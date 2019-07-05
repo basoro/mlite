@@ -115,4 +115,4 @@ if ($meta == "200") {
 	
   };
   ?>
-	<a href="http://simrs.rshdbarabai.com/dashboard/br-ralan.php" class="btn btn-secondary form-control">Back</a>
+	<a href="http://sim.rshdbarabai.com/br-ralan.php" class="btn btn-secondary form-control">Back</a>

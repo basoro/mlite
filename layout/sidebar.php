@@ -106,25 +106,31 @@
                         </ul>
                     </li>
                     <?php } ?>
-                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik')  { ?>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik' || $_SESSION['jenis_poli'] == 'U0019')  { ?>
                       <li>
                           <a href="javascript:void(0);" class="menu-toggle">
                               <i class="material-icons">import_export</i>
                               <span>Bridging</span>
                           </a>
                           <ul class="ml-menu">
+                              <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
                                   <a href="<?php echo URL; ?>/br-igd.php">IGD</a>
                               </li>
+                              <?php } ?>
+                              <?php if($_SESSION['jenis_poli'] == 'U0019' || $role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
                                   <a href="<?php echo URL; ?>/br-ralan.php">Rawat Jalan</a>
                               </li>
+                              <?php } ?>
+                              <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
                                   <a href="<?php echo URL; ?>/br-ranap.php">Rawat Inap</a>
                               </li>
                               <li>
                                   <a href="<?php echo URL; ?>/br-cekpeserta.php">Cek Kepesertaan</a>
                               </li>
+                              <?php } ?>
                           </ul>
                       </li>
                       <?php } ?>
@@ -140,8 +146,7 @@
                                 <a href="<?php echo URL; ?>/rajal_batal.php">Grafik Pasien</a>
                             </li>                         
                         </ul>
-                    </li>
-                  	<li>
+                    </li>              
                   	<li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">account_balance</i>
@@ -316,9 +321,11 @@
                               <span>Pengguna</span>
                           </a>
                           <ul class="ml-menu">
+                            <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Kasir' || $role == 'Medis' || $role == 'Apotek' || $role == 'RekamMedik' || $role == 'Paramedis_Ranap'){?>
                               <li>
                                   <a href="<?php echo URL; ?>/profil.php">Profil</a>
                               </li>
+                            <?php } ?>
                               <li>
                                   <a href="users.php">Data Pengguna</a>
                               </li>

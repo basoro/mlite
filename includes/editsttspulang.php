@@ -2,8 +2,9 @@
 include('../config.php');
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
-  $update = query("UPDATE kamar_inap SET stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
+  $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' AND diagnosa_akhir = '".$_POST['dx']."' AND stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
   if($update){ 
+    $update = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar = '".$_POST['bed']."'");
   	redirect('../pasien-ranap.php');
   }
 }
@@ -35,17 +36,35 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <h4 class="modal-title" id="smallModalLabel">Status Pulang</h4>
                 </div>
                 <div class="modal-body">
-                    <select name="stts_pulang" class="form-control show-tick">
-                    <?php
-                    $no_rawat = $_GET['norawat'];
-                    $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'kamar_inap' AND COLUMN_NAME = 'stts_pulang'");
-                    $row = fetch_array($result);
-                    $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
-                    foreach($enumList as $value) {
-                        echo "<option value='$value'>$value</option>";
-                    }
-                    ?>
-                    </select>
+                  <div class="form-group">
+                    <div class="form-line">
+                      	<label for="dx">Diagnosa</label>
+                  		<input type="text" class="form-control" name="dx" value="">
+                      	<input type="hidden" class="form-control" name="bed" value="<?php echo $_GET['bed'];?>">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-line">
+                      	<label for="tglplg">Tanggal Pulang</label>
+                  		<input type="text" class="datepicker form-control" name="tglplg" value="<?php echo $date; ?>">
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <div class="form-line">
+                      <label for="stts_pulang">Status Pulang</label>
+                      <select name="stts_pulang" class="form-control show-tick">
+                      <?php
+                      $no_rawat = $_GET['norawat'];
+                      $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'kamar_inap' AND COLUMN_NAME = 'stts_pulang'");
+                      $row = fetch_array($result);
+                      $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
+                      foreach($enumList as $value) {
+                          echo "<option value='$value'>$value</option>";
+                      }
+                      ?>
+                      </select>
+                    </div>
+                  </div>
                 </div>
                 <div class="modal-footer">
                   	<input type="hidden" name="no_rawat" value="<?php echo $no_rawat;?>">
@@ -54,4 +73,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 </form>
     </div>
 </body>
+  <script>
+        $(document).ready(function() {
+            $('.datepicker').bootstrapMaterialDatePicker({
+                format: 'YYYY-MM-DD',
+                clearButton: true,
+                weekStart: 1,
+                time: false
+            });
+        } );
+  </script>
 </html>

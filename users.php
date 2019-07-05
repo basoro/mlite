@@ -48,7 +48,7 @@ include_once('layout/sidebar.php');
                                             <div class="form-line">
                                                 <input type="text" id="role" name="role" class="form-control" placeholder="Role">
                                             </div>
-                                            <div class="m-t-15"><small>Role as Admin, Manajemen, Medis, Paramedis, Apotek, Kasir, RekamMedik</small></div>
+                                            <div class="m-t-15"><small>Role as Admin, Manajemen, Medis, Paramedis, Paramedis_Ranap, Apotek, Kasir, RekamMedik</small></div>
                                         </div>
                                     </div>
                                 </div>

@@ -42,6 +42,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="header">
                             <h2>
                                 INFORMASI KAMAR <?php if($role == 'Paramedis_Ranap') { echo $dataGetBangsal['nm_bangsal']; } else { echo 'RANAP'; } ?>
+	                         	<?php if($role == 'Admin')  { ?><button class="btn btn-success pull-right waves-effect"><a href="<?php echo URL; ?>/objek/setkmr.php" style="color:white;text-decoration:none;">Set Kamar</a></button><?php } ?>
                             </h2>
                         </div>
                         <?php
@@ -110,10 +111,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                                     <?php if($role !== 'Paramedis_Ranap')  { ?>
                                                     <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['6'];?>">e-Dokter</a></li>
                                                     <?php } ?>
-                                                    <li><a href="javascript:void(0);">Input Tindakan</a></li>
+                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['6']; ?>">Input Tindakan</a></li>
                                                     <li><a href="javascript:void(0);">Input Obat</a></li>
                                                     <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
-                                                    <li><a href="#" data-toggle="modal" data-target="#statuspulang" data-norawat="<?php echo $row['6']; ?>">Status Pulang</a></li>
+                                                    <li><a href="#" data-toggle="modal" data-target="#statuspulang" data-bed="<?php echo $row['3']; ?>" data-norawat="<?php echo $row['6']; ?>">Status Pulang</a></li>
                                                 </ul>
                                             </div>
                                         </td>
@@ -455,6 +456,223 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                           </div>
                       </div>
                     <?php } ?>
+                    <?php 
+                    if($action == "tindakan"){
+                      if (isset($_POST['ok_tdk'])) {
+                                    if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
+                                          $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}')");
+                                          if ($insert) {
+                                              redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}");
+                                          };
+                                    };
+                              };
+                      if(isset($_POST['ok_per'])){
+                            if(($no_rawat <> "")){
+                              $insert = query("INSERT INTO pemeriksaan_ranap VALUE ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
+                                          ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}')");
+                              if($insert){
+                                redirect("{$_SERVER['PHP_SELF']}?action=tindakan&no_rawat={$no_rawat}");
+                              }
+                            }
+                          }
+                      ?>
+                       <div class="row">
+                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                           <div class="body">
+                               <dl class="dl-horizontal">
+                                   <dt>Nama Lengkap</dt>
+                                   <dd><?php echo $nm_pasien; ?></dd>
+                                   <dt>No. RM</dt>
+                                   <dd><?php echo $no_rkm_medis; ?></dd>
+                                   <dt>No. Rawat</dt>
+                                   <dd><?php echo $no_rawat; ?></dd>
+                                   <dt>Umur</dt>
+                                   <dd><?php echo $umur; ?></dd>
+                               </dl>
+                               <ul class="nav nav-tabs tab-nav-right" role="tablist">
+                                 <li role="presentation" class="active"><a href="#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
+                                 <li role="presentation"><a href="#data" data-toggle="tab">TINDAKAN</a></li>
+                               </ul>
+                           </div>
+                             <div class="tab-content m-t-20">
+                               <div role="tabpanel" class="tab-pane fade in" id="data">
+                                 <div class="body">
+                                 <form method="POST">
+                                   <label for="email_address">Nama Tindakan</label>
+                                   <div class="form-group">
+                                      <select name="kd_tdk" class="form-control kd_tdk" id="kd_tdk" style="width:100%"></select>
+                                      <br/>
+                                      <input type="hidden" class="form-control" id="kdtdk" name="kdtdk"/>
+                                   </div>
+                                   <button type="submit" name="ok_tdk" value="ok_tdk" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_tdk\'">SIMPAN</button>
+                                 </form>
+                                 </div>
+                                 <div class="body">
+                                 <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                     <thead>
+                                         <tr>
+                                             <th>Nama Tindakan</th>
+                                             <th>Tanggal Tindakan</th>
+                                             <th>Biaya</th>
+                                             <th>Tools</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody>
+                                     <?php
+                                     $query_tindakan = query("SELECT rawat_inap_pr.kd_jenis_prw, rawat_inap_pr.tgl_perawatan, rawat_inap_pr.biaya_rawat, jns_perawatan_inap.nm_perawatan  FROM rawat_inap_pr, jns_perawatan_inap WHERE rawat_inap_pr.kd_jenis_prw = jns_perawatan_inap.kd_jenis_prw AND rawat_inap_pr.no_rawat = '{$no_rawat}'");
+                                     while ($data_tindakan = fetch_array($query_tindakan)) {
+                                     ?>
+                                         <tr>
+                                             <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
+                                             <td><?php echo $data_tindakan['1']; ?></td>
+                                             <td><?php echo $data_tindakan['2']; ?></td>
+                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                         </tr>
+                                     <?php
+                                     }
+                                     ?>
+                                     </tbody>
+                                 </table>
+                                 </div>
+                               </div>
+
+                               <div role="tabpanel" class="tab-pane fade in active" id="datapem">
+                                 <div class="body">
+                                 <form method="POST">
+                                   <div class="row clearfix">
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Keluhan</dt>
+                                          <dd><textarea rows="4" name="keluhan" class="form-control"></textarea></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Pemeriksaan</dt>
+                                          <dd><textarea rows="4" name="pemeriksaan" class="form-control"></textarea></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Alergi</dt>
+                                          <dd><input type="text" class="form-control" name="alergi"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Tindak Lanjut</dt>
+                                          <dd><input type="text" class="form-control" name="tndklnjt"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row clearfix">
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Suhu Badan (C)</dt>
+                                          <dd><input type="text" class="form-control" name="suhu"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Tinggi Badan (Cm)</dt>
+                                          <dd><input type="text" class="form-control" name="tinggi"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Tensi</dt>
+                                          <dd><input type="text" class="form-control" name="tensi"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Respirasi (per Menit)</dt>
+                                          <dd><input type="text" class="form-control" name="respirasi"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div class="row clearfix">
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Berat (Kg)</dt>
+                                          <dd><input type="text" class="form-control" name="berat"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Nadi (per Menit)</dt>
+                                          <dd><input type="text" class="form-control" name="nadi"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>Imun Ke</dt>
+                                          <dd><input type="text" class="form-control" name="imun"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                      <div class="form-group">
+                                        <div class="form-line">
+                                          <dt>GCS(E , V , M)</dt>
+                                          <dd><input type="text" class="form-control" name="gcs"></dd>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                   <button type="submit" name="ok_per" value="ok_per" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_per\'">SIMPAN</button>
+                                 </form>
+                                 </div>
+                                 <div class="body">
+                                 <table id="datatab" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                     <thead>
+                                         <tr>
+                                             <th>Keluhan</th>
+                                             <th>Pemeriksaan</th>
+                                             <th>Tools</th>
+                                         </tr>
+                                     </thead>
+                                     <tbody>
+                                     <?php
+                                     $query_tindakan = query("SELECT * FROM pemeriksaan_ranap WHERE no_rawat = '{$no_rawat}'");
+                                     while ($data_tindakan = fetch_array($query_tindakan)) {
+                                     ?>
+                                         <tr>
+                                             <td><?php echo $data_tindakan['keluhan']; ?></td>
+                                             <td><?php echo $data_tindakan['pemeriksaan']; ?></td>
+                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                         </tr>
+                                     <?php
+                                     }
+                                     ?>
+                                     </tbody>
+                                 </table>
+                                 </div>
+                               </div>
+                             </div>
+                           
+                      <?php } ?> 
                 <?php
                 //delete
                 if($action == "delete_diagnosa"){
@@ -472,6 +690,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                       if (($hasil)) {
                       redirect("pasien-ranap.php?action=view&no_rawat={$no_rawat}");
                       }
+                }
+                  if ($action == "delete_tindakan") {
+                  $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                  $hasil = query($hapus);
+                  if (($hasil)) {
+                    redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}");
+                  }
                 }
                 ?>
                     </div>
@@ -501,6 +726,14 @@ include_once('layout/footer.php');
             );
             return $data;
         };
+      
+      	function formatInputData (data) {
+              var $data = $(
+                  '<b>('+ data.id +')</b> Rp '+ data.tarif +' - <i>'+ data.text +'</i>'
+              );
+              return $data;
+          };
+
 
         function formatDataTEXT (data) {
             var $data = $(
@@ -567,6 +800,35 @@ include_once('layout/footer.php');
           templateResult: formatData,
           minimumInputLength: 3
         });
+      
+      $('.kd_tdk').select2({
+          placeholder: 'Pilih tindakan',
+          ajax: {
+            url: 'includes/select-tindakan-ranap.php',
+            dataType: 'json',
+            delay: 250,
+            processResults: function (data) {
+              return {
+                results: data
+              };
+            },
+            cache: true
+          },
+          templateResult: formatInputData,
+      	minimumInputLength: 3
+        });
+        
+        $('.kd_tdk').on('change', function () {
+         var kode = $("#kd_tdk").val();
+         $.ajax({
+         	url: 'includes/biayaranap.php',
+         	data: "kode="+kode,
+         }).success(function (data){
+           var json = data,
+               obj = JSON.parse(json);
+           		$('#kdtdk').val(obj.tarif);
+           });
+        });
 
         $(function () {
              $('#row_dim').hide();
@@ -583,8 +845,10 @@ include_once('layout/footer.php');
     $('#statuspulang').on('show.bs.modal', function (event) {
           var button = $(event.relatedTarget) // Button that triggered the modal
           var recipient = button.data('norawat') // Extract info from data-* attributes
+          var recipient1 = button.data('bed')
           var modal = $(this);
           var dataString = 'norawat=' + recipient;
+      	  var dataString = 'bed=' + recipient1;
             $.ajax({
                 type: "GET",
                 url: "includes/editsttspulang.php",

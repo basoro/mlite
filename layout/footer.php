@@ -127,7 +127,10 @@
         } );
 
         $('.count-to').countTo();
-
+		var table = $('#datatab').DataTable( {
+          	responsive: true,
+          	stateSave: true
+            });
         var table = $('#datatable').DataTable( {
           	responsive: true,
           	stateSave: true

@@ -15,15 +15,20 @@ if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to
 
 define('VERSION', '0.1 Beta');
 define('ABSPATH', dirname(__FILE__) . '/');
-define('URL', 'http://localhost/webapss/dashboard');
-define('URLSIMRS', 'http://localhost/webapps/');
+define('URL', 'https://sim.rshdbarabai.com');
+define('URLSIMRS', 'http://simrs.rshdbarabai.com');
 define('DIR', '');
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'sik');
-define('KODERS', '');
-define('KODEPROP','');
+define('DB_HOST', '192.168.0.250');
+define('DB_USER', 'rshd_sik');
+define('DB_PASS', 'Murakata04');
+define('DB_NAME', 'rshd_sik');
+define('KODERS', '6307012');
+define('KODEPROP','63prop');
+
+
+define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
+define('ConsID', '29459');
+define('SecretKey', '7cS168C09A');
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
