@@ -146,7 +146,23 @@
                                 <a href="<?php echo URL; ?>/rajal_batal.php">Grafik Pasien</a>
                             </li>                         
                         </ul>
-                    </li>              
+                    </li>
+                  	<?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
+                    <li>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">grade</i>
+                            <span>Penunjang & Sarana Prasarana</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li>
+                                <a href="<?php echo URL; ?>/kesling.php">Surveilance</a>
+                            </li>
+                          	<li>
+                                <a href="<?php echo URL; ?>/gizi.php">Data Diet Pasien</a>
+                            </li>
+                        </ul>
+                    </li>
+                  	<?php } ?>
                   	<li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">account_balance</i>
@@ -328,6 +344,9 @@
                             <?php } ?>
                               <li>
                                   <a href="users.php">Data Pengguna</a>
+                              </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/objek/setkmr.php">Set Kamar</a>
                               </li>
                           </ul>
                       </li>

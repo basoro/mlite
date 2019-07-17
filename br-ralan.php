@@ -49,7 +49,16 @@ include_once('layout/sidebar.php');
                                       
                               ?>
                               <tr>
-                                <td><?php echo $a['no_rkm_medis']; ?></td>
+                                <td><?php echo $a['no_rkm_medis']; $sql = "SELECT no_rawat as jml FROM bridging_sep WHERE no_rawat = '{$a['no_rawat']}'";
+                                      $ceksep = query($sql);
+                                      if(num_rows($ceksep) == 1)
+                                      {
+                                        echo "<i class='material-icons'>done</i>";
+                                      }
+                                      	else
+                                      {
+                                      	echo "<i class='material-icons'>warning</i>";
+                                      }?></td>
                                 <td><?php echo SUBSTR($a['nm_pasien'], 0, 15).' ...'; ?></td>
                                 <td><?php echo SUBSTR($a['nm_poli'], 5, 16); ?></td>
                                 <td><?php echo $a['png_jawab']; ?></td>
