@@ -37,7 +37,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="card">
                         <div class="header">
                             <h2>
-                                SURVEILANS <a href='kesling.php?action=add' class='btn btn-primary pull-right'>Tambah Data</a>
+                                SURVEILANS
                             </h2>
                         </div>
                         <div class="body">
@@ -45,32 +45,37 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         $action = isset($_GET['action'])?$_GET['action']:null;
                         if(!$action){
 							?>
-							
+							<div style="margin-bottom:50px;">
+								<a href='kesling.php?action=add' class='btn btn-primary pull-left'>
+                                <i class="material-icons" style="margin-top:2%;">create</i>
+                                <span>Tambah Data</span>
+                                </a>
+							</div>
 							<table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
 								<thead>
 								<tr>
 									<th>ID</th>
 									<th>NIP</th>
-									<th>USER</th>
-									<th>RUANGAN</th>
-									<th>KETERANGAN</th>
-									<th>FOTO</th>
+									<th>User</th>
+									<th>Ruangan</th>
+									<th>Keterangan</th>
+                                	<th>Action</th>
 								</tr>
 								</thead>
 								<tbody>
-								<?php 
-									$sql="SELECT 
-										    a.id, 
+								<?php
+									$sql="SELECT
+										    a.id,
 										    a.nip,
 											c.nama,
 											b.nm_bangsal,
 											a.keterangan,
 											a.foto
-											from 
+											from
 											surveilans as a,
 											bangsal as b,
 											petugas as c
-											where 
+											where
 											a.kd_bangsal = b.kd_bangsal
 											and
 											a.nip = c.nip
@@ -84,46 +89,60 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 										 <td>".$baranghaja['nama']."</td>
 										 <td>".$baranghaja['nm_bangsal']."</td>
 										 <td>".$baranghaja['keterangan']."</td>
-										 <td>".$baranghaja['foto']."</td>
-										 </tr>";
+                                         "?>
+                                  		 <td>
+                                           <a href="kesling.php?action=view&id=<?php echo $baranghaja['id'];?>" class="menu-toggle btn btn-info">
+                                           <i class="material-icons" style="margin-top:2%;">short_text</i>
+                                           <span>Detail</span>
+                                           </a>
+                                           &nbsp;
+                                           <a href="kesling.php?action=ubah&id=<?php echo $baranghaja['id'];?>" class="menu-toggle btn btn-warning">
+                                           <i class="material-icons">border_color</i>
+                                           <span>Ubah</span> &nbsp; &nbsp;&nbsp;
+                                           </a>
+                                           &nbsp;
+                                           <a href="kesling.php?action=hapus&id=<?php echo $baranghaja['id'];?>" class="menu-toggle btn btn-danger">
+                                           <i class="material-icons" style="margin-top:2%;">delete_forever</i>
+                                           <span>Hapus</span>
+                                           </a>
+                                           <!--    </a><a class="hapus" href="kesling.php?action=hapus&id=<?php //echo $baranghaja['id'];?>">Hapus</a> -->
+                                  		 </td>
+										 <?php "</tr>";
 									}
 								?>
 								</tbody>
 							</table>
-							
+
 						<?php
-                        } 
-						if ($action == "view"){
-							echo "ini viewnya";
-						}
-						if ($action == "add"){
-						?>
+                        }
+						if ($action == "ubah"){
+                          ?>
 							<form method="post" action="" enctype="multipart/form-data">
 									<div class="form-group form-float">
                                     	<div class="form-line">
-                                        	<input type="text" class="form-control" name="nip" value="<?php echo $_SESSION['username'];?>">
+                                        	<input type="text" class="form-control" name="nip" value="<?php echo $_GET['nip'];?>">
                                             <!-- <label class="form-label">Upload Foto</label> -->
                                         </div>
-                                    </div>						   
+                                    </div>
 									<div class="form-group">
-                                    	<div class="form-line"> 
+                                    	<div class="form-line">
 										<select name="ruangan" style="width:100%" class="form-control kd_tdk">
-									    <option value="" selected="selected" >Pilih Ruangan</option>	
+									    <option value="" selected="selected" >Pilih Ruangan</option>
 										<?php
 										$query = "SELECT * FROM bangsal where kd_bangsal !='-' and kd_bangsal !='B0009' and kd_bangsal !='B0013' and kd_bangsal !='B0015'";
 										$hasil = query($query);
 									    while ($data = mysqli_fetch_array($hasil)){
 											echo "<option value='".$data['kd_bangsal']."'>".$data['nm_bangsal']."</option>";
 										}
-										?>		
+										?>
 										</select>
-                                        <label class="form-label">Ruangan</label>  
+                                        <label class="form-label">Ruangan</label>
                                 	    </div>
                                     </div>
-									
+
                              		<div class="form-group form-float">
                                     	<div class="form-line">
-                                        	<textarea class="form-control" name="keterangan"></textarea>
+                                        	<textarea class="form-control" name="keterangan"> <?php echo $_GET['keterangan'];?></textarea>
                                             <label class="form-label">Keterangan</label>
                                         </div>
                                     </div>
@@ -135,9 +154,100 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     </div>
                                  	<button type="submit" class="form-control btn bg-indigo waves-effect tombol-simpan" name="simpan-sur">Simpan</button>
                                 </form>
+                        <?php
+						}
+                        if ($action == "hapus"){
+							$id = $_GET['id'];
+							$hapus=query("DELETE FROM surveilans WHERE id='$id'")or die(mysql_error());
+                          if($hapus){
+                            redirect('kesling.php');
+                          }
+						}
+                        if ($action == "view"){
+                         	$id = $_GET['id'];
+							$sql="SELECT
+										    a.id,
+										    a.nip,
+											c.nama,
+											b.nm_bangsal,
+											a.keterangan,
+											a.foto
+										FROM
+											surveilans as a,
+											bangsal as b,
+											petugas as c
+										WHERE
+											a.kd_bangsal = b.kd_bangsal
+											and
+											a.nip = c.nip
+											and
+                                            a.id = '$id'
+                                            ";
+                          	$query=query($sql);
+                          	$row = mysqli_fetch_array($query)
+						?>
+                          <div class="row">
+                         		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                           		<div class="body">
+                          		<dl class="dl-horizontal">
+                                   <dt>NIP</dt>
+                                   <dd><?php echo $row['nip']; ?></dd>
+                                   <dt>NAMA PETUGAS</dt>
+                                   <dd><?php echo $row['nama']; ?></dd>
+                                   <dt>NAMA RUANGAN</dt>
+                                   <dd><?php echo $row['nm_bangsal']; ?></dd>
+                                   <dt>KETERANGAN</dt>
+                                   <dd><?php echo $row['keterangan'];; ?></dd>
+                                   <dt>FOTO</dt>
+                                   <dd><img src="<?php echo URLSIMRS."/dashboard/".$row['foto']?>" width="300px">  </dd>
+                               </dl>
+                  			   </div>
+                               </div>
+                            </div>
+
+                        <?php
+						}
+						if ($action == "add"){
+						?>
+							<form method="post" action="" enctype="multipart/form-data">
+									<div class="form-group form-float">
+                                    	<div class="form-line">
+                                        	<input type="text" class="form-control" name="nip" value="<?php echo $_SESSION['username'];?>">
+                                            <!-- <label class="form-label">Upload Foto</label> -->
+                                        </div>
+                                    </div>
+									<div class="form-group">
+                                    	<div class="form-line">
+										<select name="ruangan" style="width:100%" class="form-control kd_tdk">
+									    <option value="" selected="selected" >Pilih Ruangan</option>
+										<?php
+										$query = "SELECT * FROM bangsal where kd_bangsal !='-' and kd_bangsal !='B0009' and kd_bangsal !='B0013' and kd_bangsal !='B0015'";
+										$hasil = query($query);
+									    while ($data = mysqli_fetch_array($hasil)){
+											echo "<option value='".$data['kd_bangsal']."'>".$data['nm_bangsal']."</option>";
+										}
+										?>
+										</select>
+                                        <label class="form-label">Ruangan</label>
+                                	    </div>
+                                    </div>
+
+                             		<div class="form-group form-float">
+                                    	<div class="form-line">
+                                        	<textarea class="form-control" name="keterangan"></textarea>
+                                            <label class="form-label">Keterangan</label>
+                                        </div>
+                                    </div>
+                             		<div class="form-group form-float">
+                                    	<div class="form-line">
+                                        	<input type="file" class="form-control" name="fileToUpload" id="fileToUpload">
+                                        </div>
+                                    </div>
+                                 	<button type="submit" class="form-control btn bg-indigo waves-effect tombol-simpan" name="simpan-sur">Simpan</button>
+                                </form>
 						<?php
 						}
-						?>  	
+						?>
                         </div>
                     </div>
                 </div>
