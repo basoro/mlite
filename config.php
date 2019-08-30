@@ -27,8 +27,8 @@ define('KODEPROP','63prop');
 
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
-define('ConsID', '29459');
-define('SecretKey', '7cS168C09A');
+define('ConsID', '');
+define('SecretKey', '');
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
