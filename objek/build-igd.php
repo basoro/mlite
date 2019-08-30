@@ -105,7 +105,7 @@ if ($meta == "200") {
   };
   if ($_POST['tglkkl'] == "") {
   $_POST['tglkkl'] = '0000-00-00';
-} else { 
+} else {
   $_POST['tglkkl'] = $_POST['tglkkl'];
 }
   $insert = query("INSERT INTO bridging_sep VALUES (
@@ -117,8 +117,8 @@ if ($meta == "200") {
 	}else {
     echo "Kode : ".$meta."</br>";
     echo "Pesan : ".$mets."</br>";
-  	
-	
+
+
   };
   ?>
-	<a href="http://simrs.rshdbarabai.com/dashboard/br-ranap.php" class="btn btn-secondary form-control">Back</a>
+	<a href="<?php echo URL; ?>/br-ranap.php" class="btn btn-secondary form-control">Back</a>

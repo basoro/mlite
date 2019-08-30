@@ -11,9 +11,7 @@
 $title = 'Pulang';
 include_once('../config.php');
 include_once('../layout/header.php');
-include_once('../layout/sidebar.php');?>
-<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-<?php
+include_once('../layout/sidebar.php');
 if($_SERVER['REQUEST_METHOD'] == "POST") {
   if($_POST['stts_pulang'] == "Membaik"){
     $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' , jam_keluar = '".$time."' , diagnosa_akhir = '".$_POST['dx']."' , stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");

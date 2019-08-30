@@ -17,7 +17,24 @@ include ('../init.php');
 
 $q = $_GET['q'];
 
-$sql = query("SELECT kd_jenis_prw AS id, nm_perawatan AS text, tarif_tindakanpr AS tarif FROM jns_perawatan WHERE status = '1' AND nm_perawatan LIKE '%".$q."%'");
+$sql = query("
+SELECT 
+	a.kd_kamar AS id,
+    b.nm_bangsal AS text,
+    a.trf_kamar,
+    a.kelas AS text2,
+    a.status AS text3
+FROM
+	kamar as a,
+    bangsal as b
+WHERE
+ 	a.kd_bangsal = b.kd_bangsal
+    AND
+    a.status = 'KOSONG'
+    AND
+    (nm_bangsal LIKE '%".$q."%')");
+	
+//SELECT kd_jenis_prw AS id, nm_perawatan AS text, tarif_tindakanpr AS tarif FROM jns_perawatan_inap WHERE status ='1' AND (nm_perawatan LIKE '%".$q."%')");
 $num = num_rows($sql);
 if($num > 0){
 	while($data = fetch_assoc($sql)){

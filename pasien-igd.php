@@ -61,10 +61,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                               <div class="row">
                                 <ul class="nav nav-tabs tab-nav-right" role="tablist">
                                   <li role="presentation" class="active"><a href="#data" data-toggle="tab">DATA REGISTRASI</a></li>
-                                  <?php if($role == 'RekamMedis' || $role == 'Admin'){?>
                                   <li role="presentation"><a href="#reglama" data-toggle="tab">REGISTRASI PASIEN LAMA</a></li>
                                   <li role="presentation"><a href="#regbaru" data-toggle="tab">REGISTRASI PASIEN BARU</a></li>
-								  <?php } ?>
                                 </ul>
                               </div>
                               <div class="tab-content m-t-20">
@@ -85,7 +83,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     </thead>
                                     <tbody>
                                     <?php
-                                    $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg FROM pasien a, reg_periksa b, penjab c, poliklinik d WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND d.kd_poli NOT IN('IGDK','U0027')";
+                                    $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg FROM pasien a, reg_periksa b, penjab c, poliklinik d WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND d.kd_poli = 'IGDK'";
                                     if($role == 'Medis' || $role == 'Paramedis') {
                                       $sql .= " AND b.kd_poli = '$jenis_poli'";
                                     }
@@ -104,7 +102,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                                     <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                         <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                                                        <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=edokter&no_rawat=<?php echo $row['5']; ?>">e-Dokter</a></li>
+                                                        <li><a href="javascript:void(0);">Input Obat</a></li>
                                                         <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
                                                         <li><a href="includes/insertpasien.php?no_rawat=<?php echo $row['5']; ?>">Status</a></li>
                                                     </ul>
@@ -496,6 +494,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                  </table>
                                  </div>
                                </div>
+
                                <div role="tabpanel" class="tab-pane fade in active" id="datapem">
                                  <div class="body">
                                  <form method="POST">
@@ -633,8 +632,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                              </div>
                            
                       <?php } ?>
-                      <?php 
-                    	if($action == "edokter"){ include_once 'includes/edokter.php'; }?>
                     <?php
                     //delete
                     if($action == "delete_diagnosa"){
@@ -841,6 +838,7 @@ include_once('layout/footer.php');
                 */
             } );
 
+
             $('#datatable_ralan').dataTable( {
 	          	responsive: true,
 				order: [[ 2, 'asc' ]]
@@ -849,7 +847,7 @@ include_once('layout/footer.php');
 	          	responsive: true,
 				order: [[ 4, 'asc' ]]
             } );
-            $('#databooking').dataTable( {
+            $('#datatable_booking').dataTable( {
 	          	responsive: true,
 				order: [[ 1, 'asc' ]]
             } );
@@ -888,35 +886,5 @@ include_once('layout/footer.php');
             templateResult: formatData,
             minimumInputLength: 3
         });
-      function Antri()
-        {
-          $.ajax({
-            url: './includes/ambil.php',
-            type: 'POST',
-            success: function(lol)
-            {
-              $('.antri').html(lol);
-            }
-          });
-        };
-
-        setInterval(function(){ Antri(); }, 1000);
-      $(".tglprk").bootstrapMaterialDatePicker({
-                format: 'YYYY-MM-DD',
-                clearButton: true,
-                weekStart: 1,
-                time: false
-            }).on("change", function(e) {
-                var kode = $("#tglprk").val();
-                $.ajax({
-                    url: './includes/noreg.php',
-                    data: "kode="+kode,
-                }).success(function (data){
-                var json = data,
-                    obj = JSON.parse(json);
-                        $('#noreg').val(obj.noreg);
-                });
-            });
-      
 	</script>
     

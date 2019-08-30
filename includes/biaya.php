@@ -15,7 +15,7 @@ session_start();
 include ('../config.php');
 include ('../init.php');
 
-$kode=$_GET['kode'];
+$kode = $_GET['kode'];
 $sql = query("SELECT tarif_tindakanpr FROM jns_perawatan WHERE kd_jenis_prw='$kode'");
 $data = fetch_assoc($sql);
 $tmp = array('tarif'=>$data['tarif_tindakanpr'],);

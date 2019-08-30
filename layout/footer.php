@@ -80,6 +80,9 @@
     <!-- Jquery-UI Js -->
     <script src="<?php echo URL; ?>/js/jquery-ui.min.js"></script>
 
+	
+	<script src="<?php echo URL; ?>/plugins/sweetalert/sweetalert.min.js"></script>
+
     <!-- Select2 Js -->
     <script src="<?php echo URL; ?>/js/select2.min.js"></script>
 
@@ -127,7 +130,8 @@
         } );
 
         $('.count-to').countTo();
-		var table = $('#datatab').DataTable( {
+		
+      	var table = $('#datatab').DataTable( {
           	responsive: true,
           	stateSave: true
             });

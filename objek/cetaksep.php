@@ -26,7 +26,7 @@ include_once('../config.php');
                             <div class="row clearfix">
                               <div class="col-md-2">
                                 <div class="form-group">
-                                  <img src="images/bpjslogo.PNG" height="60" width="350">
+                                  <img src="<?php echo URL; ?>/images/bpjslogo.png" height="60" width="350">
                                 </div>
                               </div>
                               <div class="col-md-10">
@@ -95,7 +95,7 @@ include_once('../config.php');
                                 No. Reg
                               </div>
                               <div class="col-md-4">
-                                : 
+                                :
                               </div>
                             </div>
                             <div class="row clearfix">

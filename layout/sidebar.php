@@ -51,6 +51,9 @@
                             </li>
 							<?php } ?>
                           	<?php if($role !== 'Paramedis_Ranap')  { ?>
+                          	<li>
+                                <a href="<?php echo URL; ?>/pasien-igd.php">Pasien IGD</a>
+                            </li>
                             <li>
                                 <a href="<?php echo URL; ?>/pasien-ralan.php">Pasien Rawat Jalan</a>
                             </li>
@@ -130,6 +133,9 @@
                               <li>
                                   <a href="<?php echo URL; ?>/br-cekpeserta.php">Cek Kepesertaan</a>
                               </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/pasien-batal-brid.php">Pasien Batal</a>
+                              </li>
                               <?php } ?>
                           </ul>
                       </li>
@@ -137,23 +143,21 @@
                     <li class="header">MANAJEMEN</li>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Apotek')  { ?>
                     <li>
-                        <a href="javascript:void(0);" class="menu-toggle">
-                            <i class="material-icons">view_array</i>
-                            <span>Grafik</span>
+                        <a href="<?php echo URL; ?>/surat.php">
+                            <i class="material-icons">storage</i>
+                            <span>Surat Menyurat</span>
                         </a>
-                        <ul class="ml-menu">
-                            <li>
-                                <a href="<?php echo URL; ?>/rajal_batal.php">Grafik Pasien</a>
-                            </li>                         
-                        </ul>
                     </li>
                   	<?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">grade</i>
-                            <span>Penunjang & Sarana Prasarana</span>
+                            <span>Utilitas Instalasi</span>
                         </a>
                         <ul class="ml-menu">
+                            <li>
+                                <a href="<?php echo URL; ?>/objek/setkmr.php">Set Kamar</a>
+                            </li>
                             <li>
                                 <a href="<?php echo URL; ?>/kesling.php">Surveilance</a>
                             </li>
@@ -330,6 +334,31 @@
                           </ul>
                       </li>
                       <?php } ?>
+                      <?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
+                    	<li>
+                          <a href="javascript:void(0);" class="menu-toggle">
+                              <i class="material-icons">mail</i>
+                              <span>SMS Gateway</span>
+                          </a>
+                          <ul class="ml-menu">
+                              <li>
+                                  <a href="<?php echo URL; ?>/sms-masuk.php">SMS Masuk</a>
+                              </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/sms-keluar.php">SMS Keluar</a>
+                              </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/sms-kirim.php">Kirim SMS</a>
+                              </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/sms-jadwal.php">Penjadwalan SMS</a>
+                              </li>
+                              <li>
+                                  <a href="<?php echo URL; ?>/sms-auto.php">Autorespon SMS</a>
+                              </li>
+                          </ul>
+                      </li>
+                    	<?php } ?>
                       <?php if($role == 'Admin')  { ?>
                       <li>
                           <a href="javascript:void(0);" class="menu-toggle">
@@ -344,9 +373,6 @@
                             <?php } ?>
                               <li>
                                   <a href="users.php">Data Pengguna</a>
-                              </li>
-                              <li>
-                                  <a href="<?php echo URL; ?>/objek/setkmr.php">Set Kamar</a>
                               </li>
                           </ul>
                       </li>

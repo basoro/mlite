@@ -112,7 +112,7 @@ if ($meta == "200") {
 	}else {
     echo "Kode : ".$meta."</br>";
     echo "Pesan : ".$mets."</br>";
-	
+
   };
   ?>
-	<a href="http://sim.rshdbarabai.com/br-ralan.php" class="btn btn-secondary form-control">Back</a>
+	<a href="<?php echo URL; ?>/br-ralan.php" class="btn btn-secondary form-control">Back</a>

@@ -40,7 +40,7 @@ include_once('layout/sidebar.php');
                             </thead>
                             <tbody>
                               <?php
-                              		$sql = "SELECT reg_periksa.no_rkm_medis , pasien.nm_pasien , pasien.tgl_lahir , reg_periksa.no_rawat , poliklinik.nm_poli , penjab.png_jawab FROM reg_periksa , pasien , poliklinik , penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.kd_poli NOT IN('IGDK') AND reg_periksa.kd_poli = poliklinik.kd_poli AND tgl_registrasi = '{$date}'";
+                              		$sql = "SELECT reg_periksa.no_rkm_medis , pasien.nm_pasien , pasien.tgl_lahir , reg_periksa.no_rawat , poliklinik.nm_poli , penjab.png_jawab FROM reg_periksa , pasien , poliklinik , penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.kd_poli NOT IN('IGDK') AND reg_periksa.kd_poli = poliklinik.kd_poli AND tgl_registrasi = '{$date}' AND reg_periksa.kd_pj != 'A01'";
 									if($role == 'Medis' || $role == 'Paramedis') {
                                       $sql .= " AND poliklinik.kd_poli = '$jenis_poli'";
                                     }
@@ -63,7 +63,7 @@ include_once('layout/sidebar.php');
                                 <td><?php echo SUBSTR($a['nm_poli'], 5, 16); ?></td>
                                 <td><?php echo $a['png_jawab']; ?></td>
                                 <td><a class="btn btn-primary" href="<?php echo $_SERVER['PHP_SELF']; ?>?action=sep&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
-                                <td><a class="btn btn-primary" href="http://sim.rshdbarabai.com/objek/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
+                                <td><a class="btn btn-primary" href="https://sim.rshdbarabai.com/objek/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
                               </tr>
                                 <?php } ?>
                             </tbody>
@@ -348,9 +348,13 @@ include_once('layout/sidebar.php');
                                     <label for="dpjp">Nama DPJP</label>
                                     <select class="form-control" id="dpjp" onchange="myFunction()" name="dpjp">
                                       <option value="" selected>-------------------------------------</option>
-                                      <?php foreach($dpjp['response']['list'] as $kode => $val): ?>
-                                      <option value="<?php echo $val['kode']; ?>"><?php echo $val['nama']; ?></option>
-                                      <?php endforeach; ?>
+                                      <?php if($polik == 'HDL'){?>
+                             			<option value="9102">dr. Aris Sugiharjo, Sp. PD</option>
+                             			<?php 
+                                      	}else{
+                                      	foreach($dpjp['response']['list'] as $kode => $val): ?>
+                                      	<option value="<?php echo $val['kode']; ?>"><?php echo $val['nama']; ?></option>
+                                      	<?php endforeach; }?>
                                     </select>
                                   </div>
                                 </div>

@@ -42,7 +42,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="header">
                             <h2>
                                 INFORMASI KAMAR <?php if($role == 'Paramedis_Ranap') { echo $dataGetBangsal['nm_bangsal']; } else { echo 'RANAP'; } ?>
-                              	<?php if($role == 'Admin'){ echo "<a href='/dashboard/objek/setkmr.php' class='btn btn-primary'>Edit Kamar</a>";}?>
+                              	<?php if($role == 'Admin'){ echo "<a href='/objek/setkmr.php' class='btn btn-primary'>Edit Kamar</a>";}?>
                             </h2>
                         </div>
                         <?php
@@ -54,11 +54,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <thead>
                                     <tr>
                                         <th>Nama</th>
-                                        <th>Nomer MR</th>
+                                        <th width = "1%">No<br>MR</th>
                                         <th>Kamar</th>
                                         <th>Bed</th>
-                                        <th>Tanggal Masuk</th>
-                                        <th>Cara Bayar</th>
+                                        <th width = "10px">Tanggal<br>Masuk</th>
+                                        <th width = "10px">Cara<br>Bayar</th>
+                                      	<th>DPJP</th>
                                      </tr>
                                 </thead>
                                 <tbody>
@@ -92,6 +93,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     	kamar_inap.stts_pulang = '-'
                                     AND
                                     	reg_periksa.kd_pj = penjab.kd_pj
+                                    
                                 ";
                                 if($role == 'Paramedis_Ranap') {
                                 	$sql .= " AND bangsal.kd_bangsal = '$jenis_poli'";
@@ -111,13 +113,15 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                                     <li><a href="javascript:void(0);">Input Obat</a></li>
                                                     <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                     <li><a href="includes/editsttspulang.php?no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
-                                                </ul>
+                                              		<li><a href="pindah-kamar-pasien2.php?action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>  
+                                              </ul>
                                             </div>
                                         </td>
                                         <td><?php echo $row['2']; ?></td>
                                         <td><?php echo $row['3']; ?></td>
                                         <td><?php echo $row['4']; ?></td>
                                         <td><?php echo $row['5']; ?></td>
+                                      	<td><?php $dpjp = query("SELECT dokter.nm_dokter FROM dpjp_ranap , dokter WHERE dpjp_ranap.kd_dokter = dokter.kd_dokter AND dpjp_ranap.no_rawat = '".$row['6']."'");$dpjpp = fetch_array($dpjp);echo $dpjpp['0'];?></td>
                                     </tr>
                                 <?php
                                 }
@@ -238,8 +242,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                    <dd><?php echo $umur; ?></dd>
                                </dl>
                                <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                                 <li role="presentation" class="active"><a href="/objek/tindakan.php#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
-                                 <li role="presentation"><a href="/objek/tindakan.php#data" data-toggle="tab">TINDAKAN</a></li>
+                                 <li role="presentation" class="active"><a href="objek/tindakan-ranap.php#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
+                                 <li role="presentation"><a href="objek/tindakan-ranap.php#data" data-toggle="tab">TINDAKAN</a></li>
+                                 <li role="presentation"><a href="objek/tindakan-ranap.php#dpjp" data-toggle="tab">DPJP</a></li>
+                                 <li role="presentation"><a href="objek/tindakan-ranap.php#hais" data-toggle="tab">HAIs</a></li>
                                </ul>
                              <?php include_once "objek/tindakan-ranap.php";?>
                            </div>
@@ -277,6 +283,13 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                   $hasil = query($hapus);
                   if (($hasil)) {
                     redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}");
+                  }
+                }
+                  if ($action == "delete_dpjp") {
+                  $hapus = "DELETE FROM dpjp_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_dokter='{$_REQUEST['kd_dokter']}'";
+                  $hasil = query($hapus);
+                  if ($hasil) {
+                    redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}#dpjp");
                   }
                 }
                 ?>
@@ -487,6 +500,23 @@ include_once('layout/footer.php');
             placeholder: 'Pilih Jenis',
             ajax: {
                 url: '/includes/select-radiology.php',
+                dataType: 'json',
+                delay: 250,
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                cache: true
+            },
+            templateResult: formatData,
+            minimumInputLength: 3
+        });
+       
+       $('.dpjp').select2({
+            placeholder: 'Pilih Dokter',
+            ajax: {
+                url: 'includes/select-dokter.php',
                 dataType: 'json',
                 delay: 250,
                     processResults: function (data) {
