@@ -90,7 +90,7 @@ if (isset($_GET['no_rawat'])) {
                                 $no=1;
                                 while ($row_rad = fetch_array($sql_rad)) {
                                   echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                  echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
+                                  echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'"></a>';
                                   echo '</div>';
                                   $no++;
                                 }
