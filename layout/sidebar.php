@@ -9,9 +9,9 @@
                 <div class="image">
                 <?php
                 if ($dataGet['1'] == 'L' || $dataGet['1'] == 'Pria') {
-                    echo '<img src="'.URL.'/images/pria.png" width="48" height="48" alt="User" />';
+                    echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';
                 } else if ($dataGet['1'] == 'P' || $dataGet['1'] == 'Wanita') {
-                    echo '<img src="'.URL.'/images/wanita.png" width="48" height="48" alt="User" />';
+                    echo '<img src="'.URL.'/assets/images/wanita.png" width="48" height="48" alt="User" />';
                 }
                 ?>
                 </div>
@@ -383,7 +383,7 @@
             <!-- Footer -->
             <div class="legal">
                 <div class="copyright">
-                    &copy; 2017 - <?php echo date('Y'); ?> <a href="#" data-toggle="modal" data-target="#ICTRSHD">Instalasi ICT RSHD</a>. V.0.1
+                &copy; 2017 - <?php echo date('Y'); ?> <a href="#" data-toggle="modal" data-target="#ICTRSHD">Instalasi ICT RSHD</a>. v <?php echo VERSION; ?>
                 </div>
             </div>
             <!-- #Footer -->
