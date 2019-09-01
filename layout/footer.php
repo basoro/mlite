@@ -30,64 +30,64 @@
     </div>
 
     <!-- Jquery Core Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery/jquery.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core Js -->
-    <script src="<?php echo URL; ?>/plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/bootstrap/js/bootstrap.js"></script>
 
     <!-- Select Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/bootstrap-select/js/bootstrap-select.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/bootstrap-select/js/bootstrap-select.js"></script>
 
     <!-- Slimscroll Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
 
     <!-- Waves Effect Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/node-waves/waves.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/node-waves/waves.js"></script>
 
     <!-- Jquery CountTo Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-countto/jquery.countTo.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-countto/jquery.countTo.js"></script>
 
     <!-- Jquery DataTable Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/jquery.dataTables.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/responsive/js/dataTables.responsive.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
-    <script src="<?php echo URL; ?>/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/jquery.dataTables.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/responsive/js/dataTables.responsive.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
 
     <!-- Chart Plugins Js -->
-    <script src="<?php echo URL; ?>/plugins/chartjs/Chart.bundle.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/chartjs/Chart.bundle.js"></script>
 
     <!-- Sparkline Chart Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-sparkline/jquery.sparkline.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-sparkline/jquery.sparkline.js"></script>
 
     <!-- Jquery CountTo Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-countto/jquery.countTo.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-countto/jquery.countTo.js"></script>
 
     <!-- Autosize Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/autosize/autosize.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/autosize/autosize.js"></script>
 
     <!-- Moment Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/momentjs/moment.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/momentjs/moment.js"></script>
 
     <!-- Bootstrap Material Datetime Picker Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
 
     <!-- Jquery-UI Js -->
-    <script src="<?php echo URL; ?>/js/jquery-ui.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/js/jquery-ui.min.js"></script>
 
 	
-	<script src="<?php echo URL; ?>/plugins/sweetalert/sweetalert.min.js"></script>
+	<script src="<?php echo URL; ?>/assets/plugins/sweetalert/sweetalert.min.js"></script>
 
     <!-- Select2 Js -->
-    <script src="<?php echo URL; ?>/js/select2.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/js/select2.min.js"></script>
 
          <!-- Light Gallery Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/light-gallery/js/lightgallery-all.js"></script>
+    <script src="<?php echo URL; ?>/assets/assets/plugins/light-gallery/js/lightgallery-all.js"></script>
 	<script>
 	
 	$(function () {
@@ -101,7 +101,7 @@
 
 
     <!-- Custom Js -->
-    <script src="<?php echo URL; ?>/js/admin.js"></script>
+    <script src="<?php echo URL; ?>/assets/js/admin.js"></script>
 	  <script>
 
       var url = window.location.pathname; //sets the variable "url" to the pathname of the current window

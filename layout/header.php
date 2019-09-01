@@ -17,42 +17,42 @@ include_once(ABSPATH.'/init.php');
     <link rel="icon" href="<?php echo URL; ?>/favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
-    <link href="<?php echo URL; ?>/css/roboto.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/roboto.css" rel="stylesheet">
 
     <!-- Material Icon Css -->
-    <link href="<?php echo URL; ?>/css/material-icon.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/material-icon.css" rel="stylesheet">
 
     <!-- Bootstrap Core Css -->
-    <link href="<?php echo URL; ?>/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
 
     <!-- Waves Effect Css -->
-    <link href="<?php echo URL; ?>/plugins/node-waves/waves.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/node-waves/waves.css" rel="stylesheet" />
 
     <!-- Animation Css -->
-    <link href="<?php echo URL; ?>/plugins/animate-css/animate.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/animate-css/animate.css" rel="stylesheet" />
 
     <!-- JQuery DataTable Css -->
-    <link href="<?php echo URL; ?>/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
-    <link href="<?php echo URL; ?>/plugins/jquery-datatable/extensions/responsive/css/responsive.dataTables.min.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/plugins/jquery-datatable/skin/bootstrap/css/dataTables.bootstrap.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/responsive/css/responsive.dataTables.min.css" rel="stylesheet">
 
     <!-- Bootstrap Material Datetime Picker Css -->
-    <link href="<?php echo URL; ?>/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css" rel="stylesheet" />
 
     <!-- Bootstrap Select Css -->
-    <link href="<?php echo URL; ?>/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/bootstrap-select/css/bootstrap-select.css" rel="stylesheet" />
 
     <!-- Jquery-UI Css -->
-    <link href="<?php echo URL; ?>/css/jquery-ui.min.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/jquery-ui.min.css" rel="stylesheet">
 
     <!-- Select2 Css -->
-    <link href="<?php echo URL; ?>/css/select2.min.css" rel="stylesheet">
-    <link href="<?php echo URL; ?>/plugins/light-gallery/css/lightgallery.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/select2.min.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/plugins/light-gallery/css/lightgallery.css" rel="stylesheet">
 
     <!-- Custom Css -->
-    <link href="<?php echo URL; ?>/css/style.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/style.css" rel="stylesheet">
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
-    <link href="<?php echo URL; ?>/css/themes/all-themes.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/css/themes/all-themes.css" rel="stylesheet" />
   
 </head>
 

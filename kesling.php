@@ -21,8 +21,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
         $namefile = $_FILES["fileToUpload"]["name"];
         $ext = end(explode(".", $namefile));
         $image_name = "kesling-".time().".".$ext;
-        move_uploaded_file($tmp_name,"images/UploadKesling/".$image_name);
-        $lokasi_berkas = 'images/UploadKesling/'.$image_name;
+        move_uploaded_file($tmp_name,"assets/images/UploadKesling/".$image_name);
+        $lokasi_berkas = 'assets/images/UploadKesling/'.$image_name;
         }
 	$insert=query("INSERT INTO surveilans (nip,kd_bangsal,keterangan,foto) VALUES ('$nip','$kd_bangsal','$keterangan','$lokasi_berkas')");
 	if($insert){

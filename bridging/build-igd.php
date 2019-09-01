@@ -121,4 +121,4 @@ if ($meta == "200") {
 
   };
   ?>
-	<a href="<?php echo URL; ?>/br-ranap.php" class="btn btn-secondary form-control">Back</a>
+	<a href="br-ranap.php" class="btn btn-secondary form-control">Back</a>

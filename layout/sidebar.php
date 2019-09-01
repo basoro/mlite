@@ -9,9 +9,9 @@
                 <div class="image">
                 <?php
                 if ($dataGet['1'] == 'L' || $dataGet['1'] == 'Pria') {
-                    echo '<img src="'.URL.'/images/pria.png" width="48" height="48" alt="User" />';
+                    echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';
                 } else if ($dataGet['1'] == 'P' || $dataGet['1'] == 'Wanita') {
-                    echo '<img src="'.URL.'/images/wanita.png" width="48" height="48" alt="User" />';
+                    echo '<img src="'.URL.'/assets/images/wanita.png" width="48" height="48" alt="User" />';
                 }
                 ?>
                 </div>
@@ -118,23 +118,23 @@
                           <ul class="ml-menu">
                               <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-igd.php">IGD</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-igd.php">IGD</a>
                               </li>
                               <?php } ?>
                               <?php if($_SESSION['jenis_poli'] == 'U0019' || $role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-ralan.php">Rawat Jalan</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-ralan.php">Rawat Jalan</a>
                               </li>
                               <?php } ?>
                               <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-ranap.php">Rawat Inap</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-ranap.php">Rawat Inap</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-cekpeserta.php">Cek Kepesertaan</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-cekpeserta.php">Cek Kepesertaan</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/pasien-batal-brid.php">Pasien Batal</a>
+                                  <a href="<?php echo URL; ?>/bridging/pasien-batal-brid.php">Pasien Batal</a>
                               </li>
                               <?php } ?>
                           </ul>
@@ -156,7 +156,7 @@
                         </a>
                         <ul class="ml-menu">
                             <li>
-                                <a href="<?php echo URL; ?>/objek/setkmr.php">Set Kamar</a>
+                                <a href="<?php echo URL; ?>/includes/setkmr.php">Set Kamar</a>
                             </li>
                             <li>
                                 <a href="<?php echo URL; ?>/kesling.php">Surveilance</a>
@@ -342,19 +342,19 @@
                           </a>
                           <ul class="ml-menu">
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-masuk.php">SMS Masuk</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-masuk.php">SMS Masuk</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-keluar.php">SMS Keluar</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-keluar.php">SMS Keluar</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-kirim.php">Kirim SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-kirim.php">Kirim SMS</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-jadwal.php">Penjadwalan SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-jadwal.php">Penjadwalan SMS</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-auto.php">Autorespon SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-auto.php">Autorespon SMS</a>
                               </li>
                           </ul>
                       </li>
@@ -383,7 +383,7 @@
             <!-- Footer -->
             <div class="legal">
                 <div class="copyright">
-                    &copy; 2017 - <?php echo date('Y'); ?> <a href="#" data-toggle="modal" data-target="#ICTRSHD">Instalasi ICT RSHD</a>. V.0.1
+                &copy; 2017 - <?php echo date('Y'); ?> <a href="#" data-toggle="modal" data-target="#ICTRSHD">Instalasi ICT RSHD</a>. v <?php echo VERSION; ?>
                 </div>
             </div>
             <!-- #Footer -->

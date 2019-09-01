@@ -9,9 +9,9 @@
 ***/
 
 $title = 'Pasien Batal';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 ?>
 
     <section class="content">
@@ -49,7 +49,7 @@ include_once('layout/sidebar.php');
                                 <td><?php echo $row['tgl_registrasi'];?></td>
                                 <td><?php echo $row['no_peserta'];?></td>
                                 <td><?php $sep = fetch_array(query("SELECT no_sep from bridging_sep where no_rawat = '".$row['no_rawat']."'"));echo $sep['no_sep'];?></td>
-                                <td><a href="objek/hapus-brid.php?no_sep=<?php echo $sep['no_sep'];?>" class="btn btn-danger">X</a></td>
+                                <td><a href="hapus-brid.php?no_sep=<?php echo $sep['no_sep'];?>" class="btn btn-danger">X</a></td>
                               </tr><?php } ?>
                             </tbody>
                             
@@ -62,7 +62,7 @@ include_once('layout/sidebar.php');
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
 <script>
 $('#datatable_batal').dataTable( {
