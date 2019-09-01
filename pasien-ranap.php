@@ -42,7 +42,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="header">
                             <h2>
                                 INFORMASI KAMAR <?php if($role == 'Paramedis_Ranap') { echo $dataGetBangsal['nm_bangsal']; } else { echo 'RANAP'; } ?>
-                              	<?php if($role == 'Admin'){ echo "<a href='/objek/setkmr.php' class='btn btn-primary'>Edit Kamar</a>";}?>
+                              	<?php if($role == 'Admin'){ echo "<a href='/inlcudes/setkmr.php' class='btn btn-primary'>Edit Kamar</a>";}?>
                             </h2>
                         </div>
                         <?php
@@ -242,12 +242,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                    <dd><?php echo $umur; ?></dd>
                                </dl>
                                <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                                 <li role="presentation" class="active"><a href="objek/tindakan-ranap.php#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
-                                 <li role="presentation"><a href="objek/tindakan-ranap.php#data" data-toggle="tab">TINDAKAN</a></li>
-                                 <li role="presentation"><a href="objek/tindakan-ranap.php#dpjp" data-toggle="tab">DPJP</a></li>
-                                 <li role="presentation"><a href="objek/tindakan-ranap.php#hais" data-toggle="tab">HAIs</a></li>
+                                 <li role="presentation" class="active"><a href="includes/tindakan-ranap.php#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
+                                 <li role="presentation"><a href="includes/tindakan-ranap.php#data" data-toggle="tab">TINDAKAN</a></li>
+                                 <li role="presentation"><a href="includes/tindakan-ranap.php#dpjp" data-toggle="tab">DPJP</a></li>
+                                 <li role="presentation"><a href="includes/tindakan-ranap.php#hais" data-toggle="tab">HAIs</a></li>
                                </ul>
-                             <?php include_once "objek/tindakan-ranap.php";?>
+                             <?php include_once "includes/tindakan-ranap.php";?>
                            </div>
                          </div>
                       </div>

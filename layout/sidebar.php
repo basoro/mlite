@@ -156,7 +156,7 @@
                         </a>
                         <ul class="ml-menu">
                             <li>
-                                <a href="<?php echo URL; ?>/objek/setkmr.php">Set Kamar</a>
+                                <a href="<?php echo URL; ?>/includes/setkmr.php">Set Kamar</a>
                             </li>
                             <li>
                                 <a href="<?php echo URL; ?>/kesling.php">Surveilance</a>
