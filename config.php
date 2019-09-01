@@ -18,10 +18,10 @@ define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/dashboard');
 define('URLSIMRS', 'http://localhost/dashboard');
 define('DIR', '');
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_HOST', '36.89.82.70');
+define('DB_USER', 'rshd_sik');
+define('DB_PASS', 'Murakata04');
+define('DB_NAME', 'rshd_sik');
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 

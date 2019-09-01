@@ -80,16 +80,16 @@
     <!-- Jquery-UI Js -->
     <script src="<?php echo URL; ?>/assets/js/jquery-ui.min.js"></script>
 
-	
+
 	<script src="<?php echo URL; ?>/assets/plugins/sweetalert/sweetalert.min.js"></script>
 
     <!-- Select2 Js -->
     <script src="<?php echo URL; ?>/assets/js/select2.min.js"></script>
 
          <!-- Light Gallery Plugin Js -->
-    <script src="<?php echo URL; ?>/assets/assets/plugins/light-gallery/js/lightgallery-all.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/light-gallery/js/lightgallery-all.js"></script>
 	<script>
-	
+
 	$(function () {
     	$('#aniimated-thumbnials').lightGallery({
         	thumbnail: true,
@@ -130,7 +130,7 @@
         } );
 
         $('.count-to').countTo();
-		
+
       	var table = $('#datatab').DataTable( {
           	responsive: true,
           	stateSave: true
@@ -155,7 +155,7 @@
         selector: 'a'
     });
 });
-      
+
 
 	  </script>
 
@@ -180,9 +180,9 @@
     document.getElementById("inputFile").click();
     }
 
-      
+
     </script>
-	
+
 
 </body>
 

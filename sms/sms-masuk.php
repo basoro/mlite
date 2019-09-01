@@ -9,9 +9,9 @@
 ***/
 
 $title = 'SMS Masuk';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 
 if(isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -215,5 +215,5 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>

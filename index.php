@@ -424,7 +424,7 @@ include_once('layout/footer.php');
                             	$sql_poli = "SELECT a.nm_poli AS nm_poli FROM poliklinik a, reg_periksa b WHERE a.kd_poli = b.kd_poli AND b.tgl_registrasi = '{$date}' GROUP BY b.kd_poli";
                             	$hasil_poli = query($sql_poli);
                                     while ($data = fetch_array ($hasil_poli)){
-                                        $get_poli = '"'.$data[nm_poli].'", ';
+                                        $get_poli = '"'.$data['nm_poli'].'", ';
                                         echo $get_poli;
                                     }
                             ?>
