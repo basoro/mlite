@@ -118,23 +118,23 @@
                           <ul class="ml-menu">
                               <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-igd.php">IGD</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-igd.php">IGD</a>
                               </li>
                               <?php } ?>
                               <?php if($_SESSION['jenis_poli'] == 'U0019' || $role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-ralan.php">Rawat Jalan</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-ralan.php">Rawat Jalan</a>
                               </li>
                               <?php } ?>
                               <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik') { ?>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-ranap.php">Rawat Inap</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-ranap.php">Rawat Inap</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/br-cekpeserta.php">Cek Kepesertaan</a>
+                                  <a href="<?php echo URL; ?>/bridging/br-cekpeserta.php">Cek Kepesertaan</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/pasien-batal-brid.php">Pasien Batal</a>
+                                  <a href="<?php echo URL; ?>/bridging/pasien-batal-brid.php">Pasien Batal</a>
                               </li>
                               <?php } ?>
                           </ul>
