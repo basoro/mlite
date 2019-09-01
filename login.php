@@ -31,25 +31,25 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     <link rel="icon" href="<?php echo URL; ?>/favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
-    <link href="<?php echo URL; ?>/css/roboto.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/roboto.css" rel="stylesheet">
 
     <!-- Material Icon Css -->
-    <link href="<?php echo URL; ?>/css/material-icon.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/material-icon.css" rel="stylesheet">
 
     <!-- Bootstrap Core Css -->
-    <link href="<?php echo URL; ?>/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
 
     <!-- Waves Effect Css -->
-    <link href="<?php echo URL; ?>/plugins/node-waves/waves.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/node-waves/waves.css" rel="stylesheet" />
 
     <!-- Animation Css -->
-    <link href="<?php echo URL; ?>/plugins/animate-css/animate.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/plugins/animate-css/animate.css" rel="stylesheet" />
 
     <!-- Custom Css -->
-    <link href="<?php echo URL; ?>/css/style.css" rel="stylesheet">
+    <link href="<?php echo URL; ?>/assets/css/style.css" rel="stylesheet">
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
-    <link href="<?php echo URL; ?>/css/all-themes.min.css" rel="stylesheet" />
+    <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
 </head>
 
 <body class="login-page">
@@ -72,7 +72,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     <!-- #END# Page Loader -->
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
-            <div class="align-center p-b-15"><img src="images/logo-hst.png"></div>
+            <div class="align-center p-b-15"><img src="assets/images/logo-hst.png"></div>
             <a href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?></a>
             <small><?php echo $dataSettings['alamat_instansi']; ?> - <?php echo $dataSettings['kabupaten']; ?></small>
         </div>
@@ -184,19 +184,19 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     </div>
 
     <!-- Jquery Core Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery/jquery.min.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery/jquery.min.js"></script>
 
     <!-- Bootstrap Core Js -->
-    <script src="<?php echo URL; ?>/plugins/bootstrap/js/bootstrap.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/bootstrap/js/bootstrap.js"></script>
 
     <!-- Waves Effect Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/node-waves/waves.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/node-waves/waves.js"></script>
 
     <!-- Validation Plugin Js -->
-    <script src="<?php echo URL; ?>/plugins/jquery-validation/jquery.validate.js"></script>
+    <script src="<?php echo URL; ?>/assets/plugins/jquery-validation/jquery.validate.js"></script>
 
     <!-- Custom Js -->
-    <script src="<?php echo URL; ?>/js/admin.js"></script>
+    <script src="<?php echo URL; ?>/assets/js/admin.js"></script>
 </body>
 
 </html>

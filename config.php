@@ -13,7 +13,7 @@
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
 
-define('VERSION', '1.0');
+define('VERSION', '1.2');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/dashboard');
 define('URLSIMRS', 'http://localhost/dashboard');

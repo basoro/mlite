@@ -1,6 +1,6 @@
 <?php
 /***
-* SIMRS Khanza Lite from version 0.1 Beta
+* SIMRS Khanza Lite from version 1.0
 * About : Porting of SIMRS Khanza by Windiarto a.k.a Mas Elkhanza as web and mobile app.
 * Last modified: 02 Pebruari 2018
 * Author : drg. Faisol Basoro
@@ -9,9 +9,9 @@
 ***/
 
 $title = 'SMS Masuk';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 
 if(isset($_GET['id'])) {
     $id = $_GET['id'];
@@ -153,7 +153,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                               <dd><?php echo $sms_masuk; ?></dd>
                               <br><br>
                               <dt></dt>
-                              <dd><a href="<?php echo $_SERVER['PHP_SELF']; ?>?option=reply&id=<?php echo $id; ?>" class="btn bg-blue btn-lg waves-effect">Reply</a> <a href="#" class="btn bg-green btn-lg waves-effect">Forward</a></dd>
+                              <dd><a href="<?php echo $_SERVER['PHP_SELF']; ?>?option=reply&id=<?php echo $id; ?>" class="btn bg-blue btn-lg waves-effect">Reply</a></dd>
                           </dl>
                         </div>
                         <?php } ?>
@@ -215,5 +215,5 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
