@@ -51,4 +51,4 @@ if ($meta == "200") {
 	
   };
   ?>
-	<a href="<?php echo URL ;?>/pasien-batal-brid.php" class="btn btn-secondary form-control">Back</a>
+	<a href="pasien-batal-brid.php" class="btn btn-secondary form-control">Back</a>

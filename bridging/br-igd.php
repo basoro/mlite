@@ -9,9 +9,9 @@
 ***/
 
 $title = 'Bridging IGD';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 ?>
 
     <section class="content">
@@ -48,7 +48,7 @@ include_once('layout/sidebar.php');
                                 <td><?php echo SUBSTR($a['nm_pasien'], 0, 15).' ...'; ?></td>
                                 <td><?php echo $a['png_jawab']; ?></td>
                                 <td><a class="btn btn-primary" href="<?php echo $_SERVER['PHP_SELF']; ?>?action=sep&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging</a></td>
-                                <td><a class="btn btn-primary" href="http://simrs.rshdbarabai.com/dashboard/objek/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
+                                <td><a class="btn btn-primary" href="cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
                               </tr>
                                 <?php } ?>
                             </tbody>
@@ -61,7 +61,7 @@ include_once('layout/sidebar.php');
 							  	$data = query($sql);
 								$b = mysqli_fetch_assoc($data);?>
                       <div class="body">
-                          <form method="post" action="objek/build-igd.php">                       
+                          <form method="post" action="build-igd.php">                       
                           <form method="get">                            
                             <div class="row clearfix">
                               <div class="col-md-2">
@@ -138,7 +138,7 @@ include_once('layout/sidebar.php');
                                   </div>
                                 </div>
                               </div>
-                              <?php include_once 'objek/bri-ranap.php';?>
+                              <?php include_once 'bri-ranap.php';?>
                               <div class="col-md-2">
                               <div class="form-group">
                                 <div class="form-line">
@@ -443,7 +443,7 @@ include_once('layout/sidebar.php');
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
 
 <script type="text/javascript">
@@ -465,7 +465,7 @@ include_once('layout/footer.php');
   $('.poli').select2({
         placeholder: 'Pilih Spesialis',
         ajax: {
-          url: 'objek/poli.php',
+          url: 'poli.php',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -481,7 +481,7 @@ include_once('layout/footer.php');
   $('.kddx').select2({
         placeholder: 'Pilih Diagnosa',
         ajax: {
-          url: 'objek/diagnosa.php',
+          url: 'diagnosa.php',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {
@@ -497,7 +497,7 @@ include_once('layout/footer.php');
   $('.drigd').select2({
         placeholder: 'Pilih Dokter',
         ajax: {
-          url: 'objek/igd-dpjp.php',
+          url: 'igd-dpjp.php',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {

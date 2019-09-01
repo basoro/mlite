@@ -115,4 +115,4 @@ if ($meta == "200") {
 
   };
   ?>
-	<a href="<?php echo URL; ?>/br-ralan.php" class="btn btn-secondary form-control">Back</a>
+	<a href="br-ralan.php" class="btn btn-secondary form-control">Back</a>

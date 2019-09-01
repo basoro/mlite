@@ -9,9 +9,9 @@
 ***/
 
 $title = 'Bridging Ralan';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 ?>
 
     <section class="content">
@@ -63,7 +63,7 @@ include_once('layout/sidebar.php');
                                 <td><?php echo SUBSTR($a['nm_poli'], 5, 16); ?></td>
                                 <td><?php echo $a['png_jawab']; ?></td>
                                 <td><a class="btn btn-primary" href="<?php echo $_SERVER['PHP_SELF']; ?>?action=sep&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
-                                <td><a class="btn btn-primary" href="https://sim.rshdbarabai.com/objek/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
+                                <td><a class="btn btn-primary" href="cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
                               </tr>
                                 <?php } ?>
                             </tbody>
@@ -76,7 +76,7 @@ include_once('layout/sidebar.php');
 							  	$data = query($sql);
 								$b = mysqli_fetch_assoc($data);?>
                       	<div class="body">
-                          <form method="post" action="objek/buildsep.php">                            
+                          <form method="post" action="buildsep.php">                            
                             <div class="row clearfix">
                               <div class="col-md-2">
                         		<div class="form-group">
@@ -161,7 +161,7 @@ include_once('layout/sidebar.php');
                                 </div>
                               </div>
                       		</div>
-                            <?php include_once 'objek/bridging.php' ?>
+                            <?php include_once 'bridging.php' ?>
                       		<div class="row clearfix">
                              <div class="col-md-2">
                               <div class="form-group">
@@ -341,7 +341,7 @@ include_once('layout/sidebar.php');
                                   </div>
                                 </div>
                               </div>
-                              <?php include_once 'objek/dpjp.php'; ?>
+                              <?php include_once 'dpjp.php'; ?>
                               <div class="col-md-4">
                                 <div class="form-group">
                                   <div class="form-line">
@@ -362,7 +362,7 @@ include_once('layout/sidebar.php');
                               <div class="col-md-2">
                                 <div class="form-group">
                                   <div class="form-line">
-                                    <?php include_once 'objek/skdp.php'; ?>
+                                    <?php include_once 'skdp.php'; ?>
                                     <label for="norm">No SKDP</label>
                                     <input type="text" class="form-control" name="skdp" value="<?php echo $sksk['no_antrian'];?>" placeholder="No SKDP">
                                   </div>
@@ -543,7 +543,7 @@ include_once('layout/sidebar.php');
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
 <script>
   function myFunction(){
