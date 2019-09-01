@@ -342,19 +342,19 @@
                           </a>
                           <ul class="ml-menu">
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-masuk.php">SMS Masuk</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-masuk.php">SMS Masuk</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-keluar.php">SMS Keluar</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-keluar.php">SMS Keluar</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-kirim.php">Kirim SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-kirim.php">Kirim SMS</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-jadwal.php">Penjadwalan SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-jadwal.php">Penjadwalan SMS</a>
                               </li>
                               <li>
-                                  <a href="<?php echo URL; ?>/sms-auto.php">Autorespon SMS</a>
+                                  <a href="<?php echo URL; ?>/sms/sms-auto.php">Autorespon SMS</a>
                               </li>
                           </ul>
                       </li>
