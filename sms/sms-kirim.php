@@ -12,6 +12,25 @@ $title = 'Kirim SMS';
 include_once('config.php');
 include_once('layout/header.php');
 include_once('layout/sidebar.php');
+
+if($_SERVER['REQUEST_METHOD'] == "POST") {
+
+  $pesan = $_POST['pesan'];
+  $notelp = $_POST['sender'];
+
+  $pesan = str_replace("\r"," ",$pesan);
+  $pesan = str_replace("\n","",$pesan);
+  $pesan = str_replace('"','',$pesan);
+  $pesan = str_replace("'","",$pesan);
+
+  $insert = "INSERT INTO outbox (DestinationNumber, TextDecoded, CreatorID) VALUES ('$notelp', '$pesan', '$notelp')";
+  query($insert);
+
+  if($insert){
+  	redirect($_SERVER['PHP_SELF']);
+  }
+}
+
 ?>
 
     <section class="content">
@@ -25,6 +44,27 @@ include_once('layout/sidebar.php');
                             </h2>
                         </div>
                         <div class="body">
+                          <div class="row clearfix">
+                            <form action="" method="post">
+                              <div class="col-sm-12">
+                                  <div class="form-group form-float form-group-lg">
+                                      <div class="form-line">
+                                          <textarea name="pesan" rows="4" class="form-control no-resize"></textarea>
+                                          <label class="form-label">Pesan SMS</label>
+                                      </div>
+                                  </div>
+                                  <div class="form-group form-float form-group-lg">
+                                      <div class="form-line">
+                                          <input type="text" name="sender" class="form-control" />
+                                          <label class="form-label">No Penerima</label>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="col-sm-12">
+                                <button type="submit" class="btn bg-indigo waves-effect">KIRIM</button>
+                              </div>
+                            </form>
+                          </div>
                         </div>
                     </div>
                 </div>
