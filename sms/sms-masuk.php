@@ -153,7 +153,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                               <dd><?php echo $sms_masuk; ?></dd>
                               <br><br>
                               <dt></dt>
-                              <dd><a href="<?php echo $_SERVER['PHP_SELF']; ?>?option=reply&id=<?php echo $id; ?>" class="btn bg-blue btn-lg waves-effect">Reply</a> <a href="#" class="btn bg-green btn-lg waves-effect">Forward</a></dd>
+                              <dd><a href="<?php echo $_SERVER['PHP_SELF']; ?>?option=reply&id=<?php echo $id; ?>" class="btn bg-blue btn-lg waves-effect">Reply</a></dd>
                           </dl>
                         </div>
                         <?php } ?>
