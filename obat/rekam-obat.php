@@ -10,9 +10,9 @@
 ***/
 
 $title = 'Rekam Obat';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 
 ?>
 
@@ -126,7 +126,7 @@ include_once('layout/sidebar.php');
 </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
 
 <script type="text/javascript">
@@ -148,7 +148,7 @@ include_once('layout/footer.php');
       $('.pasien').select2({
         placeholder: 'Pilih Nama Obat',
         ajax: {
-          url: 'includes/select-obat.php',
+          url: '../includes/select-obat.php',
           dataType: 'json',
           delay: 250,
           processResults: function (data) {

@@ -633,8 +633,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                              </div>
                            
                       <?php } ?>
-                      <?php 
-                    	if($action == "edokter"){ include_once 'includes/edokter.php'; }?>
                     <?php
                     //delete
                     if($action == "delete_diagnosa"){
