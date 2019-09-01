@@ -8,10 +8,10 @@
 * Licence under GPL
 ***/
 
-$title = 'Laporan Obat Harian Ralan Ranap';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+$title = 'Data Resep';
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 ?>
 
     <section class="content">
@@ -21,46 +21,50 @@ include_once('layout/sidebar.php');
                     <div class="card">
                         <div class="header">
                             <h2>
-                                LAPORAN OBAT RALAN - RANAP <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?>
+                                DATA RESEP ELEKTRONIK 
+                                <small><?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?></small>
                             </h2>
                         </div>
                         <div class="body">
                             <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-                          	<div class="body table-responsive">
                             <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
-                                        <th>Nama Obat</th>
-                                        <th>Ralan</th>
-                                        <th>Ranap</th>
-                                        <th>Total</th>
+                                        <th>Nama Pasien</th>
+                                        <th>No. RM</th>
+                                        <th>Jenis Bayar</th>
+                                        <th>Status Periksa</th>
+                                        <th>Status Bayar</th>
+                                        <th>Resep</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 <?php
-                                $tgl_awal = isset($_POST['tgl_awal'])?$_POST['tgl_awal']:null;
-                                $tgl_akhir = isset($_POST['tgl_akhir'])?$_POST['tgl_akhir']:null;
-                                if($tgl_awal && $tgl_akhir) {
-                                  $sql = query("SELECT nama.nama_brng, nama.kode_brng, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND status='Ralan' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ralan, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE  kode_brng = nama.kode_brng AND status='Ranap' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ranap, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS total FROM (SELECT DISTINCT nama_brng, kode_brng FROM databarang WHERE kode_brng IN(SELECT kode_brng FROM detail_pemberian_obat)) AS nama ORDER BY nama.nama_brng ASC");
-                                  $no = 1;
-                                  while($row = fetch_array($sql)) {
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar, d.no_resep, GROUP_CONCAT(f.nama_brng, ' (', e.jml, ') - ', e.aturan_pakai SEPARATOR '<br>') AS resep_dokter FROM pasien a, reg_periksa b, penjab c, resep_obat d, resep_dokter e, databarang f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli != 'IGDK' AND b.kd_poli != 'U0027' AND b.status_lanjut = 'Ralan' AND b.no_rawat = d.no_rawat AND d.no_resep = e.no_resep AND e.kode_brng = f.kode_brng";
+                                if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
+                                	$sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
+                                } else {
+                                  	$sql .= " AND b.tgl_registrasi = '$date'";
+                                }
+                                $sql .= " GROUP BY e.no_resep";
+                                $query = query($sql);
+                                $no = 1;
+                                while($row = fetch_array($query)) {
                                 ?>
                                     <tr>
-                                        <th scope="row"><?php echo $no; ?></th>
-                                        <td><?php echo $row['0']; ?></td>
-                                        <td><?php echo $row['2']; ?></td>
+                                        <td><?php echo SUBSTR($row['0'],0,20); ?><br>Alamat: <?php echo $row['2']; ?></td>
+                                        <td><?php echo $row['1']; ?></td>
                                         <td><?php echo $row['3']; ?></td>
                                         <td><?php echo $row['4']; ?></td>
+                                        <td><?php echo $row['5']; ?></td>
+                                        <td><?php echo $row['7']; ?></td>
                                     </tr>
                                 <?php
-                                  $no++;
-                                  }
+                                $no++;
                                 }
                                 ?>
                                 </tbody>
                             </table>
-                          	</div>
                             <div class="row clearfix">
                                 <form method="post" action="">
                                 <div class="col-sm-5">
@@ -94,5 +98,5 @@ include_once('layout/sidebar.php');
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>

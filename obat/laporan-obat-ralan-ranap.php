@@ -8,10 +8,10 @@
 * Licence under GPL
 ***/
 
-$title = 'Laporan Obat Harian';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+$title = 'Laporan Obat Harian Ralan Ranap';
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 ?>
 
     <section class="content">
@@ -21,46 +21,37 @@ include_once('layout/sidebar.php');
                     <div class="card">
                         <div class="header">
                             <h2>
-                                LAPORAN OBAT HARIAN <?php if(isset($_POST['tgl_perawatan'])) { echo "Tanggal ".$_POST['tgl_perawatan']; } ?>
+                                LAPORAN OBAT RALAN - RANAP <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?>
                             </h2>
                         </div>
                         <div class="body">
                             <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-                          	<div class="table-responsive">
+                          	<div class="body table-responsive">
                             <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                                 <thead>
                                     <tr>
                                         <th>#</th>
                                         <th>Nama Obat</th>
-                                        <th>Kode Obat</th>
-                                        <th>Nama Pasien</th>
-                                        <th>No. RM</th>
-                                        <th>Cara Bayar</th>
-                                        <th>Dokter</th>
-                                        <th>Jumlah</th>
-                                        <th>Biaya</th>
-                                        <th>Total Biaya</th>
+                                        <th>Ralan</th>
+                                        <th>Ranap</th>
+                                        <th>Total</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                 <?php
-                                $tgl_perawatan = isset($_POST['tgl_perawatan'])?$_POST['tgl_perawatan']:null;
-                                if ($tgl_perawatan) {
-                                  $sql = query("SELECT d.nama_brng, a.kode_brng, c.nm_pasien, b.no_rkm_medis, a.no_rawat, a.jml, e.nm_dokter, a.biaya_obat, f.png_jawab FROM detail_pemberian_obat a, reg_periksa b, pasien c, databarang d, dokter e, penjab f WHERE a.no_rawat = b.no_rawat AND b.no_rkm_medis = c.no_rkm_medis AND a.kode_brng = d.kode_brng AND b.kd_dokter = e.kd_dokter AND b.kd_pj = f.kd_pj AND a.tgl_perawatan = '$tgl_perawatan' ORDER BY a.no_rawat ASC");
+                                $tgl_awal = isset($_POST['tgl_awal'])?$_POST['tgl_awal']:null;
+                                $tgl_akhir = isset($_POST['tgl_akhir'])?$_POST['tgl_akhir']:null;
+                                if($tgl_awal && $tgl_akhir) {
+                                  $sql = query("SELECT nama.nama_brng, nama.kode_brng, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND status='Ralan' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ralan, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE  kode_brng = nama.kode_brng AND status='Ranap' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ranap, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS total FROM (SELECT DISTINCT nama_brng, kode_brng FROM databarang WHERE kode_brng IN(SELECT kode_brng FROM detail_pemberian_obat)) AS nama ORDER BY nama.nama_brng ASC");
                                   $no = 1;
                                   while($row = fetch_array($sql)) {
                                 ?>
                                     <tr>
                                         <th scope="row"><?php echo $no; ?></th>
                                         <td><?php echo $row['0']; ?></td>
-                                        <td><?php echo $row['1']; ?></td>
                                         <td><?php echo $row['2']; ?></td>
                                         <td><?php echo $row['3']; ?></td>
-                                        <td><?php echo $row['8']; ?></td>
-                                        <td><?php echo $row['6']; ?></td>
-                                        <td><?php echo $row['5']; ?></td>
-                                        <td><?php echo $row['7']; ?></td>
-                                        <td><?php echo $row['5']*$row['7']; ?></td>
+                                        <td><?php echo $row['4']; ?></td>
                                     </tr>
                                 <?php
                                   $no++;
@@ -70,13 +61,19 @@ include_once('layout/sidebar.php');
                                 </tbody>
                             </table>
                           	</div>
-                          <div id="numbers_numbers"></div>
                             <div class="row clearfix">
                                 <form method="post" action="">
-                                <div class="col-sm-10">
+                                <div class="col-sm-5">
                                     <div class="form-group">
                                         <div class="form-line">
-                                            <input type="text" name="tgl_perawatan" class="datepicker form-control" placeholder="Pilih tanggal....">
+                                            <input type="text" name="tgl_awal" class="datepicker form-control" placeholder="Pilih tanggal awal...">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <input type="text" name="tgl_akhir" class="datepicker form-control" placeholder="Pilih tanggal akhir...">
                                         </div>
                                     </div>
                                 </div>
@@ -97,5 +94,5 @@ include_once('layout/sidebar.php');
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>
