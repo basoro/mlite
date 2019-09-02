@@ -101,6 +101,9 @@
                                 <a href="<?php echo URL; ?>/data-resep.php">Data Resep</a>
                             </li>
                             <li>
+                                <a href="<?php echo URL; ?>/data-permintaan-resep.php">Data Resep Dokter</a>
+                            </li>
+                            <li>
                                 <a href="<?php echo URL; ?>/laporan-obat-harian.php">Laporan Harian</a>
                             </li>
                             <li>
