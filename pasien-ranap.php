@@ -93,7 +93,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     	kamar_inap.stts_pulang = '-'
                                     AND
                                     	reg_periksa.kd_pj = penjab.kd_pj
-                                    
+
                                 ";
                                 if($role == 'Paramedis_Ranap') {
                                 	$sql .= " AND bangsal.kd_bangsal = '$jenis_poli'";
@@ -113,7 +113,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                                     <li><a href="javascript:void(0);">Input Obat</a></li>
                                                     <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                     <li><a href="includes/editsttspulang.php?no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
-                                              		<li><a href="pindah-kamar-pasien2.php?action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>  
+                                              		<li><a href="pindah-kamar-pasien2.php?action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
                                               </ul>
                                             </div>
                                         </td>
@@ -130,7 +130,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             </table>
                         </div>
                         <?php } ?>
-                        
+
                     <?php
                     if($action == "radiologi"){
                         		if (isset($_POST['ok_radiologi'])) {
@@ -196,7 +196,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <form id="form_validation" name="pilihan" action="" method="POST"  enctype="multipart/form-data">
                                     <label for="email_address">Unggah Berkas Radiologi</label>
                                     <div class="form-group">
-                                          <img id="image_upload_preview" width="200px" src="images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                                          <img id="image_upload_preview" width="200px" src="assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                                               		<br/>
                                                     <input name="file" id="inputFile" type="file" style="display:none;"/>
                                     </div>
@@ -207,7 +207,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                           </div>
                       </div>
                     <?php } ?>
-                    <?php 
+                    <?php
                     if($action == "tindakan"){
                       if (isset($_POST['ok_tdk'])) {
                                     if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
@@ -251,8 +251,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                            </div>
                          </div>
                       </div>
-                           
-                      <?php } ?> 
+
+                      <?php } ?>
                 <?php
                 //delete
                 if($action == "delete_diagnosa"){
@@ -312,7 +312,7 @@ include_once('layout/footer.php');
             );
             return $data;
         };
-      
+
       	function formatInputData (data) {
               var $data = $(
                   '<b>('+ data.id +')</b> Rp '+ data.tarif +' - <i>'+ data.text +'</i>'
@@ -386,7 +386,7 @@ include_once('layout/footer.php');
           templateResult: formatData,
           minimumInputLength: 3
         });
-      
+
       $('.kd_tdk').select2({
           placeholder: 'Pilih tindakan',
           ajax: {
@@ -403,7 +403,7 @@ include_once('layout/footer.php');
           templateResult: formatInputData,
       	minimumInputLength: 3
         });
-        
+
         $('.kd_tdk').on('change', function () {
          var kode = $("#kd_tdk").val();
          $.ajax({
@@ -445,7 +445,7 @@ include_once('layout/footer.php');
             //    }
             //});
 
-          
+
 
             $('#riwayatmedis').dataTable( {
 	          	responsive: true
@@ -512,7 +512,7 @@ include_once('layout/footer.php');
             templateResult: formatData,
             minimumInputLength: 3
         });
-       
+
        $('.dpjp').select2({
             placeholder: 'Pilih Dokter',
             ajax: {
