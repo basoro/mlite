@@ -98,16 +98,16 @@
                         </a>
                         <ul class="ml-menu">
                             <li>
-                                <a href="<?php echo URL; ?>/data-resep.php">Data Resep</a>
+                                <a href="<?php echo URL; ?>/obat/data-resep.php">Data Resep</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/data-permintaan-resep.php">Data Resep Dokter</a>
+                                <a href="<?php echo URL; ?>/obat/data-permintaan-resep.php">Data Resep Dokter</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/laporan-obat-harian.php">Laporan Harian</a>
+                                <a href="<?php echo URL; ?>/obat/laporan-obat-harian.php">Laporan Harian</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/laporan-obat-ralan-ranap.php">Laporan Ralan - Ranap</a>
+                                <a href="<?php echo URL; ?>/obat/laporan-obat-ralan-ranap.php">Laporan Ralan - Ranap</a>
                             </li>
                         </ul>
                     </li>
@@ -167,6 +167,9 @@
                           	<li>
                                 <a href="<?php echo URL; ?>/gizi.php">Data Diet Pasien</a>
                             </li>
+                            <li>
+                                <a href="<?php echo URL; ?>/data-periksa-lab.php">Data Periksa Lab</a>
+                            </li>
                         </ul>
                     </li>
                   	<?php } ?>
@@ -177,16 +180,16 @@
                         </a>
                         <ul class="ml-menu">
                             <li>
-                                <a href="<?php echo URL; ?>/data-obat.php">Data Obat</a>
+                                <a href="<?php echo URL; ?>/obat/data-obat.php">Data Obat</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/stok-opname-gudang.php">Stok Opname Gudang</a>
+                                <a href="<?php echo URL; ?>/obat/stok-opname-gudang.php">Stok Opname Gudang</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/obat-expired.php">Obat Expired</a>
+                                <a href="<?php echo URL; ?>/obat/obat-expired.php">Obat Expired</a>
                             </li>
                           	<li>
-                                <a href="<?php echo URL; ?>/rekam-obat.php">Rekam Pemberian Obat</a>
+                                <a href="<?php echo URL; ?>/obat/rekam-obat.php">Rekam Pemberian Obat</a>
                             </li>
                         </ul>
                     </li>
