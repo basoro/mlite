@@ -378,7 +378,7 @@
                               </li>
                             <?php } ?>
                               <li>
-                                  <a href="users.php">Data Pengguna</a>
+                                  <a href="<?php echo URL; ?>/users.php">Data Pengguna</a>
                               </li>
                           </ul>
                       </li>
