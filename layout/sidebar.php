@@ -112,7 +112,7 @@
                         </ul>
                     </li>
                     <?php } ?>
-                    <!-- <?php if($role == 'Admin' || $role == 'Lab')  { ?>
+                    <?php if($role == 'Admin' || $role == 'Lab')  { ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">rate_review</i>
@@ -124,7 +124,7 @@
                             </li>
                         </ul>
                     </li>
-                    <?php } ?> -->
+                    <?php } ?>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'RekamMedik' || $_SESSION['jenis_poli'] == 'U0019')  { ?>
                       <li>
                           <a href="javascript:void(0);" class="menu-toggle">
@@ -179,9 +179,6 @@
                             </li>
                           	<li>
                                 <a href="<?php echo URL; ?>/gizi.php">Data Diet Pasien</a>
-                            </li>
-                            <li>
-                                <a href="<?php echo URL; ?>/data-periksa-lab.php">Data Periksa Lab</a>
                             </li>
                         </ul>
                     </li>
