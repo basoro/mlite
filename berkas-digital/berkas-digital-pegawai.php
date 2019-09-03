@@ -47,7 +47,7 @@
                             <option value="<?php echo $a['kode'];?>"><?php echo $a['kategori'];?> / <?php echo $a['nama_berkas'];?></option>
                         <?php } ?>
                         </select>
-                        <img id="image_upload_preview" width="200px" src="images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                        <img id="image_upload_preview" width="200px" src="../assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                         <br/>
                         <input name="file" id="inputFile" type="file" style="display:none;"/>
                     </div>

@@ -102,7 +102,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                                     <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                         <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                                                        <li><a href="javascript:void(0);">Input Obat</a></li>
+                                                        <li><a href="berkas-digital/berkas-digital-igd.php?no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
                                                         <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
                                                         <li><a href="includes/insertpasien.php?no_rawat=<?php echo $row['5']; ?>">Status</a></li>
                                                     </ul>

@@ -9,9 +9,9 @@
 ***/
 
 $title = 'Berkas Digital';
-include_once('config.php');
-include_once('layout/header.php');
-include_once('layout/sidebar.php');
+include_once('../config.php');
+include_once('../layout/header.php');
+include_once('../layout/sidebar.php');
 if (isset($_GET['no_rawat'])) {
   $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur FROM reg_periksa a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]'";
   $found_pasien = query($_sql);
@@ -106,7 +106,7 @@ if (isset($_GET['no_rawat'])) {
                                           <option value="001">Berkas SEP</option>
                                           <option value="002">Berkas Rujukan</option>
                                         </select>
-                                          <img id="image_upload_preview" width="200px" src="images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                                          <img id="image_upload_preview" width="200px" src="../assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                                           <br/>
                                           <input name="file" id="inputFile" type="file" style="display:none;"/>
                                       </div>
@@ -123,5 +123,5 @@ if (isset($_GET['no_rawat'])) {
     </section>
 
 <?php
-include_once('layout/footer.php');
+include_once('../layout/footer.php');
 ?>

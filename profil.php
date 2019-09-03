@@ -270,7 +270,7 @@ $b = mysqli_fetch_assoc($a);
                                 </div>
                                 <div role="tabpanel" class="tab-pane fade in" id="berdig">
                                     <form class="form-horizontal">
-                                        <?php include_once "berkas-digital-pegawai.php";?>
+                                        <?php include_once "berkas-digital/berkas-digital-pegawai.php";?>
                                     </form>
                                 </div>
                             </div>
