@@ -44,7 +44,7 @@
                     <div class="form-group">
                         <select class="form-control" name="masdig">
                         <?php $query = query("SELECT * FROM master_berkas_pegawai");while ($a = fetch_array($query)) {?>
-                            <option value="<?php echo $a['kode'];?>"><?php echo $a['nama_berkas'];?></option>
+                            <option value="<?php echo $a['kode'];?>"><?php echo $a['kategori'];?> / <?php echo $a['nama_berkas'];?></option>
                         <?php } ?>
                         </select>
                         <img id="image_upload_preview" width="200px" src="images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
