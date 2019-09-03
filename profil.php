@@ -26,7 +26,8 @@ $b = mysqli_fetch_assoc($a);
                         <div>
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active"><a href="#profile_settings" aria-controls="settings" role="tab" data-toggle="tab">Biodata</a></li>
-                              	<li role="presentation"><a href="#work" aria-controls="settings" role="tab" data-toggle="tab">Status Kerja</a></li>
+                                <li role="presentation"><a href="#work" aria-controls="settings" role="tab" data-toggle="tab">Status Kerja</a></li>
+                                <li role="presentation"><a href="#berdig" aria-controls="settings" role="tab" data-toggle="tab">Upload Berkas Digital Pegawai</a></li>
                                 <li role="presentation"><a href="#change_password_settings" aria-controls="settings" role="tab" data-toggle="tab">Ganti Password</a></li>
                             </ul>
 							<?php
@@ -265,6 +266,11 @@ $b = mysqli_fetch_assoc($a);
                                                 <button type="submit" class="btn btn-danger">SUBMIT</button>
                                             </div>
                                         </div>
+                                    </form>
+                                </div>
+                                <div role="tabpanel" class="tab-pane fade in" id="berdig">
+                                    <form class="form-horizontal">
+                                        <?php include_once "berkas-digital-pegawai.php";?>
                                     </form>
                                 </div>
                             </div>
