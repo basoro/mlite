@@ -27,7 +27,7 @@ $b = mysqli_fetch_assoc($a);
                             <ul class="nav nav-tabs" role="tablist">
                                 <li role="presentation" class="active"><a href="#profile_settings" aria-controls="settings" role="tab" data-toggle="tab">Biodata</a></li>
                                 <li role="presentation"><a href="#work" aria-controls="settings" role="tab" data-toggle="tab">Status Kerja</a></li>
-                                <li role="presentation"><a href="#berdig" aria-controls="settings" role="tab" data-toggle="tab">Upload Berkas Digital Pegawai</a></li>
+                                <li role="presentation"><a href="#berdig" aria-controls="settings" role="tab" data-toggle="tab">Berkas Digital</a></li>
                                 <li role="presentation"><a href="#change_password_settings" aria-controls="settings" role="tab" data-toggle="tab">Ganti Password</a></li>
                             </ul>
 							<?php
@@ -42,12 +42,12 @@ $b = mysqli_fetch_assoc($a);
                                     };
                             };
                             if(isset($_POST['stskrja'])){
-                                    $insert = query("UPDATE pegawai SET jbtn = '{$_POST['jbtn']}', bidang = '{$_POST['bdng']}', departemen = '{$_POST['dpt']}', 
+                                    $insert = query("UPDATE pegawai SET jbtn = '{$_POST['jbtn']}', bidang = '{$_POST['bdng']}', departemen = '{$_POST['dpt']}',
                                     mulai_kerja = '{$_POST['mker']}', mulai_kontrak = '{$_POST['mkon']}'");
                                     if($insert){
                                       redirect("profil.php");
                                     };
-                            }; 
+                            };
                           	?>
                             <div class="tab-content">
                                 <div role="tabpanel" class="tab-pane fade in active" id="profile_settings">
@@ -93,7 +93,7 @@ $b = mysqli_fetch_assoc($a);
                                                   			Wanita
                                                 		</label>
                                               			<!--</div>-->
-                                                      
+
                                               		</div>
                                           	  </div>
                                         </div>
