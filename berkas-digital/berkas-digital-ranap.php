@@ -106,7 +106,7 @@ if (isset($_GET['no_rawat'])) {
                                           <option value="001">Berkas SEP</option>
                                           <option value="002">Berkas Rujukan</option>
                                         </select>
-                                          <img id="image_upload_preview" width="200px" src="assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                                          <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                                           <br/>
                                           <input name="file" id="inputFile" type="file" style="display:none;"/>
                                       </div>
