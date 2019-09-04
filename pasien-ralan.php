@@ -92,7 +92,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
                                         $sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
                                     } else {
-                                        $sql .= " AND b.tgl_registrasi = '$date'";
+                                        $sql .= " AND b.tgl_registrasi = '2019-08-10'";
                                     }
                                     $query = query($sql);
                                     while($row = fetch_array($query)) {
@@ -621,7 +621,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                          <tr>
                                              <td><?php echo $data_tindakan['keluhan']; ?></td>
                                              <td><?php echo $data_tindakan['pemeriksaan']; ?></td>
-                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_pemeriksaan&keluhan=<?php echo $data_tindakan['keluhan']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                          </tr>
                                      <?php
                                      }
@@ -654,6 +654,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     if ($action == "delete_tindakan") {
                       $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                      $hasil = query($hapus);
+                      if (($hasil)) {
+                        redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                      }
+                    }
+
+                    if ($action == "delete_pemeriksaan") {
+                      $hapus = "DELETE FROM pemeriksaan_ralan WHERE keluhan='{$_REQUEST['keluhan']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                       $hasil = query($hapus);
                       if (($hasil)) {
                         redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
