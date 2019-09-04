@@ -24,7 +24,7 @@ if (isset($_GET['no_rawat'])) {
           $umur          = $row['3'];
       }
   } else {
-      redirect('pasien-ralan.php');
+      redirect('../pasien-igd.php');
   }
 }
 ?>
@@ -65,7 +65,7 @@ if (isset($_GET['no_rawat'])) {
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                   set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("pasien-ralan.php");
+                                  redirect("pasien-igd.php");
                                 }
                               }
                             }

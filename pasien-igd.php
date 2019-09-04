@@ -9,7 +9,7 @@
 * Licence under GPL
 ***/
 
-$title = 'Pendaftaran Pasien';
+$title = 'Pendaftaran Pasien IGD';
 include_once('config.php');
 include_once('layout/header.php');
 include_once('layout/sidebar.php');
@@ -26,13 +26,13 @@ if(isset($_GET['no_rawat'])) {
 	        $umur          = $row['3'];
 	     }
     } else {
-	     redirect ('pasien-ralan.php');
+	     redirect ('pasien-igd.php');
     }
 }
 if($_SERVER['REQUEST_METHOD'] == "POST") {
   $update = query("UPDATE reg_periksa SET stts = '".$_POST['stts']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
   if($update){
-  	redirect('pasien-ralan.php');
+  	redirect('pasien-igd.php');
   }
 }
 
@@ -45,7 +45,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="card">
                         <div class="header">
                             <h2>
-                                PASIEN RAWAT JALAN
+                                PASIEN IGD
                                 <small><?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?></small>
                             </h2>
                         </div>
@@ -620,7 +620,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                          <tr>
                                              <td><?php echo $data_tindakan['keluhan']; ?></td>
                                              <td><?php echo $data_tindakan['pemeriksaan']; ?></td>
-                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                             <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_pemeriksaan&keluhan=<?php echo $data_tindakan['keluhan']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                          </tr>
                                      <?php
                                      }
@@ -653,6 +653,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 
                     if ($action == "delete_tindakan") {
                       $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                      $hasil = query($hapus);
+                      if (($hasil)) {
+                        redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                      }
+                    }
+
+                    if ($action == "delete_pemeriksaan") {
+                      $hapus = "DELETE FROM pemeriksaan_ralan WHERE keluhan='{$_REQUEST['keluhan']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                       $hasil = query($hapus);
                       if (($hasil)) {
                         redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");

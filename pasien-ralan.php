@@ -92,7 +92,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
                                         $sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
                                     } else {
-                                        $sql .= " AND b.tgl_registrasi = '2019-08-10'";
+                                        $sql .= " AND b.tgl_registrasi = '$date'";
                                     }
                                     $query = query($sql);
                                     while($row = fetch_array($query)) {
