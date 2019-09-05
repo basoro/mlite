@@ -6,13 +6,8 @@
                 $namefile = $_FILES["file"]["name"];
                 $explode = explode(".", $namefile);
                 $ext = end($explode);
-                if($_POST['masdig']=='001') {
-                    $image_name = "berkasdigital-".time().".".$ext;
-                }else{
-                    $image_name = "rujukanfktp-".time().".".$ext;
-                }
-                move_uploaded_file($tmp_name,"../berkasrawat/pages/upload/".$image_name);
-                $lokasi_berkas = 'pages/upload/'.$image_name;
+                move_uploaded_file($tmp_name,"../penggajian/pages/berkaspegawai/berkas/".$image_name);
+                $lokasi_berkas = 'pages/berkaspegawai/berkas/'.$image_name;
                 $insert_berkas = query("INSERT INTO berkas_pegawai VALUES('{$_SESSION['username']}','$date','{$_POST['masdig']}','$lokasi_berkas')");
                 if($insert_berkas) {
                     set_message('Berkas digital pegawai telah ditersimpan.');
@@ -40,12 +35,16 @@
             </div>
             <div class="body">
                 <form id="form_validation" name="berdigi" action="" method="POST"  enctype="multipart/form-data">
-                    <label for="email_address">Unggah Berkas Digital Perawatan</label>
                     <div class="form-group">
+                        <label for="masdig">Kategori Berkas</label>
                         <select class="form-control" name="masdig">
                         <?php $query = query("SELECT * FROM master_berkas_pegawai");while ($a = fetch_array($query)) {?>
-                            <option value="<?php echo $a['kode'];?>"><?php echo $a['kategori'];?> / <?php echo $a['nama_berkas'];?></option>
+                            <option value="<?php echo $a['kode'];?>"><?php echo $a['kategori'];?></option>
                         <?php } ?>
+                        </select>
+                        <label for="namber">Berkas Pegawai</label>
+                        <select name="namber" id="" class="form-control">
+                            <option value=""></option>
                         </select>
                         <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                         <br/>

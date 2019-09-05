@@ -786,15 +786,15 @@ include_once('layout/footer.php');
         });
         
         $('.kd_tdk').on('change', function () {
-         var kode = $("#kd_tdk").val();
-         $.ajax({
-         	url: 'includes/biaya.php',
-         	data: "kode="+kode,
-         }).success(function (data){
-           var json = data,
-               obj = JSON.parse(json);
-           		$('#kdtdk').val(obj.tarif);
-           });
+          var kode = $("#kd_tdk").val();
+          $.ajax({
+            url: 'includes/biaya.php',
+            data: "kode="+kode,
+          }).success(function (data){
+            var json = data,
+            obj = JSON.parse(json);
+            $('#kdtdk').val(obj.tarif);
+          });
         });
 
       
