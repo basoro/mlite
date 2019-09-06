@@ -27,12 +27,6 @@ if(isset($_GET['no_rawat'])) {
 	     redirect ('pasien-ranap.php');
     }
 }
-if($_SERVER['REQUEST_METHOD'] == "POST") {
-  $update = query("UPDATE kamar_inap SET stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
-  if($update){
-  	redirect('index.php');
-  }
-}
 ?>
     <section class="content">
         <div class="container-fluid">

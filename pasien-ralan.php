@@ -29,12 +29,6 @@ if(isset($_GET['no_rawat'])) {
 	     redirect ('pasien-ralan.php');
     }
 }
-if($_SERVER['REQUEST_METHOD'] == "POST") {
-  $update = query("UPDATE reg_periksa SET stts = '".$_POST['stts']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
-  if($update){
-  	redirect('pasien-ralan.php');
-  }
-}
 
 ?>
 
@@ -54,8 +48,6 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         $action = isset($_GET['action'])?$_GET['action']:null;
                         if(!$action){
                         ?>
-                      	
-                      	
                             <div class="body table-responsive">
                               <!-- Nav tabs -->
                               <div class="row">
@@ -417,7 +409,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         </div>
                       </div>
                     <?php } ?>
-                    <?php 
+                    <?php
                     if($action == "tindakan"){
                       if (isset($_POST['ok_tdk'])) {
                                     if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
@@ -631,7 +623,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                  </div>
                                </div>
                              </div>
-                           
+
                       <?php } ?>
                     <?php
                     //delete
@@ -685,14 +677,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 include_once('layout/footer.php');
 ?>
     <script type="text/javascript">
-     
+
         function formatData (data) {
             var $data = $(
                 '<b>'+ data.id +'</b> - <i>'+ data.text +'</i>'
             );
             return $data;
         };
-      
+
         function formatInputData (data) {
               var $data = $(
                   '<b>('+ data.id +')</b> Rp '+ data.tarif +' - <i>'+ data.text +'</i>'
@@ -765,8 +757,8 @@ include_once('layout/footer.php');
           templateResult: formatData,
           minimumInputLength: 3
         });
-		
-      	
+
+
 
       	$('.kd_tdk').select2({
           placeholder: 'Pilih tindakan',
@@ -784,7 +776,7 @@ include_once('layout/footer.php');
           templateResult: formatInputData,
       	minimumInputLength: 3
         });
-        
+
         $('.kd_tdk').on('change', function () {
           var kode = $("#kd_tdk").val();
           $.ajax({
@@ -797,7 +789,7 @@ include_once('layout/footer.php');
           });
         });
 
-      
+
         $(function () {
              $('#row_dim').hide();
              $('#lainnya').change(function () {
@@ -807,8 +799,8 @@ include_once('layout/footer.php');
                  }
              });
          });
-		
-      
+
+
     </script>
     <script>
 
@@ -828,7 +820,7 @@ include_once('layout/footer.php');
             //    }
             //});
 
-          
+
 
             $('#riwayatmedis').dataTable( {
 	          	responsive: true
@@ -923,6 +915,5 @@ include_once('layout/footer.php');
                         $('#noreg').val(obj.noreg);
                 });
             });
-      
+
 	</script>
-    
