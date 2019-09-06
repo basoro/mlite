@@ -430,7 +430,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                       if(isset($_POST['ok_per'])){
                             if(($no_rawat <> "")){
                               $insert = query("INSERT INTO pemeriksaan_ralan VALUES ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
-                                          ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}')");
+                                          ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
                               if($insert){
                                 redirect("{$_SERVER['PHP_SELF']}?action=tindakan&no_rawat={$no_rawat}");
                               }

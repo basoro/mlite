@@ -219,9 +219,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                               };
                       if (isset($_POST['ok_per'])){
                             if(($no_rawat <> "")){
-                              $insert2 = query("INSERT INTO pemeriksaan_ranap (no_rawat, tgl_perawatan, jam_rawat, suhu_tubuh, tensi, nadi, respirasi, tinggi, berat, gcs, keluhan, pemeriksaan, alergi)
-                              				VALUES ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
-                                          ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}')");
+                              $insert2 = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
+                                          ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','-')");
                               if($insert2){
                                 redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}#datapem");
                               };

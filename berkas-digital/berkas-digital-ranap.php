@@ -103,8 +103,10 @@ if (isset($_GET['no_rawat'])) {
                                       <label for="email_address">Unggah Berkas Digital Perawatan</label>
                                       <div class="form-group">
                                         <select class="form-control" name="masdig">
-                                          <option value="001">Berkas SEP</option>
-                                          <option value="002">Berkas Rujukan</option>
+                                        <?php $berkas = query("SELECT * FROM master_berkas_digital");
+                                        foreach($berkas as $berkas1):?>
+                                          <option value="<?php echo $berkas1['kode'];?>"><?php echo $berkas1['nama'];?></option>
+                                        <?php endforeach; ?>
                                         </select>
                                           <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/assets/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
                                           <br/>
