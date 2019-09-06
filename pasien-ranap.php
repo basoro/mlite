@@ -103,7 +103,7 @@ if(isset($_GET['no_rawat'])) {
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-info waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['6']; ?>">Assesment & Tindakan</a></li>
+                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']; ?>">Assesment & Tindakan</a></li>
                                                     <li><a href="berkas-digital/berkas-digital-ranap.php?no_rawat=<?php echo $row['6']; ?>">Berkas Digital Perawatan</a></li>
                                                     <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                     <li><a href="includes/editsttspulang.php?no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
@@ -278,6 +278,13 @@ if(isset($_GET['no_rawat'])) {
                     redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}");
                   }
                 }
+                if ($action == "delete_hais") {
+                    $hapus = "DELETE FROM data_HAIs WHERE tanggal='{$_REQUEST['tanggal']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                    $hasil = query($hapus);
+                    if (($hasil)) {
+                      redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}&bed={$row['3']}");
+                    }
+                  }
                   if ($action == "delete_dpjp") {
                   $hapus = "DELETE FROM dpjp_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_dokter='{$_REQUEST['kd_dokter']}'";
                   $hasil = query($hapus);

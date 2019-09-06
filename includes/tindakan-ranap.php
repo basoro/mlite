@@ -46,11 +46,11 @@
         <?php 
         	if (isset($_POST['ok_hais'])) {
             	if (($_POST['tgl'] <> "") and ($no_rawat <> "")) {
-                	$insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['dpjp']}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
+                	$insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
                     ,'{$_POST['vap']}','{$_POST['iad']}','{$_POST['pleb']}','{$_POST['isk']}','{$_POST['ilo']}','{$_POST['hap']}','{$_POST['tinea']}','{$_POST['scab']}','{$_POST['deku']}'
-                    ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}')");
+                    ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}','{$_POST['bed']}')");
                     if ($insert) {
-                    	redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}#dpjp");
+                    	redirect("pasien-ranap.php?action=tindakan&no_rawat={$no_rawat}#hais");
                     };
                 };
             };
@@ -194,7 +194,7 @@
             <div class="form-group">
               <div class="form-line">
                 <dt>Bed</dt>
-                <dd><input type="text" class="form-control" name="bed" value=""></dd>
+                <dd><input type="text" class="form-control" name="bed" value="<?php echo $_GET['bed'];?>"></dd>
               </div>
             </div>
           </div>
@@ -237,7 +237,7 @@
           <tr>
             <td><?php echo $data_tindakan['tanggal']; ?></td>
             <td><?php echo $data_tindakan['kd_kamar']; ?></td>
-            <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_pemeriksaan&keluhan=<?php echo $data_tindakan['keluhan']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+            <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
           </tr>
         <?php
           }
