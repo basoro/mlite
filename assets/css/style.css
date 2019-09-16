@@ -8045,3 +8045,55 @@ html.ie11 .dropdown-menu ul.menu li a {
 
 html.ie11 .bs-searchbox .form-control {
   width: 90%; }
+
+
+
+
+.module .col-lg-3{
+  border-bottom:1px solid #ececfb;border-left:1px solid #ececfb;border-right:1px solid #ececfb;margin-right:-1px;margin-bottom:-1px;height:128px;cursor:pointer;padding:0;
+}
+.module .col-lg-3:hover{
+  box-shadow:0 0 38px rgba(0,0,0,.08) inset;-webkit-transition:all .25s ease;transition:all .25s ease;
+}
+.module a{
+  text-decoration: none;
+}
+.module .dashed-border{
+  border:1px dashed #20a53a;z-index:1;
+}
+.module .no-bg:hover{
+  box-shadow:0 0 38px rgba(0,0,0,.01) inset;-webkit-transition:all .15s ease;transition:all .15s ease;
+}
+.module .image {
+  height:40px;margin:0px 0 50px;padding-top:30px;text-align:center;
+}
+.module .image .icon i {
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .image .icon span {
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .sname{
+  text-align:center;color:#555;font-size:16px;
+}
+
+
+.pendaftaran .accordion-toggle:after {
+    /* symbol for "opening" panels */
+    font-family: 'Glyphicons Halflings';  /* essential for enabling glyphicon */
+    font-size: 24px;
+    content: "\e114";    /* adjust as needed, taken from bootstrap.css */
+    float: right;        /* adjust as needed */
+    color: grey;         /* adjust as needed */
+}
+.pendaftaran .accordion-toggle.collapsed:after {
+    /* symbol for "collapsed" panels */
+    content: "\e080";    /* adjust as needed, taken from bootstrap.css */
+}
+
+
+.png-jawab-radio-button label {
+  min-width: 100px; }
+.

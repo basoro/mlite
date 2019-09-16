@@ -5,7 +5,7 @@
 * About : Porting of SIMRS Khanza by Windiarto a.k.a Mas Elkhanza as web and mobile app.
 * Last modified: 02 Pebruari 2018
 * Author : drg. Faisol Basoro
-* Email : drg.faisol@basoro.org
+* Email : dentix.id@gmail.com
 *
 * File : init.php
 * Description : To check cookie and session

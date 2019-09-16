@@ -88,17 +88,6 @@
 
          <!-- Light Gallery Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/light-gallery/js/lightgallery-all.js"></script>
-	<script>
-
-	$(function () {
-    	$('#aniimated-thumbnials').lightGallery({
-        	thumbnail: true,
-        	selector: 'a'
-    	});
-	});
-
-	</script>
-
 
     <!-- Custom Js -->
     <script src="<?php echo URL; ?>/assets/js/admin.js"></script>
@@ -120,6 +109,30 @@
 	  </script>
 
     <script>
+
+        $('#datatable').dataTable( {
+              "processing": true,
+              "responsive": true,
+              "oLanguage": {
+                  "sProcessing":   "Sedang memproses...",
+                  "sLengthMenu":   "Tampilkan _MENU_ entri",
+                  "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+                  "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                  "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+                  "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                  "sInfoPostFix":  "",
+                  "sSearch":       "Cari:",
+                  "sUrl":          "",
+                  "oPaginate": {
+                      "sFirst":    "«",
+                      "sPrevious": "‹",
+                      "sNext":     "›",
+                      "sLast":     "»"
+                  }
+              },
+              "order": [[ 0, "asc" ]]
+        } );
+
         $(document).ready(function() {
             $('.datepicker').bootstrapMaterialDatePicker({
                 format: 'YYYY-MM-DD',
@@ -127,36 +140,14 @@
                 weekStart: 1,
                 time: false
             });
-        } );
+        });
 
         $('.count-to').countTo();
 
-      	var table = $('#datatab').DataTable( {
-          	responsive: true,
-          	stateSave: true
-            });
-        var table = $('#datatable').DataTable( {
-          	responsive: true,
-          	stateSave: true
-            });
-    		var buttons = new $.fn.dataTable.Buttons(table, {
-    			buttons: [
-        			{ extend: 'copy', className: 'btn glyphicon glyphicon-duplicate' },
-        			{ extend: 'csv', className: 'btn glyphicon glyphicon-save-file' },
-        			{ extend: 'excel', className: 'btn glyphicon glyphicon-list-alt' },
-        			{ extend: 'pdf', className: 'btn glyphicon glyphicon-file' },
-        			{ extend: 'print', className: 'btn glyphicon glyphicon-print' }
-    			]
-    		}).container().appendTo($('#buttons'));
-
-      $(function () {
-    $('#aniimated-thumbnials').lightGallery({
-        thumbnail: true,
-        selector: 'a'
-    });
-});
-
-
+      	$('#aniimated-thumbnials').lightGallery({
+          	thumbnail: true,
+          	selector: 'a'
+      	});
 	  </script>
 
     <script type="text/javascript">
@@ -177,7 +168,7 @@
     });
 
     function upload_berkas(){
-    document.getElementById("inputFile").click();
+        document.getElementById("inputFile").click();
     }
 
 

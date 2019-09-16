@@ -1,10 +1,11 @@
 <?php
 
 /***
-* e-Pasien from version 0.1 Beta
-* Last modified: 06 April 2018
+* SIMRS Khanza Lite from version 0.1 Beta
+* About : Porting of SIMRS Khanza by Windiarto a.k.a Mas Elkhanza as web and mobile app.
+* Last modified: 08 September 2019
 * Author : drg. Faisol Basoro
-* Email : drg.faisol@basoro.org
+* Email : dentix.id@gmail.com
 *
 * File : config.php
 * Description : Main config, function and helper
@@ -13,10 +14,10 @@
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
 
-define('VERSION', '1.2');
+define('VERSION', '2.0');
 define('ABSPATH', dirname(__FILE__) . '/');
-define('URL', 'http://localhost/dashboard');
-define('URLSIMRS', 'http://localhost/dashboard');
+define('URL', 'http://localhost/KhanzaLite2');
+define('URLSIMRS', 'http://localhost/KhanzaLite2');
 define('DIR', '');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
@@ -24,6 +25,7 @@ define('DB_PASS', '');
 define('DB_NAME', 'sik');
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
+define('IS_IN_MODULE', true);
 
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
@@ -31,6 +33,13 @@ define('ConsID', '');
 define('SecretKey', '');
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+// Module configuration
+$module = isset($_GET['module'])?$_GET['module']:null;
+$module_base_dir = './modules/';
+$module_ext = '.module.php';
+$module_base_file = $module.$module_ext;
+//$title = $module;
 
 function escape($string) {
     global $connection;
@@ -63,9 +72,63 @@ function num_rows($result) {
     return mysqli_num_rows($result);
 }
 
+// htmlentities remove #$%#$%@ values
+function clean($string) {
+    return htmlentities($string);
+}
+
+// redirect to another page
+function redirect($location) {
+    return header("Location: {$location}");
+}
+
+// add message to session
+function set_message($message) {
+    if(!empty($message)) {
+        $_SESSION['message'] = $message;
+    } else {
+        $message = "";
+    }
+}
+
+// display session message
+function display_message() {
+    if(isset($_SESSION['message'])) {
+        echo '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.$_SESSION['message'].'</div>';
+        unset($_SESSION['message']);
+    }
+}
+
+// show errors
+function validation_errors($error) {
+    $errors = '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.$error.'</div>';
+    return $errors;
+}
+
+// Enum dropdown value
+function enumDropdown($table_name, $column_name, $label, $echo = false) {
+    $selectDropdown = "<select name=\"$column_name\" data-width=\"100%\">";
+    $selectDropdown .= "<option value=\"\">$label</option>";
+    $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name' AND COLUMN_NAME = '$column_name'");
+
+    $row = fetch_array($result);
+    $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
+
+    foreach($enumList as $value)
+         $selectDropdown .= "<option value=\"$value\">$value</option>";
+    $selectDropdown .= "</select>";
+
+    if ($echo)
+        echo $selectDropdown;
+
+    return $selectDropdown;
+}
+
 // Get date and time
 date_default_timezone_set('Asia/Makassar');
 $year       = date('Y');
+$last_year  = $year-1;
+$next_year  = $year+1;
 $curr_month = date('m');
 $month      = date('Y-m');
 $date       = date('Y-m-d');
@@ -118,38 +181,5 @@ $bulanList = array(
 );
 
 // Get settings
-$getSettings = query("SELECT * FROM setting");
+$getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes FROM setting");
 $dataSettings = fetch_assoc($getSettings);
-
-// htmlentities remove #$%#$%@ values
-function clean($string) {
-    return htmlentities($string);
-}
-
-// redirect to another page
-function redirect($location) {
-    return header("Location: {$location}");
-}
-
-// add message to session
-function set_message($message) {
-    if(!empty($message)) {
-        $_SESSION['message'] = $message;
-    } else {
-        $message = "";
-    }
-}
-
-// display session message
-function display_message() {
-    if(isset($_SESSION['message'])) {
-        echo '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.$_SESSION['message'].'</div>';
-        unset($_SESSION['message']);
-    }
-}
-
-// show errors
-function validation_errors($error) {
-    $errors = '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.$error.'</div>';
-    return $errors;
-}
