@@ -340,10 +340,12 @@ include_once('layout/sidebar.php');
                                                    </div>
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
-                                                         <div class="">
-                                                             <select name="kelurahan" class="kelurahan" id="kelurahan" data-width="100%">
-                                                             </select>
+                                                         <div class="form-line">
+                                                            <input type="hidden" class="form-control" id="kd_kel"><input type="text" class="form-control" id="nm_kel" placeholder="Nama Kelurahan / Desa">
                                                          </div>
+                                                         <span class="input-group-addon">
+                                                             <i class="material-icons" data-toggle="modal" data-target="#kelurahanModal">attach_file</i>
+                                                         </span>
                                                      </div>
                                                    </div>
                                                 </div>
@@ -598,6 +600,39 @@ include_once('layout/sidebar.php');
         </div>
     </section>
 
+    <div class="modal fade" id="kelurahanModal" tabindex="-1" role="dialog" aria-labelledby="kelurahanModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="kelurahanModalLabel">Database Poliklinik</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="kelurahan" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Kode Kelurahan</th>
+                                <th>Nama Kelurahan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <?php
+                          $sql_kelurahan = "SELECT * FROM kelurahan";
+                          $result_kelurahan = query($sql_kelurahan);
+                          while($row = fetch_array($result_kelurahan)) {
+                            echo '<tr class="pilihkelurahan" data-kdkel='.$row[0].' data-nmkel='.$row[1].'>';
+                            echo '<td>'.$row[0].'</td>';
+                            echo '<td>'.$row[1].'</td>';
+                            echo '</tr>';
+                          }
+                          ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php
 include_once('layout/footer.php');
 ?>
@@ -628,8 +663,36 @@ include_once('layout/footer.php');
         "order": [[ 0, "asc" ]],
         "ajax": "includes/pasien.php"
   } );
+  $('#kelurahan').dataTable( {
+        "processing": true,
+        "responsive": false,
+        "oLanguage": {
+            "sProcessing":   "Sedang memproses...",
+            "sLengthMenu":   "Tampilkan _MENU_ entri",
+            "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+            "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+            "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+            "sInfoPostFix":  "",
+            "sSearch":       "Cari:",
+            "sUrl":          "",
+            "oPaginate": {
+                "sFirst":    "«",
+                "sPrevious": "‹",
+                "sNext":     "›",
+                "sLast":     "»"
+            }
+        },
+        "order": [[ 0, "asc" ]]
+  } );
 </script>
-
+<script>
+    $(document).on('click', '.pilihkelurahan', function (e) {
+        document.getElementById("kd_kel").value = $(this).attr('data-kdkel');
+        document.getElementById("nm_kel").value = $(this).attr('data-nmkel');
+        $('#kelurahanModal').modal('hide');
+    });
+</script>
 <script>
     $(function() {
       $('body').on('change', '.provinsi', function(e) {
@@ -660,17 +723,5 @@ include_once('layout/footer.php');
           });
       }
 
-      $('body').on('change', '.kecamatan', getKecamatan);
-      function getKecamatan(){
-          var kode = $("#kecamatan").val();
-          $.ajax({
-              type : "POST",
-              url  : "includes/wilayah.php?page=cari-kelurahan",
-              data :  {kode : kode},
-              success : function(data){
-                  $("#kelurahan").html(data).selectpicker('refresh');
-              }
-          });
-      }
     });
 </script>
