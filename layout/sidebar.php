@@ -12,6 +12,8 @@
                     echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';
                 } else if ($dataGet['1'] == 'P' || $dataGet['1'] == 'Wanita') {
                     echo '<img src="'.URL.'/assets/images/wanita.png" width="48" height="48" alt="User" />';
+                } else {
+                  echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';                  
                 }
                 ?>
                 </div>

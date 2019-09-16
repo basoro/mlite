@@ -327,8 +327,8 @@ include_once('layout/sidebar.php');
                                                    </div>
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
-                                                         <div class="form-line">
-                                                             <select name="kecamatan" class="kecamatan" id="kecamatan">
+                                                         <div class="">
+                                                             <select name="kecamatan" class="kecamatan" id="kecamatan" data-width="100%">
                                                              </select>
                                                          </div>
                                                      </div>
@@ -340,8 +340,8 @@ include_once('layout/sidebar.php');
                                                    </div>
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
-                                                         <div class="form-line">
-                                                             <select name="kelurahan" class="kelurahan" id="kelurahan">
+                                                         <div class="">
+                                                             <select name="kelurahan" class="kelurahan" id="kelurahan" data-width="100%">
                                                              </select>
                                                          </div>
                                                      </div>
@@ -631,7 +631,7 @@ include_once('layout/footer.php');
 </script>
 
 <script>
-    //$(function() {
+    $(function() {
       $('body').on('change', '.provinsi', function(e) {
           e.preventDefault();
               var kode = $("#provinsi").val();
@@ -640,7 +640,6 @@ include_once('layout/footer.php');
               url  : "includes/wilayah.php?page=cari-kota",
               data :  {kode : kode},
               success : function(data){
-                  //alert(kode);
                   $("#kota").html(data).selectpicker('refresh');
                   getKota();
               }
@@ -649,14 +648,12 @@ include_once('layout/footer.php');
 
       $('body').on('change', '.kota', getKota);
       function getKota(){
-          //var kode = $("#kota").val();
-          var kode = '6307';
+          var kode = $("#kota").val();
           $.ajax({
               type : "POST",
               url  : "includes/wilayah.php?page=cari-kecamatan",
               data :  {kode : kode},
               success : function(data){
-                  alert(kode);
                   $("#kecamatan").html(data).selectpicker('refresh');
                   getKecamatan();
               }
@@ -675,5 +672,5 @@ include_once('layout/footer.php');
               }
           });
       }
-    //});
+    });
 </script>

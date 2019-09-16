@@ -7747,6 +7747,9 @@ fieldset[disabled] .form-control {
       width: 100%;
       text-align: center;
       color: #fff; }
+      .login-page .login-box .logo img {
+        height: 150px;
+      }
     .login-page .login-box .logo small {
       display: block;
       width: 100%;
