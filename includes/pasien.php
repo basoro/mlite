@@ -17,7 +17,108 @@ include ('../config.php');
 $page = isset($_GET['p'])? $_GET['p'] : '';
 
 if($page=='add'){
+  if(!empty($_POST['no_rkm_medis'])){
+      $data = array();
+      $tgl_daftar = date('Y-m-d');
+      //menentukan umur sekarang
+      list($cY, $cm, $cd) = explode('-', date('Y-m-d'));
+      list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($_POST['tgl_lahir'])));
+      $umur = $cY - $Y;
 
+      $insert = query("INSERT
+          INTO
+              pasien
+          SET
+              no_rkm_medis = '{$_POST['no_rkm_medis']}',
+              nm_pasien = '{$_POST['nm_pasien']}',
+              no_ktp = '{$_POST['no_ktp']}',
+              jk = '{$_POST['jk']}',
+              tmp_lahir = '{$_POST['tmp_lahir']}',
+              tgl_lahir = '{$_POST['tgl_lahir']}',
+              nm_ibu = '{$_POST['nm_ibu']}',
+              alamat = '{$_POST['alamat']}',
+              gol_darah = '{$_POST['gol_darah']}',
+              pekerjaan = '{$_POST['pekerjaan']}',
+              stts_nikah = '{$_POST['stts_nikah']}',
+              agama = '{$_POST['agama']}',
+              tgl_daftar = '{$tgl_daftar}',
+              no_tlp = '{$_POST['no_tlp']}',
+              umur = '{$umur}',
+              pnd = '{$_POST['pnd']}',
+              keluarga = 'Ayah',
+              namakeluarga = '{$_POST['namakeluarga']}',
+              kd_pj = '{$_POST['kd_pj']}',
+              no_peserta = '{$_POST['no_peserta']}',
+              kd_kel = '{$_POST['kd_kel']}',
+              kd_kec = '{$_POST['kd_kec']}',
+              kd_kab = '{$_POST['kd_kab']}',
+              pekerjaanpj = '{$_POST['pekerjaanpj']}',
+              alamatpj = '{$_POST['alamatpj']}',
+              kelurahanpj = '{$_POST['kelurahanpj']}',
+              kecamatanpj = '{$_POST['kecamatanpj']}',
+              kabupatenpj = '{$_POST['kabupatenpj']}',
+              perusahaan_pasien = '{$_POST['perusahaan_pasien']}',
+              suku_bangsa = '{$_POST['suku_bangsa']}',
+              bahasa_pasien = '{$_POST['bahasa_pasien']}',
+              cacat_fisik = '{$_POST['cacat_fisik']}',
+              email = '{$_POST['email']}',
+              nip = '{$_POST['nip']}',
+              kd_prop = '{$_POST['kd_prop']}',
+              propinsipj = '{$_POST['propinsipj']}'
+      ");
+  }
+} else if($page=='update'){
+  if(!empty($_POST['no_rkm_medis'])){
+      $data = array();
+      $tgl_daftar = date('Y-m-d');
+      //menentukan umur sekarang
+      list($cY, $cm, $cd) = explode('-', date('Y-m-d'));
+      list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($_POST['tgl_lahir'])));
+      $umur = $cY - $Y;
+
+      $insert = query("
+          UPDATE
+              pasien
+          SET
+              nm_pasien = '{$_POST['nm_pasien']}',
+              no_ktp = '{$_POST['no_ktp']}',
+              jk = '{$_POST['jk']}',
+              tmp_lahir = '{$_POST['tmp_lahir']}',
+              tgl_lahir = '{$_POST['tgl_lahir']}',
+              nm_ibu = '{$_POST['nm_ibu']}',
+              alamat = '{$_POST['alamat']}',
+              gol_darah = '{$_POST['gol_darah']}',
+              pekerjaan = '{$_POST['pekerjaan']}',
+              stts_nikah = '{$_POST['stts_nikah']}',
+              agama = '{$_POST['agama']}',
+              tgl_daftar = '{$tgl_daftar}',
+              no_tlp = '{$_POST['no_tlp']}',
+              umur = '{$umur}',
+              pnd = '{$_POST['pnd']}',
+              keluarga = 'Ayah',
+              namakeluarga = '{$_POST['namakeluarga']}',
+              kd_pj = '{$_POST['kd_pj']}',
+              no_peserta = '{$_POST['no_peserta']}',
+              kd_kel = '{$_POST['kd_kel']}',
+              kd_kec = '{$_POST['kd_kec']}',
+              kd_kab = '{$_POST['kd_kab']}',
+              pekerjaanpj = '{$_POST['pekerjaanpj']}',
+              alamatpj = '{$_POST['alamatpj']}',
+              kelurahanpj = '{$_POST['kelurahanpj']}',
+              kecamatanpj = '{$_POST['kecamatanpj']}',
+              kabupatenpj = '{$_POST['kabupatenpj']}',
+              perusahaan_pasien = '{$_POST['perusahaan_pasien']}',
+              suku_bangsa = '{$_POST['suku_bangsa']}',
+              bahasa_pasien = '{$_POST['bahasa_pasien']}',
+              cacat_fisik = '{$_POST['cacat_fisik']}',
+              email = '{$_POST['email']}',
+              nip = '{$_POST['nip']}',
+              kd_prop = '{$_POST['kd_prop']}',
+              propinsipj = '{$_POST['propinsipj']}'
+          WHERE
+              no_rkm_medis = '{$_POST['no_rkm_medis']}'
+      ");
+  }
 } else {
     $table = <<<EOT
      (

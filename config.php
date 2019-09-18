@@ -107,7 +107,7 @@ function validation_errors($error) {
 
 // Enum dropdown value
 function enumDropdown($table_name, $column_name, $label, $echo = false) {
-    $selectDropdown = "<select name=\"$column_name\" data-width=\"100%\">";
+    $selectDropdown = "<select name=\"$column_name\" id=\"$column_name\" data-width=\"100%\">";
     $selectDropdown .= "<option value=\"\">$label</option>";
     $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name' AND COLUMN_NAME = '$column_name'");
 

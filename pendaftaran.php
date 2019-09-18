@@ -714,9 +714,9 @@ include_once('layout/footer.php');
             data:{
               no_rawat:no_rawat
             },
-           success:function(data){
+            success:function(data){
                window.location.reload(true)
-           }
-      });
+            }
+        });
     });
 </script>

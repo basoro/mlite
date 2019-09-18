@@ -30,7 +30,7 @@ $getmodule = isset($_GET['module'])?$_GET['module']:null;
                         </div>
                         <div class="content">
                             <div class="text">TOTAL PASIEN</div>
-                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rkm_medis FROM pasien"));?>" data-speed="5000" data-fresh-interval="20"></div>
+                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rkm_medis FROM pasien"));?>" data-speed="1000" data-fresh-interval="20"></div>
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@ $getmodule = isset($_GET['module'])?$_GET['module']:null;
                         </div>
                         <div class="content">
                             <div class="text">PASIEN TAHUN INI</div>
-                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rkm_medis FROM pasien WHERE tgl_daftar LIKE '%$month%'"));?>" data-speed="2000" data-fresh-interval="20"></div>
+                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rkm_medis FROM pasien WHERE tgl_daftar LIKE '%$month%'"));?>" data-speed="1000" data-fresh-interval="20"></div>
                         </div>
                     </div>
                 </div>

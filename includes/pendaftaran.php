@@ -99,8 +99,8 @@ if($page=='add'){
           SET
               kd_dokter       = '$kd_dokter',
               kd_poli         = '{$_POST['kd_poli']}',
-              p_jawab         = '-',
-              almt_pj         = '-',
+              p_jawab         = '{$_POST['namakeluarga']}',
+              almt_pj         = '{$_POST['alamatpj']}',
               hubunganpj      = '-',
               biaya_reg       = '{$biaya_reg['registrasilama']}',
               kd_pj           = '{$_POST['kd_pj']}',
