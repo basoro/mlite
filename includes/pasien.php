@@ -119,6 +119,8 @@ if($page=='add'){
               no_rkm_medis = '{$_POST['no_rkm_medis']}'
       ");
   }
+} else if($page=='delete'){
+  query("DELETE FROM pasien WHERE no_rkm_medis='$_POST[no_rkm_medis]'");
 } else {
     $table = <<<EOT
      (
