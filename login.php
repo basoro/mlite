@@ -86,9 +86,6 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
             }
 
             if ($_POST['username'] !=="" || $_POST['password'] !=="") {
-
-
-                //$sql = "SELECT AES_DECRYPT(id_user,'nur') as id_user, AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('{$_POST['username']}','nur')";
                 $sql_admin = "SELECT AES_DECRYPT(usere,'nur') as id_user, AES_DECRYPT(passworde,'windi') as password FROM admin WHERE usere = AES_ENCRYPT('{$_POST['username']}','nur')";
                 $sql = "SELECT AES_DECRYPT(id_user,'nur') as id_user, AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('{$_POST['username']}','nur')";
                 $found_admin = query($sql_admin);

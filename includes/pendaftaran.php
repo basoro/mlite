@@ -124,6 +124,6 @@ if($page=='add'){
   query("DELETE FROM rujuk_masuk WHERE no_rawat='$_POST[no_rawat]'");
   $delete = query("DELETE FROM reg_periksa WHERE no_rawat='$_POST[no_rawat]'");
 } else {
-  
+
 }
 ?>
