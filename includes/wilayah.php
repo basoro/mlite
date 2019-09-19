@@ -49,4 +49,30 @@ if ($page == 'cari-kelurahan')
 	}
 }
 
+if ($page == 'kelurahan')
+{
+	$table = <<<EOT
+	 (
+	    SELECT kd_kel, nm_kel FROM kelurahan
+	 ) temp
+	EOT;
+
+	$primaryKey = 'kd_kel';
+	$columns = array(
+	    array( 'db' => 'kd_kel','dt' => 0),
+	    array( 'db' => 'nm_kel','dt' => 1),
+	);
+
+	$sql_details = array(
+	    'user' => DB_USER,
+	    'pass' => DB_PASS,
+	    'db'   => DB_NAME,
+	    'host' => DB_HOST
+	);
+	require('ssp.class.php');
+	echo json_encode(
+	    SSP::simple( $_GET, $sql_details, $table, $primaryKey, $columns )
+	);
+}
+
 ?>

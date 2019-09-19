@@ -36,6 +36,7 @@ if($page=='add'){
               tmp_lahir = '{$_POST['tmp_lahir']}',
               tgl_lahir = '{$_POST['tgl_lahir']}',
               nm_ibu = '{$_POST['nm_ibu']}',
+              keluarga = '{$_POST['keluarga']}',
               alamat = '{$_POST['alamat']}',
               gol_darah = '{$_POST['gol_darah']}',
               pekerjaan = '{$_POST['pekerjaan']}',
@@ -45,7 +46,6 @@ if($page=='add'){
               no_tlp = '{$_POST['no_tlp']}',
               umur = '{$umur}',
               pnd = '{$_POST['pnd']}',
-              keluarga = 'Ayah',
               namakeluarga = '{$_POST['namakeluarga']}',
               kd_pj = '{$_POST['kd_pj']}',
               no_peserta = '{$_POST['no_peserta']}',
@@ -66,6 +66,9 @@ if($page=='add'){
               kd_prop = '{$_POST['kd_prop']}',
               propinsipj = '{$_POST['propinsipj']}'
       ");
+      if($insert) {
+          query("UPDATE set_no_rkm_medis SET no_rkm_medis = '{$_POST['no_rkm_medis']}'");
+      }
   }
 } else if($page=='update'){
   if(!empty($_POST['no_rkm_medis'])){
@@ -86,6 +89,7 @@ if($page=='add'){
               tmp_lahir = '{$_POST['tmp_lahir']}',
               tgl_lahir = '{$_POST['tgl_lahir']}',
               nm_ibu = '{$_POST['nm_ibu']}',
+              keluarga = '{$_POST['keluarga']}',
               alamat = '{$_POST['alamat']}',
               gol_darah = '{$_POST['gol_darah']}',
               pekerjaan = '{$_POST['pekerjaan']}',
@@ -95,7 +99,6 @@ if($page=='add'){
               no_tlp = '{$_POST['no_tlp']}',
               umur = '{$umur}',
               pnd = '{$_POST['pnd']}',
-              keluarga = 'Ayah',
               namakeluarga = '{$_POST['namakeluarga']}',
               kd_pj = '{$_POST['kd_pj']}',
               no_peserta = '{$_POST['no_peserta']}',
@@ -195,8 +198,12 @@ if($page=='add'){
         array( 'db' => 'perusahaan_pasien','dt' => 24 ),
         array( 'db' => 'nip','dt' => 25 ),
         array( 'db' => 'email','dt' => 26 ),
-        array( 'db' => 'cacat_fisik','dt' => 27 )
-    );
+        array( 'db' => 'cacat_fisik','dt' => 27 ),
+        array( 'db' => 'kelurahanpj','dt' => 28 ),
+        array( 'db' => 'kecamatanpj','dt' => 29 ),
+        array( 'db' => 'kabupatenpj','dt' => 30 ),
+        array( 'db' => 'propinsipj','dt' => 31 )
+  );
 
     $sql_details = array(
         'user' => DB_USER,

@@ -48,7 +48,7 @@ include_once('layout/sidebar.php');
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
                                                               <?php
-                                                              $get_rm = fetch_array(query("SELECT MAX(no_rkm_medis) FROM pasien"));
+                                                              $get_rm = fetch_array(query("SELECT no_rkm_medis FROM set_no_rkm_medis"));
                                                               $lastRM = substr($get_rm[0], 0, 6);
                                                               $no_rm_next = sprintf('%06s', ($lastRM + 1));
                                                               ?>
@@ -192,18 +192,18 @@ include_once('layout/sidebar.php');
                                                     <div class="col-lg-8 col-md-8 col-sm-8">
                                                       <div class="input-group input-group-lg">
                                                           <div class="png-jawab-radio-button m-t-10">
-                                                            <input name="keluarga" type="radio" value="Ayah" id="keluarga" class="with-gap radio-col-red" />
-                                                            <label for="radio_30">Ayah</label>
+                                                            <input name="keluarga" type="radio" value="Ayah" id="ayah" class="with-gap radio-col-red" checked/>
+                                                            <label for="ayah">Ayah</label>
                                                             <input name="keluarga" type="radio" value="Ibu" id="ibu" class="with-gap radio-col-pink" />
-                                                            <label for="radio_31">Ibu</label>
+                                                            <label for="ibu">Ibu</label>
                                                             <input name="keluarga" type="radio" value="Suami" id="suami" class="with-gap radio-col-purple" />
-                                                            <label for="radio_32">Suami</label>
+                                                            <label for="suami">Suami</label>
                                                             <input name="keluarga" type="radio" value="Istri" id="istri" class="with-gap radio-col-deep-purple" />
-                                                            <label for="radio_33">Istri</label>
+                                                            <label for="istri">Istri</label>
                                                             <input name="keluarga" type="radio" value="Saudara" id="saudara" class="with-gap radio-col-indigo" />
-                                                            <label for="radio_34">Saudara</label>
+                                                            <label for="saudara">Saudara</label>
                                                             <input name="keluarga" type="radio" value="Anak" id="anak" class="with-gap radio-col-blue" />
-                                                            <label for="radio_35">Anak</label>
+                                                            <label for="anak">Anak</label>
                                                           </div>
                                                       </div>
                                                     </div>
@@ -682,6 +682,10 @@ include_once('layout/footer.php');
             $(row).attr('data-nip', data[25]);
             $(row).attr('data-email', data[26]);
             $(row).attr('data-cacat_fisik', data[27]);
+            $(row).attr('data-kelurahanpj', data[28]);
+            $(row).attr('data-kecamatanpj', data[29]);
+            $(row).attr('data-kabupatenpj', data[30]);
+            $(row).attr('data-propinsipj', data[31]);
         }
   } );
   $('#kelurahan').dataTable( {
@@ -704,7 +708,13 @@ include_once('layout/footer.php');
                 "sLast":     "»"
             }
         },
-        "order": [[ 0, "asc" ]]
+        "order": [[ 0, "asc" ]],
+        "ajax": "includes/wilayah.php?page=kelurahan",
+        "createdRow": function( row, data, index ) {
+          	$(row).addClass('pilihkelurahan');
+            $(row).attr('data-kdkel', data[0]);
+            $(row).attr('data-nmkel', data[1]);
+        }
   } );
 </script>
 <script>
@@ -788,6 +798,7 @@ include_once('layout/footer.php');
         var tmp_lahir = document.getElementById("tmp_lahir").value;
         var tgl_lahir = document.getElementById("tgl_lahir").value;
         var nm_ibu = document.getElementById("nm_ibu").value;
+        var keluarga = document.querySelector('input[name="keluarga"]:checked').value;
         var alamat = document.getElementById("alamat").value;
         var gol_darah = document.getElementById("gol_darah").value;
         var pekerjaan = document.getElementById("pekerjaan").value;
@@ -825,6 +836,7 @@ include_once('layout/footer.php');
                 tmp_lahir:tmp_lahir,
                 tgl_lahir:tgl_lahir,
                 nm_ibu:nm_ibu,
+                keluarga:keluarga,
                 alamat:alamat,
                 gol_darah:gol_darah,
                 pekerjaan:pekerjaan,
@@ -866,6 +878,7 @@ include_once('layout/footer.php');
         var tmp_lahir = document.getElementById("tmp_lahir").value;
         var tgl_lahir = document.getElementById("tgl_lahir").value;
         var nm_ibu = document.getElementById("nm_ibu").value;
+        var keluarga = document.querySelector('input[name="keluarga"]:checked').value;
         var alamat = document.getElementById("alamat").value;
         var gol_darah = document.getElementById("gol_darah").value;
         var pekerjaan = document.getElementById("pekerjaan").value;
@@ -903,6 +916,7 @@ include_once('layout/footer.php');
                 tmp_lahir:tmp_lahir,
                 tgl_lahir:tgl_lahir,
                 nm_ibu:nm_ibu,
+                keluarga:keluarga,
                 alamat:alamat,
                 gol_darah:gol_darah,
                 pekerjaan:pekerjaan,

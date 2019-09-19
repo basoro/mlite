@@ -243,10 +243,15 @@ if(isset($_GET['no_rawat'])) {
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li>
+                                                    <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
                                                     <li><a href="javascript:void(0);">Bridging BPJS</a></li>
-                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Data SEP BPJS</a></li>
+                                                    <li><a href="javascript:void(0);">Data SEP BPJS</a></li>
+                                                    <?php } ?>
+                                                    <?php if(is_dir(ABSPATH.'/modules/BridgingInhealth/')) { ?>
                                                     <li><a href="javascript:void(0);">Bridging Inhealt</a></li>
                                                     <li><a href="javascript:void(0);">Data SEP Inhealth</a></li>
+                                                    <?php } ?>
                                                 </ul>
                                             </div>
                                         </td>
