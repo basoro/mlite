@@ -297,7 +297,9 @@ if(isset($_GET['no_rawat'])) {
                     </div>
                     <?php } ?>
                     <?php if($action == "view"){ ?>
-                    <?php echo $no_rawat; ?>
+                      <div class="body">
+                        <h3>Masih dalam pengembangan</h3>
+                      </div>
                     <?php } ?>
                 </div>
             </div>
