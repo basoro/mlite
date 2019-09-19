@@ -115,7 +115,7 @@ if($page=='add'){
               rujuk_masuk
           SET
               perujuk         = '{$_POST['nama_perujuk']}',
-              dokter_perujuk  = '{$_POST['nama_perujuk']}' 
+              dokter_perujuk  = '{$_POST['nama_perujuk']}'
           WHERE
               no_rawat = '{$_POST['no_rawat']}'
       ");
