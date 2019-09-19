@@ -211,7 +211,7 @@ if(isset($_GET['no_rawat'])) {
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, e.perujuk, f.kd_dokter, f.nm_dokter, b.kd_poli FROM pasien a, reg_periksa b, penjab c, poliklinik d, rujuk_masuk e, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.no_rawat = e.no_rawat AND b.kd_dokter = f.kd_dokter";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, e.perujuk, f.kd_dokter, f.nm_dokter, b.kd_poli, c.kd_pj FROM pasien a, reg_periksa b, penjab c, poliklinik d, rujuk_masuk e, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.no_rawat = e.no_rawat AND b.kd_dokter = f.kd_dokter";
                                 if($role == 'Medis' || $role == 'Paramedis') {
                                   $sql .= " AND b.kd_poli = '$jenis_poli'";
                                 }
@@ -237,6 +237,7 @@ if(isset($_GET['no_rawat'])) {
                                       data-kddokter="<?php echo $row['12']; ?>"
                                       data-nmpoli="<?php echo $row['4']; ?>"
                                       data-kdpoli="<?php echo $row['14']; ?>"
+                                      data-kdpj="<?php echo $row['15']; ?>"
                                     >
                                         <td><?php echo SUBSTR($row['0'], 0, 15).' ...'; ?></td>
                                         <td>
@@ -655,6 +656,7 @@ include_once('layout/footer.php');
         document.getElementById("kd_poli").value = $(this).attr('data-kdpoli');
         document.getElementById("nm_poli").value = $(this).attr('data-nmpoli');
         document.getElementById("namakeluarga").value = $(this).attr('data-namakeluarga');
+        document.getElementById("kd_pj").value = $(this).attr('data-kdpj');
         document.getElementById("alamatpj").value = $(this).attr('data-alamatpj');
         document.getElementById("png_jawab").value = $(this).attr('data-pngjawab');
         document.getElementById("nama_perujuk").value = $(this).attr('data-perujuk');
@@ -693,6 +695,8 @@ include_once('layout/footer.php');
         var kd_poli = document.getElementById("kd_poli").value;
         var kd_pj = document.getElementById("kd_pj").value;
         var tgl_registrasi = document.getElementById("tgl_registrasi").value;
+        var namakeluarga = document.getElementById("namakeluarga").value;
+        var alamatpj = document.getElementById("alamatpj").value;
         var nama_perujuk = document.getElementById("nama_perujuk").value;
         $.ajax({
             url:'includes/pendaftaran.php?p=update',
@@ -704,6 +708,8 @@ include_once('layout/footer.php');
                 kd_poli:kd_poli,
                 kd_pj:kd_pj,
                 tgl_registrasi:tgl_registrasi,
+                namakeluarga:namakeluarga,
+                alamatpj:alamatpj,
                 nama_perujuk:nama_perujuk
             },
            success:function(data){

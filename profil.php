@@ -35,11 +35,16 @@ $b = mysqli_fetch_assoc($a);
                         </ul>
 							          <?php
                       	if (isset($_POST['bio'])) {
+                            if($_POST['jk'] == 'L') {
+                                $jk = 'Pria';
+                            } else {
+                                $jk = 'Wanita';
+                            }
                           	$insert = query("UPDATE
                                     pegawai
                                 SET
                                     nama = '{$_POST['nama']}',
-                                    jk = '{$_POST['jk']}',
+                                    jk = '{$jk}',
                                     tmp_lahir = '{$_POST['tempat']}',
                                     tgl_lahir = '{$_POST['tanggal']}',
                                     pendidikan = '{$_POST['pddkn']}',
@@ -58,6 +63,15 @@ $b = mysqli_fetch_assoc($a);
                                         nama = '{$_POST['nama']}'
                                     WHERE
                                         nip = '{$_SESSION['username']}'
+                                ");
+                                $duainsert = query("
+                                    UPDATE
+                                        dokter
+                                    SET
+                                        nm_dokter = '{$_POST['nama']}',
+                                        jk = '{$_POST['jk']}'
+                                    WHERE
+                                        kd_dokter = '{$_SESSION['username']}'
                                 ");
                                 if ($duainsert){
                                     redirect("profil.php");
@@ -110,11 +124,11 @@ $b = mysqli_fetch_assoc($a);
                                       	  <label for="jk" class="col-sm-2 control-label">Jenis Kelamin</label>
                                           <div class="col-sm-10">
                                               <div class="form-line">
-                                                  <input class="with-gap" type="radio" name="jk" id="Pria" value="Pria" <?php if ($dataGet['1'] == 'Pria') { echo "checked='true'";}?>>
+                                                  <input class="with-gap" type="radio" name="jk" id="Pria" value="L" <?php if ($dataGet['1'] == 'L') { echo "checked='true'";}?>>
                                               	  <label for="Pria">
                                                       Pria
                                             		  </label>
-                                            		  <input class="with-gap" type="radio" name="jk" id="Wanita" value="Wanita" <?php if ($dataGet['1'] == 'Wanita') { echo "checked='true'";}?>>
+                                            		  <input class="with-gap" type="radio" name="jk" id="Wanita" value="P" <?php if ($dataGet['1'] == 'P') { echo "checked='true'";}?>>
                                             		  <label class="m-l-20" for="Wanita">
                                               		    Wanita
                                             		  </label>
