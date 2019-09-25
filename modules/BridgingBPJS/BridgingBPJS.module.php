@@ -12,19 +12,11 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 class BridgingBPJS {
     function index() {
 ?>
-<div class="body">
-    <div class="content">
         <?php include('modules/BridgingBPJS/pasien.php'); ?>
-    </div>
-</div>
 <?php
     }
     function data_sep() {
 ?>
-<div class="body">
-    <div class="content">
-    </div>
-</div>
 <?php
     }
 }

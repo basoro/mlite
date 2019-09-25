@@ -33,6 +33,8 @@ if(isset($_GET['no_rawat'])) {
     }
 }
 
+$action = isset($_GET['action'])?$_GET['action']:null;
+
 ?>
 
     <section class="content">
@@ -42,13 +44,11 @@ if(isset($_GET['no_rawat'])) {
                     <div class="card">
                         <div class="header">
                             <h2>
-                                <?php echo $title; ?> <div class="right pendaftaran"><button class="btn btn-default waves-effect accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapsePendaftaran"></button></div>
+                                <?php echo $title; ?> <div class="right pendaftaran"><?php if(!$action){ ?><button class="btn btn-default waves-effect accordion-toggle" data-toggle="collapse" data-parent="#accordion" href="#collapsePendaftaran"></button><?php } ?></div>
                                 <small>Periode <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } else { echo date("d-m-Y",strtotime($date)) . ' s/d ' . date("d-m-Y",strtotime($date));} ?></small>
                             </h2>
                         </div>
-                        <?php display_message(); ?>
                         <?php
-                        $action = isset($_GET['action'])?$_GET['action']:null;
                         if(!$action){
                         // Hitung nomor rawat
                         $tgl_reg = date('Y/m/d', strtotime($date));
@@ -300,7 +300,6 @@ if(isset($_GET['no_rawat'])) {
                     <?php } ?>
                     <?php if(FKTL !== 'Yes') { ?>
                     <?php if($action == "view"){ ?>
-                    <!-- Menu View -->
                             <div class="body">
                               <dl class="dl-horizontal">
                                 <dt>Nama Lengkap</dt>

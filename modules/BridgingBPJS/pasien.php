@@ -34,7 +34,7 @@ if(isset($_GET['no_rawat'])) {
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                         if(!$action){
                         ?>
-                            <div class="body table-responsive">
+                            <div class="body">
                                 <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                                     <thead>
                                         <tr>
