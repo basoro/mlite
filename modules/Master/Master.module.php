@@ -4,13 +4,13 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
 <ol class="breadcrumb breadcrumb-bg-grey" style="padding:10px !important;">
     <li><a href="<?php echo URL; ?>">Home</a></li>
-    <li><a href="<?php echo URL; ?>/?module=BridgingBPJS">Bridging BPJS</a></li>
+    <li><a href="<?php echo URL; ?>/?module=Master">Data Master</a></li>
     <li class="active">Index</li>
 </ol>
 
 <?php
 class Master {
-    function index() { 
+    function index() {
 ?>
 <div class="body">
     <ul class="nav nav-tabs" role="tablist">
