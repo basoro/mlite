@@ -2,7 +2,7 @@
 ob_start();
 session_start();
 
-include_once(ABSPATH.'/init.php');
+include_once('init.php');
 
 ?>
 <!DOCTYPE html>

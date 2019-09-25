@@ -39,9 +39,9 @@ include_once('layout/sidebar.php');
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar FROM pasien a, reg_periksa b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli != 'U0027'";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar FROM pasien a, reg_periksa b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj";
                                 if(isset($_POST['status_lanjut']) && $_POST['status_lanjut'] == 'Ralan') {
-                                	$sql .= " AND b.kd_poli != 'IGDK' AND b.status_lanjut = 'Ralan'";
+                                	$sql .= " AND b.status_lanjut = 'Ralan'";
                                 }
                                 if(isset($_POST['status_lanjut']) && $_POST['status_lanjut'] == 'Ranap') {
                                   $sql .= " AND b.status_lanjut = 'Ranap'";
@@ -52,7 +52,6 @@ include_once('layout/sidebar.php');
                                   	$sql .= " AND b.tgl_registrasi = '$date'";
                                 }
                                 $query = query($sql);
-                                $no = 1;
                                 while($row = fetch_array($query)) {
                                 ?>
                                     <tr>
@@ -64,7 +63,6 @@ include_once('layout/sidebar.php');
                                         <td><?php echo $row['5']; ?></td>
                                     </tr>
                                 <?php
-                                $no++;
                                 }
                                 ?>
                                 </tbody>

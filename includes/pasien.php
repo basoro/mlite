@@ -24,7 +24,6 @@ if($page=='add'){
       list($cY, $cm, $cd) = explode('-', date('Y-m-d'));
       list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($_POST['tgl_lahir'])));
       $umur = $cY - $Y;
-
       $insert = query("INSERT
           INTO
               pasien

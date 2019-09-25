@@ -16,7 +16,7 @@ $data_admin = fetch_array(query("SELECT AES_DECRYPT(usere,'nur') as id_user, AES
 if(num_rows(query("SHOW TABLES LIKE 'roles'")) !== 1) {
     redirect(URL . '/login.php');
 } else {
-  $data = fetch_array(query("SELECT AES_DECRYPT(a.id_user,'nur') as id_user, AES_DECRYPT(a.password,'windi') as password, b.cap as kd_poli, b.role as role FROM user a, roles b WHERE a.id_user = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND b.username = '{$_COOKIE['username']}' AND a.password = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));    
+  $data = fetch_array(query("SELECT AES_DECRYPT(a.id_user,'nur') as id_user, AES_DECRYPT(a.password,'windi') as password, b.cap as kd_poli, b.role as role FROM user a, roles b WHERE a.id_user = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND b.username = '{$_COOKIE['username']}' AND a.password = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));
 }
 
 if (!isset($_COOKIE['username']) && !isset($_COOKIE['password'])) {

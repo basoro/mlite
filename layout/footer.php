@@ -106,6 +106,19 @@
         }
       });
 
+      $(document).ready(function() {
+          if (location.hash) {
+              $("a[href='" + location.hash + "']").tab("show");
+          }
+          $(document.body).on("click", "a[data-toggle='tab']", function(event) {
+              location.hash = this.getAttribute("href");
+          });
+      });
+      $(window).on("popstate", function() {
+          var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
+          $("a[href='" + anchor + "']").tab("show");
+      });
+
 	  </script>
 
     <script>
@@ -173,6 +186,43 @@
 
 
     </script>
+
+<script type="text/javascript">
+    $('#getpasien').dataTable( {
+          "bInfo" : true,
+        	"scrollX": true,
+          "processing": true,
+          "serverSide": true,
+          "responsive": false,
+          "oLanguage": {
+              "sProcessing":   "Sedang memproses...",
+              "sLengthMenu":   "Tampilkan _MENU_ entri",
+              "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+              "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+              "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+              "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+              "sInfoPostFix":  "",
+              "sSearch":       "Cari:",
+              "sUrl":          "",
+              "oPaginate": {
+                  "sFirst":    "«",
+                  "sPrevious": "‹",
+                  "sNext":     "›",
+                  "sLast":     "»"
+              }
+          },
+          "order": [[ 0, "asc" ]],
+          "ajax": "<?php echo URL; ?>/includes/pasien.php"
+    } );
+</script>
+
+<?php
+if(isset($_GET['module'])) {
+  if(file_exists('modules/'.$_GET['module'].'/js.php')) {
+    include('modules/'.$_GET['module'].'/js.php');
+  }
+}
+?>
 
 
 </body>

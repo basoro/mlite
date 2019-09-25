@@ -15,17 +15,21 @@ include_once('layout/header.php');
 include_once('layout/sidebar.php');
 
 if(isset($_GET['no_rawat'])) {
-    $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur FROM reg_periksa a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]'";
+    $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur, a.status_lanjut , a.kd_pj, c.png_jawab FROM reg_periksa a, pasien b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]'";
     $found_pasien = query($_sql);
     if(num_rows($found_pasien) == 1) {
 	     while($row = fetch_array($found_pasien)) {
 	        $no_rkm_medis  = $row['0'];
+	        $get_no_rawat	 = $row['1'];
           $no_rawat	     = $row['1'];
 	        $nm_pasien     = $row['2'];
 	        $umur          = $row['3'];
+          $status_lanjut = $row['4'];
+          $kd_pj         = $row['5'];
+          $png_jawab     = $row['6'];
 	     }
     } else {
-	     redirect ('pendaftaran.php');
+	     redirect ("{$_SERVER['PHP_SELF']}");
     }
 }
 
@@ -244,14 +248,12 @@ if(isset($_GET['no_rawat'])) {
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                    <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li>
-                                                    <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
-                                                    <li><a href="javascript:void(0);">Bridging BPJS</a></li>
-                                                    <li><a href="javascript:void(0);">Data SEP BPJS</a></li>
-                                                    <?php } ?>
-                                                    <?php if(is_dir(ABSPATH.'/modules/BridgingInhealth/')) { ?>
-                                                    <li><a href="javascript:void(0);">Bridging Inhealt</a></li>
-                                                    <li><a href="javascript:void(0);">Data SEP Inhealth</a></li>
+                                                    <?php if(FKTL !== 'Yes') { ?><li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li><?php } ?>
+                                                    <?php if(FKTL == 'Yes') { ?>
+                                                      <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
+                                                        <li><a href="javascript:void(0);">Bridging BPJS</a></li>
+                                                        <li><a href="javascript:void(0);">Data SEP BPJS</a></li>
+                                                      <?php } ?>
                                                     <?php } ?>
                                                 </ul>
                                             </div>
@@ -296,10 +298,153 @@ if(isset($_GET['no_rawat'])) {
                         </div>
                     </div>
                     <?php } ?>
+                    <?php if(FKTL !== 'Yes') { ?>
                     <?php if($action == "view"){ ?>
-                      <div class="body">
-                        <h3>Masih dalam pengembangan</h3>
-                      </div>
+                    <!-- Menu View -->
+                            <div class="body">
+                              <dl class="dl-horizontal">
+                                <dt>Nama Lengkap</dt>
+                                <dd><?php echo $nm_pasien; ?></dd>
+                                <dt>No. RM</dt>
+                                <dd><?php echo $no_rkm_medis; ?></dd>
+                                <dt>No. Rawat</dt>
+                                <dd><?php echo $no_rawat; ?></dd>
+                                <dt>Cara Bayar</dt>
+                                <dd><?php echo $png_jawab; ?></dd>
+                                <dt>Umur</dt>
+                                <dd><?php echo $umur; ?> Th</dd>
+                              </dl>
+                            </div>
+                            <div class="body">
+                              <!-- Nav Tabs -->
+                              <div class="row">
+                                <ul class="nav nav-tabs tab-nav-right" role="tablist">
+                                  <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
+                                  <li role="presentation"><a href="#anamnese" data-toggle="tab">PEMERIKSAAN</a></li>
+                                  <li role="presentation"><a href="#diagnosa" data-toggle="tab">DIAGNOSA</a></li>
+                                  <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
+                                  <li role="presentation"><a href="#resep" data-toggle="tab">RESEP</a></li>
+                                </ul>
+                              </div>
+                              <!-- End Nav Tabs -->
+                              <!-- Tab Panes -->
+                              <div class="tab-content m-t-20">
+                                <!-- riwayat -->
+                                <div role="tabpanel" class="tab-pane fade in active" id="riwayat">
+                                  <table id="riwayatmedis" class="table">
+                                    <thead>
+                                      <tr>
+                                        <th>Tanggal</th>
+                                        <th>Nomor Rawat</th>
+                                        <th>Klinik/Ruangan/Dokter</th>
+                                        <th>Keluhan</th>
+                                        <th>Pemeriksaan</th>
+                                        <th>Diagnosa</th>
+                                        <th>Tindakan</th>
+                                        <th>Obat</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      <?php
+                                      $q_kunj = query ("SELECT tgl_registrasi, no_rawat, status_lanjut FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis' AND stts !='Batal' ORDER BY tgl_registrasi DESC");
+                                      while ($data_kunj = fetch_array($q_kunj)) {
+                                          $tanggal_kunj   = $data_kunj[0];
+                                          $no_rawat_kunj = $data_kunj[1];
+                                          $status_lanjut_kunj = $data_kunj[2];
+                                      ?>
+                                      <tr>
+                                        <td><?php echo $tanggal_kunj; ?></td>
+                                        <td><?php echo $no_rawat_kunj; ?></td>
+                                        <td>
+                                          <?php
+                                          if($status_lanjut_kunj == 'Ralan') {
+                                            $sql_poli = fetch_assoc(query("SELECT a.nm_poli, c.nm_dokter FROM poliklinik a, reg_periksa b, dokter c WHERE b.no_rawat = '$no_rawat_kunj' AND a.kd_poli = b.kd_poli AND b.kd_dokter = c.kd_dokter"));
+                                            echo $sql_poli['nm_poli'];
+                                            echo '<br>';
+                                            echo "(".$sql_poli['nm_dokter'].")";
+                                          } else {
+                                            echo 'Rawat Inap';
+                                          }
+                                          ?>
+                                        </td>
+                                          <?php
+                                          if($status_lanjut_kunj == 'Ralan') {
+                                            $sql_riksaralan = fetch_assoc(query("SELECT keluhan, pemeriksaan FROM pemeriksaan_ralan WHERE no_rawat = '$no_rawat_kunj'"));
+                                            echo "<td>".$sql_riksaralan['keluhan']."</td>";
+                                            echo "<td>".$sql_riksaralan['pemeriksaan']."</td>";
+                                          } else {
+                                            $sql_riksaranap = fetch_assoc(query("SELECT keluhan, pemeriksaan FROM pemeriksaan_ranap WHERE no_rawat = '$no_rawat_kunj'"));
+                                            echo "<td>".$sql_riksaranap['keluhan']."</td>";
+                                            echo "<td>".$sql_riksaranap['pemeriksaan']."</td>";
+                                          }
+                                          ?>
+                                        <td>
+                                            <ul style="list-style:none;">
+                                            <?php
+                                            $sql_dx = query("SELECT a.kd_penyakit, a.nm_penyakit FROM penyakit a, diagnosa_pasien b WHERE a.kd_penyakit = b.kd_penyakit AND b.no_rawat = '$no_rawat_kunj'");
+                                            $no=1;
+                                            while ($row_dx = fetch_array($sql_dx)) {
+                                                echo '<li>'.$no.'. '.$row_dx[1].' ('.$row_dx[0].')</li>';
+                                                $no++;
+                                            }
+                                            ?>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul style="list-style:none;">
+                                            <?php
+                                            $sql_tx = query("SELECT a.kd_jenis_prw, b.nm_perawatan  FROM rawat_jl_dr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat_kunj}'");
+                                            $no=1;
+                                            while ($row_tx = fetch_array($sql_tx)) {
+                                                echo '<li>'.$no.'. '.$row_tx[1].' ('.$row_tx[0].')</li>';
+                                                $no++;
+                                            }
+                                            ?>
+                                            </ul>
+                                        </td>
+                                        <td>
+                                            <ul style="list-style:none;">
+                                            <?php
+                                            $sql_obat = query("select detail_pemberian_obat.jml, databarang.nama_brng from detail_pemberian_obat inner join databarang on detail_pemberian_obat.kode_brng=databarang.kode_brng where detail_pemberian_obat.no_rawat= '$no_rawat_kunj'");
+                                            $no=1;
+                                            while ($row_obat = fetch_array($sql_obat)) {
+                                                echo '<li>'.$no.'. '.$row_obat[1].' ('.$row_obat[0].')</li>';
+                                                $no++;
+                                            }
+                                            ?>
+                                            </ul>
+                                        </td>
+                                      </tr>
+                                      <?php } ?>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                <!-- riwayat -->
+                                <!-- anamnese -->
+                                  <div class="tab-pane fade" role="tabpanel" id="anamnese">
+                                    <?php include_once ('./includes/anamnese.php');?>
+                                  </div>
+                                <!-- anamnese -->
+                                <!-- diagnosa -->
+                                  <div role="tabpanel" class="tab-pane fade" id="diagnosa">
+                                    <?php include_once ('./includes/diagnosa.php');?>
+                                  </div>
+                                <!-- end diagnosa -->
+                                <!-- diagnosa -->
+                                  <div role="tabpanel" class="tab-pane fade" id="tindakan">
+                                    <?php include_once ('./includes/tindakan.php');?>
+                                  </div>
+                                <!-- end diagnosa -->
+                                <!-- eresep -->
+                                  <div role="tabpanel" class="tab-pane fade" id="resep">
+                                    <?php include_once ('./includes/eresep.php');?>
+                                  </div>
+                                <!-- end eresep -->
+                              </div>
+                              <!-- Tab Panes -->
+                            </div>
+                    <!-- Menu View -->
+                    <?php } ?>
                     <?php } ?>
                 </div>
             </div>
@@ -445,6 +590,42 @@ if(isset($_GET['no_rawat'])) {
             </div>
         </div>
     </div>
+
+    <!-- delete -->
+    <?php
+    if($action == "delete_diagnosa"){
+    	$hapus = "DELETE FROM diagnosa_pasien WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_penyakit = '{$_REQUEST['kode']}' AND prioritas = '{$_REQUEST['prioritas']}'";
+    	$hasil = query($hapus);
+    	if (($hasil)) {
+    	    redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}#diagnosa");
+    	}
+    }
+
+    if($action == "delete_obat"){
+    	$hapus = "DELETE FROM resep_dokter WHERE no_resep='{$_REQUEST['no_resep']}' AND kode_brng='{$_REQUEST['kode_obat']}'";
+    	$hasil = query($hapus);
+    	if (($hasil)) {
+    	    redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}#resep");
+    	}
+    }
+
+    if($action == "delete_an"){
+      $hapus = "DELETE FROM pemeriksaan_ralan WHERE no_rawat='{$_REQUEST['no_rawat']}' AND keluhan='{$_REQUEST['keluhan']}'";
+      $hasil = query($hapus);
+      if (($hasil)) {
+        redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}#anamnese");
+      }
+    }
+    if ($action == "delete_tindakan") {
+      $hapus = "DELETE FROM rawat_jl_dr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+      $hasil = query($hapus);
+      if (($hasil)) {
+        redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}#tindakan");
+      }
+    }
+
+    ?>
+    <!-- end delete -->
 
 <?php
 include_once('layout/footer.php');
@@ -620,6 +801,28 @@ include_once('layout/footer.php');
             $(row).attr('data-perujuk', data[0]);
         }
   } );
+  $('#riwayatmedis').dataTable( {
+        "processing": true,
+        "responsive": true,
+        "oLanguage": {
+            "sProcessing":   "Sedang memproses...",
+            "sLengthMenu":   "Tampilkan _MENU_ entri",
+            "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+            "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+            "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+            "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+            "sInfoPostFix":  "",
+            "sSearch":       "Cari:",
+            "sUrl":          "",
+            "oPaginate": {
+                "sFirst":    "«",
+                "sPrevious": "‹",
+                "sNext":     "›",
+                "sLast":     "»"
+            }
+        },
+        "order": [[ 0, "asc" ]]
+  } );
 </script>
 <script type="text/javascript">
     $(document).on('click', '.pilihpasien', function (e) {
@@ -732,4 +935,112 @@ include_once('layout/footer.php');
             }
         });
     });
+
+    function formatData (data) {
+        var $data = $(
+            '<b>'+ data.id +'</b> - <i>'+ data.text +'</i>'
+        );
+        return $data;
+    };
+
+    function formatDataTEXT (data) {
+        var $data = $(
+            '<b>'+ data.text +'</b>'
+        );
+        return $data;
+    };
+
+    $('.kd_diagnosa').select2({
+        placeholder: 'Pilih diagnosa',
+        ajax: {
+            url: 'includes/select-diagnosa.php',
+            dataType: 'json',
+            delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            cache: true
+        },
+        templateResult: formatData,
+        minimumInputLength: 3
+    });
+
+    $('.prioritas').select2({
+        placeholder: 'Pilih prioritas diagnosa'
+    });
+
+    $('.kd_obat').select2({
+      placeholder: 'Pilih obat',
+      ajax: {
+        url: 'includes/select-obat.php',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatData,
+    minimumInputLength: 3
+    });
+
+    $('.aturan_pakai').select2({
+        placeholder: 'Pilih aturan pakai'
+    });
+
+    $(function () {
+         $('#row_dim').hide();
+         $('#lainnya').change(function () {
+             $('#row_dim').hide();
+             if (this.options[this.selectedIndex].value == 'lainnya') {
+                 $('#row_dim').show();
+             }
+         });
+     });
+
+</script>
+
+<script type="text/javascript">
+
+    function formatInputData (data) {
+          var $data = $(
+              '<b>('+ data.id +')</b> Rp '+ data.tarif +' - <i>'+ data.text +'</i>'
+          );
+          return $data;
+      };
+
+    $('.kd_tdk').select2({
+      placeholder: 'Pilih tindakan',
+      ajax: {
+        url: './includes/select-tindakan.php',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatInputData,
+    minimumInputLength: 3
+    });
+
+    $('.kd_tdk').on('change', function () {
+     var kode = $("#kd_tdk").val();
+     $.ajax({
+      url: './includes/select-biaya.php',
+      data: "kode="+kode,
+     }).success(function (data){
+       var json = data,
+           obj = JSON.parse(json);
+          $('#kdtdk').val(obj.tarif);
+       });
+    });
+
+
 </script>

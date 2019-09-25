@@ -60,7 +60,7 @@ include_once('layout/sidebar.php');
                                                     <i class="material-icons" data-toggle="modal" data-target="#rolesModal">attach_file</i>
                                                 </span>
                                             </div>
-                                            <div style="margin-top:-25px;"><small>Role as Admin, Manajemen, Medis, Paramedis, Paramedis_Ranap, Apotek, Kasir, RekamMedik</small></div>
+                                            <div style="margin-top:-25px;"><small>Role as Admin, Manajemen, Medis, Paramedis_Ralan, Paramedis_Ranap, Apotek, Kasir, Rekam_Medis</small></div>
                                         </div>
                                     </div>
                                     <div class="row clearfix m-t-15">
@@ -193,8 +193,8 @@ include_once('layout/sidebar.php');
                           <tr class="pilihrole" data-role="Medis">
                             <td>Medis</td>
                           </tr>
-                          <tr class="pilihrole" data-role="Paramedis_Ranap">
-                            <td>Paramedis_Ranap</td>
+                          <tr class="pilihrole" data-role="Paramedis_Ralan">
+                            <td>Paramedis_Ralan</td>
                           </tr>
                           <tr class="pilihrole" data-role="Paramedis_Ranap">
                             <td>Paramedis_Ranap</td>
@@ -205,8 +205,8 @@ include_once('layout/sidebar.php');
                           <tr class="pilihrole" data-role="Kasir">
                             <td>Kasir</td>
                           </tr>
-                          <tr class="pilihrole" data-role="RekamMedik">
-                            <td>RekamMedik</td>
+                          <tr class="pilihrole" data-role="Rekam_Medis">
+                            <td>Rekam_Medis</td>
                           </tr>
                         </tbody>
                     </table>

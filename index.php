@@ -8,12 +8,17 @@
 * Licence under GPL
 ***/
 
-$title = 'Dashboard';
+$getmodule = isset($_GET['module'])?$_GET['module']:null;
+
+if(!$getmodule) {
+  $title = 'Dashboard';
+} else {
+  $title = $_GET['module'];
+}
+
 include_once('config.php');
 include_once('layout/header.php');
 include_once('layout/sidebar.php');
-
-$getmodule = isset($_GET['module'])?$_GET['module']:null;
 
 ?>
 <?php if(!$getmodule) { ?>
@@ -90,7 +95,7 @@ $getmodule = isset($_GET['module'])?$_GET['module']:null;
                           <div class="container-fluid module">
                               <div class="row">
                               <?php
-                                  foreach (glob("modules/*/menu.php") as $filename) {
+                                  foreach (glob("modules/*/index.php") as $filename) {
                                   include $filename;
                               }
                               ?>
