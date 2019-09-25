@@ -7,6 +7,7 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
     <li><a href="<?php echo URL; ?>/?module=RawatJalan">Rawat Jalan</a></li>
     <li class="active">Index</li>
 </ol>
+
 <?php
 class RawatJalan {
     function index() {

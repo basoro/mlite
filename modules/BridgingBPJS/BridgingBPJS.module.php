@@ -2,11 +2,12 @@
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 ?>
 
-<div class="header">
-    <h2>
-        <a href="<?php echo URL; ?>/index.php">Home</a> &raquo; <a href="<?php echo $_SERVER['PHP_SELF']; ?>?module=BridgingBPJS" style="text-decoration:none;">Bridging BPJS</a>
-    </h2>
-</div>
+<ol class="breadcrumb breadcrumb-bg-grey" style="padding:10px !important;">
+    <li><a href="<?php echo URL; ?>">Home</a></li>
+    <li><a href="<?php echo URL; ?>/?module=BridgingBPJS">Bridging BPJS</a></li>
+    <li class="active">Index</li>
+</ol>
+
 <?php
 class BridgingBPJS {
     function index() {
