@@ -2,29 +2,30 @@
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 ?>
 
-<div class="header">
-    <h2>
-        Hello World
-    </h2>
-</div>
+<ol class="breadcrumb breadcrumb-bg-grey" style="padding:10px !important;">
+    <li><a href="<?php echo URL; ?>">Home</a></li>
+    <li><a href="<?php echo URL; ?>/?module=BridgingBPJS">Bridging BPJS</a></li>
+    <li class="active">Index</li>
+</ol>
+
 <?php
 class Master {
-    function index() { // This is our index function. It is called if we do not have a function defined
+    function index() { 
 ?>
 <div class="body">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active">
-            <a href="<?php echo URL; ?>/?module=HelloWorld">
+            <a href="<?php echo URL; ?>/?module=Master">
                 <i class="material-icons">home</i> <span class="hidden-xs">INDEX</span>
             </a>
         </li>
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=hello">
+            <a href="<?php echo URL; ?>/?module=Master&page=hello">
                 <i class="material-icons">face</i> <span class="hidden-xs">HELLO</span>
             </a>
         </li>
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=world">
+            <a href="<?php echo URL; ?>/?module=Master&page=world">
                 <i class="material-icons">email</i> <span class="hidden-xs">WORLD</span>
             </a>
         </li>
@@ -41,22 +42,22 @@ class Master {
 </div>
 <?php
     }
-    function hello() { // hello function called from modules.php?module=HelloWorld&page=hello
+    function hello() {
 ?>
 <div class="body">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld">
+            <a href="<?php echo URL; ?>/?module=Master">
                 <i class="material-icons">home</i> <span class="hidden-xs">INDEX</span>
             </a>
         </li>
         <li role="presentation" class="active">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=hello">
+            <a href="<?php echo URL; ?>/?module=Master&page=hello">
                 <i class="material-icons">face</i> <span class="hidden-xs">HELLO</span>
             </a>
         </li>
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=world">
+            <a href="<?php echo URL; ?>/?module=Master&page=world">
                 <i class="material-icons">email</i> <span class="hidden-xs">WORLD</span>
             </a>
         </li>
@@ -73,22 +74,22 @@ class Master {
 </div>
 <?php
     }
-    function world() { // hello function called from modules.php?module=HelloWorld&page=world
+    function world() {
 ?>
 <div class="body">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld">
+            <a href="<?php echo URL; ?>/?module=Master">
                 <i class="material-icons">home</i> <span class="hidden-xs">INDEX</span>
             </a>
         </li>
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=hello">
+            <a href="<?php echo URL; ?>/?module=Master&page=hello">
                 <i class="material-icons">face</i> <span class="hidden-xs">HELLO</span>
             </a>
         </li>
         <li role="presentation" class="active">
-            <a href="<?php echo URL; ?>/?module=HelloWorld&page=world">
+            <a href="<?php echo URL; ?>/?module=Master&page=world">
                 <i class="material-icons">email</i> <span class="hidden-xs">WORLD</span>
             </a>
         </li>

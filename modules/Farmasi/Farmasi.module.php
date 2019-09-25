@@ -2,18 +2,19 @@
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 ?>
 
-<div class="header">
-    <h2>
-        <a href="<?php echo URL; ?>/index.php">Home</a> &raquo; <a href="<?php echo $_SERVER['PHP_SELF']; ?>?module=Farmasi" style="text-decoration:none;">Farmasi</a>
-    </h2>
-</div>
+<ol class="breadcrumb breadcrumb-bg-grey" style="padding:10px !important;">
+    <li><a href="<?php echo URL; ?>">Home</a></li>
+    <li><a href="<?php echo URL; ?>/?module=Farmasi">Farmasi</a></li>
+    <li class="active">Index</li>
+</ol>
+
 <?php
 class Farmasi {
     function index() {
 ?>
 <div class="body">
     <div class="content">
-        <?php include('modules/Farmasi/pasien.php'); ?>
+        <?php getPasien(); ?>
     </div>
 </div>
 <?php
