@@ -2,17 +2,12 @@
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation">
             <a href="<?php echo URL; ?>/?module=BridgingBPJS">
-                <i class="material-icons">home</i> <span class="hidden-xs">IGD</span>
+                <i class="material-icons">home</i> <span class="hidden-xs">Index</span>
             </a>
         </li>
         <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=rawat_jalan">
-                <i class="material-icons">accessible</i> <span class="hidden-xs">Rawat Jalan</span>
-            </a>
-        </li>
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=rawat_inap">
-                <i class="material-icons">hotel</i> <span class="hidden-xs">Rawat Inap</span>
+            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=data_sep">
+                <i class="material-icons">assignment</i> <span class="hidden-xs">Data SEP</span>
             </a>
         </li>
         <li role="presentation" class="active">

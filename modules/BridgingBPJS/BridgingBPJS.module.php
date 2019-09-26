@@ -11,14 +11,12 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 <?php
 class BridgingBPJS {
     function index() {
-        include('modules/BridgingBPJS/igd.php');
+      global $dataSettings, $date;
+        include('modules/BridgingBPJS/bridging.php');
     }
-    function rawat_jalan() {
+    function data_sep() {
         global $dataSettings;
-        include('modules/BridgingBPJS/rawat-jalan.php');
-    }
-    function rawat_inap() {
-        include('modules/BridgingBPJS/rawat-inap.php');
+        include('modules/BridgingBPJS/data-sep.php');
     }
     function pasien_batal() {
         include('modules/BridgingBPJS/pasien-batal.php');
