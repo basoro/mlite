@@ -1,18 +1,13 @@
 <div class="body">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active">
+        <li role="presentation">
             <a href="<?php echo URL; ?>/?module=BridgingBPJS">
-                <i class="material-icons">home</i> <span class="hidden-xs">IGD</span>
+                <i class="material-icons">home</i> <span class="hidden-xs">Index</span>
             </a>
         </li>
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=rawat_jalan">
-                <i class="material-icons">accessible</i> <span class="hidden-xs">Rawat Jalan</span>
-            </a>
-        </li>
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=rawat_inap">
-                <i class="material-icons">hotel</i> <span class="hidden-xs">Rawat Inap</span>
+        <li role="presentation" class="active">
+            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=data_sep">
+                <i class="material-icons">assignment</i> <span class="hidden-xs">Data SEP</span>
             </a>
         </li>
         <li role="presentation">
@@ -32,35 +27,36 @@
           <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
             <thead>
               <tr>
-                <th>No MR</th>
-                <th>Nama</th>
-                <th>Jenis Bayar</th>
+                <th>No SEP</th>
+                <th>No Rawat</th>
+                <th>Tangal SEP</th>
                 <th>Bridging</th>
-                <th>Cetak SEP</th>
+                <th>Tgl Rujukan</th>
+                <th>No Rujukan</th>
               </tr>
             </thead>
             <tbody>
               <?php
-                  $sql = "SELECT reg_periksa.no_rawat , pasien.nm_pasien , reg_periksa.no_rkm_medis , penjab.png_jawab FROM reg_periksa , pasien , penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.kd_poli='IGDK' AND reg_periksa.tgl_registrasi=CURRENT_DATE()";
-  $list = query($sql);
-                    while($a = mysqli_fetch_assoc($list)) {
+                  $sql = "SELECT * FROM bridging_sep";
+                  $list = query($sql);
+                    while($a = fetch_assoc($list)) {
               ?>
               <tr>
-                <td><?php echo $a['no_rkm_medis']; ?></td>
-                <td><?php echo SUBSTR($a['nm_pasien'], 0, 15).' ...'; ?></td>
-                <td><?php echo $a['png_jawab']; ?></td>
-                <td><a class="btn btn-primary" href="<?php echo $_SERVER['PHP_SELF']; ?>?action=sep&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging</a></td>
-                <td><a class="btn btn-primary" href="cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
+                <td><?php echo $a['no_sep']; ?></td>
+                <td><?php echo $a['no_rawat']; ?></td>
+                <td><?php echo $a['tglsep']; ?></td>
+                <td><?php echo $a['tglrujukan']; ?></td>
+                <td><?php echo $a['no_rujukan']; ?></td>
               </tr>
                 <?php } ?>
             </tbody>
           </table>
   <?php } ?>
-        <?php if($action == "sep"){?>
+        <?php if($action == "bridging"){?>
         <?php $sql = "SELECT pasien.nm_pasien , reg_periksa.no_rawat , reg_periksa.no_rkm_medis , pasien.tgl_lahir , pasien.no_tlp , pasien.no_peserta , pasien.jk
     FROM reg_periksa , pasien WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = '{$_GET['no_rawat']}'";
   $data = query($sql);
-$b = mysqli_fetch_assoc($data);?>
+$b = fetch_assoc($data);?>
       <div class="body">
           <form method="post" action="build-igd.php">
           <form method="get">
@@ -139,7 +135,7 @@ $b = mysqli_fetch_assoc($data);?>
                   </div>
                 </div>
               </div>
-              <?php include_once 'bri-ranap.php';?>
+              <?php //include_once 'bri-ranap.php';?>
               <div class="col-md-2">
               <div class="form-group">
                 <div class="form-line">
