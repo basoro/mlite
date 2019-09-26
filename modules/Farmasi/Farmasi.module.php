@@ -14,7 +14,7 @@ class Farmasi {
 ?>
 <div class="body">
     <div class="content">
-        <?php getPasien(); ?>
+      <?php include('modules/Farmasi/dashboard.php'); ?>
     </div>
 </div>
 <?php

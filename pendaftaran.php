@@ -251,8 +251,8 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                                     <?php if(FKTL !== 'Yes') { ?><li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li><?php } ?>
                                                     <?php if(FKTL == 'Yes') { ?>
                                                       <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
-                                                        <li><a href="javascript:void(0);">Bridging BPJS</a></li>
-                                                        <li><a href="javascript:void(0);">Data SEP BPJS</a></li>
+                                                        <li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
+                                                        <li><a href="./?module=BridgingBPJS&page=data_sep&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
                                                       <?php } ?>
                                                     <?php } ?>
                                                 </ul>
@@ -421,22 +421,369 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 <!-- riwayat -->
                                 <!-- anamnese -->
                                   <div class="tab-pane fade" role="tabpanel" id="anamnese">
-                                    <?php include_once ('./includes/anamnese.php');?>
+                                    <form method="post">
+                                      <?php
+                                      if(isset($_POST['ok_an'])){
+                                        if(($no_rawat <> "")){
+                                          $insert = query("INSERT INTO pemeriksaan_ralan VALUE ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
+                                                      ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
+                                          if($insert){
+                                            redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                          }
+                                        }
+                                      }
+                                      ?>
+                                    <div class="row clearfix">
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Keluhan</dt>
+                                            <dd><textarea rows="4" name="keluhan" class="form-control"></textarea></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Pemeriksaan</dt>
+                                            <dd><textarea rows="4" name="pemeriksaan" class="form-control"></textarea></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Alergi</dt>
+                                            <dd><input type="text" class="form-control" name="alergi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tindak Lanjut</dt>
+                                            <dd><input type="text" class="form-control" name="tndklnjt"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Suhu Badan (C)</dt>
+                                            <dd><input type="text" class="form-control" name="suhu"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tinggi Badan (Cm)</dt>
+                                            <dd><input type="text" class="form-control" name="tinggi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tensi</dt>
+                                            <dd><input type="text" class="form-control" name="tensi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Respirasi (per Menit)</dt>
+                                            <dd><input type="text" class="form-control" name="respirasi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Berat (Kg)</dt>
+                                            <dd><input type="text" class="form-control" name="berat"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Nadi (per Menit)</dt>
+                                            <dd><input type="text" class="form-control" name="nadi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Imun Ke</dt>
+                                            <dd><input type="text" class="form-control" name="imun"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>GCS(E , V , M)</dt>
+                                            <dd><input type="text" class="form-control" name="gcs"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <dd><button type="submit" name="ok_an" value="ok_an" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_an\'">SIMPAN</button></dd><br/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                      <div class="row clearfix">
+                                        <table id="keluhan" class="table striped">
+                                          <tr>
+                                            <th>No</th>
+                                            <th>Keluhan</th>
+                                            <th>Pemeriksaan</th>
+                                            <th>Hapus</th>
+                                          </tr>
+                                          <?php
+                                          $query = query("SELECT keluhan , pemeriksaan FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'");
+                                          $no=1;
+                                           while ($data = fetch_array($query)) {
+                                          ?>
+                                          <tr>
+                                            <td><?php echo $no; ?></td>
+                                            <td><?php echo $data['0']; ?></td>
+                                            <td><?php echo $data['1']; ?></td>
+                                            <td><a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_an&keluhan=<?php echo $data['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></td>
+                                          </tr>
+                                          <?php
+                                            $no++;}
+                                          ?>
+                                        </table>
+                                      </div>
+                                    </form>
                                   </div>
                                 <!-- anamnese -->
                                 <!-- diagnosa -->
                                   <div role="tabpanel" class="tab-pane fade" id="diagnosa">
-                                    <?php include_once ('./includes/diagnosa.php');?>
+                                    <form method="post">
+                                      <?php
+                                      if (isset($_POST['ok_diagnosa'])) {
+                                        if (($_POST['kode_diagnosa'] <> "") and ($no_rawat <> "")) {
+
+                                          $cek_dx = fetch_assoc(query("SELECT a.kd_penyakit FROM diagnosa_pasien a, reg_periksa b WHERE a.kd_penyakit = '".$_POST['kode_diagnosa']."' AND b.no_rkm_medis = '$no_rkm_medis' AND a.no_rawat = b.no_rawat"));
+                                          if(empty($cek_dx)) {
+                                            $status_penyakit = 'Baru';
+                                          } else {
+                                            $status_penyakit = 'Lama';
+                                          }
+
+                                          $cek_prioritas_penyakit = fetch_assoc(query("SELECT prioritas FROM diagnosa_pasien WHERE kd_penyakit = '".$_POST['kode_diagnosa']."' AND no_rawat = '$no_rawat'"));
+                                          $cek_prioritas_primer = fetch_assoc(query("SELECT prioritas FROM diagnosa_pasien WHERE prioritas = '1' AND no_rawat = '$no_rawat'"));
+                                          $cek_prioritas = fetch_assoc(query("SELECT prioritas FROM diagnosa_pasien WHERE prioritas = '".$_POST['prioritas']."' AND no_rawat = '$no_rawat'"));
+
+                                          if (!empty($cek_prioritas_penyakit)) {
+                                              $errors[] = 'Sudah ada diagnosa yang sama.';
+                                          }
+
+                                          if(!empty($errors)) {
+
+                                              foreach($errors as $error) {
+                                                  echo validation_errors($error);
+                                              }
+
+                                          } else {
+
+                                               $insert = query("INSERT INTO diagnosa_pasien VALUES ('{$no_rawat}', '{$_POST['kode_diagnosa']}', 'Ralan', '{$_POST['prioritas']}', '{$status_penyakit}')");
+                                               if ($insert) {
+                                                    redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                               }
+                                          }
+                                        }
+                                      }
+                                      ?>
+                                    <dl class="dl-horizontal">
+                                      <dt>Diagnosa</dt>
+                                        <dd><select name="kode_diagnosa" class="kd_diagnosa" style="width:100%"></select></dd><br/>
+                                      <dt>Prioritas</dt>
+                                        <dd>
+                                          <select name="prioritas" class="prioritas" style="width:100%">
+                                            <option value="1">Diagnosa Ke-1</option>
+                                            <option value="2">Diagnosa Ke-2</option>
+                                            <option value="3">Diagnosa Ke-3</option>
+                                            <option value="4">Diagnosa Ke-4</option>
+                                            <option value="5">Diagnosa Ke-5</option>
+                                            <option value="6">Diagnosa Ke-6</option>
+                                            <option value="7">Diagnosa Ke-7</option>
+                                            <option value="8">Diagnosa Ke-8</option>
+                                            <option value="9">Diagnosa Ke-9</option>
+                                            <option value="10">Diagnosa Ke-10</option>
+                                          </select>
+                                        </dd><br/>
+                                      <dt></dt>
+                                        <dd><button type="submit" name="ok_diagnosa" value="ok_diagnosa" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_diagnosa\'">SIMPAN</button></dd><br/>
+                                      <dt></dt>
+                                        <dd>
+                                          <ul style="list-style:none;margin-left:0;padding-left:0;">
+                                            <?php
+                                            $query = query("SELECT a.kd_penyakit, b.nm_penyakit, a.prioritas FROM diagnosa_pasien a, penyakit b, reg_periksa c WHERE a.kd_penyakit = b.kd_penyakit AND a.no_rawat = '{$no_rawat}' AND a.no_rawat = c.no_rawat ORDER BY a.prioritas ASC");
+                                              $no=1;
+                                            while ($data = fetch_array($query)) {
+                                            ?>
+                                                      <li><?php echo $no; ?>. <?php echo $data['1']; ?> <a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_diagnosa&kode=<?php echo $data['0']; ?>&prioritas=<?php echo $data['2']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></li>
+                                            <?php
+                                                  $no++;
+                                            }
+                                            ?>
+                                          </ul>
+                                        </dd>
+                                    </dl>
+                                    </form>
                                   </div>
                                 <!-- end diagnosa -->
                                 <!-- diagnosa -->
                                   <div role="tabpanel" class="tab-pane fade" id="tindakan">
-                                    <?php include_once ('./includes/tindakan.php');?>
+                                    <?php
+                                    if($action == "view"){
+                                      if (isset($_POST['ok_tdk'])) {
+                                                    if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
+                                                          $insert = query("INSERT INTO rawat_jl_dr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}','Belum')");
+                                                          if ($insert) {
+                                                              redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                                          };
+                                                    };
+                                              };
+                                    }
+                                    ?>
+
+                                    <div class="body">
+                                    <form method="POST">
+                                      <label for="email_address">Nama Tindakan</label>
+                                      <div class="form-group">
+                                         <select name="kd_tdk" class="form-control kd_tdk" id="kd_tdk" style="width:100%"></select>
+                                         <br/>
+                                         <input type="hidden" class="form-control" id="kdtdk" name="kdtdk"/>
+                                      </div>
+                                      <button type="submit" name="ok_tdk" value="ok_tdk" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_tdk\'">SIMPAN</button>
+                                    </form>
+                                    </div>
+                                    <div class="body">
+                                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Tindakan</th>
+                                                <th>Tanggal Tindakan</th>
+                                                <th>Biaya</th>
+                                                <th>Tools</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakandr, b.nm_perawatan  FROM rawat_jl_dr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
+                                        while ($data_tindakan = fetch_array($query_tindakan)) {
+                                        ?>
+                                            <tr>
+                                                <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
+                                                <td><?php echo $data_tindakan['1']; ?></td>
+                                                <td><?php echo $data_tindakan['2']; ?></td>
+                                                <td><a href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
                                   </div>
                                 <!-- end diagnosa -->
                                 <!-- eresep -->
                                   <div role="tabpanel" class="tab-pane fade" id="resep">
-                                    <?php include_once ('./includes/eresep.php');?>
+                                    <form method="post">
+                                      <?php
+                                      if (isset($_POST['ok_obat'])) {
+                                          if (($_POST['kode_obat'] <> "") and ($no_rawat <> "")) {
+                                              $onhand = query("SELECT no_resep FROM resep_obat WHERE no_rawat = '{$no_rawat}' AND tgl_peresepan = CURRENT_DATE()");
+                                              $dtonhand = fetch_array($onhand);
+                                              $get_number = fetch_array(query("select ifnull(MAX(CONVERT(RIGHT(no_resep,10),signed)),0) from resep_obat where tgl_perawatan like '%{$date}%'"));
+                                              $lastNumber = substr($get_number[0], 0, 10);
+                                              $next_no_resep = sprintf('%010s', ($lastNumber + 1));
+                                              //$next_no_resep = $get_number + 1;
+
+                                              if ($dtonhand['0'] > 1) {
+                                                if ($_POST['aturan_pakai_lainnya'] == "") {
+                                                  $insert = query("INSERT INTO resep_dokter VALUES ('{$dtonhand['0']}', '{$_POST['kode_obat']}', '{$_POST['jumlah']}', '{$_POST['aturan_pakai']}')");
+                                                } else {
+                                                  $insert = query("INSERT INTO resep_dokter VALUES ('{$dtonhand['0']}', '{$_POST['kode_obat']}', '{$_POST['jumlah']}', '{$_POST['aturan_pakai_lainnya']}')");
+                                                }
+                                                redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                              } else {
+                                                  $insert = query("INSERT INTO resep_obat VALUES ('{$next_no_resep}', '{$date}', '{$time}', '{$no_rawat}', '{$_SESSION['username']}', '{$date}', '{$time}', '{$status_lanjut}')");
+                                                  if ($_POST['aturan_pakai_lainnya'] == "") {
+                                                    $insert2 = query("INSERT INTO resep_dokter VALUES ('{$next_no_resep}', '{$_POST['kode_obat']}', '{$_POST['jumlah']}', '{$_POST['aturan_pakai']}')");
+                                                  } else {
+                                                    $insert2 = query("INSERT INTO resep_dokter VALUES ('{$next_no_resep}', '{$_POST['kode_obat']}', '{$_POST['jumlah']}', '{$_POST['aturan_pakai_lainnya']}')");
+                                                  }
+                                                  redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                              }
+                                          }
+                                      }
+                                      ?>
+                                    <dl class="dl-horizontal">
+                                        <dt>Nama Obat</dt>
+                                        <dd><select name="kode_obat" class="kd_obat" style="width:100%"></select></dd><br>
+                                        <dt>Jumlah Obat</dt>
+                                        <dd><input class="form-control" name="jumlah" value="10" style="width:100%"></dd><br>
+                                        <dt>Aturan Pakai</dt>
+                                        <dd>
+                                            <select name="aturan_pakai" class="aturan_pakai" id="lainnya" style="width:100%">
+                                            <?php
+                                            $sql = query("SELECT aturan FROM master_aturan_pakai");
+                                            while($row = fetch_array($sql)){
+                                                echo '<option value="'.$row[0].'">'.$row[0].'</option>';
+                                            }
+                                            ?>
+                                            <option value="lainnya">Lainnya</option>
+                                            </select>
+                                        </dd><br>
+                                        <div id="row_dim">
+                                        <dt></dt>
+                                        <dd><input class="form-control" name="aturan_pakai_lainnya" style="width:100%"></dd><br>
+                                        </div>
+                                        <dt></dt>
+                                        <dd><button type="submit" name="ok_obat" value="ok_obat" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_obat\'">SIMPAN</button></dd><br>
+                                        <dt></dt>
+                                    </dl>
+                                    <div class="table-responsive">
+                                     <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Obat</th>
+                                                <th>Jumlah</th>
+                                                <th>Aturan Pakai</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $query_resep = query("SELECT a.kode_brng, a.jml, a.aturan_pakai, b.nama_brng, a.no_resep FROM resep_dokter a, databarang b, resep_obat c WHERE a.kode_brng = b.kode_brng AND a.no_resep = c.no_resep AND c.no_rawat = '{$no_rawat}' AND c.kd_dokter = '{$_SESSION['username']}' ");
+                                        while ($data_resep = fetch_array($query_resep)) {
+                                        ?>
+                                            <tr>
+                                                <td><?php echo $data_resep['3']; ?> <a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_obat&kode_obat=<?php echo $data_resep['0']; ?>&no_resep=<?php echo $data_resep['4']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></td>
+                                                <td><?php echo $data_resep['1']; ?></td>
+                                                <td><?php echo $data_resep['2']; ?></td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                    </form>
                                   </div>
                                 <!-- end eresep -->
                               </div>

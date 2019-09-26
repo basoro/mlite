@@ -11,13 +11,21 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 <?php
 class BridgingBPJS {
     function index() {
-?>
-        <?php include('modules/BridgingBPJS/pasien.php'); ?>
-<?php
+        include('modules/BridgingBPJS/igd.php');
     }
-    function data_sep() {
-?>
-<?php
+    function rawat_jalan() {
+        global $dataSettings;
+        include('modules/BridgingBPJS/rawat-jalan.php');
+    }
+    function rawat_inap() {
+        include('modules/BridgingBPJS/rawat-inap.php');
+    }
+    function pasien_batal() {
+        include('modules/BridgingBPJS/pasien-batal.php');
+    }
+    function cek_kepesertaan() {
+        global $date;
+        include('modules/BridgingBPJS/cek-kepesertaan.php');
     }
 }
 ?>

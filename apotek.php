@@ -68,7 +68,7 @@ if(isset($_GET['no_rawat'])) {
                                 } else {
                                   	$sql .= " AND b.tgl_registrasi = '$date'";
                                 }
-                                $sql .= " GROUP BY e.no_resep";
+                                $sql .= " GROUP BY b.no_rawat";
                                 $query = query($sql);
                                 $no = 1;
                                 while($row = fetch_array($query)) {

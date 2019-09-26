@@ -26,7 +26,7 @@ define('DB_NAME', 'khanzalite');
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', 'No');
+define('FKTL', 'Yes');
 
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
@@ -185,9 +185,9 @@ $bulanList = array(
 $getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes FROM setting");
 $dataSettings = fetch_assoc($getSettings);
 
-function getPasien() {
+function allPasien() {
 ?>
-<table id="getpasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+<table id="allpasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
         <tr>
           <th>Nama Pasien</th>
@@ -218,6 +218,43 @@ function getPasien() {
           <th>NIP/NRP</th>
           <th>E-Mail</th>
           <th>Cacat Fisik</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+<?php
+}
+
+function allObat() {
+?>
+<table id="allobat" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+    <thead>
+        <tr>
+          <th>Kode Barang</th>
+          <th>Nama Barang</th>
+          <th>Kode Satuan</th>
+          <th>Letak Barang</th>
+          <th>Harga Beli</th>
+          <th>Rawat Jalan</th>
+          <th>Kelas 1</th>
+          <th>Kelas 2</th>
+          <th>Kelas 3</th>
+          <th>Utama</th>
+          <th>VIP</th>
+          <th>VVIP</th>
+          <th>Beli Luar</th>
+          <th>Jual Bebas</th>
+          <th>Karyawan</th>
+          <th>Stok Minimal</th>
+          <th>Kode Jenis</th>
+          <th>Kapasitas</th>
+          <th>Expire</th>
+          <th>Status</th>
+          <th>Kode Industri</th>
+          <th>Kategori</th>
+          <th>Golongan</th>
         </tr>
     </thead>
     <tbody>
