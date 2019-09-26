@@ -2,7 +2,7 @@
 ob_start();
 session_start();
 
-include_once(ABSPATH.'/init.php');
+include_once('init.php');
 
 ?>
 <!DOCTYPE html>
@@ -14,13 +14,16 @@ include_once(ABSPATH.'/init.php');
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title><?php echo $dataSettings['nama_instansi']; ?> &raquo; <?php echo $title; ?></title>
     <!-- Favicon-->
-    <link rel="icon" href="<?php echo URL; ?>/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="<?php echo URL; ?>/assets/images/favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="<?php echo URL; ?>/assets/css/roboto.css" rel="stylesheet">
 
     <!-- Material Icon Css -->
     <link href="<?php echo URL; ?>/assets/css/material-icon.css" rel="stylesheet">
+
+    <!-- Webfont Medical Icon Css -->
+    <link href="<?php echo URL; ?>/assets/css/wfmi-style.css" rel="stylesheet">
 
     <!-- Bootstrap Core Css -->
     <link href="<?php echo URL; ?>/assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
@@ -53,28 +56,11 @@ include_once(ABSPATH.'/init.php');
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.css" rel="stylesheet" />
-  
+
 </head>
 
 <body class="theme-indigo">
     <!-- Page Loader -->
-  	<!--
-    <div class="page-loader-wrapper">
-        <div class="loader">
-            <div class="preloader">
-                <div class="spinner-layer pl-red">
-                    <div class="circle-clipper left">
-                        <div class="circle"></div>
-                    </div>
-                    <div class="circle-clipper right">
-                        <div class="circle"></div>
-                    </div>
-                </div>
-            </div>
-            <p>Memproses data ke server.....</p>
-        </div>
-    </div>
-	-->
     <!-- #END# Page Loader -->
     <!-- Overlay For Sidebars -->
     <div class="overlay"></div>

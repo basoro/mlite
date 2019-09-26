@@ -88,17 +88,6 @@
 
          <!-- Light Gallery Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/light-gallery/js/lightgallery-all.js"></script>
-	<script>
-
-	$(function () {
-    	$('#aniimated-thumbnials').lightGallery({
-        	thumbnail: true,
-        	selector: 'a'
-    	});
-	});
-
-	</script>
-
 
     <!-- Custom Js -->
     <script src="<?php echo URL; ?>/assets/js/admin.js"></script>
@@ -117,9 +106,46 @@
         }
       });
 
+      $(document).ready(function() {
+          if (location.hash) {
+              $("a[href='" + location.hash + "']").tab("show");
+          }
+          $(document.body).on("click", "a[data-toggle='tab']", function(event) {
+              location.hash = this.getAttribute("href");
+          });
+      });
+      $(window).on("popstate", function() {
+          var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
+          $("a[href='" + anchor + "']").tab("show");
+      });
+
 	  </script>
 
     <script>
+
+        $('#datatable').dataTable( {
+              "processing": true,
+              "responsive": true,
+              "oLanguage": {
+                  "sProcessing":   "Sedang memproses...",
+                  "sLengthMenu":   "Tampilkan _MENU_ entri",
+                  "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+                  "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                  "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+                  "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                  "sInfoPostFix":  "",
+                  "sSearch":       "Cari:",
+                  "sUrl":          "",
+                  "oPaginate": {
+                      "sFirst":    "«",
+                      "sPrevious": "‹",
+                      "sNext":     "›",
+                      "sLast":     "»"
+                  }
+              },
+              "order": [[ 0, "asc" ]]
+        } );
+
         $(document).ready(function() {
             $('.datepicker').bootstrapMaterialDatePicker({
                 format: 'YYYY-MM-DD',
@@ -127,36 +153,14 @@
                 weekStart: 1,
                 time: false
             });
-        } );
+        });
 
         $('.count-to').countTo();
 
-      	var table = $('#datatab').DataTable( {
-          	responsive: true,
-          	stateSave: true
-            });
-        var table = $('#datatable').DataTable( {
-          	responsive: true,
-          	stateSave: true
-            });
-    		var buttons = new $.fn.dataTable.Buttons(table, {
-    			buttons: [
-        			{ extend: 'copy', className: 'btn glyphicon glyphicon-duplicate' },
-        			{ extend: 'csv', className: 'btn glyphicon glyphicon-save-file' },
-        			{ extend: 'excel', className: 'btn glyphicon glyphicon-list-alt' },
-        			{ extend: 'pdf', className: 'btn glyphicon glyphicon-file' },
-        			{ extend: 'print', className: 'btn glyphicon glyphicon-print' }
-    			]
-    		}).container().appendTo($('#buttons'));
-
-      $(function () {
-    $('#aniimated-thumbnials').lightGallery({
-        thumbnail: true,
-        selector: 'a'
-    });
-});
-
-
+      	$('#aniimated-thumbnials').lightGallery({
+          	thumbnail: true,
+          	selector: 'a'
+      	});
 	  </script>
 
     <script type="text/javascript">
@@ -177,11 +181,74 @@
     });
 
     function upload_berkas(){
-    document.getElementById("inputFile").click();
+        document.getElementById("inputFile").click();
     }
 
 
     </script>
+
+<script type="text/javascript">
+    $('#allpasien').dataTable( {
+          "bInfo" : true,
+        	"scrollX": true,
+          "processing": true,
+          "serverSide": true,
+          "responsive": false,
+          "oLanguage": {
+              "sProcessing":   "Sedang memproses...",
+              "sLengthMenu":   "Tampilkan _MENU_ entri",
+              "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+              "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+              "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+              "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+              "sInfoPostFix":  "",
+              "sSearch":       "Cari:",
+              "sUrl":          "",
+              "oPaginate": {
+                  "sFirst":    "«",
+                  "sPrevious": "‹",
+                  "sNext":     "›",
+                  "sLast":     "»"
+              }
+          },
+          "order": [[ 0, "asc" ]],
+          "ajax": "<?php echo URL; ?>/includes/pasien.php"
+    } );
+    $('#allobat').dataTable( {
+          "bInfo" : true,
+        	"scrollX": true,
+          "processing": true,
+          "serverSide": true,
+          "responsive": false,
+          "oLanguage": {
+              "sProcessing":   "Sedang memproses...",
+              "sLengthMenu":   "Tampilkan _MENU_ entri",
+              "sZeroRecords":  "Tidak ditemukan data yang sesuai",
+              "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+              "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
+              "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+              "sInfoPostFix":  "",
+              "sSearch":       "Cari:",
+              "sUrl":          "",
+              "oPaginate": {
+                  "sFirst":    "«",
+                  "sPrevious": "‹",
+                  "sNext":     "›",
+                  "sLast":     "»"
+              }
+          },
+          "order": [[ 0, "asc" ]],
+          "ajax": "<?php echo URL; ?>/includes/obat.php"
+    } );
+</script>
+
+<?php
+if(isset($_GET['module'])) {
+  if(file_exists('modules/'.$_GET['module'].'/js.php')) {
+    include('modules/'.$_GET['module'].'/js.php');
+  }
+}
+?>
 
 
 </body>

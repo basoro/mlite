@@ -5,7 +5,7 @@
 * About : Porting of SIMRS Khanza by Windiarto a.k.a Mas Elkhanza as web and mobile app.
 * Last modified: 02 Pebruari 2018
 * Author : drg. Faisol Basoro
-* Email : drg.faisol@basoro.org
+* Email : dentix.id@gmail.com
 *
 * File : init.php
 * Description : To check cookie and session
@@ -28,7 +28,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title><?php echo $dataSettings['nama_instansi']; ?></title>
     <!-- Favicon-->
-    <link rel="icon" href="<?php echo URL; ?>/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="<?php echo URL; ?>/assets/images/favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="<?php echo URL; ?>/assets/css/roboto.css" rel="stylesheet">
@@ -72,7 +72,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     <!-- #END# Page Loader -->
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
-            <div class="align-center p-b-15"><img src="assets/images/logo-hst.png"></div>
+            <div class="align-center p-b-15"><img src="assets/images/yaski.png"></div>
             <a href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?></a>
             <small><?php echo $dataSettings['alamat_instansi']; ?> - <?php echo $dataSettings['kabupaten']; ?></small>
         </div>
@@ -86,19 +86,34 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
             }
 
             if ($_POST['username'] !=="" || $_POST['password'] !=="") {
-
+                $sql_admin = "SELECT AES_DECRYPT(usere,'nur') as id_user, AES_DECRYPT(passworde,'windi') as password FROM admin WHERE usere = AES_ENCRYPT('{$_POST['username']}','nur')";
                 $sql = "SELECT AES_DECRYPT(id_user,'nur') as id_user, AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('{$_POST['username']}','nur')";
+                $found_admin = query($sql_admin);
                 $found = query($sql);
 
-                if(num_rows($found) !== 1) {
-                    $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
-                }
-
-                if(num_rows($found) == 1) {
-                    $user = fetch_assoc($found);
-        		    if($user['password'] !== $_POST['password']) {
+                if(num_rows($found_admin) == 1) {
+                    if(num_rows(query("SHOW TABLES LIKE 'roles'")) !== 1) {
+                      $roles = "CREATE TABLE `roles` (
+                        `username` varchar(60) NOT NULL,
+                        `role` varchar(45) NOT NULL,
+                        `cap` varchar(20) NOT NULL
+                      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
+                      query($roles);
+                    }
+                    $user = fetch_assoc($found_admin);
+        		        if($user['password'] !== $_POST['password']) {
                         $errors[] = 'Kata kunci tidak valid.';
                     }
+                } else {
+                  if(num_rows($found) !== 1) {
+                      $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
+                  }
+                  if(num_rows($found) == 1) {
+                    $user = fetch_assoc($found);
+                    if($user['password'] !== $_POST['password']) {
+                        $errors[] = 'Kata kunci tidak valid.';
+                    }
+                  }
                 }
 
             }
@@ -171,7 +186,7 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
         setcookie('password', '', time()-60*60*24*365);
 
         unset($_SESSION['username']);
-        unset($_SESSION['level']);
+        unset($_SESSION['role']);
         unset($_SESSION['jenis_poli']);
         $_SESSION = array();
         session_destroy();

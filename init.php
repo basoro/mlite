@@ -5,23 +5,36 @@
 * About : Porting of SIMRS Khanza by Windiarto a.k.a Mas Elkhanza as web and mobile app.
 * Last modified: 02 Pebruari 2018
 * Author : drg. Faisol Basoro
-* Email : drg.faisol@basoro.org
+* Email : dentix.id@gmail.com
 *
 * File : init.php
 * Description : To check cookie and session
 * Licence under GPL
 ***/
 
-$data=fetch_array(query("SELECT AES_DECRYPT(a.id_user,'nur') as id_user, AES_DECRYPT(a.password,'windi') as password, b.cap as kd_poli, b.role as role FROM user a, roles b WHERE a.id_user = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND b.username = '{$_COOKIE['username']}' AND a.password = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));
+$data_admin = fetch_array(query("SELECT AES_DECRYPT(usere,'nur') as id_user, AES_DECRYPT(passworde,'windi') as password FROM admin WHERE usere = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND passworde = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));
+if(num_rows(query("SHOW TABLES LIKE 'roles'")) !== 1) {
+    redirect(URL . '/login.php');
+} else {
+  $data = fetch_array(query("SELECT AES_DECRYPT(a.id_user,'nur') as id_user, AES_DECRYPT(a.password,'windi') as password, b.cap as kd_poli, b.role as role FROM user a, roles b WHERE a.id_user = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND b.username = '{$_COOKIE['username']}' AND a.password = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));
+}
 
 if (!isset($_COOKIE['username']) && !isset($_COOKIE['password'])) {
     redirect(URL . '/login.php');
-} else if (($_COOKIE['username'] !== $data[0]) || ($_COOKIE['password'] !== $data[1])) {
+} else if (!in_array($_COOKIE['username'], array($data[0],$data_admin[0]))) {
+    redirect(URL . '/login.php?action=logout');
+} else if (!in_array($_COOKIE['password'], array($data[1],$data_admin[1]))) {
     redirect(URL . '/login.php?action=logout');
 } else {
-    $_SESSION['username'] = $data[0];
-    $_SESSION['jenis_poli'] = $data[2];
-    $_SESSION['role'] = $data[3];
+    if($_COOKIE['username'] == $data_admin[0]) {
+        $_SESSION['username'] = $data_admin[0];
+        $_SESSION['jenis_poli'] = '';
+        $_SESSION['role'] = 'Admin';
+    } else {
+        $_SESSION['username'] = $data[0];
+        $_SESSION['jenis_poli'] = $data[2];
+        $_SESSION['role'] = $data[3];
+    }
 }
 
 $jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;
