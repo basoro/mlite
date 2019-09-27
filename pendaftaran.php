@@ -830,12 +830,6 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                             <th>No. Asuransi</th>
                             <th>Pekerjaan PJ</th>
                             <th>Alamat PJ</th>
-                            <th>Suku Bangsa</th>
-                            <th>Bahasa</th>
-                            <th>Instansi/Perusahaan</th>
-                            <th>NIP/NRP</th>
-                            <th>E-Mail</th>
-                            <th>Cacat Fisik</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -1004,7 +998,7 @@ include_once('layout/footer.php');
         "scrollX": true,
         "processing": true,
         "serverSide": true,
-        "responsive": true,
+        "responsive": false,
         "oLanguage": {
             "sProcessing":   "Sedang memproses...",
             "sLengthMenu":   "Tampilkan _MENU_ entri",

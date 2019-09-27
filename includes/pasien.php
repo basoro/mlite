@@ -152,17 +152,17 @@ if($page=='add'){
          a.kd_kab,
          a.pekerjaanpj,
          a.alamatpj,
-         a.kelurahanpj,
-         a.kecamatanpj,
-         a.kabupatenpj,
-         a.perusahaan_pasien,
-         a.suku_bangsa,
-         a.bahasa_pasien,
          a.cacat_fisik,
          a.email,
          a.nip,
          a.kd_prop,
-         a.propinsipj
+         a.kelurahanpj,
+         a.kecamatanpj,
+         a.kabupatenpj,
+         a.propinsipj,
+         a.suku_bangsa,
+         a.bahasa_pasien,
+         a.perusahaan_pasien
        FROM
          pasien AS a
      ) temp
@@ -176,7 +176,7 @@ if($page=='add'){
         array( 'db' => 'jk','dt' => 3 ),
         array( 'db' => 'tmp_lahir','dt' => 4 ),
         array( 'db' => 'tgl_lahir','dt' => 5 ),
-        array( 'db' => 'namakeluarga','dt' => 6 ),
+        array( 'db' => 'nm_ibu','dt' => 6 ),
         array( 'db' => 'alamat','dt' => 7 ),
         array( 'db' => 'gol_darah','dt' => 8 ),
         array( 'db' => 'pekerjaan','dt' => 9 ),
@@ -192,16 +192,16 @@ if($page=='add'){
         array( 'db' => 'no_peserta','dt' => 19 ),
         array( 'db' => 'pekerjaanpj','dt' => 20 ),
         array( 'db' => 'alamatpj','dt' => 21 ),
-        array( 'db' => 'suku_bangsa','dt' => 22 ),
-        array( 'db' => 'bahasa_pasien','dt' => 23 ),
-        array( 'db' => 'perusahaan_pasien','dt' => 24 ),
-        array( 'db' => 'nip','dt' => 25 ),
-        array( 'db' => 'email','dt' => 26 ),
-        array( 'db' => 'cacat_fisik','dt' => 27 ),
-        array( 'db' => 'kelurahanpj','dt' => 28 ),
-        array( 'db' => 'kecamatanpj','dt' => 29 ),
-        array( 'db' => 'kabupatenpj','dt' => 30 ),
-        array( 'db' => 'propinsipj','dt' => 31 )
+        array( 'db' => 'nip','dt' => 22 ),
+        array( 'db' => 'email','dt' => 23 ),
+        array( 'db' => 'cacat_fisik','dt' => 24 ),
+        array( 'db' => 'kelurahanpj','dt' => 25 ),
+        array( 'db' => 'kecamatanpj','dt' => 26 ),
+        array( 'db' => 'kabupatenpj','dt' => 27 ),
+        array( 'db' => 'propinsipj','dt' => 28 ),
+        array( 'db' => 'suku_bangsa','dt' => 29 ),
+        array( 'db' => 'bahasa_pasien','dt' => 30 ),
+        array( 'db' => 'perusahaan_pasien','dt' => 31 )
   );
 
     $sql_details = array(

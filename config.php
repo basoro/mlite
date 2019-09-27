@@ -185,48 +185,6 @@ $bulanList = array(
 $getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes FROM setting");
 $dataSettings = fetch_assoc($getSettings);
 
-function allPasien() {
-?>
-<table id="allpasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
-    <thead>
-        <tr>
-          <th>Nama Pasien</th>
-          <th>No. RM</th>
-          <th>No KTP/SIM</th>
-          <th>J.K</th>
-          <th>Tmp. Lahir</th>
-          <th>Tgl. Lahir</th>
-          <th>Nama Ibu</th>
-          <th>Alamat</th>
-          <th>Gol. Darah</th>
-          <th>Pekerjaan</th>
-          <th>Stts. Nikah</th>
-          <th>Agama</th>
-          <th>Tgl. Daftar</th>
-          <th>No. Tlp</th>
-          <th>Umur</th>
-          <th>Pendidikan</th>
-          <th>Keluarga</th>
-          <th>Nama Keluarga</th>
-          <th>Asuransi</th>
-          <th>No. Asuransi</th>
-          <th>Pekerjaan PJ</th>
-          <th>Alamat PJ</th>
-          <th>Suku Bangsa</th>
-          <th>Bahasa</th>
-          <th>Instansi/Perusahaan</th>
-          <th>NIP/NRP</th>
-          <th>E-Mail</th>
-          <th>Cacat Fisik</th>
-        </tr>
-    </thead>
-    <tbody>
-    </tbody>
-</table>
-
-<?php
-}
-
 function allObat() {
 ?>
 <table id="allobat" class="table table-bordered table-striped table-hover display nowrap" width="100%">
