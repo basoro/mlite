@@ -570,9 +570,6 @@ include_once('layout/sidebar.php');
                                               <th>No. Asuransi</th>
                                               <th>Pekerjaan PJ</th>
                                               <th>Alamat PJ</th>
-                                              <th>Suku Bangsa</th>
-                                              <th>Bahasa</th>
-                                              <th>Instansi/Perusahaan</th>
                                               <th>NIP/NRP</th>
                                               <th>E-Mail</th>
                                               <th>Cacat Fisik</th>
@@ -651,7 +648,7 @@ include_once('layout/footer.php');
             }
         },
         "order": [[ 0, "asc" ]],
-        "ajax": "includes/pasien.php",
+        "ajax": "<?php echo URL;?>/includes/pasien.php",
         "createdRow": function( row, data, index ) {
           	$(row).addClass('editpasien');
             $(row).attr('data-nm_pasien', data[0]);
@@ -676,16 +673,16 @@ include_once('layout/footer.php');
             $(row).attr('data-no_peserta', data[19]);
             $(row).attr('data-pekerjaanpj', data[20]);
             $(row).attr('data-alamatpj', data[21]);
-            $(row).attr('data-suku_bangsa', data[22]);
-            $(row).attr('data-bahasa_pasien', data[23]);
-            $(row).attr('data-perusahaan_pasien', data[24]);
-            $(row).attr('data-nip', data[25]);
-            $(row).attr('data-email', data[26]);
-            $(row).attr('data-cacat_fisik', data[27]);
-            $(row).attr('data-kelurahanpj', data[28]);
-            $(row).attr('data-kecamatanpj', data[29]);
-            $(row).attr('data-kabupatenpj', data[30]);
-            $(row).attr('data-propinsipj', data[31]);
+            $(row).attr('data-nip', data[22]);
+            $(row).attr('data-email', data[23]);
+            $(row).attr('data-cacat_fisik', data[24]);
+            $(row).attr('data-kelurahanpj', data[25]);
+            $(row).attr('data-kecamatanpj', data[26]);
+            $(row).attr('data-kabupatenpj', data[27]);
+            $(row).attr('data-propinsipj', data[28]);
+            $(row).attr('data-suku_bangsa', data[29]);
+            $(row).attr('data-bahasa_pasien', data[30]);
+            $(row).attr('data-perusahaan_pasien', data[31]);
         }
   } );
   $('#kelurahan').dataTable( {

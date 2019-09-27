@@ -187,61 +187,6 @@
 
     </script>
 
-<script type="text/javascript">
-    $('#allpasien').dataTable( {
-          "bInfo" : true,
-        	"scrollX": true,
-          "processing": true,
-          "serverSide": true,
-          "responsive": false,
-          "oLanguage": {
-              "sProcessing":   "Sedang memproses...",
-              "sLengthMenu":   "Tampilkan _MENU_ entri",
-              "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-              "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-              "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-              "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-              "sInfoPostFix":  "",
-              "sSearch":       "Cari:",
-              "sUrl":          "",
-              "oPaginate": {
-                  "sFirst":    "«",
-                  "sPrevious": "‹",
-                  "sNext":     "›",
-                  "sLast":     "»"
-              }
-          },
-          "order": [[ 0, "asc" ]],
-          "ajax": "<?php echo URL; ?>/includes/pasien.php"
-    } );
-    $('#allobat').dataTable( {
-          "bInfo" : true,
-        	"scrollX": true,
-          "processing": true,
-          "serverSide": true,
-          "responsive": false,
-          "oLanguage": {
-              "sProcessing":   "Sedang memproses...",
-              "sLengthMenu":   "Tampilkan _MENU_ entri",
-              "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-              "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-              "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-              "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-              "sInfoPostFix":  "",
-              "sSearch":       "Cari:",
-              "sUrl":          "",
-              "oPaginate": {
-                  "sFirst":    "«",
-                  "sPrevious": "‹",
-                  "sNext":     "›",
-                  "sLast":     "»"
-              }
-          },
-          "order": [[ 0, "asc" ]],
-          "ajax": "<?php echo URL; ?>/includes/obat.php"
-    } );
-</script>
-
 <?php
 if(isset($_GET['module'])) {
   if(file_exists('modules/'.$_GET['module'].'/js.php')) {
