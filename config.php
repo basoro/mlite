@@ -28,7 +28,6 @@ define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
 define('FKTL', 'Yes');
 
-
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
 define('SecretKey', '');
