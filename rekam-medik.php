@@ -60,8 +60,10 @@ include_once('layout/sidebar.php');
                                     <th>Pemeriksaan</th>
                                     <th>Diagnosa</th>
                                     <th>Obat</th>
+                                    <?php if(FKTL == 'Yes') { ?>
                                     <th>Laboratorium</th>
                                     <th>Radiologi</th>
+                                    <?php } ?>
                                 </tr>
                             </thead>
                             <tbody>
@@ -121,6 +123,7 @@ include_once('layout/sidebar.php');
                                         ?>
                                         </ul>
                                     </td>
+                                    <?php if(FKTL == 'Yes') { ?>
                                     <td>
                                         <ul style="list-style:none;">
                                         <?php
@@ -145,9 +148,9 @@ include_once('layout/sidebar.php');
                                             $no++;
                                         }
                                         ?>
-
                                       </div>
                                     </td>
+                                    <?php } ?>
                                 </tr>
                                 <?php
                                     }
@@ -161,8 +164,10 @@ include_once('layout/sidebar.php');
                                         <td></td>
                                         <td></td>
                                         <td></td>
+                                        <?php if(FKTL == 'Yes') { ?>
                                         <td></td>
                                         <td></td>
+                                        <?php } ?>
                                     </tr>
                                 <?php
                                 }
