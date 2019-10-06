@@ -422,7 +422,6 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 <!-- riwayat -->
                                 <!-- anamnese -->
                                   <div class="tab-pane fade" role="tabpanel" id="anamnese">
-                                    <form method="post">
                                       <?php
                                       if(isset($_POST['ok_an'])){
                                         if(($no_rawat <> "")){
@@ -433,7 +432,18 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                           }
                                         }
                                       }
+                                      if(isset($_POST['edit_an'])){
+                                        if(($no_rawat <> "")){
+                                        $update = query("UPDATE pemeriksaan_ralan SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
+                                          if($update){
+                                            redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                                          }
+                                        }
+                                      }
                                       ?>
+                                    <?php $opt = isset($_GET['opt'])?$_GET['opt']:null; ?>
+                                    <?php if(!$opt) { ?>
+                                    <form method="post">
                                     <div class="row clearfix">
                                       <div class="col-md-6">
                                         <div class="form-group">
@@ -512,30 +522,126 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                       </div>
                                     </div>
                                       <div class="row clearfix">
-                                        <table id="datatable" class="table striped">
+                                        <table id="keluhan" class="table striped">
                                           <tr>
                                             <th>No</th>
                                             <th>Keluhan</th>
                                             <th>Pemeriksaan</th>
-                                            <th>Hapus</th>
+                                            <th>Suhu</th>
+                                            <th>BB</th>
+                                            <th>Tinggi</th>
+                                            <th>Tensi</th>
+                                            <th>Nadi</th>
+                                            <th>Alergi</th>
+                                            <th>Action</th>
                                           </tr>
                                           <?php
-                                          $query = query("SELECT keluhan , pemeriksaan FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'");
-                                          $no=1;
+                                          $query = query("SELECT * FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'");
                                            while ($data = fetch_array($query)) {
                                           ?>
                                           <tr>
                                             <td><?php echo $no; ?></td>
-                                            <td><?php echo $data['0']; ?></td>
-                                            <td><?php echo $data['1']; ?></td>
-                                            <td><a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_an&keluhan=<?php echo $data['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></td>
+                                            <td><?php echo $data['keluhan']; ?></td>
+                                            <td><?php echo $data['pemeriksaan']; ?></td>
+                                            <td><?php echo $data['suhu_tubuh']; ?></td>
+                                            <td><?php echo $data['berat']; ?></td>
+                                            <td><?php echo $data['tinggi']; ?></td>
+                                            <td><?php echo $data['tensi']; ?></td>
+                                            <td><?php echo $data['nadi']; ?></td>
+                                            <td><?php echo $data['alergi']; ?></td>
+                                            <td><a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_an&no_rawat=<?php echo $no_rawat; ?>">Hapus</a> &nbsp; <a class="btn btn-danger btn-xs" href="<?php $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $no_rawat; ?>&opt=edit_anamnese#anamnese">Edit</a></td>
                                           </tr>
                                           <?php
-                                            $no++;}
+                                            }
                                           ?>
                                         </table>
                                       </div>
                                     </form>
+                                    <?php } ?>
+                                    <?php if($opt == 'edit_anamnese' ) { ?>
+                                    <?php
+                                        $row = fetch_assoc(query("SELECT * FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'"));
+                                    ?>
+                                    <form method="post">
+                                    <div class="row clearfix">
+                                      <div class="col-md-6">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Keluhan</dt>
+                                            <dd><textarea rows="4" name="keluhan" class="form-control"><?php echo $row['keluhan']; ?></textarea></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-6">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Pemeriksaan</dt>
+                                            <dd><textarea rows="4" name="pemeriksaan" class="form-control"><?php echo $row['pemeriksaan']; ?></textarea></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Suhu Badan (C)</dt>
+                                            <dd><input type="text" class="form-control" name="suhu" value="<?php echo $row['suhu_tubuh']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tinggi Badan (Cm)</dt>
+                                            <dd><input type="text" class="form-control" name="tinggi" value="<?php echo $row['tinggi']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tensi (mmHg)</dt>
+                                            <dd><input type="text" class="form-control" name="tensi" value="<?php echo $row['tensi']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Berat (Kg)</dt>
+                                            <dd><input type="text" class="form-control" name="berat" value="<?php echo $row['berat']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Nadi (per Menit)</dt>
+                                            <dd><input type="text" class="form-control" name="nadi" value="<?php echo $row['nadi']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-3">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Alergi</dt>
+                                            <dd><input type="text" class="form-control" name="alergi" value="<?php echo $row['alergi']; ?>"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <dd><button type="submit" name="edit_an" value="edit_an" class="btn bg-indigo waves-effect" onclick="this.value=\'edit_an\'">SIMPAN</button></dd><br/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    </form>
+                                    <?php } ?>
                                   </div>
                                 <!-- anamnese -->
                                 <!-- diagnosa -->
@@ -933,7 +1039,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
         redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}#tindakan");
       }
     }
+    if($action == "delete_an"){
+      $hapus = "DELETE FROM pemeriksaan_ralan WHERE no_rawat='{$_REQUEST['no_rawat']}'";
+      $hasil = query($hapus);
+      if (($hasil)) {
+        redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+      }
 
+    }
     ?>
     <!-- end delete -->
 
