@@ -121,8 +121,16 @@ if($page=='add'){
       ");
   }
 } else if($page=='delete'){
-  query("DELETE FROM rujuk_masuk WHERE no_rawat='$_POST[no_rawat]'");
-  $delete = query("DELETE FROM reg_periksa WHERE no_rawat='$_POST[no_rawat]'");
+    query("DELETE FROM reg_periksa WHERE no_rawat='$_POST[no_rawat]'");
+} else if($page=='check'){
+  if(!empty($_POST['no_rkm_medis'])){
+    $data = array();
+    $cek = fetch_array(query("SELECT count(status_bayar) FROM reg_periksa WHERE no_rkm_medis='{$_POST['no_rkm_medis']}' AND status_bayar = 'Belum Bayar'"));
+    if($cek > "1") {
+      $data['status'] = 'exist';
+      echo json_encode($data);
+    }
+  }
 } else {
 
 }

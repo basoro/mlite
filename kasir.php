@@ -32,6 +32,12 @@ if(isset($_GET['no_rawat'])) {
     }
 }
 
+if($_SERVER['REQUEST_METHOD'] == "POST") {
+  if($_POST['nama_biaya'] <> '' && $_POST['nama_biaya'] <> '') {
+    query("INSERT INTO tambahan_biaya SET no_rawat = '{$_GET['no_rawat']}', nama_biaya = '{$_POST['nama_biaya']}', besar_biaya = '{$_POST['besar_biaya']}'");
+  }
+}
+
 ?>
 
     <section class="content">
@@ -143,7 +149,7 @@ if(isset($_GET['no_rawat'])) {
                           </dl>
                         </div>
                         <div class="body">
-                        <table class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                        <table class="table responsive table-bordered table-hover display nowrap" width="100%">
                             <thead>
                                 <tr>
                                     <th>Nama Item</th>
@@ -158,61 +164,156 @@ if(isset($_GET['no_rawat'])) {
                               </tr>
                             <?php
                             $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakandr, b.nm_perawatan  FROM rawat_jl_dr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
+                            $total_tindakan = 0;
                             while ($data_tindakan = fetch_array($query_tindakan)) {
+                                $total_tindakan += $data_tindakan['2'];
                             ?>
                                 <tr>
                                     <td><?php echo $data_tindakan['3']; ?></td>
                                     <td><?php echo $data_tindakan['2']; ?></td>
-                                    <td>Rp. <?php echo number_format($data_tindakan['2'],2,',','.'); ?></td>
-                                    <td>Rp. <?php echo number_format($data_tindakan['2'],2,',','.'); ?></td>
+                                    <td>Rp. <span class="pull-right"><?php echo number_format($data_tindakan['2'],2,',','.'); ?></span></td>
+                                    <td>Rp. <span class="pull-right"><?php echo number_format($data_tindakan['2'],2,',','.'); ?></span></td>
                                 </tr>
                             <?php
                             }
                             ?>
                             <tr>
+                                <td>Sub total tindakan</td><td></td><td></td><td>Rp. <span class="pull-right"><?php echo number_format($total_tindakan,2,',','.'); ?></span></td>
+                            </tr>
+                            <tr>
                                 <th>Obat</th><th></th><th></th><th></th>
                             </tr>
                              <?php
                              $query_resep = query("SELECT a.kode_brng, a.jml, a.aturan_pakai, b.nama_brng, a.no_resep, b.jualbebas FROM resep_dokter a, databarang b, resep_obat c WHERE a.kode_brng = b.kode_brng AND a.no_resep = c.no_resep AND c.no_rawat = '{$no_rawat}' AND c.kd_dokter = '{$_SESSION['username']}' ");
+                             $total_obat = 0;
                              while ($data_resep = fetch_array($query_resep)) {
+                               $total_obat += $data_resep['1']*$data_resep['5'];
                              ?>
                                  <tr>
                                      <td><?php echo $data_resep['3']; ?></td>
                                      <td><?php echo $data_resep['1']; ?></td>
-                                     <td>Rp. <?php echo number_format($data_resep['5'],2,',','.'); ?></td>
-                                     <td>Rp. <?php echo number_format($data_resep['1']*$data_resep['5'],2,',','.'); ?></td>
+                                     <td>Rp. <span class="pull-right"><?php echo number_format($data_resep['5'],2,',','.'); ?></span></td>
+                                     <td>Rp. <span class="pull-right"><?php echo number_format($data_resep['1']*$data_resep['5'],2,',','.'); ?></span></td>
                                  </tr>
                              <?php
                              }
                              ?>
                              <tr>
-                                 <th>Tambahan Biaya <button class="btn bg-orange waves-effect">+</button></th><th></th><th></th><th></th>
+                                 <td>Sub total obat</td><td></td><td></td><td>Rp. <span class="pull-right"><?php echo number_format($total_obat,2,',','.'); ?></span></td>
+                             </tr>
+                             <tr>
+                                 <th>Tambahan Biaya <button class="btn bg-orange waves-effect" data-toggle="modal" data-target="#unitModal">+</button></th><th></th><th></th><th></th>
                              </tr>
                               <?php
                               $query_tambahan_biaya = query("SELECT * FROM tambahan_biaya WHERE no_rawat = '{$no_rawat}'");
+                              $total_tambahan = 0;
                               while ($data_tambahan_biaya = fetch_array($query_tambahan_biaya)) {
+                                $total_tambahan += $data_tambahan_biaya['2'];
                               ?>
                                   <tr>
-                                      <td><?php echo $data_tambahan_biaya['1']; ?> <button class="btn btn-danger waves-effect" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_obat&kode_obat=<?php echo $data_resep['0']; ?>&no_resep=<?php echo $data_resep['4']; ?>&no_rawat=<?php echo $no_rawat; ?>">x</a></td>
+                                      <td><?php echo $data_tambahan_biaya['1']; ?> <a class="btn btn-danger waves-effect" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_biaya&no_rawat=<?php echo $no_rawat; ?>">x</a></td>
                                       <td>-</td>
-                                      <td>Rp. <?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></td>
-                                      <td>Rp. <?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></td>
+                                      <td>Rp. <span class="pull-right"><?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></span></td>
+                                      <td>Rp. <span class="pull-right"><?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></span></td>
                                   </tr>
                               <?php
                               }
-                              ?>                             </tbody>
+                              ?>
+                              <tr>
+                                  <th>Total</th><th></th><th></th><th>Rp. <span class="pull-right"><?php echo number_format($total_tindakan+$total_obat+$total_tambahan,2,',','.'); ?></span></th>
+                              </tr>
+                            </tbody>
                          </table>
                         </div>
                         <div class="body">
                           <button type="submit" name="ok_obat" value="ok_obat" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_obat\'">CETAK</button>
                         </div>
                       <?php } ?>
+                      <?php
+                        if($action == "delete_biaya"){
+                        	$hapus = "DELETE FROM tambahan_biaya WHERE no_rawat='{$_REQUEST['no_rawat']}'";
+                        	$hasil = query($hapus);
+                        	if (($hasil)) {
+                        	    redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
+                        	}
+                        }
+                      ?>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
+    <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="unitModalLabel">Tambahan Biaya</h4>
+                </div>
+                <div class="modal-body">
+                    <form class="form-horizontal" method="POST" action="">
+                        <div class="row clearfix">
+                            <div class="col-lg-2 col-md-2 col-sm-4 form-control-label font-20 hidden-xs">
+                                <label for="email_address_2">Nama :</label>
+                            </div>
+                            <div class="col-lg-4 col-md-10 col-sm-8">
+                              <div class="input-group input-group-lg">
+                                  <div class="form-line">
+                                      <input type="text" class="form-control" name="nama_biaya" id="nama_biaya" placeholder="Item biaya">
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-lg-2 col-md-2 col-sm-4 form-control-label font-20 hidden-xs">
+                                <label for="password_2">Biaya :</label>
+                            </div>
+                            <div class="col-lg-4 col-md-10 col-sm-8">
+                              <div class="input-group input-group-lg">
+                                  <div class="form-line">
+                                      <input type="text" class="form-control" name="besar_biaya" id="besar_biaya" placeholder="Besar biaya">
+                                  </div>
+                              </div>
+                            </div>
+                        </div>
+                        <div class="row clearfix" style="margin-bottom:40px;">
+                            <div class="col-lg-12 text-center">
+                                <button type="submit" class="btn btn-lg btn-primary m-t-15 m-l-15 waves-effect" id="simpan">SIMPAN</button>
+                            </div>
+                        </div>
+                    </form>
+                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Nama Biaya</th>
+                                <th>Besar Biaya</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <?php
+                          $all_tambahan_biaya = query("SELECT * FROM tambahan_biaya");
+                          while ($data_tambahan_biaya = fetch_array($all_tambahan_biaya)) {
+                          ?>
+                              <tr class="tambahan_biaya" data-namabiaya="<?php echo $data_tambahan_biaya['1']; ?>" data-besarbiaya="<?php echo $data_tambahan_biaya['2']; ?>">
+                                  <td><?php echo $data_tambahan_biaya['1']; ?></td>
+                                  <td>Rp. <?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></td>
+                              </tr>
+                          <?php
+                          }
+                          ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php
 include_once('layout/footer.php');
 ?>
+
+<script>
+$(document).on('click', '.tambahan_biaya', function (e) {
+    document.getElementById("nama_biaya").value = $(this).attr('data-namabiaya');
+    document.getElementById("besar_biaya").value = $(this).attr('data-besarbiaya');
+});
+</script>
