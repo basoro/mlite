@@ -14,7 +14,7 @@ include_once('layout/header.php');
 include_once('layout/sidebar.php');
 
 if(isset($_GET['no_rawat'])) {
-    $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur, a.status_lanjut , a.kd_pj, c.png_jawab FROM reg_periksa a, pasien b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]' AND a.kd_pj = c.kd_pj";
+    $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur, a.status_lanjut , a.kd_pj, c.png_jawab FROM reg_periksa a, pasien b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND a.kd_pj = c.kd_pj AND a.no_rawat = '$_GET[no_rawat]'";
     $found_pasien = query($_sql);
     if(num_rows($found_pasien) == 1) {
 	     while($row = fetch_array($found_pasien)) {
