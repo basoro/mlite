@@ -145,7 +145,11 @@ include_once('layout/sidebar.php');
                                                                  <option value="">&nbsp;</option>
                                                                  <option value="Islam">Islam</option>
                                                                  <option value="Kristen">Kristen</option>
+                                                                 <option value="Protesta">Protestan</option>
                                                                  <option value="Hindu">Hindu</option>
+                                                                 <option value="Budha">Budah</option>
+                                                                 <option value="Konghucu">Konghucu</option>
+                                                                 <option value="Aliran Kepercyaan">Aliran Kepercayaan</option>
                                                               </select>
                                                           </div>
                                                       </div>

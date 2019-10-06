@@ -56,4 +56,34 @@
                 </div>
               </div>
             </div>
-            <?php allObat(); ?>
+            <table id="allobat" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                <thead>
+                    <tr>
+                      <th>Kode Barang</th>
+                      <th>Nama Barang</th>
+                      <th>Kode Satuan</th>
+                      <th>Letak Barang</th>
+                      <th>Harga Beli</th>
+                      <th>Rawat Jalan</th>
+                      <th>Kelas 1</th>
+                      <th>Kelas 2</th>
+                      <th>Kelas 3</th>
+                      <th>Utama</th>
+                      <th>VIP</th>
+                      <th>VVIP</th>
+                      <th>Beli Luar</th>
+                      <th>Jual Bebas</th>
+                      <th>Karyawan</th>
+                      <th>Stok Minimal</th>
+                      <th>Kode Jenis</th>
+                      <th>Kapasitas</th>
+                      <th>Expire</th>
+                      <th>Status</th>
+                      <th>Kode Industri</th>
+                      <th>Kategori</th>
+                      <th>Golongan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>

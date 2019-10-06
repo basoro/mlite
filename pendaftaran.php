@@ -48,6 +48,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 <small>Periode <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } else { echo date("d-m-Y",strtotime($date)) . ' s/d ' . date("d-m-Y",strtotime($date));} ?></small>
                             </h2>
                         </div>
+                        <?php display_message(); ?>
                         <?php
                         if(!$action){
                         // Hitung nomor rawat
@@ -425,8 +426,8 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                       <?php
                                       if(isset($_POST['ok_an'])){
                                         if(($no_rawat <> "")){
-                                          $insert = query("INSERT INTO pemeriksaan_ralan VALUE ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
-                                                      ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
+                                          $insert = query("INSERT INTO pemeriksaan_ralan VALUE ('{$no_rawat}','{$date}','{$time}','{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','0','{$_POST['tinggi']}','{$_POST['berat']}'
+                                                      ,'-','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','-','-')");
                                           if($insert){
                                             redirect("{$_SERVER['PHP_SELF']}?action=view&no_rawat={$no_rawat}");
                                           }
@@ -434,7 +435,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                       }
                                       ?>
                                     <div class="row clearfix">
-                                      <div class="col-md-3">
+                                      <div class="col-md-6">
                                         <div class="form-group">
                                           <div class="form-line">
                                             <dt>Keluhan</dt>
@@ -442,11 +443,55 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                           </div>
                                         </div>
                                       </div>
-                                      <div class="col-md-3">
+                                      <div class="col-md-6">
                                         <div class="form-group">
                                           <div class="form-line">
                                             <dt>Pemeriksaan</dt>
                                             <dd><textarea rows="4" name="pemeriksaan" class="form-control"></textarea></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Suhu Badan (C)</dt>
+                                            <dd><input type="text" class="form-control" name="suhu"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tinggi Badan (Cm)</dt>
+                                            <dd><input type="text" class="form-control" name="tinggi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Tensi (mmHg)</dt>
+                                            <dd><input type="text" class="form-control" name="tensi"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div class="row clearfix">
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Berat (Kg)</dt>
+                                            <dd><input type="text" class="form-control" name="berat"></dd>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div class="col-md-4">
+                                        <div class="form-group">
+                                          <div class="form-line">
+                                            <dt>Nadi (per Menit)</dt>
+                                            <dd><input type="text" class="form-control" name="nadi"></dd>
                                           </div>
                                         </div>
                                       </div>
@@ -458,92 +503,16 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                           </div>
                                         </div>
                                       </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Tindak Lanjut</dt>
-                                            <dd><input type="text" class="form-control" name="tndklnjt"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
                                     </div>
                                     <div class="row clearfix">
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Suhu Badan (C)</dt>
-                                            <dd><input type="text" class="form-control" name="suhu"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Tinggi Badan (Cm)</dt>
-                                            <dd><input type="text" class="form-control" name="tinggi"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Tensi</dt>
-                                            <dd><input type="text" class="form-control" name="tensi"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Respirasi (per Menit)</dt>
-                                            <dd><input type="text" class="form-control" name="respirasi"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row clearfix">
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Berat (Kg)</dt>
-                                            <dd><input type="text" class="form-control" name="berat"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Nadi (per Menit)</dt>
-                                            <dd><input type="text" class="form-control" name="nadi"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>Imun Ke</dt>
-                                            <dd><input type="text" class="form-control" name="imun"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="col-md-3">
-                                        <div class="form-group">
-                                          <div class="form-line">
-                                            <dt>GCS(E , V , M)</dt>
-                                            <dd><input type="text" class="form-control" name="gcs"></dd>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div class="row clearfix">
-                                      <div class="col-md-3">
+                                      <div class="col-md-4">
                                         <div class="form-group">
                                           <dd><button type="submit" name="ok_an" value="ok_an" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_an\'">SIMPAN</button></dd><br/>
                                         </div>
                                       </div>
                                     </div>
                                       <div class="row clearfix">
-                                        <table id="keluhan" class="table striped">
+                                        <table id="datatable" class="table striped">
                                           <tr>
                                             <th>No</th>
                                             <th>Keluhan</th>
@@ -673,7 +642,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                     </form>
                                     </div>
                                     <div class="body">
-                                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
                                         <thead>
                                             <tr>
                                                 <th>Nama Tindakan</th>
@@ -709,7 +678,8 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                           if (($_POST['kode_obat'] <> "") and ($no_rawat <> "")) {
                                               $onhand = query("SELECT no_resep FROM resep_obat WHERE no_rawat = '{$no_rawat}' AND tgl_peresepan = CURRENT_DATE()");
                                               $dtonhand = fetch_array($onhand);
-                                              $get_number = fetch_array(query("select ifnull(MAX(CONVERT(RIGHT(no_resep,10),signed)),0) from resep_obat where tgl_perawatan like '%{$date}%'"));
+                                              //$get_number = fetch_array(query("select ifnull(MAX(CONVERT(RIGHT(no_resep,10),signed)),0) from resep_obat where tgl_perawatan like '%{$date}%'"));
+                                              $get_number = fetch_array(query("select ifnull(MAX(CONVERT(RIGHT(no_resep,10),signed)),0) from resep_obat"));
                                               $lastNumber = substr($get_number[0], 0, 10);
                                               $next_no_resep = sprintf('%010s', ($lastNumber + 1));
                                               //$next_no_resep = $get_number + 1;
@@ -1166,6 +1136,19 @@ include_once('layout/footer.php');
 </script>
 <script type="text/javascript">
     $(document).on('click', '.pilihpasien', function (e) {
+        /*var no_rkm_medis = document.getElementById("no_rkm_medis").value;
+        $.ajax({
+            url:'includes/pendaftaran.php?p=check',
+            method:'POST',
+            data:{
+                no_rkm_medis:no_rkm_medis
+            },
+           success:function(data){
+              if(data.status == 'exist'){
+                alert('Belum bayar')
+              }
+           }
+        });*/
         document.getElementById("nm_pasien").value = $(this).attr('data-nmpasien');
         document.getElementById("no_rkm_medis").value = $(this).attr('data-norm');
         document.getElementById("namakeluarga").value = $(this).attr('data-namakeluarga');
