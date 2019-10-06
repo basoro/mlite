@@ -26,7 +26,7 @@ define('DB_NAME', 'khanzalite');
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', 'No');
+define('FKTL', 'Yes');
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');

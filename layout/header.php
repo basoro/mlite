@@ -81,7 +81,7 @@ include_once('init.php');
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?></a>
+                <a class="navbar-brand" href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?> <?php if(FKTL == 'Yes') { echo "<span class='btn btn-xs bg-red'>v.FKTL</span>"; } else { echo "<span class='btn btn-xs bg-red'>v.FKTP</span>"; } ?></a>
             </div>
         </div>
     </nav>
