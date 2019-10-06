@@ -170,7 +170,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             ?>
                                 <tr>
                                     <td><?php echo $data_tindakan['3']; ?></td>
-                                    <td><?php echo $data_tindakan['2']; ?></td>
+                                    <td></td>
                                     <td>Rp. <span class="pull-right"><?php echo number_format($data_tindakan['2'],2,',','.'); ?></span></td>
                                     <td>Rp. <span class="pull-right"><?php echo number_format($data_tindakan['2'],2,',','.'); ?></span></td>
                                 </tr>
