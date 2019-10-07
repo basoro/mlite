@@ -39,7 +39,7 @@
                         </div>
                         <div class="content">
                             <div class="text">RESEP HARI INI</div>
-                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_resep FROM resep_dokter WHERE tgl_peresepan = CURRENT_DATE()"));?>" data-speed="1000" data-fresh-interval="20"></div>
+                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_resep FROM resep_obat WHERE tgl_peresepan = CURRENT_DATE()"));?>" data-speed="1000" data-fresh-interval="20"></div>
                         </div>
                     </div>
                 </div>
