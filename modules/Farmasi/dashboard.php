@@ -27,8 +27,8 @@
                             <i class="material-icons">people</i>
                         </div>
                         <div class="content">
-                            <div class="text">OBAT KOSONG</div>
-                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT kode_brng FROM riwayat_barang_medis WHERE tanggal IN (SELECT max(tanggal) FROM riwayat_barang_medis) AND jam IN (SELECT max(jam) FROM riwayat_barang_medis) AND stok_akhir = '0'"));?>" data-speed="1000" data-fresh-interval="20"></div>
+                            <div class="text">RESEP RALAN</div>
+                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rawat FROM resep_obat WHERE tgl_peresepan = CURRENT_DATE() AND status = 'ralan'"));?>" data-speed="1000" data-fresh-interval="20"></div>
                         </div>
                     </div>
                 </div>
@@ -38,8 +38,8 @@
                             <i class="material-icons">person</i>
                         </div>
                         <div class="content">
-                            <div class="text">RESEP HARI INI</div>
-                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_resep FROM resep_obat WHERE tgl_peresepan = CURRENT_DATE()"));?>" data-speed="1000" data-fresh-interval="20"></div>
+                            <div class="text">RESEP RANAP</div>
+                            <div class="number count-to" data-from="0" data-to="<?php echo num_rows(query("SELECT no_rawat FROM resep_obat WHERE tgl_peresepan = CURRENT_DATE() AND status = 'ranap'"));?>" data-speed="1000" data-fresh-interval="20"></div>
                         </div>
                     </div>
                 </div>
