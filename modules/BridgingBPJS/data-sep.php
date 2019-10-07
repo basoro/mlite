@@ -24,31 +24,21 @@
     <div class="content m-t-30">
         <?php $action = isset($_GET['action'])?$_GET['action']:null;
         if(!$action){?>
-          <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+          <table id="allsep" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
             <thead>
               <tr>
                 <th>No SEP</th>
                 <th>No Rawat</th>
                 <th>Tangal SEP</th>
-                <th>Bridging</th>
                 <th>Tgl Rujukan</th>
                 <th>No Rujukan</th>
+                <th>No RM</th>
+                <th>Nama Pasien</th>
+                <th>Tanggal Lahir</th>
+                <th>Peserta</th>
               </tr>
             </thead>
             <tbody>
-              <?php
-                  $sql = "SELECT * FROM bridging_sep";
-                  $list = query($sql);
-                    while($a = fetch_assoc($list)) {
-              ?>
-              <tr>
-                <td><?php echo $a['no_sep']; ?></td>
-                <td><?php echo $a['no_rawat']; ?></td>
-                <td><?php echo $a['tglsep']; ?></td>
-                <td><?php echo $a['tglrujukan']; ?></td>
-                <td><?php echo $a['no_rujukan']; ?></td>
-              </tr>
-                <?php } ?>
             </tbody>
           </table>
   <?php } ?>
