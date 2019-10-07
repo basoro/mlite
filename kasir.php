@@ -184,7 +184,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <th>Obat</th><th></th><th></th><th></th>
                             </tr>
                              <?php
-                             $query_resep = query("SELECT a.kode_brng, a.jml, a.aturan_pakai, b.nama_brng, a.no_resep, b.jualbebas FROM resep_dokter a, databarang b, resep_obat c WHERE a.kode_brng = b.kode_brng AND a.no_resep = c.no_resep AND c.no_rawat = '{$no_rawat}' AND c.kd_dokter = '{$_SESSION['username']}' ");
+                             $query_resep = query("SELECT a.kode_brng, a.jml, a.aturan_pakai, b.nama_brng, a.no_resep, b.jualbebas FROM resep_dokter a, databarang b, resep_obat c WHERE a.kode_brng = b.kode_brng AND a.no_resep = c.no_resep AND c.no_rawat = '{$no_rawat}'");
                              $total_obat = 0;
                              while ($data_resep = fetch_array($query_resep)) {
                                $total_obat += $data_resep['1']*$data_resep['5'];
