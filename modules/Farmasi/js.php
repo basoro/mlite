@@ -81,7 +81,7 @@
                     }
                 },
                 "order": [[ 0, "asc" ]],
-                "ajax": "<?php echo URL; ?>/includes/obat.php"
+                "ajax": "<?php echo URL; ?>/modules/Farmasi/includes/obat.php"
           } );
-          
+
     </script>
