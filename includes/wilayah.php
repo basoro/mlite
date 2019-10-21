@@ -55,7 +55,7 @@ if ($page == 'kelurahan')
 	 (
 	    SELECT kd_kel, nm_kel FROM kelurahan
 	 ) temp 
-	 EOT;
+EOT;
 
 	$primaryKey = 'kd_kel';
 	$columns = array(
