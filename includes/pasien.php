@@ -165,7 +165,7 @@ if($page=='add'){
          a.perusahaan_pasien
        FROM
          pasien AS a
-     ) temp 
+     ) temp
 EOT;
 
     $primaryKey = 'no_rkm_medis';

@@ -16,8 +16,8 @@ if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to
 
 define('VERSION', '2.0');
 define('ABSPATH', dirname(__FILE__) . '/');
-define('URL', 'http://localhost/KhanzaLite2');
-define('URLSIMRS', 'http://localhost/KhanzaLite2');
+define('URL', 'http://localhost/Khanza-Lite');
+define('URLSIMRS', 'http://localhost/Khanza-Lite');
 define('DIR', '');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
