@@ -166,7 +166,7 @@ if($page=='add'){
        FROM
          pasien AS a
      ) temp
-    EOT;
+EOT;
 
     $primaryKey = 'no_rkm_medis';
     $columns = array(
