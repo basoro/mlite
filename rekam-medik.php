@@ -50,7 +50,7 @@ include_once('layout/sidebar.php');
                             <dd><?php echo $data_pasien['umur']; ?></dd>
                         </dl>
                         <hr>
-                        <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                        <table id="datatable" class="table table-bordered table-striped table-hover display " width="100%">
                             <thead>
                                 <tr>
                                     <th>Tanggal</th>

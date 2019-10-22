@@ -19,6 +19,7 @@ define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/Khanza-Lite');
 define('DIR', '');
+define('PRODUCTION', 'NO'); // YES to hide error page. NO to display error page.
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
@@ -122,6 +123,24 @@ function enumDropdown($table_name, $column_name, $label, $echo = false) {
         echo $selectDropdown;
 
     return $selectDropdown;
+}
+
+function remove_directory($directory) {
+    if (!is_dir($directory)) return;
+
+    $contents = scandir($directory);
+    unset($contents[0], $contents[1]);
+
+    foreach($contents as $object) {
+        $current_object = $directory.'/'.$object;
+        if (filetype($current_object) === 'dir') {
+            remove_directory($current_object);
+        } else {
+            unlink($current_object);
+        }
+    }
+
+    rmdir($directory);
 }
 
 // Get date and time

@@ -56,7 +56,7 @@
                 </div>
               </div>
             </div>
-            <table id="allobat" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+            <table id="allobat" class="table table-bordered table-striped table-hover display " width="100%">
                 <thead>
                     <tr>
                       <th>Kode Barang</th>

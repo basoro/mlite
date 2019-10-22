@@ -13,7 +13,7 @@
                 } else if ($dataGet['1'] == 'P' || $dataGet['1'] == 'Wanita') {
                     echo '<img src="'.URL.'/assets/images/wanita.png" width="48" height="48" alt="User" />';
                 } else {
-                  echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';                  
+                  echo '<img src="'.URL.'/assets/images/pria.png" width="48" height="48" alt="User" />';
                 }
                 ?>
                 </div>
@@ -92,10 +92,18 @@
                             </a>
                         </li>
                         <li>
-                            <a href="<?php echo URL; ?>/pengaturan.php">
+                            <a href="javascript:void(0);" class="menu-toggle">
                                 <i class="material-icons">settings_applications</i>
                                 <span>Pengaturan</span>
                             </a>
+                            <ul class="ml-menu">
+                                <li>
+                                    <a href="<?php echo URL; ?>/pengaturan.php">Pengaturan Aplikasi</a>
+                                </li>
+                                <li>
+                                    <a href="<?php echo URL; ?>/plugins.php">Pengaturan Plugins</a>
+                                </li>
+                            </ul>
                         </li>
                      <?php } ?>
                 </ul>
