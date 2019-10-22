@@ -16,10 +16,10 @@ include_once('layout/sidebar.php');
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
   if(isset($_POST['fktl']) && $_POST['fktl'] == 'No') {
-    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'Yes')", "\ndefine('FKTL', 'No')", file_get_contents('config.php')));
+    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'YES')", "\ndefine('FKTL', 'NO')", file_get_contents('config.php')));
   }
   if(isset($_POST['fktl']) && $_POST['fktl'] == 'Yes') {
-    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'No')", "\ndefine('FKTL', 'Yes')", file_get_contents('config.php')));
+    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'NO')", "\ndefine('FKTL', 'YES')", file_get_contents('config.php')));
   }
   if(isset($_POST['kode_ppk']) && $_POST['kode_ppk'] !== '') {
     $kode_ppk = $dataSettings['kode_ppk'];

@@ -19,15 +19,15 @@ define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/Khanza-Lite');
 define('DIR', '');
-define('PRODUCTION', 'NO'); // YES to hide error page. NO to display error page.
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'khanzalite');
+define('PRODUCTION', 'NO'); // YES to hide error page. NO to display error page.
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', 'No');
+define('FKTL', 'NO');
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');

@@ -9,7 +9,7 @@ $module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan
 
 ?>
 
-<?php if(FKTL == 'Yes') { ?>
+<?php if(FKTL == 'YES') { ?>
   <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Paramedis_Ralan')  { ?>
     <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
       <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
