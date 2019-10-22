@@ -27,7 +27,7 @@ if($page=='add'){
        FROM
          databarang
      ) temp
-    EOT;
+EOT;
 
     $primaryKey = 'kode_brng';
     $columns = array(
