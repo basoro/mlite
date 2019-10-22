@@ -21,24 +21,33 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
   if(isset($_POST['fktl']) && $_POST['fktl'] == 'Yes') {
     file_put_contents('config.php', str_replace("\ndefine('FKTL', 'No')", "\ndefine('FKTL', 'Yes')", file_get_contents('config.php')));
   }
-  $delete = query("DELETE FROM setting");
-  if($delete) {
-      $insert = query("INSERT INTO setting
-          SET
-              nama_instansi     = '{$_POST['nama_instansi']}',
-              alamat_instansi   = '{$_POST['alamat_instansi']}',
-              propinsi          = '{$_POST['propinsi']}',
-              kabupaten         = '{$_POST['kabupaten']}',
-              kontak            = '{$_POST['kontak']}',
-              email             = '{$_POST['email']}',
-              aktifkan          = 'Yes',
-              kode_ppk          = '{$_POST['kode_ppk']}',
-              kode_ppkinhealth  = '{$_POST['kode_ppkinhealth']}',
-              kode_ppkkemenkes  = '{$_POST['kode_ppkkemenkes']}',
-              wallpaper         = '',
-              logo              = ''
-      ");
+  if(isset($_POST['kode_ppk']) && $_POST['kode_ppk'] !== '') {
+    $kode_ppk = $dataSettings['kode_ppk'];
+  } else {
+    $kode_ppk = $_POST['kode_ppk'];
   }
+  if($_FILES['file']['tmp_name']!='') {
+    $logo = addslashes(file_get_contents($_FILES['file']['tmp_name']));
+  } else {
+    $logo = escape($dataSettings['logo']);
+  }
+
+  $update = query("UPDATE setting
+      SET
+          nama_instansi     = '{$_POST['nama_instansi']}',
+          alamat_instansi   = '{$_POST['alamat_instansi']}',
+          propinsi          = '{$_POST['propinsi']}',
+          kabupaten         = '{$_POST['kabupaten']}',
+          kontak            = '{$_POST['kontak']}',
+          email             = '{$_POST['email']}',
+          aktifkan          = 'Yes',
+          kode_ppk          = '{$_POST['kode_ppk']}',
+          kode_ppkinhealth  = '{$_POST['kode_ppkinhealth']}',
+          kode_ppkkemenkes  = '{$_POST['kode_ppkkemenkes']}',
+          logo              = '{$logo}'
+      WHERE
+          kode_ppk          = '{$kode_ppk}'
+  ");
 }
 
 ?>
@@ -54,7 +63,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             </h2>
                         </div>
                         <div class="body">
-                            <form class="form-horizontal" method="post">
+                            <form class="form-horizontal" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
                                     <label for="nama" class="col-sm-2 control-label">Nama Instansi</label>
                                     <div class="col-sm-10">
@@ -135,6 +144,21 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     <div class="col-sm-10">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="kode_ppkkemenkes" name="kode_ppkkemenkes" placeholder="Kode PPK Kemenkes" value="<?php echo $dataSettings['kode_ppkkemenkes'];?>" required>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="npwp" class="col-sm-2 control-label">Logo</label>
+                                    <div class="col-sm-10">
+                                        <div class="form-line">
+                                          <?php if($dataSettings['logo'] !==''){
+                                            echo '<img id="image_upload_preview" width="200px" src="data:image/jpeg;base64,'.base64_encode( $dataSettings['logo'] ).'" onclick="upload_berkas()" style="cursor:pointer;"/>';
+                                          } else {
+                                            echo '<img id="image_upload_preview" width="200px" src="'.URL.'/assets/images/yaski.png" onclick="upload_berkas()" style="cursor:pointer;" />';
+                                          }
+                                          ?>
+                                          <br/>
+                                          <input name="file" id="inputFile" type="file" style="display:none;"/>
                                         </div>
                                     </div>
                                 </div>
