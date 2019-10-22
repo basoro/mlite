@@ -596,29 +596,30 @@ include_once('layout/sidebar.php');
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title" id="kelurahanModalLabel">Database Poliklinik</h4>
+                    <h4 class="modal-title" id="kelurahanModalLabel">Database Kelurahan</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="kelurahan" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
-                        <thead>
-                            <tr>
-                                <th>Kode Kelurahan</th>
-                                <th>Nama Kelurahan</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          <?php
-                          $sql_kelurahan = "SELECT * FROM kelurahan";
-                          $result_kelurahan = query($sql_kelurahan);
-                          while($row = fetch_array($result_kelurahan)) {
-                            echo '<tr class="pilihkelurahan" data-kdkel='.$row[0].' data-nmkel='.$row[1].'>';
-                            echo '<td>'.$row[0].'</td>';
-                            echo '<td>'.$row[1].'</td>';
-                            echo '</tr>';
-                          }
-                          ?>
-                        </tbody>
-                    </table>
+                  <div class="form-horizontal form-data" id="form-data">
+                      <div class="row clearfix">
+                          <div class="col-lg-4 col-md-4 col-sm-4 form-control-label font-20 hidden-xs">
+                              <label for="email_address_2">Nama Kelurahan :</label>
+                          </div>
+                          <div class="col-lg-8 col-md-8 col-sm-8">
+                            <div class="input-group input-group-lg">
+                                <div class="form-line">
+                                    <input type="text" class="form-control" name="nama_kelurahan" id="nama_kelurahan" placeholder="Nama Kelurahan">
+                                </div>
+                                <p class="text-danger" id="err_nama_kelurahan"></p>
+                            </div>
+                          </div>
+                      </div>
+                      <div class="row clearfix" style="margin-bottom:40px;">
+                          <div class="col-lg-12 text-center">
+                              <button type="button" class="btn btn-lg btn-primary m-t-15 m-l-15 waves-effect" id="simpan-kelurahan">SIMPAN</button>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="datakelurahan"></div>
                 </div>
             </div>
         </div>
@@ -962,5 +963,30 @@ include_once('layout/footer.php');
                window.location.reload(true)
             }
         });
+    });
+    $('.datakelurahan').load("includes/data-kelurahan.php");
+    $("#simpan-kelurahan").click(function(){
+        var data = $('.form-data').serialize();
+        var nama_kelurahan = document.getElementById("nama_kelurahan").value;
+
+          if (nama_kelurahan=="") {
+          	document.getElementById("err_nama_kelurahan").innerHTML = "Nama Kelurahan Harus Diisi";
+          } else {
+          	document.getElementById("err_nama_kelurahan").innerHTML = "";
+          }
+
+          if (nama_kelurahan!="") {
+          	 $.ajax({
+  	            type: 'POST',
+  	            url: "includes/data-kelurahan.php?p=add",
+  	            data: {
+                  nama_kelurahan:nama_kelurahan
+                },
+  	            success: function(data) {
+  	                $('.datakelurahan').load("includes/data-kelurahan.php");
+  	                document.getElementById("form-data").reset();
+  	            }
+	           });
+          }
     });
 </script>
