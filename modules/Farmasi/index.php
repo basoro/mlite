@@ -5,7 +5,7 @@ $module_directory   = 'Farmasi';
 $module_title       = 'Farmasi';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
-$module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan, upload berkas digital, berkas radiologi dan set status perawatan pasien.';
+$module_description = 'Modul untuk Gudang Farmasi dalam pengaturan obat-obatan dan bahan habis pakai.';
 
 ?>
 

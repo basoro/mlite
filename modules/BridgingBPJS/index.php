@@ -5,7 +5,7 @@ $module_directory   = 'BridgingBPJS';
 $module_title       = 'BPJS';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
-$module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan, upload berkas digital, berkas radiologi dan set status perawatan pasien.';
+$module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
 
 ?>
 

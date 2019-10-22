@@ -5,7 +5,7 @@ $module_directory   = 'Master';
 $module_title       = 'Master';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
-$module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan, upload berkas digital, berkas radiologi dan set status perawatan pasien.';
+$module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
 
 ?>
 
@@ -15,7 +15,7 @@ $module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan
       <a href="<?php echo URL; ?>/?module=Farmasi">
         <div class="image">
           <div class="icon">
-            <i class="medical-icon-i-pharmacy"></i>
+            <i class="medical-icon-i-administration"></i>
           </div>
         </div>
         <div class="sname"><?php echo $module_title; ?></div>
