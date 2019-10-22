@@ -124,6 +124,7 @@
     <script>
 
         $('#datatable').dataTable( {
+              "bStateSave": true,
               "processing": true,
               "responsive": true,
               "oLanguage": {
@@ -147,6 +148,7 @@
         } );
 
         $('#plugins').dataTable( {
+          "bStateSave": true
         } );
         $(document).ready(function() {
             $('.datepicker').bootstrapMaterialDatePicker({

@@ -101,20 +101,24 @@
     $(document).ready(function() {
 
         $('#riwayatmedis').dataTable( {
+          bStateSave: true,
           responsive: true
         } );
 
         $('#datatable_ralan').dataTable( {
+          bStateSave: true,
           responsive: true,
-    order: [[ 2, 'asc' ]]
+          order: [[ 2, 'asc' ]]
         } );
         $('#datatable_ranap').dataTable( {
+          bStateSave: true,
           responsive: true,
-    order: [[ 4, 'asc' ]]
+          order: [[ 4, 'asc' ]]
         } );
         $('#databooking').dataTable( {
+          bStateSave: true,
           responsive: true,
-    order: [[ 1, 'asc' ]]
+          order: [[ 1, 'asc' ]]
         } );
 
     } );
