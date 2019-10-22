@@ -27,7 +27,7 @@ define('DB_NAME', 'khanzalite');
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', 'Yes');
+define('FKTL', 'No');
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
@@ -40,7 +40,6 @@ $module = isset($_GET['module'])?$_GET['module']:null;
 $module_base_dir = './modules/';
 $module_ext = '.module.php';
 $module_base_file = $module.$module_ext;
-//$title = $module;
 
 function escape($string) {
     global $connection;
@@ -200,5 +199,5 @@ $bulanList = array(
 );
 
 // Get settings
-$getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes FROM setting");
+$getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes, logo FROM setting");
 $dataSettings = fetch_assoc($getSettings);
