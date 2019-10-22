@@ -9,10 +9,10 @@ $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
 
 ?>
 
-<?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Apotek')  { ?>
+<?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
   <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
     <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-      <a href="<?php echo URL; ?>/?module=Farmasi">
+      <a href="<?php echo URL; ?>/?module=Master">
         <div class="image">
           <div class="icon">
             <i class="medical-icon-i-administration"></i>
