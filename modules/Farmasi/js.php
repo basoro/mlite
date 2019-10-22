@@ -59,6 +59,7 @@
 
           $('#allobat').dataTable( {
                 "bInfo" : true,
+                "bStateSave": true, 
               	"scrollX": true,
                 "processing": true,
                 "serverSide": true,
