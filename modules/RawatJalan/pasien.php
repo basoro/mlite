@@ -35,7 +35,7 @@ if(isset($_GET['no_rawat'])) {
                         if(!$action){
                         ?>
                             <div class="body">
-                                <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                                <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                     <thead>
                                         <tr>
                                             <th>Nama Pasien</th>
@@ -170,7 +170,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                     <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                          <thead>
                                              <tr>
                                                  <th>Nama Tindakan</th>
@@ -306,7 +306,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatab" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                                     <table id="datatab" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                          <thead>
                                              <tr>
                                                  <th>Keluhan</th>

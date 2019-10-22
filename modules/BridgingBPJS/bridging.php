@@ -24,7 +24,7 @@
     <div class="content m-t-30">
         <?php $action = isset($_GET['action'])?$_GET['action']:null;
         if(!$action){?>
-          <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+          <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
             <thead>
               <tr>
                 <th>No MR</th>

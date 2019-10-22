@@ -50,7 +50,7 @@ if(isset($_GET['no_rawat'])) {
                         if(!$action){
                         ?>
                         <div class="body">
-                            <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                            <table id="datatable" class="table table-bordered table-striped table-hover display" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Nama Pasien</th>

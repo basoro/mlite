@@ -201,7 +201,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                           </div>
                         </div>
                         <div class="body">
-                            <table id="pendaftaran" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                            <table id="pendaftaran" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                 <thead>
                                     <tr>
                                         <th>Nama Pasien</th>
@@ -748,7 +748,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                     </form>
                                     </div>
                                     <div class="body">
-                                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                         <thead>
                                             <tr>
                                                 <th>Nama Tindakan</th>
@@ -881,7 +881,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="pasienModalLabel">Database Pasien</h4>
                 </div>
                 <div class="modal-body">
-                  <table id="pasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                  <table id="pasien" class="table table-bordered table-striped table-hover display " width="100%">
                       <thead>
                           <tr>
                             <th>Nama Pasien</th>
@@ -924,7 +924,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="dokterModalLabel">Database Dokter</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="dokter" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="dokter" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Kode Dokter</th>
@@ -947,7 +947,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="unitModalLabel">Database Poliklinik</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="poliklinik" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="poliklinik" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Kode Poli</th>
@@ -970,7 +970,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="penjabModalLabel">Database Cara Bayar</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="penjab" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="penjab" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Kode</th>
@@ -993,7 +993,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="perujukModalLabel">Database Perujuk</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="perujuk" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="perujuk" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Asal Rujukan</th>

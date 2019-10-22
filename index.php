@@ -91,7 +91,7 @@ include_once('layout/sidebar.php');
                       <div class="header">
                           <h2>MODUL-MODUL</h2>
                       </div>
-                      <div class="setting-con" style="padding:0; height:381px; margin-right: -4px; overflow: hidden;overflow-y:scroll">
+                      <div class="setting-con" style="padding:0; height:381px; margin-right: 0px; overflow: hidden;overflow-y:scroll">
                           <div class="container-fluid module">
                               <div class="row">
                               <?php

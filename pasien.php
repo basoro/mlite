@@ -549,7 +549,7 @@ include_once('layout/sidebar.php');
                             </div>
                             <div role="tabpanel" class="tab-pane fade in" id="datapasien">
                                 <div class="body">
-                                    <table id="pasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                    <table id="pasien" class="table table-bordered table-striped table-hover display " width="100%">
                                         <thead>
                                             <tr>
                                               <th>Nama Pasien</th>

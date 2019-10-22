@@ -22,7 +22,7 @@ if($page=='add'){
   }
 } else {
  ?>
-<table id="kelurahan" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+<table id="kelurahan" class="table responsive table-bordered table-striped table-hover display " width="100%">
     <thead>
         <tr>
             <th>Kode Kelurahan</th>

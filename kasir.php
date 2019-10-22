@@ -56,7 +56,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         if(!$action){
                         ?>
                         <div class="body">
-                            <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                            <table id="datatable" class="table table-bordered table-striped table-hover display " width="100%">
                                 <thead>
                                     <tr>
                                         <th>Nama Pasien</th>
@@ -149,7 +149,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                           </dl>
                         </div>
                         <div class="body">
-                        <table class="table responsive table-bordered table-hover display nowrap" width="100%">
+                        <table class="table responsive table-bordered table-hover display " width="100%">
                             <thead>
                                 <tr>
                                     <th>Nama Item</th>
@@ -281,7 +281,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             </div>
                         </div>
                     </form>
-                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Nama Biaya</th>

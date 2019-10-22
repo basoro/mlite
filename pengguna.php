@@ -93,7 +93,7 @@ include_once('layout/sidebar.php');
                           <div class="row clearfix">
                               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                   <div class="body">
-                                      <table id="datapengguna" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                                      <table id="datapengguna" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                           <thead>
                                               <tr>
                                                   <th>USER NAME</th>
@@ -142,7 +142,7 @@ include_once('layout/sidebar.php');
                     <h4 class="modal-title" id="usersModalLabel">Database User</h4>
                 </div>
                 <div class="modal-body table-responsive">
-                    <table id="users" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="users" class="table table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>USER NAME</th>
@@ -177,7 +177,7 @@ include_once('layout/sidebar.php');
                     <h4 class="modal-title" id="rolesModalLabel">User Role</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="roles" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="roles" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Role</th>
@@ -223,7 +223,7 @@ include_once('layout/sidebar.php');
                     <h4 class="modal-title" id="capsModalLabel">User Capability</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="capabilities" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="capabilities" class="table responsive table-bordered table-striped table-hover display " width="100%">
                         <thead>
                             <tr>
                                 <th>Kode</th>

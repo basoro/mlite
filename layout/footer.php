@@ -146,6 +146,8 @@
               "order": [[ 0, "asc" ]]
         } );
 
+        $('#plugins').dataTable( {
+        } );
         $(document).ready(function() {
             $('.datepicker').bootstrapMaterialDatePicker({
                 format: 'YYYY-MM-DD',
@@ -161,6 +163,9 @@
           	thumbnail: true,
           	selector: 'a'
       	});
+        $("#delete-plugins").click(function(e) {
+            return confirm("This record will be permanentely deleted. Is that OK?");
+        });
 	  </script>
 
     <script type="text/javascript">

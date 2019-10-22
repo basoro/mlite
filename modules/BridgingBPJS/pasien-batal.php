@@ -22,7 +22,7 @@
         </li>
     </ul>
     <div class="content m-t-30">
-      <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+      <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
         <thead>
           <tr>
             <th>No RM</th>
