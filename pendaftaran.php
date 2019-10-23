@@ -249,8 +249,8 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                             <div class="btn-group">
                                                 <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                    <?php if(FKTL !== 'Yes') { ?><li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li><?php } ?>
-                                                    <?php if(FKTL == 'Yes') { ?>
+                                                    <?php if(FKTL !== 'YES') { ?><li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li><?php } ?>
+                                                    <?php if(FKTL == 'YES') { ?>
                                                       <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
                                                         <li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
                                                         <li><a href="./?module=BridgingBPJS&page=data_sep&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
@@ -299,7 +299,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                         </div>
                     </div>
                     <?php } ?>
-                    <?php if(FKTL !== 'Yes') { ?>
+                    <?php if(FKTL !== 'YES') { ?>
                     <?php if($action == "view"){ ?>
                             <div class="body">
                               <dl class="dl-horizontal">
