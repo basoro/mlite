@@ -41,6 +41,10 @@ $module_base_dir = './modules/';
 $module_ext = '.module.php';
 $module_base_file = $module.$module_ext;
 
+if(isset($_GET['module'])) {
+  parse_str(parse_url($_SERVER['REQUEST_URI'])['query'], $params);
+}
+
 function escape($string) {
     global $connection;
     return mysqli_real_escape_string($connection, $string);

@@ -83,6 +83,11 @@
                               <span>Data Pribadi</span>
                           </a>
                       </li>
+                      <?php
+                          foreach (glob("modules/*/menu.php") as $filename_menu) {
+                          include $filename_menu;
+                      }
+                      ?>
                       <?php if($role == 'Admin')  { ?>
                       <li class="header">ADMINISTRASI</li>
                         <li>
