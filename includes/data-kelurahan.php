@@ -34,7 +34,7 @@ if($page=='add'){
       $sql_kelurahan = "SELECT * FROM kelurahan";
       $result_kelurahan = query($sql_kelurahan);
       while($row = fetch_array($result_kelurahan)) {
-        echo '<tr class="pilihkelurahan" data-kdkel='.$row[0].' data-nmkel='.$row[1].'>';
+        echo '<tr class="pilihkelurahan" data-kdkel="'.$row[0].'" data-nmkel="'.$row[1].'">';
         echo '<td>'.$row[0].'</td>';
         echo '<td>'.$row[1].'</td>';
         echo '</tr>';
