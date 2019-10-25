@@ -13,7 +13,7 @@ class Master {
     function index() {
 ?>
 <div class="body">
-    <div class="content m-t-30">
+    <div class="content">
         <b>Index Content</b>
         <p>
             Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
@@ -28,7 +28,7 @@ class Master {
     function hello() {
 ?>
 <div class="body">
-    <div class="content m-t-30">
+    <div class="content">
         <b>Hello Content</b>
         <p>
             Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.
@@ -43,7 +43,7 @@ class Master {
     function world() {
 ?>
 <div class="body">
-    <div class="content m-t-30">
+    <div class="content">
         <b>World Content</b>
         <p>
             Lorem ipsum dolor sit amet, ut duo atqui exerci dicunt, ius impedit mediocritatem an. Pri ut tation electram moderatius.

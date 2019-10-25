@@ -77,40 +77,41 @@
                         </ul>
                     </li>
                     <?php } ?>
-                      <li>
-                          <a href="<?php echo URL; ?>/profil.php">
-                              <i class="material-icons">people</i>
-                              <span>Data Pribadi</span>
-                          </a>
-                      </li>
-                      <?php
-                          foreach (glob("modules/*/menu.php") as $filename_menu) {
-                          include $filename_menu;
-                      }
-                      ?>
-                      <?php if($role == 'Admin')  { ?>
-                      <li class="header">ADMINISTRASI</li>
-                        <li>
-                            <a href="<?php echo URL; ?>/pengguna.php">
-                                <i class="material-icons">people</i>
-                                <span>Pengguna</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="material-icons">settings_applications</i>
-                                <span>Pengaturan</span>
-                            </a>
-                            <ul class="ml-menu">
-                                <li>
-                                    <a href="<?php echo URL; ?>/pengaturan.php">Pengaturan Aplikasi</a>
-                                </li>
-                                <li>
-                                    <a href="<?php echo URL; ?>/plugins.php">Pengaturan Plugins</a>
-                                </li>
-                            </ul>
-                        </li>
-                     <?php } ?>
+                    <li>
+                        <a href="<?php echo URL; ?>/profil.php">
+                            <i class="material-icons">people</i>
+                            <span>Data Pribadi</span>
+                        </a>
+                    </li>
+                    <li class="header">MODUL-MODUL</li>
+                    <?php
+                        foreach (glob("modules/*/menu.php") as $filename_menu) {
+                        include $filename_menu;
+                    }
+                    ?>
+                    <?php if($role == 'Admin')  { ?>
+                    <li class="header">ADMINISTRASI</li>
+                    <li>
+                        <a href="<?php echo URL; ?>/pengguna.php">
+                            <i class="material-icons">people</i>
+                            <span>Pengguna</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="javascript:void(0);" class="menu-toggle">
+                            <i class="material-icons">settings_applications</i>
+                            <span>Pengaturan</span>
+                        </a>
+                        <ul class="ml-menu">
+                            <li>
+                                <a href="<?php echo URL; ?>/pengaturan.php">Pengaturan Aplikasi</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo URL; ?>/plugins.php">Pengaturan Plugins</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <?php } ?>
                 </ul>
             </div>
             <!-- #Menu -->
