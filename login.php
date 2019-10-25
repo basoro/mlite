@@ -72,7 +72,13 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
     <!-- #END# Page Loader -->
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
-            <div class="align-center p-b-15"><img src="assets/images/yaski.png"></div>
+            <?php
+            if($dataSettings['logo'] !==''){
+                echo '<div class="align-center p-b-15"><img src="data:image/jpeg;base64,'.base64_encode( $dataSettings['logo'] ).'"></div>';
+            } else {
+                echo '<div class="align-center p-b-15"><img src="assets/images/yaski.png"></div>';
+            }
+            ?>
             <a href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?></a>
             <small><?php echo $dataSettings['alamat_instansi']; ?> - <?php echo $dataSettings['kabupaten']; ?></small>
         </div>
