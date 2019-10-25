@@ -7,7 +7,7 @@
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="Master" && $params['page']=="index") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Master&page=index">
-                Mater INDEX
+                Master INDEX
             </a>
         </li>
         <li class="<?php if ($params['module']=="Master" && $params['page']=="hello") {echo "active"; } ?>">
