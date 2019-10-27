@@ -179,7 +179,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             </h2>
                         </div>
                         <?php
-                          $data = json_decode(file_get_contents('http://localhost/lisensi_khanzalite.php?action=cek&email='.$dataSettings['email']), true);
+                          $data = json_decode(file_get_contents('https://khanza.basoro.id/lisensi.php?action=cek&email='.$dataSettings['email']), true);
                         ?>
                         <div class="body">
                             <div class="text-center">
