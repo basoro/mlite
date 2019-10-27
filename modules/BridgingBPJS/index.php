@@ -6,11 +6,12 @@ $module_title       = 'BPJS';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
 $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
+$module_type        = 'FKTL';
 
 ?>
 
-<?php if(FKTL == 'YES') { ?>
     <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
+      <?php if(FKTL == 'YES') { ?>
       <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
         <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=index">
           <div class="image">
@@ -21,6 +22,7 @@ $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
           <div class="sname"><?php echo $module_title; ?></div>
         </a>
       </div>
+      <?php } ?>
     <?php } else { ?>
       <tr>
         <td>
@@ -29,10 +31,13 @@ $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
               <i class="material-icons">cached</i>
             </div>
           </div>
-          <div class="sname"><?php echo $module_title; ?></div>
         </td>
         <td>
+          <h4><?php echo $module_title; ?></h4>
           <?php echo $module_description; ?>
+        </td>
+        <td>
+          <h4><?php echo $module_type; ?></h4>
         </td>
         <td>
           <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
@@ -45,4 +50,3 @@ $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
         </td>
       </tr>
     <?php } ?>
-<?php } ?>

@@ -6,6 +6,7 @@ $module_title       = 'Master';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
 $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
+$module_type        = 'FKTP';
 
 ?>
 
@@ -28,10 +29,13 @@ $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
            <i class="medical-icon-i-administration"></i>
         </div>
       </div>
-      <div class="sname"><?php echo $module_title; ?></div>
     </td>
     <td>
+      <h4><?php echo $module_title; ?></h4>
       <?php echo $module_description; ?>
+    </td>
+    <td>
+      <h4><?php echo $module_type; ?></h4>
     </td>
     <td>
       <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
