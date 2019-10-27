@@ -102,7 +102,8 @@ if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('inde
                       $roles = "CREATE TABLE `roles` (
                         `username` varchar(60) NOT NULL,
                         `role` varchar(45) NOT NULL,
-                        `cap` varchar(20) NOT NULL
+                        `cap` varchar(20) NOT NULL,
+                        `cap` text NOT NULL
                       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;";
                       query($roles);
                     }

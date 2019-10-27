@@ -141,14 +141,22 @@ include_once('layout/sidebar.php');
                       }
                       include($module_base_dir.$module. '/' .$module_base_file);
                       $moduleClass = new $module;
-                      if(in_array($module, $userModules)) {
+                      if($role == 'Admin') {
                         if(method_exists($moduleClass, $page)) {
                           $moduleClass->$page();
                         } else {
                           echo '<div class="alert bg-pink alert-dismissible" role="alert">Halaman tidak ditemukan!</div>';
                         }
                       } else {
-                        echo '<div class="alert bg-pink alert-dismissible" role="alert">Anda tidak punyak hak akses!</div>';
+                        if(in_array($module, $userModules)) {
+                          if(method_exists($moduleClass, $page)) {
+                            $moduleClass->$page();
+                          } else {
+                            echo '<div class="alert bg-pink alert-dismissible" role="alert">Halaman tidak ditemukan!</div>';
+                          }
+                        } else {
+                          echo '<div class="alert bg-pink alert-dismissible" role="alert">Anda tidak punyak hak akses!</div>';
+                        }
                       }
                     } else {
                       echo '<div class="alert bg-pink alert-dismissible" role="alert">Modul tidak ditemukan!</div>';
