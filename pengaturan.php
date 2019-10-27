@@ -190,7 +190,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <h1>BERLISENSI
                                 </h1>
                               </p>
-                                <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
+                                <a href="#gratis-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
                               <?php } else { ?>
                                 <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
                                 <p>
@@ -205,7 +205,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <h1>ERROR
                                 </h1>
                               </p>
-                                <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke lisensi Gratis</a>
+                                <a href="#error-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke lisensi Gratis</a>
                             <?php } ?>
                             </div>
                         </div>
@@ -223,7 +223,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <dd><?php echo VERSION; ?></dd>
                                 <dt>Lisensi</dt>
                                 <dd>
-                                    <?php if($data['status'] == "verified") { if($data['kode_lisensi'] == md5($dataSettings['email'])) { echo 'BERLISENSI'; } else { echo 'GRATIS'; } } else { echo 'ERROR'; } ?> <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
+                                    <?php if($data['status'] == "verified") { if($data['kode_lisensi'] == md5($dataSettings['email'])) { echo 'BERLISENSI <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } else { echo 'GRATIS <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>'; } } else { echo 'ERROR <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } ?>
                                 </dd>
                             </dl>
                             <hr />
@@ -264,6 +264,48 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Naikkan ke versi BERLISENSI</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="gratis-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Lisensi</h4>
+                </div>
+                <form method="post" action="">
+                    <div class="modal-body">
+                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
+                        <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Turunkan ke versi GRATIS</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="error-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Lisensi</h4>
+                </div>
+                <form method="post" action="">
+                    <div class="modal-body">
+                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
+                        <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Naikkan ke versi GRATIS</button>
                     </div>
                 </form>
             </div>
