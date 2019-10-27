@@ -12,7 +12,7 @@ $module_type        = 'FKTL';
 ?>
 
     <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
-      <?php if(FKTL == 'YES') { ?>
+      <?php if(FKTL == true) { ?>
       <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
         <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=index">
           <div class="image">

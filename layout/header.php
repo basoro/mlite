@@ -4,7 +4,7 @@ session_start();
 
 include_once('init.php');
 
-if(PRODUCTION == 'YES') {
+if(PRODUCTION == true) {
   ini_set('display_errors', 0);
   error_reporting(E_ERROR | E_WARNING | E_PARSE);
 }
@@ -75,7 +75,7 @@ if(PRODUCTION == 'YES') {
         <div class="container-fluid">
             <div class="navbar-header">
                 <a href="javascript:void(0);" class="bars"></a>
-                <a class="navbar-brand" href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?> <?php if(FKTL == 'YES') { echo "<span class='btn btn-xs bg-red'>v.FKTL</span>"; } else { echo "<span class='btn btn-xs bg-red'>v.FKTP</span>"; } ?></a>
+                <a class="navbar-brand" href="<?php echo URL; ?>/index.php"><?php echo $dataSettings['nama_instansi']; ?> <?php if(FKTL == true) { echo "<span class='btn btn-xs bg-red'>v.FKTL</span>"; } else { echo "<span class='btn btn-xs bg-red'>v.FKTP</span>"; } ?></a>
             </div>
         </div>
     </nav>

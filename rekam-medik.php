@@ -60,7 +60,7 @@ include_once('layout/sidebar.php');
                                     <th>Pemeriksaan</th>
                                     <th>Diagnosa</th>
                                     <th>Obat</th>
-                                    <?php if(FKTL == 'YES') { ?>
+                                    <?php if(FKTL == true) { ?>
                                     <th>Laboratorium</th>
                                     <th>Radiologi</th>
                                     <?php } ?>
@@ -123,7 +123,7 @@ include_once('layout/sidebar.php');
                                         ?>
                                         </ul>
                                     </td>
-                                    <?php if(FKTL == 'YES') { ?>
+                                    <?php if(FKTL == true) { ?>
                                     <td>
                                         <ul style="list-style:none;">
                                         <?php
@@ -164,7 +164,7 @@ include_once('layout/sidebar.php');
                                         <td></td>
                                         <td></td>
                                         <td></td>
-                                        <?php if(FKTL == 'YES') { ?>
+                                        <?php if(FKTL == true) { ?>
                                         <td></td>
                                         <td></td>
                                         <?php } ?>

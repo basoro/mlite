@@ -15,11 +15,11 @@ include_once('layout/header.php');
 include_once('layout/sidebar.php');
 
 if($_SERVER['REQUEST_METHOD'] == "POST") {
-  if(isset($_POST['fktl']) && $_POST['fktl'] == 'No') {
-    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'YES')", "\ndefine('FKTL', 'NO')", file_get_contents('config.php')));
+  if(isset($_POST['fktl']) && $_POST['fktl'] == 'false') {
+    file_put_contents('config.php', str_replace("\ndefine('FKTL', true)", "\ndefine('FKTL', false)", file_get_contents('config.php')));
   }
-  if(isset($_POST['fktl']) && $_POST['fktl'] == 'Yes') {
-    file_put_contents('config.php', str_replace("\ndefine('FKTL', 'NO')", "\ndefine('FKTL', 'YES')", file_get_contents('config.php')));
+  if(isset($_POST['fktl']) && $_POST['fktl'] == 'true') {
+    file_put_contents('config.php', str_replace("\ndefine('FKTL', false)", "\ndefine('FKTL', true)", file_get_contents('config.php')));
   }
   if(isset($_POST['kode_ppk']) && $_POST['kode_ppk'] !== '') {
     $kode_ppk = $dataSettings['kode_ppk'];
@@ -117,8 +117,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     <div class="col-sm-8">
                                         <div class="form-line">
                                             <select name="fktl" class="form-control">
-                                              <option value="No">FKTP</option>
-                                              <option value="Yes">FKTL</option>
+                                              <option value="false" <?php if(FKTL == false) { echo 'selected'; } ?>>FKTP</option>
+                                              <option value="true" <?php if(FKTL == true) { echo 'selected'; } ?>>FKTL</option>
                                             </select>
                                         </div>
                                     </div>
