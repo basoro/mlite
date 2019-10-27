@@ -70,10 +70,16 @@ include_once('layout/sidebar.php');
                           ?>
                           <div class="card">
                             <div class="body">
-                              <?php if(isset($message)) echo "<p>$message</p>"; ?>
+                              <div class="alert bg-grey alert-dismissible" role="alert">
+                                <ul class="list-unstyled">
+                                  <li>Pastikan modul yang akan diunggah berekstensi .zip</li>
+                                  <li>Modul yang sama akan ditimpa, pastikan mengunggah modul versi terbaru</li>
+                                </ul>
+                              </div>
+                              <?php if(isset($message)) echo '<div class="alert bg-green alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>'.$message.'</div>'; ?>
                               <form enctype="multipart/form-data" method="post" action="">
-                              <label>Choose a zip file to upload: <br><input type="file" name="zip_file" /></label>
-                              <input class="btn btn-primary"type="submit" name="submit" value="Upload" />
+                              <label>Choose a zip file to upload: <br><input type="file" name="zip_file" /></label><br><br>
+                              <input class="btn btn-lg btn-primary"type="submit" name="submit" value="Unggah dan Pasang" />
                               </form>
                             </div>
                           </div>

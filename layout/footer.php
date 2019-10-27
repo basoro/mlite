@@ -191,6 +191,9 @@
         document.getElementById("inputFile").click();
     }
 
+    $('#rmdirmodule').submit(function() {
+     return confirm("Anda akan menghapus Modul? Klik OK untuk melanjutkan!");
+    });
 
     </script>
 
