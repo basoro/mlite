@@ -165,9 +165,7 @@
           	thumbnail: true,
           	selector: 'a'
       	});
-        $("#delete-plugins").click(function(e) {
-            return confirm("This record will be permanentely deleted. Is that OK?");
-        });
+
 	  </script>
 
     <script type="text/javascript">
@@ -190,6 +188,10 @@
     function upload_berkas(){
         document.getElementById("inputFile").click();
     }
+
+    $(".rmdirmodule").on("submit", function() {
+        return confirm("Anda akan menghapus Modul? Klik OK untuk melanjutkan!");
+    });
 
     </script>
 

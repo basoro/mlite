@@ -45,9 +45,9 @@ $module_type        = 'FKTP';
       <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
     </td>
     <td>
-      <form method="post" action="">
+      <form class="rmdirmodule" method="post" action="">
         <input type="hidden" name="dirmodule" value="<?php echo $module_directory; ?>">
-        <button type="submit" class="btn btn-danger" id="delete-plugins"><i class="material-icons">delete</i> Delete</button>
+        <button type="submit" class="btn btn-danger"><i class="material-icons">delete</i> Delete</button>
       </form>
     </td>
   </tr>
