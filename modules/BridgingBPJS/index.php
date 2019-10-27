@@ -10,10 +10,9 @@ $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
 ?>
 
 <?php if(FKTL == 'YES') { ?>
-  <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Rekam_Medis')  { ?>
     <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
       <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-        <a href="<?php echo URL; ?>/?module=BridgingBPJS">
+        <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=index">
           <div class="image">
             <div class="icon">
               <i class="material-icons">cached</i>
@@ -46,5 +45,4 @@ $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
         </td>
       </tr>
     <?php } ?>
-  <?php } ?>
 <?php } ?>

@@ -11,11 +11,16 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 
 include_once('../config.php');
- 
+
 $q = $_GET['q'];
 
 $sql = query("SELECT kd_penyakit AS id, nm_penyakit AS text FROM penyakit WHERE (kd_penyakit LIKE '%".$q."%' OR nm_penyakit LIKE '%".$q."%')");

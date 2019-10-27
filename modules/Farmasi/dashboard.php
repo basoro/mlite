@@ -1,3 +1,5 @@
+<?php
+?>
             <div class="row clearfix">
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
                     <div class="info-box bg-pink hover-expand-effect">
@@ -56,8 +58,13 @@
                 </div>
               </div>
             </div>
-            <table id="allobat" class="table table-bordered table-striped table-hover display " width="100%">
-                <thead>
+            <div class="card">
+                <div class="header">
+                  <h2>Data Obat / BHP</h2>
+                </div>
+                <div class="body">
+                <table id="allobat" class="table table-bordered table-striped table-hover display " width="100%">
+                  <thead>
                     <tr>
                       <th>Kode Barang</th>
                       <th>Nama Barang</th>
@@ -83,7 +90,9 @@
                       <th>Kategori</th>
                       <th>Golongan</th>
                     </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                  </tbody>
+                </table>
+              </div>
+            </div>

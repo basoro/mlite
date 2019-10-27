@@ -37,6 +37,10 @@ if (!isset($_COOKIE['username']) && !isset($_COOKIE['password'])) {
     }
 }
 
+$getUserModule = fetch_assoc(query("SELECT module FROM roles WHERE username = '{$_SESSION['username']}'"));
+$getUserModule['module'] = str_replace(" ", "", $getUserModule['module']);
+$userModules=explode(",",$getUserModule['module']);
+
 $jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;
 $role = isset($_SESSION['role'])?$_SESSION['role']:null;
 

@@ -1,27 +1,8 @@
-<div class="body">
-    <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS">
-                <i class="material-icons">home</i> <span class="hidden-xs">Index</span>
-            </a>
-        </li>
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=data_sep">
-                <i class="material-icons">assignment</i> <span class="hidden-xs">Data SEP</span>
-            </a>
-        </li>
-        <li role="presentation">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=pasien_batal">
-                <i class="material-icons">clear</i> <span class="hidden-xs">Pasien Batal</span>
-            </a>
-        </li>
-        <li role="presentation" class="active">
-            <a href="<?php echo URL; ?>/?module=BridgingBPJS&page=cek_kepesertaan">
-                <i class="material-icons">assignment_ind</i> <span class="hidden-xs">Cek Kepesertaan</span>
-            </a>
-        </li>
-    </ul>
-    <div class="content m-t-30">
+<div class="card">
+    <div class="header">
+      <h2>Cek Kepesertaan</h2>
+    </div>
+    <div class="body">
       <?php if($_SERVER['REQUEST_METHOD'] == "POST"){
 if($_POST['nops'] !== ""){
 date_default_timezone_set('UTC');

@@ -9,6 +9,11 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 

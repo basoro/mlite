@@ -27,7 +27,7 @@ define('PRODUCTION', 'NO'); // YES to hide error page. NO to display error page.
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', 'NO');
+define('FKTL', 'YES');
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
@@ -40,6 +40,7 @@ $module = isset($_GET['module'])?$_GET['module']:null;
 $module_base_dir = './modules/';
 $module_ext = '.module.php';
 $module_base_file = $module.$module_ext;
+
 
 if(isset($_GET['module'])) {
   parse_str(parse_url($_SERVER['REQUEST_URI'])['query'], $params);

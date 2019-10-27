@@ -1,4 +1,3 @@
-<?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
 <li class="<?php if ($params['module']=="Master") {echo "active"; } ?>">
     <a href="javascript:void(0);" class="menu-toggle">
         <i class="material-icons">folder</i>
@@ -22,4 +21,3 @@
         </li>
     </ul>
 </li>
-<?php } ?>

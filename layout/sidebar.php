@@ -41,13 +41,15 @@
                             <span>Home</span>
                         </a>
                     </li>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'RekamMedik')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/pendaftaran.php">
                             <i class="material-icons">text_fields</i>
                             <span>Pendaftaran</span>
                         </a>
                     </li>
-                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Kasir')  { ?>
+                    <?php } ?>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Kasir')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/kasir.php">
                             <i class="material-icons">attach_money</i>
@@ -55,7 +57,7 @@
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Apotek')  { ?>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Apotek')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/apotek.php">
                             <i class="material-icons">widgets</i>
@@ -85,8 +87,17 @@
                     </li>
                     <li class="header">MODUL-MODUL</li>
                     <?php
-                        foreach (glob("modules/*/menu.php") as $filename_menu) {
-                        include $filename_menu;
+                    if($_SESSION['role'] == 'Admin') {
+                      foreach (glob("modules/*/menu.php") as $filename) {
+                        include $filename;
+                      }
+                    } else if(!empty($getUserModule['module'])) {
+                      foreach ($userModules as $key=>$filename) {
+                          $filename = str_replace(" ", "", $filename);
+                          include ("modules/".$filename."/menu.php");
+                      }
+                    } else {
+                      echo '<li><div class="alert bg-pink alert-dismissible" style="margin:20px;">Module Tidak Tersedia!</div></li>';
                     }
                     ?>
                     <?php if($role == 'Admin')  { ?>

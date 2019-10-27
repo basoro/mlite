@@ -26,7 +26,11 @@ if(isset($_GET['no_rawat'])) {
 }
 
 ?>
-
+<div class="card">
+    <div class="header">
+      <h2>Pasien Rawat Jalan</h2>
+    </div>
+    <div class="body">
                         <?php display_message(); ?>
                         <?php
                         $action = isset($_GET['action'])?$_GET['action']:null;
@@ -34,7 +38,6 @@ if(isset($_GET['no_rawat'])) {
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                         if(!$action){
                         ?>
-                            <div class="body">
                                 <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                     <thead>
                                         <tr>
@@ -68,10 +71,10 @@ if(isset($_GET['no_rawat'])) {
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                        <li><a href="./?module=RawatJalan&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
-                                                        <li><a href="./?module=RawatJalan&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
+                                                        <li><a href="./?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
+                                                        <li><a href="./?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
+                                                        <li><a href="./?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
+                                                        <li><a href="./?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
                                                     </ul>
                                                 </div>
                                             </td>
@@ -112,7 +115,6 @@ if(isset($_GET['no_rawat'])) {
                                     </div>
                                     </form>
                                 </div>
-                      </div>
 
                         <?php } ?>
 
@@ -334,6 +336,78 @@ if(isset($_GET['no_rawat'])) {
                                  </div>
 
                           <?php } ?>
+                          <?php if($action == "berkas_digital") { ?>
+                          <?php
+                            if (isset($_POST['ok_berdig'])) {
+                              $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
+                              $date = $periksa_radiologi['tgl_periksa'];
+                              $time = $periksa_radiologi['jam'];
+                                    //$photo_berkas=fetch_array(query("SELECT lokasi_file FROM berkas_digital_perawatan WHERE kode = '{$kode_berkas}' AND no_rawat='{$no_rawat}'"));
+                                    //$kode_berkas = $_POST['kode'];
+                              if($_FILES['file']['name']!='') {
+                                    //$file='../webapps/berkasrawat/'.$photo_berkas;
+                                    //@unlink($file);
+                                $tmp_name = $_FILES["file"]["tmp_name"];
+                                $namefile = $_FILES["file"]["name"];
+                                $explode = explode(".", $namefile);
+                                $ext = end($explode);
+                                if($_POST['masdig']=='001') {
+                                    $image_name = "berkasdigital-".time().".".$ext;
+                                }else{
+                                    $image_name = "rujukanfktp-".time().".".$ext;
+                                }
+                                move_uploaded_file($tmp_name,"../berkasrawat/pages/upload/".$image_name);
+                                $lokasi_berkas = 'pages/upload/'.$image_name;
+                                $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
+                                if($insert_berkas) {
+                                  set_message('Berkas digital perawatan telah ditersimpan.');
+                                  redirect("pasien-ralan.php");
+                                }
+                              }
+                            }
+                          ?>
+                                <dl class="dl-horizontal">
+                                    <dt>Nama Lengkap</dt>
+                                    <dd><?php echo $nm_pasien; ?></dd>
+                                    <dt>No. RM</dt>
+                                    <dd><?php echo $no_rkm_medis; ?></dd>
+                                    <dt>No. Rawat</dt>
+                                    <dd><?php echo $no_rawat; ?></dd>
+                                    <dt>Umur</dt>
+                                    <dd><?php echo $umur; ?></dd>
+                                </dl>
+                              <hr>
+                              <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                              <?php
+                                $sql_rad = query("select * from berkas_digital_perawatan where no_rawat= '{$_GET['no_rawat']}'");
+                                $no=1;
+                                while ($row_rad = fetch_array($sql_rad)) {
+                                  echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                  echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'"></a>';
+                                  echo '</div>';
+                                  $no++;
+                                }
+                              ?>
+                              </div>
+                            <hr>
+                              </div>
+                                <div class="body">
+                                  <form id="form_validation" name="berdigi" action="" method="POST"  enctype="multipart/form-data">
+                                      <label for="email_address">Unggah Berkas Digital Perawatan</label>
+                                      <div class="form-group">
+                                        <select class="form-control" name="masdig">
+                                          <option value="001">Berkas SEP</option>
+                                          <option value="002">Berkas Rujukan</option>
+                                        </select>
+                                          <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/modules/RawatJalan/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                                          <br/>
+                                          <input name="file" id="inputFile" type="file" style="display:none;"/>
+                                      </div>
+                                      <button type="submit" name="ok_berdig" value="ok_berdig" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_berdig\'">UPLOAD BERKAS</button>
+                                  </form>
+                                </div>
+                              </div>
+                          <?php } ?>
                           <?php
                           if($action == "radiologi"){
                                       if (isset($_POST['ok_radiologi'])) {
@@ -407,6 +481,59 @@ if(isset($_GET['no_rawat'])) {
                               </div>
                             </div>
                           <?php } ?>
+                          <?php if($action == "status_pulang") { ?>
+                            <?php if(isset($_POST['ok_status_pulang'])){
+        								if($_POST['stts_pulang'] == "Dirawat"){
+                                        $sql = query("INSERT INTO `kamar_inap` (`no_rawat`, `kd_kamar`, `trf_kamar`, `diagnosa_awal`, `diagnosa_akhir`, `tgl_masuk`,
+                                        `jam_masuk`, `tgl_keluar`, `jam_keluar`, `lama`, `ttl_biaya`, `stts_pulang`) VALUES ('{$_POST['no_rawat']}','{$_POST['kamar']}',
+                                        '{$_POST['hrgkmr']}','{$_POST['dx']}','-','{$_POST['tgl']}','$time','0000-00-00','00:00:00','0','0','-')");
+                                         if($sql){$update = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar = '".$_POST['kamar']."'");
+                                                  $regs = query("UPDATE reg_periksa SET stts = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
+                                      			}
+                                      }else{
+                                        $status = query("UPDATE reg_periksa SET stts = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
+                                         }}?>
+                                <form method="POST">
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                        <label for="stts_pulang">Status</label>
+                                        <select name="stts_pulang" id="stts_pulang"class="form-control show-tick">
+                                        <?php
+                                        $no_rawat = $_GET['no_rawat'];
+                                        $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'reg_periksa' AND COLUMN_NAME = 'stts'");
+                                        $row = fetch_array($result);
+                                        $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
+                                        foreach($enumList as $value) {
+                                            echo "<option value='$value'>$value</option>";
+                                        }
+                                        ?>
+                                        </select>
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                          <label for="kamar">Kamar</label>
+                                          <select name="kamar" class="form-control kamar" id="kamar" style="width:100%"></select>
+                                                  <br/>
+                                          <input type="hidden" class="form-control" id="hrgkmr" name="hrgkmr"/>
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                          <label for="dx">Diagnosa</label>
+                                          <input type="text" class="form-control" name="dx" value="">
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                          <label for="tglplg">Tanggal</label>
+                                          <input type="text" class="datepicker form-control" name="tgl" value="<?php echo date('Y-m-d'); ?>">
+                                      </div>
+                                    </div>
+                                      <input type="hidden" name="no_rawat" value="<?php echo $no_rawat;?>">
+                                      <button type="submit"  name="ok_status_pulang" value="ok_status_pulang"  class="btn btn-success waves-effect" onclick="this.value=\'ok_status_pulang\'">SIMPAN</button>
+                                </form>
+                          <?php } ?>
 
                         <?php
                         //delete
@@ -442,3 +569,5 @@ if(isset($_GET['no_rawat'])) {
                           }
                         }
                         ?>
+</div>
+<div>

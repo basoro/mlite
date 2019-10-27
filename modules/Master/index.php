@@ -9,40 +9,38 @@ $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
 
 ?>
 
-<?php if($role == 'Admin' || $role == 'Manajemen')  { ?>
-  <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
-    <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-      <a href="<?php echo URL; ?>/?module=Master">
-        <div class="image">
-          <div class="icon">
-            <i class="medical-icon-i-administration"></i>
-          </div>
+<?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
+  <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
+    <a href="<?php echo URL; ?>/?module=Master&page=index">
+      <div class="image">
+        <div class="icon">
+          <i class="medical-icon-i-administration"></i>
         </div>
-        <div class="sname"><?php echo $module_title; ?></div>
-      </a>
-    </div>
-  <?php } else { ?>
-    <tr>
-      <td>
-        <div class="image-plugins">
-          <div class="icon">
-             <i class="medical-icon-i-administration"></i>
-          </div>
+      </div>
+      <div class="sname"><?php echo $module_title; ?></div>
+    </a>
+  </div>
+<?php } else { ?>
+  <tr>
+    <td>
+      <div class="image-plugins">
+        <div class="icon">
+           <i class="medical-icon-i-administration"></i>
         </div>
-        <div class="sname"><?php echo $module_title; ?></div>
-      </td>
-      <td>
-        <?php echo $module_description; ?>
-      </td>
-      <td>
-        <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
-      </td>
-      <td>
-        <form method="post">
-          <input type="hidden" name="dirmodule" value="<?php echo $module_directory; ?>">
-          <button type="submit" class="btn btn-danger" id="delete-plugins"><i class="material-icons">delete</i> Delete</button>
-        </form>
-      </td>
-    </tr>
-  <?php } ?>
+      </div>
+      <div class="sname"><?php echo $module_title; ?></div>
+    </td>
+    <td>
+      <?php echo $module_description; ?>
+    </td>
+    <td>
+      <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
+    </td>
+    <td>
+      <form method="post">
+        <input type="hidden" name="dirmodule" value="<?php echo $module_directory; ?>">
+        <button type="submit" class="btn btn-danger" id="delete-plugins"><i class="material-icons">delete</i> Delete</button>
+      </form>
+    </td>
+  </tr>
 <?php } ?>
