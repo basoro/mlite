@@ -342,11 +342,7 @@ if(isset($_GET['no_rawat'])) {
                               $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
                               $date = $periksa_radiologi['tgl_periksa'];
                               $time = $periksa_radiologi['jam'];
-                                    //$photo_berkas=fetch_array(query("SELECT lokasi_file FROM berkas_digital_perawatan WHERE kode = '{$kode_berkas}' AND no_rawat='{$no_rawat}'"));
-                                    //$kode_berkas = $_POST['kode'];
                               if($_FILES['file']['name']!='') {
-                                    //$file='../webapps/berkasrawat/'.$photo_berkas;
-                                    //@unlink($file);
                                 $tmp_name = $_FILES["file"]["tmp_name"];
                                 $namefile = $_FILES["file"]["name"];
                                 $explode = explode(".", $namefile);
@@ -410,33 +406,25 @@ if(isset($_GET['no_rawat'])) {
                           <?php } ?>
                           <?php
                           if($action == "radiologi"){
-                                      if (isset($_POST['ok_radiologi'])) {
-                                    $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
-                                    $date = $periksa_radiologi['tgl_periksa'];
-                                    $time = $periksa_radiologi['jam'];
-                      //$photo_berkas=fetch_array(query("SELECT lokasi_file FROM berkas_digital_perawatan WHERE kode = '{$kode_berkas}' AND no_rawat='{$no_rawat}'"));
-                      //$kode_berkas = $_POST['kode'];
-                      if($_FILES['file']['name']!='') {
-                      //$file='../webapps/berkasrawat/'.$photo_berkas;
-                      //@unlink($file);
-                      $tmp_name = $_FILES["file"]["tmp_name"];
-                      $namefile = $_FILES["file"]["name"];
-                      $explode = explode(".", $namefile);
-                      $ext = end($explode);
-                      $image_name = "berkasradiologi-".time().".".$ext;
-                      move_uploaded_file($tmp_name,"../radiologi/pages/upload/".$image_name);
-                      $lokasi_berkas = 'pages/upload/'.$image_name;
-                      $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
-                      if($insert_berkas) {
-                      set_message('Berkas digital radiologi telah ditersimpan.');
-                          redirect("pasien-ralan.php?action=radiologi&no_rawat=$no_rawat");
-                      }
-
-
-                      }
-
-
-                                      }
+                            if (isset($_POST['ok_radiologi'])) {
+                              $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
+                              $date = $periksa_radiologi['tgl_periksa'];
+                              $time = $periksa_radiologi['jam'];
+                              if($_FILES['file']['name']!='') {
+                              $tmp_name = $_FILES["file"]["tmp_name"];
+                              $namefile = $_FILES["file"]["name"];
+                              $explode = explode(".", $namefile);
+                              $ext = end($explode);
+                              $image_name = "berkasradiologi-".time().".".$ext;
+                              move_uploaded_file($tmp_name,"../radiologi/pages/upload/".$image_name);
+                              $lokasi_berkas = 'pages/upload/'.$image_name;
+                              $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
+                                if($insert_berkas) {
+                                set_message('Berkas digital radiologi telah ditersimpan.');
+                                    redirect("pasien-ralan.php?action=radiologi&no_rawat=$no_rawat");
+                                }
+                              }
+                            }
                           ?>
                               <div class="row">
                               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">

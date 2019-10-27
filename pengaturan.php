@@ -14,7 +14,7 @@ include_once('config.php');
 include_once('layout/header.php');
 include_once('layout/sidebar.php');
 
-if($_SERVER['REQUEST_METHOD'] == "POST") {
+if (isset($_POST['setting'])) {
   if(isset($_POST['fktl']) && $_POST['fktl'] == 'false') {
     file_put_contents('config.php', str_replace("\ndefine('FKTL', true)", "\ndefine('FKTL', false)", file_get_contents('config.php')));
   }
@@ -32,22 +32,83 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     $logo = escape($dataSettings['logo']);
   }
 
+  $nama_instansi = $_POST['nama_instansi'];
+  $alamat_instansi = $_POST['alamat_instansi'];
+  $kabupaten =	$_POST['kabupaten'];
+  $propinsi =	$_POST['propinsi'];
+  $kontak =	$_POST['kontak'];
+  $email =	$_POST['email'];
+  $kode_ppk =	$_POST['kode_ppk'];
+  $kode_ppkinhealth =	$_POST['kode_ppkinhealth'];
+  $kode_ppkkemenkes =	$_POST['kode_ppkkemenkes'];
+
   $update = query("UPDATE setting
       SET
-          nama_instansi     = '{$_POST['nama_instansi']}',
-          alamat_instansi   = '{$_POST['alamat_instansi']}',
-          propinsi          = '{$_POST['propinsi']}',
-          kabupaten         = '{$_POST['kabupaten']}',
-          kontak            = '{$_POST['kontak']}',
-          email             = '{$_POST['email']}',
+          nama_instansi     = '{$nama_instansi}',
+          alamat_instansi   = '{$alamat_instansi}',
+          propinsi          = '{$propinsi}',
+          kabupaten         = '{$kabupaten}',
+          kontak            = '{$kontak}',
+          email             = '{$email}',
           aktifkan          = 'Yes',
-          kode_ppk          = '{$_POST['kode_ppk']}',
-          kode_ppkinhealth  = '{$_POST['kode_ppkinhealth']}',
-          kode_ppkkemenkes  = '{$_POST['kode_ppkkemenkes']}',
+          kode_ppk          = '{$kode_ppk}',
+          kode_ppkinhealth  = '{$kode_ppkinhealth}',
+          kode_ppkkemenkes  = '{$kode_ppkkemenkes}',
           logo              = '{$logo}'
       WHERE
           kode_ppk          = '{$kode_ppk}'
   ");
+  if($update) {
+    $url = "https://khanza.basoro.id/lisensi.php?action=insert";
+    $curlHandle = curl_init();
+    curl_setopt($curlHandle, CURLOPT_URL, $url);
+    curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$nama_instansi."&alamat_instansi=".$alamat_instansi."&kabupaten=".$kabupaten."&propinsi=".$propinsi."&Kontak=".$kontak."&email=".$email."&kode_ppk=".$kode_ppk."&kode_ppkinhealth=".$kode_ppkinhealth."&kode_ppkkemenkes=".$kode_ppkkemenkes);
+    curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+    curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+    curl_setopt($curlHandle, CURLOPT_POST, 1);
+    curl_exec($curlHandle);
+    curl_close($curlHandle);
+  }
+}
+
+if (isset($_POST['lisensi'])) {
+  $url = "https://khanza.basoro.id/lisensi.php?action=aktifkan";
+  $curlHandle = curl_init();
+  curl_setopt($curlHandle, CURLOPT_URL, $url);
+  curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"kode_lisensi=".$_POST[kode_lisensi]."&email=".$dataSettings['email']);
+  curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+  curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+  curl_setopt($curlHandle, CURLOPT_POST, 1);
+  curl_exec($curlHandle);
+  curl_close($curlHandle);
+}
+
+if (isset($_POST['gratis'])) {
+  $url = "https://khanza.basoro.id/lisensi.php?action=gratis";
+  $curlHandle = curl_init();
+  curl_setopt($curlHandle, CURLOPT_URL, $url);
+  curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$dataSettings['email']);
+  curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+  curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+  curl_setopt($curlHandle, CURLOPT_POST, 1);
+  curl_exec($curlHandle);
+  curl_close($curlHandle);
+}
+
+if (isset($_POST['error'])) {
+  $url = "https://khanza.basoro.id/lisensi.php?action=insert";
+  $curlHandle = curl_init();
+  curl_setopt($curlHandle, CURLOPT_URL, $url);
+  curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$dataSettings['nama_instansi']."&alamat_instansi=".dataSettings['$alamat_instansi']."&kabupaten=".$dataSettings['kabupaten']."&propinsi=".$dataSettings['propinsi']."&Kontak=".$dataSettings['kontak']."&email=".$dataSettings['email']."&kode_ppk=".$dataSettings['kode_ppk']."&kode_ppkinhealth=".$dataSettings['kode_ppkinhealth']."&kode_ppkkemenkes=".$dataSettings['kode_ppkkemenkes']);
+  curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+  curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+  curl_setopt($curlHandle, CURLOPT_POST, 1);
+  curl_exec($curlHandle);
+  curl_close($curlHandle);
 }
 
 ?>
@@ -164,7 +225,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 </div>
                                 <div class="form-group">
                                     <div class="col-sm-offset-2 col-sm-10">
-                                        <input type="submit" name="bio" class="btn btn-danger" value="SIMPAN" />
+                                        <input type="submit" name="setting" class="btn btn-danger" value="SIMPAN" />
                                     </div>
                                 </div>
                             </form>
@@ -185,14 +246,14 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                             <div class="text-center">
                               <?php if($data['status'] == "verified") { ?>
                               <?php if($data['kode_lisensi'] == md5($dataSettings['email'])) { ?>
-                              <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                              <i class="material-icons text-success" style="font-size:150px;">child_care</i>
                               <p>
                                 <h1>BERLISENSI
                                 </h1>
                               </p>
                                 <a href="#gratis-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
                               <?php } else { ?>
-                                <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                                <i class="material-icons text-primary" style="font-size:150px;">check_circle_outline</i>
                                 <p>
                                   <h1>GRATIS
                                   </h1>
@@ -200,7 +261,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                   <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke versi BERLISENSI</a>
                               <?php } ?>
                             <?php } else { ?>
-                              <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                              <i class="material-icons text-danger" style="font-size:150px;">cancel</i>
                               <p>
                                 <h1>ERROR
                                 </h1>
@@ -259,11 +320,11 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="modal-body">
                         <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
                         <p>Untuk mengaktifkan versi BERLISENSI, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza.</p>
-                        <input type="text" name="license-key" class="form-control" placeholder="Kode lisensi (License Key)..." />
+                        <input type="text" name="kode_lisensi" class="form-control" placeholder="Kode lisensi (License Key)..." />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Naikkan ke versi BERLISENSI</button>
+                        <button type="submit" class="btn btn-primary" name="lisensi">Naikkan ke versi BERLISENSI</button>
                     </div>
                 </form>
             </div>
@@ -281,10 +342,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="modal-body">
                         <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
                         <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                        <div class="text-center" style="margin-top:40px;margin-bottom:40px;">
+                          <button type="submit" class="btn btn-lg btn-danger" style="padding:20px;font-size:24px;" name="gratis">Turunkan ke versi GRATIS</button>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Turunkan ke versi GRATIS</button>
                     </div>
                 </form>
             </div>
@@ -302,10 +365,12 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                     <div class="modal-body">
                         <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
                         <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                        <div class="text-center" style="margin-top:40px;margin-bottom:40px;">
+                          <button type="submit" class="btn btn-lg btn-primary" style="padding:20px;font-size:24px;" name="error">Naikkan ke versi GRATIS</button>
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Naikkan ke versi GRATIS</button>
                     </div>
                 </form>
             </div>
