@@ -114,8 +114,8 @@ include_once('layout/sidebar.php');
                                       <table id="datapengguna" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                           <thead>
                                               <tr>
-                                                  <th>USER NAME</th>
                                                   <th>NAMA</th>
+                                                  <th>USER NAME</th>
                                                   <th>ROLE</th>
                                                   <th>CAP</th>
                                                   <th>MODULE</th>
@@ -135,8 +135,8 @@ include_once('layout/sidebar.php');
                                               data-capnama='".$query2['nama']."'
                                               data-modulename='".$row['module']."'
                                             >";
-                                      				echo "<td>".$row['username']."</td>";
                                     			    echo "<td>".$query1['nama']."</td>";
+                                              echo "<td>".$row['username']."</td>";
                                       				echo "<td>".$row['role']."</td>";
                                   				    echo "<td>".$query2['nama']."</td>";
                                               echo "<td>".$row['module']."</td>";
