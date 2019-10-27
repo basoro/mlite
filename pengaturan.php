@@ -257,8 +257,8 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                 </div>
                 <form method="post" action="">
                     <div class="modal-body">
-                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://batflat.org/buy" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
-                        <p>Untuk mengaktifkan versi BERLISENSI, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi <a href="https://batflat.org/buy" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza.</p>
+                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
+                        <p>Untuk mengaktifkan versi BERLISENSI, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza.</p>
                         <input type="text" name="license-key" class="form-control" placeholder="Kode lisensi (License Key)..." />
                     </div>
                     <div class="modal-footer">
