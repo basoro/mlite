@@ -3,6 +3,7 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
 $module_directory   = 'Farmasi';
 $module_title       = 'Farmasi';
+$module_version     = '1.0';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
 $module_description = 'Modul untuk Gudang Farmasi dalam pengaturan obat-obatan dan bahan habis pakai.';
@@ -35,7 +36,10 @@ $module_type        = 'FKTP';
       <?php echo $module_description; ?>
     </td>
     <td>
-      <h4><?php echo $module_type; ?></h4>
+      <b><?php echo $module_type; ?></b>
+    </td>
+    <td>
+      <b><?php echo $module_version; ?></b>
     </td>
     <td>
       <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>

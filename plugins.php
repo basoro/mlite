@@ -84,6 +84,7 @@ include_once('layout/sidebar.php');
                                   <th>Plugins</th>
                                   <th>Deskripsi singkat</th>
                                   <th>Type</th>
+                                  <th>Versi</th>
                                   <th>Pembuat</th>
                                   <th>Aksi</th>
                                 </tr>

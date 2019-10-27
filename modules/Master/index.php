@@ -3,6 +3,7 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
 $module_directory   = 'Master';
 $module_title       = 'Master';
+$module_version     = '1.0';
 $module_author      = 'Ataaka Salim';
 $module_url         = 'https://khanza.basoro.id';
 $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
@@ -12,7 +13,7 @@ $module_type        = 'FKTP';
 
 <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
   <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-    <a href="<?php echo URL; ?>/?module=Master&page=index">
+    <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
           <i class="medical-icon-i-administration"></i>
@@ -35,7 +36,10 @@ $module_type        = 'FKTP';
       <?php echo $module_description; ?>
     </td>
     <td>
-      <h4><?php echo $module_type; ?></h4>
+      <b><?php echo $module_type; ?></b>
+    </td>
+    <td>
+      <b><?php echo $module_version; ?></b>
     </td>
     <td>
       <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>

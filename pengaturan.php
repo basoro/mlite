@@ -150,7 +150,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                 <div class="form-group">
                                     <label for="npwp" class="col-sm-4 control-label">Logo</label>
                                     <div class="col-sm-8">
-                                        <div class="form-line">
+                                        <div class="form">
                                           <?php if($dataSettings['logo'] !==''){
                                             echo '<img id="image_upload_preview" width="200px" src="data:image/jpeg;base64,'.base64_encode( $dataSettings['logo'] ).'" onclick="upload_berkas()" style="cursor:pointer;"/>';
                                           } else {

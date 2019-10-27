@@ -81,9 +81,9 @@ if(isset($_GET['no_rawat'])) {
                                             <td><?php echo $row['6']; ?></td>
                                             <td><?php echo $row['7']; ?></td>
                                             <td><?php echo $row['8']; ?></td>
-                                            <td><?php echo SUBSTR($row['2'],0,20); ?></td>
+                                            <td><?php echo $row['2']; ?></td>
                                             <td><?php echo $row['3']; ?></td>
-                                            <td><?php echo SUBSTR($row['4'],5,15); ?></td>
+                                            <td><?php echo $row['4']; ?></td>
                                         </tr>
                                     <?php
                                     }

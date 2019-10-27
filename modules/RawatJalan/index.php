@@ -1,10 +1,11 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory = 'RawatJalan';
-$module_title = 'Rawat Jalan';
-$module_author = 'Ataaka Salim';
-$module_url = 'https://khanza.basoro.id';
+$module_directory   = 'RawatJalan';
+$module_title       = 'Rawat Jalan';
+$module_version     = '1.0';
+$module_author      = 'Ataaka Salim';
+$module_url         = 'https://khanza.basoro.id';
 $module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan, upload berkas digital, berkas radiologi dan set status perawatan pasien.';
 $module_type        = 'FKTL';
 
@@ -37,7 +38,10 @@ $module_type        = 'FKTL';
           <?php echo $module_description; ?>
         </td>
         <td>
-          <h4><?php echo $module_type; ?></h4>
+          <b><?php echo $module_type; ?></b>
+        </td>
+        <td>
+          <b><?php echo $module_version; ?></b>
         </td>
         <td>
           <a href="<?php echo $module_url; ?>" alt="<?php echo $module_author; ?>"><?php echo $module_author; ?></a>
