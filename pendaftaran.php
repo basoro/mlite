@@ -881,7 +881,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                     <h4 class="modal-title" id="pasienModalLabel">Database Pasien</h4>
                 </div>
                 <div class="modal-body">
-                  <table id="pasien" class="table table-bordered table-striped table-hover display " width="100%">
+                  <table id="pasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                       <thead>
                           <tr>
                             <th>Nama Pasien</th>

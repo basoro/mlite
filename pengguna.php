@@ -163,7 +163,7 @@ include_once('layout/sidebar.php');
                     <h4 class="modal-title" id="usersModalLabel">Database User</h4>
                 </div>
                 <div class="modal-body table-responsive">
-                    <table id="users" class="table table-bordered table-striped table-hover display " width="100%">
+                    <table id="users" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>USER NAME</th>
