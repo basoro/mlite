@@ -9,11 +9,16 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 
 include ('../../../config.php');
-include ('../../../init.php');
+//include ('../../../init.php');
 
 $kode = $_GET['kode'];
 $sql = query("SELECT trf_kamar FROM kamar WHERE kd_kamar='$kode'");

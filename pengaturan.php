@@ -55,7 +55,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
     <section class="content">
         <div class="container-fluid">
             <div class="row clearfix">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
                     <div class="card">
                         <div class="header">
                             <h2>
@@ -65,56 +65,56 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                         <div class="body">
                             <form class="form-horizontal" method="post" enctype="multipart/form-data">
                                 <div class="form-group">
-                                    <label for="nama" class="col-sm-2 control-label">Nama Instansi</label>
-                                    <div class="col-sm-10">
+                                    <label for="nama" class="col-sm-4 control-label">Nama Instansi</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="nama_instansi" name="nama_instansi" placeholder="Nama Instansi" value="<?php echo $dataSettings['nama_instansi']; ?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="alamat" class="col-sm-2 control-label">Alamat Instansi</label>
-                                    <div class="col-sm-10">
+                                    <label for="alamat" class="col-sm-4 control-label">Alamat Instansi</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <textarea class="form-control" id="alamat_instansi" name="alamat_instansi" rows="3" maxlength="60" placeholder="Alamat"><?php echo $dataSettings['alamat_instansi'];?></textarea>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                      <label for="NIP" class="col-sm-2 control-label">Kabupaten</label>
-                                      <div class="col-sm-10">
+                                      <label for="NIP" class="col-sm-4 control-label">Kabupaten</label>
+                                      <div class="col-sm-8">
                                           <div class="form-line">
                                               <input type="text" class="form-control" id="kabupaten" name="kabupaten" placeholder="Kabupaten" value="<?php echo $dataSettings['kabupaten']; ?>">
                                           </div>
                                       </div>
                                 </div>
                                 <div class="form-group">
-                                      <label for="NIK" class="col-sm-2 control-label">Propinsi</label>
-                                      <div class="col-sm-10">
+                                      <label for="NIK" class="col-sm-4 control-label">Propinsi</label>
+                                      <div class="col-sm-8">
                                           <div class="form-line">
                                               <input type="text" class="form-control" id="propinsi" name="propinsi" placeholder="Propinsi" value="<?php echo $dataSettings['propinsi']; ?>">
                                           </div>
                                       </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="tempat" class="col-sm-2 control-label">Telepon</label>
-                                    <div class="col-sm-10">
+                                    <label for="tempat" class="col-sm-4 control-label">Telepon</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="kontak" name="kontak" placeholder="Nomor Telepon" value="<?php echo $dataSettings['kontak'];?>">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="tanggal" class="col-sm-2 control-label">e-Mail</label>
-                                    <div class="col-sm-10">
+                                    <label for="tanggal" class="col-sm-4 control-label">e-Mail</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="email" name="email" placeholder="e-Mail" value="<?php echo $dataSettings['email'];?>">
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-2 control-label">FKTP/FKTL</label>
-                                    <div class="col-sm-10">
+                                    <label for="npwp" class="col-sm-4 control-label">FKTP/FKTL</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <select name="fktl" class="form-control">
                                               <option value="No">FKTP</option>
@@ -124,32 +124,32 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-2 control-label">Kode PPK</label>
-                                    <div class="col-sm-10">
+                                    <label for="npwp" class="col-sm-4 control-label">Kode PPK</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="kode_ppk" name="kode_ppk" placeholder="Kode PPK" value="<?php echo $dataSettings['kode_ppk'];?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-2 control-label">Kode PPK Inhealth</label>
-                                    <div class="col-sm-10">
+                                    <label for="npwp" class="col-sm-4 control-label">Kode PPK Inhealth</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="kode_ppkinhealth" name="kode_ppkinhealth" placeholder="Kode PPK Inhealth" value="<?php echo $dataSettings['kode_ppkinhealth'];?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-2 control-label">Kode PPK Kemenkes</label>
-                                    <div class="col-sm-10">
+                                    <label for="npwp" class="col-sm-4 control-label">Kode PPK Kemkes</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                             <input type="text" class="form-control" id="kode_ppkkemenkes" name="kode_ppkkemenkes" placeholder="Kode PPK Kemenkes" value="<?php echo $dataSettings['kode_ppkkemenkes'];?>" required>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-2 control-label">Logo</label>
-                                    <div class="col-sm-10">
+                                    <label for="npwp" class="col-sm-4 control-label">Logo</label>
+                                    <div class="col-sm-8">
                                         <div class="form-line">
                                           <?php if($dataSettings['logo'] !==''){
                                             echo '<img id="image_upload_preview" width="200px" src="data:image/jpeg;base64,'.base64_encode( $dataSettings['logo'] ).'" onclick="upload_berkas()" style="cursor:pointer;"/>';
@@ -168,12 +168,107 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                                     </div>
                                 </div>
                             </form>
-                         </div>
+                        </div>
                     </div>
                 </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                                LISENSI PAKAI
+                            </h2>
+                        </div>
+                        <?php
+                          $data = json_decode(file_get_contents('http://localhost/lisensi_khanzalite.php?action=cek&email='.$dataSettings['email']), true);
+                        ?>
+                        <div class="body">
+                            <div class="text-center">
+                              <?php if($data['status'] == "verified") { ?>
+                              <?php if($data['kode_lisensi'] == md5($dataSettings['email'])) { ?>
+                              <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                              <p>
+                                <h1>BERLISENSI
+                                </h1>
+                              </p>
+                                <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
+                              <?php } else { ?>
+                                <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                                <p>
+                                  <h1>GRATIS
+                                  </h1>
+                                </p>
+                                  <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke versi BERLISENSI</a>
+                              <?php } ?>
+                            <?php } else { ?>
+                              <i class="material-icons text-success" style="font-size:150px;">check_circle_outline</i>
+                              <p>
+                                <h1>ERROR
+                                </h1>
+                              </p>
+                                <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke lisensi Gratis</a>
+                            <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="header">
+                            <h2>
+                              Informasi sistem
+                            </h2>
+                        </div>
+                        <div class="panel-body">
+                            <dl class="dl-horizontal no-margin">
+                                <dt>Versi</dt>
+                                <dd><?php echo VERSION; ?></dd>
+                                <dt>Lisensi</dt>
+                                <dd>
+                                    <?php if($data['status'] == "verified") { if($data['kode_lisensi'] == md5($dataSettings['email'])) { echo 'BERLISENSI'; } else { echo 'GRATIS'; } } else { echo 'ERROR'; } ?> <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
+                                </dd>
+                            </dl>
+                            <hr />
+                            <dl class="dl-horizontal no-margin">
+                                <dt>Versi PHP</dt>
+                                <dd>7.3.6</dd>
+                                <dt>Versi MySQL</dt>
+                                <dd>5.7.24</dd>
+                            </dl>
+                            <hr />
+                            <dl class="dl-horizontal no-margin">
+                                <dt>Ukuran System</dt>
+                                <dd>1.54 MB</dd>
+                                <dt>Ukuran database</dt>
+                                <dd>3.83 GB</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+               </div>
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="license-modal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Lisensi</h4>
+                </div>
+                <form method="post" action="">
+                    <div class="modal-body">
+                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://batflat.org/buy" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
+                        <p>Untuk mengaktifkan versi BERLISENSI, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi <a href="https://batflat.org/buy" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza.</p>
+                        <input type="text" name="license-key" class="form-control" placeholder="Kode lisensi (License Key)..." />
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">Naikkan ke versi BERLISENSI</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 <?php
 include_once('layout/footer.php');

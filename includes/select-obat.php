@@ -11,13 +11,18 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 
 include_once('../config.php');
- 
+
 $q = $_GET['q'];
- 
+
 $sql = query("SELECT kode_brng AS id, nama_brng AS text FROM databarang WHERE (kode_brng LIKE '%".$q."%' OR nama_brng LIKE '%".$q."%')");
 $json = [];
 

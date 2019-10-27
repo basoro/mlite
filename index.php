@@ -95,8 +95,17 @@ include_once('layout/sidebar.php');
                           <div class="container-fluid module">
                               <div class="row">
                               <?php
-                                  foreach (glob("modules/*/index.php") as $filename) {
+                              if($_SESSION['role'] == 'Admin') {
+                                foreach (glob("modules/*/index.php") as $filename) {
                                   include $filename;
+                                }
+                              } else if(!empty($getUserModule['module'])) {
+                                foreach ($userModules as $key=>$filename) {
+                                    $filename = str_replace(" ", "", $filename);
+                                    include ("modules/".$filename."/index.php");
+                                }
+                              } else {
+                                echo '<div class="alert bg-pink alert-dismissible" style="margin:20px;">Module Tidak Tersedia!</div>';
                               }
                               ?>
                               </div>
@@ -122,28 +131,30 @@ include_once('layout/sidebar.php');
         <div class="container-fluid">
             <div class="row clearfix">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <div class="card">
 
-                      <?php
-                      if(file_exists($module_base_dir.$module. '/' .$module_base_file)) {
-                        if(isset($_GET['page'])) {
-                          $page = $_GET['page'];
-                        } else {
-                          $page = 'index';
-                        }
-                        include($module_base_dir.$module. '/' .$module_base_file);
-                        $moduleClass = new $module;
+                    <?php
+                    if(file_exists($module_base_dir.$module. '/' .$module_base_file)) {
+                      if(isset($_GET['page'])) {
+                        $page = $_GET['page'];
+                      } else {
+                        $page = 'index';
+                      }
+                      include($module_base_dir.$module. '/' .$module_base_file);
+                      $moduleClass = new $module;
+                      if(in_array($module, $userModules)) {
                         if(method_exists($moduleClass, $page)) {
                           $moduleClass->$page();
                         } else {
-                          die("Halaman tidak ditemukan!");
+                          echo '<div class="alert bg-pink alert-dismissible" role="alert">Halaman tidak ditemukan!</div>';
                         }
                       } else {
-                        die("Modul tidak ditemukan!");
+                        echo '<div class="alert bg-pink alert-dismissible" role="alert">Anda tidak punyak hak akses!</div>';
                       }
-                      ?>
+                    } else {
+                      echo '<div class="alert bg-pink alert-dismissible" role="alert">Modul tidak ditemukan!</div>';
+                    }
+                    ?>
 
-                    </div>
                 </div>
             </div>
         </div>

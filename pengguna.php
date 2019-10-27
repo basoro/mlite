@@ -79,6 +79,24 @@ include_once('layout/sidebar.php');
                                             <div style="margin-top:-25px;"><small>Capability based on kode poliklinik and kode bangsal</small></div>
                                         </div>
                                     </div>
+                                    <div class="row clearfix m-t-15">
+                                        <div class="col-lg-2 col-md-2 col-sm-4 col-xs-4 form-control-label">
+                                            <label for="cap">MODULE</label>
+                                        </div>
+                                        <div class="col-lg-10 col-md-10 col-sm-8 col-xs-8">
+                                          <div class="input-group input-group-lg">
+                                                <div class="form">
+                                                  <select id="modulename" name="modulename[]" class="form-control" multiple="multiple">
+                                                      <option value="Master">Master</option>
+                                                      <option value="BridgingBPJS">BridgingBPJS</option>
+                                                      <option value="Farmasi">Farmasi</option>
+                                                      <option value="RawatJalan">RawatJalan</option>
+                                                  </select>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top:5px;"><small>Access to modules</small></div>
+                                        </div>
+                                    </div>
                                     <div class="row clearfix" style="margin-top:40px;margin-bottom:40px;">
                                         <div class="col-lg-12 text-center">
                                             <button type="button" class="btn btn-lg btn-primary m-t-15 m-l-15 waves-effect" id="simpan">SIMPAN</button>
@@ -100,6 +118,7 @@ include_once('layout/sidebar.php');
                                                   <th>NAMA</th>
                                                   <th>ROLE</th>
                                                   <th>CAP</th>
+                                                  <th>MODULE</th>
                                               </tr>
                                           </thead>
                                           <tbody>
@@ -114,11 +133,13 @@ include_once('layout/sidebar.php');
                                               data-role='".$row['1']."'
                                               data-cap='".$row['2']."'
                                               data-capnama='".$query2['nama']."'
+                                              data-modulename='".$row['module']."'
                                             >";
                                       				echo "<td>".$row['username']."</td>";
                                     			    echo "<td>".$query1['nama']."</td>";
                                       				echo "<td>".$row['role']."</td>";
                                   				    echo "<td>".$query2['nama']."</td>";
+                                              echo "<td>".$row['module']."</td>";
                                       				echo "</tr>";
                                   				}
                           								?>
@@ -370,13 +391,15 @@ include_once('layout/footer.php');
       var username = document.getElementById("username").value;
       var role = document.getElementById("role").value;
       var cap = document.getElementById("cap").value;
+      var modulename = $("#modulename").val();
       $.ajax({
           url:'includes/pengguna.php?p=add',
           method:'POST',
           data:{
               username:username,
               role:role,
-              cap:cap
+              cap:cap,
+              modulename:modulename
           },
          success:function(data){
              window.location.reload(true)
@@ -387,13 +410,15 @@ include_once('layout/footer.php');
       var username = document.getElementById("username").value;
       var role = document.getElementById("role").value;
       var cap = document.getElementById("cap").value;
+      var modulename = $("#modulename").val();
       $.ajax({
           url:'includes/pengguna.php?p=update',
           method:'POST',
           data:{
               username:username,
               role:role,
-              cap:cap
+              cap:cap,
+              modulename:modulename
           },
          success:function(data){
              window.location.reload(true)
@@ -412,5 +437,8 @@ include_once('layout/footer.php');
              window.location.reload(true)
          }
     });
+  });
+  $("#modulename").select2({
+      multiple: true
   });
 </script>

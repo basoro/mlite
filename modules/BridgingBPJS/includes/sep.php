@@ -9,6 +9,11 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 
@@ -19,7 +24,7 @@ $table = <<<EOT
    SELECT
      no_sep, no_rawat, tglsep, tglrujukan, no_rujukan, nomr, nama_pasien, tanggal_lahir, peserta
    FROM
-     bridging_sep 
+     bridging_sep
  ) temp
 EOT;
 

@@ -9,16 +9,21 @@
 * Licence under GPL
 ***/
 
+if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
+   header("HTTP/1.0 403 Forbidden");
+   exit;
+}
+
 ob_start();
 session_start();
 
 include ('../config.php');
-//include ('../init.php');
 
 $page = isset($_GET['p'])? $_GET['p'] : '';
 
 if($page=='add'){
   if(!empty($_POST['username'])){
+      $modulename = implode(', ', $_POST['modulename']);
       $data = array();
       $insert = query("INSERT
           INTO
@@ -26,18 +31,21 @@ if($page=='add'){
           SET
               username  = '{$_POST['username']}',
               role      = '{$_POST['role']}',
-              cap       = '{$_POST['cap']}'
+              cap       = '{$_POST['cap']}',
+              module    = '{$modulename}'
       ");
   }
 }
 if($page=='update'){
   if(!empty($_POST['username'])){
+      $modulename = implode(', ', $_POST['modulename']);
       $insert_perujuk = query("
           UPDATE
               roles
           SET
               role      = '{$_POST['role']}',
-              cap       = '{$_POST['cap']}'
+              cap       = '{$_POST['cap']}',
+              module    = '{$modulename}'
           WHERE
               username = '{$_POST['username']}'
       ");
