@@ -45,7 +45,7 @@ include_once('layout/sidebar.php');
 
                             	$continue = strtolower($name[1]) == 'zip' ? true : false;
                             	if(!$continue) {
-                            		$message = "The file you are trying to upload is not a .zip file. Please try again.";
+                            		$message = "Anda mencoba mengunggah modul dengan extensi bukan .zip! Silahkan coba lagi.";
                             	}
 
                             	$target_path = ABSPATH.''.$filename;
@@ -58,9 +58,9 @@ include_once('layout/sidebar.php');
 
                             			unlink($target_path);
                             		}
-                            		$message = "Your .zip file was uploaded and unpacked.";
+                            		$message = "Modul tambahan telah di unggah dan diaktifkan.";
                             	} else {
-                            		$message = "There was a problem with the upload. Please try again.";
+                            		$message = "Ada masalah dengan unggahan modul anda. Silahkan coba lagi. ";
                             	}
                             }
                             if(isset($_POST['dirmodule'])) {
