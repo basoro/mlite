@@ -41,7 +41,7 @@ if(isset($_GET['no_rawat'])) {
                                 <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
                                     <thead>
                                         <tr>
-                                            <th>Nama Pasien</th>
+                                            <th>Nama Pasien<?php echo $date; ?></th>
                                             <th>No. RM</th>
                                             <th width="10%">No.<br>Reg</th>
                                             <th>Tgl. Reg</th>
