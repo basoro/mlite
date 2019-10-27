@@ -60,7 +60,7 @@ if(isset($_GET['no_rawat'])) {
                                     if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
                                         $sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
                                     } else {
-                                        $sql .= " AND b.tgl_registrasi = CURRENT_DATE()";
+                                        $sql .= " AND b.tgl_registrasi = '2019-10-27'";
                                     }
                                     $query = query($sql);
                                     while($row = fetch_array($query)) {
