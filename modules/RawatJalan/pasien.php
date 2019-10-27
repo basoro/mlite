@@ -38,7 +38,7 @@ if(isset($_GET['no_rawat'])) {
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                         if(!$action){
                         ?>
-                                <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
+                                <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                     <thead>
                                         <tr>
                                             <th>Nama Pasien</th>
@@ -172,7 +172,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
+                                     <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                          <thead>
                                              <tr>
                                                  <th>Nama Tindakan</th>
@@ -308,7 +308,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatab" class="table responsive table-bordered table-striped table-hover display " width="100%">
+                                     <table id="datatab" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                          <thead>
                                              <tr>
                                                  <th>Keluhan</th>

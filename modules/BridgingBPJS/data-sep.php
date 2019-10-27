@@ -5,7 +5,7 @@
     <div class="body">
         <?php $action = isset($_GET['action'])?$_GET['action']:null;
         if(!$action){?>
-          <table id="allsep" class="table responsive table-bordered table-striped table-hover display " width="100%">
+          <table id="allsep" class="table table-bordered table-striped table-hover display nowrap" width="100%">
             <thead>
               <tr>
                 <th>No SEP</th>

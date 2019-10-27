@@ -3,7 +3,7 @@
       <h2>Pasien Batal</h2>
     </div>
     <div class="body">
-      <table id="datatable" class="table responsive table-bordered table-striped table-hover display " width="100%">
+      <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
         <thead>
           <tr>
             <th>No RM</th>
