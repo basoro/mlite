@@ -216,7 +216,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, e.perujuk, f.kd_dokter, f.nm_dokter, b.kd_poli, c.kd_pj FROM pasien a, reg_periksa b, penjab c, poliklinik d, rujuk_masuk e, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.no_rawat = e.no_rawat AND b.kd_dokter = f.kd_dokter";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, b.stts, f.kd_dokter, f.nm_dokter, b.kd_poli, c.kd_pj FROM pasien a, reg_periksa b, penjab c, poliklinik d, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.kd_dokter = f.kd_dokter";
                                 if($role == 'Medis' || $role == 'Paramedis') {
                                   $sql .= " AND b.kd_poli = '$jenis_poli'";
                                 }
@@ -227,6 +227,12 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 }
                                 $query = query($sql);
                                 while($row = fetch_array($query)) {
+                                  $perujuk = fetch_assoc(query("SELECT perujuk FROM rujuk_masuk WHERE no_rawat = '".$row['5']."'"));
+                                  if(!empty($perujuk['perujuk'])) {
+                                    $rujuk_masuk = $perujuk['perujuk'];
+                                  } else {
+                                    $rujuk_masuk = "";
+                                  }
                                 ?>
 
                                     <tr class="editpasien"
@@ -237,7 +243,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                       data-namakeluarga="<?php echo $row['9']; ?>"
                                       data-alamatpj="<?php echo $row['10']; ?>"
                                       data-pngjawab="<?php echo $row['3']; ?>"
-                                      data-perujuk="<?php echo $row['11']; ?>"
+                                      data-perujuk="<?php echo $rujuk_masuk; ?>"
                                       data-nmdokter="<?php echo $row['13']; ?>"
                                       data-kddokter="<?php echo $row['12']; ?>"
                                       data-nmpoli="<?php echo $row['4']; ?>"
