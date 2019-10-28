@@ -47,7 +47,7 @@
                 </div>
             </div>
             <div class="row clearfix">
-              <div class="col-lg-12 pull-left pd0">
+              <div class="col-lg-12">
                 <div class="card">
                     <div class="header">
                         <h2>RESEP POLIKLINIK HARI INI</h2>
