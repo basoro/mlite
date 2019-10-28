@@ -12,6 +12,10 @@
 * Licence under GPL
 ***/
 
+if (file_exists('install.php')) {
+  header("Location: install.php");
+}
+
 ob_start();
 session_start();
 

@@ -62,7 +62,7 @@ if(isset($_GET['no_rawat'])) {
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar, d.no_resep, GROUP_CONCAT(f.nama_brng, ' (', e.jml, ') - ', e.aturan_pakai SEPARATOR '<br>') AS resep_dokter, b.no_rawat FROM pasien a, reg_periksa b, penjab c, resep_obat d, resep_dokter e, databarang f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli != 'IGDK' AND b.kd_poli != 'U0027' AND b.status_lanjut = 'Ralan' AND b.no_rawat = d.no_rawat AND d.no_resep = e.no_resep AND e.kode_brng = f.kode_brng";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, b.stts, b.status_bayar, d.no_resep, GROUP_CONCAT(f.nama_brng, ' (', e.jml, ') - ', e.aturan_pakai SEPARATOR '<br>') AS resep_dokter, b.no_rawat FROM pasien a, reg_periksa b, penjab c, resep_obat d, resep_dokter e, databarang f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.status_lanjut = 'Ralan' AND b.no_rawat = d.no_rawat AND d.no_resep = e.no_resep AND e.kode_brng = f.kode_brng";
                                 if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
                                 	$sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
                                 } else {

@@ -61,7 +61,7 @@ function query($sql) {
 function confirm($query) {
     global $connection;
     if(!$query) {
-        die("Query failed! " . mysqli_error($connection));
+        die('<div class="alert bg-pink alert-dismissible" role="alert">Query failed!</div>' . mysqli_error($connection));
     }
 }
 
@@ -240,5 +240,7 @@ $bulanList = array(
 );
 
 // Get settings
-$getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes, logo FROM setting");
-$dataSettings = fetch_assoc($getSettings);
+if( basename($_SERVER['PHP_SELF'], '.php') !== 'install' ) {
+  $getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes, logo FROM setting");
+  $dataSettings = fetch_assoc($getSettings);
+}
