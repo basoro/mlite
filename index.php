@@ -74,7 +74,7 @@ include_once('layout/sidebar.php');
                 </div>
             </div>
             <div class="row clearfix">
-              <div class="col-lg-12 pull-left pd0">
+              <div class="col-lg-12">
                 <div class="card">
                     <div class="header">
                         <h2>POLIKLINIK HARI INI</h2>
@@ -86,7 +86,7 @@ include_once('layout/sidebar.php');
               </div>
             </div>
             <div class="row clearfix">
-              <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 pull-left pd0">
+              <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                   <div class="card">
                       <div class="header">
                           <h2>MODUL-MODUL</h2>
@@ -113,7 +113,7 @@ include_once('layout/sidebar.php');
                       </div>
                   </div>
               </div>
-              <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 pull-left pd0">
+              <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
                  <div class="card">
                     <div class="header">
                        <h2>KUNJUNGAN PASIEN DALAM TAHUN</h2>
