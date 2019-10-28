@@ -147,6 +147,42 @@ function remove_directory($directory) {
     rmdir($directory);
 }
 
+function foldersize($path) {
+  $total_size = 0;
+  $files = scandir($path);
+  $cleanPath = rtrim($path, '/'). '/';
+
+  foreach($files as $t) {
+      if ($t<>"." && $t<>"..") {
+          $currentFile = $cleanPath . $t;
+          if (is_dir($currentFile)) {
+              $size = foldersize($currentFile);
+              $total_size += $size;
+          }
+          else {
+              $size = filesize($currentFile);
+              $total_size += $size;
+          }
+      }
+  }
+
+  return $total_size;
+}
+
+function roundSize($bytes) {
+    if ($bytes/1024 < 1) {
+        return $bytes.' B';
+    }
+    if ($bytes/1024/1024 < 1) {
+        return round($bytes/1024).' KB';
+    }
+    if ($bytes/1024/1024/1024 < 1) {
+        return round($bytes/1024/1024, 2).' MB';
+    } else {
+        return round($bytes/1024/1024/1024, 2).' GB';
+    }
+}
+
 // Get date and time
 date_default_timezone_set('Asia/Makassar');
 $year       = date('Y');

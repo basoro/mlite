@@ -290,16 +290,17 @@ if (isset($_POST['error'])) {
                             <hr />
                             <dl class="dl-horizontal no-margin">
                                 <dt>Versi PHP</dt>
-                                <dd>7.3.6</dd>
+                                <dd><?php echo phpversion(); ?></dd>
                                 <dt>Versi MySQL</dt>
-                                <dd>5.7.24</dd>
+                                <dd><?php printf("%s\n", mysqli_get_server_info($connection)); ?></dd>
                             </dl>
                             <hr />
                             <dl class="dl-horizontal no-margin">
                                 <dt>Ukuran System</dt>
-                                <dd>1.54 MB</dd>
+                                <dd><?php echo roundSize(foldersize(ABSPATH)); ?></dd>
                                 <dt>Ukuran database</dt>
-                                <dd>3.83 GB</dd>
+                                <?php $mysql_size = fetch_assoc(query("SELECT ROUND(SUM(data_length + index_length), 1) AS mysql_size FROM information_schema.tables WHERE table_schema = '".DB_NAME."' GROUP BY table_schema")); ?>
+                                <dd><?php echo roundSize($mysql_size['mysql_size']); ?></dd>
                             </dl>
                         </div>
                     </div>
