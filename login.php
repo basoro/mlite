@@ -13,15 +13,15 @@
 ***/
 
 if (file_exists('install.php')) {
-  header("Location: install.php");
+  require_once('config.php');
+  if(num_rows(query("SHOW TABLES LIKE 'setting'")) !== 1) {
+    redirect("install.php");
+  }
 }
-
 ob_start();
 session_start();
 
 require_once('config.php');
-
-if (isset($_COOKIE['username']) && isset($_COOKIE['password'])) { redirect('index.php'); }
 
 ?>
 <!DOCTYPE html>

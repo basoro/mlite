@@ -239,8 +239,9 @@ $bulanList = array(
 	'12' => 'Desember'
 );
 
-// Get settings
 if( basename($_SERVER['PHP_SELF'], '.php') !== 'install' ) {
-  $getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes, logo FROM setting");
-  $dataSettings = fetch_assoc($getSettings);
+  if(num_rows(query("SHOW TABLES LIKE 'setting'")) == 1) {
+    $getSettings = query("SELECT nama_instansi, alamat_instansi, kabupaten, propinsi, kontak, email, kode_ppk, kode_ppkinhealth, kode_ppkkemenkes, logo FROM setting");
+    $dataSettings = fetch_assoc($getSettings);
+  }
 }

@@ -12,6 +12,10 @@
 * Licence under GPL
 ***/
 
+if(num_rows(query("SHOW TABLES LIKE 'setting'")) !== 1) {
+  header("Location: install.php");
+}
+
 $data_admin = fetch_array(query("SELECT AES_DECRYPT(usere,'nur') as id_user, AES_DECRYPT(passworde,'windi') as password FROM admin WHERE usere = AES_ENCRYPT('{$_COOKIE['username']}','nur') AND passworde = AES_ENCRYPT('{$_COOKIE['password']}','windi')"));
 if(num_rows(query("SHOW TABLES LIKE 'roles'")) !== 1) {
     redirect(URL . '/login.php');

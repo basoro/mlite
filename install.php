@@ -48,6 +48,13 @@ error_reporting(E_ERROR | E_WARNING | E_PARSE);
 $action = isset($_GET['action'])?$_GET['action']:null;
 
 if(!$action) {
+
+require('config.php');
+
+if(num_rows(query("SHOW TABLES LIKE 'setting'"))  == 1) {
+    header("Location: index.php");
+}
+
 ?>
     <div class="body">
         <form id="sign_in" method="POST" action="install.php?action=start">
@@ -180,7 +187,11 @@ if($action == 'finish') {
     }
     ?>
     <div class="body">
-      <div class="alert bg-pink alert-dismissible" role="alert">Instalasi Selesai!<br>Silahkan hapus file install.php untuk mencegah digunakan untuk menggangu sistem anda.</div>
+      <div class="alert bg-pink alert-dismissible" role="alert">Instalasi Khanza Lite selesai!<br>Silahkan hapus file install.php untuk mencegah digunakan menggangu sistem anda.</div>
+      <p>Untuk menggunakan SIMKES Khanza versi Desktop silahkan merujuk ke repo utama <a href="https://github.com/mas-elkhanza/SIMRS-Khanza">Github Mas Elkhanza</a> atau ikuti <a href="https://simkes.basoro.id">langkah cepat</a> <a href="https://github.com/basoro/SIMKES-Khanza/blob/master/README.md">disini</a>.</p>
+      <p><a href="./login.php" class="btn btn-lg bg-green">LOGIN</a></p>
+      <label>Username:</labe> <b>spv</b><br>
+      <label>Password:</labe> <b>server</b>
     </div>
 
     <?php
