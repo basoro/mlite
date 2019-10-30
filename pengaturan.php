@@ -62,7 +62,7 @@ if (isset($_POST['setting'])) {
     $url = "https://khanza.basoro.id/lisensi.php?action=insert";
     $curlHandle = curl_init();
     curl_setopt($curlHandle, CURLOPT_URL, $url);
-    curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$nama_instansi."&alamat_instansi=".$alamat_instansi."&kabupaten=".$kabupaten."&propinsi=".$propinsi."&Kontak=".$kontak."&email=".$email."&kode_ppk=".$kode_ppk."&kode_ppkinhealth=".$kode_ppkinhealth."&kode_ppkkemenkes=".$kode_ppkkemenkes);
+    curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$nama_instansi."&alamat_instansi=".$alamat_instansi."&kabupaten=".$kabupaten."&propinsi=".$propinsi."&kontak=".$kontak."&email=".$email."&kode_ppk=".$kode_ppk."&kode_ppkinhealth=".$kode_ppkinhealth."&kode_ppkkemenkes=".$kode_ppkkemenkes);
     curl_setopt($curlHandle, CURLOPT_HEADER, 0);
     curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -102,7 +102,7 @@ if (isset($_POST['error'])) {
   $url = "https://khanza.basoro.id/lisensi.php?action=insert";
   $curlHandle = curl_init();
   curl_setopt($curlHandle, CURLOPT_URL, $url);
-  curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$dataSettings['nama_instansi']."&alamat_instansi=".$dataSettings['alamat_instansi']."&kabupaten=".$dataSettings['kabupaten']."&propinsi=".$dataSettings['propinsi']."&Kontak=".$dataSettings['kontak']."&email=".$dataSettings['email']."&kode_ppk=".$dataSettings['kode_ppk']."&kode_ppkinhealth=".$dataSettings['kode_ppkinhealth']."&kode_ppkkemenkes=".$dataSettings['kode_ppkkemenkes']);
+  curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$dataSettings['nama_instansi']."&alamat_instansi=".$dataSettings['alamat_instansi']."&kabupaten=".$dataSettings['kabupaten']."&propinsi=".$dataSettings['propinsi']."&kontak=".$dataSettings['kontak']."&email=".$dataSettings['email']."&kode_ppk=".$dataSettings['kode_ppk']."&kode_ppkinhealth=".$dataSettings['kode_ppkinhealth']."&kode_ppkkemenkes=".$dataSettings['kode_ppkkemenkes']);
   curl_setopt($curlHandle, CURLOPT_HEADER, 0);
   curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
   curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
