@@ -2,7 +2,7 @@
 <li class="<?php if ($params['module']=="RawatInap") {echo "active"; } ?>">
     <a href="javascript:void(0);" class="menu-toggle">
         <i class="material-icons">hotel</i>
-        <span>Rawat Ipan</span>
+        <span>Rawat Inap</span>
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="RawatInap" && $params['page']=="index") {echo "active"; } ?>">
