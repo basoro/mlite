@@ -28,7 +28,7 @@ if(isset($_GET['no_rawat'])) {
 ?>
 <div class="card">
     <div class="header">
-      <h2>Pasien Rawat Jalan</h2>
+      <h2>Pasien Rawat Inap</h2>
     </div>
     <div class="body">
                         <?php display_message(); ?>
@@ -38,58 +38,84 @@ if(isset($_GET['no_rawat'])) {
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                         if(!$action){
                         ?>
-                                <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
-                                    <thead>
-                                        <tr>
-                                            <th>Nama Pasien</th>
-                                            <th>No. RM</th>
-                                            <th width="10%">No.<br>Reg</th>
-                                            <th>Tgl. Reg</th>
-                                            <th>Jam Reg</th>
-                                            <th>Alamat</th>
-                                            <th>Jenis<br>Bayar</th>
-                                            <th>Poliklinik</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    <?php
-                                    $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg FROM pasien a, reg_periksa b, penjab c, poliklinik d WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli";
-                                    if($role == 'Medis' || $role == 'Paramedis') {
-                                      $sql .= " AND b.kd_poli = '$jenis_poli'";
-                                    }
-                                    if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
-                                        $sql .= " AND b.tgl_registrasi BETWEEN '$_POST[tgl_awal]' AND '$_POST[tgl_akhir]'";
-                                    } else {
-                                        $sql .= " AND b.tgl_registrasi = '{$date}'";
-                                    }
-                                    $query = query($sql);
-                                    while($row = fetch_array($query)) {
-                                    ?>
-                                        <tr>
-                                            <td><?php echo SUBSTR($row['0'], 0, 15).' ...'; ?></td>
-                                            <td>
-                                                <div class="btn-group">
-                                                    <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
-                                                    <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                        <li><a href="./?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                            <td><?php echo $row['6']; ?></td>
-                                            <td><?php echo $row['7']; ?></td>
-                                            <td><?php echo $row['8']; ?></td>
-                                            <td><?php echo $row['2']; ?></td>
-                                            <td><?php echo $row['3']; ?></td>
-                                            <td><?php echo $row['4']; ?></td>
-                                        </tr>
-                                    <?php
-                                    }
-                                    ?>
-                                    </tbody>
-                                </table>
+                        <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                            <thead>
+                                <tr>
+                                    <th>Nama</th>
+                                    <th width = "1%">No<br>MR</th>
+                                    <th>Kamar</th>
+                                    <th>Bed</th>
+                                    <th width = "10px">Tanggal<br>Masuk</th>
+                                    <th width = "10px">Cara<br>Bayar</th>
+                                    <th>DPJP</th>
+                                 </tr>
+                            </thead>
+                            <tbody>
+                            <!-- This query based on Adly's (Adly Hidayat S.KOM) query. Thanks bro -->
+                            <?php
+                            $sql = "
+                              SELECT
+                                pasien.nm_pasien,
+                                  reg_periksa.no_rkm_medis,
+                                  bangsal.nm_bangsal,
+                                  kamar_inap.kd_kamar,
+                                  kamar_inap.tgl_masuk,
+                                  penjab.png_jawab,
+                                  reg_periksa.no_rawat
+                                FROM
+                                  kamar_inap,
+                                    reg_periksa,
+                                    pasien,
+                                    bangsal,
+                                    kamar,
+                                    penjab
+                                WHERE
+                                  kamar_inap.no_rawat = reg_periksa.no_rawat
+                                AND
+                                  reg_periksa.no_rkm_medis = pasien.no_rkm_medis
+                                AND
+                                  kamar_inap.kd_kamar = kamar.kd_kamar
+                                AND
+                                  kamar.kd_bangsal = bangsal.kd_bangsal
+                                AND
+                                  kamar_inap.stts_pulang = '-'
+                                AND
+                                  reg_periksa.kd_pj = penjab.kd_pj
+
+                            ";
+                            if($role == 'Paramedis_Ranap') {
+                              $sql .= " AND bangsal.kd_bangsal = '$jenis_poli'";
+                            }
+                            $sql .= " ORDER BY kamar_inap.kd_kamar ASC";
+                            $result = query($sql);
+                            while($row = fetch_array($result)) {
+                              $get_no_rawat = $row['6'];
+                            ?>
+                                <tr>
+                                    <td><?php echo SUBSTR($row['0'], 0, 15).' ...'; ?></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-info waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
+                                            <ul class="dropdown-menu dropdown-menu-right" role="menu">
+                                                <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['6']; ?>">Assesment & Tindakan</a></li>
+                                                <li><a href="javascript:void(0);">Input Obat</a></li>
+                                                <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
+                                                <li><a href="includes/editsttspulang.php?no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
+                                              <li><a href="pindah-kamar-pasien2.php?action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+                                          </ul>
+                                        </div>
+                                    </td>
+                                    <td><?php echo $row['2']; ?></td>
+                                    <td><?php echo $row['3']; ?></td>
+                                    <td><?php echo $row['4']; ?></td>
+                                    <td><?php echo $row['5']; ?></td>
+                                    <td><?php $dpjp = query("SELECT dokter.nm_dokter FROM dpjp_ranap , dokter WHERE dpjp_ranap.kd_dokter = dokter.kd_dokter AND dpjp_ranap.no_rawat = '".$row['6']."'");$dpjpp = fetch_array($dpjp);echo $dpjpp['0'];?></td>
+                                </tr>
+                            <?php
+                            }
+                            ?>
+                            </tbody>
+                        </table>
                                 <div class="row clearfix">
                                     <form method="post" action="">
                                     <div class="col-sm-5">
