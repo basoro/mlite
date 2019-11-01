@@ -240,7 +240,7 @@ if (isset($_POST['error'])) {
                             </h2>
                         </div>
                         <?php
-                          $data = json_decode(file_get_contents('https://khanza.basoro.id/lisensi.php?action=cek&email='.$dataSettings['email']), true);
+                          $data = json_decode(file_get_contents_curl('https://khanza.basoro.id/lisensi.php?action=cek&email='.$dataSettings['email']), true);
                         ?>
                         <div class="body">
                             <div class="text-center">
