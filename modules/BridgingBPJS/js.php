@@ -29,3 +29,13 @@
           } );
 
     </script>
+
+    <script>
+      function myFunction(){
+    		$("#dpjp").on("change",function(){
+            //Getting Value
+            var selValue = $("#dpjp :selected").text();
+            //Setting Value
+            $("#nmdp").val(selValue);
+        });}
+    </script>
