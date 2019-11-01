@@ -120,6 +120,9 @@
                             <li>
                                 <a href="<?php echo URL; ?>/plugins.php">Pengaturan Plugins</a>
                             </li>
+                            <li>
+                                <a href="<?php echo URL; ?>/update.php">Update Aplikasi</a>
+                            </li>
                         </ul>
                     </li>
                     <?php } ?>

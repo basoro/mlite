@@ -97,7 +97,7 @@ if(isset($_GET['no_rawat'])) {
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-info waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=tindakan&no_rawat=<?php echo $row['6']; ?>">Assesment & Tindakan</a></li>
+                                                <li><a href="./?module=RawatInap&page=index&action=tindakan&no_rawat=<?php echo $row['6']; ?>">Assesment & Tindakan</a></li>
                                                 <li><a href="javascript:void(0);">Input Obat</a></li>
                                                 <li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                 <li><a href="includes/editsttspulang.php?no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>

@@ -25,7 +25,7 @@ include_once('layout/sidebar.php');
     <section class="content">
         <div class="container-fluid">
             <div class="block-header">
-                <p class="col-orange font-24 font-uppercase"><?php echo $title; ?></p>
+                <p class="col-orange font-24 font-uppercase"><?php echo $title; ?> <?php $last = json_decode($json_updates, true); $last[] = $last; if($last['1'] > VERSION) { echo '<a href="./update.php" class="btn btn-lg bg-red text-white right">Update Ke V.'.$last['0']['versi'].'</a>'; } ?></p>
             </div>
             <div class="row clearfix">
                 <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">

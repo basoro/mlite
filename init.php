@@ -48,4 +48,6 @@ $userModules=explode(",",$getUserModule['module']);
 $jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;
 $role = isset($_SESSION['role'])?$_SESSION['role']:null;
 
+$json_updates = file_get_contents("https://khanza.basoro.id/updates.php");
+
 ?>
