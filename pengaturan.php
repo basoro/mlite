@@ -248,7 +248,7 @@ if (isset($_POST['error'])) {
                               <?php if($data['kode_lisensi'] == md5($dataSettings['email'])) { ?>
                               <i class="material-icons text-success" style="font-size:150px;">child_care</i>
                               <p>
-                                <h1>TERDAFTAR
+                                <h1>BERLISENSI
                                 </h1>
                               </p>
                                 <a href="#gratis-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
@@ -258,7 +258,7 @@ if (isset($_POST['error'])) {
                                   <h1>GRATIS
                                   </h1>
                                 </p>
-                                  <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke versi TERDAFTAR</a>
+                                  <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke versi BERLISENSI</a>
                               <?php } ?>
                             <?php } else { ?>
                               <i class="material-icons text-danger" style="font-size:150px;">cancel</i>
