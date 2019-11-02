@@ -283,9 +283,9 @@ if (isset($_POST['error'])) {
                             <dl class="dl-horizontal no-margin">
                                 <dt>Versi</dt>
                                 <dd><?php echo VERSION; ?></dd>
-                                <dt>Lisensi</dt>
+                                <dt>Status</dt>
                                 <dd>
-                                    <?php if($data['status'] == "verified") { if($data['kode_lisensi'] == md5($dataSettings['email'])) { echo 'BERLISENSI <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } else { echo 'GRATIS <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>'; } } else { echo 'ERROR <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } ?>
+                                    <?php if($data['status'] == "verified") { if($data['kode_lisensi'] == md5($dataSettings['email'])) { echo 'TERDAFTAR <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } else { echo 'TIDAK TERDAFTAR <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>'; } } else { echo 'ERROR <a href="#gratis-modal" data-toggle="modal" class="small">(Sunting)</a>'; } ?>
                                 </dd>
                             </dl>
                             <hr />
