@@ -236,7 +236,7 @@ if (isset($_POST['error'])) {
                     <div class="card">
                         <div class="header">
                             <h2>
-                                LISENSI PAKAI
+                                Status Apikasi
                             </h2>
                         </div>
                         <?php
@@ -244,21 +244,22 @@ if (isset($_POST['error'])) {
                         ?>
                         <div class="body">
                             <div class="text-center">
+                              <p>Informasi tentang status aplikasi digunakan untuk kebutuhan pendataan pengguna Khanza Lite. Licensi yang dianut di perangkat lunak tetap mengacu ke <a href="https://en.wikipedia.org/wiki/Aladdin_Free_Public_License">Aladdin Free Public License</a>. Tidak ada biaya yang dikenakan atas penggunaan aplikasi ini.</p>
                               <?php if($data['status'] == "verified") { ?>
                               <?php if($data['kode_lisensi'] == md5($dataSettings['email'])) { ?>
                               <i class="material-icons text-success" style="font-size:150px;">child_care</i>
                               <p>
-                                <h1>BERLISENSI
+                                  <h1>TERDAFTAR
                                 </h1>
                               </p>
-                                <a href="#gratis-modal" data-toggle="modal" class="btn btn-primary">Turunkan ke lisensi Gratis</a>
+                                <a href="#gratis-modal" data-toggle="modal" class="btn btn-primary">Hapus Dari Daftar</a>
                               <?php } else { ?>
                                 <i class="material-icons text-primary" style="font-size:150px;">check_circle_outline</i>
                                 <p>
-                                  <h1>GRATIS
+                                  <h1>TIDAK TERDAFTAR
                                   </h1>
                                 </p>
-                                  <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke versi BERLISENSI</a>
+                                  <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Masukkan Dalam Daftar</a>
                               <?php } ?>
                             <?php } else { ?>
                               <i class="material-icons text-danger" style="font-size:150px;">cancel</i>
@@ -266,7 +267,7 @@ if (isset($_POST['error'])) {
                                 <h1>ERROR
                                 </h1>
                               </p>
-                                <a href="#error-modal" data-toggle="modal" class="btn btn-primary">Naikkan ke lisensi Gratis</a>
+                                <a href="#error-modal" data-toggle="modal" class="btn btn-primary">Perbaiki ERROR</a>
                             <?php } ?>
                             </div>
                         </div>
@@ -315,17 +316,17 @@ if (isset($_POST['error'])) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Lisensi</h4>
+                    <h4 class="modal-title">Aktifasi Pendataan</h4>
                 </div>
                 <form method="post" action="">
                     <div class="modal-body">
-                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
-                        <p>Untuk mengaktifkan versi BERLISENSI, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza.</p>
-                        <input type="text" name="kode_lisensi" class="form-control" placeholder="Kode lisensi (License Key)..." />
+                        <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi Khanza Lite. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>kode validasi Pendaftaran</b></a>.</p>
+                        <p>Untuk mengaktifkan kode validasi pendaftaran, silahkan ketik kode validasi pendaftaran dalam isian dibawah. Anda bisa melihat kode validasi pendaftaran pada email konfirmasi <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan kode validasi</b></a>.</p>
+                        <input type="text" name="kode_lisensi" class="form-control" placeholder="Kode Validasi....." />
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary" name="lisensi">Naikkan ke versi BERLISENSI</button>
+                        <button type="submit" class="btn btn-primary" name="lisensi">Aktifkan Kode Validasi</button>
                     </div>
                 </form>
             </div>
@@ -337,14 +338,13 @@ if (isset($_POST['error'])) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Lisensi</h4>
+                    <h4 class="modal-title">Status Aplikasi</h4>
                 </div>
                 <form method="post" action="">
                     <div class="modal-body">
-                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
-                        <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                        <p class="text-center">Anda akan menghapus data pengguna Khanza Lite dari daftar Status Pengguna Aplikasi. Apakah anda yakin?</p>
                         <div class="text-center" style="margin-top:40px;margin-bottom:40px;">
-                          <button type="submit" class="btn btn-lg btn-danger" style="padding:20px;font-size:24px;" name="gratis">Turunkan ke versi GRATIS</button>
+                          <button type="submit" class="btn btn-lg btn-danger" style="padding:20px;font-size:24px;" name="gratis">Hapus Dari Daftar Pengguna</button>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -360,14 +360,13 @@ if (isset($_POST['error'])) {
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">Lisensi</h4>
+                    <h4 class="modal-title">Perbaiki Kesalahan</h4>
                 </div>
                 <form method="post" action="">
                     <div class="modal-body">
-                        <p>Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), pilihlah <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>Versi BERLISENSI</b></a>.</p>
-                        <p>Untuk mengaktifkan versi BERLISENSI, anda perlu mendapatkan kode lisensi. Anda bisa melakukan <a href="https://khanza.basoro.id/lisensi.php?action=request" target="_blank"><b>permintaan lisensi</b></a> SIMKES Khanza Lite tidak dipungut biaya.</p>
+                        <p class="text-center">Terjadi kesalahan pada konfigurasi anda. Apakah anda akan memperbaikinnya? Silahkan klik tombol dibawah!</p>
                         <div class="text-center" style="margin-top:40px;margin-bottom:40px;">
-                          <button type="submit" class="btn btn-lg btn-primary" style="padding:20px;font-size:24px;" name="error">Naikkan ke versi GRATIS</button>
+                          <button type="submit" class="btn btn-lg btn-primary" style="padding:20px;font-size:24px;" name="error">Perbaikin ERROR</button>
                         </div>
                     </div>
                     <div class="modal-footer">
