@@ -36,16 +36,17 @@ $b = fetch_assoc($a);
 							          <?php
                       	if (isset($_POST['bio'])) {
 
-                            if($_FILES['file']['name']!='') {
-                                $file='../webapps/penggajian/pages/pegawai/photo/'.$a['photo'];
+                            if($_FILES['file']['name'] !=='') {
+                                $file=WEBAPPS.'penggajian/'.$b['photo'];
                                 @unlink($file);
                                 $tmp_name = $_FILES["file"]["tmp_name"];
                                 $namefile = $_FILES["file"]["name"];
-                                $ext = end(explode(".", $namefile));
-                                $image_name = $username."-".time().".".$ext;
-                                move_uploaded_file($tmp_name,"../webapps/penggajian/pages/pegawai/photo/".$image_name);
+                                $explode = explode(".", $namefile);
+                                $ext = end($explode);
+                                $image_name = "pages/pegawai/photo/".$_SESSION['username']."-".time().".".$ext;
+                                move_uploaded_file($tmp_name,WEBAPPS."penggajian/".$image_name);
                             } else {
-                                $image_name=$a['photo'];
+                                $image_name=$b['photo'];
                             }
 
                             if($_POST['jk'] == 'L') {
@@ -143,17 +144,16 @@ $b = fetch_assoc($a);
                         ?>
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane fade in active" id="profile_settings">
-                                <form class="form-horizontal" method="post" action="">
+                                <form class="form-horizontal" method="post" action=""  enctype="multipart/form-data">
                                     <div class="form-group">
                                         <div class="col-sm-4"></div>
                                         <div class="col-sm-4">
                                             <div class="form">
-                                              <?php if($a['photo'] !==''){
-                                                echo '<img id="image_upload_preview" width="200px" src="data:image/jpeg;base64,'.base64_encode( $a['photo'] ).'" onclick="upload_berkas()" style="cursor:pointer;"/>';
-                                              } else {
-                                                echo '<img id="image_upload_preview" width="200px" src="'.URL.'/assets/images/'.$dataGet['1'].'.png" onclick="upload_berkas()" style="cursor:pointer;" />';
-                                              }
-                                              ?>
+                                              <?php if($b['photo'] !==''){ ?>
+                                                <img id="image_upload_preview" width="200px" src="<?php echo URLSIMRS; ?>/penggajian/pages/pegawai/photo/<?php echo $b['photo']; ?>" onclick="upload_berkas()" style="cursor:pointer;" />
+                                              <?php } else { ?>
+                                                <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/assets/images/<?php echo $dataGet['1']; ?>.png" onclick="upload_berkas()" style="cursor:pointer;" />';
+                                              <?php } ?>
                                               <br/>
                                               <input name="file" id="inputFile" type="file" style="display:none;"/>
                                             </div>

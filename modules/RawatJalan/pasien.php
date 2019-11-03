@@ -482,7 +482,7 @@ if(isset($_GET['no_rawat'])) {
                               $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
                               $date = $periksa_radiologi['tgl_periksa'];
                               $time = $periksa_radiologi['jam'];
-                              if($_FILES['file']['name']!='') {
+                              if($_FILES['file']['name']!=='') {
                                 $tmp_name = $_FILES["file"]["tmp_name"];
                                 $namefile = $_FILES["file"]["name"];
                                 $explode = explode(".", $namefile);
