@@ -14,7 +14,7 @@ include_once('config.php');
 include_once('layout/header.php');
 include_once('layout/sidebar.php');
 $a = query("SELECT * FROM pegawai WHERE nik = '{$_SESSION['username']}'");
-$b = mysqli_fetch_assoc($a);
+$b = fetch_assoc($a);
 ?>
 
 <section class="content">
@@ -35,11 +35,25 @@ $b = mysqli_fetch_assoc($a);
                         </ul>
 							          <?php
                       	if (isset($_POST['bio'])) {
+
+                            if($_FILES['file']['name']!='') {
+                                $file='../penggajian/pages/pegawai/photo/'.$a['photo'];
+                                @unlink($file);
+                                $tmp_name = $_FILES["file"]["tmp_name"];
+                                $namefile = $_FILES["file"]["name"];
+                                $ext = end(explode(".", $namefile));
+                                $image_name = $username."-".time().".".$ext;
+                                move_uploaded_file($tmp_name,"../penggajian/pages/pegawai/photo/".$image_name);
+                            } else {
+                                $image_name=$a['photo'];
+                            }
+
                             if($_POST['jk'] == 'L') {
                                 $jk = 'Pria';
                             } else {
                                 $jk = 'Wanita';
                             }
+
                           	$insert = query("UPDATE
                                     pegawai
                                 SET
@@ -51,21 +65,20 @@ $b = mysqli_fetch_assoc($a);
                                     stts_wp = '{$_POST['swp']}',
                                     npwp = '{$_POST['npwp']}',
                                     alamat = '{$_POST['alamat']}',
-                                    no_ktp = '{$_POST['NIK']}'
+                                    no_ktp = '{$_POST['NIK']}',
+                                    photo = '{$image_name}'
                                 WHERE
                                     nik = '{$_SESSION['username']}'
                             ");
                             if ($insert) {
-                                $duainsert = query("
-                                    UPDATE
+                                $duainsert = query("UPDATE
                                         petugas
                                     SET
                                         nama = '{$_POST['nama']}'
                                     WHERE
                                         nip = '{$_SESSION['username']}'
                                 ");
-                                $duainsert = query("
-                                    UPDATE
+                                $duainsert = query("UPDATE
                                         dokter
                                     SET
                                         nm_dokter = '{$_POST['nama']}',
@@ -87,15 +100,66 @@ $b = mysqli_fetch_assoc($a);
                                     departemen = '{$_POST['dpt']}',
                                     mulai_kerja = '{$_POST['mker']}',
                                     mulai_kontrak = '{$_POST['mkon']}'
+                                WHERE
+                                    nik = '{$_SESSION['username']}'
+
                             ");
                             if($insert){
                                 redirect("profil.php");
                             };
                         };
+                        if(isset($_POST['ganti_password'])){
+                            $old_password   = $_POST['OldPassword'];
+                            $new_password    = $_POST['NewPassword'];
+                            $new_password2  = $_POST['NewPasswordConfirm'];
+
+                            $cek_pass = fetch_assoc(query("SELECT AES_DECRYPT(id_user,'nur') as id_user, AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('{$_SESSION['username']}','nur')"));
+
+                            if($old_password !== $cek_pass['password']) {
+                                $errors[] = 'Recent password dont match';
+                            }
+
+                            if($new_password !== $new_password2) {
+                                $errors[] = 'Password dont match confirm password';
+                            }
+
+                            if (!empty($errors)) {
+                                foreach($errors as $error) {
+                                   echo validation_errors($error);
+                                }
+                            } else {
+                                $insert = query("UPDATE
+                                        user
+                                    SET
+                                        password = AES_ENCRYPT('{$new_password}','windi')
+                                    WHERE
+                                        id_user = AES_ENCRYPT('{$_SESSION['username']}','nur')
+                                ");
+                                if($insert){
+                                    redirect("profil.php");
+                                };
+                            }
+                        };
                         ?>
                         <div class="tab-content">
                             <div role="tabpanel" class="tab-pane fade in active" id="profile_settings">
-                                <form class="form-horizontal" method="post">
+                                <form class="form-horizontal" method="post" action="">
+                                    <div class="form-group">
+                                        <div class="col-sm-4"></div>
+                                        <div class="col-sm-4">
+                                            <div class="form">
+                                              <?php if($a['photo'] !==''){
+                                                echo '<img id="image_upload_preview" width="200px" src="data:image/jpeg;base64,'.base64_encode( $a['photo'] ).'" onclick="upload_berkas()" style="cursor:pointer;"/>';
+                                              } else {
+                                                echo '<img id="image_upload_preview" width="200px" src="'.URL.'/assets/images/'.$dataGet['1'].'.png" onclick="upload_berkas()" style="cursor:pointer;" />';
+                                              }
+                                              ?>
+                                              <br/>
+                                              <input name="file" id="inputFile" type="file" style="display:none;"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-4"></div>
+                                    </div>
                                     <div class="form-group">
                                         <label for="nama" class="col-sm-2 control-label">Nama Lengkap</label>
                                         <div class="col-sm-10">
@@ -199,7 +263,7 @@ $b = mysqli_fetch_assoc($a);
                                 </form>
                             </div>
                           	<div role="tabpanel" class="tab-pane fade in" id="work">
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" method="post" action="">
                                   	<div class="form-group">
                                         <label for="jbtn" class="col-sm-2 control-label">Jabatan</label>
                                         <div class="col-sm-10">
@@ -272,7 +336,7 @@ $b = mysqli_fetch_assoc($a);
                                 </form>
                             </div>
                             <div role="tabpanel" class="tab-pane fade in" id="change_password_settings">
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" method="post" action="">
                                     <div class="form-group">
                                         <label for="OldPassword" class="col-sm-3 control-label">Password Lama</label>
                                         <div class="col-sm-9">
@@ -299,7 +363,7 @@ $b = mysqli_fetch_assoc($a);
                                     </div>
                                     <div class="form-group">
                                         <div class="col-sm-offset-3 col-sm-9">
-                                            <button type="submit" class="btn btn-danger">SUBMIT</button>
+                                            <input type="submit" name="ganti_password" class="btn btn-danger" value="SUBMIT">
                                         </div>
                                     </div>
                                 </form>
