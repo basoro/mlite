@@ -492,7 +492,7 @@ if(isset($_GET['no_rawat'])) {
                                 }else{
                                     $image_name = "rujukanfktp-".time().".".$ext;
                                 }
-                                move_uploaded_file($tmp_name,"../berkasrawat/pages/upload/".$image_name);
+                                move_uploaded_file($tmp_name,"../webapps/berkasrawat/pages/upload/".$image_name);
                                 $lokasi_berkas = 'pages/upload/'.$image_name;
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {

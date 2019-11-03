@@ -37,13 +37,13 @@ $b = fetch_assoc($a);
                       	if (isset($_POST['bio'])) {
 
                             if($_FILES['file']['name']!='') {
-                                $file='../penggajian/pages/pegawai/photo/'.$a['photo'];
+                                $file='../webapps/penggajian/pages/pegawai/photo/'.$a['photo'];
                                 @unlink($file);
                                 $tmp_name = $_FILES["file"]["tmp_name"];
                                 $namefile = $_FILES["file"]["name"];
                                 $ext = end(explode(".", $namefile));
                                 $image_name = $username."-".time().".".$ext;
-                                move_uploaded_file($tmp_name,"../penggajian/pages/pegawai/photo/".$image_name);
+                                move_uploaded_file($tmp_name,"../webapps/penggajian/pages/pegawai/photo/".$image_name);
                             } else {
                                 $image_name=$a['photo'];
                             }
