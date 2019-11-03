@@ -149,7 +149,7 @@ $b = fetch_assoc($a);
                                         <div class="col-sm-4"></div>
                                         <div class="col-sm-4">
                                             <div class="form">
-                                              <div class="image">
+                                              <div style="-webkit-border-radius: 50%;-moz-border-radius: 50%;-ms-border-radius: 50%;border-radius: 50%;">
                                               <?php if($b['photo'] !==''){ ?>
                                                 <img id="image_upload_preview" width="200px" src="<?php echo URLSIMRS; ?>/penggajian/<?php echo $b['photo']; ?>" onclick="upload_berkas()" style="cursor:pointer;" />
                                               <?php } else { ?>
