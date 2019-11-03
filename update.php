@@ -37,7 +37,7 @@ include_once('layout/sidebar.php');
                           $results = json_decode($json_updates, true);
                           foreach($results as $key=>$value) {
                             echo '<dl class="dl-horizontal">';
-                            echo "<dt>Versi :</dt> <dd>".$value['versi']."<dd>";
+                            echo "<dt>Versi :</dt> <dd>".$value['versi']."</dd>";
                             echo "<dt>Perubahan :</dt> <dd>".str_replace("\r\n","<br>", $value['perubahan'])."</dd>";
                             echo '</dl>';
                           }
