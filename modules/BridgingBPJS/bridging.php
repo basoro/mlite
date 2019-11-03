@@ -176,7 +176,7 @@ $b = mysqli_fetch_assoc($data);?>
                 <ul class="dropdown-menu">
                   <?php
                   foreach($result['response']['rujukan'] as $key => $value):
-                    echo '<li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat='.$_GET['no_rawat'].'&no_rujuk='.$value['tglKunjungan'].'" class="dropdown-item" name="nrjk">'.$value['tglKunjungan'].'</a></li>';
+                    echo '<li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat='.$_GET['no_rawat'].'&no_rujuk='.$value['noKunjungan'].'" class="dropdown-item" name="nrjk">'.$value['noKunjungan'].'</a></li>';
                   endforeach;
                   ?>
                 </ul>
