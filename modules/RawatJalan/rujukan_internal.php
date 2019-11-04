@@ -53,7 +53,7 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
             <div class="col-sm-10">
                 <div class="form-group">
                     <div class="form-line">
-                        <input type="text" name="tanggal" class="datepicker form-control" placeholder="Pilih tanggal awal...">
+                        <input type="text" name="tanggal" class="datepicker form-control" placeholder="Pilih tanggal...">
                     </div>
                 </div>
             </div>
