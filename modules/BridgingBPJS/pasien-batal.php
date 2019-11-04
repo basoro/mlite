@@ -1,5 +1,9 @@
 <?php
 if(isset($_GET['no_sep']) && $_GET['no_sep'] !=="") {
+  ?>
+    <script>confirm('Apakah anda ingin menghapus SEP pasien dengan nomor jaminan <?php echo $_GET['no_sep']; ?>')</script>
+  <?php
+
   $sup = new StdClass();
   $sup->noSep = $_GET['no_sep'];
   $sup->user = $_SESSION['username'];
@@ -41,10 +45,6 @@ if(isset($_GET['no_sep']) && $_GET['no_sep'] !=="") {
     //echo "Pesan : ".$mets."</br>";
     //echo $sepranap;
   if ($meta == "200") {
-
-    ?>
-      <script>confirm('Apakah anda ingin menghapus SEP pasien dengan nomor jaminan <?php echo $_GET['no_sep']; ?>')</script>
-    <?php
 
     $insert = query("DELETE FROM bridging_sep WHERE no_sep = '".$_GET['no_sep']."'");
   	}else {
