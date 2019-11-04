@@ -21,11 +21,11 @@
         <tbody>
           <?php
               $sql = "SELECT reg_periksa.no_rkm_medis , pasien.nm_pasien , pasien.tgl_lahir , reg_periksa.no_rawat , poliklinik.nm_poli , penjab.png_jawab FROM reg_periksa , pasien , poliklinik , penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.kd_poli NOT IN('IGDK') AND reg_periksa.kd_poli = poliklinik.kd_poli AND tgl_registrasi = '{$date}' AND reg_periksa.kd_pj != 'A01'";
-if($role == 'Medis' || $role == 'Paramedis') {
-                  $sql .= " AND poliklinik.kd_poli = '$jenis_poli'";
-                }
-            $list = query($sql);
-                while($a = mysqli_fetch_assoc($list)) {
+              if($role == 'Medis' || $role == 'Paramedis') {
+                $sql .= " AND poliklinik.kd_poli = '$jenis_poli'";
+              }
+              $list = query($sql);
+              while($a = mysqli_fetch_assoc($list)) {
 
           ?>
           <tr>
