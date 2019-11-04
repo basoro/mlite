@@ -42,7 +42,7 @@ if($role == 'Medis' || $role == 'Paramedis') {
             <td><?php echo SUBSTR($a['nm_pasien'], 0, 15).' ...'; ?></td>
             <td><?php echo SUBSTR($a['nm_poli'], 5, 16); ?></td>
             <td><?php echo $a['png_jawab']; ?></td>
-            <td><a class="btn btn-primary" href="<?php echo URL; ?>/?module=BridgingBPJS&action=bridging&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
+            <td><a class="btn btn-primary" href="<?php echo URL; ?>/?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
             <td><a class="btn btn-primary" href="<?php echo URL; ?>/modules/BridgingBPJS/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
           </tr>
             <?php } ?>
