@@ -23,7 +23,7 @@
             </tbody>
           </table>
         <?php } ?>
-        <?php if($action == "no_rkm_medis"){?>
+        <?php if($action == "view"){?>
 
       <?php } ?>
     </div>
