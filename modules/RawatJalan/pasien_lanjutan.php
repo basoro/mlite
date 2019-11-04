@@ -27,9 +27,8 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
         if($role == 'Medis' || $role == 'Paramedis') {
           $sql .= " AND b.kd_poli = '$jenis_poli'";
         }
-
         if(isset($_POST['tanggal']) && $_POST['tanggal'] !="") {
-            $_sql .= " AND a.tgl_registrasi = '{$_POST['tanggal']}'";
+            $sql .= " AND a.tgl_registrasi = '{$_POST['tanggal']}'";
         } else {
             $sql .= " AND b.tgl_registrasi = '{$yesterday}'";
         }
