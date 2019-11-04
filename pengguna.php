@@ -87,10 +87,13 @@ include_once('layout/sidebar.php');
                                           <div class="input-group input-group-lg">
                                                 <div class="form">
                                                   <select id="modulename" name="modulename[]" class="form-control" multiple="multiple">
-                                                      <option value="Master">Master</option>
-                                                      <option value="BridgingBPJS">BridgingBPJS</option>
-                                                      <option value="Farmasi">Farmasi</option>
-                                                      <option value="RawatJalan">RawatJalan</option>
+                                                    <?php
+                                                    foreach (glob("modules/*/index.php") as $filename) {
+                                                      $filename = str_replace("modules/", "", $filename);
+                                                      $filename = str_replace("/index.php", "", $filename);
+                                                      echo '<option value="'.$filename.'">'.$filename.'</option>';
+                                                    }
+                                                    ?>
                                                   </select>
                                                 </div>
                                             </div>
