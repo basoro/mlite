@@ -27,7 +27,13 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
         if($role == 'Medis' || $role == 'Paramedis') {
           $sql .= " AND b.kd_poli = '$jenis_poli'";
         }
-        $sql .= " AND b.tgl_registrasi = '{$yesterday}'";
+
+        if(isset($_POST['tanggal']) && $_POST['tanggal'] !="") {
+            $_sql .= " AND a.tgl_registrasi = '{$_POST['tanggal']}'";
+        } else {
+            $sql .= " AND b.tgl_registrasi = '{$yesterday}'";
+        }
+
         $query = query($sql);
         while($row = fetch_array($query)) {
         ?>
@@ -56,5 +62,23 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
         ?>
         </tbody>
     </table>
+    <div class="row clearfix">
+        <form method="post" action="">
+        <div class="col-sm-10">
+            <div class="form-group">
+                <div class="form-line">
+                    <input type="text" name="tanggal" class="datepicker form-control" placeholder="Pilih tanggal awal...">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="form-line">
+                    <input type="submit" class="btn bg-blue btn-block btn-lg waves-effect">
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
   </div>
 </div>
