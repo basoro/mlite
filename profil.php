@@ -37,14 +37,14 @@ $b = fetch_assoc($a);
                       	if (isset($_POST['bio'])) {
 
                             if($_FILES['file']['name'] !=='') {
-                                $file=WEBAPPS.'penggajian/'.$b['photo'];
+                                $file=WEBAPPS.'/penggajian/'.$b['photo'];
                                 @unlink($file);
                                 $tmp_name = $_FILES["file"]["tmp_name"];
                                 $namefile = $_FILES["file"]["name"];
                                 $explode = explode(".", $namefile);
                                 $ext = end($explode);
                                 $image_name = "pages/pegawai/photo/".$_SESSION['username']."-".time().".".$ext;
-                                move_uploaded_file($tmp_name,WEBAPPS."penggajian/".$image_name);
+                                move_uploaded_file($tmp_name,WEBAPPS."/penggajian/".$image_name);
                             } else {
                                 $image_name=$b['photo'];
                             }

@@ -46,17 +46,10 @@
 
                                 <div class="row clearfix">
                                     <form method="post" action="">
-                                    <div class="col-sm-5">
+                                    <div class="col-sm-10">
                                         <div class="form-group">
                                             <div class="form-line">
-                                                <input type="text" name="tgl_awal" class="datepicker form-control" placeholder="Pilih tanggal awal...">
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-5">
-                                        <div class="form-group">
-                                            <div class="form-line">
-                                                <input type="text" name="tgl_akhir" class="datepicker form-control" placeholder="Pilih tanggal akhir...">
+                                                <input type="text" name="tanggal" class="datepicker form-control" placeholder="Pilih tanggal awal...">
                                             </div>
                                         </div>
                                     </div>
