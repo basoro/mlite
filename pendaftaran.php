@@ -259,7 +259,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                                     <?php if(FKTL == true) { ?>
                                                       <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
                                                         <li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
-                                                        <li><a href="./?module=BridgingBPJS&page=data_sep&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
+                                                        <li><a href="./?module=BridgingBPJS&page=data_sep&view=individual&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
                                                       <?php } ?>
                                                     <?php } ?>
                                                 </ul>
