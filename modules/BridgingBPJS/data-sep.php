@@ -40,7 +40,7 @@
             </thead>
             <tbody>
               <?php
-              $individual = query("SELECT no_sep, no_rawat, tglsep, tglrujukan, no_rujukan, nomr, nama_pasien, tanggal_lahir, peserta FROM bridging_sep WHERE no_rkm_medis = '{'$_GET['no_rkm_medis']'}'");
+              $individual = query("SELECT no_sep, no_rawat, tglsep, tglrujukan, no_rujukan, nomr, nama_pasien, tanggal_lahir, peserta FROM bridging_sep WHERE no_rkm_medis = '{$_GET['no_rkm_medis']}'");
               while($row = fetch_assoc($individual)) {
                 echo '<tr>';
                 echo '  <td>'.$row['no_sep'].'</td>';
