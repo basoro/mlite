@@ -1,5 +1,7 @@
 <?php
 $yesterday = date("Y-m-j", strtotime( '-1 days' ) );
+$jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;
+$role = isset($_SESSION['role'])?$_SESSION['role']:null;
 ?>
 <div class="card">
   <div class="header">
