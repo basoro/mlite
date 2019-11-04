@@ -11,6 +11,10 @@ class BridgingBPJS {
         global $dataSettings;
         include('modules/BridgingBPJS/data-sep.php');
     }
+    function cetak_sep() {
+        global $dataSettings;
+        include('modules/BridgingBPJS/cetaksep.php');
+    }
     function pasien_batal() {
         include('modules/BridgingBPJS/pasien-batal.php');
     }
