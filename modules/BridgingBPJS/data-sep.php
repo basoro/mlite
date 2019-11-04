@@ -3,7 +3,7 @@
       <h2>Data SEP</h2>
     </div>
     <div class="body">
-        <?php $action = isset($_GET['action'])?$_GET['action']:null;
+        <?php $action = isset($_GET['view'])?$_GET['view']:null;
         if(!$action){?>
           <table id="allsep" class="table table-bordered table-striped table-hover display nowrap" width="100%">
             <thead>
@@ -22,7 +22,7 @@
             <tbody>
             </tbody>
           </table>
-  <?php } ?>
+        <?php } ?>
         <?php if($action == "no_rkm_medis"){?>
 
       <?php } ?>
