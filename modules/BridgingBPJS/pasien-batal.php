@@ -40,18 +40,19 @@ if(isset($_GET['no_sep']) && $_GET['no_sep'] !=="") {
   $result = json_decode($content,true);
   $meta = $result['metaData']['code'];
   $mets = $result['metaData']['message'];
-
-    //echo "Kode : ".$meta."</br>";
-    //echo "Pesan : ".$mets."</br>";
-    //echo $sepranap;
   if ($meta == "200") {
 
     $insert = query("DELETE FROM bridging_sep WHERE no_sep = '".$_GET['no_sep']."'");
+    if($insert) {
+      redirect(URL.'/?module=BridgingBPJS&page=pasien_batal');
+    }
   	}else {
     ?>
       <script>alert('<?php echo "Pesan : ".$mets; ?>')</script>
     <?php
+      redirect(URL.'/?module=BridgingBPJS&page=pasien_batal');
     };
+
   }
   ?>
 
