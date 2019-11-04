@@ -163,7 +163,7 @@ if($role == 'Medis' || $role == 'Paramedis') {
         '{$ktrk}','{$_POST['tglkkl']}','{$_POST['ktrg']}','{$supl}','{$_POST['sepsup']}','','','','','','','{$_POST['skdp']}','{$_POST['dpjp']}','{$_POST['nmdpjp']}')");
     	}else {
       ?>
-        <script>alert('<?php echo "Kode : ".$meta."</br>Pesan : ".$mets; ?>')</script>
+        <script>alert('<?php echo "Kode : ".$meta."\nPesan : ".$mets."\nRespon : ".$sep; ?>')</script>
       <?php
       };
     }
