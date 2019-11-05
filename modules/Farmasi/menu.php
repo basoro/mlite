@@ -46,7 +46,7 @@
         </li>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="obat_expired") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=obat_expired">
-                Stok Opname Gudang
+                Obat Expired
             </a>
         </li>
     </ul>
