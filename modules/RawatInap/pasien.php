@@ -21,7 +21,7 @@ if(isset($_GET['no_rawat'])) {
 	        $umur          = $row['3'];
 	     }
     } else {
-	     redirect ('pasien-ralan.php');
+	     redirect ('./?module=RawatInap&page=index');
     }
 }
 
@@ -152,7 +152,7 @@ if(isset($_GET['no_rawat'])) {
                                         if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
                                               $insert = query("INSERT INTO rawat_jl_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}','Belum')");
                                               if ($insert) {
-                                                  redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
                                         };
                                   };
@@ -523,7 +523,7 @@ if(isset($_GET['no_rawat'])) {
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                   set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("pasien-ralan.php");
+                                  redirect("./?module=RawatInap&page=index");
                                 }
                               }
                             }
@@ -589,7 +589,7 @@ if(isset($_GET['no_rawat'])) {
                               $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                 set_message('Berkas digital radiologi telah ditersimpan.');
-                                    redirect("pasien-ralan.php?action=radiologi&no_rawat=$no_rawat");
+                                    redirect("./?module=RawatInap&page=index&action=radiologi&no_rawat=$no_rawat");
                                 }
                               }
                             }
@@ -638,29 +638,38 @@ if(isset($_GET['no_rawat'])) {
                             </div>
                           <?php } ?>
                           <?php if($action == "status_pulang") { ?>
-                            <?php if(isset($_POST['ok_status_pulang'])){
+                            <?php if(isset($_POST['simpan_stts_pulang'])){
 
                                   if($_POST['stts_pulang'] == "Membaik"){
                                     $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' , jam_keluar = '".$time."' , diagnosa_akhir = '".$_POST['dx']."' , stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
                                     if($update){
                                       $update1 = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar = '".$_POST['bed']."'");
-                                      redirect('../pasien-ranap.php');
+                                      redirect('./?module=RawatInap&page=index');
                                     }
-                                  }else{echo "<script>swal({
-                                                        title: 'Pilih Membaik untuk Memulangkan',
-                                                        icon: 'warning',
-                                                        dangerMode: true,
-                                                      })</script>";}
+                                  }else{echo "<script>alert('Pilih Membaik untuk Memulangkan')</script>";}
 
                                 }?>
-                                <form method="POST">
+                                <form action="" method="POST">
+                                  <div class="modal-body">
                                     <div class="form-group">
                                       <div class="form-line">
-                                        <label for="stts_pulang">Status</label>
-                                        <select name="stts_pulang" id="stts_pulang"class="form-control show-tick">
+                                          <label for="dx">Diagnosa</label>
+                                          <input type="text" class="form-control" name="dx" value="">
+                                          <input type="hidden" class="form-control" name="bed" value="<?php echo $_GET['bed'];?>">
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                          <label for="tglplg">Tanggal Pulang</label>
+                                          <input type="text" class="datepicker form-control" name="tglplg" value="<?php echo $date; ?>">
+                                      </div>
+                                    </div>
+                                    <div class="form-group">
+                                      <div class="form-line">
+                                        <label for="stts_pulang">Status Pulang</label>
+                                        <select name="stts_pulang" class="form-control show-tick">
                                         <?php
-                                        $no_rawat = $_GET['no_rawat'];
-                                        $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'reg_periksa' AND COLUMN_NAME = 'stts'");
+                                        $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'kamar_inap' AND COLUMN_NAME = 'stts_pulang'");
                                         $row = fetch_array($result);
                                         $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
                                         foreach($enumList as $value) {
@@ -670,49 +679,202 @@ if(isset($_GET['no_rawat'])) {
                                         </select>
                                       </div>
                                     </div>
-                                    <div class="form-group">
-                                      <div class="form-line">
-                                          <label for="kamar">Kamar</label>
-                                          <select name="kamar" class="form-control kamar" id="kamar" style="width:100%"></select>
-                                                  <br/>
-                                          <input type="hidden" class="form-control" id="hrgkmr" name="hrgkmr"/>
-                                      </div>
-                                    </div>
-                                    <div class="form-group">
-                                      <div class="form-line">
-                                          <label for="dx">Diagnosa</label>
-                                          <input type="text" class="form-control" name="dx" value="">
-                                      </div>
-                                    </div>
-                                    <div class="form-group">
-                                      <div class="form-line">
-                                          <label for="tglplg">Tanggal</label>
-                                          <input type="text" class="datepicker form-control" name="tgl" value="<?php echo date('Y-m-d'); ?>">
-                                      </div>
-                                    </div>
-                                      <input type="hidden" name="no_rawat" value="<?php echo $no_rawat;?>">
-                                      <button type="submit"  name="ok_status_pulang" value="ok_status_pulang"  class="btn btn-success waves-effect" onclick="this.value=\'ok_status_pulang\'">SIMPAN</button>
-                                </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                      <input type="hidden" name="no_rawat" value="<?php echo $_GET['no_rawat'];?>">
+                                      <input type="submit" class="btn btn-success waves-effect" name="simpan_stts_pulang" value="SIMPAN">
+                                  </div>
+                             	  </form>
+                          <?php } ?>
+                          <?php if($action == "pindah") {
+
+                            if ($_POST['stts_pindah'] == "2"){
+                          			$no_rawat	 = $_POST['no_rawat'];
+                          			$kd_kamar 	 = $_POST['kamar'];
+                          			$kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
+
+                          			$sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
+                          			$query		 =query($sql_kamar);
+                          			$data		 =fetch_assoc($query);
+
+                          			$tarif_kamar = $data['trf_kamar'];
+                          			$tgl_masuk 	 = $_POST['tgl_masuk'];
+                          			$jam		 = $_POST['jam_masuk'];
+
+                          			$update = query("UPDATE kamar_inap SET kd_kamar = '".$_POST['kamar']."', trf_kamar ='".$data['trf_kamar']."', tgl_masuk ='".$_POST['tgl_masuk']."', lama = '1', ttl_biaya = '".$data['trf_kamar']."' WHERE no_rawat = '".$_POST['no_rawat']."' AND stts_pulang ='-' ");
+                          			$update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
+                          			$update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
+
+                          	} else if ($_POST['stts_pindah'] == "3") {
+                          			$no_rawat	 = $_POST['no_rawat'];
+                          			$kd_kamar 	 = $_POST['kamar'];
+                          			$kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
+
+                          			$sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
+                          			$query		 =query($sql_kamar);
+                          			$data		 =fetch_assoc($query);
+
+                          			$tarif_kamar = $data['trf_kamar'];
+
+                          			$tgl_masuk 	 = $_POST['tgl_masuk'];
+                          			$jam		 = $_POST['jam_masuk'];
+
+                          			$tambah = query("INSERT INTO kamar_inap VALUES ('$no_rawat','$kd_kamar','$tarif_kamar','{$_POST['diagnosa_awal']}','-','$tgl_masuk','$jam','0000-00-00','00:00:00','1','$tarif_kamar','-')");
+                          			$update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
+
+                          			$tgl_masuk2       = new DateTime($tgl_masuk);
+
+                          			$sql_kamar_2     = "SELECT tgl_masuk,trf_kamar FROM kamar_inap WHERE kd_kamar ='{$_POST['kd_kamar_sebelumnya']}' AND no_rawat ='{$_POST['no_rawat']}'";
+                          			$query2		     =query($sql_kamar_2);
+                          			$data		     =fetch_assoc($query2);
+                          			$data_tgl 		 = $data['tgl_masuk'];
+                          			$tgl_keluar			= new DateTime($data_tgl);
+                          			$tgl_keluar_post 	= $tgl_masuk2->diff($tgl_keluar);
+                          			$ttl_biaya 			= $tgl_keluar_post->days * $tarif_kamar;
+                          			$tgl_keluar_bujur 	= $tgl_keluar->format('Y-m-d');
+
+                          			$update_kamar_sebelumnya = query("UPDATE kamar_inap SET stts_pulang = 'Pindah Kamar', tgl_keluar = '$tgl_masuk',jam_keluar='$jam',lama = '".$tgl_keluar_post->d."', ttl_biaya = '$ttl_biaya' WHERE no_rawat = '".$_POST['no_rawat']."' AND kd_kamar='$kd_kmr_sbl' ");
+                          			$update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
+
+                          		} else {
+
+                              }
+
+                            ?>
+
+                            <div class="row">
+             							   <div class="body">
+                                      		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        		<div class="card">
+             								  <div class="card-body" style="padding-top:15px;padding-left:15px;">
+             								   <h5><?php echo $_GET['nm_pasien'];?></h5>
+             								   <?php
+             								     $sql ="SELECT
+             									a.no_rawat,
+             									b.no_rkm_medis,
+             									c.nm_pasien,
+             									a.tgl_masuk,
+             									a.tgl_keluar,
+             									a.kd_kamar,
+             									d.kd_bangsal,
+             									e.nm_bangsal,
+             									a.stts_pulang
+             								  FROM
+             									kamar_inap as a,
+             									reg_periksa as b,
+             									pasien as c,
+             									kamar as d,
+             									bangsal as e
+             								  WHERE
+             									a.no_rawat = b.no_rawat
+             									AND
+             									b.no_rkm_medis = c.no_rkm_medis
+             									AND
+             									a.kd_kamar=d.kd_kamar
+             									AND
+             									d.kd_bangsal=e.kd_bangsal
+             									AND
+             									a.no_rawat ='$nomor_rawat'
+             									";
+
+             									$query=query($sql);
+             								    $no=1;
+             									while($data=$query->fetch_assoc()){  ?>
+             									  <?php echo $no++;?>.
+             									  <?php echo $data['nm_bangsal'];?>
+             										&nbsp;&nbsp;/&nbsp;&nbsp;<?php echo $data['kd_kamar'];?>
+             										&nbsp;&nbsp;/&nbsp;&nbsp;<?php echo $data['tgl_masuk'];?>
+             										&nbsp;&nbsp;/&nbsp;&nbsp;<?php if ($data['stts_pulang'] == "-"){echo "Belum Pulang";} else {echo $data['stts_pulang'];};?>
+             								        <hr>
+             								      <?php }
+             								      $no_rkm_medis=$data['no_rkm_medis'];
+             								      ?>
+             								  </div>
+             								  </div>
+             								</div>
+             								<form method="post" action="" style ="margin-left:5px;margin-right:5px;">
+             									<div class="col-sm-3">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<input type="text" class="form-control" name="no_rawat" value="<?php echo $_GET['no_rawat'];?>">
+             												<label class="form-label">Nomor Rawat</label>
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-2">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<input type="text" class="form-control" name="no_rkm_medis" value="<?php echo $_GET['no_rkm_medis'];?>">
+             												<label class="form-label">Nomor Rekam Medik</label>
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-2">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<input type="text" class="form-control" name="kd_kamar_sebelumnya" value="<?php echo $_GET['kd_kmr_sblmny'];?>">
+             												<label class="form-label">Kd Kamar Sebelumnya</label>
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-5">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<input type="text" class="form-control" name="nm_pasien" value="<?php echo $_GET['nm_pasien'];?>">
+             												<label class="form-label">Nama Pasien</label>
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-3">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<label class="form-label">Tanggal Masuk</label>
+             												<input type="text" name="tgl_masuk" class="datepicker form-control" value="<?php echo date('Y-m-d');?>">
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-2">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<label class="form-label">Jam Masuk</label>
+             												<input type="text" name="jam_masuk" class="form-control" value="<?php echo date('H:m:s');?>">
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-2">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<label class="form-label">Diagnosa Awal</label>
+             												<input type="text" name="diagnosa_awal" class="form-control" value="<?php
+             														$sql_kamar   = "SELECT diagnosa_awal FROM kamar_inap WHERE no_rawat ='{$_GET['no_rawat']}'";
+             														$query		 =query($sql_kamar);
+             														$data		 =fetch_assoc($query);
+             														echo $data['diagnosa_awal'];?> ">
+             											</div>
+             										</div>
+             									</div>
+             									<div class="col-sm-5">
+             										<div class="form-group">
+             											<div class="form-line">
+             												<select name="stts_pindah" style="width:100%" class="form-control" id="stts_pindah">
+             													<option value="2" selected="selected" >2. Kamar sebelumnya diganti dengan kamar yang baru</option>
+             													<option value="3" >3. Kamar sebelumnya distatus pindah</option>
+             												</select>
+             											</div>
+             										</div>
+             									</div>
+             									<div class="form-group" style="width:97%; margin-left:15px;">
+                                                   <select name="kamar" class="form-control kamar" id="kamar" style="width:100%"></select>
+                                                    <!--   <br/>
+             										<input type="hidden" class="form-control" id="kamar" name="kamar"/> -->
+                                                 </div>
+                                              	<button type="submit" class="form-control btn bg-indigo waves-effect tombol-simpan" name="simpan">Simpan</button>
+                                             </form>
+             						        </div>
+             						  </div>
                           <?php } ?>
 
                         <?php
-                        //delete
-                        if($action == "delete_diagnosa"){
-                              $hapus = "DELETE FROM diagnosa_pasien WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_penyakit = '{$_REQUEST['kode']}' AND prioritas = '{$_REQUEST['prioritas']}'";
-                              $hasil = query($hapus);
-                              if (($hasil)) {
-                                  redirect("pasien-ralan.php?action=view&no_rawat={$no_rawat}");
-                              }
-                        }
-
-                        //delete
-                        if($action == "delete_obat"){
-                              $hapus = "DELETE FROM resep_dokter WHERE no_resep='{$_REQUEST['no_resep']}' AND kode_brng='{$_REQUEST['kode_obat']}'";
-                              $hasil = query($hapus);
-                              if (($hasil)) {
-                              redirect("pasien-ralan.php?action=view&no_rawat={$no_rawat}");
-                              }
-                        }
                         if ($action == "delete_pemeriksaan") {
                           $hapus = "DELETE FROM pemeriksaan_ralan WHERE no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
@@ -725,7 +887,7 @@ if(isset($_GET['no_rawat'])) {
                           $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
                         ?>
