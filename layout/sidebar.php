@@ -48,10 +48,18 @@
                     </li>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'RekamMedik')  { ?>
                     <li>
-                        <a href="<?php echo URL; ?>/pendaftaran.php">
+                        <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">text_fields</i>
-                            <span>Pendaftaran</span>
+                            <span>Pasien</span>
                         </a>
+                        <ul class="ml-menu">
+                            <li>
+                                <a href="<?php echo URL; ?>/pendaftaran.php">Pendaftaran</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo URL; ?>/booking.php">Booking</a>
+                            </li>
+                        </ul>
                     </li>
                     <?php } ?>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Kasir')  { ?>
