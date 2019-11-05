@@ -9,9 +9,44 @@
                 Dashboard
             </a>
         </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="data_resep") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=data_resep">
+                Data Resep Elektronik
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="laporan_harian") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=laporan_harian">
+                Laporan Obat Harian
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="laporan_ralan_ranap") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=laporan_ralan_ranap">
+                Laporan Ralan Ranap
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="permintaan_resep") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=permintaan_resep">
+                Permintaan Resep Dokter
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="rekam_obat") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=rekam_obat">
+                Rekam Pemberian Obat
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="monitoring_obat") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=monitoring_obat">
+                Monitoring Obat
+            </a>
+        </li>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="stok_opname") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=stok_opname">
-                Dashboard
+                Stok Opname Gudang
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="obat_expired") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=obat_expired">
+                Stok Opname Gudang
             </a>
         </li>
     </ul>

@@ -59,7 +59,7 @@
 
           $('#allobat').dataTable( {
                 "bInfo" : true,
-                "bStateSave": true, 
+                "bStateSave": true,
               	"scrollX": true,
                 "processing": true,
                 "serverSide": true,
@@ -84,5 +84,40 @@
                 "order": [[ 0, "asc" ]],
                 "ajax": "<?php echo URL; ?>/modules/Farmasi/includes/obat.php"
           } );
+
+    </script>
+
+    <script type="text/javascript">
+
+        function formatData (data) {
+            var $data = $(
+                '<b>'+ data.id +'</b> - <i>'+ data.text +'</i>'
+            );
+            return $data;
+        };
+
+        function formatDataTEXT (data) {
+            var $data = $(
+                '<b>'+ data.text +'</b>'
+            );
+            return $data;
+        };
+
+          $('.pasien').select2({
+            placeholder: 'Pilih Nama Obat',
+            ajax: {
+              url: '<?php echo URL; ?>/modules/Farmasi/includes/select-obat.php',
+              dataType: 'json',
+              delay: 250,
+              processResults: function (data) {
+                return {
+                  results: data
+                };
+              },
+              cache: true
+            },
+            templateResult: formatData,
+            minimumInputLength: 3
+          });
 
     </script>
