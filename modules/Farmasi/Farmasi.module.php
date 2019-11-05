@@ -7,7 +7,8 @@ class Farmasi {
     function index() {
       include('modules/Farmasi/dashboard.php');
     }
-    function data_obat() {
+    function stok_opname() {
+      include('modules/Farmasi/stok-opname.php');
     }
 }
 ?>

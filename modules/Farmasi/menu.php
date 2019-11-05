@@ -9,5 +9,10 @@
                 Dashboard
             </a>
         </li>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="stok_opname") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=stok_opname">
+                Dashboard
+            </a>
+        </li>
     </ul>
 </li>
