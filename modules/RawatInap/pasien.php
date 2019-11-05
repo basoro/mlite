@@ -150,7 +150,7 @@ if(isset($_GET['no_rawat'])) {
                         if($action == "tindakan"){
                           if (isset($_POST['ok_tdk'])) {
                                         if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
-                                              $insert = query("INSERT INTO rawat_jl_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}','Belum')");
+                                              $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}')");
                                               if ($insert) {
                                                   redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
@@ -159,7 +159,7 @@ if(isset($_GET['no_rawat'])) {
 
                           if(isset($_POST['ok_per'])){
                                 if(($no_rawat <> "")){
-                                  $insert = query("INSERT INTO pemeriksaan_ralan VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
+                                  $insert = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
                                               ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
                                   if($insert){
                                     redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
@@ -168,7 +168,7 @@ if(isset($_GET['no_rawat'])) {
                               };
                           if(isset($_POST['edit_an'])){
                                 if(($no_rawat <> "")){
-                              	$insert = query("UPDATE pemeriksaan_ralan SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
+                              	$insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
 
                                   if($insert){
                                     redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
@@ -220,7 +220,7 @@ if(isset($_GET['no_rawat'])) {
                                          </thead>
                                          <tbody>
                                          <?php
-                                         $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakanpr, b.nm_perawatan  FROM rawat_jl_pr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
+                                         $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakanpr, b.nm_perawatan  FROM rawat_inap_pr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
                                          while ($data_tindakan = fetch_array($query_tindakan)) {
                                          ?>
                                              <tr>
@@ -361,7 +361,7 @@ if(isset($_GET['no_rawat'])) {
                                          </thead>
                                          <tbody>
                                          <?php
-                                         $query_tindakan = query("SELECT * FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'");
+                                         $query_tindakan = query("SELECT * FROM pemeriksaan_ranap WHERE no_rawat = '{$no_rawat}'");
                                          while ($data_tindakan = fetch_array($query_tindakan)) {
                                          ?>
                                              <tr>
@@ -388,7 +388,7 @@ if(isset($_GET['no_rawat'])) {
 
                           <?php if($opt == 'edit_anamnese' ) { ?>
                           <?php
-                              $row = fetch_assoc(query("SELECT * FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'"));
+                              $row = fetch_assoc(query("SELECT * FROM pemeriksaan_ranap WHERE no_rawat = '{$no_rawat}'"));
                           ?>
                           <form method="post">
                           <div class="row clearfix">
@@ -876,7 +876,7 @@ if(isset($_GET['no_rawat'])) {
 
                         <?php
                         if ($action == "delete_pemeriksaan") {
-                          $hapus = "DELETE FROM pemeriksaan_ralan WHERE no_rawat='{$_REQUEST['no_rawat']}'";
+                          $hapus = "DELETE FROM pemeriksaan_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
                             redirect("./?module=RawatInap&action=tindakan&no_rawat={$no_rawat}");
@@ -884,7 +884,7 @@ if(isset($_GET['no_rawat'])) {
                         }
 
                         if ($action == "delete_tindakan") {
-                          $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                          $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
                             redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
@@ -904,7 +904,7 @@ if(isset($_GET['no_rawat'])) {
               <div class="modal-body">
 
                 <?php
-                    $row = fetch_assoc(query("SELECT * FROM pemeriksaan_ralan WHERE no_rawat = '{$no_rawat}'"));
+                    $row = fetch_assoc(query("SELECT * FROM pemeriksaan_ranap WHERE no_rawat = '{$no_rawat}'"));
                 ?>
                 <form method="post">
                 <div class="row clearfix">
