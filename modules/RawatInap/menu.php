@@ -10,11 +10,6 @@
                 Pasien Rawat Inap
             </a>
         </li>
-        <li class="<?php if ($params['module']=="RawatInap" && $params['page']=="cppt") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatInap&page=cppt">
-              CPPT
-            </a>
-        </li>
         <li class="<?php if ($params['module']=="RawatInap" && $params['page']=="diet_pasien") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=RawatInap&page=diet_pasien">
                 Diet Pasien

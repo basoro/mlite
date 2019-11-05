@@ -201,7 +201,7 @@ if(isset($_GET['no_rawat'])) {
                                                  <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
                                                  <td><?php echo $data_tindakan['1']; ?></td>
                                                  <td><?php echo $data_tindakan['2']; ?></td>
-                                                 <td><a href="./?module=Rawatjalan&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                                 <td><a href="./?module=RawatJalan&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
                                          }

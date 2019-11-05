@@ -8,9 +8,6 @@ class RawatInap {
         global $dataSettings, $date;
        include('modules/RawatInap/pasien.php');
     }
-    function cppt() {
-       include('modules/RawatInap/cppt.php');
-    }
     function diet_pasien() {
        include('modules/RawatInap/diet_pasien.php');
     }
