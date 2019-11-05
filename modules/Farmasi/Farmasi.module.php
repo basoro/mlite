@@ -14,7 +14,7 @@ class Farmasi {
       include('modules/Farmasi/laporan-obat-harian.php');
     }
     function laporan_ralan_ranap() {
-      include('modules/Farmasi/laporam-obat-ralan-ranap.php');
+      include('modules/Farmasi/laporan-obat-ralan-ranap.php');
     }
     function permintaan_resep() {
       include('modules/Farmasi/data-permintaan-resep.php');
