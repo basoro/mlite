@@ -156,7 +156,7 @@ $b = fetch_assoc($a);
                                                 } else if ($dataGet['1'] == 'P' || $dataGet['1'] == 'Wanita') {
                                                     echo '<img id="image_upload_preview" width="200px" style="-webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; border-radius: 50%;" src="'.URL.'/assets/images/wanita.png" onclick="upload_berkas()" style="cursor:pointer;" alt="User" />';
                                                 } else {
-                                                  echo '<img id="image_upload_preview" width="200px" style="-webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; border-radius: 50%;" src="'.URL.'/assets/images/pria.png" onclick="upload_berkas()" style="cursor:pointer;" alt="User" />';
+                                                  echo '<img id="image_upload_preview" width="200px" style="-webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; border-radius: 50%;" src="'.URL.'/assets/images/no-photo.jpg" onclick="upload_berkas()" style="cursor:pointer;" alt="User" />';
                                                 }
                                               } else {
                                                 echo '<img id="image_upload_preview" width="200px" style="-webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; border-radius: 50%;" src="'.URLSIMRS.'/penggajian/'.$b['photo'].'" onclick="upload_berkas()" style="cursor:pointer;" alt="User" />';
