@@ -31,7 +31,7 @@ $b = fetch_assoc($a);
                         <ul class="nav nav-tabs" role="tablist">
                             <li role="presentation" class="active"><a href="#profile_settings" aria-controls="settings" role="tab" data-toggle="tab">Biodata</a></li>
                             <li role="presentation"><a href="#work" aria-controls="settings" role="tab" data-toggle="tab">Status Kerja</a></li>
-                            <li role="presentation"><a href="#change_password_settings" aria-controls="settings" role="tab" data-toggle="tab">Ganti Password</a></li>
+                            <li role="presentation"><a href="#change_password_settings" aria-controls="settings" role="tab" data-toggle="tab">Password</a></li>
                         </ul>
 							          <?php
                       	if (isset($_POST['bio'])) {
