@@ -191,7 +191,7 @@ if(isset($_GET['no_rawat'])) {
                                        <dd><?php echo $umur; ?></dd>
                                    </dl>
                                    <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                                     <li role="presentation" class="active"><a href="#datapem" data-toggle="tab">PEMERIKSAAN</a></li>
+                                     <li role="presentation" class="active"><a href="#datapem" data-toggle="tab">CPPT</a></li>
                                      <li role="presentation"><a href="#data" data-toggle="tab">TINDAKAN</a></li>
                                    </ul>
                                </div>
