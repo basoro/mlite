@@ -35,6 +35,67 @@ if(isset($_GET['no_rawat'])) {
   <!-- Font Awesome -->
   <link rel="stylesheet" href="<?php echo URL; ?>/assets/plugins/font-awesome/css/font-awesome.min.css">
   <!-- Theme style -->
+  <link rel="stylesheet" href="https://adminlte.io/themes/AdminLTE/dist/css/AdminLTE.min.css">
+  <style>
+  /*
+ * Page: Invoice
+ * -------------
+ */
+.invoice {
+  position: relative;
+  background: #fff;
+  border: 1px solid #f4f4f4;
+  padding: 20px;
+  margin: 10px 25px;
+}
+.invoice-title {
+  margin-top: 0;
+}
+/*
+ * Misc: print
+ * -----------
+ */
+@media print {
+  .no-print,
+  .main-sidebar,
+  .left-side,
+  .main-header,
+  .content-header {
+    display: none !important;
+  }
+  .content-wrapper,
+  .right-side,
+  .main-footer {
+    margin-left: 0 !important;
+    min-height: 0 !important;
+    -webkit-transform: translate(0, 0) !important;
+    -ms-transform: translate(0, 0) !important;
+    -o-transform: translate(0, 0) !important;
+    transform: translate(0, 0) !important;
+  }
+  .fixed .content-wrapper,
+  .fixed .right-side {
+    padding-top: 0 !important;
+  }
+  .invoice {
+    width: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .invoice-col {
+    float: left;
+    width: 33.3333333%;
+  }
+  .table-responsive {
+    overflow: auto;
+  }
+  .table-responsive > .table tr th,
+  .table-responsive > .table tr td {
+    white-space: normal !important;
+  }
+}
+</style>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
