@@ -136,10 +136,10 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                       <?php if($action == "view"){ ?>
                         <div class="body">
                           <dl class="dl-horizontal">
-                            <dt>Nama Lengkap</dt>
-                            <dd><?php echo $nm_pasien; ?></dd>
-                            <dt>No. RM</dt>
-                            <dd><?php echo $no_rkm_medis; ?></dd>
+                            <dt class="col-1">Nama Lengkap</dt>
+                            <dd class="col-1"><?php echo $nm_pasien; ?></dd>
+                            <dt class="col-2">No. RM</dt>
+                            <dd class="col-2"><?php echo $no_rkm_medis; ?></dd>
                             <dt>No. Rawat</dt>
                             <dd><?php echo $no_rawat; ?></dd>
                             <dt>Cara Bayar</dt>
@@ -226,7 +226,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                          </table>
                         </div>
                         <div class="body">
-                          <button type="submit" name="ok_obat" value="ok_obat" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_obat\'">CETAK</button>
+                          <a href="print_billing.php?no_rawat=<?php echo $no_rawat; ?>" class="btn bg-indigo waves-effect">CETAK</a>
                         </div>
                       <?php } ?>
                       <?php
