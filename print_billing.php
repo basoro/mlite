@@ -35,7 +35,6 @@ if(isset($_GET['no_rawat'])) {
   <!-- Font Awesome -->
   <link rel="stylesheet" href="<?php echo URL; ?>/assets/plugins/font-awesome/css/font-awesome.min.css">
   <!-- Theme style -->
-  <link rel="stylesheet" href="https://adminlte.io/themes/AdminLTE/dist/css/AdminLTE.min.css">
   <style>
   /*
  * Page: Invoice
