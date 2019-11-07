@@ -226,7 +226,7 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
                          </table>
                         </div>
                         <div class="body">
-                          <a href="print_billing.php?no_rawat=<?php echo $no_rawat; ?>" class="btn bg-indigo waves-effect">CETAK</a>
+                          <a href="print_billing.php?no_rawat=<?php echo $no_rawat; ?>" class="btn bg-indigo waves-effect" target="_blank">CETAK</a>
                         </div>
                       <?php } ?>
                       <?php
