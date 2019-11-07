@@ -241,7 +241,7 @@ if(isset($_GET['no_rawat'])) {
         <div class="table-responsive">
           <table class="table">
             <tr>
-              <th style="width:50%">Subtotal Tindakan:</th>
+              <th style="width:50%">Subtotal Tindakan</th>
               <td>Rp. <span class="pull-right"><?php echo number_format($total_tindakan,2,',','.'); ?></span></td>
             </tr>
             <tr>
