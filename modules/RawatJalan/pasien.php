@@ -21,7 +21,7 @@ if(isset($_GET['no_rawat'])) {
 	        $umur          = $row['3'];
 	     }
     } else {
-	     redirect ('pasien-ralan.php');
+	     redirect ('./?module=RawatJalan&page=index');
     }
 }
 
@@ -126,7 +126,7 @@ if(isset($_GET['no_rawat'])) {
                                         if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
                                               $insert = query("INSERT INTO rawat_jl_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}','Belum')");
                                               if ($insert) {
-                                                  redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                                                  redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
                                         };
                                   };
@@ -497,7 +497,7 @@ if(isset($_GET['no_rawat'])) {
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                   set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("pasien-ralan.php");
+                                  redirect("./?module=RawatJalan&page=index");
                                 }
                               }
                             }
@@ -563,7 +563,7 @@ if(isset($_GET['no_rawat'])) {
                               $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                 set_message('Berkas digital radiologi telah ditersimpan.');
-                                    redirect("pasien-ralan.php?action=radiologi&no_rawat=$no_rawat");
+                                    redirect("./?module=RawatJalan&page=index&action=radiologi&no_rawat=$no_rawat");
                                 }
                               }
                             }
@@ -671,7 +671,7 @@ if(isset($_GET['no_rawat'])) {
                               $hapus = "DELETE FROM diagnosa_pasien WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_penyakit = '{$_REQUEST['kode']}' AND prioritas = '{$_REQUEST['prioritas']}'";
                               $hasil = query($hapus);
                               if (($hasil)) {
-                                  redirect("pasien-ralan.php?action=view&no_rawat={$no_rawat}");
+                                  redirect("./?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
                               }
                         }
 
@@ -680,7 +680,7 @@ if(isset($_GET['no_rawat'])) {
                               $hapus = "DELETE FROM resep_dokter WHERE no_resep='{$_REQUEST['no_resep']}' AND kode_brng='{$_REQUEST['kode_obat']}'";
                               $hasil = query($hapus);
                               if (($hasil)) {
-                              redirect("pasien-ralan.php?action=view&no_rawat={$no_rawat}");
+                              redirect("./?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
                               }
                         }
                         if ($action == "delete_pemeriksaan") {
@@ -695,7 +695,7 @@ if(isset($_GET['no_rawat'])) {
                           $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("pasien-ralan.php?action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
                         ?>
