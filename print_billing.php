@@ -249,7 +249,7 @@ if(isset($_GET['no_rawat'])) {
               <td>Rp. <span class="pull-right"><?php echo number_format($total_obat,2,',','.'); ?></span></td>
             </tr>
             <tr>
-              <th>Subtotal Obat</th>
+              <th>Subtotal Tambahan Biaya</th>
               <td>Rp. <span class="pull-right"><?php echo number_format($total_tambahan,2,',','.'); ?></span></td>
             </tr>
             <tr>
