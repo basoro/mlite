@@ -215,7 +215,7 @@ if(isset($_GET['no_rawat'])) {
               $total_tambahan += $data_tambahan_biaya['2'];
             ?>
                 <tr>
-                    <td><?php echo $data_tambahan_biaya['1']; ?> <a class="btn btn-danger waves-effect" href="<?php $_SERVER['PHP_SELF']; ?>?action=delete_biaya&no_rawat=<?php echo $no_rawat; ?>">x</a></td>
+                    <td><?php echo $data_tambahan_biaya['1']; ?></td>
                     <td>-</td>
                     <td>Rp. <span class="pull-right"><?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></span></td>
                     <td>Rp. <span class="pull-right"><?php echo number_format($data_tambahan_biaya['2'],2,',','.'); ?></span></td>
