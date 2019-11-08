@@ -18,7 +18,7 @@ ob_start();
 session_start();
 
 include ('../../../config.php');
-//include ('../../../init.php');
+include ('../../../init.php');
 
 $kode = $_GET['kode'];
 $sql = query("SELECT trf_kamar FROM kamar WHERE kd_kamar='$kode'");

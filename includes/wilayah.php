@@ -16,7 +16,8 @@ if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
    exit;
 }
 
-include'../config.php';
+include ('../config.php');
+include ('../init.php');
 
 error_reporting(0);
 $page = isset($_GET['page'])?$_GET['page']:null;

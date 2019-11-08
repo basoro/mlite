@@ -18,7 +18,7 @@ ob_start();
 session_start();
 
 include ('../../../config.php');
-//include ('../../../init.php');
+include ('../../../init.php');
 
 $q = $_GET['q'];
 

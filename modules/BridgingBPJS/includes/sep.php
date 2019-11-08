@@ -18,6 +18,7 @@ ob_start();
 session_start();
 
 include ('../../../config.php');
+include ('../../../init.php');
 
 $table = <<<EOT
  (

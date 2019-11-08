@@ -19,7 +19,8 @@ if(!isset($_SERVER['HTTP_X_REQUESTED_WITH'])) {
 ob_start();
 session_start();
 
-include_once('../config.php');
+include ('../config.php');
+include ('../init.php');
 
 $q = $_GET['q'];
 
