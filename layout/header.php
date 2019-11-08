@@ -56,6 +56,14 @@ if(PRODUCTION == true) {
     <link href="<?php echo URL; ?>/assets/css/select2.min.css" rel="stylesheet">
     <link href="<?php echo URL; ?>/assets/plugins/light-gallery/css/lightgallery.css" rel="stylesheet">
 
+    <?php
+    if(isset($_GET['module'])) {
+      if(file_exists('modules/'.$_GET['module'].'/css.php')) {
+        include('modules/'.$_GET['module'].'/css.php');
+      }
+    }
+    ?>
+
     <!-- Custom Css -->
     <link href="<?php echo URL; ?>/assets/css/style.css" rel="stylesheet">
 
