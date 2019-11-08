@@ -168,7 +168,7 @@ if(isset($_GET['no_rawat'])) {
                                    <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
                                    <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">PEMERIKSAAN</a></li>
                                    <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
-                                 </ul>                                 
+                                 </ul>
                                </div>
                                <!-- End Nav Tabs -->
                                <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
@@ -180,7 +180,7 @@ if(isset($_GET['no_rawat'])) {
                                              $no=1;
                                              while ($row_rmlama = fetch_array($sql_rmlama)) {
                                                  echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.SIMRSURL.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
                                                  echo '</div>';
                                                  $no++;
                                              }
@@ -190,7 +190,7 @@ if(isset($_GET['no_rawat'])) {
                                              $no=1;
                                              while ($row_rmlama = fetch_array($sql_rmlama)) {
                                                  echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.SIMRSURL.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
                                                  echo '</div>';
                                                  $no++;
                                              }
@@ -355,7 +355,7 @@ if(isset($_GET['no_rawat'])) {
                                                $no=1;
                                                while ($row_lab = fetch_array($sql_lab)) {
                                                    echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=laboratorium&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.SIMRSURL.'/berkasrawat/'.$row_lab[2].'"></a>';
+                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=laboratorium&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_lab[2].'"></a>';
                                                    echo '</div>';
                                                    $no++;
                                                }
@@ -369,7 +369,7 @@ if(isset($_GET['no_rawat'])) {
                                                $no=1;
                                                while ($row_rad = fetch_array($sql_rad)) {
                                                    echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=radiologi&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.SIMRSURL.'/radiologi/'.$row_rad[3].'"></a>';
+                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=radiologi&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
                                                    echo '</div>';
                                                    $no++;
                                                }
