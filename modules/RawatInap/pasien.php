@@ -419,7 +419,7 @@ if(isset($_GET['no_rawat'])) {
                                      </table>
                                    </div>
                                    <!-- riwayat -->
-                                   <div role="tabpanel" class="tab-pane fade in active" id="pemeriksaan">
+                                   <div role="tabpanel" class="tab-pane fade in" id="pemeriksaan">
                                      <div class="body">
                                      <form method="POST">
                                        <div class="row clearfix">
