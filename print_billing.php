@@ -1,5 +1,6 @@
 <?php
 include('config.php');
+include('init.php');
 if(isset($_GET['no_rawat'])) {
     $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur, a.status_lanjut , a.kd_pj, c.png_jawab, b.alamat, b.no_tlp, b.email FROM reg_periksa a, pasien b, penjab c WHERE a.no_rkm_medis = b.no_rkm_medis AND a.kd_pj = c.kd_pj AND a.no_rawat = '$_GET[no_rawat]'";
     $found_pasien = query($_sql);
