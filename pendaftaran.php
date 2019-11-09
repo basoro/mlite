@@ -411,11 +411,11 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                         <td>
                                             <ul style="list-style:none;">
                                             <?php
-                                            $sql_obat = query("select detail_pemberian_obat.jml, databarang.nama_brng from detail_pemberian_obat inner join databarang on detail_pemberian_obat.kode_brng=databarang.kode_brng where detail_pemberian_obat.no_rawat= '$no_rawat_kunj'");
+                                            $sql_obat = query("SELECT a.kode_brng, a.jml, a.aturan_pakai, b.nama_brng, a.no_resep FROM resep_dokter a, databarang b, resep_obat c WHERE a.kode_brng = b.kode_brng AND a.no_resep = c.no_resep AND c.no_rawat = '{$no_rawat_kunj}'");
                                             $no=1;
                                             while ($row_obat = fetch_array($sql_obat)) {
-                                                echo '<li>'.$no.'. '.$row_obat[1].' ('.$row_obat[0].')</li>';
-                                                $no++;
+                                              echo '<li>'.$no.'. '.$row_obat[3].' - '.$row_obat[1].' ('.$row_obat[2].')</li>';
+                                              $no++;
                                             }
                                             ?>
                                             </ul>
