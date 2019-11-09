@@ -16,7 +16,7 @@ $module_type        = 'FKTP';
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="medical-icon-i-administration"></i>
+          <i class="material-icons">folder</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
@@ -27,7 +27,7 @@ $module_type        = 'FKTP';
     <td>
       <div class="image-plugins">
         <div class="icon">
-           <i class="medical-icon-i-administration"></i>
+           <i class="material-icons">folder</i>
         </div>
       </div>
     </td>
