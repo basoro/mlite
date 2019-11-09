@@ -19,11 +19,13 @@
                 Laporan Obat Harian
             </a>
         </li>
+        <?php if(FKTL == true) { ?>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="laporan_ralan_ranap") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=laporan_ralan_ranap">
                 Laporan Ralan Ranap
             </a>
         </li>
+        <?php } ?>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="permintaan_resep") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=permintaan_resep">
                 Permintaan Resep Dokter
@@ -34,20 +36,24 @@
                 Rekam Pemberian Obat
             </a>
         </li>
+        <?php if(FKTL == true) { ?>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="monitoring_obat") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=monitoring_obat">
                 Monitoring Obat
             </a>
         </li>
+        <?php } ?>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="stok_opname") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=stok_opname">
                 Stok Opname Gudang
             </a>
         </li>
+        <?php if(FKTL == true) { ?>
         <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="obat_expired") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Farmasi&page=obat_expired">
                 Obat Expired
             </a>
         </li>
+        <?php } ?>
     </ul>
 </li>
