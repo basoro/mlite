@@ -375,9 +375,33 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                         </td>
                                           <?php
                                           if($status_lanjut_kunj == 'Ralan') {
-                                            $sql_riksaralan = fetch_assoc(query("SELECT keluhan, pemeriksaan FROM pemeriksaan_ralan WHERE no_rawat = '$no_rawat_kunj'"));
+
+                                            $sql_riksaralan = fetch_assoc(query("SELECT keluhan, pemeriksaan, tinggi, berat, suhu_tubuh, tensi, nadi, respirasi FROM pemeriksaan_ralan WHERE no_rawat = '$no_rawat_kunj'"));
                                             echo "<td>".$sql_riksaralan['keluhan']."</td>";
-                                            echo "<td>".$sql_riksaralan['pemeriksaan']."</td>";
+                                            echo "<td>";
+                                            echo "<ul style='list-style:none;margin:0;padding:0;'>";
+                                            echo "<li>".$sql_riksaralan['pemeriksaan']."</li>";
+                                            if(!empty($sql_riksaralan['tinggi'])) {
+                                            echo "<li>Tinggi : ".$sql_riksaralan['tinggi']." cm</li>";
+                                            }
+                                            if(!empty($sql_riksaralan['berat'])) {
+                                              echo "<li>BB : ".$sql_riksaralan['berat']." Kg</li>";
+                                            }
+                                            if(!empty($sql_riksaralan['suhu_tubuh'])) {
+                                            echo "<li>Suhu : ".$sql_riksaralan['suhu_tubuh']." C</li>";
+                                            }
+                                            if(!empty($sql_riksaralan['tensi'])) {
+                                            echo "<li>Tensi : ".$sql_riksaralan['tensi']." mmHg</li>";
+                                            }
+                                            if(!empty($sql_riksaralan['nadi'])) {
+                                            echo "<li>Nadi : ".$sql_riksaralan['nadi']." x/mnt</li>";
+                                            }
+                                            if(!empty($sql_riksaralan['respirasi'])) {
+                                            echo "<li>RR : ".$sql_riksaralan['respirasi']." x/mnt</li>";
+                                            }
+                                            echo "</ul>";
+                                            echo "</td>";
+
                                           } else {
                                             $sql_riksaranap = fetch_assoc(query("SELECT keluhan, pemeriksaan FROM pemeriksaan_ranap WHERE no_rawat = '$no_rawat_kunj'"));
                                             echo "<td>".$sql_riksaranap['keluhan']."</td>";
