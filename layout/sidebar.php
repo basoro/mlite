@@ -62,6 +62,13 @@
                         </ul>
                     </li>
                     <?php } ?>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Apotek')  { ?>
+                    <li>
+                        <a href="<?php echo URL; ?>/apotek.php">
+                            <i class="material-icons">widgets</i>
+                            <span>Apotek</span>
+                        </a>
+                    </li>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Kasir')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/kasir.php">
@@ -70,13 +77,6 @@
                         </a>
                     </li>
                     <?php } ?>
-                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Apotek')  { ?>
-                    <li>
-                        <a href="<?php echo URL; ?>/apotek.php">
-                            <i class="material-icons">widgets</i>
-                            <span>Apotek</span>
-                        </a>
-                    </li>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">assignment_ind</i>
