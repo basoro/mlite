@@ -4,8 +4,8 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 $module_directory   = 'Master';
 $module_title       = 'Master';
 $module_version     = '1.0';
-$module_author      = 'Ataaka Salim';
-$module_url         = 'https://khanza.basoro.id';
+$module_author      = 'drg. Faisol Basoro';
+$module_url         = 'https://basoro.id';
 $module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
 $module_type        = 'FKTP';
 

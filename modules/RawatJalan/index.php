@@ -4,8 +4,8 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 $module_directory   = 'RawatJalan';
 $module_title       = 'Rawat Jalan';
 $module_version     = '1.0';
-$module_author      = 'Ataaka Salim';
-$module_url         = 'https://khanza.basoro.id';
+$module_author      = 'drg. Faisol Basoro';
+$module_url         = 'https://basoro.id';
 $module_description = 'Modul rawat jalan yang berisi isian pemeriksaan, tindakan, upload berkas digital, berkas radiologi dan set status perawatan pasien.';
 $module_type        = 'FKTL';
 

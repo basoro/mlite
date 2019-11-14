@@ -4,8 +4,8 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 $module_directory   = 'BridgingBPJS';
 $module_title       = 'BPJS';
 $module_version     = '1.0';
-$module_author      = 'Ataaka Salim';
-$module_url         = 'https://khanza.basoro.id';
+$module_author      = 'drg. Faisol Basoro';
+$module_url         = 'https://basoro.id';
 $module_description = 'Modul Bridging BPJS untuk memudahkan pelayanan di FKTL.';
 $module_type        = 'FKTL';
 
