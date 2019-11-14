@@ -12,6 +12,7 @@ $module_type        = 'FKTL';
 ?>
 
 <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
+  <?php if(FKTL == true) { ?>
   <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
@@ -22,6 +23,7 @@ $module_type        = 'FKTL';
       <div class="sname"><?php echo $module_title; ?></div>
     </a>
   </div>
+  <?php } ?>
 <?php } else { ?>
   <tr>
     <td>
