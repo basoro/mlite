@@ -127,7 +127,10 @@ include_once('layout/sidebar.php');
             </div>
         </div>
     </section>
-
+    <?php
+    $cek_quis = query("SELECT * FROM quisioner_jawab WHERE username = '".$_SESSION['username']."'");
+    if(num_rows($cek_quis) == 0) {
+    ?>
     <div class="modal fade" id="pengumuman" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -136,10 +139,28 @@ include_once('layout/sidebar.php');
                     <h4 class="modal-title" id="unitModalLabel">Quisioner</h4>
                 </div>
                 <div class="modal-body">
+                  <?php
+                   $sql = "SELECT * FROM quisioner WHERE kategori = 'pmkp' AND status = '0'";
+                   $result = query($sql);
+                   echo '<ol>';
+                   while($row = fetch_array($result)) {
+                     echo '<li>'.$row['pertanyaan'];
+                     echo '<ul class="list-unstyled">';
+                     echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_1'].'" id="sangat_tidak_setuju'.$row['id'].'"> <label for="sangat_tidak_setuju'.$row['id'].'">Sangat Tidak Setuju</label></li>';
+                     echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_2'].'" id="tidak_setuju'.$row['id'].'"> <label for="tidak_setuju'.$row['id'].'">Tidak Setuju</label></li>';
+                     echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_3'].'" id="kadang_kadang'.$row['id'].'"> <label for="kadang-kadang'.$row['id'].'">Kadang-Kadang</label></li>';
+                     echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_4'].'" id="setuju'.$row['id'].'"> <label for="setuju'.$row['id'].'">Setuju</label></li>';
+                     echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_5'].'" id="sangat_setuju'.$row['id'].'"> <label for="sangat_setuju'.$row['id'].'">Sangat Setuju</label></li>';
+                     echo '</ul>';
+                     echo '</li>';
+                   }
+                   echo '</ol>';
+                  ?>
                 </div>
             </div>
         </div>
     </div>
+    <?php } ?>
 
 <?php } else { ?>
     <section class="content">

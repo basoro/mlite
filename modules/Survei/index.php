@@ -1,12 +1,12 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory   = 'PMKP';
-$module_title       = 'PMKP';
+$module_directory   = 'Survei';
+$module_title       = 'Survei';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul PMKP';
+$module_description = 'Modul Survei';
 $module_type        = 'FKTL';
 
 ?>
