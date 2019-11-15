@@ -1,9 +1,8 @@
 <body onload="ajax()"></body>
 
-				<h2 class="title">phpSMS V3.0 Server</h2>
         <?php
         if(num_rows(query("SHOW TABLES LIKE 'gammux'")) !== 1) {
-          echo 'Belum terinstall';
+          echo '<h3>Belum terinstall</h3>';
         }
         ?>
 				<div class="entry">
@@ -13,23 +12,7 @@
 if (($_GET['op'] == 'main') || (!isset($_GET['op'])))
 {
 ?>
-<li class="current_page_item"><a href="inbox.php?page=1">INBOX</a></li>
-<li><a href="group.php?op=show">GROUP</a></li>
-<li><a href="listphone.php?op=show">PHONEBOOK</a></li>
-<li><a href="sendsms.php?op=single">INSTANT SMS</a></li>
-<li><a href="listmsg.php?op=show">ON SCHEDULED SMS</a></li>
-<li><a href="auto.php?op=show">AUTORESPONDER</a></li>
-<li><a href="report.php?op=show">OUTBOX</a></li>
-<h2>Administrasi</h2>
-<ul>
-  <li><a href="index.php?op=config">Setting Konfigurasi</a></li>
-  <li><a href="index.php?op=onservice">Jalankan Service</a></li>
-  <li><a href="index.php?op=offservice">Matikan Service</a></li>
-  <li><a href="index.php?op=pulsa">Cek Pulsa</a></li>
-</ul>
-
 					<h3>Fitur Utama:</h3>
-                    <p>&nbsp;</p>
 <ul>
    <li>Manajemen Phonebook</li>
    <li>Manajemen Group</li>
