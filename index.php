@@ -22,20 +22,6 @@ include_once('layout/sidebar.php');
 
 ?>
 
-<div class="modal fade" id="pengumuman">
-  <div class="modal-header">
-    <a class="close" data-dismiss="modal">×</a>
-    <h3>Modal header</h3>
-  </div>
-  <div class="modal-body">
-    <p>One fine body…</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn">Close</a>
-    <a href="#" class="btn btn-primary">Save changes</a>
-  </div>
-</div>
-
 <?php if(!$getmodule) { ?>
     <section class="content">
         <div class="container-fluid">
@@ -141,6 +127,30 @@ include_once('layout/sidebar.php');
             </div>
         </div>
     </section>
+
+    <div class="modal fade" id="pengumuman" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="unitModalLabel">Database Poliklinik</h4>
+                </div>
+                <div class="modal-body">
+                    <table id="poliklinik" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                        <thead>
+                            <tr>
+                                <th>Kode Poli</th>
+                                <th>Nama Poli</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php } else { ?>
     <section class="content">
         <div class="container-fluid">
