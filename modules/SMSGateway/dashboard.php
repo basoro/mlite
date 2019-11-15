@@ -2,7 +2,7 @@
 
         <?php
         if(num_rows(query("SHOW TABLES LIKE 'gammux'")) !== 1) {
-          echo '<h3>Belum terinstall</h3>';
+          echo '<h3>Belum terinstall Database SMS Gateway</h3>';
         }
         ?>
 				<div class="entry">
