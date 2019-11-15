@@ -128,7 +128,7 @@ include_once('layout/sidebar.php');
         </div>
     </section>
 
-    <div class="modal fade" id="pengumuman" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
+    <div class="modal fade" id="pengumuman" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
