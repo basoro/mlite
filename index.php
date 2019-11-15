@@ -21,6 +21,21 @@ include_once('layout/header.php');
 include_once('layout/sidebar.php');
 
 ?>
+
+<div class="modal fade" id="pengumuman">
+  <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h3>Modal header</h3>
+  </div>
+  <div class="modal-body">
+    <p>One fine body…</p>
+  </div>
+  <div class="modal-footer">
+    <a href="#" class="btn">Close</a>
+    <a href="#" class="btn btn-primary">Save changes</a>
+  </div>
+</div>
+
 <?php if(!$getmodule) { ?>
     <section class="content">
         <div class="container-fluid">
@@ -284,17 +299,3 @@ include_once('layout/sidebar.php');
 
     </script>
 <?php } ?>
-
-<div class="modal hide in" id="pengumuman">
-  <div class="modal-header">
-    <a class="close" data-dismiss="modal">×</a>
-    <h3>Modal header</h3>
-  </div>
-  <div class="modal-body">
-    <p>One fine body…</p>
-  </div>
-  <div class="modal-footer">
-    <a href="#" class="btn">Close</a>
-    <a href="#" class="btn btn-primary">Save changes</a>
-  </div>
-</div>
