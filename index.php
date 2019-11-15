@@ -137,6 +137,7 @@ include_once('layout/sidebar.php');
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="unitModalLabel">Quisioner</h4>
+                    <p>Silahkan isi quisioner berikut. Data yang dikirim bersifat anonim</p>
                 </div>
                 <div class="modal-body">
                   <?php
@@ -144,7 +145,7 @@ include_once('layout/sidebar.php');
                    $result = query($sql);
                    echo '<ol>';
                    while($row = fetch_array($result)) {
-                     echo '<li>'.$row['pertanyaan'];
+                     echo '<li class="m-t-10 m-b-10">'.$row['pertanyaan'];
                      echo '<ul class="list-unstyled">';
                      echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_1'].'" id="sangat_tidak_setuju'.$row['id'].'"> <label for="sangat_tidak_setuju'.$row['id'].'">Sangat Tidak Setuju</label></li>';
                      echo '<li><input type="radio" name="'.$row['id'].'" value="'.$row['jawab_2'].'" id="tidak_setuju'.$row['id'].'"> <label for="tidak_setuju'.$row['id'].'">Tidak Setuju</label></li>';
@@ -156,6 +157,8 @@ include_once('layout/sidebar.php');
                    }
                    echo '</ol>';
                   ?>
+                  <br>
+                  <button class="btn btn-lg btn-primary" type="submit">Simpan</button>
                 </div>
             </div>
         </div>
