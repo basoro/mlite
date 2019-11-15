@@ -16,7 +16,7 @@ $module_type        = 'FKTL';
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="material-icons">chart</i>
+          <i class="material-icons">poll</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
@@ -27,7 +27,7 @@ $module_type        = 'FKTL';
     <td>
       <div class="image-plugins">
         <div class="icon">
-           <i class="material-icons">chart</i>
+           <i class="material-icons">poll</i>
         </div>
       </div>
     </td>
