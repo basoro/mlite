@@ -282,7 +282,7 @@ include_once('layout/sidebar.php');
     </script>
 <?php } ?>
 
-<div class="modal hide fade" id="pengumuman">
+<div class="modal hide in" id="pengumuman">
   <div class="modal-header">
     <a class="close" data-dismiss="modal">×</a>
     <h3>Modal header</h3>
