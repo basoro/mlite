@@ -129,7 +129,7 @@ include_once('layout/sidebar.php');
     </section>
 
     <div class="modal fade" id="pengumuman" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
