@@ -119,6 +119,10 @@
           $("a[href='" + anchor + "']").tab("show");
       });
 
+      $(window).on('load',function(){
+          $('#pengumuman').modal('show');
+      });
+
 	  </script>
 
     <script>
@@ -202,14 +206,6 @@ if(isset($_GET['module'])) {
   }
 }
 ?>
-
-<script type="text/javascript">
-  $(document).ready(function() {
-    $(window).on('load',function(){
-        $('#pengumuman').modal('show');
-    });
-  });
-</script>
 
 </body>
 
