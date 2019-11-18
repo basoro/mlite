@@ -1,0 +1,59 @@
+These Windows services are started:
+
+   Agere Modem Call Progress Audio
+   Apache2.2
+   Application Layer Gateway Service
+   ArcSoft Connect Daemon
+   Bluetooth Service
+   COM+ Event System
+   Com4QLBEx
+   Computer Browser
+   Cryptographic Services
+   DCOM Server Process Launcher
+   DHCP Client
+   Distributed Link Tracking Client
+   DNS Client
+   Event Log
+   Fast User Switching Compatibility
+   Help and Support
+   hpqwmiex
+   IIS Admin
+   IPSEC Services
+   Logical Disk Manager
+   mysql
+   NetMeeting Remote Desktop Sharing
+   Network Connections
+   Network Location Awareness (NLA)
+   Plug and Play
+   Print Spooler
+   Protected Storage
+   Remote Access Connection Manager
+   Remote Procedure Call (RPC)
+   Remote Registry
+   Secondary Logon
+   Security Accounts Manager
+   Server
+   Shell Hardware Detection
+   Simple Mail Transfer Protocol (SMTP)
+   SQL Server VSS Writer
+   SSDP Discovery Service
+   System Event Notification
+   System Restore Service
+   Task Scheduler
+   TCP/IP NetBIOS Helper
+   Telephony
+   Terminal Services
+   Themes
+   UDisk Monitor
+   WebClient
+   Windows Audio
+   Windows Firewall/Internet Connection Sharing (ICS)
+   Windows Image Acquisition (WIA)
+   Windows Management Instrumentation
+   Windows Time
+   Wireless Zero Configuration
+   Workstation
+   World Wide Web Publishing
+
+The command completed successfully.
+

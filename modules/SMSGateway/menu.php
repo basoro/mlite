@@ -6,26 +6,31 @@
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="index") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SMSGateway&page=index">
-                SMS Dashboard
+                Dashboard
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="masuk") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=masuk">
-                SMS Masuk
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="inbox") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=inbox">
+                SMS Inbox
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="keluar") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=keluar">
-                SMS Keluar
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="group") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=group">
+                SMS Group
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="kirim") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=kirim">
-                Kirim SMS
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="listphone") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">
+                Phonebook
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="jadwal") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=jadwal">
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="sendsms") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms">
+                SMS Instant
+            </a>
+        </li>
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="listmsg") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=listmsg">
                 SMS Terjadwal
             </a>
         </li>
@@ -34,9 +39,9 @@
                 SMS Auto Responder
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="buku_telepon") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=buku_telepon">
-                Buku Telepon
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="report") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=report">
+                Report
             </a>
         </li>
     </ul>

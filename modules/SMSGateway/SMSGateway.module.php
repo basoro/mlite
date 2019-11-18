@@ -5,25 +5,32 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 <?php
 class SMSGateway {
     function index() {
-      include('modules/SMSGateway/dashboard.php');
+      global $connection;
+      include('modules/SMSGateway/inc/index.php');
     }
-    function masuk() {
-      include('modules/SMSGateway/sms-masuk.php');
+    function inbox() {
+      include('modules/SMSGateway/inc/inbox.php');
     }
-    function keluar() {
-      include('modules/SMSGateway/sms-keluar.php');
+    function group() {
+      include('modules/SMSGateway/inc/group.php');
     }
-    function kirim() {
-      include('modules/SMSGateway/sms-kirim.php');
+    function listphone() {
+      include('modules/SMSGateway/inc/listphone.php');
     }
-    function jadwal() {
-      include('modules/SMSGateway/sms-jadwal.php');
+    function sendsms() {
+      include('modules/SMSGateway/inc/sendsms.php');
+    }
+    function listmsg() {
+      include('modules/SMSGateway/inc/listmsg.php');
     }
     function auto() {
-      include('modules/SMSGateway/sms-auto.php');
+      include('modules/SMSGateway/inc/auto.php');
     }
-    function buku_telepon() {
-      include('modules/SMSGateway/sms-buku.php');
+    function report() {
+      include('modules/SMSGateway/inc/report.php');
+    }
+    function export() {
+      include('modules/SMSGateway/inc/export.php');
     }
 }
 ?>

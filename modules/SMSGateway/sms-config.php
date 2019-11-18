@@ -1,5 +1,5 @@
 <?php
-$path = "C:\AppServ\www\gammuxxxxxx";
+$path = "/usr/local/gammu";
 $msgREG = "Terimakasih [nama], kami akan proses segera registrasi Anda";
 $msgErrorREG = "Format REG salah. Format yang benar REG#NAMA#ALAMAT";
 $msgFWD = "SMS Anda telah diforward ke group id ";
@@ -9,5 +9,4 @@ $msgErrorData = "Data tidak ditemukan";
 $msgErrorKeyword = "Keyword tidak ditemukan";
 $msgErrorInfo = "Format SMS Info salah";
 $defaultID = "1";
-
 ?>

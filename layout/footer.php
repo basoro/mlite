@@ -119,10 +119,6 @@
           $("a[href='" + anchor + "']").tab("show");
       });
 
-      $(window).on('load',function(){
-          $('#pengumuman').modal('show');
-      });
-
 	  </script>
 
     <script>

@@ -9,9 +9,11 @@ class RawatJalan {
        include('modules/RawatJalan/pasien.php');
     }
     function rujuk_internal() {
+      global $dataSettings, $date;
        include('modules/RawatJalan/rujukan_internal.php');
     }
     function pasien_lanjutan() {
+      global $dataSettings, $date;
        include('modules/RawatJalan/pasien_lanjutan.php');
     }
 }

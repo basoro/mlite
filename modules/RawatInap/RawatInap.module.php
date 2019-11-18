@@ -9,6 +9,7 @@ class RawatInap {
        include('modules/RawatInap/pasien.php');
     }
     function diet_pasien() {
+      global $dataSettings, $date;
        include('modules/RawatInap/diet_pasien.php');
     }
 }

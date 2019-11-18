@@ -23,7 +23,7 @@ define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'khanzalite');
-define('PRODUCTION', true);
+define('PRODUCTION', false);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
