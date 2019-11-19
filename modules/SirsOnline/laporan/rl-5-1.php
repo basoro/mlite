@@ -1,7 +1,7 @@
 <div class="card">
     <div class="header">
         <h2>
-          LAPORAN RL 5.1 (Rawat Inap)
+          LAPORAN RL 5.1 (Kunjungan Rawat Inap)
             <small><?php $date = date('Y-m-d'); if(isset($_POST['tahun'])) { $tahun = $_POST['tahun']; } else { $tahun = date("Y",strtotime($date)); };
               			 if(isset($_POST['bulan'])) { $bulan = $_POST['bulan']; } else { $bulan = date("M",strtotime($date)); };echo "Periode ".$tahun; ?></small>
         </h2>

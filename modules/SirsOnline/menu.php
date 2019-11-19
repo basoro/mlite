@@ -76,62 +76,62 @@
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_10") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_10">
-                RL 3.10
+                Pelayanan Khusus (RL 3.10)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_11") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_11">
-                RL 3.11
+                Kesehatan Jiwa (RL 3.11)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_12") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_12">
-                RL 3.12
+                Keluarga Berencana (RL 3.12)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_13") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_13">
-                RL 3.13
+                Farmasi (RL 3.13)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_14") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_14">
-                RL 3.14
+                Rujukan (RL 3.14)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_3_15") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_3_15">
-                RL 3.15
+                Cara Bayar (RL 3.15)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_4_a") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_4_a">
-                RL 4.a
+                Penyakit Rawat Inap (RL 4.a)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_4_b") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_4_b">
-                RL 4.b
+                Penyakit Rawat Jalan (RL 4.b)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_5_1") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_5_1">
-                RL 5.1
+                Kunjungan Rawat Inap (RL 5.1)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_5_2") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_5_2">
-                RL 5.2
+                Kunjungan Rawat Jalan (RL 5.2)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_5_3") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_5_3">
-                RL 5.3
+                10 Penyakit Rawat Inap (RL 5.3)
             </a>
         </li>
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="rl_5_4") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=SirsOnline&page=rl_5_4">
-                RL 5.4
+                10 Penyakit Rawat Jalan (RL 5.4)
             </a>
         </li>
     </ul>
