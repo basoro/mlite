@@ -28,7 +28,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	          ORDER BY sms_autoresponder.idgroup, interv";
 	$hasil = query($query);
 	echo "<br>";
-	echo "<table border='1' width='100%'>";
+	echo '<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">';
 	echo "<tr><th>Interval (hari)</th><th>Message</th><th>Group</th><th>Atur</th></tr>";
 	while ($data = fetch_array($hasil))
 	{

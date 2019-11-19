@@ -169,7 +169,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 					<input name="userfile" type="file" size="50"><br><br>
 					Masukkan template SMS<br>
 					<textarea name="template" cols="50" rows="8"></textarea><br><br>
-					<input name="upload" type="submit" value="KIRIM SMS"></td>
+					<input name="upload" type="submit" class="btn btn-primary m-t-15 waves-effect" value="KIRIM SMS"></td>
 					</form>
 				</div>
 		</div>
@@ -229,12 +229,12 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 					<form method="post" enctype="multipart/form-data" action="sendsms.php?op=autoreply&action=proses">
 					Pilih file source<br>
 					<input type="hidden" name="MAX_FILE_SIZE" value="20000000">
-					<input name="userfile" type="file" size="50"> <input name="upload" type="submit" value="Import Data"></td>
+					<input name="userfile" type="file" size="50"> <input name="upload" type="submit" class="btn btn-primary m-t-15 waves-effect" value="Import Data"></td>
 					</form>
 					<p>&nbsp;</p>
 					<h3><small>Daftar Keyword</small></h3>
 					<br>
-					<table border='1' width='100%'>
+					<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
 					<tr><th>NO</th><th>KEYWORD</th><th>ACTION</th></tr>
 					<?php
 

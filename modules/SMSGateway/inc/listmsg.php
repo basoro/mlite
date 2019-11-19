@@ -33,7 +33,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		$query = "SELECT * FROM sms_message ORDER BY id";
 		$hasil = query($query);
 		echo "<br>";
-		echo "<table border='1' width='100%'>";
+		echo '<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">';
 		echo "<tr><th>Message</th><th>Group</th><th>Published Date</th><th>Atur</th></tr>";
 		while ($data = fetch_array($hasil))
 		{
