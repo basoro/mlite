@@ -13,12 +13,12 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 } else {
 ?>
 
-				<h2 class="title">Atur Auto Responder</h2>
-				<ul>
-					<li><a href="<?php echo URL; ?>/?module=SMSGateway&page=auto&op=add">Tambah AutoResponder</a></li>
-				</ul>
-				<div class="entry">
-					<p>
+<div class="card">
+	<div class="header">
+			<h2>Atur Auto Responder <a class="pull-right" href="<?php echo URL; ?>/?module=SMSGateway&page=auto&op=add">Tambah</a></h2>
+	</div>
+	<div class="body">
+
 <?php
 	if (!$op)
 	{
@@ -179,11 +179,3 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	}
 }
 ?>
-					</p>
-				</div>
-			</div>
-			</div>
-			</div>
-
-		</div>
-		<!-- end #content -->

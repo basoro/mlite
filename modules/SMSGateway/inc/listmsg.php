@@ -13,20 +13,13 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 } else {
 ?>
 
-				<h2 class="title">On Scheduled SMS</h2>
-				<ul>
-					<li><a href="<?php echo URL; ?>/?module=SMSGateway&page=listmsg&op=add">Tambah On Scheduled SMS</a></li>
-				</ul>
+<div class="card">
+	<div class="header">
+			<h2>On Scheduled SMS <a class="pull-right" href="<?php echo URL; ?>/?module=SMSGateway&page=listmsg&op=add">Tambah</a></h2>
+	</div>
+	<div class="body">
 
-				<div class="entry">
-					<p>
 <?php
-
-if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
-	echo '<p class="lead">Belum terinstall SMS Gateway</p>';
-	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary">Install Sekarang</a>';
-} else {
-
 		if (!$op)
 		{
 		// menampilkan semua daftar on scheduled message yang belum terkirim (status = 0)
@@ -167,12 +160,3 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		}
 }
 ?>
-
-					</p>
-				</div>
-			</div>
-			</div>
-			</div>
-
-		</div>
-<?php } ?>

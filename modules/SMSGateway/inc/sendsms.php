@@ -21,11 +21,11 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<div class="card">
 		    <div class="header">
 		        <h2>
-		            SMS INSTANT
+		            SMS Instant
 		        </h2>
 		    </div>
 				<div class="body">
-					<ul class="nav nav-tabs tab-nav-right" role="tablist">
+					<ul class="nav nav-tabs tab-nav-right m-b-20" role="tablist">
 							<li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms">SMS Instant</a></li>
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=broadcast">Broadcast</a></li>
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=autoreply">Auto Reply</a></li>
@@ -154,11 +154,11 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<div class="card">
 		    <div class="header">
 		        <h2>
-		            SMS INSTANT
+		            SMS Instant
 		        </h2>
 		    </div>
 				<div class="body">
-					<ul class="nav nav-tabs tab-nav-right" role="tablist">
+					<ul class="nav nav-tabs tab-nav-right m-b-20" role="tablist">
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms">SMS Instant</a></li>
 							<li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=broadcast">Broadcast</a></li>
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=autoreply">Auto Reply</a></li>
@@ -217,11 +217,11 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<div class="card">
 		    <div class="header">
 		        <h2>
-		            SMS INSTANT
+		            SMS Instant
 		        </h2>
 		    </div>
 				<div class="body">
-					<ul class="nav nav-tabs tab-nav-right" role="tablist">
+					<ul class="nav nav-tabs tab-nav-right m-b-20" role="tablist">
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms">SMS Instant</a></li>
 							<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=broadcast">Broadcast</a></li>
 							<li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=autoreply">Auto Reply</a></li>

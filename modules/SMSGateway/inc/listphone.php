@@ -30,7 +30,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		$query = "SELECT * FROM sms_phonebook ORDER BY nama";
 		$hasil = query($query);
 		echo "<p>&nbsp;</p>";
-		echo "<table border='1'  width='100%'>";
+		echo '<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">';
 		echo "<tr><th>Nama</th><th>Alamat</th><th>No. Telp</th><th>Group</th><th>Atur</th></tr>";
 		while ($data = fetch_array($hasil))
 		{
@@ -94,35 +94,45 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		{
 		// proses tambah data phonebook
 		?>
-		<p>&nbsp;</p>
-		<h3>Tambah Phonebook</h3>
-		<p>&nbsp;</p>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=simpan">
+		<div class="card">
+			<div class="header">
+					<h2>SMS Gateway</h2>
+			</div>
+			<div class="body">
+				<ul class="nav nav-tabs tab-nav-right" role="tablist">
+						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
+						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
+						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
+				</ul>
+				<div class="lead m-t-20 m-b-10">Tambah Phonebook</div>
+				<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=simpan">
 
-		<table border="0">
-		<tr><td>Nama</td><td>:</td><td><input type="text" name="nama" size="50"></td></tr>
-		<tr><td>Alamat</td><td>:</td><td><input type="text" name="alamat" size="50"></td></tr>
-		<tr><td>No. Telp</td><td>:</td><td><input type="text" name="notelp" value="+62"></td></tr>
-		<tr><td>Group</td><td>:</td><td>
-		<select name="group">
-		<?php
-		$query = "SELECT * FROM sms_group";
-		$hasil = query($query);
-		while ($data = fetch_array($hasil))
-		{
-		  echo "<option value='".$data['idgroup']."'>".$data['group']."</option>";
-		}
-		?>
-		</select></td></tr>
-		</table>
-		<br><br>
-		Kirim SMS konfirmasi?
-		<input type="radio" name="confirm" value="1"> Ya <input type="radio" name="confirm" value="0" checked> Tidak
-		<br><br>
-		<input type="submit" name="submit" value="Simpan">
+				<table border="0">
+				<tr><td>Nama</td><td>:</td><td><input type="text" name="nama" size="50"></td></tr>
+				<tr><td>Alamat</td><td>:</td><td><input type="text" name="alamat" size="50"></td></tr>
+				<tr><td>No. Telp</td><td>:</td><td><input type="text" name="notelp" value="+62"></td></tr>
+				<tr><td>Group</td><td>:</td><td>
+				<select name="group">
+				<?php
+				$query = "SELECT * FROM sms_group";
+				$hasil = query($query);
+				while ($data = fetch_array($hasil))
+				{
+				  echo "<option value='".$data['idgroup']."'>".$data['group']."</option>";
+				}
+				?>
+				</select></td></tr>
+				</table>
+				<br><br>
+				Kirim SMS konfirmasi?
+				<input type="radio" name="confirm" value="1"> Ya <input type="radio" name="confirm" value="0" checked> Tidak
+				<br><br>
+				<input type="submit" name="submit" value="Simpan">
 
-		</form>
-
+				</form>
+			</div>
+		</div>
 		<?php
 		}
 		else
@@ -180,48 +190,70 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 			$hasil = query($query);
 			$data = fetch_array($hasil);
 		?>
-
-		<p>&nbsp;</p>
-		<h3>Edit Phonebook</h3>
-		<p>&nbsp;</p>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=update">
-		<table border="0">
-		<tr><td>Nama</td><td>:</td><td><input type="text" name="nama" value="<?php echo $data['nama']; ?>" size="50"></td></tr>
-		<tr><td>Alamat</td><td>:</td><td><input type="text" name="alamat" value="<?php echo $data['alamat'];?>" size="50"></td></tr>
-		<tr><td>No. Telp</td><td>:</td><td><input type="text" name="notelp" value="<?php echo $data['noTelp']?>"></td></tr>
-		<tr><td>Group</td><td>:</td>
-		<td><select name="group">
-		<?php
-		$query2 = "SELECT * FROM sms_group";
-		$hasil2 = query($query2);
-		while ($data2 = fetch_array($hasil2))
-		{
-		  if ($data2['idgroup'] == $data['idgroup']) echo "<option value='".$data2['idgroup']."' selected>".$data2['group']."</option>";
-		  else echo "<option value='".$data2['idgroup']."'>".$data2['group']."</option>";
-		}
-		?>
-		</select></td></tr>
-		</table>
-		<p>&nbsp;</p>
-		<input type="submit" name="submit" value="Simpan">
-		<input type="hidden" name="notelplama" value="<?php echo $data['noTelp'];?>">
-		<input type="hidden" name="grouplama" value="<?php echo $data['idgroup'];?>">
-		</form>
+		<div class="card">
+			<div class="header">
+					<h2>SMS Gateway</h2>
+			</div>
+			<div class="body">
+				<ul class="nav nav-tabs tab-nav-right" role="tablist">
+						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
+						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
+						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
+				</ul>
+				<div class="lead m-t-20 m-b-10">Edit Phonebook</div>
+				<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=update">
+				<table border="0">
+				<tr><td>Nama</td><td>:</td><td><input type="text" name="nama" value="<?php echo $data['nama']; ?>" size="50"></td></tr>
+				<tr><td>Alamat</td><td>:</td><td><input type="text" name="alamat" value="<?php echo $data['alamat'];?>" size="50"></td></tr>
+				<tr><td>No. Telp</td><td>:</td><td><input type="text" name="notelp" value="<?php echo $data['noTelp']?>"></td></tr>
+				<tr><td>Group</td><td>:</td>
+				<td><select name="group">
+				<?php
+				$query2 = "SELECT * FROM sms_group";
+				$hasil2 = query($query2);
+				while ($data2 = fetch_array($hasil2))
+				{
+				  if ($data2['idgroup'] == $data['idgroup']) echo "<option value='".$data2['idgroup']."' selected>".$data2['group']."</option>";
+				  else echo "<option value='".$data2['idgroup']."'>".$data2['group']."</option>";
+				}
+				?>
+				</select></td></tr>
+				</table>
+				<p>&nbsp;</p>
+				<input type="submit" name="submit" value="Simpan">
+				<input type="hidden" name="notelplama" value="<?php echo $data['noTelp'];?>">
+				<input type="hidden" name="grouplama" value="<?php echo $data['idgroup'];?>">
+				</form>
+			</div>
+		</div>
 
 		<?php
 		}
 		else if ($op == "import")
 		{
 		?>
-		<p>&nbsp;</p>
-		<h2>Import Phone Book</h1>
-		<p>&nbsp;</p>
-		<form method="post" enctype="multipart/form-data" action="listphone.php?op=proses">
-		Pilih file
-		<input type="hidden" name="MAX_FILE_SIZE" value="20000000">
-		<input name="userfile" type="file">
-		<input name="upload" type="submit" value="Import"></td>
-		</form>
+		<div class="card">
+			<div class="header">
+					<h2>SMS Gateway</h2>
+			</div>
+			<div class="body">
+				<ul class="nav nav-tabs tab-nav-right" role="tablist">
+						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
+						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
+						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
+				</ul>
+				<div class="lead m-t-20 m-b-10">Import Phonebook</div>
+
+				<form method="post" enctype="multipart/form-data" action="listphone.php?op=proses">
+				Pilih file
+				<input type="hidden" name="MAX_FILE_SIZE" value="20000000">
+				<input name="userfile" type="file">
+				<input name="upload" type="submit" value="Import"></td>
+				</form>
+			</div>
+		</div>
 
 		<?php
 		}
