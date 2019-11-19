@@ -1,7 +1,7 @@
 <div class="card">
     <div class="header">
         <h2>
-            BLANK TEMPLATE
+            Profil Rumah Sakit
         </h2>
     </div>
     <div class="body">

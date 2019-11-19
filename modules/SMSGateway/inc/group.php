@@ -12,26 +12,38 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	echo '</div>';
 } else {
 ?>
+<div class="card">
+	<div class="header">
+			<h2>SMS Inbox <a class="pull-right" href="<?php echo URL; ?>/?module=SMSGateway&page=group&op=add">Tambah</a></h2>
+	</div>
+	<div class="body">
 
-				<h2 class="title">Atur Group Phonebook</h2>
-				<p class="lead"><a href="<?php echo URL; ?>/?module=SMSGateway&page=group&op=add">Tambah</a></p>
-				<div class="entry">
-					<p>
 <?php
 		if (!$op)
 		{
 		// menampilkan seluruh data group
+?>
+<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+	<thead>
+		<tr>
+			<th>ID Group</th>
+			<th>Nama Group</th>
+			<th>Atur</th>
+		</tr>
+	</thead>
+	<tbody>
 
+<?php
 		$query = "SELECT * FROM sms_group";
 		$hasil = query($query);
-		echo "<br>";
-		echo "<table border='1' width='100%'>";
-		echo "<tr><th>ID Group</th><th>Nama Group</th><th>Atur</th></tr>";
 		while ($data = fetch_array($hasil))
 		{
 		   echo "<tr><td>".$data['idgroup']."</td><td>".$data['group']."</td><td><a href='".URL."/?module=SMSGateway&page=group&op=edit&id=".$data['idgroup']."'>Edit</a> | <a href='".URL."/?module=SMSGateway&page=group&op=hapus&id=".$data['idgroup']."'>Hapus</a></td></tr>";
 		}
-		echo "</table>";
+?>
+	</tbody>
+</table>
+<?php
 		}
 		else if ($op == "update")
 		{
@@ -54,11 +66,10 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		{
 		// proses tambah data group
 		?>
-		<h3>Tambah Group</h3>
-		<p>&nbsp;</p>
+		<p class="lead">Tambah Group</p>
 		<form name="formku" method="post" action="<?php echo URL; ?>/?module=SMSGateway&page=group&op=simpan">
 		Nama Group (tanpa spasi) : <input type="text" name="group">
-		<input type="submit" name="submit" value="Simpan">
+		<input type="submit" class="btn btn-primary" name="submit" value="Simpan">
 		</form>
 
 
@@ -93,23 +104,19 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 			$data = fetch_array($hasil);
 		?>
 
-		<h3>Edit Group</h3>
-		<p>&nbsp;</p>
+		<p class="lead">Edit Group</p>
 		<form name="formku" method="post" action="<?php echo URL; ?>/?module=SMSGateway&page=group&op=update">
 		Nama Group : <input type="text" name="group" value="<?php echo $data['group']; ?>">
-		<input type="submit" name="submit" value="Simpan">
+		<input type="submit" class="btn btn-primary" name="submit" value="Simpan">
 		<input type="hidden" name="id" value="<?php echo $data['idgroup'];?>">
 		</form>
 
 
 		<?php
 		}
+		?>
+	</div>
+</div>
+<?php
 }
-				?>
-					</p>
-				</div>
-			</div>
-			</div>
-			</div>
-
-		</div>
+?>

@@ -40,21 +40,40 @@
               </tr>
           </thead>
           <tbody>
+              <?php
+              $kamar = "SELECT COUNT(kd_kamar) as total FROM kamar WHERE statusdata = '1'";
+              $result1 = fetch_array(query($kamar));
+              $hari = "SELECT SUM(lama) as lama FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'";
+              while ($result2 = fetch_array(query($hari))) {
+                $result2['lama'] += $result2['lama'];
+              }
+              //$result2 = fetch_array(query($hari));
+              $bor = $result2['lama']/($result1['total']*365);
+              $jml = "SELECT COUNT(no_rawat) as jml FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'";
+              $jmlpsn = fetch_array(query($jml));
+              $alos = $result2['lama']/$jmlpsn['jml'];
+              $bto = $jmlpsn['jml']/$result1['total'];
+              $toi = (($result1['total']*365)-$result2['lama'])/$jmlpsn['jml'];
+              $mati = "SELECT COUNT(no_rawat) as mati FROM kamar_inap WHERE stts_pulang = 'Meninggal' AND lama > 2 AND tgl_masuk LIKE '%{$tahun}%'";
+              $death = fetch_array(query($mati));
+              $ndr = ($death['mati']/$jmlpsn['jml'])*1000;
+              $die = "SELECT COUNT(no_rawat) as mati FROM kamar_inap WHERE stts_pulang = 'Meninggal' AND tgl_masuk LIKE '%{$tahun}%'";
+              $shi = fetch_array(query($die));
+              $gdr = ($shi['mati']/$jmlpsn['jml'])*1000;
+              $avg = $jmlpsn['jml']/365;
+              ?>
               <tr>
                   <td><?php echo KODERS; ?></td>
                   <td><?php echo KODEPROP; ?></td>
                   <td><?php echo $dataSettings['kabupaten']; ?></td>
                   <td><?php echo $tahun; ?></td>
-                  <td><?php $kamar = "SELECT COUNT(kd_kamar) as total FROM kamar WHERE statusdata = '1'"; $result1 = fetch_array(query($kamar));
-                    		$hari = "SELECT SUM(lama) as lama FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'"; $result2 = fetch_array(query($hari));
-                    		$bor = $result2['lama']/($result1['total']*365); echo number_format($bor*100,2)."%";?></td>
-                  <td><?php $jml = "SELECT COUNT(no_rawat) as jml FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'"; $jmlpsn = fetch_array(query($jml));
-                    		$alos = $result2['lama']/$jmlpsn['jml']; echo number_format($alos,2)." Hari";?></td>
-                  <td><?php $bto = $jmlpsn['jml']/$result1['total']; echo number_format($bto,2)." Kali";?></td>
-                  <td><?php $toi = (($result1['total']*365)-$result2['lama'])/$jmlpsn['jml']; echo number_format($toi,2)." Hari";?></td>
-                  <td><?php $mati = "SELECT COUNT(no_rawat) as mati FROM kamar_inap WHERE stts_pulang = 'Meninggal' AND lama > 2 AND tgl_masuk LIKE '%{$tahun}%'"; $death = fetch_array(query($mati)); $ndr = ($death['mati']/$jmlpsn['jml'])*1000; echo number_format($ndr,2)." Permil";?></td>
-                  <td><?php $die = "SELECT COUNT(no_rawat) as mati FROM kamar_inap WHERE stts_pulang = 'Meninggal' AND tgl_masuk LIKE '%{$tahun}%'"; $shi = fetch_array(query($die));$gdr = ($shi['mati']/$jmlpsn['jml'])*1000;echo number_format($gdr,2)." Permil";?></td>
-                  <td><?php $avg = $jmlpsn['jml']/365; echo number_format($avg,2);?></td>
+                  <td><?php echo number_format($bor*100,2)."%"; ?></td>
+                  <td><?php echo number_format($alos,2)." Hari"; ?></td>
+                  <td><?php echo number_format($bto,2)." Kali";?></td>
+                  <td><?php echo number_format($toi,2)." Hari";?></td>
+                  <td><?php  echo number_format($ndr,2)." Permil";?></td>
+                  <td><?php echo number_format($gdr,2)." Permil";?></td>
+                  <td><?php echo number_format($avg,2);?></td>
               </tr>
           </tbody>
       </table>
