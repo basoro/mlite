@@ -18,7 +18,7 @@ define('VERSION', '2.5');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/Khanza-Lite');
-define('DIR', '');
+define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
