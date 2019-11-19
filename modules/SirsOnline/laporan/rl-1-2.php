@@ -43,11 +43,8 @@
               <?php
               $kamar = "SELECT COUNT(kd_kamar) as total FROM kamar WHERE statusdata = '1'";
               $result1 = fetch_array(query($kamar));
-              $hari = "SELECT SUM(lama) as lama FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'";
-              while ($result2 = fetch_array(query($hari))) {
-                $result2['lama'] += $result2['lama'];
-              }
-              //$result2 = fetch_array(query($hari));
+              $hari = "SELECT lama as lama FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'";
+              $result2 = fetch_array(query($hari));
               $bor = $result2['lama']/($result1['total']*365);
               $jml = "SELECT COUNT(no_rawat) as jml FROM kamar_inap WHERE tgl_masuk LIKE '%{$tahun}%'";
               $jmlpsn = fetch_array(query($jml));
