@@ -61,9 +61,9 @@ $lft = array('left' => '0', 'right' => '1', 'highlight' => '2'); ?>
 
       <p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($message))), URL.'/modules/Userwall/assets/smileys/'); ?></p>
        <?php if(!empty($video)) { ?>
-          <iframe width="400" height="300" src="https://www.youtube.com/embed/<?php echo get_youtubeid($video);?>" frameborder="0" allowfullscreen></iframe>
+          <div class="embed-responsive embed-responsive-16by9"><iframe src="https://www.youtube.com/embed/<?php echo get_youtubeid($video);?>" frameborder="0" allowfullscreen></iframe></div>
           <?php } elseif(!empty($image)) { ?>
-          <img src="<?php echo URL;?>/modules/Userwall/inc/image.php/<?php echo $image;?>?width=400&nocache&quality=100&image=/<?php echo DIR;?>modules/Userwall/inc/uploads/<?php echo $image;?>">
+          <img class="img-responsive" src="<?php echo URL;?>/modules/Userwall/inc/image.php/<?php echo $image;?>?nocache&quality=100&image=/<?php echo DIR;?>modules/Userwall/inc/uploads/<?php echo $image;?>">
           <?php } ?>
 
     </div>
