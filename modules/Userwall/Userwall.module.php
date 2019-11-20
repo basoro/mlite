@@ -17,7 +17,7 @@ class Userwall {
       $action = isset($_GET['user'])?$_GET['user']:null;
       include 'inc/libs/smileys.php';
 ?>
-      <div class="container">
+      <div class="row container-userwall">
         <ol class="timeline clearfix">
           <li class="right"> <i class="pointer"></i>
             <div class="unit">

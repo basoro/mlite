@@ -13,25 +13,32 @@
 .timeline > li {
   float: left;
   clear: left;
-  width: 436px;
   margin-bottom: 15px;
   position: relative;
   z-index: 2;
 }
+.timeline > .left {
+  width: 50%;
+  float: left;
+  clear: left;
+  padding-right: 14px;
+}
 .timeline > .right {
+  width: 50%;
   float: right;
   clear: right;
+  padding-left: 14px;
 }
 .timeline .pointer {
   background: url(../images/icons-4.png) -41px -28px no-repeat;
   width: 19px;
   height: 15px;
   position: absolute;
-  right: -18px;
+  right: -4px;
   top: 20px;
 }
 .timeline .right > .pointer {
-  left: -18px;
+  left: -4px;
   right: auto;
   background-position: -61px -28px;
 }
@@ -57,7 +64,7 @@
 }
 .timeline .spine {
   position: absolute;
-  left: 436px;
+  left: 50%;
   width: 29px;
   height: 100%;
   z-index: 1;
@@ -215,4 +222,33 @@
 #Spinner {
   text-align: center;
   padding: 10px 0;
+}
+
+@media (max-width: 767px) {
+  .timeline {
+    background: none;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    position: relative;
+  }
+  .timeline > .left {
+    width: 100%;
+    padding-right: 0px;
+  }
+  .timeline > .right {
+    width: 100%;
+    padding-left: 0px;
+  }
+  .timeline .pointer {
+    background: none;
+    width: 19px;
+    height: 15px;
+    right: 0px;
+    top: 20px;
+  }
+  .timeline .right > .pointer {
+    left: 0px;
+    right: auto;
+  }
 }

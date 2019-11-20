@@ -1,14 +1,7 @@
 @charset "utf-8";
 
-body{
-    background:#E7EBF2;
-    font-size:12px;
-    line-height:1.4;
-    font-family:'lucida grande',tahoma,verdana,arial,sans-serif;
-}
-
-.container{
-    width:932px;
+.container-userwall{
+    width:100%;
     margin:0px auto;
 }
 
