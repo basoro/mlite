@@ -36,7 +36,7 @@ class Userwall {
                     ?>
                   </a>
                   <div class="imageUnit-content">
-                    <h4><a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $_SESSION['username']; ?></a></h4>
+                    <h4><a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $b['nama']; ?></a></h4>
                     <p>Follow me</p>
                   </div>
                 </div>
