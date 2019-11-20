@@ -142,7 +142,7 @@ class Userwall {
                     <?php } ?>
                     <div class="imageUnit-content">
                       <h4><a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $row['username']; ?>"><?php echo $_b_wall['nama']; ?></a></h4>
-                      <p><?php echo timeAgo($row['date']);?> ago via Web</p>
+                      <p><?php echo timeAgo($row['date']);?></p>
                     </div>
                   </div>
                   <p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($row['desc']))), URL.'/modules/Userwall/inc/assets/smileys/'); ?></p>
