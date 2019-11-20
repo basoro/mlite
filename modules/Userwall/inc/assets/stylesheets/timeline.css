@@ -251,4 +251,8 @@
     left: 0px;
     right: auto;
   }
+  .timeline .highlight .pointer {
+    background-image: none;
+  }
+
 }
