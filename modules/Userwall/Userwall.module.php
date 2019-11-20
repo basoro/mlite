@@ -180,7 +180,7 @@ class Userwall {
                       <?php } ?>
                   </div>
                   <div class="acomment-meta">
-                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $comt['username']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
+                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $__b_wall['nama']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
                   </div>
                   <div class="acomment-content"><p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($comt['comment']))), URL.'/modules/Userwall/inc/assets/smileys/'); ?></p></div></li>
                   <?php } ?>
