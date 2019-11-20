@@ -46,7 +46,7 @@ if(!empty($_GET['lastPost'])) {
               <p style="float:right; text-align:right;"><a href="javascript:;" class="post-delete" id="post_delete_<?php echo $post_id; ?>">X</a></p>
               <?php } ?>
               <div class="imageUnit-content">
-                <h4><a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $row['username']; ?>"><?php echo $row['username']; ?></a></h4>
+                <h4><a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $row['username']; ?>"><?php echo $b_wall['nama']; ?></a></h4>
                 <p><?php echo timeAgo($row['date']);?> ago via Web</p>
               </div>
             </div>
