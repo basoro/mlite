@@ -53,7 +53,7 @@ $lft = array('left' => '0', 'right' => '1', 'highlight' => '2'); ?>
          <p style="float:right; text-align:right;"><a href="javascript:;" class="post-delete" id="post_delete_<?php echo $ins_id;?>">X</a></p>
         <div class="imageUnit-content">
 
-          <h4><a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $_SESSION['username']; ?>"><?php echo $_SESSION['username']; ?></a></h4>
+          <h4><a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $_SESSION['username']; ?>"><?php echo $b_wall['nama']; ?></a></h4>
           <p>0 sec ago</p>
 
         </div>
