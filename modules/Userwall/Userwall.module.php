@@ -147,7 +147,7 @@ class Userwall {
                   </div>
                   <p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($row['desc']))), URL.'/modules/Userwall/inc/assets/smileys/'); ?></p>
                   <?php if(!empty($row['vid_url'])) { ?>
-                    <iframe width="400" height="300" src="https://www.youtube.com/embed/<?php echo get_youtubeid($row['vid_url']);?>" frameborder="0" allowfullscreen></iframe>
+                    <div class="embed-responsive embed-responsive-16by9"><iframe src="https://www.youtube.com/embed/<?php echo get_youtubeid($row['vid_url']);?>" frameborder="0" allowfullscreen></iframe></div>
                   <?php } elseif(!empty($row['image_url'])) { ?>
                     <img src="<?php echo URL;?>/modules/Userwall/inc/image.php/<?php echo $row['image_url'];?>?width=400&nocache&quality=100&image=/<?php echo DIR;?>modules/Userwall/inc/uploads/<?php echo $row['image_url'];?>">
                   <?php } ?>
