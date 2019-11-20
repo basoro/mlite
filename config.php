@@ -29,6 +29,7 @@ define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
 define('FKTL', true);
 define('WEBAPPS', '../webapps');
+define('THEME', 'indigo');
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
