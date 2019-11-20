@@ -14,15 +14,15 @@
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
 
-define('VERSION', '2.5');
+define('VERSION', '2.6');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
-define('URLSIMRS', 'http://localhost/Khanza-Lite');
+define('URLSIMRS', 'http://localhost/webapps');
 define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'khanzalite');
+define('DB_NAME', 'sik');
 define('PRODUCTION', false);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
