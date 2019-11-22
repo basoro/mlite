@@ -2,7 +2,7 @@
 //require("config.php");
 //session_start();
 global $conn;
-$conn = new PDO("mysql:host=localhost;dbname=sik","root","");
+$conn = new PDO("mysql:host=".DB_HOST.";dbname=".DB_NAME."","".DB_USER."","".DB_PASS."");
 
 error_reporting(0);
 function get_questions(){

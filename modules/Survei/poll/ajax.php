@@ -1,5 +1,5 @@
 <?php
-	//require("../../../config.php");
+	require("../../../config.php");
 	session_start();
 	require("functions.php");
 	if(isset($_POST) && count($_POST)){
