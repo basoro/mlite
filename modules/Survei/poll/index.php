@@ -8,7 +8,7 @@ unset($_SESSION['poll_answered']);
 
    <div class="container">
        <div class="row">
-           <h3 align="center">Simple Ajax PHP Polling Script</h3>
+           <h3 align="center">Simple Polling</h3>
            <div class="col-sm-4 col-sm-offset-4">
                <div class="panel panel-primary">
                    <div class="panel-heading">
