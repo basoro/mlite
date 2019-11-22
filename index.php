@@ -152,12 +152,12 @@ unset($_SESSION['poll_answered']);
                       </div>
                       <div class="panel-footer">
                           <div class="row">
-                            <div class="col-sm-6">
+                            <div class="col-xs-6">
                               <a href="#">
                               <button type="button" class="btn btn-lg btn-primary btn-sm button">Pilih</button>
                               </a>
                             </div>
-                            <div class="col-sm-6">
+                            <div class="col-xs-6">
                               <a href="javascript:;" onClick="javascript:get_poll();">
                                 <div class="btn btn-lg btn-danger btn-sm pull-right selesai">Selanjutnya</div>
                               </a>
