@@ -119,6 +119,10 @@
           $("a[href='" + anchor + "']").tab("show");
       });
 
+      $(window).on('load',function(){
+           $('#pengumuman').modal('show');
+      });
+
 	  </script>
 
     <script>
@@ -196,6 +200,10 @@
     </script>
 
 <?php
+if(file_exists('modules/Survei/js.php')) {
+  include('modules/Survei/js.php');
+}
+
 if(isset($_GET['module'])) {
   if(file_exists('modules/'.$_GET['module'].'/js.php')) {
     include('modules/'.$_GET['module'].'/js.php');

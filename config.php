@@ -28,6 +28,7 @@ define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
 define('FKTL', true);
+define('POLL', true);
 define('WEBAPPS', '../webapps');
 define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
 
