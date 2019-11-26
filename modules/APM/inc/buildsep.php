@@ -87,7 +87,7 @@ $sep = $result['response']['sep']['noSep'];
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="fontawesome-free-5.6.3-web/css/all.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
     <link href="css/gijgo.min.css" rel="stylesheet" type="text/css" />
 
     <style>

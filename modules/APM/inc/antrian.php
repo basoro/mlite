@@ -6,8 +6,8 @@ include('../../../config.php');
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Aplikasi Antrian Pasien Rawat Jalan</title>
- 	<link href="<?php echo URL; ?>/modules/APM/inc/css/bootstrap.css" rel="stylesheet" />
-  <link href="<?php echo URL; ?>/modules/APM/inc/fontawesome-free-5.6.3-web/css/all.css" rel="stylesheet" />
+ 	<link href="<?php echo URL; ?>/modules/APM/inc/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="<?php echo URL; ?>/modules/APM/inc/css/fontawesome.min.css" rel="stylesheet" />
   <style>
   body{
   	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;

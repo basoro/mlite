@@ -10,21 +10,21 @@ include('../../../config.php');
 
 	<!-- demo -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="fontawesome-free-5.6.3-web/css/all.css">
+    <link rel="stylesheet" href="css/fontawesome.min.css">
     <link href="css/gijgo.min.css" rel="stylesheet" type="text/css" />
 
 	<!-- jQuery & jQuery UI + theme (required) -->
-	<link href="keyboard/Keyboard-1.30.1/docs/css/jquery-ui.min.css" rel="stylesheet">
-	<script src="keyboard/Keyboard-1.30.1/docs/js/jquery-latest-slim.min.js"></script>
-	<script src="keyboard/Keyboard-1.30.1/docs/js/jquery-ui-custom.min.js"></script>
-	<script src="keyboard/Keyboard-1.30.1/docs/js/bootstrap.min.js"></script>
+	<link href="css/jquery-ui.min.css" rel="stylesheet">
+	<script src="js/jquery-latest-slim.min.js"></script>
+	<script src="js/jquery-ui-custom.min.js"></script>
+	<script src="js/bootstrap-3.3.7.min.js"></script>
 
 	<!-- keyboard widget css & script (required) -->
-	<link href="keyboard/Keyboard-1.30.1/css/keyboard.css" rel="stylesheet">
-	<script src="keyboard/Keyboard-1.30.1/js/jquery.keyboard.js"></script>
+	<link href="css/keyboard.css" rel="stylesheet">
+	<script src="js/jquery.keyboard.js"></script>
 
 	<!-- keyboard extensions (optional) -->
-	<script src="keyboard/Keyboard-1.30.1/js/jquery.mousewheel.js"></script>
+	<script src="js/jquery.mousewheel.js"></script>
 
 	<!-- initialize keyboard (required) -->
 	<script>
@@ -166,7 +166,7 @@ text-align: center;
             <div class="card-body">
               <form class="form-signin" method="post">
                 <div class="form-label-group">
-                  <input type="text" name="no_mr" id="no_mr" class="form-control form-control-lg text-white" placeholder="NO REKAM MEDIS" required>
+                  <input type="text" name="no_mr" id="no_mr" class="form-control form-control-lg" placeholder="NO REKAM MEDIS" required>
                 </div>
                 <button class="btn btn-lg btn-dark btn-block shadow text-uppercase" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">CEK NOMER REKAM MEDIS</button>
               </form>
