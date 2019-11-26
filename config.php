@@ -22,7 +22,7 @@ define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_NAME', 'khanzalite');
 define('PRODUCTION', false);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
@@ -46,6 +46,11 @@ $module_base_file = $module.$module_ext;
 
 if(isset($_GET['module'])) {
   parse_str(parse_url($_SERVER['REQUEST_URI'])['query'], $params);
+}
+
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if($db->connect_error){
+    die("Unable to connect database: " . $db->connect_error);
 }
 
 function escape($string) {
@@ -77,6 +82,28 @@ function fetch_assoc($result) {
 
 function num_rows($result) {
     return mysqli_num_rows($result);
+}
+
+function insertTable($table_name, $insertvalue="") {
+  $query1 = "";
+  $query2 = "";
+  if($insertvalue != ""){
+    $i=0;
+    foreach($insertvalue as $key => $item) {
+      if($i == 0) {
+        $query1 = $key;
+        $query2 = "'".$item."'";
+      }
+      else{
+        $query1 = $query1 . ", ".$key;
+        $query2 = $query2 . ", '".$item."'";
+      }
+      $i++;
+    }
+  }
+
+  $query = "INSERT INTO ".$table_name." (".$query1.") VALUES (".$query2.")";
+  query($query);
 }
 
 // htmlentities remove #$%#$%@ values
@@ -205,6 +232,12 @@ $month      = date('Y-m');
 $date       = date('Y-m-d');
 $time       = date('H:i:s');
 $date_time  = date('Y-m-d H:i:s');
+
+$tanggal    = date('d');
+$bulan      = date('m');
+$tahun      = date('Y');
+$time       = date('H:i:s');
+$nonbooking = date('His');
 
 // Namahari
 $hari=fetch_array(query("SELECT DAYNAME(current_date())"));
