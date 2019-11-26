@@ -6,7 +6,7 @@ $module_title       = 'APM';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul Anjungan Pasien Mandiri di SIMKES Khanza.';
+$module_description = 'Modul Anjungan Pasien dan Cetak SEP Mandiri di SIMKES Khanza.';
 $module_type        = 'FKTL';
 
 ?>
