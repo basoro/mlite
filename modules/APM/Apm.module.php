@@ -23,19 +23,13 @@ class Apm {
   </div>
   <div class="body">
       <div class="row clearfix">
-        <div class="col-lg-4 text-center">
+        <div class="col-lg-6 text-center">
           <div class="card">
             <img src="<?php echo URL; ?>/modules/APM/images/apm.png" class="img-responsive">
           </div>
           <a href="<?php echo URL; ?>/modules/APM/inc/index.php" class="btn btn-lg btn-primary" target="_blank">Antrian & APM</a>
         </div>
-        <div class="col-lg-4 text-center">
-          <div class="card">
-            <img src="<?php echo URL; ?>/modules/APM/images/antrian.png" class="img-responsive">
-          </div>
-          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php" class="btn btn-lg btn-success" target="_blank">Display Antrian</a>
-        </div>
-        <div class="col-lg-4 text-center">
+        <div class="col-lg-6 text-center">
           <div class="card">
             <img src="<?php echo URL; ?>/modules/APM/images/sep.png" class="img-responsive">
           </div>
@@ -44,6 +38,29 @@ class Apm {
       </div>
   </div>
 </div>
+<div class="card">
+  <div class="header">
+      <h2>Anrian Loket Rawat Jalan</h2>
+  </div>
+  <div class="body">
+      <div class="row clearfix">
+        <div class="col-lg-6 text-center">
+          <div class="card">
+            <img src="<?php echo URL; ?>/modules/APM/images/antrian.png" class="img-responsive">
+          </div>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php" class="btn btn-lg btn-success" target="_blank">Display Antrian</a>
+        </div>
+        <div class="col-lg-6 text-center">
+          <div class="card">
+            <img src="<?php echo URL; ?>/modules/APM/images/pemanggil.png" class="img-responsive">
+          </div>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=lama" class="btn btn-lg btn-success" target="_blank">Pemanggil Antrian</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=baru" class="btn btn-lg btn-success" target="_blank">Pemanggil CS</a>
+        </div>
+      </div>
+  </div>
+</div>
+
 <?php
       }
     }
