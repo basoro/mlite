@@ -166,7 +166,7 @@ text-align: center;
             <div class="card-body">
               <form class="form-signin" method="post">
                 <div class="form-label-group">
-                  <input type="text" name="no_mr" id="no_mr" class="form-control form-control-lg" placeholder="NO REKAM MEDIS" required>
+                  <input type="text" name="no_mr" id="no_mr" class="form-control form-control-lg bg-dark text-white" placeholder="NO REKAM MEDIS" required>
                 </div>
                 <button class="btn btn-lg btn-dark btn-block shadow text-uppercase" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">CEK NOMER REKAM MEDIS</button>
               </form>
