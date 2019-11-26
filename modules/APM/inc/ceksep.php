@@ -179,7 +179,7 @@ text-align: center;
 
     <br>
     <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
-      <h3 class="display-6"><marquee>Silahkan hubungi petugas jika anda mengalami kesulitan.</marquee></h3>
+      <h3 class="display-6"><marquee>Silahkan hubungi petugas jika anda mengalami kesulitan</marquee></h3>
     </div>
 
 </body>

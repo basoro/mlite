@@ -15,6 +15,19 @@ include('../../../init.php');
     <link href="css/gijgo.min.css" rel="stylesheet" type="text/css" />
 
     <style>
+    body{
+    	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    	background: #0264d6; /* Old browsers */
+    	background: -moz-radial-gradient(center, ellipse cover,  #0264d6 1%, #1c2b5a 100%); /* FF3.6+ */
+    	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(1%,#0264d6), color-stop(100%,#1c2b5a)); /* Chrome,Safari4+ */
+    	background: -webkit-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Chrome10+,Safari5.1+ */
+    	background: -o-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Opera 12+ */
+    	background: -ms-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* IE10+ */
+    	background: radial-gradient(ellipse at center,  #0264d6 1%,#1c2b5a 100%); /* W3C */
+    	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0264d6', endColorstr='#1c2b5a',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+    	height:calc(100vh);
+    	width:100%;
+    }
     .modal-full {
       min-width: 100%;
       margin: 0;
@@ -118,7 +131,7 @@ include('../../../init.php');
     <title>Anjungan Pasien Mandiri</title>
   </head>
   <body>
-    <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center text-white">
       <h1 class="display-2">APM</h1>
       <h3 class="display-6">Anjungan Pasien Mandiri Pelayanan Rawat Jalan</h3>
       <h2 class="display-5"><?php echo $dataSettings['nama_instansi']; ?></h2>
@@ -152,9 +165,11 @@ include('../../../init.php');
         </div>
       </div>
     </div>
-    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center text-danger">
-      <h3 class="display-6">Silahkan hubungi petugas jika anda mengalami kesulitan.</h3>
+    <br>
+    <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
+      <h3 class="display-6"><marquee>Silahkan hubungi petugas jika anda mengalami kesulitan</marquee></h3>
     </div>
+
 
     <!-- Modal Antrian -->
     <div class="modal fade" id="antrian" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
