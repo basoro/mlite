@@ -1,5 +1,6 @@
 <?php
 include('../../../config.php');
+include('../../../init.php');
 ?>
 <!DOCTYPE html>
 <html>
@@ -168,7 +169,7 @@ text-align: center;
                 <div class="form-label-group">
                   <input type="text" name="no_mr" id="no_mr" class="form-control form-control-lg bg-dark text-white" placeholder="NO REKAM MEDIS" required>
                 </div>
-                <button class="btn btn-lg btn-dark btn-block shadow text-uppercase" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">CEK NOMER REKAM MEDIS</button>
+                <button class="btn btn-lg btn-dark btn-block shadow text-uppercase" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">CEK</button>
               </form>
             </div>
           </div>

@@ -1,5 +1,6 @@
 <?php
 include('../../../config.php');
+include('../../../init.php');
 ?>
 <!doctype html>
 <html lang="en">

@@ -10,6 +10,7 @@
 
 $title = 'Cetak SEP';
 include('../../../config.php');
+include('../../../init.php');
 ?>
 <title>Cetak SEP</title>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">

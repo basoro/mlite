@@ -1,5 +1,6 @@
 <?php
 include('../../../config.php');
+include('../../../init.php');
 
 $sup = new StdClass();
 $sup->noKartu = $_POST['nops'];
