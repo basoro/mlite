@@ -1,7 +1,6 @@
 var staticCacheName = 'khanza-lite';
 var filesToCache = [
   '/',
-  'index.html',
   'main.js'
 ];
 
