@@ -1,6 +1,19 @@
 var staticCacheName = 'khanza-lite';
 var filesToCache = [
   '/',
+  'index.html',
+  'assets/css/roboto.css',
+  'assets/css/material-icon.css',
+  'assets/plugins/bootstrap/css/bootstrap.css',
+  'assets/plugins/node-waves/waves.css',
+  'assets/plugins/animate-css/animate.css',
+  'assets/css/style.css',
+  'assets/css/themes/all-themes.min.css',
+  'assets/plugins/jquery/jquery.min.js',
+  'assets/plugins/bootstrap/js/bootstrap.js',
+  'assets/plugins/node-waves/waves.js',
+  'assets/plugins/jquery-validation/jquery.validate.js',
+  'assets/js/admin.js',
   'main.js'
 ];
 
