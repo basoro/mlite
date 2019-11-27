@@ -70,6 +70,13 @@ if(PRODUCTION == true) {
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
 
+    <meta name="theme-color" content="#6700DF">
+    <link rel="manifest" href="manifest.json">
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
+
+
 </head>
 
 <body class="theme-<?php echo THEME; ?>">

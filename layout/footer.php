@@ -203,6 +203,8 @@ if(isset($_GET['module'])) {
 }
 ?>
 
+<script src="main.js"></script>
+
 </body>
 
 </html>
