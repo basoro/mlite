@@ -3,7 +3,7 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 ?>
 
 <?php
-class Apm {
+class APM {
     function index() {
       if(num_rows(query("SHOW TABLES LIKE 'antrian_loket'")) !== 1) {
         echo '<div class="alert bg-pink alert-dismissible text-center">';
