@@ -7,7 +7,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
 if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	echo '<div style="min-height:70vh; min-width:70vw;">';
 	echo '<div class="alert bg-pink alert-dismissible text-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">';
-	echo '<p class="lead">Belum terinstall SMS Gateway</p>';
+	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
 	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
 	echo '</div>';
 	echo '</div>';

@@ -7,12 +7,12 @@ class APM {
     function index() {
       if(num_rows(query("SHOW TABLES LIKE 'antrian_loket'")) !== 1) {
         echo '<div class="alert bg-pink alert-dismissible text-center">';
-        echo '<p class="lead">Belum terinstall Antrian Loket & CS</p>';
+        echo '<p class="lead">Belum terinstall Database Antrian Loket & CS</p>';
         echo '<a href="'.URL.'/?module=APM&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
         echo '</div>';
       } else if(num_rows(query("SHOW TABLES LIKE 'antrics'")) !== 1) {
         echo '<div class="alert bg-pink alert-dismissible text-center">';
-        echo '<p class="lead">Belum terinstall Antrian CS</p>';
+        echo '<p class="lead">Belum terinstall Database Antrian CS</p>';
         echo '<a href="'.URL.'/?module=APM&page=install_antrics" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
         echo '</div>';
       } else {
