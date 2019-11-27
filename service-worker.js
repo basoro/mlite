@@ -1,8 +1,7 @@
-var staticCacheName = 'basoro-id';
+var staticCacheName = 'khanza-lite';
 var filesToCache = [
   '/',
   'index.html',
-  'css/themes/all-themes.min.css',
   'main.js'
 ];
 
