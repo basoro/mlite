@@ -30,7 +30,6 @@ define('IS_IN_MODULE', true);
 define('FKTL', true);
 define('WEBAPPS', '../webapps');
 define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
-define('POLL', false);
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
