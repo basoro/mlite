@@ -1,7 +1,6 @@
 var staticCacheName = 'khanza-lite';
 var filesToCache = [
   '/',
-  'index.html',
   'assets/css/roboto.css',
   'assets/css/material-icon.css',
   'assets/plugins/bootstrap/css/bootstrap.css',
