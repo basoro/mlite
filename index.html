@@ -10,12 +10,6 @@
     <!-- Favicon-->
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon">
 
-    <meta name="theme-color" content="#6700DF">
-    <link rel="manifest" href="./manifest.json">
-    <!-- iOS Support -->
-    <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
-    <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
-
     <!-- Google Fonts -->
     <link href="assets/css/roboto.css" rel="stylesheet">
 
@@ -36,6 +30,11 @@
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="assets/css/themes/all-themes.min.css" rel="stylesheet" />
+    <meta name="theme-color" content="#6700DF">
+    <link rel="manifest" href="./manifest.json">
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
 
 </head>
 
@@ -57,6 +56,8 @@
         </div>
     </div>
 
+    <script src="main.js"></script>
+
     <!-- Jquery Core Js -->
     <script src="assets/plugins/jquery/jquery.min.js"></script>
 
@@ -71,23 +72,6 @@
 
     <!-- Custom Js -->
     <script src="assets/js/admin.js"></script>
-    <script>
-    // REGISTER ON LOAD
-    window.addEventListener('load', e => {
-      if (!('serviceWorker' in navigator)) {
-          console.log('Service worker not supported');
-          return;
-      }
-      navigator.serviceWorker.register('service-worker.js')
-          .then(function () {
-              console.log('Service worker registered');
-          })
-          .catch(function (error) {
-              console.log('Service worker registration failed:',
-                  error);
-          });
-    });
-    </script>
 
 </body>
 
