@@ -191,17 +191,6 @@ if (isset($_POST['error'])) {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="pwa" class="col-sm-4 control-label">PWA</label>
-                                    <div class="col-sm-8">
-                                        <div class="form-line">
-                                            <select name="pwa" class="form-control">
-                                              <option value="false" <?php if(PWA == false) { echo 'selected'; } ?>>Disable</option>
-                                              <option value="true" <?php if(PWA == true) { echo 'selected'; } ?>>Enable</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
                                     <label for="npwp" class="col-sm-4 control-label">Kode PPK</label>
                                     <div class="col-sm-8">
                                         <div class="form-line">
@@ -237,6 +226,17 @@ if (isset($_POST['error'])) {
                                           ?>
                                           <br/>
                                           <input name="file" id="inputFile" type="file" style="display:none;"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwa" class="col-sm-4 control-label">PWA</label>
+                                    <div class="col-sm-8">
+                                        <div class="form-line">
+                                            <select name="pwa" class="form-control">
+                                              <option value="false" <?php if(PWA == false) { echo 'selected'; } ?>>Disable</option>
+                                              <option value="true" <?php if(PWA == true) { echo 'selected'; } ?>>Enable</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
