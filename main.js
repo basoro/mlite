@@ -4,7 +4,7 @@ window.addEventListener('load', e => {
       console.log('Service worker not supported');
       return;
   }
-  navigator.serviceWorker.register('service-worker.js')
+  navigator.serviceWorker.register('./service-worker.js')
       .then(function () {
           console.log('Service worker registered');
       })
