@@ -71,7 +71,7 @@ if(PRODUCTION == true) {
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
 
     <meta name="theme-color" content="#6700DF">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="<?php echo URL; ?>/manifest.json">
     <!-- iOS Support -->
     <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
     <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
