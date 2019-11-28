@@ -54,11 +54,13 @@ require_once('config.php');
 
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
-    <meta name="theme-color" content="#6700DF">
-    <link rel="manifest" href="<?php echo URL; ?>/manifest.json">
-    <!-- iOS Support -->
-    <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
-    <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
+    <?php if(PWA == true) { ?>
+      <meta name="theme-color" content="#6700DF">
+      <link rel="manifest" href="<?php echo URL; ?>/manifest.json">
+      <!-- iOS Support -->
+      <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
+      <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
+    <?php } ?>
 
 </head>
 
@@ -230,7 +232,9 @@ require_once('config.php');
     <!-- Custom Js -->
     <script src="<?php echo URL; ?>/assets/js/admin.js"></script>
 
+    <?php if(PWA == true) { ?>
     <script src="<?php echo URL; ?>/main.js"></script>
+    <?php } ?>
 
 </body>
 

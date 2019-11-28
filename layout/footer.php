@@ -202,8 +202,9 @@ if(isset($_GET['module'])) {
   }
 }
 ?>
-
+<?php if(PWA == true) { ?>
 <script src="<?php echo URL; ?>/main.js"></script>
+<?php } ?>
 
 </body>
 
