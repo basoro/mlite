@@ -6,7 +6,7 @@
   "display": "fullscreen",
   "orientation": "portrait-primary",
   "scope": "/",
-  "start_url": "/login.php",
+  "start_url": "/index.html",
   "icons": [{
       "src": "assets/icons/icon-72x72.png",
       "sizes": "72x72",
