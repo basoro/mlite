@@ -25,7 +25,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   }
 
   if (isset($_POST['ok_odont'])) {
-        if (($_POST['ok_odont'] <> "")) {
+        if (($_POST['ok_odont'] <> "") and ($_POST['value'] <> "")) {
               $insert = query("INSERT INTO pemeriksaan_odontogram VALUES ('{$no_rkm_medis}','{$_GET['no_rawat']}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['gg_xx']}','{$_POST['value']}','{$_POST['catatan']}')");
         };
   };
@@ -37,22 +37,22 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
    <td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td>
   </tr>
   <tr>
-  <td style="height: 25px; width: 25px;" <?php $gg_18 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_18' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_18['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_18['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_17 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_17' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_17['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_17['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_16 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_16' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_16['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_16['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_15 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_15' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_15['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_15['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_14 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_14' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_14['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_14['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_13 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_13' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_13['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_13['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_12 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_12' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_12['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_12['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_11 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_11' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_11['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_11['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_21 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_21' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_21['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_21['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_22 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_22' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_22['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_22['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_23 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_23' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_23['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_23['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_24 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_24' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_24['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_24['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_25 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_25' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_25['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_25['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_26 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_26' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_26['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_26['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_27 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_27' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_27['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_27['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_28 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_28' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_28['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_28['value'].'"'; }; ?>></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_18 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_18' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_18['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_18['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_17 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_17' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_17['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_17['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_16 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_16' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_16['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_16['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_15 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_15' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_15['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_15['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_14 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_14' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_14['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_14['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_13 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_13' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_13['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_13['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_12 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_12' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_12['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_12['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_11 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_11' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_11['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_11['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_21 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_21' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_21['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_21['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_22 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_22' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_22['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_22['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_23 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_23' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_23['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_23['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_24 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_24' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_24['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_24['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_25 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_25' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_25['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_25['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_26 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_26' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_26['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_26['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_27 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_27' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_27['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_27['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_28 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_28' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_28['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_28['value'].".png'>"; } ?></td>
   </tr>
   <tr>
     <td style="height: 5px;"> </td>
@@ -61,16 +61,16 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   <td> </td>
   <td> </td>
   <td> </td>
-  <td style="height: 25px; width: 25px;" <?php $gg_55 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_55' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_55['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_55['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_54 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_54' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_54['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_54['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_53 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_53' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_53['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_53['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_52 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_52' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_52['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_52['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_51 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_51' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_51['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_51['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_61 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_61' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_61['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_61['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_62 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_62' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_62['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_62['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_63 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_63' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_63['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_63['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_64 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_64' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_64['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_64['value'].'"'; }; ?>></td>
-  <td style="height: 25px; width: 25px;" <?php $gg_65 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_65' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_65['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_65['value'].'"'; }; ?>></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_55 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_55' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_55['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_55['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_54 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_54' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_54['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_54['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_53 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_53' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_53['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_53['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_52 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_52' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_52['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_52['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_51 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_51' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_51['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_51['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_61 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_61' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_61['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_61['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_62 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_62' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_62['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_62['value'].".png'>"; } ?></td>
+  <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_63 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_63' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_63['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_63['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_64 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_64' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_64['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_64['value'].".png'>"; } ?></td>
+  <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_65 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_65' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_65['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_65['value'].".png'>"; } ?></td>
     <td> </td>
     <td> </td>
     <td> </td>
@@ -83,16 +83,16 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
     <td> </td>
     <td> </td>
     <td> </td>
-    <td style="height: 25px; width: 25px;" <?php $gg_85 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_85' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_85['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_85['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_84 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_84' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_84['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_84['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_83 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_83' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_83['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_83['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_82 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_82' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_82['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_82['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_81 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_81' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_81['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_81['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_71 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_71' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_71['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_71['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_72 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_72' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_72['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_72['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_73 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_73' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_73['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_73['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_74 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_74' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_74['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_74['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_75 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_75' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_75['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_75['value'].'"'; }; ?>></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_85 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_85' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_85['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_85['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_84 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_84' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_84['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_84['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_83 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_83' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_83['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_83['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_82 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_82' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_82['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_82['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_81 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_81' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_81['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_81['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_71 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_71' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_71['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_71['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_72 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_72' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_72['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_72['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_73 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_73' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_73['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_73['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_74 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_74' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_74['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_74['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_75 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_75' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_75['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_75['value'].".png'>"; } ?></td>
     <td> </td>
     <td> </td>
     <td> </td>
@@ -101,22 +101,22 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
       <td style="height: 5px;"> </td>
     </tr>
     <tr>
-    <td style="height: 25px; width: 25px;" <?php $gg_48 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_48' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_48['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_48['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_47 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_47' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_47['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_47['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_46 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_46' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_46['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_46['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_45 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_45' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_45['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_45['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_44 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_44' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_44['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_44['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_43 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_43' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_43['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_43['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_42 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_42' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_42['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_42['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_41 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_41' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_41['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_41['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_31 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_31' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_31['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_31['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_32 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_32' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_32['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_32['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_33 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_33' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_33['value'] =='') { echo 'class="gigi_anterior"'; } else { echo 'bgcolor="'.$gg_33['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_34 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_34' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_34['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_34['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_35 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_35' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_35['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_35['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_36 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_36' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_36['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_36['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_37 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_37' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_37['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_37['value'].'"'; }; ?>></td>
-    <td style="height: 25px; width: 25px;" <?php $gg_38 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_38' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_38['value'] =='') { echo 'class="gigi_posterior"'; } else { echo 'bgcolor="'.$gg_38['value'].'"'; }; ?>></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_48 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_48' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_48['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_48['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_47 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_47' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_47['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_47['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_46 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_46' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_46['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_46['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_45 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_45' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_45['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_45['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_44 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_44' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_44['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_44['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_43 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_43' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_43['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_43['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_42 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_42' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_42['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_42['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_41 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_41' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_41['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_41['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_31 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_31' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_31['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_31['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_32 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_32' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_32['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_32['value'].".png'>"; } ?></td>
+    <td class="gigi_anterior" style="height: 25px; width: 25px;"><?php $gg_33 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_33' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_33['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_33['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_34 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_34' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_34['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_34['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_35 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_35' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_35['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_35['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_36 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_36' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_36['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_36['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_37 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_37' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_37['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_37['value'].".png'>"; } ?></td>
+    <td class="gigi_posterior" style="height: 25px; width: 25px;"><?php $gg_38 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_38' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if(!empty($gg_38['value'])) { echo "<img src='".URL."/modules/Odontogram/img/".$gg_38['value'].".png'>"; } ?></td>
     </tr>
 
   <tr>
@@ -127,26 +127,22 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 
 <table style="margin: 0 auto; width: 450px;">
   <tr>
-    <td style="height: 20px; width: 20px; background-color: #ffffff; border: 1px solid #000000; "></td>
-    <td> = Normal</td>
-    <td style="height: 20px; width: 20px; background-color: #FF0000; border: 1px solid #000000; "></td>
-    <td> = Dicabut</td>
-    <td style="height: 20px; width: 20px; background-color: #000000; border: 1px solid #000000; "></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Erupsi.png"></td>
+    <td> = Erupsi</td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Tanggal.png"></td>
     <td> = Hilang</td>
-    <td style="height: 20px; width: 20px; background-color: #FFFF00; border: 1px solid #000000; "></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Karies.png"></td>
     <td> = Karies</td>
   </tr>
   <tr>
     <td style="height: 5px;"> </td>
   </tr>
   <tr>
-    <td style="height: 20px; width: 20px; background-color: #FF6600; border: 1px solid #000000; "></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Akar.png"></td>
     <td> = Sisa Akar</td>
-    <td style="height: 20px; width: 20px; background-color: #0000FF; border: 1px solid #000000; "></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Tumpatan.png"></td>
     <td> = Tumpatan</td>
-    <td style="height: 20px; width: 20px; background-color: #FF00FF; border: 1px solid #000000; "></td>
-    <td> = Gigi Tiruan</td>
-    <td style="height: 20px; width: 20px; background-color: #339966; border: 1px solid #000000; "></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Goyang.png"></td>
     <td> = Goyang</td>
   </tr>
 </table>
@@ -198,8 +194,15 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
           <p>
               <b>Hasil Pemeriksaan</b>
           </p>
-          <input name="value" class="btn odont_input color">
-
+          <select name="value" class="form-control show-tick" data-live-search="true">
+            <option value="">------------</option>
+            <option value="Erupsi">Erupsi</option>
+            <option value="Hilang">Hilang</option>
+            <option value="Karies">Karies</option>
+            <option value="Sisa">Sisa Akar</option>
+            <option value="Tumpatan">Tumpatan</option>
+            <option value="Goyang">Goyang</option>
+          </select>
       </div>
       <div class="col-md-12">
           <p>
@@ -232,22 +235,10 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
     <?php
     $query_odontogram = query("SELECT *  FROM pemeriksaan_odontogram WHERE no_rkm_medis = '{$no_rkm_medis}'");
     while ($data_odontogram = fetch_array($query_odontogram)) {
-      if($data_odontogram['5'] == '#FF0000') {
-        $data_value = 'Dicabut';
-      } else if($data_odontogram['5'] == '#000000') {
-        $data_value = 'Hilang';
-      } else if($data_odontogram['5'] == '#FFFF00') {
-        $data_value = 'Karies';
-      } else if($data_odontogram['5'] == '#FF6600') {
+      if($data_odontogram['5'] == 'Akar') {
         $data_value = 'Sisa Akar';
-      } else if($data_odontogram['5'] == '#0000FF') {
-        $data_value = 'Tumpatan';
-      } else if($data_odontogram['5'] == '#FF00FF') {
-        $data_value = 'Gigi Tiruan';
-      } else if ($data_odontogram['5'] == '#339966') {
-        $data_value = 'Goyang';
       } else {
-        $data_value = 'Normal';
+        $data_value = $data_odontogram['5'];
       }
     ?>
         <tr>
