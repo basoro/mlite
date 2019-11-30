@@ -148,7 +148,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
           <p>
               <b>Pemeriksaan</b>
           </p>
-          <select class="form-control show-tick" data-live-search="true">
+          <select class="form-control show-tick" data-size="4" data-live-search="true">
             <option value="gg_18">Gigi 18</option>
             <option value="gg_17">Gigi 17</option>
             <option value="gg_16">Gigi 16</option>
