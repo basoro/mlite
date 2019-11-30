@@ -223,7 +223,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
         <tr>
-            <th>Tanggal Tindakan</th>
+            <th>Tanggal</th>
             <th>Pemeriksaan</th>
             <th>Catatan</th>
             <?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
