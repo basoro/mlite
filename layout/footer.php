@@ -77,6 +77,8 @@
     <!-- Bootstrap Material Datetime Picker Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
 
+    <script src="<?php echo URL;?>/modules/Odontogram/js/odontogram.js" type="text/javascript"></script>
+
     <!-- Jquery-UI Js -->
     <script src="<?php echo URL; ?>/assets/js/jquery-ui.min.js"></script>
 
@@ -165,6 +167,8 @@
           	thumbnail: true,
           	selector: 'a'
       	});
+
+        $('.color').colorPicker();
 
 	  </script>
 

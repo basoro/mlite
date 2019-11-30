@@ -67,6 +67,8 @@ if(PRODUCTION == true) {
     <!-- Custom Css -->
     <link href="<?php echo URL; ?>/assets/css/style.css" rel="stylesheet">
 
+    <link href="<?php echo URL;?>/modules/Odontogram/css/odontogram.css" rel="stylesheet" type="text/css" />
+
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
 
