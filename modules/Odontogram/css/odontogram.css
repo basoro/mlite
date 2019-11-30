@@ -15,11 +15,6 @@
     background-repeat: no-repeat;
     background-size: 100% 100%;
 }
-.Dicabut{
-    background: url("../img/anterior.png");
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-}
 td.name { font-weight: bold; font-size: 14px; }
 input.odont_input, .odont_color {
 	width: 25px;
