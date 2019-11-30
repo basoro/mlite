@@ -1,4 +1,5 @@
 <?php
+
 if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') {
   $no_rkm_medis = $_GET['no_rkm_medis'];
 } else if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') {
@@ -16,6 +17,12 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   echo '</div>';
 } else {
 
+  if (isset($_POST['ok_odont'])) {
+        if (($_POST['ok_odont'] <> "")) {
+              $insert = query("INSERT INTO pemeriksaan_odontogram VALUES ('{$no_rkm_medis}','{$_GET['no_rawat']}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['gg_xx']}','{$_POST['value']}','{$_POST['catatan']}')");
+        };
+  };
+
 ?>
 <div class="table-odontogram">
 <table style="margin: 0 auto; width: 450px; text-align: center;">
@@ -28,9 +35,9 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   <td <?php $gg_16 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_16' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_16['value'] !='') { echo 'bgcolor="'.$gg_16['value'].'"'; } else { echo 'class="gigi_posterior"'; }; ?>></td>
   <td <?php $gg_15 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_15' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_15['value'] !='') { echo 'bgcolor="'.$gg_15['value'].'"'; } else { echo 'class="gigi_posterior"'; }; ?>></td>
   <td <?php $gg_14 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_14' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_14['value'] !='') { echo 'bgcolor="'.$gg_14['value'].'"'; } else { echo 'class="gigi_posterior"'; }; ?>></td>
-  <td class="gigi_anterior"><input type="text" name="gg_13" id="gg_13" value="<?php $gg_13 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_13' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); echo $gg_13['value']; ?>" class="odont_input color"></td>
-  <td class="gigi_anterior"><input type="text" name="gg_12" id="gg_12" value="<?php //echo @get_post_meta($post->ID, 'gg_12', true); ?>" class="odont_input color"></td>
-  <td class="gigi_anterior"><input type="text" name="gg_11" id="gg_11" value="<?php //echo @get_post_meta($post->ID, 'gg_11', true); ?>" class="odont_input color"></td>
+  <td <?php $gg_13 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_13' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_13['value'] !='') { echo 'bgcolor="'.$gg_13['value'].'"'; } else { echo 'class="gigi_anterior"'; }; ?>></td>
+  <td <?php $gg_12 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_12' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_12['value'] !='') { echo 'bgcolor="'.$gg_12['value'].'"'; } else { echo 'class="gigi_anterior"'; }; ?>></td>
+  <td <?php $gg_11 = fetch_assoc(query("SELECT value FROM pemeriksaan_odontogram WHERE gg_xx = 'gg_11' AND no_rkm_medis = '{$no_rkm_medis}' ORDER BY tgl_perawatan ASC LIMIT 1")); if($gg_11['value'] !='') { echo 'bgcolor="'.$gg_11['value'].'"'; } else { echo 'class="gigi_anterior"'; }; ?>></td>
   <td> </td>
   <td class="gigi_anterior"><input type="text" name="gg_21" id="gg_21" value="<?php //echo @get_post_meta($post->ID, 'gg_21', true); ?>" class="odont_input color"></td>
   <td class="gigi_anterior"><input type="text" name="gg_22" id="gg_22" value="<?php //echo @get_post_meta($post->ID, 'gg_22', true); ?>" class="odont_input color"></td>
@@ -142,13 +149,13 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 </div>
 <br><br>
 <?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
-<form method="POST">
+<form method="POST" action="">
   <div class="row clearfix">
       <div class="col-md-12">
           <p>
               <b>Pemeriksaan</b>
           </p>
-          <select class="form-control show-tick" data-size="4" data-live-search="true">
+          <select name="gg_xx" class="form-control show-tick" data-size="4" data-live-search="true">
             <option value="gg_18">Gigi 18</option>
             <option value="gg_17">Gigi 17</option>
             <option value="gg_16">Gigi 16</option>
@@ -187,7 +194,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
           <p>
               <b>Hasil Pemeriksaan</b>
           </p>
-          <button class="btn odont_input color"></button>
+          <input name="value" class="btn odont_input color">
 
       </div>
       <div class="col-md-12">
@@ -196,9 +203,15 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
           </p>
           <textarea name="catatan" class="form-control" col="4" row="4"></textarea>
       </div>
+
+      <div class="col-md-12">
+        <button type="submit" name="ok_odont" value="ok_odont" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_odont\'">SIMPAN</button>
+      </div>
+
   </div>
 </form>
 <?php } ?>
+<br>
 <p class="lead">History Odontogram</p>
 <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
