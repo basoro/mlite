@@ -141,9 +141,10 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 </table>
 </div>
 <br><br>
+<?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
 <form method="POST">
   <div class="row clearfix">
-      <div class="col-md-6">
+      <div class="col-md-12">
           <p>
               <b>Pemeriksaan</b>
           </p>
@@ -156,9 +157,33 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_13">Gigi 13</option>
             <option value="gg_12">Gigi 12</option>
             <option value="gg_11">Gigi 11</option>
+            <option value="gg_21">Gigi 21</option>
+            <option value="gg_22">Gigi 22</option>
+            <option value="gg_23">Gigi 23</option>
+            <option value="gg_24">Gigi 24</option>
+            <option value="gg_25">Gigi 25</option>
+            <option value="gg_26">Gigi 26</option>
+            <option value="gg_27">Gigi 27</option>
+            <option value="gg_28">Gigi 28</option>
+            <option value="gg_38">Gigi 38</option>
+            <option value="gg_37">Gigi 37</option>
+            <option value="gg_36">Gigi 36</option>
+            <option value="gg_35">Gigi 35</option>
+            <option value="gg_34">Gigi 34</option>
+            <option value="gg_33">Gigi 33</option>
+            <option value="gg_32">Gigi 32</option>
+            <option value="gg_41">Gigi 31</option>
+            <option value="gg_41">Gigi 41</option>
+            <option value="gg_42">Gigi 42</option>
+            <option value="gg_43">Gigi 43</option>
+            <option value="gg_44">Gigi 44</option>
+            <option value="gg_45">Gigi 45</option>
+            <option value="gg_46">Gigi 46</option>
+            <option value="gg_47">Gigi 47</option>
+            <option value="gg_48">Gigi 48</option>
           </select>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-12">
           <p>
               <b>Hasil Pemeriksaan</b>
           </p>
@@ -173,6 +198,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
       </div>
   </div>
 </form>
+<?php } ?>
 <p class="lead">History Odontogram</p>
 <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
@@ -180,7 +206,9 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <th>Tanggal Tindakan</th>
             <th>Pemeriksaan</th>
             <th>Catatan</th>
+            <?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
             <th>Tools</th>
+            <?php } ?>
         </tr>
     </thead>
     <tbody>
@@ -209,7 +237,9 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <td><?php echo $data_odontogram['2']; ?></td>
             <td><?php echo "Gigi ".ltrim($data_odontogram['4'], 'gg_'); ?> <?php echo $data_value; ?></td>
             <td><?php echo $data_odontogram['6']; ?></td>
+            <?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
             <td><a href="./?module=Odontogram&page=index&action=delete_odontogram&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+            <?php } ?>
         </tr>
     <?php
     }
