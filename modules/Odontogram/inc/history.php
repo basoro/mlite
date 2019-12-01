@@ -200,7 +200,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="Hilang">Hilang</option>
             <option value="Karies">Karies</option>
             <option value="Sisa">Sisa Akar</option>
-            <option value="Tumpatan">Tumpatan</option>
+            <option value="Tumpat">Tumpatan</option>
             <option value="Goyang">Goyang</option>
           </select>
       </div>
@@ -237,6 +237,8 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
     while ($data_odontogram = fetch_array($query_odontogram)) {
       if($data_odontogram['5'] == 'Akar') {
         $data_value = 'Sisa Akar';
+      } else if($data_odontogram['5'] == 'Tumpat') {
+        $data_value = 'Tumpatan';
       } else {
         $data_value = $data_odontogram['5'];
       }
