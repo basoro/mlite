@@ -140,7 +140,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   <tr>
     <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Akar.png"></td>
     <td> = Sisa Akar</td>
-    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Tumpatan.png"></td>
+    <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Tumpat.png"></td>
     <td> = Tumpatan</td>
     <td><img src="<?php echo URL; ?>/modules/Odontogram/img/Goyang.png"></td>
     <td> = Goyang</td>
