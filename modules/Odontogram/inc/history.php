@@ -77,7 +77,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 
     </tr>
   <tr>
-    <td> </td><td> </td><td> </td><td>V</td><td>IV</td><td>III</td><td>II</td><td>I</td><td>I</td><td>II</td><td>III</td><td>IV</td><td>V</td><td> </td><td> </td><td> </td>
+    <td> </td><td> </td><td> </td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td> </td><td> </td><td> </td>
   </tr>
   <tr>
     <td> </td>
@@ -197,7 +197,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
           <select name="value" class="form-control show-tick" data-live-search="true">
             <option value="">------------</option>
             <option value="Erupsi">Erupsi</option>
-            <option value="Hilang">Hilang</option>
+            <option value="Tanggal">Tanggal</option>
             <option value="Karies">Karies</option>
             <option value="Sisa">Sisa Akar</option>
             <option value="Tumpat">Tumpatan</option>
