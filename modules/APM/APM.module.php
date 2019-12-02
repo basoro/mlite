@@ -40,7 +40,7 @@ class APM {
 </div>
 <div class="card">
   <div class="header">
-      <h2>Anrian Loket Rawat Jalan</h2>
+      <h2>Antrian Loket Rawat Jalan</h2>
   </div>
   <div class="body">
       <div class="row clearfix">

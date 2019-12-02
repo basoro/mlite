@@ -113,6 +113,7 @@ include('../../../init.php');
 <script src="js/popper.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <script>
+
 setInterval(function(){ getAntrianLoket(); }, 2000);
 
 function getAntrianLoket() {
