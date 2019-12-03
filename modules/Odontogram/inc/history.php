@@ -199,7 +199,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="Erupsi">Erupsi</option>
             <option value="Tanggal">Tanggal</option>
             <option value="Karies">Karies</option>
-            <option value="Sisa">Sisa Akar</option>
+            <option value="Akar">Sisa Akar</option>
             <option value="Tumpat">Tumpatan</option>
             <option value="Goyang">Goyang</option>
           </select>
