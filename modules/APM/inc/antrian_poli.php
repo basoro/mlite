@@ -48,7 +48,7 @@ include('../../../init.php');
   </style>
 </head>
 <body class="bg-light text-white">
-  <h1 class="display-3 text-center text-white m-3">Antrian Poliklinik</h1>
+  <h1 class="display-3 text-center text-white m-3">Antrian Poliklinik <?php echo $dataSettings['nama_instansi']; ?></h1>
 
   <table class="table table-bordered table-striped lead">
     <thead>
