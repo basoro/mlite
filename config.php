@@ -14,7 +14,7 @@
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
 
-define('VERSION', '2.8');
+define('VERSION', '2.9');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/webapps');
@@ -35,6 +35,9 @@ define('PWA', false);
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
 define('SecretKey', '');
+
+$loket=['1','2','3']; // Loket harus angka maksimal 9
+$loket_cs=['8','9']; // Loket CS harus angka maximal 9
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
