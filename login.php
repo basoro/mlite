@@ -23,6 +23,11 @@ session_start();
 
 require_once('config.php');
 
+if(PRODUCTION == true) {
+  ini_set('display_errors', 0);
+  error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
