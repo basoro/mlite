@@ -54,8 +54,8 @@ class APM {
           <div class="card">
             <img src="<?php echo URL; ?>/modules/APM/images/pemanggil.png" class="img-responsive">
           </div>
-          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=lama" class="btn btn-lg btn-success" target="_blank">Pemanggil Antrian</a>
-          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=baru" class="btn btn-lg btn-success" target="_blank">Pemanggil CS</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=panggil_loket" class="btn btn-lg btn-success" target="_blank">Pemanggil Antrian</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=panggil_cs" class="btn btn-lg btn-success" target="_blank">Pemanggil CS</a>
         </div>
       </div>
   </div>
