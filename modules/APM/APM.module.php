@@ -48,7 +48,8 @@ class APM {
           <div class="card">
             <img src="<?php echo URL; ?>/modules/APM/images/antrian.png" class="img-responsive">
           </div>
-          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php" class="btn btn-lg btn-success" target="_blank">Display Antrian</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php" class="btn btn-lg btn-success" target="_blank">Antrian Loket</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian_poli.php" class="btn btn-lg btn-success" target="_blank">Antrian Poli</a>
         </div>
         <div class="col-lg-6 text-center">
           <div class="card">

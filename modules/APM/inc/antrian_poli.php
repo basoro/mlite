@@ -47,7 +47,7 @@ include('../../../init.php');
   }
   </style>
 </head>
-<body class="bg-light">
+<body class="bg-light text-white">
   <h1 class="display-3 text-center text-white m-3">Antrian Poliklinik</h1>
 
   <table class="table table-bordered table-striped lead">
@@ -60,9 +60,9 @@ include('../../../init.php');
     </thead>
     <tbody>
       <?php
-      $master = query("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$namahari'");
+      $master = query("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$namahari'  AND a.kd_poli IN ($poli_hari_ini)");
       while ($row = fetch_array($master)) {
-        $dalam_pemeriksaan = fetch_assoc(query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.stts = 'Berkas Diterima' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' LIMIT 1"));
+        $dalam_pemeriksaan = fetch_assoc(query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.no_rkm_medis = b.no_rkm_medis AND a.stts = 'Berkas Diterima' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' LIMIT 1"));
         echo '<tr>';
         echo '  <th>'.$row['nm_dokter'].'<br>'.$row['nm_poli'].'</th>';
         if($dalam_pemeriksaan == '') {
@@ -70,7 +70,7 @@ include('../../../init.php');
         } else {
           echo '  <td class="align-middle">('.$dalam_pemeriksaan['no_reg'].') '.$dalam_pemeriksaan['nm_pasien'].'</td>';
         }
-        $selanjutnya = query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.stts = 'Belum' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' ORDER BY a.no_reg ASC");
+        $selanjutnya = query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.no_rkm_medis = b.no_rkm_medis AND a.stts = 'Belum' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' ORDER BY a.no_reg ASC");
         echo '  <td class="align-middle"><marquee scrollamount="3">';
         while($row = fetch_array($selanjutnya)) {
           echo '- '.$row['nm_pasien'].' (<strong>'.$row['no_reg'].'</strong>) ';

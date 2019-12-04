@@ -38,6 +38,7 @@ define('SecretKey', '');
 
 $loket=['1','2','3']; // Loket harus angka maksimal 9
 $loket_cs=['8','9']; // Loket CS harus angka maximal 9
+$poli_hari_ini = "'-','IGDK','U0002','U0001','U0003','U0004','U0005'"; // Kode poli yang mau ditampilkan
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
