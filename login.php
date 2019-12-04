@@ -70,6 +70,9 @@ if(PRODUCTION == true) {
 </head>
 
 <body class="login-page">
+<?php
+if(PRODUCTION == true) {
+?>
     <!-- Page Loader -->
     <div class="page-loader-wrapper">
         <div class="loader">
@@ -87,6 +90,9 @@ if(PRODUCTION == true) {
         </div>
     </div>
     <!-- #END# Page Loader -->
+<?php
+}
+?>
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
             <?php
