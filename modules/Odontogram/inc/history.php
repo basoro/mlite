@@ -179,7 +179,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_34">Gigi 34</option>
             <option value="gg_33">Gigi 33</option>
             <option value="gg_32">Gigi 32</option>
-            <option value="gg_41">Gigi 31</option>
+            <option value="gg_31">Gigi 31</option>
             <option value="gg_41">Gigi 41</option>
             <option value="gg_42">Gigi 42</option>
             <option value="gg_43">Gigi 43</option>
@@ -188,6 +188,28 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_46">Gigi 46</option>
             <option value="gg_47">Gigi 47</option>
             <option value="gg_48">Gigi 48</option>
+
+            <option value="gg_55">Gigi 55</option>
+            <option value="gg_54">Gigi 54</option>
+            <option value="gg_53">Gigi 53</option>
+            <option value="gg_52">Gigi 52</option>
+            <option value="gg_51">Gigi 51</option>
+            <option value="gg_61">Gigi 61</option>
+            <option value="gg_62">Gigi 62</option>
+            <option value="gg_63">Gigi 63</option>
+            <option value="gg_64">Gigi 64</option>
+            <option value="gg_65">Gigi 65</option>
+            <option value="gg_75">Gigi 75</option>
+            <option value="gg_74">Gigi 74</option>
+            <option value="gg_73">Gigi 73</option>
+            <option value="gg_72">Gigi 72</option>
+            <option value="gg_71">Gigi 71</option>
+            <option value="gg_81">Gigi 81</option>
+            <option value="gg_82">Gigi 82</option>
+            <option value="gg_83">Gigi 83</option>
+            <option value="gg_84">Gigi 84</option>
+            <option value="gg_85">Gigi 85</option>
+
           </select>
       </div>
       <div class="col-md-12">
