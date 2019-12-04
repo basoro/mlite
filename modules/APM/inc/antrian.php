@@ -9,6 +9,9 @@ include('../../../init.php');
 <title>Aplikasi Antrian Pasien Rawat Jalan</title>
  	<link href="<?php echo URL; ?>/modules/APM/inc/css/bootstrap.min.css" rel="stylesheet" />
   <link href="<?php echo URL; ?>/modules/APM/inc/css/fontawesome.min.css" rel="stylesheet" />
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
   <style>
   body{
   	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -62,15 +65,15 @@ include('../../../init.php');
         </div>
       </div>
       <div class="col-3 ">
-        <a href="antrian.php?action=lama" style="text-decoration:none; color:#000;">
+        <a href="antrian.php?action=panggil_loket" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:120px;font-weight:lighter;padding:0;margin-top:-15px;margin-bottom:-15px;">L<span class="antrian_loket"><span></div>
+              <div style="font-size:120px;font-weight:lighter;padding:0;margin-top:-15px;margin-bottom:-15px;">A<span class="antrian_loket"><span></div>
             </div>
             <div class="card-footer bg-transparent border-success display-4">Loket <span class="get_loket"><span></div>
           </div>
         </a>
-        <a href="antrian.php?action=baru" style="text-decoration:none; color:#000;">
+        <a href="antrian.php?action=panggil_cs" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
               <div style="font-size:120px;font-weight:lighter;padding:0;margin-top:-15px;margin-bottom:-15px;">B<span class="antrian_cs"><span></div>
@@ -103,15 +106,12 @@ include('../../../init.php');
     </div>
   </div>
 <?php } ?>
-<?php if($action == 'baru') { ?>
-<?php include('includes/pasien_baru.php'); ?>
+<?php if($action == 'panggil_cs') { ?>
+<?php include('includes/panggil_cs.php'); ?>
 <?php } ?>
-<?php if($action == 'lama') { ?>
-<?php include('includes/pasien_lama.php'); ?>
+<?php if($action == 'panggil_loket') { ?>
+<?php include('includes/panggil_loket.php'); ?>
 <?php } ?>
-<script src="js/jquery.min.js"></script>
-<script src="js/popper.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
 <script>
 
 setInterval(function(){ getAntrianLoket(); }, 2000);
@@ -161,7 +161,6 @@ function getCS() {
     }
   });
 };
-
 </script>
 </body>
 </html>
