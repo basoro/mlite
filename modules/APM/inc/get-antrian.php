@@ -15,7 +15,7 @@ if ($aksi == "tampilloket") {
 	}
 	echo '<div id="nomernya" align="center">';
   echo '<h1 class="display-1">';
-  echo 'L'.$next_antrian;
+  echo 'A'.$next_antrian;
   echo '</h1>';
   echo '['.$tanggal.'-'.$bulan.'-'.$tahun.']';
   echo '</div>';
@@ -37,7 +37,7 @@ if ($aksi == "printloket") {
 	}
 	echo '<div id="nomernya" align="center">';
   echo '<h1 class="display-1">';
-  echo 'L'.$next_antrian;
+  echo 'A'.$next_antrian;
   echo '</h1>';
   echo '['.$tanggal.'-'.$bulan.'-'.$tahun.']';
   echo '</div>';
