@@ -85,13 +85,13 @@ class APM {
       ALTER TABLE `antrics`
         ADD KEY `loket` (`loket`),
         ADD KEY `antrian` (`antrian`);
-        CREATE TABLE `antriprioritas` (
-          `loket` int(11) NOT NULL,
-          `antrian` int(11) NOT NULL
-        ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-        ALTER TABLE `antriprioritas`
-          ADD KEY `loket` (`loket`),
-          ADD KEY `antrian` (`antrian`);";
+      CREATE TABLE `antriprioritas` (
+        `loket` int(11) NOT NULL,
+        `antrian` int(11) NOT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+      ALTER TABLE `antriprioritas`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
           echo "Table created successfully.";
