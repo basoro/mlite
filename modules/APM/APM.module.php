@@ -15,6 +15,11 @@ class APM {
         echo '<p class="lead">Belum terinstall Database Antrian CS</p>';
         echo '<a href="'.URL.'/?module=APM&page=install_antrics" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
         echo '</div>';
+      } else if(num_rows(query("SHOW TABLES LIKE 'antriprioritas'")) !== 1) {
+        echo '<div class="alert bg-pink alert-dismissible text-center">';
+        echo '<p class="lead">Belum terinstall Database Antrian Prioritas</p>';
+        echo '<a href="'.URL.'/?module=APM&page=install_antriprioritas" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+        echo '</div>';
       } else {
 ?>
 <div class="card">
@@ -101,14 +106,27 @@ class APM {
     }
     function install_antrics() {
       global $connection;
-      $sql_userwall = "ALTER TABLE `antrian_loket` ADD `type` VARCHAR(50) NOT NULL AFTER `kd`;
-      ALTER TABLE `antrian_loket` CHANGE `postdate` `postdate` DATE NOT NULL;
-      ALTER TABLE `antrian_loket` ADD `start_time` TIME NOT NULL AFTER `postdate`, ADD `end_time` TIME NOT NULL DEFAULT '00:00:00' AFTER `start_time`;
-      CREATE TABLE `antrics` (
+      $sql_userwall = "CREATE TABLE `antrics` (
         `loket` int(11) NOT NULL,
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
       ALTER TABLE `antrics`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);";
+
+      if(mysqli_multi_query($connection,$sql_userwall)){
+          echo "Table created successfully.";
+      } else{
+          echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
+      }
+    }
+    function install_antriprioritas() {
+      global $connection;
+      $sql_userwall = "CREATE TABLE `antriprioritas` (
+        `loket` int(11) NOT NULL,
+        `antrian` int(11) NOT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+      ALTER TABLE `antriprioritas`
         ADD KEY `loket` (`loket`),
         ADD KEY `antrian` (`antrian`);";
 
