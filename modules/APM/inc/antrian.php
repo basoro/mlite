@@ -68,17 +68,25 @@ include('../../../init.php');
         <a href="antrian.php?action=panggil_loket" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:120px;font-weight:lighter;padding:0;margin-top:-15px;margin-bottom:-15px;">A<span class="antrian_loket"><span></div>
+              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">A<span class="antrian_loket"><span></div>
             </div>
-            <div class="card-footer bg-transparent border-success display-4">Loket <span class="get_loket"><span></div>
+            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_loket"><span></div>
           </div>
         </a>
         <a href="antrian.php?action=panggil_cs" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:120px;font-weight:lighter;padding:0;margin-top:-15px;margin-bottom:-15px;">B<span class="antrian_cs"><span></div>
+              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">B<span class="antrian_cs"><span></div>
             </div>
-            <div class="card-footer bg-transparent border-success display-4">Loket <span class="get_cs"><span></div>
+            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_cs"><span></div>
+          </div>
+        </a>
+        <a href="antrian.php?action=panggil_prioritas" style="text-decoration:none; color:#000;">
+          <div class="card border-success mb-4">
+            <div class="card-body text-success">
+              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">C<span class="antrian_prioritas"><span></div>
+            </div>
+            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_prioritas"><span></div>
           </div>
         </a>
       </div>
@@ -112,6 +120,9 @@ include('../../../init.php');
 <?php if($action == 'panggil_loket') { ?>
 <?php include('includes/panggil_loket.php'); ?>
 <?php } ?>
+<?php if($action == 'panggil_prioritas') { ?>
+<?php include('includes/panggil_prioritas.php'); ?>
+<?php } ?>
 <script>
 
 setInterval(function(){ getAntrianLoket(); }, 2000);
@@ -134,6 +145,18 @@ function getAntrianCS() {
     type: 'post',
     success: function(data) {
       $('.antrian_cs').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getAntrianPrioritas(); }, 2000);
+
+function getAntrianPrioritas() {
+  $.ajax({
+    url: 'includes/antriprioritas.php',
+    type: 'post',
+    success: function(data) {
+      $('.antrian_prioritas').html(data);
     }
   });
 };
@@ -161,6 +184,19 @@ function getCS() {
     }
   });
 };
+
+setInterval(function(){ getPrioritas(); }, 2000);
+
+function getPrioritas() {
+  $.ajax({
+    url: 'includes/prioritas.php',
+    type: 'post',
+    success: function(data) {
+      $('.get_prioritas').html(data);
+    }
+  });
+};
+
 </script>
 </body>
 </html>

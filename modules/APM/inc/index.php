@@ -173,7 +173,7 @@ include('../../../init.php');
 
     <!-- Modal Antrian -->
     <div class="modal fade" id="antrian" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+      <div class="modal-dialog modal-dialog-centered modal-lg modal-full" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title" id="exampleModalCenterTitle">Antrian Loket</h5>
@@ -181,9 +181,9 @@ include('../../../init.php');
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" style="padding-top:100px;">
             <div class="row justify-content-around">
-            <div class="col-5 pt-5 pb-5">
+            <div class="col-4 pt-5 pb-5">
               <div id="printAntrianLoket" style="display: none;" class="cetak">
                 <div style="width: 180px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;">
                   <div id="print_nomor_loket"></div>
@@ -192,10 +192,10 @@ include('../../../init.php');
               </div>
               <div id="display_nomor_loket"></div>
               <form role="form" id="formloket" name="formloket">
-                <button type="submit" class="btn btn-lg btn-danger btn-block" id="btnKRM" value="Submit" name="btnKRM" onclick="printDiv('printAntrianLoket');">AMBIL ANTRIAN LOKET</button>
+                <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRM" value="Submit" name="btnKRM" onclick="printDiv('printAntrianLoket');">ANTRIAN LOKET</button>
               </form>
             </div>
-            <div class="col-5 pt-5 pb-5">
+            <div class="col-4 pt-5 pb-5">
               <div id="printAntrianCS" style="display: none;" class="cetak">
                 <div style="width: 180px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;">
                   <div id="print_nomor_cs"></div>
@@ -204,7 +204,19 @@ include('../../../init.php');
               </div>
               <div id="display_nomor_cs"></div>
               <form role="form" id="formcs" name="formcs">
-                <button type="submit" class="btn btn-lg btn-danger btn-block" id="btnKRMCS" value="Submit" name="btnKRMCS" onclick="printDiv('printAntrianCS');">AMBIL ANTRIAN CS</button>
+                <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRMCS" value="Submit" name="btnKRMCS" onclick="printDiv('printAntrianCS');">ANTRIAN CS</button>
+              </form>
+            </div>
+            <div class="col-4 pt-5 pb-5">
+              <div id="printAntrianPrioritas" style="display: none;" class="cetak">
+                <div style="width: 180px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;">
+                  <div id="print_nomor_prioritas"></div>
+                  Layanan Prioritas
+                </div>
+              </div>
+              <div id="display_nomor_prioritas"></div>
+              <form role="form" id="formprioritas" name="formprioritas">
+                <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRMPrioritas" value="Submit" name="btnKRMPrioritas" onclick="printDiv('printAntrianPrioritas');">ANTRIAN PRIORITAS</button>
               </form>
             </div>
             </div>
@@ -485,6 +497,8 @@ include('../../../init.php');
       $("#print_nomor_loket").load("get-antrian.php?aksi=printloket");
       $("#display_nomor_cs").load("get-antrian.php?aksi=tampilcs");
       $("#print_nomor_cs").load("get-antrian.php?aksi=printcs");
+      $("#display_nomor_prioritas").load("get-antrian.php?aksi=tampilprioritas");
+      $("#print_nomor_prioritas").load("get-antrian.php?aksi=printprioritas");
     })
     </script>
     <script>

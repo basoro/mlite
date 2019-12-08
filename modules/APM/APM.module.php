@@ -57,6 +57,7 @@ class APM {
           </div>
           <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=panggil_loket" class="btn btn-lg btn-success" target="_blank">Pemanggil Antrian</a>
           <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=panggil_cs" class="btn btn-lg btn-success" target="_blank">Pemanggil CS</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php?action=panggil_prioritas" class="btn btn-lg btn-success" target="_blank">Pemanggil Prioritas</a>
         </div>
       </div>
   </div>
@@ -83,7 +84,14 @@ class APM {
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
       ALTER TABLE `antrics`
         ADD KEY `loket` (`loket`),
-        ADD KEY `antrian` (`antrian`);";
+        ADD KEY `antrian` (`antrian`);
+        CREATE TABLE `antriprioritas` (
+          `loket` int(11) NOT NULL,
+          `antrian` int(11) NOT NULL
+        ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+        ALTER TABLE `antriprioritas`
+          ADD KEY `loket` (`loket`),
+          ADD KEY `antrian` (`antrian`);";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
           echo "Table created successfully.";
