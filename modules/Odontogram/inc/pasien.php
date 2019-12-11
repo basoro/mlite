@@ -1,4 +1,4 @@
-<table id="pendaftaran" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
         <tr>
             <th>Nama Pasien</th>
