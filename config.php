@@ -20,7 +20,7 @@ define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/webapps');
 define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
-define('DB_USER', 'rootOnly');
+define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'sik');
 define('PRODUCTION', false);
@@ -28,10 +28,6 @@ define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
 define('FKTL', true);
-<<<<<<< HEAD
-define('POLL', false);
-=======
->>>>>>> 26751c1178007759cc0449d9a59de8c9c719e5b2
 define('WEBAPPS', '../webapps');
 define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
 define('PWA', false);
