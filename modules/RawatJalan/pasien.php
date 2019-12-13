@@ -167,6 +167,9 @@ if(isset($_GET['no_rawat'])) {
                                  <ul class="nav nav-tabs tab-nav-right" role="tablist">
                                    <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
                                    <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">PEMERIKSAAN</a></li>
+                                   <?php if(is_dir(ABSPATH.'/modules/Odontogram/')) { ?>
+                                     <li role="presentation"><a href="#odontogram" data-toggle="tab">ODONTOGRAM</a></li>
+                                   <?php } ?>
                                    <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
                                  </ul>
                                </div>
@@ -538,6 +541,13 @@ if(isset($_GET['no_rawat'])) {
                                      </table>
                                      </div>
                                    </div>
+                                   <!-- odontogram -->
+                                   <?php if(is_dir(ABSPATH.'/modules/Odontogram/')) { ?>
+                                   <div class="tab-pane fade" role="tabpanel" id="odontogram">
+                                     <?php include('modules/Odontogram/inc/history.php'); ?>
+                                   </div>
+                                   <?php } ?>
+                                   <!-- end odontogram -->
                                    <div role="tabpanel" class="tab-pane fade in" id="tindakan">
                                      <div class="body">
                                      <form method="POST">

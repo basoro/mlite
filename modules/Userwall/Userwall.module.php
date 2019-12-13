@@ -6,7 +6,7 @@ class Userwall {
     $get_user = isset($_GET['user'])?$_GET['user']:null;
     if(num_rows(query("SHOW TABLES LIKE 'posts'")) !== 1) {
       echo '<div class="alert bg-pink alert-dismissible text-center">';
-      echo '<p class="lead">Belum terinstall Userwall (Facebook Like)</p>';
+      echo '<p class="lead">Belum terinstall Database Userwall (Facebook Like)</p>';
       echo '<a href="'.URL.'/?module=Userwall&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
       echo '</div>';
     } else {

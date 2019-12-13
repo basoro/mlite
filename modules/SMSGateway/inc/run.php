@@ -2,18 +2,18 @@
 <?php
 
 // koneksi ke mysql
-include "koneksi.php";
-include "send.php";
-include "config.php";
+//include "koneksi.php";
+//include "send.php";
+//include "config.php";
 
 // mencatat tanggal sekarang
 $tgl = date("Y-m-d H:i:s");
 
 // ---------------------- PROSEDUR AUTO RECEIVED TO INBOX START ------------------------------
 
-$query = "SELECT * FROM inbox 
+$query = "SELECT * FROM inbox
           WHERE textdecoded NOT LIKE 'REG#%' AND textdecoded NOT LIKE 'FWD#%'  AND textdecoded NOT LIKE 'INFO#%' AND (UDH = '' OR UDH LIKE '%01') AND processed = 'false'";
-	  
+
 $hasil = mysql_query($query);
 while ($data = mysql_fetch_array($hasil))
 {
@@ -22,7 +22,7 @@ while ($data = mysql_fetch_array($hasil))
 
    if ($data['UDH'] != '')
    {
-        
+
       $chop = substr($data['UDH'], 0, 8);
 	  $n = (int) substr($data['UDH'], 8, 2);
 	  $text = "";
@@ -33,7 +33,7 @@ while ($data = mysql_fetch_array($hasil))
 		 $hasil3 = mysql_query($query3);
 		 if (mysql_num_rows($hasil3) > 0) $sum++;
 	  }
-	  
+
 	  if ($sum == $n)
 	  {
 	  	  for ($i=1; $i<=$n; $i++)
@@ -47,7 +47,7 @@ while ($data = mysql_fetch_array($hasil))
 			 $query3 = "UPDATE inbox SET processed = 'true' WHERE ID = '$id'";
 			 mysql_query($query3);
 	      }
-	 
+
 		  $notelp = $data['SenderNumber'];
 		  $time = $data['ReceivingDateTime'];
 		  $text = str_replace("'", "", $text);
@@ -55,9 +55,9 @@ while ($data = mysql_fetch_array($hasil))
 		  mysql_query($query2);
 		  send($notelp, $msgINBOX);
 	  }
-	  
+
    }
-   else 
+   else
    {
       $id = $data['ID'];
       $text = str_replace("'", "", $data['TextDecoded']);
@@ -69,7 +69,7 @@ while ($data = mysql_fetch_array($hasil))
 	  mysql_query($query2);
 	  send($notelp, $msgINBOX);
    }
-   
+
 }
 
 // ---------------------- PROSEDUR AUTO RECEIVED TO INBOX END ------------------------------
@@ -84,18 +84,18 @@ while ($data = mysql_fetch_array($hasil))
    $notelp = $data['noTelp'];
    $tglJoin = $data['dateJoin'];
    $nama = $data['nama'];
-   
+
    $query2 = "SELECT * FROM sms_autoresponder";
    $hasil2 = mysql_query($query2);
    while ($data2 = mysql_fetch_array($hasil2))
    {
 	   $interval = $data2['interv'];
 	   $id = $data2['id'];
-	   
+
 	   $query3 = "SELECT datediff('$tgl', '$tglJoin') as selisih";
 	   $hasil3 = mysql_query($query3);
 	   $data3 = mysql_fetch_array($hasil3);
-	   
+
 	   if ($data3['selisih'] >= $interval)
 	   {
 	      $query4 = "SELECT status FROM sms_autolist WHERE phoneNumber = '$notelp' AND id = '$id'";
@@ -105,26 +105,26 @@ while ($data = mysql_fetch_array($hasil))
 		  {
   		     $msg = $data2['msg'];
 		     $msg2 = str_replace('[nama]', $nama, $msg);
-			 
+
 			 $pesan = str_replace("\r"," ",$msg2);
 	         $pesan = str_replace("\n","",$pesan);
 	         $pesan = str_replace('"','',$pesan);
              $pesan = str_replace("'","",$pesan);
-			 
+
 			 send($notelp, $pesan);
-			 
+
              $query4 = "DELETE FROM sms_autolist WHERE phoneNumber = '$notelp' AND id = '$id'";
 			 mysql_query($query4);
-          }			 
+          }
 	   }
    }
-   
+
 }
 
 // ---------------------- PROSEDUR AUTO RESPONDER END ------------------------------
 
 
-// ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS START------------------------- 
+// ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS START-------------------------
 
 // command SMS: REG#NAMA#ALAMAT
 
@@ -135,7 +135,7 @@ while ($data = mysql_fetch_array($hasil))
 {
 $idmsg = $data['ID'];
 $notelp = $data['SenderNumber'];
-$split = explode("#", $data['TextDecoded']); 
+$split = explode("#", $data['TextDecoded']);
 $command = strtoupper($split[0]);
 
 $now = date("Y-m-d");
@@ -160,32 +160,32 @@ else if ($command == "INFO")
    {
    $keyword = strtoupper($split[1]);
    $key = strtoupper($split[2]);
-  
+
    $query2 = "SELECT template FROM sms_keyword WHERE keyword = '$keyword'";
    $hasil2 = mysql_query($query2);
-   
+
    if (mysql_num_rows($hasil2) > 0)
    {
    $data2  = mysql_fetch_array($hasil2);
    $template = $data2['template'];
-   
+
    preg_match_all("|\[(.*)\]|U", $template, $string, PREG_PATTERN_ORDER);
-   
+
    $query2 = "SELECT * FROM sms_data WHERE keyword = '$keyword' AND `key` = '$key'";
    $hasil2 = mysql_query($query2);
    if (mysql_num_rows($hasil2) > 0)
    {
    $data2 = mysql_fetch_array($hasil2);
-   
+
    foreach($string[1] as $kunci => $nilai)
    {
       $template = str_replace('['.$nilai.']', '['.strtolower($nilai).']', $template);
 	  $kapital = strtolower($nilai);
 	  $template = str_replace('['.$kapital.']', $data2[$kapital], $template);
    }
-   $reply = $template; 
+   $reply = $template;
    }
-   else $reply = $msgErrorData;   
+   else $reply = $msgErrorData;
    }
    else $reply = $msgErrorKeyword;
    }
@@ -208,7 +208,7 @@ else if ($command == "FWD")
   $reply = $msgFWD.$idgroup;
   }
   else $reply = $msgErrorFWD;
-  
+
 }
 
 send($notelp, $reply);
@@ -217,7 +217,7 @@ $query2 = "UPDATE inbox SET Processed = 'true' WHERE ID = '$idmsg'";
 $hasil2 = mysql_query($query2);
 }
 
-// ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS FINISH ------------------------- 
+// ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS FINISH -------------------------
 
 
 // ---------------------- PROSEDUR ON SCHEDULED SMS START-------------------------
@@ -245,7 +245,7 @@ $pesan = str_replace("'","",$pesan);
 $query = "DELETE FROM sms_message WHERE id = '$id'";
 $hasil = mysql_query($query);
 
-// menyimpan message yang dikirim ke tabel sms_sentmsg (berisi message2 yang pernah dikirim)   
+// menyimpan message yang dikirim ke tabel sms_sentmsg (berisi message2 yang pernah dikirim)
 $query = "INSERT INTO sms_sentmsg(msg) VALUES ('$pesan')";
 $hasil = mysql_query($query);
 
@@ -264,9 +264,9 @@ $hasil = mysql_query($query);
 while ($data = mysql_fetch_array($hasil))
 {
       // proses pengiriman pesan SMS ke semua no. telp
-      $notelp = $data['noTelp'];	  
+      $notelp = $data['noTelp'];
       $pesan2 = str_replace('[nama]', $data['nama'], $pesan);
-	  
+
 	  send($notelp, $pesan2);
 }
 }

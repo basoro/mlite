@@ -77,6 +77,8 @@
     <!-- Bootstrap Material Datetime Picker Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
 
+    <script src="<?php echo URL;?>/modules/Odontogram/js/odontogram.js" type="text/javascript"></script>
+
     <!-- Jquery-UI Js -->
     <script src="<?php echo URL; ?>/assets/js/jquery-ui.min.js"></script>
 
@@ -117,10 +119,6 @@
       $(window).on("popstate", function() {
           var anchor = location.hash || $("a[data-toggle='tab']").first().attr("href");
           $("a[href='" + anchor + "']").tab("show");
-      });
-
-      $(window).on('load',function(){
-           $('#pengumuman').modal('show');
       });
 
 	  </script>
@@ -170,6 +168,8 @@
           	selector: 'a'
       	});
 
+        $('.color').colorPicker();
+
 	  </script>
 
     <script type="text/javascript">
@@ -200,16 +200,15 @@
     </script>
 
 <?php
-if(file_exists('modules/Survei/js.php')) {
-  include('modules/Survei/js.php');
-}
-
 if(isset($_GET['module'])) {
   if(file_exists('modules/'.$_GET['module'].'/js.php')) {
     include('modules/'.$_GET['module'].'/js.php');
   }
 }
 ?>
+<?php if(PWA == true) { ?>
+<script src="<?php echo URL; ?>/main.js"></script>
+<?php } ?>
 
 </body>
 

@@ -5,7 +5,7 @@
     if ($op !== 'install') {
       if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
       	echo '<div class="alert bg-pink alert-dismissible text-center">';
-      	echo '<p class="lead">Belum terinstall SMS Gateway</p>';
+      	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
       	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
       	echo '</div>';
       }

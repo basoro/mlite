@@ -327,6 +327,9 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 <ul class="nav nav-tabs tab-nav-right" role="tablist">
                                   <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
                                   <li role="presentation"><a href="#anamnese" data-toggle="tab">PEMERIKSAAN</a></li>
+                                  <?php if(is_dir(ABSPATH.'/modules/Odontogram/')) { ?>
+                                    <li role="presentation"><a href="#odontogram" data-toggle="tab">ODONTOGRAM</a></li>
+                                  <?php } ?>
                                   <li role="presentation"><a href="#diagnosa" data-toggle="tab">DIAGNOSA</a></li>
                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
                                   <li role="presentation"><a href="#resep" data-toggle="tab">RESEP</a></li>
@@ -674,6 +677,13 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                     <?php } ?>
                                   </div>
                                 <!-- anamnese -->
+                                <!-- odontogram -->
+                                <?php if(is_dir(ABSPATH.'/modules/Odontogram/')) { ?>
+                                <div class="tab-pane fade" role="tabpanel" id="odontogram">
+                                  <?php include('modules/Odontogram/inc/history.php'); ?>
+                                </div>
+                                <?php } ?>
+                                <!-- end odontogram -->
                                 <!-- diagnosa -->
                                   <div role="tabpanel" class="tab-pane fade" id="diagnosa">
                                     <form method="post">
