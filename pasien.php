@@ -76,7 +76,7 @@ include_once('layout/sidebar.php');
                                                     <div class="col-lg-8 col-md-8 col-sm-8">
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
-                                                              <input type="text" class="form-control" id="no_ktp" placeholder="Nomor Induk Kependudukan">
+                                                              <input type="text" class="form-control" id="no_ktp" placeholder="Nomor Induk Kependudukan" value="0">
                                                           </div>
                                                       </div>
                                                     </div>
@@ -110,14 +110,14 @@ include_once('layout/sidebar.php');
                                                     <div class="col-lg-5 col-md-5 col-sm-5">
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
-                                                              <input type="text" class="form-control" id="tmp_lahir" placeholder="Tempat Lahir">
+                                                              <input type="text" class="form-control" id="tmp_lahir" placeholder="Tempat Lahir" value="-">
                                                           </div>
                                                       </div>
                                                     </div>
                                                     <div class="col-lg-3 col-md-3 col-sm-3">
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
-                                                              <input type="text" class="form-control datepicker" id="tgl_lahir" placeholder="Tgl Lahir">
+                                                              <input type="text" class="form-control datepicker" id="tgl_lahir" placeholder="Tgl Lahir" value="<?php echo $date; ?>">
                                                           </div>
                                                       </div>
                                                     </div>
@@ -142,7 +142,6 @@ include_once('layout/sidebar.php');
                                                       <div class="input-group input-group-lg">
                                                           <div class="form">
                                                               <select name="agama" id="agama" data-width="100%">
-                                                                 <option value="">&nbsp;</option>
                                                                  <option value="Islam">Islam</option>
                                                                  <option value="Kristen">Kristen</option>
                                                                  <option value="Protesta">Protestan</option>
@@ -172,7 +171,7 @@ include_once('layout/sidebar.php');
                                                     <div class="col-lg-8 col-md-8 col-sm-8">
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
-                                                              <input type="text" class="form-control" id="pekerjaan" placeholder="Pekerjaan">
+                                                              <input type="text" class="form-control" id="pekerjaan" placeholder="Pekerjaan" value="-">
                                                           </div>
                                                       </div>
                                                     </div>
@@ -184,7 +183,7 @@ include_once('layout/sidebar.php');
                                                     <div class="col-lg-8 col-md-8 col-sm-8">
                                                       <div class="input-group input-group-lg">
                                                           <div class="form-line">
-                                                              <input type="text" class="form-control" id="nm_ibu" placeholder="Nama Ibu">
+                                                              <input type="text" class="form-control" id="nm_ibu" placeholder="Nama Ibu" value="-">
                                                           </div>
                                                       </div>
                                                     </div>
@@ -224,7 +223,6 @@ include_once('layout/sidebar.php');
                                                              <select name="penjab" class="penjab" id="kd_pj" data-width="100%">
                                                              <?php
                                                              $query_penjab = query("SELECT * FROM penjab");
-                                                             echo '<option>Pilih Asuransi</option>';
                                                              while($data = fetch_assoc($query_penjab)) {
                                                                  echo '<option value="'.$data['kd_pj'].'">'.$data['png_jawab'].'</option>';
                                                              }
@@ -241,7 +239,7 @@ include_once('layout/sidebar.php');
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
                                                          <div class="form-line">
-                                                             <input type="text" class="form-control" id="no_peserta" placeholder="Nomor Peserta">
+                                                             <input type="text" class="form-control" id="no_peserta" placeholder="Nomor Peserta" value="0">
                                                          </div>
                                                      </div>
                                                    </div>
@@ -253,7 +251,7 @@ include_once('layout/sidebar.php');
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
                                                          <div class="form-line">
-                                                             <input type="text" class="form-control" id="no_tlp" placeholder="Nomor Telepon">
+                                                             <input type="text" class="form-control" id="no_tlp" placeholder="Nomor Telepon" value="0">
                                                          </div>
                                                      </div>
                                                    </div>
@@ -265,7 +263,7 @@ include_once('layout/sidebar.php');
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
                                                          <div class="form-line">
-                                                             <input type="text" class="form-control" id="email" placeholder="Alamat e-Mail">
+                                                             <input type="text" class="form-control" id="email" placeholder="Alamat e-Mail" value="-">
                                                          </div>
                                                      </div>
                                                    </div>
@@ -277,7 +275,7 @@ include_once('layout/sidebar.php');
                                                    <div class="col-lg-8 col-md-8 col-sm-8">
                                                      <div class="input-group input-group-lg">
                                                          <div class="form-line">
-                                                             <textarea rows="4" class="form-control no-resize" id="alamat" placeholder="Alamat Lengkap ....."></textarea>
+                                                             <textarea rows="4" class="form-control no-resize" id="alamat" placeholder="Alamat Lengkap .....">-</textarea>
                                                          </div>
                                                      </div>
                                                    </div>
@@ -363,7 +361,6 @@ include_once('layout/sidebar.php');
                                                                 <select name="perusahaan_pasien" class="perusahaan_pasien" id="perusahaan_pasien" data-width="100%">
                                                          		    <?php
                                                          		    $query_instansi = query("SELECT * FROM perusahaan_pasien");
-                                                         		    echo '<option>Pilih Perusahaan</option>';
                                                          		    while($data = fetch_assoc($query_instansi)) {
                                                          			      echo '<option value="'.$data['kode_perusahaan'].'">'.$data['nama_perusahaan'].'</option>';
                                                          		    }
@@ -380,7 +377,7 @@ include_once('layout/sidebar.php');
                                                       <div class="col-lg-8 col-md-8 col-sm-8">
                                                         <div class="input-group input-group-lg">
                                                             <div class="form-line">
-                                                                <input type="text" class="form-control" id="nip" placeholder="NIP / NRP">
+                                                                <input type="text" class="form-control" id="nip" placeholder="NIP / NRP" value="0">
                                                             </div>
                                                         </div>
                                                       </div>
@@ -395,7 +392,6 @@ include_once('layout/sidebar.php');
                                                                 <select name="suku_bangsa" class="suku_bangsa" id="suku_bangsa" data-width="100%">
                                                                 <?php
                                                                 $query_sukubangsa = query("SELECT * FROM suku_bangsa");
-                                                                echo '<option>Pilih Suku Bangsa</option>';
                                                                 while($data = fetch_assoc($query_sukubangsa)) {
                                                                     echo '<option value="'.$data['id'].'">'.$data['nama_suku_bangsa'].'</option>';
                                                                 }
@@ -415,7 +411,6 @@ include_once('layout/sidebar.php');
                                                                 <select name="bahasa_pasien" class="bahasa_pasien" id="bahasa_pasien" data-width="100%">
                                                                 <?php
                                                                 $query_bahasa = query("SELECT * FROM bahasa_pasien");
-                                                                echo '<option>Pilih Bahasa</option>';
                                                                 while($data = fetch_assoc($query_bahasa)) {
                                                                     echo '<option value="'.$data['id'].'">'.$data['nama_bahasa'].'</option>';
                                                                 }
@@ -435,7 +430,6 @@ include_once('layout/sidebar.php');
                                                                 <select name="cacat_fisik" class="cacat_fisik" id="cacat_fisik" data-width="100%">
                                                                 <?php
                                                                 $query_cacatfisik = query("SELECT * FROM cacat_fisik");
-                                                                echo '<option>Pilih Cacat Fisik</option>';
                                                                 while($data = fetch_assoc($query_cacatfisik)) {
                                                                     echo '<option value="'.$data['id'].'">'.$data['nama_cacat'].'</option>';
                                                                 }
@@ -452,7 +446,7 @@ include_once('layout/sidebar.php');
                                                       <div class="col-lg-8 col-md-8 col-sm-8">
                                                         <div class="input-group input-group-lg">
                                                             <div class="form-line">
-                                                                <input type="text" class="form-control" id="namakeluarga" placeholder="Penanggung Jawab">
+                                                                <input type="text" class="form-control" id="namakeluarga" placeholder="Penanggung Jawab" value="-">
                                                             </div>
                                                         </div>
                                                       </div>
@@ -464,7 +458,7 @@ include_once('layout/sidebar.php');
                                                       <div class="col-lg-8 col-md-8 col-sm-8">
                                                         <div class="input-group input-group-lg">
                                                             <div class="form-line">
-                                                                <input type="text" class="form-control" id="pekerjaanpj" placeholder="Pekerjaan Penanggung Jawab">
+                                                                <input type="text" class="form-control" id="pekerjaanpj" placeholder="Pekerjaan Penanggung Jawab" value="-">
                                                             </div>
                                                         </div>
                                                       </div>
@@ -478,7 +472,7 @@ include_once('layout/sidebar.php');
                                                      <div class="col-lg-8 col-md-8 col-sm-8">
                                                        <div class="input-group input-group-lg">
                                                            <div class="form-line">
-                                                               <textarea rows="4" class="form-control no-resize" id="alamatpj" placeholder="Alamat Lengkap ....."></textarea>
+                                                               <textarea rows="4" class="form-control no-resize" id="alamatpj" placeholder="Alamat Lengkap .....">-</textarea>
                                                            </div>
                                                        </div>
                                                      </div>
@@ -490,7 +484,7 @@ include_once('layout/sidebar.php');
                                                      <div class="col-lg-8 col-md-8 col-sm-8">
                                                        <div class="input-group input-group-lg">
                                                            <div class="form-line">
-                                                               <input type="text" class="form-control" id="propinsipj" placeholder="Propinsi">
+                                                               <input type="text" class="form-control" id="propinsipj" placeholder="Propinsi" value="-">
                                                            </div>
                                                        </div>
                                                      </div>
@@ -502,7 +496,7 @@ include_once('layout/sidebar.php');
                                                      <div class="col-lg-8 col-md-8 col-sm-8">
                                                        <div class="input-group input-group-lg">
                                                            <div class="form-line">
-                                                               <input type="text" class="form-control" id="kabupatenpj" placeholder="Kabupaten">
+                                                               <input type="text" class="form-control" id="kabupatenpj" placeholder="Kabupaten" value="-">
                                                            </div>
                                                        </div>
                                                      </div>
@@ -514,7 +508,7 @@ include_once('layout/sidebar.php');
                                                      <div class="col-lg-8 col-md-8 col-sm-8">
                                                        <div class="input-group input-group-lg">
                                                            <div class="form-line">
-                                                               <input type="text" class="form-control" id="kecamatanpj" placeholder="Kecamatan">
+                                                               <input type="text" class="form-control" id="kecamatanpj" placeholder="Kecamatan" value="-">
                                                            </div>
                                                        </div>
                                                      </div>
@@ -526,7 +520,7 @@ include_once('layout/sidebar.php');
                                                      <div class="col-lg-8 col-md-8 col-sm-8">
                                                        <div class="input-group input-group-lg">
                                                            <div class="form-line">
-                                                               <input type="text" class="form-control" id="kelurahanpj" placeholder="Kelurahan / Desa">
+                                                               <input type="text" class="form-control" id="kelurahanpj" placeholder="Kelurahan / Desa" value="-">
                                                            </div>
                                                        </div>
                                                      </div>
