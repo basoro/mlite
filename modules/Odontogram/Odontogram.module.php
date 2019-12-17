@@ -5,7 +5,7 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 <?php
 class Odontogram {
     function index() {
-      global $role, $date;
+      global $role, $date, $jenis_poli;
 ?>
 <div class="card">
   <div class="header">
