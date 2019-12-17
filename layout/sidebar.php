@@ -69,6 +69,7 @@
                             <span>Apotek</span>
                         </a>
                     </li>
+                    <?php } ?>
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Kasir')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/kasir.php">
@@ -77,6 +78,7 @@
                         </a>
                     </li>
                     <?php } ?>
+                    <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Rekam_Medis')  { ?>
                     <li>
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">assignment_ind</i>
