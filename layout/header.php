@@ -11,7 +11,7 @@ if(PRODUCTION == true) {
 
 ?>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
@@ -67,8 +67,19 @@ if(PRODUCTION == true) {
     <!-- Custom Css -->
     <link href="<?php echo URL; ?>/assets/css/style.css" rel="stylesheet">
 
+    <link href="<?php echo URL;?>/modules/Odontogram/css/odontogram.css" rel="stylesheet" type="text/css" />
+
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="<?php echo URL; ?>/assets/css/themes/all-themes.min.css" rel="stylesheet" />
+
+    <?php if(PWA == true) { ?>
+    <meta name="theme-color" content="#6700DF">
+    <link rel="manifest" href="<?php echo URL; ?>/manifest.json">
+    <!-- iOS Support -->
+    <link rel="apple-touch-icon" href="assets/icons/icon-96x96.png">
+    <meta name="apple-mobile-web-app-status-bar" content="#FFFFFF">
+    <?php } ?>
+
 
 </head>
 

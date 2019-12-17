@@ -21,6 +21,12 @@ if (isset($_POST['setting'])) {
   if(isset($_POST['fktl']) && $_POST['fktl'] == 'true') {
     file_put_contents('config.php', str_replace("\ndefine('FKTL', false)", "\ndefine('FKTL', true)", file_get_contents('config.php')));
   }
+  if(isset($_POST['pwa']) && $_POST['pwa'] == 'false') {
+    file_put_contents('config.php', str_replace("\ndefine('PWA', true)", "\ndefine('PWA', false)", file_get_contents('config.php')));
+  }
+  if(isset($_POST['pwa']) && $_POST['pwa'] == 'true') {
+    file_put_contents('config.php', str_replace("\ndefine('PWA', false)", "\ndefine('PWA', true)", file_get_contents('config.php')));
+  }
   if(isset($_POST['kode_ppk']) && $_POST['kode_ppk'] !== '') {
     $kode_ppk = $dataSettings['kode_ppk'];
   } else {
@@ -174,7 +180,7 @@ if (isset($_POST['error'])) {
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label for="npwp" class="col-sm-4 control-label">FKTP/FKTL</label>
+                                    <label for="fktl" class="col-sm-4 control-label">FKTP/FKTL</label>
                                     <div class="col-sm-8">
                                         <div class="form-line">
                                             <select name="fktl" class="form-control">
@@ -220,6 +226,17 @@ if (isset($_POST['error'])) {
                                           ?>
                                           <br/>
                                           <input name="file" id="inputFile" type="file" style="display:none;"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="pwa" class="col-sm-4 control-label">PWA</label>
+                                    <div class="col-sm-8">
+                                        <div class="form-line">
+                                            <select name="pwa" class="form-control">
+                                              <option value="false" <?php if(PWA == false) { echo 'selected'; } ?>>Disable</option>
+                                              <option value="true" <?php if(PWA == true) { echo 'selected'; } ?>>Enable</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>

@@ -1,7 +1,8 @@
+<?php if(FKTL == true) { ?>
 <li class="<?php if ($params['module']=="SirsOnline") {echo "active"; } ?>">
     <a href="javascript:void(0);" class="menu-toggle">
         <i class="material-icons">assignment_turned_in</i>
-        <span>Sirs Online (Laporan)</span>
+        <span>Sirs Online</span>
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="SirsOnline" && $params['page']=="index") {echo "active"; } ?>">
@@ -136,3 +137,4 @@
         </li>
     </ul>
 </li>
+<?php } ?>

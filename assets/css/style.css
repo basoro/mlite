@@ -4241,7 +4241,7 @@ section.content {
 /* Modals ====================================== */
 .modal {
   text-align: center;
-  margin: 20px;
+  margin: 10px;
   padding: 0!important;
 }
 
@@ -6275,7 +6275,7 @@ fieldset[disabled] .form-control {
   background: rgba(255, 255, 255, 0.5); }
 
 /* Page Loader ================================= */
-.page-loader-wrapper {
+.page-loader-wrapper, .page-loader-wrapper-splash {
   z-index: 99999999;
   position: fixed;
   top: 0;
@@ -6287,12 +6287,12 @@ fieldset[disabled] .form-control {
   background: #eee;
   overflow: hidden;
   text-align: center; }
-  .page-loader-wrapper p {
+  .page-loader-wrapper p, .page-loader-wrapper-splash p {
     font-size: 13px;
     margin-top: 10px;
     font-weight: bold;
     color: #444; }
-  .page-loader-wrapper .loader {
+  .page-loader-wrapper .loader, .page-loader-wrapper-splash .loader {
     position: relative;
     top: calc(50% - 30px); }
 

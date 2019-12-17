@@ -14,7 +14,7 @@
 
 if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to access this script directly from browser!');
 
-define('VERSION', '2.6');
+define('VERSION', '2.9');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('URL', 'http://localhost/Khanza-Lite');
 define('URLSIMRS', 'http://localhost/webapps');
@@ -36,6 +36,12 @@ define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/
 define('ConsID', '');
 define('SecretKey', '');
 
+$loket=['1','2','3']; // Loket harus angka maksimal 9
+$loket_cs=['4','5']; // Loket CS harus angka maximal 9
+$loket_prioritas=['6']; // Loket Prioritas harus angka maximal 9
+
+$poli_hari_ini = "'U0002','U0001','U0003','U0004','U0005','U0017','U0041','U0009'";
+
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 // Module configuration
@@ -47,6 +53,11 @@ $module_base_file = $module.$module_ext;
 
 if(isset($_GET['module'])) {
   parse_str(parse_url($_SERVER['REQUEST_URI'])['query'], $params);
+}
+
+$db = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+if($db->connect_error){
+    die("Unable to connect database: " . $db->connect_error);
 }
 
 function escape($string) {
@@ -78,6 +89,28 @@ function fetch_assoc($result) {
 
 function num_rows($result) {
     return mysqli_num_rows($result);
+}
+
+function insertTable($table_name, $insertvalue="") {
+  $query1 = "";
+  $query2 = "";
+  if($insertvalue != ""){
+    $i=0;
+    foreach($insertvalue as $key => $item) {
+      if($i == 0) {
+        $query1 = $key;
+        $query2 = "'".$item."'";
+      }
+      else{
+        $query1 = $query1 . ", ".$key;
+        $query2 = $query2 . ", '".$item."'";
+      }
+      $i++;
+    }
+  }
+
+  $query = "INSERT INTO ".$table_name." (".$query1.") VALUES (".$query2.")";
+  query($query);
 }
 
 // htmlentities remove #$%#$%@ values
@@ -206,6 +239,12 @@ $month      = date('Y-m');
 $date       = date('Y-m-d');
 $time       = date('H:i:s');
 $date_time  = date('Y-m-d H:i:s');
+
+$tanggal    = date('d');
+$bulan      = date('m');
+$tahun      = date('Y');
+$time       = date('H:i:s');
+$nonbooking = date('His');
 
 // Namahari
 $hari=fetch_array(query("SELECT DAYNAME(current_date())"));
