@@ -22,9 +22,6 @@
         <ul class="nav nav-tabs tab-nav-right" role="tablist">
             <li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Dashboard</a></li>
             <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=config">Pengaturan</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=onservice">Start Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=offservice">Stop Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=pulsa">Cek Pulsa</a></li>
         </ul>
         <div class="lead m-t-20 m-b-10">Fitur Utama:</div>
         <ul>
@@ -41,123 +38,8 @@
            <li>On Scheduled SMS ke semua nomor atau berdasar group</li>
            <li>Support Long Text SMS Sending and Receive (unlimited character)</li>
            <li>SMS Sending Report</li>
-           <li>SMS Inbox & Outbox Export ke Excel</li>
-           <li>SMS broadcast via import file Excel</li>
            <li>SMS Autoforward</li>
         </ul>
-
-        <div class="lead m-t-20 m-b-10">Status Service</div>
-        <ul>
-          <li>
-            <div id="service"></div>
-          </li>
-        </ul>
-      </div>
-    </div>
-    <?php
-    } else if ($op == 'onservice') {
-    ?>
-    <div class="card">
-      <div class="header">
-          <h2>SMS Gateway</h2>
-      </div>
-      <div class="body">
-        <ul class="nav nav-tabs tab-nav-right" role="tablist">
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Dashboard</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=config">Pengaturan</a></li>
-            <li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=onservice">Start Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=offservice">Stop Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=pulsa">Cek Pulsa</a></li>
-        </ul>
-        <p class="lead m-t-20 m-b-10">Klik tombol di bawah ini untuk menjalankan GAMMU Service!</p>
-
-        <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>?op=onservice&action=start">
-        <input type="submit" class="btn btn-lg btn-primary m-t-15 waves-effect" name="submit" value="JALANKAN SERVICE GAMMU">
-        </form>
-
-      <?php
-        if ($action == 'start') {
-         echo "<p>&nbsp;</p>";
-         echo "<b>Status :</b><br>";
-         echo "<pre>";
-         passthru($path."\gammu-smsd -c smsdrc -s");
-         echo "</pre>";
-        }
-        ?>
-      </div>
-    </div>
-    <?php
-    }
-    else if ($op == 'offservice')
-    {
-    ?>
-    <div class="card">
-      <div class="header">
-          <h2>SMS Gateway</h2>
-      </div>
-      <div class="body">
-        <ul class="nav nav-tabs tab-nav-right" role="tablist">
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Dashboard</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=config">Pengaturan</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=onservice">Start Service</a></li>
-            <li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=offservice">Stop Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=pulsa">Cek Pulsa</a></li>
-        </ul>
-        <p class="lead m-t-20 m-b-10">Klik tombol di bawah ini untuk menghentikan GAMMU Service!</p>
-
-        <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>?op=offservice&action=off">
-        <input type="submit" class="btn btn-lg btn-primary m-t-15 waves-effect" name="submit" value="MATIKAN SERVICE GAMMU">
-        </form>
-
-        <?php
-        if ($action == 'off') {
-        echo "<p>&nbsp;</p>";
-        echo "<b>Status :</b><br>";
-        echo "<pre>";
-        passthru($path."\gammu-smsd -k");
-        echo "</pre>";
-        }
-        ?>
-      </div>
-    </div>
-    <?php
-    } else if ($op == 'pulsa') {
-    ?>
-    <div class="card">
-      <div class="header">
-          <h2>SMS Gateway</h2>
-      </div>
-      <div class="body">
-        <ul class="nav nav-tabs tab-nav-right" role="tablist">
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Dashboard</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=config">Pengaturan</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=onservice">Start Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=offservice">Stop Service</a></li>
-            <li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=pulsa">Cek Pulsa</a></li>
-        </ul>
-        <p class="lead m-t-20 m-b-10"><b>Penting!!!</b></p><p>Pastikan sebelum cek pulsa, service harus sudah dimatikan dahulu</p>
-        <form method="post" action="<?php $_SERVER['PHP_SELF']; ?>?op=pulsa&action=cek">
-        Masukkan perintah cek pulsa <input type="text" class="form-control" name="command"> Mis. *123#
-        <br><br><input type="submit" class="btn btn-primary m-t-15 waves-effect" name="submit" value="CEK PULSA">
-        </form>
-
-        <?php
-        if ($action == 'cek') {
-          $command = $_POST['command'];
-          $command = $path."\gammu -c ".$path."\gammurc getussd ".$command;
-
-           // jalankan perintah cek pulsa via gammu
-           exec($command, $hasil);
-
-          // proses filter hasil output
-          for ($i=0; $i<=count($hasil)-1; $i++) {
-             if (substr_count($hasil[$i], 'Service reply') > 0) $index = $i;
-          }
-
-          // menampilkan sisa pulsa
-          echo $hasil[$index];
-        }
-        ?>
       </div>
     </div>
     <?php
@@ -173,9 +55,6 @@
         <ul class="nav nav-tabs tab-nav-right" role="tablist">
             <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Dashboard</a></li>
             <li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=config">Pengaturan</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=onservice">Start Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=offservice">Stop Service</a></li>
-            <li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index&op=pulsa">Cek Pulsa</a></li>
         </ul>
         <?php
           include ABSPATH."/modules/SMSGateway/sms-config.php";
