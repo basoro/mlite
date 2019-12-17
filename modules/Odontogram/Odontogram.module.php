@@ -18,7 +18,7 @@ class Odontogram {
 <?php
     }
     function history() {
-      global $role, $date;
+      global $role, $date, $no_rkm_medis;
 ?>
 <div class="card">
   <div class="header">
