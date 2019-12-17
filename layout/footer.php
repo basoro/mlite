@@ -1,7 +1,7 @@
 
     <!--
     Sebagai respect kepada TIM Pengembangan SIMRS Khanza Lite RSUD H. Damanhuri Barabai,
-    atas effort dan kerja keras temen-temen di Instalasi ICT, 
+    atas effort dan kerja keras temen-temen di Instalasi ICT,
     kami harap tidak menghilangkan modal content dibawah ini.
     Jika ingin mengganti, memodifikasi, diperbolehkan dengan tetap menyertakannya.
     Terima kasih atas pengertian anda.
@@ -170,7 +170,7 @@
 
         $('.count-to').countTo();
 
-      	$('#aniimated-thumbnials').lightGallery({
+      	$('#animated-thumbnails').lightGallery({
           	thumbnail: true,
           	selector: 'a'
       	});
