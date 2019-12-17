@@ -17,6 +17,7 @@ class Userwall {
       $action = isset($_GET['user'])?$_GET['user']:null;
       include 'inc/libs/smileys.php';
 ?>
+      <?php display_message(); ?>
       <div class="row container-userwall">
         <ol class="timeline clearfix">
           <li class="right"> <i class="pointer"></i>
@@ -255,7 +256,8 @@ class Userwall {
       ADD CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`cpid`) REFERENCES `posts` (`pid`) ON DELETE CASCADE ON UPDATE NO ACTION;";
 
     if(mysqli_multi_query($connection,$sql_userwall)){
-        echo "Table created successfully.";
+        set_message ('Table created successfully.');
+        redirect ('./?module=Userwall&page=index');
     } else{
         echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
     }

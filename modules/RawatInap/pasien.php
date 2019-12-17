@@ -32,6 +32,7 @@ if(isset($_GET['no_rawat'])) {
     </div>
     <div class="body">
                         <?php display_message(); ?>
+                        <br>
                         <?php
                         $action = isset($_GET['action'])?$_GET['action']:null;
                         $jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;

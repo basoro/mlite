@@ -13,6 +13,7 @@
 
     if (!$op) {
     ?>
+    <?php display_message(); ?>
     <div class="card">
       <div class="header">
           <h2>SMS Gateway</h2>
@@ -442,7 +443,8 @@
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
 
       if(mysqli_multi_query($connection,$sql_sms_gateway)){
-          echo "Table created successfully.";
+          set_message ('Table created successfully.');
+          redirect ('./?module=SMSGateway&page=index');
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }
