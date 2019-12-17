@@ -6,7 +6,7 @@ if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') {
   $get_no_rkm_medis = fetch_assoc(query("SELECT no_rkm_medis FROM reg_periksa WHERE no_rawat = '{$_GET['no_rawat']}'"));
   $no_rkm_medis = $get_no_rkm_medis['no_rkm_medis'];
 } else {
-  //redirect(URL.'/?module=Odontogram&page=index');
+  redirect(URL.'/?module=Odontogram&page=index');
 } ?>
 
 <?php
@@ -18,6 +18,16 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 } else {
 
   $action = isset($_GET['action'])?$_GET['action']:null;
+
+  $_sql = "SELECT * FROM pasien WHERE no_rkm_medis = '$no_rkm_medis'";
+  $found_pasien = query($_sql);
+  if(num_rows($found_pasien) == 1) {
+     while($row = fetch_array($found_pasien)) {
+        $no_rkm_medis  = $row['no_rkm_medis'];
+        $nm_pasien     = $row['nm_pasien'];
+        $umur          = $row['umur'];
+     }
+   }
 
   if($action == "delete_odontogram"){
         $hapus = "DELETE FROM pemeriksaan_odontogram WHERE no_rawat='{$_REQUEST['no_rawat']}' AND gg_xx = '{$_REQUEST['gg_xx']}'";
@@ -31,6 +41,18 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   };
 
 ?>
+
+<div class="body">
+  <dl class="dl-horizontal">
+    <dt>Nama Lengkap</dt>
+    <dd><?php echo $nm_pasien; ?></dd>
+    <dt>No. RM</dt>
+    <dd><?php echo $no_rkm_medis; ?></dd>
+    <dt>Umur</dt>
+    <dd><?php echo $umur; ?> Th</dd>
+  </dl>
+</div>
+<hr>
 <div class="table-odontogram">
 <table style="margin: 0 auto; width: 450px; text-align: center;">
    <tr>
