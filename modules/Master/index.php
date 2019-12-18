@@ -1,12 +1,12 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory   = 'Odontogram';
-$module_title       = 'Odontogram';
+$module_directory   = 'Master';
+$module_title       = 'Master';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul Odontogram untuk dokter gigi di SIMKES Khanza.';
+$module_description = 'Modul master-master pengaturan di SIMKES Khanza.';
 $module_type        = 'FKTP';
 
 ?>
@@ -16,7 +16,7 @@ $module_type        = 'FKTP';
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="medical-icon-i-dental"></i>
+          <i class="material-icons">folder</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
@@ -27,7 +27,7 @@ $module_type        = 'FKTP';
     <td>
       <div class="image-plugins">
         <div class="icon">
-          <i class="medical-icon-i-dental"></i>
+           <i class="material-icons">folder</i>
         </div>
       </div>
     </td>
