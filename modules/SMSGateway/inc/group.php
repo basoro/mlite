@@ -14,7 +14,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 ?>
 <div class="card">
 	<div class="header">
-			<h2>SMS Inbox <a class="pull-right" href="<?php echo URL; ?>/?module=SMSGateway&page=group&op=add">Tambah</a></h2>
+			<h2>SMS Inbox</h2>
 	</div>
 	<div class="body">
 
@@ -23,6 +23,12 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		{
 		// menampilkan seluruh data group
 ?>
+<p class="lead">Tambah Group</p>
+<form name="formku" method="post" action="<?php echo URL; ?>/?module=SMSGateway&page=group&op=simpan">
+Nama Group (tanpa spasi) : <input type="text" name="group">
+<input type="submit" class="btn btn-primary" name="submit" value="Simpan">
+</form>
+<br>
 <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
 	<thead>
 		<tr>
@@ -61,21 +67,6 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 
 		}
-
-		if ($op == "add")
-		{
-		// proses tambah data group
-		?>
-		<p class="lead">Tambah Group</p>
-		<form name="formku" method="post" action="<?php echo URL; ?>/?module=SMSGateway&page=group&op=simpan">
-		Nama Group (tanpa spasi) : <input type="text" name="group">
-		<input type="submit" class="btn btn-primary" name="submit" value="Simpan">
-		</form>
-
-
-		<?php
-		}
-
 		if ($op == "simpan")
 		{
 		// proses penyimpanan data group yang baru
