@@ -22,7 +22,7 @@ define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_NAME', 'khanzalite');
 define('PRODUCTION', false);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
