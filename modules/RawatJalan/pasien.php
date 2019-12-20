@@ -177,7 +177,7 @@ if(isset($_GET['no_rawat'])) {
                                <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
                                <div class="collapse" id="collapseExample">
                                  <div class="well">
-                                             <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                             <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                              <?php
                                              $sql_rmlama = query("SELECT * FROM berkas_digital_perawatan WHERE kode = '003' AND no_rawat IN (SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis')");
                                              $no=1;
@@ -352,7 +352,7 @@ if(isset($_GET['no_rawat'])) {
                                                }
                                                ?>
                                                </ul>
-                                               <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                               <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                                <?php
                                                $sql_lab = query("select * from berkas_digital_perawatan where kode = '005' and no_rawat = '$no_rawat_kunj'");
                                                $no=1;
@@ -366,7 +366,7 @@ if(isset($_GET['no_rawat'])) {
                                              </div>
                                            </td>
                                            <td>
-                                               <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                               <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                                <?php
                                                $sql_rad = query("select * from gambar_radiologi where no_rawat= '$no_rawat_kunj'");
                                                $no=1;
@@ -629,7 +629,7 @@ if(isset($_GET['no_rawat'])) {
                                     <dd><?php echo $umur; ?></dd>
                                 </dl>
                               <hr>
-                              <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                              <div id="animated-thumbnails" class="list-unstyled row clearfix">
                               <?php
                                 $sql_rad = query("select * from berkas_digital_perawatan where no_rawat= '{$_GET['no_rawat']}'");
                                 $no=1;
@@ -698,7 +698,7 @@ if(isset($_GET['no_rawat'])) {
                                     <dd><?php echo $umur; ?></dd>
                                 </dl>
                     <hr>
-                                            <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                            <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                             <?php
                                             $sql_rad = query("select * from gambar_radiologi where no_rawat= '{$_GET['no_rawat']}'");
                                             $no=1;

@@ -20,10 +20,8 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	</div>
 	<div class="body">
 		<ul class="nav nav-tabs tab-nav-right" role="tablist">
-				<li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+				<li role="presentation" class="active"><a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">Phonebook</a></li>
 				<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
-				<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
-				<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
 		</ul>
 		<div class="lead m-t-20 m-b-10">Fitur Utama:</div>
 <?php
@@ -100,10 +98,8 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 			</div>
 			<div class="body">
 				<ul class="nav nav-tabs tab-nav-right" role="tablist">
-						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">Phonebook</a></li>
 						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
-						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
-						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
 				</ul>
 				<div class="lead m-t-20 m-b-10">Tambah Phonebook</div>
 				<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=simpan">
@@ -196,10 +192,8 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 			</div>
 			<div class="body">
 				<ul class="nav nav-tabs tab-nav-right" role="tablist">
-						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
+						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">Phonebook</a></li>
 						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
-						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
-						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
 				</ul>
 				<div class="lead m-t-20 m-b-10">Edit Phonebook</div>
 				<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=update">
@@ -229,96 +223,6 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		</div>
 
 		<?php
-		}
-		else if ($op == "import")
-		{
-		?>
-		<div class="card">
-			<div class="header">
-					<h2>SMS Gateway</h2>
-			</div>
-			<div class="body">
-				<ul class="nav nav-tabs tab-nav-right" role="tablist">
-						<li role="presentation"><a href="<?php echo URL; ?>/?module=SMSGateway&page=index">Phonebook</a></li>
-						<li role="presentation"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=add">Tambah Phonebook</a></li>
-						<li role="presentation" class="active"><a href="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=import">Import Phonebook (From Excel)</a></li>
-						<li role="presentation"><a href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=phonebook">Export Phonebook (To Excel)</a></li>
-				</ul>
-				<div class="lead m-t-20 m-b-10">Import Phonebook</div>
-
-				<form method="post" enctype="multipart/form-data" action="listphone.php?op=proses">
-				Pilih file
-				<input type="hidden" name="MAX_FILE_SIZE" value="20000000">
-				<input name="userfile" type="file">
-				<input name="upload" type="submit" value="Import"></td>
-				</form>
-			</div>
-		</div>
-
-		<?php
-		}
-		else if ($op == "proses")
-		{
-
-		error_reporting(E_ALL ^ E_NOTICE);
-		require_once 'excel_reader2.php';
-
-		// koneksi ke mysql
-		include 'koneksi.php';
-
-		// membaca file excel yang diimport
-		$data = new Spreadsheet_Excel_Reader($_FILES['userfile']['tmp_name']);
-
-		// membaca jumlah baros dari data excel
-		$baris = $data->rowcount($sheet_index=0);
-
-		// inisial counter untuk jumlah data yang sukses dan yang gagal diimport
-		$countsukses = 0;
-		$countgagal = 0;
-
-		// import data excel mulai baris ke-2 (karena baris pertama adalah nama kolom)
-		for ($i=2; $i<=$baris; $i++)
-		{
-		  // membaca data nama
-		  $nama = $data->val($i, 1);
-
-		  // membaca data no. telp
-		  $telp = $data->val($i, 2);
-
-		  // membaca data alamat
-		  $alamat = $data->val($i, 3);
-
-		  // membaca data group
-		  $group = $data->val($i, 4);
-
-		  // membaca data tanggal join
-		  $tanggal = $data->val($i, 5);
-
-		  // insert data nama dan telp ke tabel sms_phonebook
-		  $query = "INSERT INTO sms_phonebook VALUES('$telp', '$nama', '$alamat', '$group', '$tanggal')";
-		  $hasil = query($query);
-
-		  $query = "SELECT id FROM sms_autoresponder WHERE idgroup = '$group'";
-		  $hasil = query($query);
-		  while ($dataku = fetch_array($hasil))
-		  {
-		      $idpesan = $dataku['id'];
-		      $query2 = "INSERT INTO sms_autolist VALUES ('$telp', '$idpesan', '0')";
-		      query($query2);
-		  }
-
-		  // menghitung jumlah data sukses dan gagal ketika import
-		  if ($hasil) $countsukses++;
-		  else $countgagal++;
-		}
-
-		// menampilkan jumlah data yang sukses dan gagal ketika import
-		echo "<p>&nbsp</p>";
-		echo "<h3>Proses import data selesai.</h3>";
-		echo "<p>&nbsp</p>";
-		echo "<p>Jumlah data yang sukses diimport : ".$countsukses."<br>";
-		echo "Jumlah data yang gagal diimport : ".$countgagal."</p>";
-
 		}
 		else if ($op == "send")
 		{

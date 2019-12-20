@@ -5,9 +5,10 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 <?php
 class Odontogram {
     function index() {
-      global $role, $date;
+      global $role, $date, $jenis_poli;
 ?>
 <div class="card">
+  <?php display_message(); ?>
   <div class="header">
       <h2>Odontogram List</h2>
   </div>
@@ -18,7 +19,7 @@ class Odontogram {
 <?php
     }
     function history() {
-      global $role, $date;
+      global $role, $date, $no_rkm_medis;
 ?>
 <div class="card">
   <div class="header">
@@ -47,7 +48,8 @@ class Odontogram {
         ADD CONSTRAINT `pemeriksaan_odontogram_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
-          echo "Table created successfully.";
+          set_message ('Table created successfully.');
+          redirect ('./?module=Odontogram&page=index');
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }

@@ -16,7 +16,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 <div class="card">
 	<div class="header">
-			<h2>SMS Inbox <a class="pull-right" href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=inbox">Export</a></h2>
+			<h2>SMS Inbox</h2>
 	</div>
 	<div class="body">
 <?php
