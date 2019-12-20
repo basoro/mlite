@@ -98,10 +98,11 @@ if(isset($_GET['no_rawat'])) {
                                             <button type="button" class="btn btn-info waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=tindakan&no_rawat=<?php echo $row['6']; ?>">CPPT & Tindakan</a></li>
+                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=surveihais&no_rawat=<?php echo $row['6']; ?>">Surveilans Infeksi</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=berkas_digital&no_rawat=<?php echo $row['6']; ?>">Berkas Digital Perawatan</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
-                                              <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
                                           </ul>
                                         </div>
                                     </td>
@@ -980,7 +981,42 @@ if(isset($_GET['no_rawat'])) {
              						        </div>
              						  </div>
                           <?php } ?>
-
+                          <?php if($action == "surveihais") { ?>
+                              <div class="body">
+                                  <dl class="dl-horizontal">
+                                      <dt>Nama Lengkap</dt>
+                                      <dd><?php echo $nm_pasien; ?></dd>
+                                      <dt>No. RM</dt>
+                                      <dd><?php echo $no_rkm_medis; ?></dd>
+                                      <dt>No. Rawat</dt>
+                                      <dd><?php echo $no_rawat; ?></dd>
+                                      <dt>Umur</dt>
+                                      <dd><?php echo $umur; ?></dd>
+                                  </dl>
+                                  <div>
+                                      <ul class="nav nav-tabs" role="tablist">
+                                          <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+                                          <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Tindakan Operasi</a></li>
+                                          <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Komplikasi / Infeksi</a></li>
+                                          <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Pemakaian Antimikroba</a></li>
+                                      </ul>
+                                  </div>
+                                  <div class="tab-content">
+                                      <div role="tabpanel" class="tab-pane fade" id="5">
+                                          <?php include_once('includes/survei.php');?>
+                                      </div>
+                                      <div role="tabpanel" class="tab-pane fade" id="6">
+                                          <?php include_once('includes/toperasi.php');?>
+                                      </div>
+                                      <div role="tabpanel" class="tab-pane fade" id="7">
+                                          <?php include_once('includes/komplikasi.php');?>
+                                      </div>
+                                      <div role="tabpanel" class="tab-pane fade" id="8">
+                                          <?php include_once('includes/antimikroba.php');?>
+                                      </div>
+                                  </div>
+                              </div>
+                          <?php } ?>
                         <?php
                         if ($action == "delete_pemeriksaan") {
                           $hapus = "DELETE FROM pemeriksaan_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}'";
