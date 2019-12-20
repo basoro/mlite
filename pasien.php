@@ -983,4 +983,9 @@ include_once('layout/footer.php');
 	           });
           }
     });
+    $.fn.selectpicker.defaults = {
+        template: {
+            caret: ''
+        }
+    }
 </script>
