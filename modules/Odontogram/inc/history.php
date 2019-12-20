@@ -42,6 +42,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 
 ?>
 
+<?php if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') { ?>
 <div class="body">
   <dl class="dl-horizontal">
     <dt>Nama Lengkap</dt>
@@ -53,6 +54,8 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   </dl>
 </div>
 <hr>
+<?php } ?>
+
 <div class="table-odontogram">
 <table style="margin: 0 auto; width: 450px; text-align: center;">
    <tr>
