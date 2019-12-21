@@ -996,14 +996,14 @@ if(isset($_GET['no_rawat'])) {
                                   </dl>
                                   <div>
                                       <ul class="nav nav-tabs" role="tablist">
-                                          <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+                                          <li role="presentation" class="active"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
                                           <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Tindakan Operasi</a></li>
                                           <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Komplikasi / Infeksi</a></li>
                                           <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Pemakaian Antimikroba</a></li>
                                       </ul>
                                   </div>
                                   <div class="tab-content">
-                                      <div role="tabpanel" class="tab-pane fade" id="5">
+                                      <div role="tabpanel" class="tab-pane fade in active" id="5">
                                           <?php include_once('includes/survei.php');?>
                                       </div>
                                       <div role="tabpanel" class="tab-pane fade" id="6">
