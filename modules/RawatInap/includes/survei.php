@@ -1,13 +1,13 @@
                                 <form action="" method="post">
                                     <h5 class="card-inside-title">1. Intra Vena Kateter</h5>
                                     <div class="demo-checkbox">
-                                        <input type="checkbox" name="vensen" id="basic_checkbox_1">
+                                        <input type="checkbox" value="Vena Sentral" name="vensen" id="basic_checkbox_1">
                                         <label for="basic_checkbox_1">Vena Sentral</label>
-                                        <input type="checkbox" name="venper" id="basic_checkbox_2">
+                                        <input type="checkbox" value="Vena Perifer" name="venper" id="basic_checkbox_2">
                                         <label for="basic_checkbox_2">Vena Perifer</label>
-                                        <input type="checkbox" name="arteri" id="basic_checkbox_3">
+                                        <input type="checkbox" value="Arteri" name="arteri" id="basic_checkbox_3">
                                         <label for="basic_checkbox_3">Arteri</label>
-                                        <input type="checkbox" name="umbilikal" id="basic_checkbox_4">
+                                        <input type="checkbox" value="Umbilikal" name="umbilikal" id="basic_checkbox_4">
                                         <label for="basic_checkbox_4">Umbilikal</label>
                                     </div>
                                     <div class="row clearfix">
@@ -59,9 +59,9 @@
 
                                     <h5 class="card-inside-title">2. Vena Kateter</h5>
                                     <div class="demo-checkbox">
-                                        <input type="checkbox" name="urine" id="basic_checkbox_5">
+                                        <input type="checkbox" value="Urine Kateter" name="urine" id="basic_checkbox_5">
                                         <label for="basic_checkbox_5">Urine Kateter</label>
-                                        <input type="checkbox" name="supra" id="basic_checkbox_6">
+                                        <input type="checkbox" value="Suprapubik Kateter" name="supra" id="basic_checkbox_6">
                                         <label for="basic_checkbox_6">Suprapubik Kateter</label>
                                     </div>
                                     <div class="row clearfix">
@@ -113,9 +113,9 @@
 
                                     <h5 class="card-inside-title">3. Ventilasi Mekanik</h5>
                                     <div class="demo-checkbox">
-                                        <input type="checkbox" name="tuba" id="basic_checkbox_7">
+                                        <input type="checkbox" value="Tuba Endotrakeal" name="tuba" id="basic_checkbox_7">
                                         <label for="basic_checkbox_7">Tuba Endotrakeal</label>
-                                        <input type="checkbox" name="trake" id="basic_checkbox_8">
+                                        <input type="checkbox" value="Trakeostomi" name="trake" id="basic_checkbox_8">
                                         <label for="basic_checkbox_8">Trakeostomi</label>
                                     </div>
                                     <div class="row clearfix">
@@ -179,11 +179,11 @@
                                     </div>
                                     <div>
                                         <div class="demo-checkbox">
-                                            <input type="checkbox" name="drain" id="basic1">
+                                            <input type="checkbox" value="Drain" name="drain" id="basic1">
                                             <label for="basic1">Drain</label>
-                                            <input type="checkbox" name="iabp" id="basic2">
+                                            <input type="checkbox" value="IABP" name="iabp" id="basic2">
                                             <label for="basic2">IABP</label>
-                                            <input type="checkbox" name="cvvh" id="basic3">
+                                            <input type="checkbox" value="CVVH" name="cvvh" id="basic3">
                                             <label for="basic3">CVVH</label>
                                         </div>
                                     </div>
