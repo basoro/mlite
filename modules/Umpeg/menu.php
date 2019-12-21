@@ -1,6 +1,6 @@
 <li class="<?php if ($params['module']=="Umpeg") {echo "active"; } ?>">
     <a href="javascript:void(0);" class="menu-toggle">
-        <i class="material-icons">folder</i>
+        <i class="material-icons">assignment_ind</i>
         <span>Umum Dan Kepegawaian</span>
     </a>
     <ul class="ml-menu">

@@ -2,7 +2,7 @@
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
 $module_directory   = 'IGD';
-$module_title       = 'Instalasi Gawat Darurat';
+$module_title       = 'IGD';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';

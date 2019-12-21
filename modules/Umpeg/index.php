@@ -2,7 +2,7 @@
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
 $module_directory   = 'Umpeg';
-$module_title       = 'Umum Dan Kepegawaian';
+$module_title       = 'Umpeg';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
@@ -16,7 +16,7 @@ $module_type        = 'FKTP';
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="material-icons">folder</i>
+          <i class="material-icons">assignment_ind</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
