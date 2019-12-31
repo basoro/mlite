@@ -11,26 +11,14 @@ class SMSGateway {
     function inbox() {
       include('modules/SMSGateway/inc/inbox.php');
     }
-    function group() {
-      include('modules/SMSGateway/inc/group.php');
-    }
     function listphone() {
       include('modules/SMSGateway/inc/listphone.php');
     }
     function sendsms() {
-      include('modules/SMSGateway/inc/sendsms.php');
+      include('modules/SMSGateway/inc/instant.php');
     }
-    function listmsg() {
-      include('modules/SMSGateway/inc/listmsg.php');
-    }
-    function auto() {
-      include('modules/SMSGateway/inc/auto.php');
-    }
-    function report() {
-      include('modules/SMSGateway/inc/report.php');
-    }
-    function export() {
-      include('modules/SMSGateway/inc/export.php');
+    function outbox() {
+      include('modules/SMSGateway/inc/outbox.php');
     }
 }
 ?>

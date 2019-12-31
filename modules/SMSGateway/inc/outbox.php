@@ -14,7 +14,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 <div class="card">
     <div class="header">
         <h2>
-            SMS KELUAR
+            SMS Outbox
         </h2>
     </div>
     <div class="body">
@@ -24,25 +24,23 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 										<th>No. Tujuan</th>
 										<th>Isi SMS</th>
 										<th>Waktu</th>
-										<th>Aksi</th>
 								</tr>
 						</thead>
 						<tbody>
 						<?php
-						$sql = "SELECT * FROM sms";
+						$sql = "SELECT * FROM sms_outbox";
 						if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
-							$sql .= " WHERE (tgl_sms BETWEEN '$_POST[tgl_awal] 00:00:01' AND '$_POST[tgl_akhir] 23:59:59')";
+							$sql .= " WHERE (time BETWEEN '$_POST[tgl_awal] 00:00:01' AND '$_POST[tgl_akhir] 23:59:59')";
 						}
-						$sql .= " ORDER BY tgl_sms";
+						$sql .= " ORDER BY time";
 						$query = query($sql);
 						$no = 1;
 						while($row = fetch_array($query)) {
 						?>
-								<tr class="<?php echo $color; ?>">
+								<tr>
 										<td><?php echo $row['2']; ?></td>
-										<td><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&id=<?php echo $row['0'];?>"><?php echo $row['1']; ?></a></td>
-										<td><?php echo $row['6']; ?></td>
-										<td><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=delete&id=<?php echo $row['0'];?>">Hapus</a></td>
+										<td><?php echo $row['1']; ?></td>
+										<td><?php echo $row['3']; ?></td>
 								</tr>
 						<?php
 						}

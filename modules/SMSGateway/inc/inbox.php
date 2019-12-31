@@ -41,7 +41,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 									  $pesan = substr($data['msg'], 0, 50);
 
 									  $nosender = $data['sender'];
-									  $query3 = "SELECT nama FROM sms_phonebook WHERE noTelp = '$nosender'";
+									  $query3 = "SELECT pegawai.nama, petugas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip AND petugas.no_telp = '$nosender'";
 									  $hasil3 = query($query3);
 									  $data3  = fetch_array($hasil3);
 
@@ -92,11 +92,11 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		Forward ke :
 		<select name="sender">
 		<?php
-		$query = "SELECT * FROM sms_phonebook";
+		$query = "SELECT pegawai.nama, petgas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip";
 		$hasil = query($query);
 		while ($data = fetch_array($hasil))
 		{
-		  echo "<option value='".$data['noTelp']."'>".$data['nama']."</option>";
+		  echo "<option value='".$data['no_telp']."'>".$data['nama']."</option>";
 		}
 		?>
 		</select><br>

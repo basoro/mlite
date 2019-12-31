@@ -34,10 +34,54 @@
     }
   }
 
-  xmlhttp.open("GET","<?php echo URL; ?>/modules/SMSGateway/run.php");
+  xmlhttp.open("GET","<?php echo URL; ?>/modules/SMSGateway/inc/run.php");
   xmlhttp.send();
-  xmlhttp2.open("GET","<?php echo URL; ?>/modules/SMSGateway/service.php");
-  xmlhttp2.send();
   setTimeout("ajax()", 8000);
   }
+
+  </script>
+
+  <script type="text/javascript">
+
+      function formatData (data) {
+          var $data = $(
+              '<b>'+ data.id +'</b> - <i>'+ data.text +' ['+ data.notlp +']</i>'
+          );
+          return $data;
+      };
+
+      $('.pasiennotlp').select2({
+        placeholder: 'Pilih Pasien',
+        ajax: {
+          url: '<?php echo URL;?>/modules/SMSGateway/inc/select-pasien-notlp.php',
+          dataType: 'json',
+          delay: 250,
+          processResults: function (data) {
+            return {
+              results: data
+            };
+          },
+          cache: true
+        },
+        templateResult: formatData,
+      minimumInputLength: 3
+      });
+
+      $('.pegawainotlp').select2({
+        placeholder: 'Pilih Pegawai',
+        ajax: {
+          url: '<?php echo URL;?>/modules/SMSGateway/inc/select-pegawai-notlp.php',
+          dataType: 'json',
+          delay: 250,
+          processResults: function (data) {
+            return {
+              results: data
+            };
+          },
+          cache: true
+        },
+        templateResult: formatData,
+      minimumInputLength: 3
+      });
+
   </script>

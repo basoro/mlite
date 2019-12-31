@@ -25,14 +25,14 @@
         </ul>
         <div class="lead m-t-20 m-b-10">Fitur Utama:</div>
         <ul>
-           <li>Manajemen Phonebook</li>
-           <li>Manajemen Group</li>
+           <li>Manajemen nomor telepon pasien dan karyawan</li>
+           <li>Manajemen berdasarkan group jabatan</li>
            <li>Manajemen INBOX SMS</li>
            <li>Reply SMS INBOX</li>
            <li>Manajemen Auto Responder<br>Mendukung pesan SMS secara terjadwal seperti halnya auto responder di internet marketing, berdasarkan group</li>
-           <li>Personalisasi SMS <br>Pesan SMS yang dikirimkan bisa berisi nama masing-masing pemilik nomor, sesuai yang ada di phonebook)</li>
-           <li>Support Registrasi via SMS <br>Seseorang bisa melakukan registrasi ke dalam daftar phonebook melalui SMS</li>
-           <li>Auto Confirm Registrasi via SMS <br>Seseorang yang telah melakukan registrasi ke phonebook via SMS akan mendapat balasan atau konfirmasi otomatis via SMS juga</li>
+           <li>Personalisasi SMS <br>Pesan SMS yang dikirimkan bisa berisi nama masing-masing pemilik nomor, sesuai yang ada di daftar pasien atau karyawan.</li>
+           <li>Support pendaftaran pasien baru via SMS <br>Seseorang bisa melakukan registrasi pasien baru ke dalam daftar pasien melalui SMS</li>
+           <li>Auto Confirm pendaftaran pasien baru via SMS <br>Seseorang yang telah melakukan registrasi via SMS akan mendapat balasan atau konfirmasi otomatis via SMS juga</li>
            <li>Customizable Auto Confirm SMS Message<br>Isi pesan konfirmasi ketika registrasi phonebook bisa diatur sendiri.</li>
            <li>Kirim SMS Instant ke semua nomor atau berdasar group</li>
            <li>On Scheduled SMS ke semua nomor atau berdasar group</li>
@@ -226,7 +226,7 @@
               </div>
               <div class="row clearfix">
                   <div class="col-lg-offset-3 col-md-offset-3 col-sm-offset-3 col-xs-offset-5">
-                      <button type="button" class="btn btn-primary m-t-15 waves-effect">SIMPAN</button>
+                      <button type="button" name="proses" class="btn btn-primary m-t-15 waves-effect">SIMPAN</button>
                   </div>
               </div>
             </form>
@@ -238,7 +238,31 @@
 
     <?php
     } else if ($op == 'install') {
-      $sql_sms_gateway = "CREATE TABLE `sms_autolist` (
+      $sql_sms_gateway = "CREATE TABLE `sms_inbox` (
+        `id` int(11) NOT NULL,
+        `msg` text,
+        `sender` varchar(20) DEFAULT NULL,
+        `time` datetime DEFAULT NULL,
+        `flagRead` int(11) DEFAULT NULL,
+        `flagReply` int(11) DEFAULT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+      ALTER TABLE `sms_inbox`
+        ADD PRIMARY KEY (`id`);
+      ALTER TABLE `sms_inbox`
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+      CREATE TABLE `sms_outbox` (
+        `id` int(11) NOT NULL,
+        `msg` text,
+        `destinaton` varchar(20) DEFAULT NULL,
+        `time` datetime DEFAULT NULL,
+        `status` varchar(11) DEFAULT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+      ALTER TABLE `sms_outbox`
+        ADD PRIMARY KEY (`id`);
+      ALTER TABLE `sms_outbox`
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+/*      CREATE TABLE `sms_autolist` (
         `phoneNumber` varchar(15) NOT NULL DEFAULT '',
         `id` int(11) NOT NULL DEFAULT '0',
         `status` int(11) DEFAULT NULL
@@ -258,18 +282,6 @@
         `field4` varchar(100) DEFAULT NULL,
         `field5` varchar(100) DEFAULT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-      CREATE TABLE `sms_group` (
-        `idgroup` int(11) NOT NULL,
-        `group` varchar(50) DEFAULT NULL
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-      CREATE TABLE `sms_inbox` (
-        `id` int(11) NOT NULL,
-        `msg` text,
-        `sender` varchar(20) DEFAULT NULL,
-        `time` datetime DEFAULT NULL,
-        `flagRead` int(11) DEFAULT NULL,
-        `flagReply` int(11) DEFAULT NULL
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
       CREATE TABLE `sms_keyword` (
         `keyword` varchar(100) NOT NULL DEFAULT '',
         `template` varchar(500) DEFAULT NULL
@@ -278,15 +290,8 @@
         `id` int(11) NOT NULL,
         `message` text,
         `pubdate` datetime DEFAULT NULL,
-        `status` int(11) NOT NULL,
+        `status` int(11) DEFAULT NULL,
         `idgroup` int(11) DEFAULT NULL
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-      CREATE TABLE `sms_phonebook` (
-        `noTelp` varchar(50) NOT NULL DEFAULT '',
-        `nama` varchar(50) DEFAULT NULL,
-        `alamat` varchar(100) DEFAULT NULL,
-        `idgroup` int(11) DEFAULT NULL,
-        `dateJoin` date DEFAULT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
       CREATE TABLE `sms_sentmsg` (
         `id` int(11) NOT NULL,
@@ -298,28 +303,19 @@
         ADD PRIMARY KEY (`id`);
       ALTER TABLE `sms_data`
         ADD PRIMARY KEY (`keyword`,`key`);
-      ALTER TABLE `sms_group`
-        ADD PRIMARY KEY (`idgroup`);
-      ALTER TABLE `sms_inbox`
-        ADD PRIMARY KEY (`id`);
       ALTER TABLE `sms_keyword`
         ADD PRIMARY KEY (`keyword`);
       ALTER TABLE `sms_message`
         ADD PRIMARY KEY (`id`);
-      ALTER TABLE `sms_phonebook`
-        ADD PRIMARY KEY (`noTelp`);
       ALTER TABLE `sms_sentmsg`
         ADD PRIMARY KEY (`id`);
       ALTER TABLE `sms_autoresponder`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-      ALTER TABLE `sms_group`
-        MODIFY `idgroup` int(11) NOT NULL AUTO_INCREMENT;
-      ALTER TABLE `sms_inbox`
-        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
       ALTER TABLE `sms_message`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
       ALTER TABLE `sms_sentmsg`
-        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;";
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT; */
+      ";
 
       if(mysqli_multi_query($connection,$sql_sms_gateway)){
           set_message ('Table created successfully.');
