@@ -37,9 +37,16 @@ define('ConsID', '');
 define('SecretKey', '');
 
 $loket=['1','2','3']; // Loket harus angka maksimal 9
+<<<<<<< HEAD
+$loket_cs=['4','5']; // Loket CS harus angka maximal 9
+$loket_prioritas=['6']; // Loket Prioritas harus angka maximal 9
+
+$poli_hari_ini = "'U0002','U0001','U0003','U0004','U0005','U0017','U0041','U0009'";
+=======
 $loket_cs=['7','8']; // Loket CS harus angka maximal 9
 $loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9
 $poli_hari_ini = "'-','IGDK','U0002','U0001','U0003','U0004','U0005'"; // Kode poli yang mau ditampilkan
+>>>>>>> master
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 

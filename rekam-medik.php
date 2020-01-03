@@ -50,6 +50,37 @@ include_once('layout/sidebar.php');
                             <dd><?php echo $data_pasien['umur']; ?></dd>
                         </dl>
                         <hr>
+                               <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
+                               <button class="btn bg-red waves-effect m-t-15 m-b-15" type="button" data-toggle="modal" data-target="#rmlamaModal">Upload RM Lama</button>
+                      
+                               <div class="collapse" id="collapseExample">
+                                 <div class="well">
+                                             <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                             <?php
+                                             $sql_rmlama = query("SELECT * FROM berkas_digital_perawatan WHERE kode = '003' AND no_rawat IN (SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis')");
+                                             $no=1;
+                                             while ($row_rmlama = fetch_array($sql_rmlama)) {
+                                                 echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                                 echo '</div>';
+                                                 $no++;
+                                             }
+                                             ?>
+                                             <?php
+                                             $sql_rmlama = query("SELECT * FROM berkas_digital_perawatan WHERE kode = '006' AND no_rawat IN (SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis')");
+                                             $no=1;
+                                             while ($row_rmlama = fetch_array($sql_rmlama)) {
+                                                 echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                                 echo '</div>';
+                                                 $no++;
+                                             }
+                                             ?>
+                                             </div>
+                                 </div>
+                               </div>
+                               <div class="clearfix"></div>
+                      
                         <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
                             <thead>
                                 <tr>
@@ -198,6 +229,54 @@ include_once('layout/sidebar.php');
         </div>
     </div>
 </section>
+
+                          <?php
+                            if (isset($_POST['ok_berdig'])) {
+                              $get_periksa = fetch_assoc(query("SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '{$_POST['__no_rkm_medis']}' ORDER BY no_rawat DESC LIMIT 1"));
+                              //$get_periksa = fetch_assoc(query("SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '035469' ORDER BY no_rawat DESC LIMIT 1"));
+                              if($_FILES['file']['name']!=='') {
+                                $tmp_name = $_FILES["file"]["tmp_name"];
+                                $namefile = $_FILES["file"]["name"];
+                                $explode = explode(".", $namefile);
+                                $ext = end($explode);
+                                $image_name = "berkasdigital-".time().".".$ext;
+                                move_uploaded_file($tmp_name,WEBAPPS."/berkasrawat/pages/upload/".$image_name);
+                                $lokasi_berkas = 'pages/upload/'.$image_name;
+                                //$insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('2019/10/10/000040','003', '$lokasi_berkas')");
+                                $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('{$get_periksa['no_rawat']}','003', '$lokasi_berkas')");
+                                if($insert_berkas) {
+                                  //set_message('Berkas digital perawatan telah ditersimpan.');
+                                  //redirect("./?module=RawatJalan&page=index");
+                                }
+                              }
+                            }
+                          ?>
+
+
+    <div class="modal fade" id="rmlamaModal" tabindex="-1" role="dialog" aria-labelledby="rmlamaModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="rmlamaModalLabel">Berkas Digital</h4>
+                </div>
+                <div class="modal-body">
+                                <div class="body">
+                                  <form id="form_validation" name="berdigi" action="" method="POST"  enctype="multipart/form-data">
+                                      <label for="email_address">Unggah Berkas Digital Perawatan</label>
+                                      <div class="form-group">
+                                          <img id="image_upload_preview" width="200px" src="<?php echo URL; ?>/modules/RawatJalan/images/upload_berkas.png" onclick="upload_berkas()" style="cursor:pointer;" />
+                                          <br/>
+                                        	<input name="__no_rkm_medis" type="hidden" value="<?php echo $data_pasien['no_rkm_medis']; ?>">
+                                          <input name="file" id="inputFile" type="file" style="display:none;"/>
+                                      </div>
+                                      <button type="submit" name="ok_berdig" value="ok_berdig" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_berdig\'">UPLOAD BERKAS</button>
+                                  </form>
+                                </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 <?php
 include_once('layout/footer.php');
