@@ -52,17 +52,6 @@
         ADD PRIMARY KEY (`id`);
       ALTER TABLE `sms_inbox`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-      CREATE TABLE `sms_outbox` (
-        `id` int(11) NOT NULL,
-        `msg` text,
-        `destinaton` varchar(20) DEFAULT NULL,
-        `time` datetime DEFAULT NULL,
-        `status` varchar(11) DEFAULT NULL
-      ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-      ALTER TABLE `sms_outbox`
-        ADD PRIMARY KEY (`id`);
-      ALTER TABLE `sms_outbox`
-        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
       ";
 
       if(mysqli_multi_query($connection,$sql_sms_gateway)){
