@@ -2,9 +2,8 @@
 <?php
 
 // koneksi ke mysql
-//include "koneksi.php";
-//include "send.php";
-//include "config.php";
+include "../../../config.php";
+include "send.php";
 
 // mencatat tanggal sekarang
 $tgl = date("Y-m-d H:i:s");
@@ -92,17 +91,17 @@ $now = date("Y-m-d");
 
 if ($command == "REG")
 {
-if (count($split) == 3)
-{
-$nama = $split[1];
-$alamat = $split[2];
+  if (count($split) == 3)
+  {
+    $nama = $split[1];
+    $alamat = $split[2];
 
-$query2 = "INSERT INTO sms_phonebook VALUES ('$notelp', '$nama', '$alamat', '$defaultID', '$now')";
-$hasil2 = query($query2);
+    $query2 = "INSERT INTO booking_registrasi VALUES ('$notelp', '$nama', '$alamat', '$defaultID', '$now')";
+    $hasil2 = query($query2);
 
-$reply = $msgREG;
-}
-else $reply = $msgErrorREG;
+    $reply = $msgREG;
+  }
+  else $reply = $msgErrorREG;
 }
 else if ($command == "INFO")
 {
