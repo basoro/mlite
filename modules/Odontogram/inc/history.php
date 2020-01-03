@@ -6,11 +6,7 @@ if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') {
   $get_no_rkm_medis = fetch_assoc(query("SELECT no_rkm_medis FROM reg_periksa WHERE no_rawat = '{$_GET['no_rawat']}'"));
   $no_rkm_medis = $get_no_rkm_medis['no_rkm_medis'];
 } else {
-<<<<<<< HEAD
-  //redirect(URL.'/?module=Odontogram&page=index');
-=======
   redirect(URL.'/?module=Odontogram&page=index');
->>>>>>> master
 } ?>
 
 <?php
@@ -23,8 +19,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 
   $action = isset($_GET['action'])?$_GET['action']:null;
 
-<<<<<<< HEAD
-=======
   $_sql = "SELECT * FROM pasien WHERE no_rkm_medis = '$no_rkm_medis'";
   $found_pasien = query($_sql);
   if(num_rows($found_pasien) == 1) {
@@ -35,7 +29,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
      }
    }
 
->>>>>>> master
   if($action == "delete_odontogram"){
         $hapus = "DELETE FROM pemeriksaan_odontogram WHERE no_rawat='{$_REQUEST['no_rawat']}' AND gg_xx = '{$_REQUEST['gg_xx']}'";
         $hasil = query($hapus);
@@ -48,8 +41,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   };
 
 ?>
-<<<<<<< HEAD
-=======
 
 <?php if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') { ?>
 <div class="body">
@@ -65,7 +56,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 <hr>
 <?php } ?>
 
->>>>>>> master
 <div class="table-odontogram">
 <table style="margin: 0 auto; width: 450px; text-align: center;">
    <tr>
@@ -214,11 +204,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_34">Gigi 34</option>
             <option value="gg_33">Gigi 33</option>
             <option value="gg_32">Gigi 32</option>
-<<<<<<< HEAD
-            <option value="gg_41">Gigi 31</option>
-=======
             <option value="gg_31">Gigi 31</option>
->>>>>>> master
             <option value="gg_41">Gigi 41</option>
             <option value="gg_42">Gigi 42</option>
             <option value="gg_43">Gigi 43</option>
@@ -227,8 +213,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_46">Gigi 46</option>
             <option value="gg_47">Gigi 47</option>
             <option value="gg_48">Gigi 48</option>
-<<<<<<< HEAD
-=======
 
             <option value="gg_55">Gigi 55</option>
             <option value="gg_54">Gigi 54</option>
@@ -251,7 +235,6 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <option value="gg_84">Gigi 84</option>
             <option value="gg_85">Gigi 85</option>
 
->>>>>>> master
           </select>
       </div>
       <div class="col-md-12">

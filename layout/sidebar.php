@@ -69,11 +69,7 @@
                             <span>Apotek</span>
                         </a>
                     </li>
-<<<<<<< HEAD
-                  <?php } ?>
-=======
                     <?php } ?>
->>>>>>> master
                     <?php if($role == 'Admin' || $role == 'Manajemen' || $role == 'Medis' || $role == 'Kasir')  { ?>
                     <li>
                         <a href="<?php echo URL; ?>/kasir.php">
@@ -97,7 +93,7 @@
                             </li>
                         </ul>
                     </li>
-             
+
                     <li>
                         <a href="<?php echo URL; ?>/profil.php">
                             <i class="material-icons">people</i>
