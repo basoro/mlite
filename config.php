@@ -22,14 +22,14 @@ define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_NAME', 'khanzalite');
 define('PRODUCTION', false);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', true);
+define('FKTL', false);
 define('WEBAPPS', '../webapps');
-define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
+define('THEME', 'deep-purple'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
 define('PWA', false);
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
