@@ -62,7 +62,8 @@ if(isset($_GET['no_rawat'])) {
                                   kamar_inap.kd_kamar,
                                   kamar_inap.tgl_masuk,
                                   penjab.png_jawab,
-                                  reg_periksa.no_rawat
+                                  reg_periksa.no_rawat,
+                                  pasien.no_tlp
                                 FROM
                                   kamar_inap,
                                     reg_periksa,
@@ -104,6 +105,9 @@ if(isset($_GET['no_rawat'])) {
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+                                                <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
+                                                  <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['7']; ?>">Kirim SMS</a></li>
+                                                <?php } ?>
                                           </ul>
                                         </div>
                                     </td>

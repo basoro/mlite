@@ -42,7 +42,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		if ($op == "instant")
 		{
 		  $ph = str_replace(" ", "+", $_GET['ph']);
-		  $query = "SELECT nama FROM sms_phonebook WHERE noTelp = '$ph'";
+		  $query = "SELECT nama FROM petugas WHERE no_telp = '$ph'";
 		  $hasil = query($query);
 		  $data  = fetch_array($hasil);
 		  $nama = $data['nama'];
@@ -55,7 +55,28 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<br>
 		Keterangan: Berikan string [nama] bila ingin menampilkan nama si penerima SMS pada pesan di atas.
 		<br><br>
-		<input type="submit" value="KIRIM SMS">
+		<input type="submit" class="btn btn-primary m-t-15 waves-effect" value="KIRIM SMS">
+		</form>
+		<?php
+		}
+		else
+		if ($op == "instant_pasien")
+		{
+		  $ph = str_replace(" ", "+", $_GET['ph']);
+		  $query = "SELECT nm_pasien AS nama FROM pasien WHERE no_tlp = '$ph'";
+		  $hasil = query($query);
+		  $data  = fetch_array($hasil);
+		  $nama = $data['nama'];
+		  echo "<br><p><b>Nomor Tujuan :</b> ".$nama." (".$ph.")</p>";
+		?>
+		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=send">
+		<input type="hidden" name="phone" value="<?php echo $ph; ?>">
+		Message : <br>
+		<textarea name="pesan" rows="10" cols="50"></textarea>
+		<br>
+		Keterangan: Berikan string [nama] bila ingin menampilkan nama si penerima SMS pada pesan di atas.
+		<br><br>
+		<input type="submit" class="btn btn-primary m-t-15 waves-effect" value="KIRIM SMS">
 		</form>
 		<?php
 		}
