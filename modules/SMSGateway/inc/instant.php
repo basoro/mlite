@@ -123,8 +123,18 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 		   send($notelp, $pesan);
 		   }
-
-		   echo "<hr><p>SMS sudah dikirim....</p><hr>";
+?>
+		<div class="card">
+				<div class="header">
+						<h2>
+								SMS Instant
+						</h2>
+				</div>
+				<div class="body">
+					SMS sudah dikirim....
+				</div>
+		</div>
+<?php
 		}
-		?>
-<?php } ?>
+}
+?>

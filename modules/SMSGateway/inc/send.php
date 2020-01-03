@@ -5,9 +5,9 @@ function send($notelp, $msgReply)
    $query = "SELECT nm_pasien AS nama FROM pasien WHERE no_tlp = '$notelp'";
    $hasil = query($query);
    $data  = fetch_array($hasil);
-   $nama = $data['nama'];
+   $nama  = strtoupper($data['nama']);
 
-   $msgReply = str_replace(strtoupper('[nama]'), $nama, $msgReply);
+   $msgReply = str_replace('[nama]', $nama, $msgReply);
    $msgReply = str_replace("\r"," ",$msgReply);
    $msgReply = str_replace("\n","",$msgReply);
    $msgReply = str_replace("'","",$msgReply);
@@ -15,7 +15,7 @@ function send($notelp, $msgReply)
 
    if (strlen($msgReply)<=160)
    {
-      $query = "INSERT INTO outbox (DestinationNumber, TextDecoded, CreatorID) VALUES ('$notelp', '$msgReply', 'Gammu 1.25')";
+      $query = "INSERT INTO outbox (DestinationNumber, TextDecoded, CreatorID) VALUES ('$notelp', '$msgReply', 'Gammu 16')";
       query($query);
 
    }
@@ -35,7 +35,7 @@ function send($notelp, $msgReply)
       $msg = $pecah[$i-1];
       if ($i == 1) $query = "INSERT INTO outbox (DestinationNumber, UDH, TextDecoded, ID, MultiPart, CreatorID)
 	                         VALUES ('$notelp', '$udh', '$msg', '$newID', 'true', 'Gammu 1.25')";
-	  else $query = "INSERT INTO outbox_multipart(UDH, TextDecoded, ID, SequencePosition)
+	    else $query = "INSERT INTO outbox_multipart(UDH, TextDecoded, ID, SequencePosition)
 	                 VALUES ('$udh', '$msg', '$newID', '$i')";
       query($query);
 

@@ -24,23 +24,25 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 										<th>No. Tujuan</th>
 										<th>Isi SMS</th>
 										<th>Waktu</th>
+										<th>Status</th>
 								</tr>
 						</thead>
 						<tbody>
 						<?php
-						$sql = "SELECT * FROM sms_outbox";
+						$sql = "SELECT * FROM sentitems";
 						if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
-							$sql .= " WHERE (time BETWEEN '$_POST[tgl_awal] 00:00:01' AND '$_POST[tgl_akhir] 23:59:59')";
+							$sql .= " WHERE (SendingDateTime BETWEEN '$_POST[tgl_awal] 00:00:01' AND '$_POST[tgl_akhir] 23:59:59')";
 						}
-						$sql .= " ORDER BY time";
+						$sql .= " ORDER BY SendingDateTime";
 						$query = query($sql);
 						$no = 1;
 						while($row = fetch_array($query)) {
 						?>
 								<tr>
-										<td><?php echo $row['2']; ?></td>
-										<td><?php echo $row['1']; ?></td>
-										<td><?php echo $row['3']; ?></td>
+										<td><?php echo $row['DestinationNumber']; ?></td>
+										<td><?php echo $row['TextDecoded']; ?></td>
+										<td><?php echo $row['SendingDateTime']; ?></td>
+										<td><?php echo $row['Status']; ?></td>
 								</tr>
 						<?php
 						}

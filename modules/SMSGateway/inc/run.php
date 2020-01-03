@@ -28,7 +28,7 @@ while ($data = fetch_array($hasil))
 	  $text = "";
 	  for ($i=1; $i<=$n; $i++)
 	  {
-	     $udh = $chop.sprintf("%02s", $n).sprintf("%02s", $i);
+	   $udh = $chop.sprintf("%02s", $n).sprintf("%02s", $i);
 		 $query3 = "SELECT * FROM inbox WHERE udh = '$udh' AND SenderNumber = '$noTelp' AND processed = 'false'";
 		 $hasil3 = query($query3);
 		 if (num_rows($hasil3) > 0) $sum++;
@@ -73,56 +73,6 @@ while ($data = fetch_array($hasil))
 }
 
 // ---------------------- PROSEDUR AUTO RECEIVED TO INBOX END ------------------------------
-
-
-// ---------------------- PROSEDUR AUTO RESPONDER START ------------------------------
-
-$query = "SELECT * FROM sms_phonebook";
-$hasil = query($query);
-while ($data = fetch_array($hasil))
-{
-   $notelp = $data['noTelp'];
-   $tglJoin = $data['dateJoin'];
-   $nama = $data['nama'];
-
-   $query2 = "SELECT * FROM sms_autoresponder";
-   $hasil2 = query($query2);
-   while ($data2 = fetch_array($hasil2))
-   {
-	   $interval = $data2['interv'];
-	   $id = $data2['id'];
-
-	   $query3 = "SELECT datediff('$tgl', '$tglJoin') as selisih";
-	   $hasil3 = query($query3);
-	   $data3 = fetch_array($hasil3);
-
-	   if ($data3['selisih'] >= $interval)
-	   {
-	      $query4 = "SELECT status FROM sms_autolist WHERE phoneNumber = '$notelp' AND id = '$id'";
-		  $hasil4 = query($query4);
-		  $data4  = fetch_array($hasil4);
-		  if ($data4['status'] == '0')
-		  {
-  		     $msg = $data2['msg'];
-		     $msg2 = str_replace('[nama]', $nama, $msg);
-
-			 $pesan = str_replace("\r"," ",$msg2);
-	         $pesan = str_replace("\n","",$pesan);
-	         $pesan = str_replace('"','',$pesan);
-             $pesan = str_replace("'","",$pesan);
-
-			 send($notelp, $pesan);
-
-             $query4 = "DELETE FROM sms_autolist WHERE phoneNumber = '$notelp' AND id = '$id'";
-			 query($query4);
-          }
-	   }
-   }
-
-}
-
-// ---------------------- PROSEDUR AUTO RESPONDER END ------------------------------
-
 
 // ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS START-------------------------
 
@@ -218,73 +168,4 @@ $hasil2 = query($query2);
 }
 
 // ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS FINISH -------------------------
-
-
-// ---------------------- PROSEDUR ON SCHEDULED SMS START-------------------------
-
-// mencari message yang publish date nya tanggal sekarang dan statusnya masih = 0 (belum dikirim)
-$query = "SELECT * FROM sms_message WHERE pubdate <= '$tgl' AND status = 0";
-$hasil = query($query);
-$data = fetch_array($hasil);
-
-if (num_rows($hasil) > 0)
-{
-// jika ada message yang publish datenya tgl sekarang dan statusnya 0 maka dikirim
-
-// membaca isi dan id message
-$pesan = $data['message'];
-$group = $data['idgroup'];
-$id = $data['id'];
-
-$pesan = str_replace("\r"," ",$pesan);
-$pesan = str_replace("\n","",$pesan);
-$pesan = str_replace('"','',$pesan);
-$pesan = str_replace("'","",$pesan);
-
-// mengubah status message menjadi 1 (telah dikirim)
-$query = "DELETE FROM sms_message WHERE id = '$id'";
-$hasil = query($query);
-
-// menyimpan message yang dikirim ke tabel sms_sentmsg (berisi message2 yang pernah dikirim)
-$query = "INSERT INTO sms_sentmsg(msg) VALUES ('$pesan')";
-$hasil = query($query);
-
-// membaca ID message yang baru saja dikirim dari tabel sms_sentmsg
-$query = "SELECT max(id) as max FROM sms_sentmsg";
-$hasil = query($query);
-$data = fetch_array($hasil);
-$idmsg = $data['max'];
-
-// membaca seluruh no. telp dari tabel sms_phonebook
-
-if ($group == 0) $query = "SELECT * FROM sms_phonebook";
-else $query = "SELECT * FROM sms_phonebook WHERE idgroup = '$group'";
-
-$hasil = query($query);
-while ($data = fetch_array($hasil))
-{
-      // proses pengiriman pesan SMS ke semua no. telp
-      $notelp = $data['noTelp'];
-      $pesan2 = str_replace('[nama]', $data['nama'], $pesan);
-
-	  send($notelp, $pesan2);
-}
-}
-
-// ---------------------- PROSEDUR ON SCHEDULED SMS FINISH-------------------------
-?>
-
-<?php
-echo "<table border='1' width='100%'>";
-echo "<tr><th>Sending Date Time</th><th>Destination Number</th><th>Text Decoded</th><th>Status</th></tr>";
-$query = "SELECT * FROM sentitems ORDER BY SendingDateTime DESC LIMIT 0, 100";
-$hasil = query($query);
-
-while ($data = fetch_array($hasil))
-{
-   echo "<tr><td>".$data['SendingDateTime']."</td><td>".$data['DestinationNumber']."</td><td>".$data['TextDecoded']."</td><td>".$data['Status']."</td></tr>";
-}
-echo "</table>";
-
-
 ?>
