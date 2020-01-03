@@ -216,7 +216,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, b.stts, f.kd_dokter, f.nm_dokter, b.kd_poli, c.kd_pj FROM pasien a, reg_periksa b, penjab c, poliklinik d, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.kd_dokter = f.kd_dokter";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_rawat, b.no_reg, b.tgl_registrasi, b.jam_reg, b.p_jawab, b.almt_pj, b.stts, f.kd_dokter, f.nm_dokter, b.kd_poli, c.kd_pj, a.no_tlp FROM pasien a, reg_periksa b, penjab c, poliklinik d, dokter f WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.kd_dokter = f.kd_dokter";
                                 if($role == 'Medis' || $role == 'Paramedis') {
                                   $sql .= " AND b.kd_poli = '$jenis_poli'";
                                 }
@@ -261,6 +261,9 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                                         <li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
                                                         <li><a href="./?module=BridgingBPJS&page=data_sep&view=individual&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
                                                       <?php } ?>
+                                                    <?php } ?>
+                                                    <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
+                                                      <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
                                                     <?php } ?>
                                                 </ul>
                                             </div>

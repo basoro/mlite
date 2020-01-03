@@ -93,7 +93,7 @@
                             </li>
                         </ul>
                     </li>
-                    <?php } ?>
+
                     <li>
                         <a href="<?php echo URL; ?>/profil.php">
                             <i class="material-icons">people</i>
