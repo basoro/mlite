@@ -14,14 +14,9 @@
                 SMS Inbox
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="group") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=group">
-                SMS Group
-            </a>
-        </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="listphone") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">
-                Phonebook
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="outbox") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=outbox">
+                SMS Outbox
             </a>
         </li>
         <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="sendsms") {echo "active"; } ?>">
@@ -29,19 +24,9 @@
                 SMS Instant
             </a>
         </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="listmsg") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=listmsg">
-                SMS Terjadwal
-            </a>
-        </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="auto") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=auto">
-                SMS Auto Responder
-            </a>
-        </li>
-        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="report") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=SMSGateway&page=report">
-                Report
+        <li class="<?php if ($params['module']=="SMSGateway" && $params['page']=="listphone") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=SMSGateway&page=listphone">
+                Phonebook
             </a>
         </li>
     </ul>

@@ -168,7 +168,7 @@ include_once('layout/sidebar.php');
                                         </ul>
                                     </td>
                                     <td>
-                                        <div id="aniimated-thumbnials" class="list-unstyled row clearfix">
+                                        <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                         <?php
                                         $sql_rad = query("select * from gambar_radiologi where no_rawat= '$no_rawat_kunj'");
                                         $no=1;

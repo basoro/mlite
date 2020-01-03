@@ -23,6 +23,11 @@ session_start();
 
 require_once('config.php');
 
+if(PRODUCTION == true) {
+  ini_set('display_errors', 0);
+  error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +70,9 @@ require_once('config.php');
 </head>
 
 <body class="login-page">
+<?php
+if(PRODUCTION == true) {
+?>
     <!-- Page Loader -->
     <div class="page-loader-wrapper">
         <div class="loader">
@@ -82,6 +90,9 @@ require_once('config.php');
         </div>
     </div>
     <!-- #END# Page Loader -->
+<?php
+}
+?>
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
             <?php

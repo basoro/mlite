@@ -1,13 +1,13 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory   = 'Survei';
-$module_title       = 'Survei';
+$module_directory   = 'Umpeg';
+$module_title       = 'Umpeg';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul Survei';
-$module_type        = 'FKTL';
+$module_description = 'Modul umum dan kepegawaian di SIMKES Khanza.';
+$module_type        = 'FKTP';
 
 ?>
 
@@ -16,7 +16,7 @@ $module_type        = 'FKTL';
     <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="material-icons">poll</i>
+          <i class="material-icons">assignment_ind</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
@@ -27,7 +27,7 @@ $module_type        = 'FKTL';
     <td>
       <div class="image-plugins">
         <div class="icon">
-           <i class="material-icons">poll</i>
+           <i class="material-icons">folder</i>
         </div>
       </div>
     </td>

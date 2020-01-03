@@ -62,7 +62,8 @@ if(isset($_GET['no_rawat'])) {
                                   kamar_inap.kd_kamar,
                                   kamar_inap.tgl_masuk,
                                   penjab.png_jawab,
-                                  reg_periksa.no_rawat
+                                  reg_periksa.no_rawat,
+                                  pasien.no_tlp
                                 FROM
                                   kamar_inap,
                                     reg_periksa,
@@ -104,6 +105,12 @@ if(isset($_GET['no_rawat'])) {
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+<<<<<<< HEAD
+=======
+                                                <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
+                                                  <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['7']; ?>">Kirim SMS</a></li>
+                                                <?php } ?>
+>>>>>>> master
                                           </ul>
                                         </div>
                                     </td>
@@ -996,14 +1003,22 @@ if(isset($_GET['no_rawat'])) {
                                   </dl>
                                   <div>
                                       <ul class="nav nav-tabs" role="tablist">
+<<<<<<< HEAD
                                           <li role="presentation" class="active"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+=======
+                                          <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+>>>>>>> master
                                           <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Tindakan Operasi</a></li>
                                           <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Komplikasi / Infeksi</a></li>
                                           <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Pemakaian Antimikroba</a></li>
                                       </ul>
                                   </div>
                                   <div class="tab-content">
+<<<<<<< HEAD
                                       <div role="tabpanel" class="tab-pane fade in active" id="5">
+=======
+                                      <div role="tabpanel" class="tab-pane fade" id="5">
+>>>>>>> master
                                           <?php include_once('includes/survei.php');?>
                                       </div>
                                       <div role="tabpanel" class="tab-pane fade" id="6">

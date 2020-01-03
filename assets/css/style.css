@@ -4239,7 +4239,7 @@ section.content {
     font-size: 17px; }
 
 /* Modals ====================================== */
-.modal {
+/*.modal {
   text-align: center;
   margin: 10px;
   padding: 0!important;
@@ -4257,7 +4257,7 @@ section.content {
   display: inline-block;
   text-align: left;
   vertical-align: middle;
-}
+}*/
 .modal .modal-header {
   border: none;
   padding: 25px 25px 5px 25px; }

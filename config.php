@@ -28,19 +28,25 @@ define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
 define('FKTL', true);
-define('POLL', false);
 define('WEBAPPS', '../webapps');
 define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
+define('PWA', false);
 
 define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/');
 define('ConsID', '');
 define('SecretKey', '');
 
 $loket=['1','2','3']; // Loket harus angka maksimal 9
+<<<<<<< HEAD
 $loket_cs=['4','5']; // Loket CS harus angka maximal 9
 $loket_prioritas=['6']; // Loket Prioritas harus angka maximal 9
 
 $poli_hari_ini = "'U0002','U0001','U0003','U0004','U0005','U0017','U0041','U0009'";
+=======
+$loket_cs=['7','8']; // Loket CS harus angka maximal 9
+$loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9
+$poli_hari_ini = "'-','IGDK','U0002','U0001','U0003','U0004','U0005'"; // Kode poli yang mau ditampilkan
+>>>>>>> master
 
 $connection = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
@@ -149,7 +155,6 @@ function validation_errors($error) {
 // Enum dropdown value
 function enumDropdown($table_name, $column_name, $label, $echo = false) {
     $selectDropdown = "<select name=\"$column_name\" id=\"$column_name\" data-width=\"100%\">";
-    $selectDropdown .= "<option value=\"\">$label</option>";
     $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name' AND COLUMN_NAME = '$column_name'");
 
     $row = fetch_array($result);

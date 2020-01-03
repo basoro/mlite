@@ -22,6 +22,10 @@ class APM {
         echo '</div>';
       } else {
 ?>
+<<<<<<< HEAD
+=======
+<?php display_message(); ?>
+>>>>>>> master
 <div class="card">
   <div class="header">
       <h2>Anjungan Pasien Mandiri</h2>
@@ -99,7 +103,12 @@ class APM {
         ADD KEY `antrian` (`antrian`);";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
+<<<<<<< HEAD
           echo "Table created successfully.";
+=======
+          set_message ('Table created successfully.');
+          redirect ('./?module=APM&page=index');
+>>>>>>> master
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }
@@ -115,7 +124,12 @@ class APM {
         ADD KEY `antrian` (`antrian`);";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
+<<<<<<< HEAD
           echo "Table created successfully.";
+=======
+          set_message ('Table created successfully.');
+          redirect ('./?module=APM&page=index');
+>>>>>>> master
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }
@@ -131,7 +145,12 @@ class APM {
         ADD KEY `antrian` (`antrian`);";
 
       if(mysqli_multi_query($connection,$sql_userwall)){
+<<<<<<< HEAD
           echo "Table created successfully.";
+=======
+          set_message ('Table created successfully.');
+          redirect ('./?module=APM&page=index');
+>>>>>>> master
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }

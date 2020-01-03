@@ -16,7 +16,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 <div class="card">
 	<div class="header">
-			<h2>SMS Inbox <a class="pull-right" href="<?php echo URL; ?>/modules/SMSGateway/inc/export.php?op=inbox">Export</a></h2>
+			<h2>SMS Inbox</h2>
 	</div>
 	<div class="body">
 <?php
@@ -29,7 +29,6 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 											<th>Status Reply</th>
 											<th>Pengirim</th>
 											<th>Waktu SMS</th>
-											<th>Action</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -41,7 +40,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 									  $pesan = substr($data['msg'], 0, 50);
 
 									  $nosender = $data['sender'];
-									  $query3 = "SELECT nama FROM sms_phonebook WHERE noTelp = '$nosender'";
+									  $query3 = "SELECT pegawai.nama, petugas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip AND petugas.no_telp = '$nosender'";
 									  $hasil3 = query($query3);
 									  $data3  = fetch_array($hasil3);
 
@@ -51,10 +50,10 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 									  if ($data['flagRead'] == 0) $color = "yellow";
 									  else $color = "white";
 
-									  if ($data['flagReply'] == 0) $status = "&nbsp;";
+									  if ($data['flagReply'] == 0) $status = "<b>[N]</b>";
 									  else $status = "<b>[R]</b>";
 
-									  echo "<tr bgcolor='".$color."'><td><a href='".URL."/?module=SMSGateway&page=inbox&op=view&id=".$data['id']."'>".$pesan."...</a></td><td align='center'>".$status."</td><td>".$sendername."</td><td>".$data['time']."</td><td><a href='".str_replace("&id=".$id, "", $_SERVER['REQUEST_URI'])."&id=".$data['id']."'>Hapus</a></td></tr>";
+									  echo "<tr bgcolor='".$color."'><td><a href='".URL."/?module=SMSGateway&page=inbox&op=view&id=".$data['id']."'>".$pesan."...</a></td><td align='center'>".$status."</td><td>".$sendername."</td><td>".$data['time']."</td></tr>";
 									}
 									?>
 									</tbody>
@@ -77,47 +76,46 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 		   $noSender = $data['sender'];
 
-
-		   if ($_GET['act'] == "forward")
+		   if (isset($_GET['act']) && $_GET['act'] == "forward")
 		   {
 		   $id = $_GET['id'];
 		   $query = "SELECT * FROM sms_inbox WHERE id = '$id'";
 		   $hasil = query($query);
 		   $data = fetch_array($hasil);
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=send">
+		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=forward">
 		Message : <br>
-		<textarea name="pesan" rows="12" cols="50"><?php echo $data['msg']; ?></textarea>
+		<textarea name="pesan" class="form-control" rows="12" cols="50"><?php echo $data['msg']; ?></textarea>
 		<br><br>
 		Forward ke :
-		<select name="sender">
+		<select name="sender" class="form-control show-tick selectpicker" data-live-search="true" data-size="3">
 		<?php
-		$query = "SELECT * FROM sms_phonebook";
+		$query = "SELECT pegawai.nama, petugas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip";
 		$hasil = query($query);
 		while ($data = fetch_array($hasil))
 		{
-		  echo "<option value='".$data['noTelp']."'>".$data['nama']."</option>";
+		  echo "<option value='".$data['no_telp']."'>".$data['nama']."</option>";
 		}
 		?>
 		</select><br>
 		<br>
-		<input type="submit" name="submit" value="Send SMS">
+		<input type="submit" class="btn btn-lg btn-primary" name="submit" value="Send SMS">
 		</form>
 		<?php
 		   }
 		   else
-		   if ($_GET['act'] == "reply")
+		   if (isset($_GET['act']) && $_GET['act'] == "reply")
 		   {
 		   $id = $_GET['id'];
 		?>
 		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=send">
 		Message : <br>
-		<textarea name="pesan" rows="12" cols="50"></textarea>
+		<textarea name="pesan" class="form-control" rows="12" cols="50"></textarea>
 		<br>
 		<br>
 		<input type="hidden" name="sender" value="<?php echo $data['sender']; ?>">
 		<input type="hidden" name="id" value="<?php echo $id; ?>">
-		<input type="submit" name="submit" value="Send SMS">
+		<input type="submit" class="btn btn-lg btn-primary" name="submit" value="Send SMS">
 		</form>
 
 		<?php
@@ -175,13 +173,6 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 		   echo "<p>SMS sudah dikirim</p>";
 		}
-		else if ($op == "delete")
-		{
-		   $id = $_GET['id'];
-		   $query = "DELETE FROM sms_inbox WHERE id = '$id'";
-		   query($query);
-		   echo "SMS sudah dihapus";
-		 }
 }
 ?>
 	</div>
