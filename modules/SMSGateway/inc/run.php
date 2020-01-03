@@ -52,7 +52,7 @@ while ($data = fetch_array($hasil))
 		  $text = str_replace("'", "", $text);
 		  $query2 = "INSERT INTO sms_inbox(msg, sender, time, flagRead, flagReply) VALUES ('$text', '$notelp', '$time', 0, 0)";
 		  query($query2);
-		  send($notelp, $msgINBOX);
+		  send($notelp, 'Terimakasih sudah mengirim SMS ke kami');
 	  }
 
    }
@@ -66,7 +66,7 @@ while ($data = fetch_array($hasil))
 	  $time = $data['ReceivingDateTime'];
       $query2 = "INSERT INTO sms_inbox(msg, sender, time, flagRead, flagReply) VALUES ('$text', '$notelp', '$time', 0, 0)";
 	  query($query2);
-	  send($notelp, $msgINBOX);
+	  send($notelp, 'Terimakasih sudah mengirim SMS ke kami');
    }
 
 }
@@ -96,12 +96,12 @@ if ($command == "REG")
     $nama = $split[1];
     $alamat = $split[2];
 
-    $query2 = "INSERT INTO booking_registrasi VALUES ('$notelp', '$nama', '$alamat', '$defaultID', '$now')";
+    $query2 = "INSERT INTO booking_registrasi VALUES ('$notelp', '$nama', '$alamat', '1', '$now')";
     $hasil2 = query($query2);
 
-    $reply = $msgREG;
+    $reply = 'Terimakasih [nama], kami akan proses segera registrasi Anda';
   }
-  else $reply = $msgErrorREG;
+  else $reply = 'Format REG salah. Format yang benar REG#NAMA#ALAMAT';
 }
 else if ($command == "INFO")
 {
@@ -134,11 +134,11 @@ else if ($command == "INFO")
    }
    $reply = $template;
    }
-   else $reply = $msgErrorData;
+   else $reply = 'Data tidak ditemukan';
    }
-   else $reply = $msgErrorKeyword;
+   else $reply = 'Keyword tidak ditemukan';
    }
-   else $reply = $msgErrorInfo;
+   else $reply = 'Format SMS Info salah';
 
 }
 else if ($command == "FWD")
@@ -154,9 +154,9 @@ else if ($command == "FWD")
   {
      send($data2['noTelp'], $pesan." (Dikirim oleh: ".$notelp.")");
   }
-  $reply = $msgFWD.$idgroup;
+  $reply = 'SMS Anda telah diforward ke group id '.$idgroup;
   }
-  else $reply = $msgErrorFWD;
+  else $reply = 'Format FWD salah. Format yang benar FWD#IDGROUP#PESAN';
 
 }
 
