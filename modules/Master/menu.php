@@ -6,22 +6,17 @@
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="Master" && $params['page']=="index") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/?module=Master&page=index">
-                Dashboard
+                Master INDEX
             </a>
         </li>
-        <li class="<?php if ($params['module']=="Master" && $params['page']=="poliklinik") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Master&page=poliklinik">
-                Master Poliklinik
+        <li class="<?php if ($params['module']=="Master" && $params['page']=="hello") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Master&page=hello">
+                Master HELLO
             </a>
         </li>
-        <li class="<?php if ($params['module']=="Master" && $params['page']=="dokter") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Master&page=dokter">
-                Master Dokter
-            </a>
-        </li>
-        <li class="<?php if ($params['module']=="Master" && $params['page']=="carabayar") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Master&page=carabayar">
-                Master Cara Bayar
+        <li class="<?php if ($params['module']=="Master" && $params['page']=="world") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Master&page=world">
+                Master WORLD
             </a>
         </li>
     </ul>

@@ -37,7 +37,7 @@ if(PRODUCTION == true) {
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title><?php echo $dataSettings['nama_instansi']; ?></title>
     <!-- Favicon-->
-    <link rel="icon" href="<?php echo URL; ?>/assets/images/favicon.png" type="image/x-icon">
+    <link rel="icon" href="<?php echo URL; ?>/assets/images/favicon.ico" type="image/x-icon">
 
     <!-- Google Fonts -->
     <link href="<?php echo URL; ?>/assets/css/roboto.css" rel="stylesheet">

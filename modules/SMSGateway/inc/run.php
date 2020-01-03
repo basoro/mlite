@@ -1,6 +1,7 @@
 
 <?php
 
+// koneksi ke mysql
 include "../../../config.php";
 include "send.php";
 
@@ -166,5 +167,4 @@ $hasil2 = query($query2);
 }
 
 // ---------------------- PROSEDUR AUTO RECEIVED & REPLY SMS FINISH -------------------------
-
 ?>

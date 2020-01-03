@@ -83,12 +83,12 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   $hasil = query($query);
 		   $data = fetch_array($hasil);
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=send">
+		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=forward">
 		Message : <br>
 		<textarea name="pesan" class="form-control" rows="12" cols="50"><?php echo $data['msg']; ?></textarea>
 		<br><br>
 		Forward ke :
-		<select name="sender">
+		<select name="sender" class="form-control show-tick selectpicker" data-live-search="true" data-size="3">
 		<?php
 		$query = "SELECT pegawai.nama, petugas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip";
 		$hasil = query($query);
