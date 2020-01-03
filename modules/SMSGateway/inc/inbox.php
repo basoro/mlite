@@ -76,7 +76,6 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 		   $noSender = $data['sender'];
 
-
 		   if (isset($_GET['act']) && $_GET['act'] == "forward")
 		   {
 		   $id = $_GET['id'];
