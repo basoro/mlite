@@ -43,5 +43,8 @@ class Umpeg {
 </div>
 <?php
     }
+    function tambah() {
+      include ('tambah.php');
+    }
 }
 ?>

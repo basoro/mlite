@@ -9,5 +9,10 @@
                 Data Pegawai
             </a>
         </li>
+        <li class="<?php if ($params['module']=="Umpeg" && $params['page']=="tambah") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Umpeg&page=tambah">
+                Tambah Pegawai
+            </a>
+        </li>
     </ul>
 </li>
