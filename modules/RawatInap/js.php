@@ -100,28 +100,58 @@
 <script>
 
     $(document).ready(function() {
-
-        $('#riwayatmedis').dataTable( {
-          bStateSave: true,
-          responsive: true
-        } );
-
-        $('#datatable_ralan').dataTable( {
-          bStateSave: true,
-          responsive: true,
-          order: [[ 2, 'asc' ]]
-        } );
-        $('#datatable_ranap').dataTable( {
+        $('table.datatable').DataTable( {
           bStateSave: true,
           responsive: true,
           order: [[ 4, 'asc' ]]
-        } );
-        $('#databooking').dataTable( {
-          bStateSave: true,
-          responsive: true,
-          order: [[ 1, 'asc' ]]
-        } );
+        } );      
+    });   
+    
+    $('.dpjp').select2({
+      placeholder: 'Pilih Dokter',
+      ajax: {
+        url: '<?php echo URL; ?>/modules/RawatInap/includes/select-dokter.php',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatData,
+      minimumInputLength: 3
+    });
 
-    } );
+    $('.kd_poli').select2({
+      placeholder: 'Pilih poli',
+      ajax: {
+        url: '<?php echo URL; ?>/modules/RawatJalan/includes/select-poli.php',
+        dataType: 'json',
+        delay: 250,
+        processResults: function (data) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatData,
+      minimumInputLength: 3
+    });
 
+    $(".tglprk").on("change", function(e) {
+      var kode = $("#tglprk").val();
+      var poli = $("#kd_poli").val();
+      $.ajax({
+        url: '<?php echo URL; ?>/modules/RawatInap/includes/noreg.php',
+        data: {kode:kode,poli:poli},
+        success: function(data){
+          var json = data;
+          obj = JSON.parse(json);
+          $('#noreg').val(obj.noreg);
+        }
+      })
+    });
 </script>

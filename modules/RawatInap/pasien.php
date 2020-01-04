@@ -13,15 +13,15 @@ if(isset($_GET['no_rawat'])) {
     $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur FROM reg_periksa a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]'";
     $found_pasien = query($_sql);
     if(num_rows($found_pasien) == 1) {
-	     while($row = fetch_array($found_pasien)) {
-	        $no_rkm_medis  = $row['0'];
-	        $get_no_rawat	     = $row['1'];
+      while($row = fetch_array($found_pasien)) {
+          $no_rkm_medis  = $row['0'];
+          $get_no_rawat	     = $row['1'];
           $no_rawat	     = $row['1'];
-	        $nm_pasien     = $row['2'];
-	        $umur          = $row['3'];
-	     }
+          $nm_pasien     = $row['2'];
+          $umur          = $row['3'];
+      }
     } else {
-	     redirect ('./?module=RawatInap&page=index');
+      redirect ('./?module=RawatInap&page=index');
     }
 }
 
@@ -49,7 +49,7 @@ if(isset($_GET['no_rawat'])) {
                                     <th width = "10px">Tanggal<br>Masuk</th>
                                     <th width = "10px">Cara<br>Bayar</th>
                                     <th>DPJP</th>
-                                 </tr>
+                                </tr>
                             </thead>
                             <tbody>
                             <!-- This query based on Adly's (Adly Hidayat S.KOM) query. Thanks bro -->
@@ -145,9 +145,6 @@ if(isset($_GET['no_rawat'])) {
                                 </div>
 
                         <?php } ?>
-
-
-
                         <?php
                         if($action == "tindakan"){
                           if (isset($_POST['ok_tdk'])) {
@@ -170,7 +167,7 @@ if(isset($_GET['no_rawat'])) {
                               };
                           if(isset($_POST['edit_an'])){
                                 if(($no_rawat <> "")){
-                              	$insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
+                                  $insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
 
                                   if($insert){
                                     redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
@@ -179,29 +176,30 @@ if(isset($_GET['no_rawat'])) {
                               };
 
                           ?>
-                           <div class="row">
-                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                               <div class="body">
-                                   <dl class="dl-horizontal">
-                                       <dt>Nama Lengkap</dt>
-                                       <dd><?php echo $nm_pasien; ?></dd>
-                                       <dt>No. RM</dt>
-                                       <dd><?php echo $no_rkm_medis; ?></dd>
-                                       <dt>No. Rawat</dt>
-                                       <dd><?php echo $no_rawat; ?></dd>
-                                       <dt>Umur</dt>
-                                       <dd><?php echo $umur; ?></dd>
-                                   </dl>
-                               </div>
-                               <div class="row">
-                                 <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                                   <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
-                                   <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">CPPT</a></li>
-                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
-                                 </ul>
-                               </div>
-                               <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
-                               <div class="collapse" id="collapseExample">
+                          <div class="row">
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                              <div class="body">
+                                  <dl class="dl-horizontal">
+                                      <dt>Nama Lengkap</dt>
+                                      <dd><?php echo $nm_pasien; ?></dd>
+                                      <dt>No. RM</dt>
+                                      <dd><?php echo $no_rkm_medis; ?></dd>
+                                      <dt>No. Rawat</dt>
+                                      <dd><?php echo $no_rawat; ?></dd>
+                                      <dt>Umur</dt>
+                                      <dd><?php echo $umur; ?></dd>
+                                  </dl>
+                              </div>
+                              <div class="row">
+                                <ul class="nav nav-tabs tab-nav-right" role="tablist">
+                                  <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
+                                  <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">CPPT</a></li>
+                                  <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
+                                  <li role="presentation"><a href="#skdp" data-toggle="tab">SKDP</a></li>
+                                </ul>
+                              </div>
+                              <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
+                              <div class="collapse" id="collapseExample">
                                  <div class="well">
                                              <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                              <?php
@@ -232,7 +230,7 @@ if(isset($_GET['no_rawat'])) {
                                  <div class="tab-content m-t-20">
                                    <!-- riwayat -->
                                    <div role="tabpanel" class="tab-pane fade in active" id="riwayat">
-                                     <table id="riwayatmedis" class="table">
+                                     <table class="table datatable">
                                        <thead>
                                          <tr>
                                            <th>Tanggal</th>
@@ -530,7 +528,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatab" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                     <table class="table datatable table-bordered table-striped table-hover display nowrap" width="100%">
                                          <thead>
                                              <tr>
                                                <th>Keluhan</th>
@@ -580,7 +578,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                     <table class="table table-bordered table-striped table-hover display nowrap datatable" width="100%">
                                          <thead>
                                              <tr>
                                                  <th>Nama Tindakan</th>
@@ -607,7 +605,11 @@ if(isset($_GET['no_rawat'])) {
                                      </table>
                                      </div>
                                    </div>
+                                   <div role="tabpanel" class="tab-pane fade in" id="skdp">
+                                 <?php include_once('includes/skdp.php');?>
                                  </div>
+                                 </div>
+                                 
 
                           <?php } ?>
 
@@ -996,14 +998,14 @@ if(isset($_GET['no_rawat'])) {
                                   </dl>
                                   <div>
                                       <ul class="nav nav-tabs" role="tablist">
-                                          <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+                                          <li role="presentation" class="active"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
                                           <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Tindakan Operasi</a></li>
                                           <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Komplikasi / Infeksi</a></li>
                                           <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Pemakaian Antimikroba</a></li>
                                       </ul>
                                   </div>
                                   <div class="tab-content">
-                                      <div role="tabpanel" class="tab-pane fade" id="5">
+                                      <div role="tabpanel" class="tab-pane fade in active" id="5">
                                           <?php include_once('includes/survei.php');?>
                                       </div>
                                       <div role="tabpanel" class="tab-pane fade" id="6">
