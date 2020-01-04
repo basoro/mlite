@@ -51,7 +51,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=send">
 		<input type="hidden" name="phone" value="<?php echo $ph; ?>">
 		Message : <br>
-		<textarea name="pesan" rows="10" cols="50"></textarea>
+		<textarea name="pesan" cols="30" rows="5" class="form-control no-resize"></textarea>
 		<br>
 		Keterangan: Berikan string [nama] bila ingin menampilkan nama si penerima SMS pada pesan di atas.
 		<br><br>
@@ -72,7 +72,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=send">
 		<input type="hidden" name="phone" value="<?php echo $ph; ?>">
 		Message : <br>
-		<textarea name="pesan" rows="10" cols="50"></textarea>
+		<textarea name="pesan" cols="30" rows="5" class="form-control no-resize"></textarea>
 		<br>
 		Keterangan: Berikan string [nama] bila ingin menampilkan nama si penerima SMS pada pesan di atas.
 		<br><br>
