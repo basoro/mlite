@@ -1,12 +1,12 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory   = 'Umpeg';
-$module_title       = 'Umpeg';
+$module_directory   = 'Kepegawaian';
+$module_title       = 'Kepegawaian';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul umum dan kepegawaian di SIMKES Khanza.';
+$module_description = 'Modul kepegawaian di SIMKES Khanza.';
 $module_type        = 'FKTP';
 
 ?>

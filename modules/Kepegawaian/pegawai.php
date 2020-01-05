@@ -1,11 +1,3 @@
-<?php
-if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
-?>
-
-<?php
-class Umpeg {
-    function index() {
-?>
 <div class="card">
   <div class="header">
       <h2>Data Pegawai</h2>
@@ -41,10 +33,3 @@ class Umpeg {
     </table>
   </div>
 </div>
-<?php
-    }
-    function tambah() {
-      include ('tambah.php');
-    }
-}
-?>
