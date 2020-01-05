@@ -44,6 +44,23 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 				          </select>
 				      </div>
 
+							<div class="form-group">
+				          <input type="radio" name="kirim" value="group_pasien" id="group_pasien" class="with-gap">
+				          <label for="group_pasien">Kirim ke Pasien Poliklinik</label>
+				          <select class="form-control show-tick selectpicker" name='group_pasien' data-live-search="true" data-size="3">
+				          <option value="0">Semua Poli</option>
+				          <?php
+				          $query = "SELECT * FROM poliklinik";
+				          $hasil = query($query);
+				          while ($data = fetch_array($hasil))
+				          {
+				            echo "<option value='".$data['kd_poli']."'>".$data['nm_poli']."</option>";
+				          }
+				          ?>
+				          </select>
+									<input type="text" name="tgl_registrasi" class="form-control form-line datepicker" placeholder="Tanggal Kunjungan">
+				      </div>
+
 				      <div class="form-group">
 
 				          <input type="radio" name="kirim" value="single" id="single" class="with-gap">
@@ -111,6 +128,31 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   $pesan = $_POST['pesan'];
 
 		   send($notelp, $pesan);
+		   }
+			 // jika pengirimannya berdasarkan group pasien periksa
+		   if ($_POST['kirim'] == "group_pasien")
+		   {
+			 // membaca group pasien berdasarkan poli
+		   $group = $_POST['group_pasien'];
+		   // membaca tanggal periksa
+		   $group = $_POST['tgl_registrasi'];
+		   // membaca pesan yang akan dikirim dari form
+		   $pesan = $_POST['pesan'];
+
+		   // membaca  no. telp dari phonebook berdasarkan group
+
+		   if ($group == 0) $query = "SELECT pasien.no_tlp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$_POST['tgl_registrasi']}'";
+		   else if ($group !== 0) $query = "SELECT pasien.no_tlp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$_POST['tgl_registrasi']}' AND reg_periksa.kd_poli = '$group'";
+
+		   $hasil = query($query);
+
+		   while ($data = fetch_array($hasil))
+			   {
+			      // proses pengiriman pesan SMS ke semua no. telp
+			      $notelp = $data['no_tlp'];
+
+			      send($notelp, $pesan);
+			   }
 		   }
 			 // jika pengirimannya berdasarkan single
 		   else if ($_POST['kirim'] == "pasien")
