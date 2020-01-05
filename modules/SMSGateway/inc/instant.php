@@ -47,8 +47,8 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 							<div class="form-group">
 				          <input type="radio" name="kirim" value="group_pasien" id="group_pasien" class="with-gap">
 				          <label for="group_pasien">Kirim ke Pasien Poliklinik</label>
-				          <select class="form-control show-tick selectpicker" name='group_pasien' data-live-search="true" data-size="3">
-				          <option value="0">Semua Poli</option>
+				          <select class="form-control show-tick selectpicker" name="group_pasien" data-live-search="true" data-size="3">
+				          <option value="">Pilih Poli</option>
 				          <?php
 				          $query = "SELECT * FROM poliklinik";
 				          $hasil = query($query);
@@ -72,7 +72,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 							<div class="form-group">
 				          <input type="radio" name="kirim" value="jabatan" id="jabatan" class="with-gap">
 				          <label for="jabatan">Kirim ke Group Jabatan</label>
-				          <select class="form-control show-tick selectpicker" name='group' data-live-search="true" data-size="3">
+				          <select class="form-control show-tick selectpicker" name="group" data-live-search="true" data-size="3">
 				          <option value="0">Semua Jabatan</option>
 				          <?php
 				          $query = "SELECT * FROM jabatan";
@@ -141,8 +141,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 
 		   // membaca  no. telp dari phonebook berdasarkan group
 
-		   if ($group == 0) $query = "SELECT pasien.no_tlp AS no_telp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$tgl_registrasi}'";
-		   else if ($group !== 0) $query = "SELECT pasien.no_tlp AS no_telp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$tgl_registrasi}' AND reg_periksa.kd_poli = '$group'";
+		 	 $query = "SELECT pasien.no_tlp AS no_telp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$tgl_registrasi}' AND reg_periksa.kd_poli = '{$group}'";
 
 		   $hasil = query($query);
 
