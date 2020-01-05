@@ -78,6 +78,12 @@ if(isset($_GET['no_rawat'])) {
                                                         <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
                                                           <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
                                                         <?php } ?>
+                                                            <li><a class="trigger right-caret">Another Dropdown</a>
+                                                                <ul class="dropdown-menu sub-menu">
+                                                                  <li><a href="#">Level 3</a></li>
+                                                                  <li><a href="#">Level 3</a></li>
+                                                                </ul>
+                                                            </li>
                                                     </ul>
                                                 </div>
                                             </td>
