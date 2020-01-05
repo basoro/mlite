@@ -130,26 +130,26 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   send($notelp, $pesan);
 		   }
 			 // jika pengirimannya berdasarkan group pasien periksa
-		   if ($_POST['kirim'] == "group_pasien")
+		   else if ($_POST['kirim'] == "group_pasien")
 		   {
 			 // membaca group pasien berdasarkan poli
 		   $group = $_POST['group_pasien'];
 		   // membaca tanggal periksa
-		   $group = $_POST['tgl_registrasi'];
+		   $tgl_registrasi = $_POST['tgl_registrasi'];
 		   // membaca pesan yang akan dikirim dari form
 		   $pesan = $_POST['pesan'];
 
 		   // membaca  no. telp dari phonebook berdasarkan group
 
-		   if ($group == 0) $query = "SELECT pasien.no_tlp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$_POST['tgl_registrasi']}'";
-		   else if ($group !== 0) $query = "SELECT pasien.no_tlp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$_POST['tgl_registrasi']}' AND reg_periksa.kd_poli = '$group'";
+		   if ($group == 0) $query = "SELECT pasien.no_tlp AS no_telp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$tgl_registrasi}'";
+		   else if ($group !== 0) $query = "SELECT pasien.no_tlp AS no_telp FROM pasien, reg_periksa WHERE pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND reg_periksa.tgl_registrasi = '{$tgl_registrasi}' AND reg_periksa.kd_poli = '$group'";
 
 		   $hasil = query($query);
 
 		   while ($data = fetch_array($hasil))
 			   {
 			      // proses pengiriman pesan SMS ke semua no. telp
-			      $notelp = $data['no_tlp'];
+			      $notelp = $data['no_telp'];
 
 			      send($notelp, $pesan);
 			   }
