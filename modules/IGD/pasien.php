@@ -75,6 +75,13 @@ if(isset($_GET['no_rawat'])) {
                                                         <li><a href="./?module=IGD&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
                                                         <li><a href="./?module=IGD&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
                                                         <li><a href="./?module=IGD&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
+                                                        <!-- <li><a href="./?module=IGD&page=index&action=kategori&no_rawat=<?php echo $row['5']; ?>">Kategori Pasien</a></li> -->
+                                                        <li class="dropdown-submenu">
+                                                          <a tabindex="-1" href="#">More options</a>
+                                                          <ul class="dropdown-menu">
+                                                            ...
+                                                          </ul>
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </td>
@@ -591,7 +598,47 @@ if(isset($_GET['no_rawat'])) {
                                  </div>
 
                           <?php } ?>
-
+                          <?php if($action == "kategori") { ?>
+                            <div class="body">
+                                    <form method="POST">
+                                      <label for="email_address">Kategori Pasien</label>
+                                      <div class="form-group">
+                                          <select name="kd_kat" class="form-control kd_kat" id="kd_kat" style="width:100%"></select>
+                                          <br/>
+                                        <!-- <input type="hidden" class="form-control" id="kdtdk" name="kdtdk"/> -->
+                                      </div>
+                                      <button type="submit" name="ok_kat" value="ok_kat" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_kat\'">SIMPAN</button>
+                                    </form>
+                                    </div>
+                                    <div class="body">
+                                    <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Nama Tindakan</th>
+                                                <th>Tanggal Tindakan</th>
+                                                <th>Biaya</th>
+                                                <th>Tools</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <?php
+                                        $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakanpr, b.nm_perawatan  FROM rawat_jl_pr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
+                                        while ($data_tindakan = fetch_array($query_tindakan)) {
+                                        ?>
+                                            <tr>
+                                                <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
+                                                <td><?php echo $data_tindakan['1']; ?></td>
+                                                <td><?php echo $data_tindakan['2']; ?></td>
+                                                <td><a href="./?module=IGD&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                            </tr>
+                                        <?php
+                                        }
+                                        ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                  </div>
+                          <?php } ?>
                           <?php if($action == "berkas_digital") { ?>
                           <?php
                             if (isset($_POST['ok_berdig'])) {

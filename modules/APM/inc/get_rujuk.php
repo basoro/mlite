@@ -27,8 +27,8 @@ if(!empty($_POST['no_peserta'])){
 	$result = json_decode($content, true);
   	$hasil = [];
   	foreach($result['response']['rujukan'] as $key => $value):
-	array_push($hasil,['no_rujukan' => $value['no_rujukan']]);
-  	endforeach
+	    array_push($hasil,['no_rujukan' => $value['no_rujukan']]);
+    endforeach;
     //returns data as JSON format
     echo json_encode($hasil);
 }

@@ -196,6 +196,7 @@ if(isset($_GET['no_rawat'])) {
                                   <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">CPPT</a></li>
                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
                                   <li role="presentation"><a href="#skdp" data-toggle="tab">SKDP</a></li>
+                                  <li role="presentation"><a href="#hais" data-toggle="tab">HAIs</a></li>
                                 </ul>
                               </div>
                               <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
@@ -604,13 +605,218 @@ if(isset($_GET['no_rawat'])) {
                                          </tbody>
                                      </table>
                                      </div>
-                                   </div>
-                                   <div role="tabpanel" class="tab-pane fade in" id="skdp">
-                                 <?php include_once('includes/skdp.php');?>
-                                 </div>
-                                 </div>
-                                 
-
+                                  </div>
+                                  <div role="tabpanel" class="tab-pane fade in" id="skdp">
+                                    <?php include_once('includes/skdp.php');?>
+                                  </div>
+                                  <div role="tabpanel" class="tab-pane fade in" id="hais">
+    <div class="body">
+      <form method="POST">
+        <?php 
+          if (isset($_POST['ok_hais'])) {
+            if (($_POST['tgl'] <> "") and ($no_rawat <> "")) {
+                $insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
+                    ,'{$_POST['vap']}','{$_POST['iad']}','{$_POST['pleb']}','{$_POST['isk']}','{$_POST['ilo']}','{$_POST['hap']}','{$_POST['tinea']}','{$_POST['scab']}','{$_POST['deku']}'
+                    ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}','{$_POST['bed']}')");
+                    if ($insert) {
+                      redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                    };
+                };
+            };
+        ?>
+        <div class="row clearfix">
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Sputum</dt>
+                <dd><input type="text" class="form-control" name="sputum"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Darah</dt>
+                <dd><input type="text" class="form-control" name="darah"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Urine</dt>
+                <dd><input type="text" class="form-control" name="alergi"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Antibiotik</dt>
+                <dd><input type="text" class="form-control" name="anti"></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row clearfix">
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ETT</dt>
+                <dd><input type="text" class="form-control" name="ett"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>CVL</dt>
+                <dd><input type="text" class="form-control" name="cvl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>IVL</dt>
+                <dd><input type="text" class="form-control" name="ivl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>UC</dt>
+                <dd><input type="text" class="form-control" name="uc"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>VAP</dt>
+                <dd><input type="text" class="form-control" name="vap"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>IAD</dt>
+                <dd><input type="text" class="form-control" name="iad"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>PLEB</dt>
+                <dd><input type="text" class="form-control" name="pleb"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ISK</dt>
+                <dd><input type="text" class="form-control" name="isk"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ILO</dt>
+                <dd><input type="text" class="form-control" name="ilo"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>HAP</dt>
+                <dd><input type="text" class="form-control" name="hap"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Tinea</dt>
+                <dd><input type="text" class="form-control" name="tinea"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Scabies</dt>
+                <dd><input type="text" class="form-control" name="scab"></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="row clearfix">
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Bed</dt>
+          <?php $bed = fetch_array(query("SELECT kd_kamar from kamar_inap where no_rawat = '{$no_rawat}'"));?>
+                <dd><input type="text" class="form-control" name="bed" value="<?php echo $bed['0'];?>"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Tanggal</dt>
+                <dd><input type="text" class="datepicker form-control" name="tgl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Deku</dt>
+                <dd><select type="text" class="form-control" name="deku"><option value="IYA">IYA</option><option value="TIDAK">TIDAK</option></select></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <button type="submit" name="ok_hais" value="ok_hais" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_hais\'">SIMPAN</button>
+      </form>
+    </div>
+    <div class="body">
+      <table id="hais" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Kamar</th>
+            <th>Tools</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php
+        $query_tindakan = query("SELECT * FROM data_HAIs WHERE no_rawat = '{$no_rawat}'");
+        while ($data_tindakan = fetch_array($query_tindakan)) {
+        ?>
+          <tr>
+            <td><?php echo $data_tindakan['tanggal']; ?></td>
+            <td><?php echo $data_tindakan['kd_kamar']; ?></td>
+            <td><a href="./?module=RawatInap&page=index&action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+          </tr>
+        <?php
+          }
+        ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+                                </div>
+                            
                           <?php } ?>
 
                           <?php if($action == "berkas_digital") { ?>
@@ -1036,6 +1242,20 @@ if(isset($_GET['no_rawat'])) {
                             redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
+                          if ($action == "delete_hais") {
+                            $hapus = "DELETE FROM data_HAIs WHERE tanggal='{$_REQUEST['tanggal']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                            $hasil = query($hapus);
+                            if (($hasil)) {
+                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            }
+                          }
+                          if ($action == "delete_skdp") {
+                            $hapus = "DELETE FROM booking_registrasi WHERE no_reg='{$_REQUEST['no_reg']}' AND no_rkm_medis='{$_REQUEST['no_rkm_medis']}'";
+                            $hasil = query($hapus);
+                            if (($hasil)) {
+                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            }
+                          }
                         ?>
 </div>
 <div>
