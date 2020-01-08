@@ -55,5 +55,12 @@
             </a>
         </li>
         <?php } ?>
+        <?php if(FKTL == true) { ?>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="laporan_pemberian_obat") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=laporan_pemberian_obat">
+                Laporan Pemberian Obat
+            </a>
+        </li>
+        <?php } ?>
     </ul>
 </li>

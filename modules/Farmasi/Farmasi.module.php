@@ -40,5 +40,9 @@ class Farmasi {
       global $dataSettings, $date;
       include('modules/Farmasi/obat-expired.php');
     }
+    function laporan_pemberian_obat() {
+      global $dataSettings, $date;
+      include('modules/Farmasi/laporan-pemberian-obat.php');
+    }
 }
 ?>
