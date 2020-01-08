@@ -21,7 +21,7 @@ define('URLSIMRS', 'http://localhost/webapps');
 define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'rootOnly');
+define('DB_PASS', '');
 define('DB_NAME', 'sik');
 define('PRODUCTION', false);
 define('KODERS', '6307012');
