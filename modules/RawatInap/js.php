@@ -125,3 +125,22 @@
     } );
 
 </script>
+
+<script>
+$('.kd_jenis_prw_lab').select2({
+    placeholder: 'Pilih Jenis',
+    ajax: {
+        url: 'includes/select-laboratorium.php',
+        dataType: 'json',
+        delay: 250,
+            processResults: function (data) {
+                return {
+                    results: data
+                };
+            },
+        cache: true
+    },
+    templateResult: formatData,
+    minimumInputLength: 3
+});
+</script>

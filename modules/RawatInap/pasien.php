@@ -199,9 +199,12 @@ if(isset($_GET['no_rawat'])) {
                                </div>
                                <div class="row">
                                  <ul class="nav nav-tabs tab-nav-right" role="tablist">
-                                   <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
+                                   <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">Riwayat</a></li>
                                    <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">CPPT</a></li>
-                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
+                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">Tindakan</a></li>
+                                   <li role="presentation"><a href="#skdp" data-toggle="tab">SKDP</a></li>
+                                   <li role="presentation"><a href="#hais" data-toggle="tab">HAIs</a></li>
+                                   <li role="presentation"><a href="#minta_lab" data-toggle="tab">Permintaan Lab</a></li>
                                  </ul>
                                </div>
                                <button class="btn bg-cyan waves-effect m-t-15 m-b-15" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">Berkas RM Lama</button>
@@ -571,6 +574,217 @@ if(isset($_GET['no_rawat'])) {
                                      </table>
                                      </div>
                                    </div>
+
+                                  <div role="tabpanel" class="tab-pane fade in" id="skdp">
+                                    <?php include_once('includes/skdp.php');?>
+                                  </div>
+                                  <div role="tabpanel" class="tab-pane fade in" id="hais">
+    <div class="body">
+      <form method="POST">
+        <?php
+          if (isset($_POST['ok_hais'])) {
+            if (($_POST['tgl'] <> "") and ($no_rawat <> "")) {
+                $insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
+                    ,'{$_POST['vap']}','{$_POST['iad']}','{$_POST['pleb']}','{$_POST['isk']}','{$_POST['ilo']}','{$_POST['hap']}','{$_POST['tinea']}','{$_POST['scab']}','{$_POST['deku']}'
+                    ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}','{$_POST['bed']}')");
+                    if ($insert) {
+                      redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                    };
+                };
+            };
+        ?>
+        <div class="row clearfix">
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Sputum</dt>
+                <dd><input type="text" class="form-control" name="sputum"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Darah</dt>
+                <dd><input type="text" class="form-control" name="darah"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Urine</dt>
+                <dd><input type="text" class="form-control" name="alergi"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Antibiotik</dt>
+                <dd><input type="text" class="form-control" name="anti"></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row clearfix">
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ETT</dt>
+                <dd><input type="text" class="form-control" name="ett"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>CVL</dt>
+                <dd><input type="text" class="form-control" name="cvl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>IVL</dt>
+                <dd><input type="text" class="form-control" name="ivl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>UC</dt>
+                <dd><input type="text" class="form-control" name="uc"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>VAP</dt>
+                <dd><input type="text" class="form-control" name="vap"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>IAD</dt>
+                <dd><input type="text" class="form-control" name="iad"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>PLEB</dt>
+                <dd><input type="text" class="form-control" name="pleb"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ISK</dt>
+                <dd><input type="text" class="form-control" name="isk"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>ILO</dt>
+                <dd><input type="text" class="form-control" name="ilo"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>HAP</dt>
+                <dd><input type="text" class="form-control" name="hap"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Tinea</dt>
+                <dd><input type="text" class="form-control" name="tinea"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-1">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Scabies</dt>
+                <dd><input type="text" class="form-control" name="scab"></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row clearfix">
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Bed</dt>
+          <?php $bed = fetch_array(query("SELECT kd_kamar from kamar_inap where no_rawat = '{$no_rawat}'"));?>
+                <dd><input type="text" class="form-control" name="bed" value="<?php echo $bed['0'];?>"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Tanggal</dt>
+                <dd><input type="text" class="datepicker form-control" name="tgl"></dd>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-2">
+            <div class="form-group">
+              <div class="form-line">
+                <dt>Deku</dt>
+                <dd><select type="text" class="form-control" name="deku"><option value="IYA">IYA</option><option value="TIDAK">TIDAK</option></select></dd>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" name="ok_hais" value="ok_hais" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_hais\'">SIMPAN</button>
+      </form>
+    </div>
+    <div class="body">
+      <table id="hais" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+        <thead>
+          <tr>
+            <th>Tanggal</th>
+            <th>Kamar</th>
+            <th>Tools</th>
+          </tr>
+        </thead>
+        <tbody>
+        <?php
+        $query_tindakan = query("SELECT * FROM data_HAIs WHERE no_rawat = '{$no_rawat}'");
+        while ($data_tindakan = fetch_array($query_tindakan)) {
+        ?>
+          <tr>
+            <td><?php echo $data_tindakan['tanggal']; ?></td>
+            <td><?php echo $data_tindakan['kd_kamar']; ?></td>
+            <td><a href="./?module=RawatInap&page=index&action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+          </tr>
+        <?php
+          }
+        ?>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
                                    <div role="tabpanel" class="tab-pane fade in" id="tindakan">
                                      <div class="body">
                                      <form method="POST">
@@ -611,6 +825,66 @@ if(isset($_GET['no_rawat'])) {
                                      </table>
                                      </div>
                                    </div>
+                                   <div role="tabpanel" class="tab-pane fade in" id="minta_lab">
+                                       <form method="post">
+                                         <?php
+                                         if (isset($_POST['ok_lab'])) {
+                                             if (($_POST['kd_jenis_prw_lab'] <> "") and ($no_rawat <> "")) {
+
+                                                 $get_number = fetch_array(query("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '{$date}'"));
+                                                 $lastNumber = substr($get_number[0], 0, 4);
+                                                 $get_next_number = sprintf('%04s', ($lastNumber + 1));
+                                                 $get_date = str_replace('-', '',$date);
+                                                 $next_no_order = 'PL'.$get_date.''.$get_next_number;
+                                                 echo $next_no_order;
+                                                 $insert = query("INSERT INTO permintaan_lab VALUES ('{$next_no_order}', '{$no_rawat}', '{$date}', '{$time}', '0000-00-00', '00:00:00', '0000-00-00', '00:00:00', '{$_SESSION['username']}', 'ralan')");
+                                                 if($insert) {
+                                                   if($_POST['klinis'] <> "") {
+                                                       $insert_klinis = query("INSERT INTO diagnosa_pasien_klinis VALUES ('{$next_no_order}', '{$_POST['klinis']}')");
+                                                   }
+                                                   $get_kd_jenis_prw = $_POST['kd_jenis_prw_lab'];
+                                                   for ($i = 0; $i < count($get_kd_jenis_prw); $i++) {
+                                                       $kd_jenis_prw = $get_kd_jenis_prw[$i];
+                                                       $insert2 = query("INSERT INTO permintaan_pemeriksaan_lab VALUES ('{$next_no_order}', '{$kd_jenis_prw}', 'Belum')");
+                                                       redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                                   }
+                                                 }
+
+                                             }
+                                         }
+                                         if($action == "delete_lab"){
+                                         	$hapus = "DELETE FROM permintaan_pemeriksaan_lab WHERE noorder='{$_REQUEST['noorder']}' AND kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}'";
+                                         	$hasil = query($hapus);
+                                         	if (($hasil)) {
+                                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                         	}
+                                         }
+                                         ?>
+                                       <dl class="dl-horizontal">
+                                           <dt>Klinis</dt>
+                                           <dd><input name="klinis" class="form-control" style="width:100%"></dd><br/>
+                                           <dt>Jenis Pemeriksaan</dt>
+                                           <dd><select name="kd_jenis_prw_lab[]" class="kd_jenis_prw_lab" multiple="multiple" style="width:100%"></select></dd><br/>
+                                           <dt></dt>
+                                           <dd><button type="submit" name="ok_lab" value="ok_lab" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_lab\'">SIMPAN</button></dd><br/>
+                                           <dt></dt>
+                                           <dd>
+                                             <ul style="list-style:none;margin-left:0;padding-left:0;">
+                                             <?php
+                                             $query = query("SELECT c.kd_jenis_prw, d.nm_perawatan, c.noorder FROM  reg_periksa a, permintaan_lab b, permintaan_pemeriksaan_lab c, jns_perawatan_lab d  WHERE a.no_rawat = '{$no_rawat}' AND a.no_rawat = b.no_rawat AND b.noorder = c.noorder AND c.kd_jenis_prw = d.kd_jenis_prw");
+                                               $no=1;
+                                             while ($data = fetch_array($query)) {
+                                             ?>
+                                                       <li><?php echo $no; ?>. <?php echo $data['1']; ?> <a class="btn btn-danger btn-xs" href="./?module=RawatInap&page=index&action=delete_lab&kd_jenis_prw=<?php echo $data['0']; ?>&noorder=<?php echo $data['2']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></li>
+                                             <?php
+                                                   $no++;
+                                             }
+                                             ?>
+                                             </ul>
+                                           </dd>
+                                       </dl>
+                                       </form>
+                                    </div>
                                  </div>
 
                           <?php } ?>
@@ -1000,14 +1274,14 @@ if(isset($_GET['no_rawat'])) {
                                   </dl>
                                   <div>
                                       <ul class="nav nav-tabs" role="tablist">
-                                          <li role="presentation"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
+                                          <li role="presentation" class="active"><a href="#5" aria-controls="5" role="tab" data-toggle="tab">Faktor Resiko</a></li>
                                           <li role="presentation"><a href="#6" aria-controls="6" role="tab" data-toggle="tab">Tindakan Operasi</a></li>
                                           <li role="presentation"><a href="#7" aria-controls="7" role="tab" data-toggle="tab">Komplikasi / Infeksi</a></li>
                                           <li role="presentation"><a href="#8" aria-controls="8" role="tab" data-toggle="tab">Pemakaian Antimikroba</a></li>
                                       </ul>
                                   </div>
                                   <div class="tab-content">
-                                      <div role="tabpanel" class="tab-pane fade" id="5">
+                                      <div role="tabpanel" class="tab-pane fade in active" id="5">
                                           <?php include_once('includes/survei.php');?>
                                       </div>
                                       <div role="tabpanel" class="tab-pane fade" id="6">
