@@ -25,7 +25,7 @@
               )
                 VALUES
               (
-                NULL, '{$_POST['NIP']}', '{$_POST['nama']}', '{$_POST['jk']}', '{$_POST['jbtn']}', '-', '-', '-', '-', '{$_POST['dpt']}', '{$_POST['bdng']}', '{$_POST['swp']}', '-', '{$_POST['npwp']}', '{$_POST['pddkn']}', '0', '{$_POST['tempat']}', '{$_POST['tanggal']}', '{$_POST['alamat']}', '-', '{$_POST['mker']}', '{$_POST['ms_kerja']}', '-', '-', '0', '{$_POST['stts_aktif']}', '0', '0', '0', '{$_POST['mkon']}', '0', '0', '{$image_name}', '{$_POST['NIK']}'
+                NULL, '{$_POST['NIP']}', '{$_POST['nama']}', '{$_POST['jk']}', '{$_POST['jbtn']}', '-', '-', '-', '-', '{$_POST['dpt']}', '{$_POST['bdng']}', '{$_POST['swp']}', '-', '{$_POST['npwp']}', '{$_POST['pddkn']}', '0', '{$_POST['tempat']}', '{$_POST['tanggal']}', '{$_POST['alamat']}', '-', '{$_POST['mker']}', '{$_POST['ms_kerja']}', '-', '{$_POST['bank']}', '0', '{$_POST['stts_aktif']}', '0', '0', '0', '{$_POST['mkon']}', '0', '0', '{$image_name}', '{$_POST['NIK']}'
               )
             ");
 
@@ -179,6 +179,18 @@
                                 <?php echo enumDropdown('pegawai', 'ms_kerja', '&nbsp;', ''); ?>
                             </div>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="swp" class="col-sm-2 control-label">Akun Bank</label>
+                        <div class="col-sm-10">
+                            <div class="form-line">
+                                <select name="bank" class="form-control">
+                                    <?php $c = query("SELECT * FROM bank"); while($d = fetch_assoc($c)){?>
+                                    <option value="<?php echo $d['namabank'];?>"><?php echo $d['namabank'];?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                      	</div>
                     </div>
                     <div class="form-group">
                         <label for="mker" class="col-sm-2 control-label">Mulai Kerja</label>
