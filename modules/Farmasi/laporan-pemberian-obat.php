@@ -96,9 +96,9 @@
                         <div class="form-group">
                             <div class="form-line">
                             <select name="status" style="width:100%" class="form-control">
-									<option value="B0014" selected="selected" >Rawat Jalan</option>
+									<option value="B0014" selected="selected">Rawat Jalan</option>
 									<option value="B0001">Rawat Inap</option>
-									<option value="B0018" >IGD</option>
+									<option value="B0018">IGD</option>
 								</select>
                             </div>
                         </div>

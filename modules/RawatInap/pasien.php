@@ -195,6 +195,7 @@ if(isset($_GET['no_rawat'])) {
                                   <li role="presentation" class="active"><a href="#riwayat" data-toggle="tab">RIWAYAT</a></li>
                                   <li role="presentation"><a href="#pemeriksaan" data-toggle="tab">CPPT</a></li>
                                   <li role="presentation"><a href="#tindakan" data-toggle="tab">TINDAKAN</a></li>
+                                  <li role="presentation"><a href="#dokter" data-toggle="tab">DPJP</a></li>
                                   <li role="presentation"><a href="#skdp" data-toggle="tab">SKDP</a></li>
                                   <li role="presentation"><a href="#hais" data-toggle="tab">HAIs</a></li>
                                 </ul>
@@ -607,7 +608,9 @@ if(isset($_GET['no_rawat'])) {
                                      </div>
                                   </div>
                                   <div role="tabpanel" class="tab-pane fade in" id="skdp">
+                                    <div class="body">
                                     <?php include_once('includes/skdp.php');?>
+                                    </div>
                                   </div>
                                   <div role="tabpanel" class="tab-pane fade in" id="hais">
     <div class="body">
@@ -814,6 +817,9 @@ if(isset($_GET['no_rawat'])) {
         </tbody>
       </table>
     </div>
+  </div>
+  <div role="tabpanel" class="tab-pane fade in" id="dokter">
+  <?php include_once('includes/dpjp.php');?>
   </div>
                                 </div>
                             
@@ -1253,6 +1259,13 @@ if(isset($_GET['no_rawat'])) {
                             $hapus = "DELETE FROM booking_registrasi WHERE no_reg='{$_REQUEST['no_reg']}' AND no_rkm_medis='{$_REQUEST['no_rkm_medis']}'";
                             $hasil = query($hapus);
                             if (($hasil)) {
+                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            }
+                          }
+                          if ($action == "delete_dpjp") {
+                            $hapus = "DELETE FROM dpjp_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_dokter='{$_REQUEST['kd_dokter']}'";
+                            $hasil = query($hapus);
+                            if ($hasil) {
                               redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                             }
                           }
