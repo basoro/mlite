@@ -25,7 +25,7 @@
                 $sql .= " AND poliklinik.kd_poli = '$jenis_poli'";
               }
               $list = query($sql);
-              while($a = mysqli_fetch_assoc($list)) {
+              while($a = fetch_assoc($list)) {
 
           ?>
           <tr>
@@ -171,7 +171,7 @@
     <?php $sql = "SELECT pasien.nm_pasien , reg_periksa.no_rawat , reg_periksa.no_rkm_medis , pasien.tgl_lahir , pasien.no_tlp , pasien.no_peserta , pasien.jk , poliklinik.nm_poli
 FROM reg_periksa , pasien , poliklinik WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = '{$_GET['no_rawat']}'";
 $data = query($sql);
-$b = mysqli_fetch_assoc($data);?>
+$b = fetch_assoc($data);?>
     <div class="body">
       <form method="post" action="">
         <div class="row clearfix">
@@ -491,13 +491,10 @@ $b = mysqli_fetch_assoc($data);?>
                 <label for="dpjp">Nama DPJP</label>
                 <select class="form-control" id="dpjp" onchange="myFunction()" name="dpjp">
                   <option value="" selected>-------------------------------------</option>
-                  <?php if($polik == 'HDL'){?>
-              <option value="9102">dr. Aris Sugiharjo, Sp. PD</option>
-              <?php
-                    }else{
+                  <?php
                     foreach($dpjp['response']['list'] as $kode => $val): ?>
                     <option value="<?php echo $val['kode']; ?>"><?php echo $val['nama']; ?></option>
-                    <?php endforeach; }?>
+                  <?php endforeach; ?>
                 </select>
               </div>
             </div>
@@ -508,7 +505,7 @@ $b = mysqli_fetch_assoc($data);?>
                 <?php
                 $sql = "SELECT no_antrian FROM skdp_bpjs WHERE no_rkm_medis = '{$b['no_rkm_medis']}' and tanggal_datang = '{$date}'";
                 $skdp = query($sql);
-                $sksk = mysqli_fetch_assoc($skdp);
+                $sksk = fetch_assoc($skdp);
                 ?>
                 <label for="norm">No SKDP</label>
                 <input type="text" class="form-control" name="skdp" value="<?php echo $sksk['no_antrian'];?>" placeholder="No SKDP">

@@ -38,7 +38,7 @@ include_once('../../config.php');
                             </div>
                             <?php $sql = "SELECT * FROM bridging_sep WHERE no_rawat = '{$_GET['no_rawat']}'";
                             	$assoc = query($sql);
-                            	$cetak = mysqli_fetch_assoc($assoc);
+                            	$cetak = fetch_assoc($assoc);
                             ?>
                             <div class="row clearfix">
                               <div class="col-md-2">
