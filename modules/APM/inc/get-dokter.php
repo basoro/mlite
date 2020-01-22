@@ -20,12 +20,23 @@ if(!empty($_POST['kd_poli'])){
       //get data from the database
       $query = $db->query("SELECT a.kd_dokter, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.kd_poli = '{$_POST['kd_poli']}' AND a.hari_kerja LIKE '%$hari%'");
 
-      if($query->num_rows > 0){
+      $sql = "SELECT a.kd_dokter, c.nm_dokter, a.kuota FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.kd_poli = '{$_POST['kd_poli']}' AND a.hari_kerja LIKE '%$hari%'";
+
+      $result = fetch_assoc(query($sql));
+
+      $check_kuota = fetch_assoc(query("SELECT COUNT(*) AS count FROM reg_periksa WHERE kd_poli = '{$_POST['kd_poli']}' AND tgl_registrasi = '{$_POST['tgl_registrasi']}'"));
+      $curr_count = $check_kuota['count'];
+      $curr_kuota = $result['kuota'];
+      $online = $curr_kuota / LIMIT;
+
+      if($curr_count > $online) {
+        $data['status'] = 'limit';
+      } else if($query->num_rows > 0){
           while ($userData = $query->fetch_assoc()) {
             $data['status'] = 'ok';
             $data['result'][] = $userData;
           }
-      }else{
+      } else {
           $data['status'] = 'err';
           $data['result'] = '';
       }

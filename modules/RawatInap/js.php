@@ -26,7 +26,7 @@
     $('.kd_tdk').select2({
       placeholder: 'Pilih tindakan',
       ajax: {
-        url: '<?php echo URL; ?>/modules/RawatJalan/includes/select-tindakan.php',
+        url: '<?php echo URL; ?>/modules/RawatInap/includes/select-tindakan.php',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -43,7 +43,7 @@
     $('.kd_tdk').on('change', function () {
      var kode = $("#kd_tdk").val();
      $.ajax({
-      url: '<?php echo URL; ?>/modules/RawatJalan/includes/biaya.php',
+      url: '<?php echo URL; ?>/modules/RawatInap/includes/biaya.php',
       data: "kode="+kode,
      }).success(function (data){
        var json = data,
@@ -70,7 +70,7 @@
   $('.kamar').select2({
           placeholder: 'Pilih kamar',
           ajax: {
-            url: 'modules/RawatJalan/includes/select-kamar.php',
+            url: 'modules/RawatInap/includes/select-kamar.php',
             dataType: 'json',
             delay: 250,
             processResults: function (data) {
@@ -87,7 +87,7 @@
   	$('.kamar').on('change', function () {
          var kode = $("#kamar").val();
          $.ajax({
-         	url: 'modules/RawatJalan/includes/biayabed.php',
+         	url: 'modules/RawatInap/includes/biayabed.php',
          	data: "kode="+kode,
          }).success(function (data){
            var json = data,

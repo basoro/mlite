@@ -156,7 +156,9 @@ if(isset($_GET['no_rawat'])) {
                         if($action == "tindakan"){
                           if (isset($_POST['ok_tdk'])) {
                                         if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
-                                              $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}')");
+                                              $get_biaya = fetch_assoc(query("SELECT material, bhp, kso, menejemen, tarif_tindakanpr, total_byrpr FROM jns_perawatan_inap WHERE kd_jenis_prw = '{$_POST['kd_tdk']}'"));
+
+                                              $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','{$get_biaya['material']}','{$get_biaya['bhp']}','{$get_biaya['tarif_tindakanpr']}','{$get_biaya['kso']}','{$get_biaya['menejemen']}','{$get_biaya['total_byrpr']}')");
                                               if ($insert) {
                                                   redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
@@ -424,7 +426,7 @@ if(isset($_GET['no_rawat'])) {
                                                $no=1;
                                                while ($row_obat = fetch_array($sql_obat)) {
                                                    $get_aturan = fetch_assoc(query("SELECT resep_dokter.aturan_pakai AS aturan FROM resep_dokter, resep_obat WHERE resep_dokter.no_resep = resep_obat.no_resep AND resep_obat.no_rawat = '$row_obat[2]' AND resep_dokter.kode_brng = '{$row_obat['3']}'"));
-                                                   echo '<li>'.$no.'. '.$row_obat[1].' - '.$get_aturan[aturan].' ('.$row_obat[0].')</li>';
+                                                   echo '<li>'.$no.'. '.$row_obat['1'].' - '.$get_aturan['aturan'].' ('.$row_obat['0'].')</li>';
                                                    //echo '<li>'.$no.'. '.$row_obat[1].' ('.$row_obat[0].')</li>';
                                                    $no++;
                                                }

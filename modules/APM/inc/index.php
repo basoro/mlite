@@ -583,7 +583,7 @@ include('../../../init.php');
                 $(div_data).appendTo('#pilih_poli_daftar');
               } else if(data.status == 'exist'){
                 alert("Anda sudah terdaftar...");
-                document.getElementById("tgl_registrasi_daftar").value = "";
+                document.getElementById("pilih_poli_daftar").value = "";
               } else {
                 alert("Detail poli tidak ditemukan...");
                 document.getElementById("tgl_registrasi_daftar").value = "";
@@ -608,6 +608,9 @@ include('../../../init.php');
                 var div_data="<option value="+data.kd_dokter+">"+data.nm_dokter+"</option>";
                 $(div_data).appendTo('#pilih_dokter_daftar');
               });
+            } else if(data.status == 'limit'){
+              alert("Limit pendaftaran sudah terpenuhi. Silahkan pilih hari lain...");
+              document.getElementById("tgl_registrasi_daftar").value = "";
             }else{
               $("#pilih_dokter_daftar").empty();
               alert("Dokter tidak ditemukan...");
