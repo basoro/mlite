@@ -2,7 +2,11 @@
     <div class="header">
         <h2>
           LAPORAN RL 3.3 (Gigi & Mulut)
-            <small><?php if(isset($_GET['tahun'])) { $tahun = $_GET['tahun']; } else { $tahun = date("Y",strtotime($date)); }; echo "Periode ".$tahun; ?></small>
+            <small><?php if (isset($_GET['tahun'])) {
+    $tahun = $_GET['tahun'];
+} else {
+    $tahun = date("Y", strtotime($date));
+}; echo "Periode ".$tahun; ?></small>
         </h2>
         <ul class="header-dropdown m-r--5">
             <li class="dropdown">
@@ -10,10 +14,13 @@
                     <i class="material-icons">more_vert</i>
                 </a>
                 <ul class="dropdown-menu pull-right">
-                    <li><a href="rl-3-3.php?tahun=2016">2016</a></li>
-                    <li><a href="rl-3-3.php?tahun=2017">2017</a></li>
-                    <li><a href="rl-3-3.php?tahun=2018">2018</a></li>
-                    <li><a href="rl-3-3.php?tahun=2019">2019</a></li>
+                  <?php
+                  $current_year = date('Y');
+                  $years = range($current_year-5, $current_year);
+                  foreach ($years as $year) {
+                      echo '<li><a href="'.URL.'/?module=SirsOnline&page=rl_3_3&tahun='.$year.'">'.$year.'</a></li>';
+                  }
+                  ?>
                 </ul>
             </li>
         </ul>
@@ -45,22 +52,24 @@
             GROUP BY prosedur_pasien.kode";
             $query = query($sql);
             $no = 1;
-            while($row = fetch_array($query)) {
-
-            ?>
+            while ($row = fetch_array($query)) {
+                ?>
                 <tr>
                     <td>6307012</td>
                   	<td>63prop</td>
                   	<td><?php
-              		$nm_its = fetch_array(query("SELECT setting.kabupaten FROM setting"));echo $nm_its['0']; ?></td>
+                      $nm_its = fetch_array(query("SELECT setting.kabupaten FROM setting"));
+                echo $nm_its['0']; ?></td>
                   	<td><?php
-              		$bpt = fetch_array(query("SELECT setting.nama_instansi FROM setting"));echo $bpt['0']; ?></td>
+                      $bpt = fetch_array(query("SELECT setting.nama_instansi FROM setting"));
+                echo $bpt['0']; ?></td>
                     <td><?php echo $tahun; ?></td>
                     <td><?php echo $no; ?></td>
                   	<td><?php echo $row['1']; ?></td>
                     <td><?php echo $row['0']; ?></td>
                   	<td><?php
-              		$awal_tahun = fetch_array(query("SElECT count(reg_periksa.no_rawat) FROM reg_periksa , prosedur_pasien , icd9 WHERE reg_periksa.no_rawat = prosedur_pasien.no_rawat AND prosedur_pasien.kode = icd9.kode AND icd9.kode = '{$row['1']}'")); echo $awal_tahun['0']; ?></td>
+                      $awal_tahun = fetch_array(query("SElECT count(reg_periksa.no_rawat) FROM reg_periksa , prosedur_pasien , icd9 WHERE reg_periksa.no_rawat = prosedur_pasien.no_rawat AND prosedur_pasien.kode = icd9.kode AND icd9.kode = '{$row['1']}'"));
+                echo $awal_tahun['0']; ?></td>
                  	</tr>
             <?php
             $no++;

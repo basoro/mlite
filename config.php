@@ -38,6 +38,10 @@ define('BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id:8080/new-vclaim-rest/
 define('ConsID', '');
 define('SecretKey', '');
 
+define('SisruteApiUrl', 'https://api.sisrute.kemkes.go.id/');
+define('IDSisrute', '');
+define('KeySisrute', '');
+
 $loket=['1','2','3']; // Loket harus angka maksimal 9
 $loket_cs=['7','8']; // Loket CS harus angka maximal 9
 $loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9

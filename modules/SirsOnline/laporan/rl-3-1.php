@@ -2,7 +2,12 @@
     <div class="header">
         <h2>
           LAPORAN RL 3.1 (Rawat Inap)
-            <small><?php if(isset($_GET['tahun'])) { $tahun = $_GET['tahun']; } else { $date = date('Y-m-d'); $tahun = date("Y",strtotime($date)); }; echo "Periode ".$tahun; ?></small>
+            <small><?php if (isset($_GET['tahun'])) {
+    $tahun = $_GET['tahun'];
+} else {
+    $date = date('Y-m-d');
+    $tahun = date("Y", strtotime($date));
+}; echo "Periode ".$tahun; ?></small>
         </h2>
         <ul class="header-dropdown m-r--5">
             <li class="dropdown">
@@ -14,7 +19,7 @@
                     $current_year = date('Y');
                     $years = range($current_year-5, $current_year);
                     foreach ($years as $year) {
-                      echo '<li><a href="'.URL.'/?module=SirsOnline&page=rl_3_1&tahun='.$year.'">'.$year.'</a></li>';
+                        echo '<li><a href="'.URL.'/?module=SirsOnline&page=rl_3_1&tahun='.$year.'">'.$year.'</a></li>';
                     }
                     ?>
                 </ul>
@@ -59,53 +64,77 @@
             GROUP BY bangsal.kd_bangsal";
             $query = query($sql);
             $no = 1;
-            while($row = fetch_array($query)) {
-
-            ?>
+            while ($row = fetch_array($query)) {
+                ?>
                 <tr>
                     <td>6307012</td>
                   	<td>63prop</td>
                   	<td><?php
-              		$nm_its = fetch_array(query("SELECT setting.kabupaten FROM setting"));echo $nm_its['0']; ?></td>
+                      $nm_its = fetch_array(query("SELECT setting.kabupaten FROM setting"));
+                echo $nm_its['0']; ?></td>
                   	<td><?php
-              		$bpt = fetch_array(query("SELECT setting.nama_instansi FROM setting"));echo $bpt['0']; ?></td>
+                      $bpt = fetch_array(query("SELECT setting.nama_instansi FROM setting"));
+                echo $bpt['0']; ?></td>
                     <td><?php echo $tahun; ?></td>
                     <td><?php echo $no; ?></td>
-                    <td><?php if ($row['2'] == 'B0003') {echo 'Penyakit Dalam';}
-              			elseif ($row['2'] == 'B0010') {echo 'Bedah';}
-              			elseif ($row['2'] == 'B0012') {echo 'Obsygin';}
-              			elseif ($row['2'] == 'B0007') {echo 'ICU';}
-              			elseif ($row['2'] == 'B0008') {echo 'PICU';}
-              			elseif ($row['2'] == 'B0005') {echo 'Kesehatan Anak';}
-              			elseif ($row['2'] == 'B0006') {echo 'Perinatologi';}
-              			elseif ($row['2'] == 'B0004') {echo 'Bedah Orthopedi';}
-              			else {echo $row['2'];}; ?></td>
+                    <td><?php if ($row['2'] == 'B0003') {
+                    echo 'Penyakit Dalam';
+                } elseif ($row['2'] == 'B0010') {
+                    echo 'Bedah';
+                } elseif ($row['2'] == 'B0012') {
+                    echo 'Obsygin';
+                } elseif ($row['2'] == 'B0007') {
+                    echo 'ICU';
+                } elseif ($row['2'] == 'B0008') {
+                    echo 'PICU';
+                } elseif ($row['2'] == 'B0005') {
+                    echo 'Kesehatan Anak';
+                } elseif ($row['2'] == 'B0006') {
+                    echo 'Perinatologi';
+                } elseif ($row['2'] == 'B0004') {
+                    echo 'Bedah Orthopedi';
+                } else {
+                    echo $row['2'];
+                }; ?></td>
                   	<td><?php
-              		$tahun_before = $tahun - 1;
-              		$awal_tahun = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_masuk LIKE '%{$tahun_before}-12-31%'")); echo $awal_tahun['0']; ?></td>
+                      $tahun_before = $tahun - 1;
+                $awal_tahun = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_masuk LIKE '%{$tahun_before}-12-31%'"));
+                echo $awal_tahun['0']; ?></td>
                  	<td><?php
-              		$masuk = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_masuk BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $masuk['0']; ?></td>
+                      $masuk = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_masuk BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $masuk['0']; ?></td>
                   	<td><?php
-              		$keluar = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang IN ('Membaik','APS','Pindah Kamar','+') AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $keluar['0']; ?></td>
+                      $keluar = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang IN ('Membaik','APS','Pindah Kamar','+') AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $keluar['0']; ?></td>
                   	<td><?php
-              		$dieless = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang = 'Meninggal' AND kamar_inap.lama <=2 AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $dieless['0']; ?></td>
+                      $dieless = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang = 'Meninggal' AND kamar_inap.lama <=2 AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $dieless['0']; ?></td>
                   	<td><?php
-              		$diemore = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang = 'Meninggal' AND kamar_inap.lama >=2 AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $diemore['0']; ?></td>
+                      $diemore = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang = 'Meninggal' AND kamar_inap.lama > 2 AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $diemore['0']; ?></td>
                   	<td><?php
-              		$lama = fetch_array(query("SElECT SUM(kamar_inap.lama) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang != '-' AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $lama['0']; ?></td>
+                      $lama = fetch_array(query("SElECT SUM(kamar_inap.lama) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND kamar_inap.stts_pulang != '-' AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $lama['0']; ?></td>
                   	<td><?php
-              		$akhir_tahun = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar LIKE '%{$tahun}-12-31%'")); echo $akhir_tahun['0']; ?></td>
+                      $akhir_tahun = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar LIKE '%{$tahun}-12-31%'"));
+                echo $akhir_tahun['0']; ?></td>
                   	<td><?php $msk = fetch_array(query("SELECT SUM(kamar_inap.lama) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_masuk BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31' GROUP BY kamar_inap.tgl_masuk"));
-              			$klr = fetch_array(query("SELECT SUM(kamar_inap.lama) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31' GROUP BY kamar_inap.tgl_keluar"));$ttl = $akhir_tahun['0'] + $msk ['0'] - $klr ['0'];echo $ttl;?></td>
+                $klr = fetch_array(query("SELECT SUM(kamar_inap.lama) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31' GROUP BY kamar_inap.tgl_keluar"));
+                $ttl = $akhir_tahun['0'] + $msk ['0'] - $klr ['0'];
+                echo $ttl; ?></td>
                   	<td>0</td>
                   	<td><?php
-              		$vip = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas VIP' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $vip['0']; ?></td>
+                      $vip = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas VIP' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $vip['0']; ?></td>
                   	<td><?php
-                  	$k1 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 1' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $k1['0']; ?></td>
+                      $k1 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 1' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $k1['0']; ?></td>
                   	<td><?php
-              		$k2 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 2' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $k2['0']; ?></td>
+                      $k2 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 2' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $k2['0']; ?></td>
                   	<td><?php
-              		$k3 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 3' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'")); echo $k3['0']; ?></td>
+                      $k3 = fetch_array(query("SElECT count(kamar_inap.no_rawat) FROM kamar_inap , kamar , bangsal WHERE kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND bangsal.kd_bangsal = '{$row['2']}' AND kamar.kelas = 'Kelas 3' AND kamar_inap.tgl_keluar BETWEEN '{$tahun}-01-01' AND '{$tahun}-12-31'"));
+                echo $k3['0']; ?></td>
                   	<td>0</td>
                 </tr>
             <?php
