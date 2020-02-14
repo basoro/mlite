@@ -11,7 +11,7 @@ $tgl = date("Y-m-d H:i:s");
 // ---------------------- PROSEDUR AUTO RECEIVED TO INBOX START ------------------------------
 
 $query = "SELECT * FROM inbox
-          WHERE textdecoded NOT LIKE 'REG#%' AND (UDH = '' OR UDH LIKE '%01') AND processed = 'false'";
+          WHERE textdecoded NOT LIKE 'REG#%' AND textdecoded NOT LIKE 'INFO#%' AND (UDH = '' OR UDH LIKE '%01') AND processed = 'false'";
 
 $hasil = query($query);
 while ($data = fetch_array($hasil))
@@ -77,7 +77,7 @@ while ($data = fetch_array($hasil))
 
 // command SMS: REG#NAMA#ALAMAT
 
-$query = "SELECT * FROM inbox WHERE textdecoded LIKE 'REG#%' AND processed = 'false'";
+$query = "SELECT * FROM inbox WHERE (textdecoded LIKE 'REG#%' OR textdecoded LIKE 'INFO#%') AND processed = 'false'";
 $hasil = query($query);
 
 while ($data = fetch_array($hasil))
@@ -162,7 +162,26 @@ if ($command == "REG")
       }
     }
   }
-  else $reply = 'Format REG salah. Format yang benar REG#NO_KARTU#KODE_POLI#TGL_BEROBAT. Untuk info kode poli INFO#POLI.';
+  else $reply = 'Format REG salah. Format yang benar REG#NO_KARTU#KODE_POLI#TGL_BEROBAT#CARA_BAYAR. Untuk info kode poli INFO#POLI.';
+} else ($command == "INFO") {
+  if (count($split) == 2) {
+    $keyword = strtoupper($split[1]);
+
+    $query = "SELECT * FROM poliklinik WHERE nm_poli LIKE 'POLI%'";
+    $hasil = query($query);
+
+    $result = '';
+    if (num_rows($hasil) > 0) {
+      while ($row = fetch_array($hasil)) {
+        $result .= $row['kd_poli'].': '.$row['nm_poli'].', ';
+      }
+      $reply = $result;
+    } else {
+      $reply = 'Data tidak ditemukan';
+    }
+  } else {
+    $reply = 'Format SMS Info salah';
+  }
 }
 
 send($notelp, $reply);
