@@ -61,7 +61,7 @@ include('../../../init.php');
     </thead>
     <tbody>
       <?php
-      $master = query("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$namahari'  AND a.kd_poli IN ($poli_hari_ini)");
+      $master = query("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$namahari'  AND a.kd_poli IN ($poli_hari_ini)");
       while ($row = fetch_array($master)) {
         $dalam_pemeriksaan = fetch_assoc(query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.no_rkm_medis = b.no_rkm_medis AND a.stts = 'Berkas Diterima' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' LIMIT 1"));
         echo '<tr>';
@@ -71,10 +71,22 @@ include('../../../init.php');
         } else {
           echo '  <td class="align-middle">('.$dalam_pemeriksaan['no_reg'].') '.$dalam_pemeriksaan['nm_pasien'].'</td>';
         }
+        $max_reg = fetch_array(query("SELECT MAX(no_reg) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_poli = '$row[kd_poli]' AND kd_dokter = '$row[kd_dokter]' ORDER BY no_reg ASC"));
+        $no_max_reg = substr($max_reg['0'], 0, 3);
         $selanjutnya = query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.no_rkm_medis = b.no_rkm_medis AND a.stts = 'Belum' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' ORDER BY a.no_reg ASC");
         echo '  <td class="align-middle"><marquee scrollamount="3">';
-        while($row = fetch_array($selanjutnya)) {
-          echo '- '.$row['nm_pasien'].' (<strong>'.$row['no_reg'].'</strong>) ';
+        while($row2 = fetch_array($selanjutnya)) {
+          $no_urut_reg = substr($row2['no_reg'], 0, 3);
+          $diff = ($row['jam_selesai'] - $row['jam_mulai']) * 60;
+          $get_interval = round($diff/$no_max_reg);
+          if($get_interval > 10){
+            $interval = 10;
+          } else {
+            $interval = $get_interval;
+          }
+          $minutes = $no_urut_reg * $interval;
+          $row['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($row['jam_mulai'])));
+          echo '- '.$row2['nm_pasien'].' (<strong>'.$row2['no_reg'].' - '.$row['jam_mulai'].'</strong>) ';
         }
         echo '  </marquee></td>';
         echo '</tr>';
