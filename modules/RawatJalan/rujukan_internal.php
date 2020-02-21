@@ -35,7 +35,7 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
 				while($row = fetch_array($sql)){
 						echo '<tr>';
 						echo '<td>';
-						echo '<a href="./?module=RawatJalan&page=rujuk_internal&action=jawaban&no_rawat='.$row['4'].'" class="title">'.ucwords(strtolower(SUBSTR($row['0'], 0, 20))).' ...</a>';
+						echo '<a href="./index.php?module=RawatJalan&page=rujuk_internal&action=jawaban&no_rawat='.$row['4'].'" class="title">'.ucwords(strtolower(SUBSTR($row['0'], 0, 20))).' ...</a>';
 						echo '</td>';
                           	echo '<td>'.$row['3'].'</td>';
 						echo '<td>'.$row['1'].'</td>';

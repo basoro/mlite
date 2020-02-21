@@ -14,7 +14,7 @@ $module_type        = 'FKTL';
 <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
   <?php if(FKTL == true) { ?>
   <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-    <a href="<?php echo URL; ?>/?module=<?php echo $module_directory; ?>&page=index">
+    <a href="<?php echo URL; ?>/index.php?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
           <i class="material-icons">assignment_turned_in</i>

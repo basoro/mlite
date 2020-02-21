@@ -8,7 +8,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	echo '<div style="min-height:70vh; min-width:70vw;">';
 	echo '<div class="alert bg-pink alert-dismissible text-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">';
 	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
-	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
+	echo '<a href="'.URL.'/index.php?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
 	echo '</div>';
 	echo '</div>';
 } else {
@@ -25,7 +25,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		        </h2>
 		    </div>
 				<div class="body">
-				  <form name="formku" method="POST" action="<?php echo URL; ?>/?module=SMSGateway&page=sendsms&op=send">
+				  <form name="formku" method="POST" action="<?php echo URL; ?>/index.php?module=SMSGateway&page=sendsms&op=send">
 				      <div class="form-group form-float">
 				          <div class="form-line">
 				              <textarea name="pesan" cols="30" rows="5" class="form-control no-resize" required></textarea>

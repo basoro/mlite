@@ -6,7 +6,7 @@
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="IGD" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=IGD&page=index">
+            <a href="<?php echo URL; ?>/index.php?module=IGD&page=index">
                 Pasien IGD
             </a>
         </li>

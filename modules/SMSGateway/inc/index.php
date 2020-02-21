@@ -6,7 +6,7 @@
       if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
       	echo '<div class="alert bg-pink alert-dismissible text-center">';
       	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
-      	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
+      	echo '<a href="'.URL.'/index.php?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
       	echo '</div>';
       }
     }
@@ -56,7 +56,7 @@
 
       if(mysqli_multi_query($connection,$sql_sms_gateway)){
           set_message ('Table created successfully.');
-          redirect ('./?module=SMSGateway&page=index');
+          redirect ('./index.php?module=SMSGateway&page=index');
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }

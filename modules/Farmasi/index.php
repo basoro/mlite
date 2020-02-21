@@ -13,7 +13,7 @@ $module_type        = 'FKTP';
 
 <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
   <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-    <a href="<?php echo URL; ?>/?module=Farmasi&page=index">
+    <a href="<?php echo URL; ?>/index.php?module=Farmasi&page=index">
       <div class="image">
         <div class="icon">
           <i class="medical-icon-i-pharmacy"></i>

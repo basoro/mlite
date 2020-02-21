@@ -5,12 +5,12 @@
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="Kepegawaian" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Kepegawaian&page=index">
+            <a href="<?php echo URL; ?>/index.php?module=Kepegawaian&page=index">
                 Data Pegawai
             </a>
         </li>
         <li class="<?php if ($params['module']=="Kepegawaian" && $params['page']=="tambah") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Kepegawaian&page=tambah">
+            <a href="<?php echo URL; ?>/index.php?module=Kepegawaian&page=tambah">
                 Tambah Pegawai
             </a>
         </li>

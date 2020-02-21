@@ -31,7 +31,7 @@ if(!empty($_GET['lastPost'])) {
           <!-- Story -->
           <div class="storyUnit">
             <div class="imageUnit">
-              <a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $row['username']; ?>">
+              <a href="<?php echo URL; ?>/index.php?module=Userwall&page=index&user=<?php echo $row['username']; ?>">
                 <?php
                   $a_wall = query("SELECT * FROM pegawai WHERE nik = '{$row['username']}'");
                   $b_wall = fetch_assoc($a_wall);
@@ -46,7 +46,7 @@ if(!empty($_GET['lastPost'])) {
               <p style="float:right; text-align:right;"><a href="javascript:;" class="post-delete" id="post_delete_<?php echo $post_id; ?>">X</a></p>
               <?php } ?>
               <div class="imageUnit-content">
-                <h4><a href="<?php echo URL; ?>/?module=Userwall&page=index&user=<?php echo $row['username']; ?>"><?php echo $b_wall['nama']; ?></a></h4>
+                <h4><a href="<?php echo URL; ?>/index.php?module=Userwall&page=index&user=<?php echo $row['username']; ?>"><?php echo $b_wall['nama']; ?></a></h4>
                 <p><?php echo timeAgo($row['date']);?></p>
               </div>
             </div>
@@ -69,7 +69,7 @@ if(!empty($_GET['lastPost'])) {
              <?php while($comt = fetch_array($comments)) { $comment_id = $comt['cid']; ?>
              <li id="li-comment-<?php echo $comment_id; ?>">
             <div class="acomment-avatar">
-                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>">
+                    <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $comt['username']; ?>">
             					<?php
             					$a_wall = query("SELECT * FROM pegawai WHERE nik = '{$comt['username']}'");
             					$b_wall = fetch_assoc($a_wall);
@@ -85,7 +85,7 @@ if(!empty($_GET['lastPost'])) {
             <?php } ?>
             </div>
             <div class="acomment-meta">
-            <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $b_wall['nama']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
+            <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $b_wall['nama']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
             </div>
             <div class="acomment-content"><p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($comt['comment']))), URL.'/modules/Userwall/inc/assets/smileys/'); ?></p></div></li>
             <?php } ?>

@@ -14,7 +14,7 @@ $module_type        = 'FKTL';
     <?php if(basename($_SERVER['SCRIPT_NAME']) == 'index.php') { ?>
       <?php if(FKTL == true) { ?>
       <div class="col-xs-6 col-sm-3 col-md-3 col-lg-3">
-        <a href="<?php echo URL; ?>/?module=RawatJalan&page=index">
+        <a href="<?php echo URL; ?>/index.php?module=RawatJalan&page=index">
           <div class="image">
             <div class="icon">
               <i class="medical-icon-i-outpatient"></i>

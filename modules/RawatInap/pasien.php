@@ -21,7 +21,7 @@ if(isset($_GET['no_rawat'])) {
 	        $umur          = $row['3'];
 	     }
     } else {
-	     redirect ('./?module=RawatInap&page=index');
+	     redirect ('./index.php?module=RawatInap&page=index');
     }
 }
 
@@ -99,14 +99,14 @@ if(isset($_GET['no_rawat'])) {
                                         <div class="btn-group">
                                             <button type="button" class="btn btn-info waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=tindakan&no_rawat=<?php echo $row['6']; ?>">CPPT & Tindakan</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=surveihais&no_rawat=<?php echo $row['6']; ?>">Surveilans Infeksi</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=berkas_digital&no_rawat=<?php echo $row['6']; ?>">Berkas Digital Perawatan</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=tindakan&no_rawat=<?php echo $row['6']; ?>">CPPT & Tindakan</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=surveihais&no_rawat=<?php echo $row['6']; ?>">Surveilans Infeksi</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=berkas_digital&no_rawat=<?php echo $row['6']; ?>">Berkas Digital Perawatan</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
+                                                <li><a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
                                                 <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
-                                                  <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['7']; ?>">Kirim SMS</a></li>
+                                                  <li><a href="./index.php?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['7']; ?>">Kirim SMS</a></li>
                                                 <?php } ?>
                                           </ul>
                                         </div>
@@ -160,7 +160,7 @@ if(isset($_GET['no_rawat'])) {
 
                                               $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','{$get_biaya['material']}','{$get_biaya['bhp']}','{$get_biaya['tarif_tindakanpr']}','{$get_biaya['kso']}','{$get_biaya['menejemen']}','{$get_biaya['total_byrpr']}')");
                                               if ($insert) {
-                                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                                  redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
                                         };
                                   };
@@ -170,7 +170,7 @@ if(isset($_GET['no_rawat'])) {
                                   $insert = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
                                               ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
                                   if($insert){
-                                    redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
                                 }
                               };
@@ -179,7 +179,7 @@ if(isset($_GET['no_rawat'])) {
                               	$insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
 
                                   if($insert){
-                                    redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
                                 }
                               };
@@ -624,7 +624,7 @@ if(isset($_GET['no_rawat'])) {
                                                <td><?php echo $data_tindakan['tensi']; ?></td>
                                                <td><?php echo $data_tindakan['nadi']; ?></td>
                                                <td><?php echo $data_tindakan['respirasi']; ?></td>
-                                               <td><a href="#" data-toggle="modal" data-target="#edit_anamneseModal">Edit</a> <a href="./?module=RawatInap&action=delete_pemeriksaan&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                               <td><a href="#" data-toggle="modal" data-target="#edit_anamneseModal">Edit</a> <a href="./index.php?module=RawatInap&action=delete_pemeriksaan&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
                                          }
@@ -647,7 +647,7 @@ if(isset($_GET['no_rawat'])) {
                     ,'{$_POST['vap']}','{$_POST['iad']}','{$_POST['pleb']}','{$_POST['isk']}','{$_POST['ilo']}','{$_POST['hap']}','{$_POST['tinea']}','{$_POST['scab']}','{$_POST['deku']}'
                     ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}','{$_POST['bed']}')");
                     if ($insert) {
-                      redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                      redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                     };
                 };
             };
@@ -834,7 +834,7 @@ if(isset($_GET['no_rawat'])) {
           <tr>
             <td><?php echo $data_tindakan['tanggal']; ?></td>
             <td><?php echo $data_tindakan['kd_kamar']; ?></td>
-            <td><a href="./?module=RawatInap&page=index&action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+            <td><a href="./index.php?module=RawatInap&page=index&action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
           </tr>
         <?php
           }
@@ -875,7 +875,7 @@ if(isset($_GET['no_rawat'])) {
                                                  <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
                                                  <td><?php echo $data_tindakan['1']; ?></td>
                                                  <td><?php echo $data_tindakan['2']; ?></td>
-                                                 <td><a href="./?module=RawatInap&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                                 <td><a href="./index.php?module=RawatInap&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
                                          }
@@ -905,7 +905,7 @@ if(isset($_GET['no_rawat'])) {
                                                    for ($i = 0; $i < count($get_kd_jenis_prw); $i++) {
                                                        $kd_jenis_prw = $get_kd_jenis_prw[$i];
                                                        $insert2 = query("INSERT INTO permintaan_pemeriksaan_lab VALUES ('{$next_no_order}', '{$kd_jenis_prw}', 'Belum')");
-                                                       redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                                       redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                                    }
                                                  }
 
@@ -915,7 +915,7 @@ if(isset($_GET['no_rawat'])) {
                                          	$hapus = "DELETE FROM permintaan_pemeriksaan_lab WHERE noorder='{$_REQUEST['noorder']}' AND kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}'";
                                          	$hasil = query($hapus);
                                          	if (($hasil)) {
-                                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                              redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                          	}
                                          }
                                          ?>
@@ -934,7 +934,7 @@ if(isset($_GET['no_rawat'])) {
                                                $no=1;
                                              while ($data = fetch_array($query)) {
                                              ?>
-                                                       <li><?php echo $no; ?>. <?php echo $data['1']; ?> <a class="btn btn-danger btn-xs" href="./?module=RawatInap&page=index&action=delete_lab&kd_jenis_prw=<?php echo $data['0']; ?>&noorder=<?php echo $data['2']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></li>
+                                                       <li><?php echo $no; ?>. <?php echo $data['1']; ?> <a class="btn btn-danger btn-xs" href="./index.php?module=RawatInap&page=index&action=delete_lab&kd_jenis_prw=<?php echo $data['0']; ?>&noorder=<?php echo $data['2']; ?>&no_rawat=<?php echo $no_rawat; ?>">[X]</a></li>
                                              <?php
                                                    $no++;
                                              }
@@ -969,7 +969,7 @@ if(isset($_GET['no_rawat'])) {
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                   set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("./?module=RawatInap&page=index");
+                                  redirect("./index.php?module=RawatInap&page=index");
                                 }
                               }
                             }
@@ -1035,7 +1035,7 @@ if(isset($_GET['no_rawat'])) {
                               $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                 set_message('Berkas digital radiologi telah ditersimpan.');
-                                    redirect("./?module=RawatInap&page=index&action=radiologi&no_rawat=$no_rawat");
+                                    redirect("./index.php?module=RawatInap&page=index&action=radiologi&no_rawat=$no_rawat");
                                 }
                               }
                             }
@@ -1090,7 +1090,7 @@ if(isset($_GET['no_rawat'])) {
                                     $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' , jam_keluar = '".$time."' , diagnosa_akhir = '".$_POST['dx']."' , stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
                                     if($update){
                                       $update1 = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar = '".$_POST['bed']."'");
-                                      redirect('./?module=RawatInap&page=index');
+                                      redirect('./index.php?module=RawatInap&page=index');
                                     }
                                   }else{echo "<script>alert('Pilih Membaik untuk Memulangkan')</script>";}
 
@@ -1360,7 +1360,7 @@ if(isset($_GET['no_rawat'])) {
                           $hapus = "DELETE FROM pemeriksaan_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("./?module=RawatInap&action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./index.php?module=RawatInap&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
 
@@ -1368,7 +1368,7 @@ if(isset($_GET['no_rawat'])) {
                           $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
                         ?>

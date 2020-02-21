@@ -7,7 +7,7 @@ class Userwall {
     if(num_rows(query("SHOW TABLES LIKE 'posts'")) !== 1) {
       echo '<div class="alert bg-pink alert-dismissible text-center">';
       echo '<p class="lead">Belum terinstall Database Userwall (Facebook Like)</p>';
-      echo '<a href="'.URL.'/?module=Userwall&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+      echo '<a href="'.URL.'/index.php?module=Userwall&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
       echo '</div>';
     } else {
       $a = query("SELECT * FROM pegawai WHERE nik = '{$_SESSION['username']}'");
@@ -25,7 +25,7 @@ class Userwall {
               <!-- Story -->
               <div class="storyUnit">
                 <div class="imageUnit">
-                  <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>">
+                  <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $_SESSION['username']; ?>">
                     <?php
                       $_a_wall = query("SELECT * FROM pegawai WHERE nik = '{$_SESSION['username']}'");
                       $_b_wall = fetch_assoc($_a_wall);
@@ -37,7 +37,7 @@ class Userwall {
                     ?>
                   </a>
                   <div class="imageUnit-content">
-                    <h4><a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $b['nama']; ?></a></h4>
+                    <h4><a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $b['nama']; ?></a></h4>
                     <p>Follow me</p>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ class Userwall {
                 <!-- Story -->
                 <div class="storyUnit">
                   <div class="imageUnit">
-                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $row['username']; ?>">
+                    <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $row['username']; ?>">
                       <?php
                         $_a_wall = query("SELECT * FROM pegawai WHERE nik = '{$row['username']}'");
                         $_b_wall = fetch_assoc($_a_wall);
@@ -142,7 +142,7 @@ class Userwall {
                       <p style="float:right; text-align:right;"><a href="javascript:;" class="post-delete" id="post_delete_<?php echo $post_id; ?>">X</a></p>
                     <?php } ?>
                     <div class="imageUnit-content">
-                      <h4><a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $row['username']; ?>"><?php echo $_b_wall['nama']; ?></a></h4>
+                      <h4><a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $row['username']; ?>"><?php echo $_b_wall['nama']; ?></a></h4>
                       <p><?php echo timeAgo($row['date']);?></p>
                     </div>
                   </div>
@@ -165,7 +165,7 @@ class Userwall {
                   <?php $c = fetch_array(query("SELECT `photo` FROM `pegawai` WHERE `nik` = '{$comt['username']}'")); ?>
                   <li id="li-comment-<?php echo $comment_id; ?>">
                   <div class="acomment-avatar">
-                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>" rel="nofollow">
+                    <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $comt['username']; ?>" rel="nofollow">
                     <?php
                       $__a_wall = query("SELECT * FROM pegawai WHERE nik = '{$comt['username']}'");
                       $__b_wall = fetch_assoc($__a_wall);
@@ -181,7 +181,7 @@ class Userwall {
                       <?php } ?>
                   </div>
                   <div class="acomment-meta">
-                    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $__b_wall['nama']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
+                    <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $comt['username']; ?>"><?php echo $__b_wall['nama']; ?></a>  <?php echo timeAgo($comt['commented_date']);?>
                   </div>
                   <div class="acomment-content"><p class="msg_wrap"><?php echo parse_smileys(make_clickable(nl2br(stripslashes($comt['comment']))), URL.'/modules/Userwall/inc/assets/smileys/'); ?></p></div></li>
                   <?php } ?>
@@ -257,7 +257,7 @@ class Userwall {
 
     if(mysqli_multi_query($connection,$sql_userwall)){
         set_message ('Table created successfully.');
-        redirect ('./?module=Userwall&page=index');
+        redirect ('./index.php?module=Userwall&page=index');
     } else{
         echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
     }

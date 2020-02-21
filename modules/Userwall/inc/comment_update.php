@@ -22,7 +22,7 @@ if(!empty($_POST['comment']) && !empty($_POST['act_id'])) {
 	<li id="li-comment-<?php echo $ins_id; ?>">
 	  <?php $d = fetch_array(query("SELECT `photo` FROM `pegawai` WHERE `nik` = '{$_SESSION['username']}'")); ?>
 	  <div class="acomment-avatar">
-	    <a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>" rel="nofollow">
+	    <a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $_SESSION['username']; ?>" rel="nofollow">
 	       <?php
 	      $a_wall = query("SELECT * FROM pegawai WHERE nik = '{$_SESSION['username']}'");
 	      $b_wall = fetch_assoc($a_wall);
@@ -36,7 +36,7 @@ if(!empty($_POST['comment']) && !empty($_POST['act_id'])) {
 			<p style="float:right; text-align:right; font-size:10px;"><a href="javascript:;" rel="<?php echo $post_id; ?>" class="comment-delete" id="comment_delete_<?php echo $ins_id; ?>">X</a></p>
 		</div>
 		<div class="acomment-meta">
-			<a href="<?php echo URL; ?>/?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $b_wall['nama']; ?></a>  0 sec ago
+			<a href="<?php echo URL; ?>/index.php?module=Userwall&user=<?php echo $_SESSION['username']; ?>"><?php echo $b_wall['nama']; ?></a>  0 sec ago
 		</div>
 		<div class="acomment-content">
 			<p class="msg_wrap">

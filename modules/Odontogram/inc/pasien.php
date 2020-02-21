@@ -31,7 +31,7 @@
 
         <tr>
             <td><?php echo SUBSTR($row['0'], 0, 15).' ...'; ?></td>
-            <td><a href="./?module=Odontogram&page=history&no_rkm_medis=<?php echo $row['1']; ?>"><?php echo $row['1']; ?></a></td>
+            <td><a href="./index.php?module=Odontogram&page=history&no_rkm_medis=<?php echo $row['1']; ?>"><?php echo $row['1']; ?></a></td>
             <td><?php echo $row['2']; ?></td>
             <td><?php echo $row['3']; ?></td>
             <td><?php echo $row['4']; ?></td>

@@ -42,10 +42,10 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                     <div class="btn-group">
                         <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                         <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                            <li><a href="./?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                            <li><a href="./?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
-                            <li><a href="./?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
-                            <li><a href="./?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
+                            <li><a href="./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
+                            <li><a href="./index.php?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
+                            <li><a href="./index.php?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
+                            <li><a href="./index.php?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
                         </ul>
                     </div>
                 </td>

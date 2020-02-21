@@ -7,7 +7,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	echo '<div style="min-height:70vh; min-width:70vw;">';
 	echo '<div class="alert bg-pink alert-dismissible text-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">';
 	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
-	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
+	echo '<a href="'.URL.'/index.php?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
 	echo '</div>';
 	echo '</div>';
 } else {
@@ -26,7 +26,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		echo "<thead><tr><th>Nama</th><th>Alamat</th><th>No. Telp</th><th>Group</th><th>Atur</th></tr></thead><tbody>";
 		while ($data = fetch_array($hasil))
 		{
-		   echo "<tr><td>".$data['nama']."</td><td>".$data['alamat']."</td><td>".$data['no_telp']."</td><td>".$data['jbtn']."</td><td><a href='".URL."/?module=SMSGateway&page=listphone&op=instant&ph=".$data['no_telp']."'>Kirim SMS</a>&nbsp;&nbsp; </td></tr>";
+		   echo "<tr><td>".$data['nama']."</td><td>".$data['alamat']."</td><td>".$data['no_telp']."</td><td>".$data['jbtn']."</td><td><a href='".URL."/index.php?module=SMSGateway&page=listphone&op=instant&ph=".$data['no_telp']."'>Kirim SMS</a>&nbsp;&nbsp; </td></tr>";
 
 		}
 		echo "</tbody></table>";
@@ -48,7 +48,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		  $nama = $data['nama'];
 		  echo "<br><p><b>Nomor Tujuan :</b> ".$nama." (".$ph.")</p>";
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=send">
+		<form name="formku" method="post" action="<?php echo URL;?>/index.php?module=SMSGateway&page=listphone&op=send">
 		<input type="hidden" name="phone" value="<?php echo $ph; ?>">
 		Message : <br>
 		<textarea name="pesan" cols="30" rows="5" class="form-control no-resize"></textarea>
@@ -69,7 +69,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		  $nama = $data['nama'];
 		  echo "<br><p><b>Nomor Tujuan :</b> ".$nama." (".$ph.")</p>";
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=listphone&op=send">
+		<form name="formku" method="post" action="<?php echo URL;?>/index.php?module=SMSGateway&page=listphone&op=send">
 		<input type="hidden" name="phone" value="<?php echo $ph; ?>">
 		Message : <br>
 		<textarea name="pesan" cols="30" rows="5" class="form-control no-resize"></textarea>

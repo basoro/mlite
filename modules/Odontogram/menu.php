@@ -5,12 +5,12 @@
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="Odontogram" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Odontogram&page=index">
+            <a href="<?php echo URL; ?>/index.php?module=Odontogram&page=index">
                 Odontogram List
             </a>
         </li>
         <li class="<?php if ($params['module']=="Odontogram" && $params['page']=="history") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=Odontogram&page=history">
+            <a href="<?php echo URL; ?>/index.php?module=Odontogram&page=history">
                 Odontogram History
             </a>
         </li>

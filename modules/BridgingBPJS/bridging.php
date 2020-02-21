@@ -42,7 +42,7 @@
             <td><?php echo SUBSTR($a['nm_pasien'], 0, 15).' ...'; ?></td>
             <td><?php echo $a['nm_poli']; ?></td>
             <td><?php echo $a['png_jawab']; ?></td>
-            <td><a class="btn btn-primary" href="<?php echo URL; ?>/?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
+            <td><a class="btn btn-primary" href="<?php echo URL; ?>/index.php?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $a['no_rawat'];?>">Cek Bridging PCare</a></td>
             <td><a class="btn btn-primary" href="<?php echo URL; ?>/modules/BridgingBPJS/cetaksep.php?action=cetak&no_rawat=<?php echo $a['no_rawat']; ?>" target="_BLANK">Cetak</a></td>
           </tr>
             <?php } ?>
@@ -293,7 +293,7 @@ $b = fetch_assoc($data);?>
                 <ul class="dropdown-menu">
                   <?php
                   foreach($result['response']['rujukan'] as $key => $value):
-                    echo '<li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat='.$_GET['no_rawat'].'&no_rujuk='.$value['noKunjungan'].'" class="dropdown-item" name="nrjk">'.$value['noKunjungan'].'</a></li>';
+                    echo '<li><a href="./index.php?module=BridgingBPJS&page=index&action=bridging&no_rawat='.$_GET['no_rawat'].'&no_rujuk='.$value['noKunjungan'].'" class="dropdown-item" name="nrjk">'.$value['noKunjungan'].'</a></li>';
                   endforeach;
                   ?>
                 </ul>

@@ -8,7 +8,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 	echo '<div style="min-height:70vh; min-width:70vw;">';
 	echo '<div class="alert bg-pink alert-dismissible text-center" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);">';
 	echo '<p class="lead">Belum terinstall Database SMS Gateway</p>';
-	echo '<a href="'.URL.'/?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
+	echo '<a href="'.URL.'/index.php?module=SMSGateway&page=index&op=install" class="btn btn-lg btn-primary m-t-20">Install Sekarang</a>';
 	echo '</div>';
 	echo '</div>';
 } else {
@@ -53,7 +53,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 									  if ($data['flagReply'] == 0) $status = "<b>[N]</b>";
 									  else $status = "<b>[R]</b>";
 
-									  echo "<tr bgcolor='".$color."'><td><a href='".URL."/?module=SMSGateway&page=inbox&op=view&id=".$data['id']."'>".$pesan."...</a></td><td align='center'>".$status."</td><td>".$sendername."</td><td>".$data['time']."</td></tr>";
+									  echo "<tr bgcolor='".$color."'><td><a href='".URL."/index.php?module=SMSGateway&page=inbox&op=view&id=".$data['id']."'>".$pesan."...</a></td><td align='center'>".$status."</td><td>".$sendername."</td><td>".$data['time']."</td></tr>";
 									}
 									?>
 									</tbody>
@@ -70,7 +70,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   echo "<p><b>Waktu Pengiriman:</b> ".$data['time']."</p>";
 		   echo "<p><b>Message:</b></p>";
 		   echo "<p>".$data['msg']."</p>";
-		   echo "<p>[<b><a href='".URL."/?module=SMSGateway&page=inbox&op=view&act=reply&id=".$data['id']."'>REPLY SMS</a></b>] [<b><a href='".URL."/?module=SMSGateway&page=inbox&op=view&act=forward&id=".$data['id']."'>FORWARD SMS</a></b>]</p>";
+		   echo "<p>[<b><a href='".URL."/index.php?module=SMSGateway&page=inbox&op=view&act=reply&id=".$data['id']."'>REPLY SMS</a></b>] [<b><a href='".URL."/index.php?module=SMSGateway&page=inbox&op=view&act=forward&id=".$data['id']."'>FORWARD SMS</a></b>]</p>";
 		   $query = "UPDATE sms_inbox SET flagRead = '1' WHERE id = '$id'";
 		   query($query);
 
@@ -83,7 +83,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   $hasil = query($query);
 		   $data = fetch_array($hasil);
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=forward">
+		<form name="formku" method="post" action="<?php echo URL;?>/index.php?module=SMSGateway&page=inbox&op=forward">
 		Message : <br>
 		<textarea name="pesan" class="form-control" rows="12" cols="50"><?php echo $data['msg']; ?></textarea>
 		<br><br>
@@ -108,7 +108,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		   {
 		   $id = $_GET['id'];
 		?>
-		<form name="formku" method="post" action="<?php echo URL;?>/?module=SMSGateway&page=inbox&op=send">
+		<form name="formku" method="post" action="<?php echo URL;?>/index.php?module=SMSGateway&page=inbox&op=send">
 		Message : <br>
 		<textarea name="pesan" class="form-control" rows="12" cols="50"></textarea>
 		<br>

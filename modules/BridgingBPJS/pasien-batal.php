@@ -44,13 +44,13 @@ if(isset($_GET['no_sep']) && $_GET['no_sep'] !=="") {
 
     $insert = query("DELETE FROM bridging_sep WHERE no_sep = '".$_GET['no_sep']."'");
     if($insert) {
-      redirect(URL.'/?module=BridgingBPJS&page=pasien_batal');
+      redirect(URL.'/index.php?module=BridgingBPJS&page=pasien_batal');
     }
   	}else {
     ?>
       <script>alert('<?php echo "Pesan : ".$mets; ?>')</script>
     <?php
-      redirect(URL.'/?module=BridgingBPJS&page=pasien_batal');
+      redirect(URL.'/index.php?module=BridgingBPJS&page=pasien_batal');
     };
 
   }
@@ -85,7 +85,7 @@ if(isset($_GET['no_sep']) && $_GET['no_sep'] !=="") {
                   <td><?php echo $row['tgl_registrasi'];?></td>
                   <td><?php echo $row['no_peserta'];?></td>
                   <td><?php $sep = fetch_array(query("SELECT no_sep from bridging_sep where no_rawat = '".$row['no_rawat']."'"));echo $sep['no_sep'];?></td>
-                  <td><a href="<?php echo URL; ?>/?module=BridgingBPJS&page=pasien_batal&no_sep=<?php echo $sep['no_sep'];?>" class="btn btn-danger">Hapus SEP</a></td>
+                  <td><a href="<?php echo URL; ?>/index.php?module=BridgingBPJS&page=pasien_batal&no_sep=<?php echo $sep['no_sep'];?>" class="btn btn-danger">Hapus SEP</a></td>
                 </tr>
               <?php } ?>
         </tbody>

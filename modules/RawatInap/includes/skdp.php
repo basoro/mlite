@@ -16,7 +16,7 @@
           $insert2 = query("INSERT INTO booking_registrasi VALUES ('{$date}','{$time}','{$no_rkm_medis}','{$_POST['tgl']}','{$_POST['dpjp']}','{$_POST['kd_poli']}','{$_POST['noreg']}','{$_POST['kd_pj']}','0'
                       ,'{$date_time}','Belum')");
           if($insert2){
-            redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+            redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
           }
         }
       }
@@ -131,7 +131,7 @@
       <td><?php echo $data['1']; ?></td>
       <td><?php echo $data['2']; ?></td>
       <td><?php echo $data['3']; ?></td>
-      <td><a class="btn bg-red waves-effect" href="./?module=RawatInap&page=index&action=delete_skdp&no_reg=<?php echo $data['3']; ?>&no_rkm_medis=<?php echo $no_rkm_medis; ?>">Hapus</a></td>
+      <td><a class="btn bg-red waves-effect" href="./index.php?module=RawatInap&page=index&action=delete_skdp&no_reg=<?php echo $data['3']; ?>&no_rkm_medis=<?php echo $no_rkm_medis; ?>">Hapus</a></td>
     </tr>
     <?php
       $no++;}

@@ -6,14 +6,14 @@ if(isset($_GET['no_rkm_medis']) && $_GET['no_rkm_medis'] !=='') {
   $get_no_rkm_medis = fetch_assoc(query("SELECT no_rkm_medis FROM reg_periksa WHERE no_rawat = '{$_GET['no_rawat']}'"));
   $no_rkm_medis = $get_no_rkm_medis['no_rkm_medis'];
 } else {
-  redirect(URL.'/?module=Odontogram&page=index');
+  redirect(URL.'/index.php?module=Odontogram&page=index');
 } ?>
 
 <?php
 if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
   echo '<div class="alert bg-pink alert-dismissible text-center">';
   echo '<p class="lead">Belum terinstall Database Odontogram</p>';
-  echo '<a href="'.URL.'/?module=Odontogram&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+  echo '<a href="'.URL.'/index.php?module=Odontogram&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
   echo '</div>';
 } else {
 
@@ -295,7 +295,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
             <td><?php echo "Gigi ".ltrim($data_odontogram['4'], 'gg_'); ?> <?php echo $data_value; ?></td>
             <td><?php echo $data_odontogram['6']; ?></td>
             <?php if(isset($_GET['no_rawat']) && $_GET['no_rawat'] !=='') { ?>
-            <td><a href="./?module=Odontogram&page=history&no_rawat=<?php echo $no_rawat; ?>&gg_xx=<?php echo $data_odontogram['4']; ?>&action=delete_odontogram">Hapus</a></td>
+            <td><a href="./index.php?module=Odontogram&page=history&no_rawat=<?php echo $no_rawat; ?>&gg_xx=<?php echo $data_odontogram['4']; ?>&action=delete_odontogram">Hapus</a></td>
             <?php } ?>
         </tr>
     <?php

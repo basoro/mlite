@@ -258,12 +258,12 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                                     <?php if(FKTL == false) { ?><li><a href="<?php echo $_SERVER['PHP_SELF']; ?>?action=view&no_rawat=<?php echo $row['5']; ?>">Pelayanan</a></li><?php } ?>
                                                     <?php if(FKTL == true) { ?>
                                                       <?php if(is_dir(ABSPATH.'/modules/BridgingBPJS/')) { ?>
-                                                        <li><a href="./?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
-                                                        <li><a href="./?module=BridgingBPJS&page=data_sep&view=individual&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
+                                                        <li><a href="./index.php?module=BridgingBPJS&page=index&action=bridging&no_rawat=<?php echo $row['5']; ?>">Bridging BPJS</a></li>
+                                                        <li><a href="./index.php?module=BridgingBPJS&page=data_sep&view=individual&no_rkm_medis=<?php echo $row['1']; ?>">Data SEP BPJS</a></li>
                                                       <?php } ?>
                                                     <?php } ?>
                                                     <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
-                                                      <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
+                                                      <li><a href="./index.php?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
                                                     <?php } ?>
                                                 </ul>
                                             </div>

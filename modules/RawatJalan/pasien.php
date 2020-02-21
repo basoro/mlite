@@ -21,7 +21,7 @@ if(isset($_GET['no_rawat'])) {
 	        $umur          = $row['3'];
 	     }
     } else {
-	     redirect ('./?module=RawatJalan&page=index');
+	     redirect ('./index.php?module=RawatJalan&page=index');
     }
 }
 
@@ -71,12 +71,12 @@ if(isset($_GET['no_rawat'])) {
                                                 <div class="btn-group">
                                                     <button type="button" class="btn btn-secondary waves-effect dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><?php echo $row['1']; ?> <span class="caret"></span></button>
                                                     <ul class="dropdown-menu dropdown-menu-right" role="menu">
-                                                        <li><a href="./?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
-                                                        <li><a href="./?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
+                                                        <li><a href="./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat=<?php echo $row['5']; ?>">Assesment & Tindakan</a></li>
+                                                        <li><a href="./index.php?module=RawatJalan&page=index&action=berkas_digital&no_rawat=<?php echo $row['5']; ?>">Berkas Digital Perawatan</a></li>
+                                                        <li><a href="./index.php?module=RawatJalan&page=index&action=radiologi&no_rawat=<?php echo $row['5']; ?>">Berkas Radiologi</a></li>
+                                                        <li><a href="./index.php?module=RawatJalan&page=index&action=status_pulang&no_rawat=<?php echo $row['5']; ?>">Status</a></li>
                                                         <?php if(is_dir(ABSPATH.'/modules/SMSGateway/')) { ?>
-                                                          <li><a href="./?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
+                                                          <li><a href="./index.php?module=SMSGateway&page=listphone&op=instant_pasien&ph=<?php echo $row['16']; ?>">Kirim SMS</a></li>
                                                         <?php } ?>
                                                         <!--
                                                         <li><a class="trigger right-caret">Another Dropdown</a>
@@ -135,7 +135,7 @@ if(isset($_GET['no_rawat'])) {
                                         if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
                                               $insert = query("INSERT INTO rawat_jl_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}','Belum')");
                                               if ($insert) {
-                                                  redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                                  redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                                               };
                                         };
                                   };
@@ -145,7 +145,7 @@ if(isset($_GET['no_rawat'])) {
                                   $insert = query("INSERT INTO pemeriksaan_ralan VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
                                               ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
                                   if($insert){
-                                    redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
                                 }
                               };
@@ -154,7 +154,7 @@ if(isset($_GET['no_rawat'])) {
                               	$insert = query("UPDATE pemeriksaan_ralan SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
 
                                   if($insert){
-                                    redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
                                 }
                               };
@@ -600,7 +600,7 @@ if(isset($_GET['no_rawat'])) {
                                                <td><?php echo $data_tindakan['tensi']; ?></td>
                                                <td><?php echo $data_tindakan['nadi']; ?></td>
                                                <td><?php echo $data_tindakan['respirasi']; ?></td>
-                                               <td><a href="#" data-toggle="modal" data-target="#edit_anamneseModal">Edit</a> <a href="./?module=RawatJalan&action=delete_pemeriksaan&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                               <td><a href="#" data-toggle="modal" data-target="#edit_anamneseModal">Edit</a> <a href="./index.php?module=RawatJalan&action=delete_pemeriksaan&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
                                          }
@@ -647,7 +647,7 @@ if(isset($_GET['no_rawat'])) {
                                                  <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
                                                  <td><?php echo $data_tindakan['1']; ?></td>
                                                  <td><?php echo $data_tindakan['2']; ?></td>
-                                                 <td><a href="./?module=RawatJalan&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
+                                                 <td><a href="./index.php?module=RawatJalan&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
                                          }
@@ -681,7 +681,7 @@ if(isset($_GET['no_rawat'])) {
                                 $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                   set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("./?module=RawatJalan&page=index");
+                                  redirect("./index.php?module=RawatJalan&page=index");
                                 }
                               }
                             }
@@ -747,7 +747,7 @@ if(isset($_GET['no_rawat'])) {
                               $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
                                 if($insert_berkas) {
                                 set_message('Berkas digital radiologi telah ditersimpan.');
-                                    redirect("./?module=RawatJalan&page=index&action=radiologi&no_rawat=$no_rawat");
+                                    redirect("./index.php?module=RawatJalan&page=index&action=radiologi&no_rawat=$no_rawat");
                                 }
                               }
                             }
@@ -855,7 +855,7 @@ if(isset($_GET['no_rawat'])) {
                               $hapus = "DELETE FROM diagnosa_pasien WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_penyakit = '{$_REQUEST['kode']}' AND prioritas = '{$_REQUEST['prioritas']}'";
                               $hasil = query($hapus);
                               if (($hasil)) {
-                                  redirect("./?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
+                                  redirect("./index.php?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
                               }
                         }
 
@@ -864,14 +864,14 @@ if(isset($_GET['no_rawat'])) {
                               $hapus = "DELETE FROM resep_dokter WHERE no_resep='{$_REQUEST['no_resep']}' AND kode_brng='{$_REQUEST['kode_obat']}'";
                               $hasil = query($hapus);
                               if (($hasil)) {
-                              redirect("./?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
+                              redirect("./index.php?module=RawatJalan&page=index&action=view&no_rawat={$no_rawat}");
                               }
                         }
                         if ($action == "delete_pemeriksaan") {
                           $hapus = "DELETE FROM pemeriksaan_ralan WHERE no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("./?module=RawatJalan&action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./index.php?module=RawatJalan&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
 
@@ -879,7 +879,7 @@ if(isset($_GET['no_rawat'])) {
                           $hapus = "DELETE FROM rawat_jl_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
-                            redirect("./?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                           }
                         }
                         ?>

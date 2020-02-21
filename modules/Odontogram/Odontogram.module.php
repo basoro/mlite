@@ -49,7 +49,7 @@ class Odontogram {
 
       if(mysqli_multi_query($connection,$sql_userwall)){
           set_message ('Table created successfully.');
-          redirect ('./?module=Odontogram&page=index');
+          redirect ('./index.php?module=Odontogram&page=index');
       } else{
           echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
       }

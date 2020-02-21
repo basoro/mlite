@@ -6,12 +6,12 @@
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="RawatInap" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatInap&page=index">
+            <a href="<?php echo URL; ?>/index.php?module=RawatInap&page=index">
                 Pasien Rawat Inap
             </a>
         </li>
         <li class="<?php if ($params['module']=="RawatInap" && $params['page']=="diet_pasien") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatInap&page=diet_pasien">
+            <a href="<?php echo URL; ?>/index.php?module=RawatInap&page=diet_pasien">
                 Diet Pasien
             </a>
         </li>

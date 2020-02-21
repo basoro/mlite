@@ -6,17 +6,17 @@
     </a>
     <ul class="ml-menu">
         <li class="<?php if ($params['module']=="RawatJalan" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatJalan&page=index">
+            <a href="<?php echo URL; ?>/index.php?module=RawatJalan&page=index">
                 Pasien Rawat Jalan
             </a>
         </li>
         <li class="<?php if ($params['module']=="RawatJalan" && $params['page']=="rujuk_internal") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatJalan&page=rujuk_internal">
+            <a href="<?php echo URL; ?>/index.php?module=RawatJalan&page=rujuk_internal">
                 Rujukan Internal
             </a>
         </li>
         <li class="<?php if ($params['module']=="RawatJalan" && $params['page']=="pasien_lanjutan") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/?module=RawatJalan&page=pasien_lanjutan">
+            <a href="<?php echo URL; ?>/index.php?module=RawatJalan&page=pasien_lanjutan">
               Pasien Lanjutan
             </a>
         </li>

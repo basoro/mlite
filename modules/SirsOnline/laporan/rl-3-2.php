@@ -14,7 +14,7 @@
                   $current_year = date('Y');
                   $years = range($current_year-5, $current_year);
                   foreach ($years as $year) {
-                    echo '<li><a href="'.URL.'/?module=SirsOnline&page=rl_3_2&tahun='.$year.'">'.$year.'</a></li>';
+                    echo '<li><a href="'.URL.'/index.php?module=SirsOnline&page=rl_3_2&tahun='.$year.'">'.$year.'</a></li>';
                   }
                   ?>
                 </ul>
