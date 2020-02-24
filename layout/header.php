@@ -4,11 +4,6 @@ session_start();
 
 include_once('init.php');
 
-if(PRODUCTION == true) {
-  ini_set('display_errors', 0);
-  error_reporting(E_ERROR | E_WARNING | E_PARSE);
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="en">

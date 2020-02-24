@@ -85,7 +85,7 @@ include('../../../init.php');
             $interval = $get_interval;
           }
           $minutes = $no_urut_reg * $interval;
-          $row['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($row['jam_mulai'])));
+          $row['jam_mulai'] = date('H:i:s',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
           echo '- '.$row2['nm_pasien'].' (<strong>'.$row2['no_reg'].' - '.$row['jam_mulai'].'</strong>) ';
         }
         echo '  </marquee></td>';

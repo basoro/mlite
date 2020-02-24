@@ -50,4 +50,9 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
 
 $json_updates = file_get_contents_curl("https://khanza.basoro.id/updates.php?action=changelog");
 
+if(PRODUCTION == true) {
+  ini_set('display_errors', 0);
+  error_reporting(E_ERROR | E_WARNING | E_PARSE);
+}
+
 ?>
