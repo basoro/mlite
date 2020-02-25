@@ -56,6 +56,7 @@ class APM {
           </div>
           <a href="<?php echo URL; ?>/modules/APM/inc/antrian.php" class="btn btn-lg btn-success" target="_blank">Antrian Loket</a>
           <a href="<?php echo URL; ?>/modules/APM/inc/antrian_poli.php" class="btn btn-lg btn-success" target="_blank">Antrian Poli</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/antrian_apotek.php" class="btn btn-lg btn-success" target="_blank">Antrian Apotek</a>
         </div>
         <div class="col-lg-6 text-center">
           <div class="card">
