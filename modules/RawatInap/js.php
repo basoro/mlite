@@ -95,6 +95,40 @@
            		$('#kmr').val(obj.tarif);
            });
         });
+    $('.kd_jenis_prw_lab').select2({
+        placeholder: 'Pilih Jenis',
+        ajax: {
+            url: 'modules/RawatInap/includes/select-laboratorium.php',
+            dataType: 'json',
+            delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            cache: true
+        },
+        templateResult: formatData,
+        minimumInputLength: 3
+    });
+
+    $('.kd_jenis_prw_rad').select2({
+        placeholder: 'Pilih Jenis',
+        ajax: {
+            url: 'modules/RawatInap/includes/select-radiology.php',
+            dataType: 'json',
+            delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+            cache: true
+        },
+        templateResult: formatData,
+        minimumInputLength: 3
+    });
+
 </script>
 
 <script>
