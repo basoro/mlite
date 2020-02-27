@@ -54,7 +54,6 @@ include('../../../init.php');
   <div class="px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center mb-4">
     <div class="text-white display-3">ANTRIAN PASIEN RAWAT JALAN</div>
   </div>
-
   <div class="container-fluid">
     <div class="row">
       <div class="col-9">
@@ -68,7 +67,7 @@ include('../../../init.php');
         <a href="antrian.php?action=panggil_loket" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">A<span class="antrian_loket"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">A<span class="antrian_loket"><span></div>
             </div>
             <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_loket"><span></div>
           </div>
@@ -76,7 +75,7 @@ include('../../../init.php');
         <a href="antrian.php?action=panggil_cs" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">B<span class="antrian_cs"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">B<span class="antrian_cs"><span></div>
             </div>
             <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_cs"><span></div>
           </div>
@@ -84,11 +83,32 @@ include('../../../init.php');
         <a href="antrian.php?action=panggil_prioritas" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:100px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">C<span class="antrian_prioritas"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">C<span class="antrian_prioritas"><span></div>
             </div>
             <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_prioritas"><span></div>
           </div>
         </a>
+        <div class="card border-0 mb-4">
+          <div class="card-body bg-danger text-white">
+            <div style="font-size:27px;font-weight:lighter;padding-top:5px;padding-bottom:5px;margin-top:-20px;margin-bottom:-25px;">
+              <script type='text/javascript'>
+          			<!--
+          			var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+          			var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+          			var date = new Date();
+          			var day = date.getDate();
+          			var month = date.getMonth();
+          			var thisDay = date.getDay(),
+          			    thisDay = myDays[thisDay];
+          			var yy = date.getYear();
+          			var year = (yy < 1000) ? yy + 1900 : yy;
+          			document.write(thisDay + ', ' + day + ' ' + months[month] + ' ' + year);
+          			//-->
+          		</script>
+            </div>
+          </div>
+          <div class="card-footer bg-warning text-black" style="font-size:30px;padding-top:0;padding-bottom:0;"><span id="clock"><span></div>
+        </div>
       </div>
     </div>
     <div class="row">
@@ -123,6 +143,40 @@ include('../../../init.php');
 <?php if($action == 'panggil_prioritas') { ?>
 <?php include('includes/panggil_prioritas.php'); ?>
 <?php } ?>
+<script type="text/javascript">
+<!--
+function showTime() {
+    var a_p = "";
+    var today = new Date();
+    var curr_hour = today.getHours();
+    var curr_minute = today.getMinutes();
+    var curr_second = today.getSeconds();
+    if (curr_hour < 12) {
+        a_p = "AM";
+    } else {
+        a_p = "PM";
+    }
+    if (curr_hour == 0) {
+        curr_hour = 12;
+    }
+    if (curr_hour > 12) {
+        curr_hour = curr_hour - 12;
+    }
+    curr_hour = checkTime(curr_hour);
+    curr_minute = checkTime(curr_minute);
+    curr_second = checkTime(curr_second);
+ document.getElementById('clock').innerHTML=curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+    }
+
+function checkTime(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
+setInterval(showTime, 500);
+//-->
+</script>
 <script>
 
 setInterval(function(){ getAntrianLoket(); }, 2000);
