@@ -1,0 +1,1634 @@
+[
+  {
+    "variable_id": "1",
+    "variable_indicator_id": "1",
+    "variable_name": "Jumlah asesmen lengkap yang dilakukan oleh tenaga medis dalam waktu 24 jam setelah pasien masuk rawat inap dalam waktu 1 bulan",
+    "variable_type": "N",
+    "variable_unit_name": "Orang",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "2",
+    "variable_indicator_id": "1",
+    "variable_name": "Jumlah total pasien yang masuk rawat inap dalam waktu 24 jam, dalam waktu 1 bulan",
+    "variable_type": "D",
+    "variable_unit_name": "Orang",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "3",
+    "variable_indicator_id": "2",
+    "variable_name": "Jumlah status pasien yang tidak ada dokumentasi asesmen nyeri awal maupun ulang sesuai panduan manajemen nyeri per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "orang",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "4",
+    "variable_indicator_id": "2",
+    "variable_name": "Jumlah seluruh pasien dengan keluhan nyeri dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "Orang",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "5",
+    "variable_indicator_id": "3",
+    "variable_name": "Jumlah kerusakan sample darah per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "sample",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "6",
+    "variable_indicator_id": "3",
+    "variable_name": "Jumlah sample darah pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "sampel",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "7",
+    "variable_indicator_id": "4",
+    "variable_name": "Jumlah jenis pemeriksaan dengan hasil kritis yang tidak terlaporkan per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "jenis",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "8",
+    "variable_indicator_id": "4",
+    "variable_name": "Jumlah jenis pemeriksaan dengan hasil kritis pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "jenis",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "9",
+    "variable_indicator_id": "5",
+    "variable_name": "Jumlah penolakan expertise per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pelayanan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "10",
+    "variable_indicator_id": "5",
+    "variable_name": "Jumlah seluruh pelayanan di radiologi pada bulan tersebut ",
+    "variable_type": "D",
+    "variable_unit_name": "pelayanan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "11",
+    "variable_indicator_id": "6",
+    "variable_name": "Jumlah pasien rawat jalan yang menerima hasil foto beserta bacaan lebih dari 3 jam per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "12",
+    "variable_indicator_id": "6",
+    "variable_name": "Jumlah seluruh pasien rawat jalan yang dilakukan tindakan foto rontgen pada bulan tersebut ",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "13",
+    "variable_indicator_id": "7",
+    "variable_name": "Jumlah pemeriksaan ulang radiologi per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "14",
+    "variable_indicator_id": "7",
+    "variable_name": "Jumlah pasien yang dilakukan pemeriksaan radiologi pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "15",
+    "variable_indicator_id": "8",
+    "variable_name": "Jumlah tindakan radiologi yang tidak dilakukan asesmen awal radiologi per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "tindakan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "16",
+    "variable_indicator_id": "8",
+    "variable_name": "Jumlah seluruh tindakan radiologi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "tindakan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "17",
+    "variable_indicator_id": "9",
+    "variable_name": "Jumlah kejadian tidak dilakukannya penandaan lokasi operasi pada semua kasus operasi yang harus dilakukan penandaan lokasi operasi per bulan.",
+    "variable_type": "N",
+    "variable_unit_name": "kejadian",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "18",
+    "variable_indicator_id": "9",
+    "variable_name": "Jumlah semua kasus operasi yang harus dilakukan penandaan lokasi operasi dalam bulan tersebut.",
+    "variable_type": "D",
+    "variable_unit_name": "kejadian",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "19",
+    "variable_indicator_id": "10",
+    "variable_name": "Jumlah operasi ulang dengan diagnosa sama / komplikasinya per bulan.",
+    "variable_type": "N",
+    "variable_unit_name": "operasi",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "20",
+    "variable_indicator_id": "10",
+    "variable_name": "Jumlah seluruh operasi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "operasi",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "21",
+    "variable_indicator_id": "11",
+    "variable_name": "Jumlah insiden salah prosedur operasi pada pasien",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "22",
+    "variable_indicator_id": "11",
+    "variable_name": "Jumlah insiden salah prosedur operasi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "23",
+    "variable_indicator_id": "12",
+    "variable_name": "Jumlah insiden kesalahan lokasi operasi pada pasien pembedahan",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "24",
+    "variable_indicator_id": "12",
+    "variable_name": "Jumlah insiden kesalahan lokasi operasi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "25",
+    "variable_indicator_id": "13",
+    "variable_name": "Insiden kesalahan diagnosis pra operasi",
+    "variable_type": "N",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "26",
+    "variable_indicator_id": "13",
+    "variable_name": "Insiden kesalahan diagnosis pra operasi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "27",
+    "variable_indicator_id": "14",
+    "variable_name": "Jumlah kesalahan penyerahan perbekalan per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "28",
+    "variable_indicator_id": "14",
+    "variable_name": "Jumlah permintaan perbekalan dalam bentuk resep dan formulir permintaan pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "29",
+    "variable_indicator_id": "15",
+    "variable_name": "Jumlah kesalahan / ketidaktepatan pemberian obat (5 Benar)",
+    "variable_type": "N",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "30",
+    "variable_indicator_id": "15",
+    "variable_name": "Jumlah total kesalahan/ketidaktepatan pemberian obat dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kesalahan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "31",
+    "variable_indicator_id": "16",
+    "variable_name": "Jumlah pasien yang tidak dilakukan asesmen pre anestesi secara lengkap per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "32",
+    "variable_indicator_id": "16",
+    "variable_name": "Jumlah pasien operasi dengan anestesi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "33",
+    "variable_indicator_id": "17",
+    "variable_name": "Jumlah kasus reaksi transfusi darah per hari",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "34",
+    "variable_indicator_id": "17",
+    "variable_name": "Jumlah total kasus pemasangan transfusi darah (kantong darah) di hari tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "35",
+    "variable_indicator_id": "18",
+    "variable_name": "Informed consent yang tidak lengkap per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "36",
+    "variable_indicator_id": "18",
+    "variable_name": "Jumlah tindakan kedokteran dari seluruh pasien dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "37",
+    "variable_indicator_id": "19",
+    "variable_name": "Jumlah catatan rekam medis yang belum lengkap dan benar dalam 14 hari per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "catatan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "38",
+    "variable_indicator_id": "19",
+    "variable_name": "Jumlah catatan rekam medis dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "catatan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "39",
+    "variable_indicator_id": "20",
+    "variable_name": "Jumlah pasien yang mengalami infeksi pasca operasi dalam satu bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "40",
+    "variable_indicator_id": "20",
+    "variable_name": "Jumlah seluruh pasien yang dioperasi di rumah sakit dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "41",
+    "variable_indicator_id": "21",
+    "variable_name": "Jumlah pasien sepsis per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "42",
+    "variable_indicator_id": "21",
+    "variable_name": "Jumlah pasien rawat inap pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "43",
+    "variable_indicator_id": "22",
+    "variable_name": "Jumlah kasus infeksi luka infus per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "44",
+    "variable_indicator_id": "22",
+    "variable_name": "Jumlah hari pemasangan infus dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "hari",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "45",
+    "variable_indicator_id": "23",
+    "variable_name": "Jumlah kasus infeksi aliran darah primer karena pemasangan intravaskular kateter perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "46",
+    "variable_indicator_id": "23",
+    "variable_name": "Jumlah hari pemasangan intravaskular kateter dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "hari",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "47",
+    "variable_indicator_id": "24",
+    "variable_name": "Jumlah kasus infeksi karena pemasangan kateter per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "48",
+    "variable_indicator_id": "24",
+    "variable_name": "Jumlah hari pemasangan kateter dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "hari",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "49",
+    "variable_indicator_id": "25",
+    "variable_name": "Jumlah VAP atau pneumonia yang terjadi akibat pemasangan ventilator per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "VAP",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "50",
+    "variable_indicator_id": "25",
+    "variable_name": "Jumlah hari pemakaian Endotracheal Tube (ETT) pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "hari",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "51",
+    "variable_indicator_id": "26",
+    "variable_name": "Jumlah kasus luka dekubitus per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "52",
+    "variable_indicator_id": "26",
+    "variable_name": "Jumlah pasien tirah baring pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "53",
+    "variable_indicator_id": "27",
+    "variable_name": "Jumlah insiden ketidaktepatan identifikasi pasien",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "54",
+    "variable_indicator_id": "27",
+    "variable_name": "Jumlah total insiden ketidaktepatan identifikasi pasien dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "55",
+    "variable_indicator_id": "28",
+    "variable_name": "Insiden kejadian/kesalahan yang terkait dengan keamanan obat-obatan yang perlu diwaspadai",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "56",
+    "variable_indicator_id": "28",
+    "variable_name": "Jumlah total insiden/kejadian kesalahan yang terkait dengan keamanan obat-obatan yang perlu diwaspadai dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "57",
+    "variable_indicator_id": "29",
+    "variable_name": "Jumlah insiden pasien jatuh dalam bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "58",
+    "variable_indicator_id": "29",
+    "variable_name": "Jumlah total insiden pasien jatuh dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "59",
+    "variable_indicator_id": "30",
+    "variable_name": "Jumlah pasien stroke ischemic yang tidak mendapatkan terapi anti trombotik pada saat KRS perbulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "60",
+    "variable_indicator_id": "30",
+    "variable_name": "Jumlah seluruh pasien stroke ischemic yang KRS dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "61",
+    "variable_indicator_id": "31",
+    "variable_name": "Jumlah pasien stroke yang tidak mendapatkan edukasi tentang stroke selama menjalani rawat inap selama satu bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "62",
+    "variable_indicator_id": "31",
+    "variable_name": "Jumlah seluruh pasien stroke yang dirawat inap dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "63",
+    "variable_indicator_id": "32",
+    "variable_name": "Jumlah pasien IMA yang tidak mendapatkan terapi aspirin/anti trombotik dalam waktu 24 jam sejak datang ke RS per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "64",
+    "variable_indicator_id": "32",
+    "variable_name": "Jumlah seluruh pasien IMA dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "65",
+    "variable_indicator_id": "33",
+    "variable_name": "Jumlah bayi baru lahir yang tidak mendapat ASI eksklusif selama masa rawat inap dalam satu bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "66",
+    "variable_indicator_id": "33",
+    "variable_name": "Jumlah seluruh bayi baru lahir dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "67",
+    "variable_indicator_id": "34",
+    "variable_name": "Jumlah pasien asma anak yang tidak menerima bronkodilator selama masa rawat inap per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "68",
+    "variable_indicator_id": "34",
+    "variable_name": "Jumlah seluruh pasien asma anak dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "69",
+    "variable_indicator_id": "35",
+    "variable_name": "Jumlah semua pasien tuberkulosis yang tidak ditangani sesuai dengan strategi DOTS per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "70",
+    "variable_indicator_id": "35",
+    "variable_name": "Jumlah seluruh pasien tuberculosis yang ditangani dalam bulan tersebut.",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "71",
+    "variable_indicator_id": "36",
+    "variable_name": "Jumlah seluruh pasien terdiagnosa TB terkonfirmasi bakteriologis pada triwulan tersebut.",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "72",
+    "variable_indicator_id": "36",
+    "variable_name": "Jumlah seluruh pasien terduga TB yang melakukan pemeriksaan dahak mikroskopis pada bulan tersebut.",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "73",
+    "variable_indicator_id": "37",
+    "variable_name": "Jumlah seluruh pasien TB paru terkonfirmasi bakteriologis dengan hasil pemeriksaan BTA akhir tahap awal negatif",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "74",
+    "variable_indicator_id": "37",
+    "variable_name": "Jumlah seluruh pasien TB paru terkonfirmasi bakteriologis yang diobati.",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "75",
+    "variable_indicator_id": "38",
+    "variable_name": "Jumlah seluruh pasien TB paru terkonfirmasi bakteriologis yang sembuh.",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "76",
+    "variable_indicator_id": "38",
+    "variable_name": "Jumlah seluruh pasien TB paru terkonfirmasi bakteriologis yang diobati",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "77",
+    "variable_indicator_id": "39",
+    "variable_name": "Jumlah ibu meninggal karena eklampsia per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "78",
+    "variable_indicator_id": "39",
+    "variable_name": "Jumlah ibu dengan eklampsia pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "79",
+    "variable_indicator_id": "40",
+    "variable_name": "Jumlah ibu melahirkan yang meninggal karena perdarahan perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "80",
+    "variable_indicator_id": "40",
+    "variable_name": "Jumlah ibu melahirkan dengan perdarahan pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "81",
+    "variable_indicator_id": "41",
+    "variable_name": "Jumlah BBLR 1500 – 2500 gr dengan usia kehamilan ≥ 32 minggu yang tidak berhasil ditangani per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "BBLR",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "82",
+    "variable_indicator_id": "41",
+    "variable_name": "Jumlah seluruh BBLR 1500 – 2500 gr dengan usia kehamilan ≥ 32 minggu yang ditangani dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "BBLR",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "83",
+    "variable_indicator_id": "42",
+    "variable_name": "Jumlah ibu yang mengalami keterlambatan sectio caesarea pada bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "84",
+    "variable_indicator_id": "42",
+    "variable_name": "Jumlah ibu yang mengalami sectio caesarea pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "85",
+    "variable_indicator_id": "43",
+    "variable_name": "Jumlah ibu hamil / bersalin / nifas yang mengalami keterlambatan penyediaan darah pada bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "86",
+    "variable_indicator_id": "43",
+    "variable_name": "Jumlah ibu hamil / bersalin / nifas yang membutuhkan transfusi darah pada bulan tersebut.",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "87",
+    "variable_indicator_id": "44",
+    "variable_name": "Jumlah bayi baru lahir yang tidak dilakukan IMD pada bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "88",
+    "variable_indicator_id": "44",
+    "variable_name": "Jumlah seluruh bayi baru lahir yang dapat dilakukan IMD pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "89",
+    "variable_indicator_id": "45",
+    "variable_name": "Jumlah pasien rawat ulang per bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "90",
+    "variable_indicator_id": "45",
+    "variable_name": "Jumlah pasien masuk rumah sakit dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "91",
+    "variable_indicator_id": "46",
+    "variable_name": "Jumlah pasien yang kembali ke Instalasi Pelayanan Intensif dengan kasus yang sama dalam waktu < 72 jam pada per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "92",
+    "variable_indicator_id": "46",
+    "variable_name": "Jumlah seluruh pasien yang dirawat di Instalasi Pelayanan Intensif dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "93",
+    "variable_indicator_id": "47",
+    "variable_name": "Jumlah pasien pulang atas permintaan sendiri per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "94",
+    "variable_indicator_id": "47",
+    "variable_name": "Jumlah seluruh pasien yang dirawat dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "95",
+    "variable_indicator_id": "48",
+    "variable_name": "Jumlah pasien yang mengalami kesalahan tindakan rehabilitasi medis per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "96",
+    "variable_indicator_id": "48",
+    "variable_name": "Jumlah seluruh pasien yang diprogram rehabilitasi medis dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "97",
+    "variable_indicator_id": "49",
+    "variable_name": "Jumlah resume rawat jalan yang tidak terisi dengan lengkap per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "98",
+    "variable_indicator_id": "49",
+    "variable_name": "Jumlah kunjungan yang membutuhkan resume rawat jalan dalam bulan tersebut.",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "99",
+    "variable_indicator_id": "50",
+    "variable_name": "Jumlah pasien non diit yang tidak menghabiskan makan siangnya ≥ ½ porsi per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "100",
+    "variable_indicator_id": "50",
+    "variable_name": "Jumlah pasien non diit rawat inap yang makan siang dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "101",
+    "variable_indicator_id": "51",
+    "variable_name": "Jumlah kejadian kesalahan jenis diit makanan pasien per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "insiden",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "102",
+    "variable_indicator_id": "51",
+    "variable_name": "Jumlah porsi makanan diit dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "103",
+    "variable_indicator_id": "52",
+    "variable_name": "Jumlah  ketidaklengkapan laporan operasi per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "104",
+    "variable_indicator_id": "52",
+    "variable_name": "Jumlah pasien operasi pada bulan tersebut (sesuai data dari IKO)",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "105",
+    "variable_indicator_id": "53",
+    "variable_name": "Jumlah  ketidaklengkapan laporan anestesi per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "106",
+    "variable_indicator_id": "53",
+    "variable_name": "Jumlah total pasien operasi dengan anestesi pada bulan tersebut (sesuai data dari IKO)",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "107",
+    "variable_indicator_id": "54",
+    "variable_name": "Jumlah tertinggalnya instrumen/kasa/benda lain saat operasi per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "108",
+    "variable_indicator_id": "54",
+    "variable_name": "Total kejadian tertinggalnya instrumen/kasa/benda lain saat operasi per bulan ",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "109",
+    "variable_indicator_id": "55",
+    "variable_name": "Jumlah pasien yang operasinya tertunda 30 menit per bulan ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "110",
+    "variable_indicator_id": "55",
+    "variable_name": "Jumlah pasien operasi dalam bulan tersebut ",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "111",
+    "variable_indicator_id": "56",
+    "variable_name": "Jumlah status pasien di ICU dengan keluhan nyeri yang tidak lengkap dokumentasi asesmen nyerinya selama 1 bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "112",
+    "variable_indicator_id": "56",
+    "variable_name": "Jumlah seluruh pasien yang dirawat di ICU dengan keluhan nyeri dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "113",
+    "variable_indicator_id": "57",
+    "variable_name": "Insiden Kesalahan Setting Ventilator ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "114",
+    "variable_indicator_id": "57",
+    "variable_name": "Jumlah total Insiden Kesalahan Setting Ventilator dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "115",
+    "variable_indicator_id": "58",
+    "variable_name": "Jumlah Insiden Vagal Reflek Pada Pemasangan ET",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "116",
+    "variable_indicator_id": "58",
+    "variable_name": "Jumlah total Insiden Vagal Reflek Pada Pemasangan ET pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "117",
+    "variable_indicator_id": "59",
+    "variable_name": "Jumlah pasien rawat jalan yang menerima obat racikan ≥ 60 menit per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "118",
+    "variable_indicator_id": "59",
+    "variable_name": "Jumlah pasien rawat jalan yang menerima resep obat racikan dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "119",
+    "variable_indicator_id": "60",
+    "variable_name": "Jumlah pasien rawat jalan yang menerima obat non racikan > 20 menit ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "120",
+    "variable_indicator_id": "60",
+    "variable_name": "Jumlah pasien rawat jalan yang menerima obat non racikan dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "121",
+    "variable_indicator_id": "61",
+    "variable_name": "Jumlah kesalahan penulisan jenis komponen pada label darah per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "122",
+    "variable_indicator_id": "61",
+    "variable_name": "Jumlah permintaan darah pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "123",
+    "variable_indicator_id": "62",
+    "variable_name": "Jumlah kesalahan pemeriksaan golongan darah per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "124",
+    "variable_indicator_id": "62",
+    "variable_name": "Jumlah semua pemeriksaan golongan darah dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "125",
+    "variable_indicator_id": "63",
+    "variable_name": "Jumlah kesalahan jenis komponen darah yang diberikan perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "126",
+    "variable_indicator_id": "63",
+    "variable_name": "Jumlah permintaan darah pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "127",
+    "variable_indicator_id": "64",
+    "variable_name": "Jumlah seluruh pasien yang drop out per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "128",
+    "variable_indicator_id": "64",
+    "variable_name": "Jumlah seluruh pasien yang diprogram rehabilitasi medis dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "129",
+    "variable_indicator_id": "65",
+    "variable_name": "Jumlah keterlambatan waktu tindakan hemodialisa perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "130",
+    "variable_indicator_id": "65",
+    "variable_name": "Jumlah seluruh pasien hemodialisa dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "131",
+    "variable_indicator_id": "66",
+    "variable_name": "Jumlah kesalahan setting program hemodialisa perbulan ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "132",
+    "variable_indicator_id": "66",
+    "variable_name": "Jumlah total kesalahan setting program hemodialisa dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "133",
+    "variable_indicator_id": "67",
+    "variable_name": "Jumlah ketidaktepatan insersi vena dan arteri perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "134",
+    "variable_indicator_id": "67",
+    "variable_name": "Jumlah total ketidaktepatan insersi vena dan arteri pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "135",
+    "variable_indicator_id": "68",
+    "variable_name": "Angka kegagalan uji Bowie Dick pada mesin sterilisasi autoclave per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "136",
+    "variable_indicator_id": "68",
+    "variable_name": "Jumlah seluruh hasil uji Bowie Dick pada mesin sterilisasi autoclave pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "137",
+    "variable_indicator_id": "69",
+    "variable_name": "Jumlah tindakan endoskopi yang tertunda lebih dari 60 menit perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "138",
+    "variable_indicator_id": "69",
+    "variable_name": "Jumlah pasien yang dilakukan endoskopi dalam bulan tersebut ",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "139",
+    "variable_indicator_id": "70",
+    "variable_name": "Insiden vagal reflex pada tindakan endoskopi perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "140",
+    "variable_indicator_id": "70",
+    "variable_name": "Jumlah total insiden vagal reflex pada tindakan endoskopi pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "141",
+    "variable_indicator_id": "71",
+    "variable_name": "Insiden ruptur colon pada tindakan kolonoskopi per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "142",
+    "variable_indicator_id": "71",
+    "variable_name": "Jumlah total insiden ruptur colon pada tindakan kolonoskopi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "143",
+    "variable_indicator_id": "72",
+    "variable_name": "Jumlah kesalahan posisi pasien dalam pemeriksaan radiologi perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "144",
+    "variable_indicator_id": "72",
+    "variable_name": "Jumlah seluruh pemeriksaan radiologi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "145",
+    "variable_indicator_id": "73",
+    "variable_name": "Jumlah kesalahan cetak film  pemeriksaan radiologi perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "146",
+    "variable_indicator_id": "73",
+    "variable_name": "Jumlah seluruh pemeriksaan radiologi dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "147",
+    "variable_indicator_id": "74",
+    "variable_name": "Penomeran rekam medis ganda/dobel per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "148",
+    "variable_indicator_id": "74",
+    "variable_name": "Jumlah pasien MRS dan jumlah pasien rawat jalan dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "149",
+    "variable_indicator_id": "75",
+    "variable_name": "Kehilangan dokumen rekam medis pasien rawat jalan perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "150",
+    "variable_indicator_id": "75",
+    "variable_name": "Jumlah pasien rawat jalan dalam bulan teersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "151",
+    "variable_indicator_id": "76",
+    "variable_name": "Jumlah pasien pembedahan di ruang operasi yang telah diisi lengkap checklist keselamatan pasiennya sesuai tahapan oleh petugas tertentu disertai tandatangan dan penulisan jam pengisian",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "152",
+    "variable_indicator_id": "76",
+    "variable_name": "Jumlah pasien pembedahan di ruang operasi",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "153",
+    "variable_indicator_id": "77",
+    "variable_name": "Jumlah item resep (R/) yang sesuai Fornas ",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "154",
+    "variable_indicator_id": "77",
+    "variable_name": "Jumlah total item resep (R/)",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "155",
+    "variable_indicator_id": "78",
+    "variable_name": "jumlah pasien meninggal di IGD ≤ 8 jam sejak datang ",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "156",
+    "variable_indicator_id": "78",
+    "variable_name": "jumlah seluruh pasien yang ditangani di IGD ",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "157",
+    "variable_indicator_id": "79",
+    "variable_name": "KKM + KKK + KKH (%)",
+    "variable_type": "N",
+    "variable_unit_name": "%",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "158",
+    "variable_indicator_id": "79",
+    "variable_name": "Nilai Denominator = 3",
+    "variable_type": "D",
+    "variable_unit_name": "%",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "159",
+    "variable_indicator_id": "80",
+    "variable_name": "Jumlah pasien IGD yang tidak dirawat yang mengalami kesalahan billing resep perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "160",
+    "variable_indicator_id": "80",
+    "variable_name": "Jumlah seluruh pasien IGD yang tidak dirawat yang dilakukan billing resep dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "161",
+    "variable_indicator_id": "81",
+    "variable_name": "Jumlah keterlambatan waktu menangani kerusakan alat perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "162",
+    "variable_indicator_id": "81",
+    "variable_name": "Jumlah seluruh laporan kerusakan alat dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "163",
+    "variable_indicator_id": "82",
+    "variable_name": "Jumlah kejadian genset menyala dalam waktu > 10 detik pada saat listrik padam perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "164",
+    "variable_indicator_id": "82",
+    "variable_name": "Jumlah seluruh kejadian pemadaman listrik dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "165",
+    "variable_indicator_id": "83",
+    "variable_name": "Jumlah linen yang hilang perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "166",
+    "variable_indicator_id": "83",
+    "variable_name": "Jumlah seluruh linen dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "167",
+    "variable_indicator_id": "84",
+    "variable_name": "Jumlah ketidaktepatan administrasi keuangan laboratorium perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "168",
+    "variable_indicator_id": "84",
+    "variable_name": "Jumlah pelayanan administrasi keuangan dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "169",
+    "variable_indicator_id": "85",
+    "variable_name": "Jumlah ketidaklengkapan dokumen pendukung penagihan perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "170",
+    "variable_indicator_id": "85",
+    "variable_name": "Jumlah seluruh tagihan atas pelayanan rumah sakit yang terkirim dalm bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "171",
+    "variable_indicator_id": "86",
+    "variable_name": "Jumlah angket kepuasan yang tidak kembali atau tidak terisi selama satu bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "172",
+    "variable_indicator_id": "86",
+    "variable_name": "Jumlah angket kepuasan yang dibagikan dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "173",
+    "variable_indicator_id": "87",
+    "variable_name": "Jumlah keterlambatan respon time petugas EDP dalam menanggapi laporan kerusakan hardware / jaringan pada bulan tersebut",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "174",
+    "variable_indicator_id": "87",
+    "variable_name": "Jumlah seluruh laporan kerusakan hardware / jaringan pada bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "175",
+    "variable_indicator_id": "88",
+    "variable_name": "Ketidaksesuaian surat pesanan (SP) dg fisik barang/ bahan yg diterima per bulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "176",
+    "variable_indicator_id": "88",
+    "variable_name": "Jumlah surat pesanan barang yang dikirim dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "177",
+    "variable_indicator_id": "89",
+    "variable_name": "Jumlah keterlambatan pelayanan ambulans perbulan",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "178",
+    "variable_indicator_id": "89",
+    "variable_name": "Jumlah seluruh permintaan ambulans dalam bulan tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "179",
+    "variable_indicator_id": "90",
+    "variable_name": "Jumlah proses yang telah dilakukan identifikasi secara benar",
+    "variable_type": "N",
+    "variable_unit_name": "proses",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "180",
+    "variable_indicator_id": "90",
+    "variable_name": "Jumlah proses pelayanan yang di observasi ",
+    "variable_type": "D",
+    "variable_unit_name": "proses",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "181",
+    "variable_indicator_id": "91",
+    "variable_name": "Jumlah pasien gawat, darurat, dan gawat-darurat yang mendapatkan pelayanan kegawatdaruratannya dalam waktu ? 5 menit.",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "182",
+    "variable_indicator_id": "91",
+    "variable_name": "Jumlah seluruh pasien pasien gawat, darurat, dan gawat-darurat yang mendapatkan pelayanan kegawatdaruratan di rumah sakit tersebut",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "183",
+    "variable_indicator_id": "92",
+    "variable_name": "Jumlah kumulatif waktu tunggu pasien rawat jalan yang disurvey",
+    "variable_type": "N",
+    "variable_unit_name": "menit",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "184",
+    "variable_indicator_id": "92",
+    "variable_name": "Jumlah seluruh pasien rawat jalan yang disurvey",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "185",
+    "variable_indicator_id": "93",
+    "variable_name": "Jumlah pasien yang waktu jadwal operasinya berubah",
+    "variable_type": "N",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "186",
+    "variable_indicator_id": "93",
+    "variable_name": "Jumlah pasien operasi elektif",
+    "variable_type": "D",
+    "variable_unit_name": "pasien",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "187",
+    "variable_indicator_id": "94",
+    "variable_name": "Jumlah visite dokter spesialis sebelum jam 14:00 pada hari berjalan",
+    "variable_type": "N",
+    "variable_unit_name": "visitasi",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "188",
+    "variable_indicator_id": "94",
+    "variable_name": "Jumlah visite dokter spesialis pada hari berjalan",
+    "variable_type": "D",
+    "variable_unit_name": "visitasi",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "189",
+    "variable_indicator_id": "95",
+    "variable_name": "Jumlah pemeriksaan laboratorium kritis yang dilaporkan < 30 menit",
+    "variable_type": "N",
+    "variable_unit_name": "pemeriksaa",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "190",
+    "variable_indicator_id": "95",
+    "variable_name": "Jumlah seluruh pemeriksaan laboratorium kritis",
+    "variable_type": "D",
+    "variable_unit_name": "pemeriksaa",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "191",
+    "variable_indicator_id": "96",
+    "variable_name": "Jumlah R/ yang patuh dengan formularium nasional",
+    "variable_type": "N",
+    "variable_unit_name": "resep",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "192",
+    "variable_indicator_id": "96",
+    "variable_name": "Jumlah seluruh R/",
+    "variable_type": "D",
+    "variable_unit_name": "resep",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "193",
+    "variable_indicator_id": "97",
+    "variable_name": "Jumlah R/ yang patuh dengan formularium RS",
+    "variable_type": "N",
+    "variable_unit_name": "resep",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "194",
+    "variable_indicator_id": "97",
+    "variable_name": "Jumlah seluruh R/",
+    "variable_type": "D",
+    "variable_unit_name": "resep",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "195",
+    "variable_indicator_id": "98",
+    "variable_name": "Total kebersihan tangan yang dilakukan",
+    "variable_type": "N",
+    "variable_unit_name": "catatan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "196",
+    "variable_indicator_id": "98",
+    "variable_name": "Peluang kebersihan tangan",
+    "variable_type": "D",
+    "variable_unit_name": "catatan",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "197",
+    "variable_indicator_id": "99",
+    "variable_name": "Jumlah kasus yang mendapatkan ketiga upaya pencegahan pasien jatuh",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "198",
+    "variable_indicator_id": "99",
+    "variable_name": "Jumlah kasus semua pasien yang berisiko jatuh",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "199",
+    "variable_indicator_id": "100",
+    "variable_name": "Jumlah kasus yang penanganannya patuh dengan kriteria 5 clinical pathways",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "200",
+    "variable_indicator_id": "100",
+    "variable_name": "Jumlah total kasus yang masuk dalam kriteria 5 clinical pathways yang ditetapkan",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "201",
+    "variable_indicator_id": "101",
+    "variable_name": "Hasil Penilaian IKM. Jumlah kumulatif hasil penilaian kepuasan dari pasien yang disurvei (dalam prosen)",
+    "variable_type": "N",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "202",
+    "variable_indicator_id": "101",
+    "variable_name": "Skala Maksimal Penilaian IKM. Jumlah total pasien yang disurvei (n minimal 50)",
+    "variable_type": "D",
+    "variable_unit_name": "kasus",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "203",
+    "variable_indicator_id": "102",
+    "variable_name": "Jumlah KKM, KKK dan KKH yang sudah ditanggapi dan ditindaklanjuti",
+    "variable_type": "N",
+    "variable_unit_name": "komplain",
+    "variable_record_status": "A"
+  },
+  {
+    "variable_id": "204",
+    "variable_indicator_id": "102",
+    "variable_name": "Jumlah seluruh KKM, KKK dan KKH",
+    "variable_type": "D",
+    "variable_unit_name": "komplain",
+    "variable_record_status": "A"
+  }
+]

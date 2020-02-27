@@ -1,0 +1,512 @@
+[
+  {
+    "indicator_id": "1",
+    "indicator_element": "Kelengkapan asesmen medis dalam waktu 24 jam setelah pasien masuk rawat inap",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "2",
+    "indicator_element": "Ketidakpatuhan pendokumentasian asesmen nyeri secara kontinyu di status pasien",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "3",
+    "indicator_element": "Kerusakan sampel darah",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "4",
+    "indicator_element": "Tidak terlaporkannya hasil kritis",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "5",
+    "indicator_element": "Penolakan expertise",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "6",
+    "indicator_element": "Keterlambatan hasil foto rawat jalan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "7",
+    "indicator_element": "Pemeriksaan ulang radiologi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "8",
+    "indicator_element": "Tidak dilakukannya asesmen awal radiologi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "9",
+    "indicator_element": "Tidak dilakukannya  penandaan lokasi operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "10",
+    "indicator_element": "Operasi ulang dengan diagnosa sama dan atau komplikasinya",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "11",
+    "indicator_element": "Kesalahan Prosedur Operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "12",
+    "indicator_element": "Kesalahan Lokasi Operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "13",
+    "indicator_element": "Kesalahan Diagnosa Pre dan post operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "14",
+    "indicator_element": "Kesalahan penyerahan perbekalan farmasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "15",
+    "indicator_element": "Ketidaktepatan pemberian obat (5 benar)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "16",
+    "indicator_element": "Ketidaklengkapan asesmen pre anestesi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "17",
+    "indicator_element": "Kejadian Reaksi Transfusi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "18",
+    "indicator_element": "Ketidaklengkapan informed consent",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "19",
+    "indicator_element": "Ketidaklengkapan catatan medis pasien (KLPCM)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "20",
+    "indicator_element": "Infeksi Daerah  Operasi (IDO)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "21",
+    "indicator_element": "Sepsis",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "22",
+    "indicator_element": "Infeksi Luka Infus (ILI / Plebitis)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "23",
+    "indicator_element": "Infeksi Aliran Darah Primer  (IADP)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "24",
+    "indicator_element": "Infeksi Saluran Kemih (ISK)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "25",
+    "indicator_element": "Pneumonia akibat pemakaian ventilator (Ventilator Associated Pneumonia /VAP)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "26",
+    "indicator_element": "Kejadian dekubitus selama masa perawatan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "27",
+    "indicator_element": "Ketidaktepatan identifikasi pasien",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "28",
+    "indicator_element": "Insiden keamanan obat yang perlu diwaspadai",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "29",
+    "indicator_element": "Kejadian pasien jatuh",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "30",
+    "indicator_element": "Pasien stroke ischemic yang tidak mendapatkan terapi anti trombotik pada saat KRS.",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "31",
+    "indicator_element": "Pasien stroke yang tidak mendapatkan edukasi selama masa perawatan di rumah sakit",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "32",
+    "indicator_element": "Pasien IMA yang tidak mendapatkan terapi aspirin (anti trombotik) dalam waktu 24 jam sejak datang ke Rumah Sakit.",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "33",
+    "indicator_element": "Bayi baru lahir yang tidak mendapatkan ASI Eksklusif selama rawat inap",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "34",
+    "indicator_element": "Pasien asma anak yang tidak menerima bronkodilator selama masa rawat inap",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "35",
+    "indicator_element": "Penanganan pasien tuberkulosis yang tidak sesuai strategi DOTS (Directly Observed Treatment Shortcourse)",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "36",
+    "indicator_element": "Proporsi pasien TB paru terkonfirmasi bakteriologis diantara terduga TB",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "37",
+    "indicator_element": "Angka konversi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "38",
+    "indicator_element": "Angka kesembuhan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "39",
+    "indicator_element": "Kematian ibu melahirkan karena eklampsi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "40",
+    "indicator_element": "Kematian ibu melahirkan karena perdarahan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "41",
+    "indicator_element": "Ketidakmampuan menangani BBLR 1500-2500gr",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "42",
+    "indicator_element": "Keterlambatan operasi sectio caesarea",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "43",
+    "indicator_element": "Keterlambatan penyediaan darah",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "44",
+    "indicator_element": "Kejadian tidak dilakukan Inisiasi Menyusu Dini (IMD) pada bayi baru lahir",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "45",
+    "indicator_element": "Angka perawatan ulang",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "46",
+    "indicator_element": "Pasien yang kembali ke Instalasi Pelayanan Intensif (ICU) dengan kasus yang sama < 72 jam",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "47",
+    "indicator_element": "Kejadian pulang atas permintaan sendiri",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "48",
+    "indicator_element": "Kesalahan tindakan rehabilitasi medis",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "49",
+    "indicator_element": "Ketidaklengkapan pengisian resume medis rawat jalan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "50",
+    "indicator_element": "Sisa makan siang pasien non diit",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "51",
+    "indicator_element": "Kesalahan diit pasien",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "52",
+    "indicator_element": "Ketidaklengkapan Laporan Operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "53",
+    "indicator_element": "Ketidaklengkapan Laporan Anestesi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "54",
+    "indicator_element": "Insiden tertinggalnya instrumen/kasa/benda lain saat operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "55",
+    "indicator_element": "Keterlambatan waktu mulai operasi > 30 menit",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "56",
+    "indicator_element": "Ketidakpatuhan pendokumentasian asesmen nyeri",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "57",
+    "indicator_element": "Insiden Kesalahan Setting Ventilator",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "58",
+    "indicator_element": "Insiden Vagal Reflex Pada Pemasangan ET",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "59",
+    "indicator_element": "Keterlambatan waktu penerimaan obat racikan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "60",
+    "indicator_element": "Keterlambatan waktu penerimaan obat non racikan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "61",
+    "indicator_element": "Kesalahan penulisan jenis komponen darah pada kitir/label darah",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "62",
+    "indicator_element": "Kesalahan pemeriksaan golongan darah",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "63",
+    "indicator_element": "Kesalahan jenis komponen darah",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "64",
+    "indicator_element": "Pasien rehabilitasi medis yang drop out",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "65",
+    "indicator_element": "Keterlambatan waktu tindakan hemodialisa",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "66",
+    "indicator_element": "Insiden kesalahan setting program hemodialisa",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "67",
+    "indicator_element": "Insiden ketidaktepatan insersi vena dan arteri pada pasien hemodialisa",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "68",
+    "indicator_element": "Kegagalan Uji Bowie Dick",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "69",
+    "indicator_element": "Keterlambatan waktu tindakan endoskopi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "70",
+    "indicator_element": "Insiden vagal reflex pada tindakan gastroskopi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "71",
+    "indicator_element": "Insiden ruptur colon pada tindakan kolonoskopi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "72",
+    "indicator_element": "Kesalahan Posisi Pasien dalam Pemeriksaan Radiologi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "73",
+    "indicator_element": "Kesalahan cetak film pada pemeriksaan  radiologi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "74",
+    "indicator_element": "Penomeran rekam medis ganda/dobel",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "75",
+    "indicator_element": "Kehilangan dokumen rekam medis pasien rawat jalan",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "76",
+    "indicator_element": "Angka kelengkapan pengisian surgical checklist di kamar operasi",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "77",
+    "indicator_element": "Kepatuhan Penggunaan Formularium Nasional",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "78",
+    "indicator_element": "Kematian Pasien di IGD",
+    "indicator_category_id": "1"
+  },
+  {
+    "indicator_id": "79",
+    "indicator_element": "Kecepatan Respon Terhadap Komplaian (KRK)",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "80",
+    "indicator_element": "Ketidaktepatan billing resep obat pasien IGD",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "81",
+    "indicator_element": "Keterlambatan waktu menangani kerusakan alat",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "82",
+    "indicator_element": "Keterlambatan respon time genset",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "83",
+    "indicator_element": "Linen hilang",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "84",
+    "indicator_element": "Ketidaktepatan administrasi keuangan laboratorium",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "85",
+    "indicator_element": "Ketidaklengkapan dokumen pendukung penagihan",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "86",
+    "indicator_element": "Tidak terisinya Angket Kepuasan Pasien Rawat Inap",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "87",
+    "indicator_element": "Keterlambatan waktu penanganan kerusakan hardware / jaringan",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "88",
+    "indicator_element": "Ketidaksesuaian surat pesanan (SP) dengan fisik barang / bahan",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "89",
+    "indicator_element": "Keterlambatan Pelayanan Ambulans di Rumah Sakit",
+    "indicator_category_id": "2"
+  },
+  {
+    "indicator_id": "90",
+    "indicator_element": "Kepatuhan Identifikasi Pasien",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "91",
+    "indicator_element": "Emergency Respon Time (Waktu Tanggap Pelayanan Gawatdarurat ≤ 5 menit).",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "92",
+    "indicator_element": "Waktu Tunggu Rawat Jalan",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "93",
+    "indicator_element": "Penundaan Operasi Elektif",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "94",
+    "indicator_element": "Kepatuhan Jam Visite Dokter Spesialis",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "95",
+    "indicator_element": "Waktu Lapor Hasil Tes Kritis laboratorium",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "96",
+    "indicator_element": "Kepatuhan Penggunaan Formularium Nasional Bagi RS Provider BPJS",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "97",
+    "indicator_element": "Kepatuhan Penggunaan Formularium RS Non Provider BPJS",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "98",
+    "indicator_element": "Kepatuhan Cuci Tangan",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "99",
+    "indicator_element": "Kepatuhan Upaya Pencegahan Risiko Cedera Akibat Pasien Jatuh pada pasien Rawat Inap",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "100",
+    "indicator_element": "Kepatuhan Terhadap Clinical Pathway",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "101",
+    "indicator_element": "Kepuasan Pasien dan Keluarga",
+    "indicator_category_id": "4"
+  },
+  {
+    "indicator_id": "102",
+    "indicator_element": "Kecepatan respon Terhadap Komplain",
+    "indicator_category_id": "4"
+  }
+]

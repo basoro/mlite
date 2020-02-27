@@ -41,6 +41,11 @@ $loket_cs=['7','8']; // Loket CS harus angka maximal 9
 $loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9
 $poli_hari_ini = "'-','IGDK','U0002','U0001','U0003','U0004','U0005'"; // Kode poli yang mau ditampilkan
 
+$sismadak_username = ''; //Akun untuk login ke SISMADAK
+$sismadak_password = ''; //Password untuk login ke SISMADAK
+$sismadak_department_id = ''; //Kode Departemen, lihat tabel master_institution_department
+$sismadak_url = ''; // Url ke server SISMADAK
+
 // Limit untuk kuota. Misal 2 (50%), 4 (25%) dari kuota dalam jadwal
 define ("LIMIT", 2);
 

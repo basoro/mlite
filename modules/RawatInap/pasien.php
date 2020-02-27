@@ -39,6 +39,7 @@ if(isset($_GET['no_rawat'])) {
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
                         if(!$action){
                         ?>
+                        <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
                         <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                             <thead>
                                 <tr>
@@ -168,7 +169,7 @@ if(isset($_GET['no_rawat'])) {
                           if(isset($_POST['ok_per'])){
                                 if(($no_rawat <> "")){
                                   $insert = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
-                                              ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
+                                              ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}')");
                                   if($insert){
                                     redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
@@ -1366,6 +1367,23 @@ if(isset($_GET['no_rawat'])) {
 
                         if ($action == "delete_tindakan") {
                           $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                          $hasil = query($hapus);
+                          if (($hasil)) {
+                            redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                          }
+                        }
+                        //delete
+                        if($action == "delete_lab"){
+
+                        	$hapus = "DELETE FROM permintaan_pemeriksaan_lab WHERE noorder='{$_REQUEST['noorder']}' AND kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}'";
+                        	$hasil = query($hapus);
+                        	if (($hasil)) {
+                        	    redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                        	}
+
+                        }
+                        if ($action == "delete_skdp") {
+                          $hapus = "DELETE FROM skdp_bpjs WHERE no_antrian='{$_REQUEST['no_reg']}' AND no_rkm_medis='{$_REQUEST['no_rkm_medis']}' AND tanggal_datang='{$_REQUEST['tanggal_periksa']}'";
                           $hasil = query($hapus);
                           if (($hasil)) {
                             redirect("./index.php?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
