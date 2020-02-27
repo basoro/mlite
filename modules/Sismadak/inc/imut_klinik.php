@@ -16,7 +16,7 @@ if(isset($_POST['simpan_imut'])){
 
   if(isset($_POST['N']) && $_POST['N'] !=='') {
     //curl_setopt($ch, CURLOPT_URL, "");
-    $ch = curl_init($sismadak_url);
+    $ch = curl_init($sismadak_url.'/application/ws/ws_imut_simrs.php');
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -38,7 +38,7 @@ if(isset($_POST['simpan_imut'])){
   }
   if(isset($_POST['D']) && $_POST['D'] !=='') {
     //curl_setopt($ch, CURLOPT_URL, "");
-    $ch = curl_init($sismadak_url);
+    $ch = curl_init($sismadak_url.'/application/ws/ws_imut_simrs.php');
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     curl_setopt($ch, CURLOPT_TIMEOUT, 60);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
