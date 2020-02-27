@@ -31,7 +31,7 @@ if(isset($_POST['simpan_imut'])){
     $response = json_decode($content,true);
     //print_r($response);
     if($response['status'] == 200) {
-      echo '<div class="alert bg-green alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Nilai Numerator Indikator Mutu telah disimpan!</div>';
+      echo '<div class="alert bg-green alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Nilai Numerator telah disimpan!</div>';
     } else {
       echo '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Error silahkan cek kembali konfigurasi!</div>';
     }
@@ -53,7 +53,7 @@ if(isset($_POST['simpan_imut'])){
     $response = json_decode($content,true);
     //print_r($response);
     if($response['status'] == 200) {
-      echo '<div class="alert bg-green alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Nilai Denumerator Indikator Mutu telah disimpan!</div>';
+      echo '<div class="alert bg-green alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Nilai Denumerator telah disimpan!</div>';
     } else {
       echo '<div class="alert bg-pink alert-dismissible" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>Error silahkan cek kembali konfigurasi!</div>';
     }
