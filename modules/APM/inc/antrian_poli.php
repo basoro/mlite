@@ -64,8 +64,15 @@ include('../../../init.php');
       $master = query("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$namahari'  AND a.kd_poli IN ($poli_hari_ini)");
       while ($row = fetch_array($master)) {
         $dalam_pemeriksaan = fetch_assoc(query("SELECT a.no_reg, b.nm_pasien FROM reg_periksa a, pasien b WHERE a.tgl_registrasi = '$date' AND a.no_rkm_medis = b.no_rkm_medis AND a.stts = 'Berkas Diterima' AND a.kd_poli = '$row[kd_poli]' AND a.kd_dokter = '$row[kd_dokter]' LIMIT 1"));
+        $data_antrian = fetch_array(query("SELECT poliklinik.nm_poli, count(reg_periksa.kd_poli) as jumlah,
+        (select count(*) from reg_periksa WHERE reg_periksa.stts='Sudah' AND reg_periksa.kd_poli=poliklinik.kd_poli AND reg_periksa.tgl_registrasi='$date') as terlayani
+        FROM reg_periksa
+        INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
+        WHERE reg_periksa.tgl_registrasi='$date' and reg_periksa.kd_poli='$row[kd_poli]'
+        GROUP BY reg_periksa.kd_poli"));
+
         echo '<tr>';
-        echo '  <th>'.$row['nm_dokter'].'<br>'.$row['nm_poli'].'</th>';
+        echo '  <th>'.$row['nm_dokter'].'<br>'.$row['nm_poli'].'<br>[ Antrian: '.$data_antrian['jumlah'].' - Terlayani: '.$data_antrian['terlayani'].' ]</th>';
         if($dalam_pemeriksaan == '') {
           echo '  <td class="align-middle">Kosong</td>';
         } else {
