@@ -1,5 +1,3 @@
-
-<?php ?>
 <style>
 @media (max-width: 767px) {
   .modal-fullscreen-xs-down {
