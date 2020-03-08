@@ -30,18 +30,25 @@ class EBook {
           <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
             <thead>
               <tr>
-                <th>Kode</th>
                 <th>Judul</th>
+                <th>Ringkasan</th>
                 <th>Aksi</th>
               </tr>
             </thead>
             <tbody>
               <?php
-              $query = query("SELECT * FROM perpustakaan_ebook");
+              $query = query("SELECT perpustakaan_ebook.*, perpustakaan_pengarang.nama_pengarang FROM perpustakaan_ebook, perpustakaan_pengarang WHERE perpustakaan_ebook.kode_pengarang = perpustakaan_pengarang.kode_pengarang");
               while ($row = fetch_array($query)) {
                 echo '<tr>';
-                echo '<td>'.$row['kode_ebook'].'</td>';
-                echo '<td>'.$row['judul_ebook'].'</td>';
+                echo '<td>'.SUBSTR($row['judul_ebook'], 0, 30).' ...</td>';
+                echo '<td>';
+                echo '<ul class="list-unstyled">';
+                echo '<li>Kode: '.$row['kode_ebook'].'</li>';
+                echo '<li>Judul: '.$row['judul_ebook'].'</li>';
+                echo '<li>Halaman : '.$row['jml_halaman'].'</li>';
+                echo '<li>Pengarang: '.$row['nama_pengarang'].'</li>';
+                echo '</ul>';
+                echo '</td>';
                 echo '<td><a href="#" class="view-ebook" data-id="'.$row[kode_ebook].'"><i class="material-icons">library_books</i></a></a></td>';
                 echo '</tr>';
               }
