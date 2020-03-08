@@ -31,7 +31,7 @@ class EBook {
             <thead>
               <tr>
                 <th>Kode</th>
-                <th>Judul e-Book</th>
+                <th>Judul</th>
                 <th>Aksi</th>
               </tr>
             </thead>
