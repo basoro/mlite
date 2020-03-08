@@ -1,12 +1,12 @@
 <?php
 if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 
-$module_directory   = 'Kepegawaian';
-$module_title       = 'Kepegawaian';
+$module_directory   = 'EBook';
+$module_title       = 'EBook';
 $module_version     = '1.0';
 $module_author      = 'drg. Faisol Basoro';
 $module_url         = 'https://basoro.id';
-$module_description = 'Modul kepegawaian di SIMKES Khanza.';
+$module_description = 'Modul EBook (e-Library) di SIMKES Khanza.';
 $module_type        = 'FKTP';
 
 ?>
@@ -16,7 +16,7 @@ $module_type        = 'FKTP';
     <a href="<?php echo URL; ?>/index.php?module=<?php echo $module_directory; ?>&page=index">
       <div class="image">
         <div class="icon">
-          <i class="material-icons">assignment_ind</i>
+          <i class="material-icons">library_books</i>
         </div>
       </div>
       <div class="sname"><?php echo $module_title; ?></div>
@@ -27,7 +27,7 @@ $module_type        = 'FKTP';
     <td>
       <div class="image-plugins">
         <div class="icon">
-           <i class="material-icons">assignment_ind</i>
+           <i class="material-icons">library_books</i>
         </div>
       </div>
     </td>

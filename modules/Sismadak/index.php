@@ -27,7 +27,7 @@ $module_type        = 'FKTP';
     <td>
       <div class="image-plugins">
         <div class="icon">
-           <i class="material-icons">folder</i>
+           <i class="material-icons">insert_chart</i>
         </div>
       </div>
     </td>

@@ -110,7 +110,7 @@ if(isset($_POST['validasi'])) {
                                 </thead>
                                 <tbody>
                                 <?php
-                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_reg, b.tanggal_booking, b.jam_booking, b.status FROM pasien a, booking_registrasi b, penjab c, poliklinik d WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli";
+                                $sql = "SELECT a.nm_pasien, b.no_rkm_medis, a.alamat, c.png_jawab, d.nm_poli, b.no_reg, b.tanggal_booking, b.jam_booking, b.status FROM pasien a, booking_registrasi b, penjab c, poliklinik d WHERE a.no_rkm_medis = b.no_rkm_medis AND b.kd_pj = c.kd_pj AND b.kd_poli = d.kd_poli AND b.status = 'Belum'";
                                 if($role == 'Medis' || $role == 'Paramedis') {
                                   $sql .= " AND b.kd_poli = '$jenis_poli'";
                                 }

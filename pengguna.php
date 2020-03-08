@@ -119,6 +119,7 @@ include_once('layout/sidebar.php');
                                               <tr>
                                                   <th>NAMA</th>
                                                   <th>USER NAME</th>
+                                                  <th>PASSWORD</th>
                                                   <th>ROLE</th>
                                                   <th>CAP</th>
                                                   <th>MODULE</th>
@@ -130,6 +131,7 @@ include_once('layout/sidebar.php');
                                   				while($row = fetch_array($sql)){
                                             $query1 = fetch_assoc(query("(SELECT nm_dokter AS nama FROM dokter WHERE kd_dokter = '$row[username]') UNION (SELECT nama AS nama FROM pegawai WHERE nik ='$row[username]') UNION (SELECT nama AS nama FROM petugas WHERE nip ='$row[username]')"));
                                             $query2 = fetch_assoc(query("(SELECT nm_poli AS nama FROM poliklinik WHERE kd_poli = '$row[cap]') UNION (SELECT nm_bangsal AS nama FROM bangsal WHERE kd_bangsal = '$row[cap]')"));
+                                            $query3 = fetch_assoc(query("SELECT AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('{$row['username']}','nur')"));
                                             echo "<tr class='editusername'
                                               data-username='".$row['0']."'
                                               data-nama='".$query1['nama']."'
@@ -140,6 +142,7 @@ include_once('layout/sidebar.php');
                                             >";
                                     			    echo "<td>".$query1['nama']."</td>";
                                               echo "<td>".$row['username']."</td>";
+                                              echo "<td>".$query3['password']."</td>";
                                       				echo "<td>".$row['role']."</td>";
                                   				    echo "<td>".$query2['nama']."</td>";
                                               echo "<td>".$row['module']."</td>";
