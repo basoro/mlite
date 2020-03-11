@@ -4,13 +4,18 @@
         <span>Sismadak</span>
     </a>
     <ul class="ml-menu">
+        <li class="<?php if ($params['module']=="Sismadak" && $params['page']=="index") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/index.php?module=Sismadak&page=index">
+                Instrument SNARS 1.1
+            </a>
+        </li>
         <li class="<?php if ($params['module']=="Sismadak" && $params['page']=="imut_klinik") {echo "active"; } ?>">
             <a href="<?php echo URL; ?>/index.php?module=Sismadak&page=imut_klinik">
                 Indikator Area Klinik
             </a>
         </li>
-        <li class="<?php if ($params['module']=="Sismadak" && $params['page']=="index") {echo "active"; } ?>">
-            <a href="<?php echo URL; ?>/index.php?module=Sismadak&page=index">
+        <li class="<?php if ($params['module']=="Sismadak" && $params['page']=="imut_manajemen") {echo "active"; } ?>">
+            <a href="<?php echo URL; ?>/index.php?module=Sismadak&page=imut_manajemen">
                 Indikator Area Manajemen
             </a>
         </li>

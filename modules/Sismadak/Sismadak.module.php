@@ -6,6 +6,10 @@ if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
 class Sismadak {
     function index() {
       global $dataSettings, $sismadak_username, $sismadak_password, $sismadak_department_id, $sismadak_url;
+      include('modules/Sismadak/inc/instrument.php');
+    }
+    function imut_manajemen() {
+      global $dataSettings, $sismadak_username, $sismadak_password, $sismadak_department_id, $sismadak_url;
       include('modules/Sismadak/inc/imut_manajemen.php');
     }
     function imut_klinik() {

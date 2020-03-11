@@ -30,8 +30,12 @@ for($i=0;$i<$panjang;$i++){
 ?>
 <?php
 if($_SERVER['REQUEST_METHOD'] == "POST") {
-	query("DELETE FROM `antriloket`");
-	query("INSERT INTO `antriloket` (`loket`, `antrian`) VALUES ('1', '1')");
+  if(empty($_POST['antrian'])) {
+    query("DELETE FROM `antriloket`");
+    query("INSERT INTO `antriloket` (`loket`, `antrian`) VALUES ('0', '0')");
+  } else {
+    query("UPDATE antriloket SET loket = '{$_GET['loket']}', antrian = '{$_POST['antrian']}'");
+  }
 }
 ?>
 <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;" class="mt-2 mb-5">Pemanggil Antrian Loket</div>
@@ -59,10 +63,22 @@ if($_SERVER['REQUEST_METHOD'] == "POST") {
 	</div>
 </div>
 
-<div class="text-center m-5">
+<div class="mx-auto text-center m-5" style="width: 300px;">
 <form method="POST" action="">
-	<input type="submit" class="btn btn-lg" value="RESET">
+  <div class="input-group mb-3">
+    <input type="text" class="form-control form-control-lg" name="antrian" placeholder="Input No. Urut">
+    <div class="input-group-append">
+      <input class="btn btn-lg btn-danger" type="submit" value="RESET">
+    </div>
+  </div>
 </form>
+</div>
+
+<div class="text-center text-white">
+# Klik 1X Tombol <i class="fas fa-forward"></i> Untuk Antrian Nomor Urut Selanjutnya dan Klik Tombol <i class="fas fa-bullhorn"></i> Untuk Memanggil </br>
+# Untuk Menyesuaikan Urutan, Masukan Nomor Urut Yang Akan dipanggil kemudian Klik RESET 1X dan Tombol <i class="fas fa-forward"></i> 1X</br>
+# Untuk Reset Nomor Antrian Counter Menjadi 0 Klik RESET 1X dan Tombol <i class="fas fa-forward"></i> 1X</br>
+# Angka di Sebelah Kiri Tombol Pemanggil Menunjukan Jumlah Nomor Antrian Yang Telah diambil Pasien</br>
 </div>
 
 <?php foreach($loket as $value){ ?>
