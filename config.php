@@ -22,8 +22,8 @@ define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'rshd_sik');
-define('PRODUCTION', false);
+define('DB_NAME', 'sik');
+define('PRODUCTION', true);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
@@ -39,7 +39,7 @@ define('SecretKey', '');
 $loket=['1','2','3']; // Loket harus angka maksimal 9
 $loket_cs=['7','8']; // Loket CS harus angka maximal 9
 $loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9
-$poli_hari_ini = "'-','IGDK','U0002','U0001','U0003','U0004','U0005'"; // Kode poli yang mau ditampilkan
+$poli_hari_ini = "'-','IGDK','U0041','U0001','U0003','U0004','U0005','U0036'"; // Kode poli yang mau ditampilkan
 
 $sismadak_username = ''; //Akun untuk login ke SISMADAK
 $sismadak_password = ''; //Password untuk login ke SISMADAK

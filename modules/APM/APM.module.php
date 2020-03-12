@@ -73,6 +73,78 @@ class APM {
 <?php
       }
     }
+    function data_antrian() {
+      global $connection, $date;
+?>
+<div class="card">
+  <div class="header">
+      <h2>Data Antrian</h2>
+  </div>
+  <div class="body">
+    <span id="table-filter" style="display:none">
+    Filter:
+    <select>
+    <option value="">All</option>
+    <option>Loket</option>
+    <option>CS</option>
+    <option>Prioritas</option>
+    </select>
+    </span>
+    <table id="data_antrian" class="table table-striped table-bordered" style="width:100%">
+        <thead>
+            <tr>
+                <th>Tipe</th>
+                <th>Antrian</th>
+                <th>Tanggal</th>
+                <th>Jam Mulai</th>
+                <th>Jam Selesai</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+        $sql = "SELECT * FROM antrian_loket";
+        if(isset($_POST['postdate'])) {
+            $sql .= " WHERE postdate = '$_POST[postdate]'";
+        } else {
+            $sql .= " WHERE postdate = '{$date}'";
+        }
+        $sql .= " ORDER BY type ASC";
+        $query = query($sql);
+        while($row = fetch_array($query)) {
+          echo '<tr>';
+          echo '    <td>'.$row['type'].'</td>';
+          echo '    <td>'.$row['noantrian'].'</td>';
+          echo '    <td>'.$row['postdate'].'</td>';
+          echo '    <td>'.$row['start_time'].'</td>';
+          echo '    <td>'.$row['end_time'].'</td>';
+          echo '</tr>';
+        }
+        ?>
+        </tbody>
+    </table>
+    <div class="row clearfix">
+        <form method="post" action="">
+        <div class="col-sm-10">
+            <div class="form-group">
+                <div class="form-line">
+                    <input type="text" name="postdate" class="datepicker form-control" placeholder="Pilih tanggal...">
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-2">
+            <div class="form-group">
+                <div class="form-line">
+                    <input type="submit" class="btn bg-blue btn-block btn-lg waves-effect">
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<?php
+    }
     function install() {
       global $connection;
       $sql_userwall = "CREATE TABLE `antrian_loket` (
