@@ -49,7 +49,7 @@ class EBook {
                 echo '<li>Pengarang: '.$row['nama_pengarang'].'</li>';
                 echo '</ul>';
                 echo '</td>';
-                echo '<td><a href="#" class="view-ebook" data-id="'.$row[kode_ebook].'"><i class="material-icons">library_books</i></a></a></td>';
+                echo '<td><a href="#" class="view-ebook" data-id="'.$row['kode_ebook'].'"><i class="material-icons">library_books</i></a></a></td>';
                 echo '</tr>';
               }
               ?>
