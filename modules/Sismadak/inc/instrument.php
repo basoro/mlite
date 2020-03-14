@@ -4,7 +4,7 @@
   </div>
   <div class="body">
     <div class="table-responsive">
-      <table id="datatable" class="table datatable">
+      <table id="elemen" class="table datatable">
         <thead>
           <tr>
             <th>#</th>

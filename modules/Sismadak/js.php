@@ -22,6 +22,7 @@ $('#elemen').dataTable( {
   },
   "order": [[ 0, "asc" ]],
   "columns": [
+    { "searchable": false },
     null,
     { "searchable": false },
     { "searchable": false },
