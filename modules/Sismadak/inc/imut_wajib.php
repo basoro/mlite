@@ -77,6 +77,7 @@ $id = isset($_GET['id'])?$_GET['id']:null;
       <table class="table datatable">
         <thead>
           <tr>
+            <th>#</th>
             <th>Indikator</th>
             <th>Tanggal</th>
             <th>Aksi</th>
@@ -87,18 +88,21 @@ $id = isset($_GET['id'])?$_GET['id']:null;
           $url = "modules/Sismadak/inc/imut.json";
           $json = file_get_contents($url);
           $datas = (array)json_decode($json, true);
+          $i = '-88';
           foreach($datas as $data) {
             if($data['indicator_category_id'] == 4) {
               echo '<form method="" action="">';
               echo '<input name="module" value="'.$_GET['module'].'" type="hidden">';
               echo '<input name="page" value="'.$_GET['page'].'" type="hidden">';
               echo '<tr>';
+              echo '<td>'.$i.'</td>';
               echo '<td>'.$data['indicator_element'].'</td>';
               echo '<td><input class="datepicker form-control" name="tanggal" placeholder="Tanggal"></td>';
               echo '<td><button type="submit" name="id" value="'.$data['indicator_id'].'" class="btn btn-primary">INPUT</button></td>';
               echo '</tr>';
               echo '</form>';
             }
+            $i++;
           }
           ?>
         </tbody>
