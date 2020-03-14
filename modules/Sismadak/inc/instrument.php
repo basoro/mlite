@@ -7,6 +7,7 @@
       <table id="elemen" class="table datatable">
         <thead>
           <tr>
+            <th>#</th>
             <th>Elemen</th>
             <th>Penjelasan</th>
             <th>RDOWS</th>
@@ -20,6 +21,7 @@
           $datas = (array)json_decode($json, true);
           foreach($datas as $data) {
               echo '<tr>';
+              echo '<td>'.$data['id'].'</td>';
               echo '<td>'.$data['instrument'].'</td>';
               echo '<td>'.$data['name'].'</td>';
               echo '<td>'.nl2br($data['RDOWS']).'</td>';
