@@ -97,7 +97,7 @@ $id = isset($_GET['id'])?$_GET['id']:null;
               echo '<td>'.$i.'</td>';
               echo '<td>'.$data['indicator_element'].'</td>';
               echo '<td><input class="datepicker form-control" name="tanggal" placeholder="Tanggal"></td>';
-              echo '<td><button type="submit" name="id" value="'.$data['indicator_id'].'" class="btn btn-primary">INPUT</button></td>';
+              echo '<td><button type="submit" name="id" value="'.$data['indicator_id'].'" class="btn btn-primary"><i class="material-icons">launch</i></button></td>';
               echo '</tr>';
               echo '</form>';
             }
