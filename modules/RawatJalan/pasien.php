@@ -143,7 +143,7 @@ if(isset($_GET['no_rawat'])) {
                           if(isset($_POST['ok_per'])){
                                 if(($no_rawat <> "")){
                                   $insert = query("INSERT INTO pemeriksaan_ralan VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
-                                              ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
+                                              ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','{$_POST['penilaian']}')");
                                   if($insert){
                                     redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
                                   }
@@ -151,7 +151,7 @@ if(isset($_GET['no_rawat'])) {
                               };
                           if(isset($_POST['edit_an'])){
                                 if(($no_rawat <> "")){
-                              	$insert = query("UPDATE pemeriksaan_ralan SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
+                              	$insert = query("UPDATE pemeriksaan_ralan SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}', penilaian = '{$_POST['penilaian']}' WHERE no_rawat = '{$no_rawat}'");
 
                                   if($insert){
                                     redirect("./index.php?module=RawatJalan&page=index&action=tindakan&no_rawat={$no_rawat}");
@@ -464,127 +464,139 @@ if(isset($_GET['no_rawat'])) {
                                    </div>
                                    <!-- riwayat -->
                                    <div role="tabpanel" class="tab-pane fade in" id="pemeriksaan">
-                                     <div class="body">
+                                     <div class="clearfix">
                                      <form method="POST">
                                        <div class="row clearfix">
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Keluhan</dt>
-                                              <dd><textarea rows="4" name="keluhan" class="form-control"></textarea></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Pemeriksaan</dt>
-                                              <dd><textarea rows="4" name="pemeriksaan" class="form-control"></textarea></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Alergi</dt>
-                                              <dd><input type="text" class="form-control" name="alergi"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Tindak Lanjut</dt>
-                                              <dd><input type="text" class="form-control" name="tndklnjt"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="row clearfix">
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Suhu Badan (C)</dt>
-                                              <dd><input type="text" class="form-control" name="suhu"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Tinggi Badan (Cm)</dt>
-                                              <dd><input type="text" class="form-control" name="tinggi"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Tensi</dt>
-                                              <dd><input type="text" class="form-control" name="tensi"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Respirasi (per Menit)</dt>
-                                              <dd><input type="text" class="form-control" name="respirasi"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div class="row clearfix">
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Berat (Kg)</dt>
-                                              <dd><input type="text" class="form-control" name="berat"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Nadi (per Menit)</dt>
-                                              <dd><input type="text" class="form-control" name="nadi"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>Imun Ke</dt>
-                                              <dd><input type="text" class="form-control" name="imun"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                          <div class="form-group">
-                                            <div class="form-line">
-                                              <dt>GCS(E , V , M)</dt>
-                                              <dd><input type="text" class="form-control" name="gcs"></dd>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
+                                       <div class="col-md-4">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Keluhan</dt>
+                                             <dd><textarea rows="4" name="keluhan" class="form-control"></textarea></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-4">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Pemeriksaan</dt>
+                                             <dd><textarea rows="4" name="pemeriksaan" class="form-control"></textarea></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-4">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Penilaian</dt>
+                                             <dd><textarea rows="4" name="penilaian" class="form-control"></textarea></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       </div>
+
+                                       <div class="row clearfix">
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Suhu Badan (C)</dt>
+                                             <dd><input type="text" class="form-control" name="suhu"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Berat (Kg)</dt>
+                                             <dd><input type="text" class="form-control" name="berat"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Tinggi Badan (Cm)</dt>
+                                             <dd><input type="text" class="form-control" name="tinggi"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Tensi</dt>
+                                             <dd><input type="text" class="form-control" name="tensi"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Nadi (per Menit)</dt>
+                                             <dd><input type="text" class="form-control" name="nadi"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-2">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Respirasi (per Menit)</dt>
+                                             <dd><input type="text" class="form-control" name="respirasi"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       </div>
+
+                                       <div class="row clearfix">
+                                       <div class="col-md-3">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Alergi</dt>
+                                             <dd><input type="text" class="form-control" name="alergi"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-3">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Imun Ke</dt>
+                                             <dd><input type="text" class="form-control" name="imun"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-3">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>GCS(E , V , M)</dt>
+                                             <dd><input type="text" class="form-control" name="gcs"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       <div class="col-md-3">
+                                         <div class="form-group">
+                                           <div class="form-line">
+                                             <dt>Tindak Lanjut</dt>
+                                             <dd><input type="text" class="form-control" name="tndklnjt"></dd>
+                                           </div>
+                                         </div>
+                                       </div>
+                                       </div>
                                        <button type="submit" name="ok_per" value="ok_per" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_per\'">SIMPAN</button>
                                      </form>
                                      </div>
-                                     <div class="body">
-                                     <table id="datatab" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                     <div class="clearfix">
+                                       <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" style="width:100%;">
                                          <thead>
-                                             <tr>
-                                               <th>Keluhan</th>
-                                               <th>Pemeriksaan</th>
-                                               <th>Suhu</th>
-                                               <th>BB</th>
-                                               <th>Tinggi</th>
-                                               <th>Tensi</th>
-                                               <th>Nadi</th>
-                                               <th>RR</th>
-                                               <th>Action</th>
-                                             </tr>
+                                           <tr>
+                                             <th>No</th>
+                                             <th>Keluhan</th>
+                                             <th>Pemeriksaan</th>
+                                             <th>Penilaian</th>
+                                             <th>Suhu</th>
+                                             <th>BB</th>
+                                             <th>Tinggi</th>
+                                             <th>Tensi</th>
+                                             <th>Nadi</th>
+                                             <th>RR</th>
+                                             <th>Action</th>
+                                           </tr>
                                          </thead>
                                          <tbody>
                                          <?php
@@ -594,6 +606,7 @@ if(isset($_GET['no_rawat'])) {
                                              <tr>
                                                <td><?php echo $data_tindakan['keluhan']; ?></td>
                                                <td><?php echo $data_tindakan['pemeriksaan']; ?></td>
+                                               <td><?php echo $data_tindakan['penilaian']; ?></td>
                                                <td><?php echo $data_tindakan['suhu_tubuh']; ?></td>
                                                <td><?php echo $data_tindakan['berat']; ?></td>
                                                <td><?php echo $data_tindakan['tinggi']; ?></td>
@@ -900,106 +913,114 @@ if(isset($_GET['no_rawat'])) {
                 ?>
                 <form method="post">
                 <div class="row clearfix">
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Edit Keluhan</dt>
-                      <dd><textarea rows="4" name="keluhan" class="form-control"><?php echo $row['keluhan']; ?></textarea></dd>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Edit Keluhan</dt>
+                        <dd><textarea rows="4" name="keluhan" class="form-control"><?php echo $row['keluhan']; ?></textarea></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Pemeriksaan</dt>
-                      <dd><textarea rows="4" name="pemeriksaan" class="form-control"><?php echo $row['pemeriksaan']; ?></textarea></dd>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Pemeriksaan</dt>
+                        <dd><textarea rows="4" name="pemeriksaan" class="form-control"><?php echo $row['pemeriksaan']; ?></textarea></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Alergi</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['alergi']; ?>" name="alergi"></dd>
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Penilaian</dt>
+                        <dd><textarea rows="4" name="penilaian" class="form-control"><?php echo $row['penilaian']; ?></textarea></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Tindak Lanjut</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['rtl']; ?>" name="tndklnjt"></dd>
+                  </div>
+                  <div class="row clearfix">
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Suhu Badan (C)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['suhu_tubuh']; ?>" name="suhu"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                </div>
-                <div class="row clearfix">
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Suhu Badan (C)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['suhu_tubuh']; ?>" name="suhu"></dd>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Berat (Kg)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['berat']; ?>" name="berat"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Tinggi Badan (Cm)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['tinggi']; ?>" name="tinggi"></dd>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Tinggi Badan (Cm)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['tinggi']; ?>" name="tinggi"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Tensi</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['tensi']; ?>" name="tensi"></dd>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Tensi</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['tensi']; ?>" name="tensi"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Respirasi (per Menit)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['respirasi']; ?>" name="respirasi"></dd>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Nadi (per Menit)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['nadi']; ?>" name="nadi"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                </div>
-                <div class="row clearfix">
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Berat (Kg)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['berat']; ?>" name="berat"></dd>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Respirasi (per Menit)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['respirasi']; ?>" name="respirasi"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Nadi (per Menit)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['nadi']; ?>" name="nadi"></dd>
+                  </div>
+                  <div class="row clearfix">
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Alergi</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['alergi']; ?>" name="alergi"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>Imun Ke</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['imun_ke']; ?>"  name="imun"></dd>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Imun Ke</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['imun_ke']; ?>"  name="imun"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="col-md-3">
-                  <div class="form-group">
-                    <div class="form-line">
-                      <dt>GCS(E , V , M)</dt>
-                      <dd><input type="text" class="form-control" value="<?php echo $row['gcs']; ?>" name="gcs"></dd>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>GCS(E , V , M)</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['gcs']; ?>" name="gcs"></dd>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <div class="form-line">
+                        <dt>Tindak Lanjut</dt>
+                        <dd><input type="text" class="form-control" value="<?php echo $row['rtl']; ?>" name="tndklnjt"></dd>
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 <div class="row clearfix">
                 <div class="col-md-3">
