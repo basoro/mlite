@@ -86,9 +86,8 @@ if(isset($_POST['validasi'])) {
                     <div class="card">
                         <div class="header">
                             <h2>
-                                <?php echo $title; ?><?php echo date('Y-m-d'); ?>
-
-                                <small><?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?></small>
+                                <?php echo $title; ?>
+                                <small>Periode <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } else { echo date('Y-m-d'); } ?></small>
                             </h2>
                         </div>
                         <div class="body table-responsive">
@@ -144,14 +143,6 @@ if(isset($_POST['validasi'])) {
                             <p><button type="submit" name="validasi" class="btn btn-lg btn-danger">Validasi</button></p>
                             <p>Press <b>Validasi</b> to validate Pasien Booking to Registration.</p>
                             <hr>
-
-                            <!--
-                            <p><b>Selected rows data:</b></p>
-                            <pre id="booking_datatable-console-rows"></pre>
-
-                            <p><b>Form data as submitted to the server:</b></p>
-                            <pre id="booking_datatable-console-form"></pre>
-                            -->
                             </form>
 
                             <div class="row clearfix">
@@ -230,21 +221,6 @@ $(document).ready(function() {
               .val(rowId)
        );
     });
-
-    // FOR DEMONSTRATION ONLY
-    // The code below is not needed in production
-
-    // Output form data to a console
-    //$('#booking_datatable-console-rows').text(rows_selected.join(","));
-
-    // Output form data to a console
-    //$('#booking_datatable-console-form').text($(form).serialize());
-
-    // Remove added elements
-    //$('input[name="no_rkm_medis\[\]"]', form).remove();
-
-    // Prevent actual form submission
-    //e.preventDefault();
  });
 });
 
