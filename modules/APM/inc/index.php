@@ -13,6 +13,8 @@ include('../../../init.php');
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/fontawesome.min.css">
     <link href="css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+  	<link href="css/keyboard.css" rel="stylesheet">
 
     <style>
     body{
@@ -126,6 +128,9 @@ include('../../../init.php');
 
     .nav-pills.nav-wizard > li a.active {
       background-color: #428bca;
+    }
+    div.ui-keyboard {
+      z-index: 2000;
     }
     </style>
     <title>Anjungan Pasien Mandiri</title>
@@ -256,7 +261,7 @@ include('../../../init.php');
                 <h4>Data Rekam Medik</h4>
                 <div class="form-group">
                   <label for="campaignName">Nomor Kartu Berobat</label>
-                  <input type="text" class="form-text form-control form-control-lg" id="no_rm" value=""></input>
+                  <input type="text" class="form-text form-control form-control-lg norm" id="no_rm" value="" placeholder="Nomor Kartu Berobat"></input>
                 </div>
                 <button class="btn btn-secondary" id="infoContinue">Cek Kartu</button>
               </div>
@@ -452,6 +457,20 @@ include('../../../init.php');
     <script src="js/popper.min.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/gijgo.min.js" type="text/javascript"></script>
+    <!-- jQuery & jQuery UI + theme (required) -->
+  	<!--<link href="css/jquery-ui.min.css" rel="stylesheet">-->
+  	<!--<script src="js/jquery-latest-slim.min.js"></script>-->
+  	<script src="js/jquery-ui-custom.min.js"></script>
+  	<!--<script src="js/bootstrap-3.3.7.min.js"></script>-->
+
+  	<!-- keyboard widget css & script (required) -->
+    <!--<link href="css/jquery-ui.min.css" rel="stylesheet">
+  	<link href="css/keyboard.css" rel="stylesheet">-->
+  	<script src="js/jquery.keyboard.js"></script>
+
+  	<!-- keyboard extensions (optional) -->
+  	<script src="js/jquery.mousewheel.js"></script>
+
     <script>
     $(document).ready(function(){
       $('#getNoRM').on('click',function(){
@@ -820,6 +839,68 @@ include('../../../init.php');
 
     });
     </script>
+
+    <script>
+  		$(function() {
+        $('#norm')
+        	.keyboard({
+        		layout: 'custom',
+        		customLayout: {
+        			'normal' : [
+        				'8 9 . {b}',
+        				'4 5 6 7',
+        				'0 1 2 3',
+        				'{accept} {cancel}'
+        			]
+        		},
+        		maxLength : 6,
+        		// Prevent keys not in the displayed keyboard from being typed in
+        		restrictInput : true,
+        		// include lower case characters (added v1.25.7)
+        		restrictInclude : 'a b c d e f',
+        		// don't use combos or A+E could become a ligature
+        		useCombos : false,
+        		// activate the "validate" callback function
+        		acceptValid : true,
+        		validate : function(keyboard, value, isClosing){
+        			// only make valid if input is 6 characters in length
+        			return value.length === 6;
+        		}
+        	})
+        	.addTyping();
+          });
+  	</script>
+
+    <script>
+  		$(function() {
+        $('.norm')
+        	.keyboard({
+        		layout: 'custom',
+        		customLayout: {
+        			'normal' : [
+        				'8 9 . {b}',
+        				'4 5 6 7',
+        				'0 1 2 3',
+        				'{accept} {cancel}'
+        			]
+        		},
+        		maxLength : 6,
+        		// Prevent keys not in the displayed keyboard from being typed in
+        		restrictInput : true,
+        		// include lower case characters (added v1.25.7)
+        		restrictInclude : 'a b c d e f',
+        		// don't use combos or A+E could become a ligature
+        		useCombos : false,
+        		// activate the "validate" callback function
+        		acceptValid : true,
+        		validate : function(keyboard, value, isClosing){
+        			// only make valid if input is 6 characters in length
+        			return value.length === 6;
+        		}
+        	})
+        	.addTyping();
+          });
+  	</script>
 
   </body>
 </html>
