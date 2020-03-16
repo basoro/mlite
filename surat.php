@@ -118,10 +118,10 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         <div class="col-lg-10 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
                                               <div class="form-line">
-                                                  <input type="text" class="form-control" id="nik_pj"><input type="text" class="form-control" id="nama_pj" placeholder="Atasan Langsung">
+                                                  <input type="hidden" class="form-control" id="nik_pj"><input type="text" class="form-control" id="nama_pj" placeholder="Atasan Langsung">
                                               </div>
                                               <span class="input-group-addon">
-                                                  <i class="material-icons" data-toggle="modal" data-target="#penjabModal">attach_file</i>
+                                                  <i class="material-icons" data-toggle="modal" data-target="#atasanModal">attach_file</i>
                                               </span>
                                           </div>
                                         </div>
@@ -221,6 +221,39 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
         </div>
     </section>
 
+    <div class="modal fade" id="atasanModal" tabindex="-1" role="dialog" aria-labelledby="atasanModalLabel" aria-hidden="true">
+        <div class="modal-dialog" style="width:800px">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="atasanModalLabel">Database Pegawai</h4>
+                </div>
+                <div class="modal-body">
+                  <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                      <thead>
+                          <tr>
+                              <th>Kode Kelurahan</th>
+                              <th>Nama Kelurahan</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        $sql = "SELECT nik, nama FROM pegawai";
+                        $result = query($sql);
+                        while($row = fetch_array($result)) {
+                          echo '<tr class="pilihatasan" data-nik_pj="'.$row[0].'" data-nama_pj="'.$row[1].'">';
+                          echo '<td>'.$row[0].'</td>';
+                          echo '<td>'.$row[1].'</td>';
+                          echo '</tr>';
+                        }
+                        ?>
+                      </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php
 include_once('layout/footer.php');
 ?>
@@ -234,6 +267,11 @@ $(document).on('click', '.editcuti', function (e) {
   document.getElementById("alasan_cuti").value = $(this).attr('data-alasan_cuti');
   document.getElementById("nik_pj").value = $(this).attr('data-nik_pj');
   document.getElementById("nama_pj").value = $(this).attr('data-nama_pj');
+});
+$(document).on('click', '.pilihatasan', function (e) {
+  document.getElementById("nik_pj").value = $(this).attr('data-nik_pj');
+  document.getElementById("nama_pj").value = $(this).attr('data-nama_pj');
+  $('#atasanModal').modal('hide');
 });
 $("#simpan").click(function(){
     var no_pengajuan = document.getElementById("no_pengajuan").value;
