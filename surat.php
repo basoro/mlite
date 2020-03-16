@@ -93,7 +93,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         </div>
                                         <div class="col-lg-4 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
-                                              <div class="form-line">
+                                              <div class="form">
                                                   <?php echo enumDropdown('pengajuan_cuti', 'urgensi', '&nbsp;', ''); ?>
                                               </div>
                                           </div>
@@ -118,7 +118,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         <div class="col-lg-10 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
                                               <div class="form-line">
-                                                  <input type="hidden" class="form-control" id="nik_pj"><input type="text" class="form-control" id="nama_pj" placeholder="Atasan Langsung">
+                                                  <input type="text" class="form-control" id="nik_pj"><input type="text" class="form-control" id="nama_pj" placeholder="Atasan Langsung">
                                               </div>
                                               <span class="input-group-addon">
                                                   <i class="material-icons" data-toggle="modal" data-target="#penjabModal">attach_file</i>
@@ -241,9 +241,9 @@ $("#simpan").click(function(){
     var alamat_tujuan = document.getElementById("alamat_tujuan").value;
     var tgl_awal = document.getElementById("tgl_awal").value;
     var tgl_akhir = document.getElementById("tgl_akhir").value;
+    var urgensi = document.getElementById("urgensi").value;
     var alasan_cuti = document.getElementById("alasan_cuti").value;
     var nik_pj = document.getElementById("nik_pj").value;
-    var nama_pj = document.getElementById("nama_pj").value;
     $.ajax({
         url:'includes/cuti.php?p=add',
         method:'POST',
@@ -253,9 +253,9 @@ $("#simpan").click(function(){
             alamat_tujuan:alamat_tujuan,
             tgl_awal:tgl_awal,
             tgl_akhir:tgl_akhir,
+            urgensi:urgensi,
             alasan_cuti:alasan_cuti,
-            nik_pj:nik_pj,
-            nama_pj:nama_pj
+            nik_pj:nik_pj
         },
        success:function(data){
             window.location.reload(true)
@@ -269,9 +269,9 @@ $("#ganti").click(function(){
   var alamat_tujuan = document.getElementById("alamat_tujuan").value;
   var tgl_awal = document.getElementById("tgl_awal").value;
   var tgl_akhir = document.getElementById("tgl_akhir").value;
+  var urgensi = document.getElementById("urgensi").value;
   var alasan_cuti = document.getElementById("alasan_cuti").value;
   var nik_pj = document.getElementById("nik_pj").value;
-  var nama_pj = document.getElementById("nama_pj").value;
     $.ajax({
         url:'includes/cuti.php?p=update',
         method:'POST',
@@ -281,9 +281,9 @@ $("#ganti").click(function(){
           alamat_tujuan:alamat_tujuan,
           tgl_awal:tgl_awal,
           tgl_akhir:tgl_akhir,
+          urgensi:urgensi,
           alasan_cuti:alasan_cuti,
-          nik_pj:nik_pj,
-          nama_pj:nama_pj
+          nik_pj:nik_pj
         },
        success:function(data){
             window.location.reload(true)

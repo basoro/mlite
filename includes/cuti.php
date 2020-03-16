@@ -39,12 +39,11 @@ if($page=='add'){
               jumlah            = '10',
               kepentingan         = '{$_POST['alasan_cuti']}',
               nik_pj         = '{$_POST['nik_pj']}',
-              nama_pj         = '{$_POST['nama_pj']}',
               status     = 'Proses Pengajuan'
       ");
   }
 } else if($page=='update'){
-  if(!empty($_POST['pengajuan_cuti'])){
+  if(!empty($_POST['no_pengajuan'])){
       $data = array();
       $insert = query("
           UPDATE
@@ -56,8 +55,7 @@ if($page=='add'){
               alamat         = '{$_POST['alamat_tujuan']}',
               jumlah            = '10',
               kepentingan         = '{$_POST['alasan_cuti']}',
-              nik_pj         = '{$_POST['nik_pj']}',
-              nama_pj         = '{$_POST['nama_pj']}',
+              nik_pj         = '{$_POST['nik_pj']}'
           WHERE
               no_pengajuan = '{$_POST['no_pengajuan']}'
       ");
