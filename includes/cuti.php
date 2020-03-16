@@ -24,6 +24,9 @@ $page = isset($_GET['p'])? $_GET['p'] : '';
 
 if($page=='add'){
   if(!empty($_POST['no_pengajuan'])){
+      $tgl1 = new DateTime($_POST['tgl_akhir']);
+    	$tgl2 = new DateTime($_POST['tgl_awal']);
+    	$jml = $tgl2->diff($tgl1)->days;
       $data = array();
       $insert = query("INSERT
           INTO
@@ -36,7 +39,7 @@ if($page=='add'){
               nik         = '{$_SESSION['username']}',
               urgensi         = '{$_POST['urgensi']}',
               alamat         = '{$_POST['alamat_tujuan']}',
-              jumlah            = '10',
+              jumlah            = $jml,
               kepentingan         = '{$_POST['alasan_cuti']}',
               nik_pj         = '{$_POST['nik_pj']}',
               status     = 'Proses Pengajuan'
@@ -44,6 +47,9 @@ if($page=='add'){
   }
 } else if($page=='update'){
   if(!empty($_POST['no_pengajuan'])){
+      $tgl1 = new DateTime($_POST['tgl_akhir']);
+      $tgl2 = new DateTime($_POST['tgl_awal']);
+      $jml = $tgl2->diff($tgl1)->days;
       $data = array();
       $insert = query("
           UPDATE
@@ -53,7 +59,7 @@ if($page=='add'){
               tanggal_akhir         = '{$_POST['tgl_akhir']}',
               urgensi         = '{$_POST['urgensi']}',
               alamat         = '{$_POST['alamat_tujuan']}',
-              jumlah            = '10',
+              jumlah            = $jml,
               kepentingan         = '{$_POST['alasan_cuti']}',
               nik_pj         = '{$_POST['nik_pj']}'
           WHERE
