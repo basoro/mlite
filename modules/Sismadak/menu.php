@@ -1,3 +1,4 @@
+<?php if(FKTL == true) { ?>
 <li class="<?php if ($params['module']=="Sismadak") {echo "active"; } ?>">
     <a href="javascript:void(0);" class="menu-toggle">
         <i class="material-icons">insert_chart</i>
@@ -26,3 +27,4 @@
         </li>
     </ul>
 </li>
+<?php } ?>

@@ -95,7 +95,7 @@ if(isset($_POST['validasi'])) {
                             <table id="booking_datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                                 <thead>
                                     <tr>
-                                        <th><input type="checkbox"  id="basic_checkbox_1" /><label></label></th>
+                                        <th><input type="checkbox" id="basic_checkbox_1" /><label></label></th>
                                         <th>Nama Pasien</th>
                                         <th>No. RM</th>
                                         <th>No. Reg</th>
@@ -141,7 +141,7 @@ if(isset($_POST['validasi'])) {
 
                             <hr>
                             <p><button type="submit" name="validasi" class="btn btn-lg btn-danger">Validasi</button></p>
-                            <p>Press <b>Validasi</b> to validate Pasien Booking to Registration.</p>
+                            <p>Tekan tombol <b>Validasi</b> untuk persetujuan ke pendaftaran pasien.</p>
                             <hr>
                             </form>
 
@@ -181,7 +181,6 @@ if(isset($_POST['validasi'])) {
 include_once('layout/footer.php');
 ?>
 <script type="text/javascript">
-
 
 $(document).ready(function() {
  var table = $('#booking_datatable').DataTable({

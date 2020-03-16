@@ -95,10 +95,18 @@
                     </li>
                     <?php } ?>
                     <li>
-                        <a href="<?php echo URL; ?>/profil.php">
+                        <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">people</i>
                             <span>Data Pribadi</span>
                         </a>
+                        <ul class="ml-menu">
+                            <li>
+                                <a href="<?php echo URL; ?>/profil.php">Profil</a>
+                            </li>
+                            <li>
+                                <a href="<?php echo URL; ?>/surat.php">Surat Cuti</a>
+                            </li>
+                        </ul>
                     </li>
                     <li class="header">MODUL-MODUL</li>
                     <?php
