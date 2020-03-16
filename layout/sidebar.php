@@ -104,7 +104,7 @@
                                 <a href="<?php echo URL; ?>/profil.php">Profil</a>
                             </li>
                             <li>
-                                <a href="<?php echo URL; ?>/surat.php">Surat Cuti</a>
+                                <a href="<?php echo URL; ?>/surat.php">Pengajuan Cuti</a>
                             </li>
                         </ul>
                     </li>
