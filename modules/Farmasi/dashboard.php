@@ -63,7 +63,7 @@
                   <h2>Data Obat / BHP</h2>
                 </div>
                 <div class="body">
-                <table id="allobat" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                <table id="allobat" class="table table-bordered table-striped table-hover nowrap" width="100%">
                   <thead>
                     <tr>
                       <th>Kode Barang</th>

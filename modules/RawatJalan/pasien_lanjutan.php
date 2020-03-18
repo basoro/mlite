@@ -8,7 +8,7 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
       <h2>Pasien Lanjutan</h2>
   </div>
   <div class="body">
-    <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
         <thead>
             <tr>
                 <th>Nama Pasien</th>

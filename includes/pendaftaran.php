@@ -131,7 +131,7 @@ if($page=='add'){
   if(!empty($_POST['no_rkm_medis'])){
     $data = array();
     $cek = fetch_array(query("SELECT count(status_bayar) FROM reg_periksa WHERE no_rkm_medis='{$_POST['no_rkm_medis']}' AND status_bayar = 'Belum Bayar'"));
-    if($cek > "1") {
+    if($cek['0'] >= 1) {
       $data['status'] = 'exist';
       echo json_encode($data);
     }

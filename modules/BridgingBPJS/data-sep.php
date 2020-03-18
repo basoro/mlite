@@ -5,7 +5,7 @@
     <div class="body">
         <?php $action = isset($_GET['view'])?$_GET['view']:null;
         if(!$action){?>
-          <table id="allsep" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+          <table id="allsep" class="table table-bordered table-striped table-hover nowrap" width="100%">
             <thead>
               <tr>
                 <th>No SEP</th>
@@ -24,7 +24,7 @@
           </table>
         <?php } ?>
         <?php if($action == "individual"){?>
-          <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+          <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
             <thead>
               <tr>
                 <th>No SEP</th>

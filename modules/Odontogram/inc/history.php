@@ -267,7 +267,7 @@ if(num_rows(query("SHOW TABLES LIKE 'pemeriksaan_odontogram'")) !== 1) {
 <?php } ?>
 <br>
 <p class="lead">History Odontogram</p>
-<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+<table class="table table-bordered table-striped table-hover display nowrap" width="100%">
     <thead>
         <tr>
             <th>Tanggal</th>

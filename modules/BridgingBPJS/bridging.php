@@ -7,7 +7,7 @@
     <?php $action = isset($_GET['action'])?$_GET['action']:null;
     if(!$action){?>
     <div class="body">
-      <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+      <table class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
         <thead>
           <tr>
             <th>No MR</th>

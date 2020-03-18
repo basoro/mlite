@@ -34,9 +34,9 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                         </div>
                         <div class="panel-group" id="accordion">
                           <div class="panel panel-default" style="border: none !important;">
-                            <div id="collapsePendaftaran" class="panel-collapse collapse" style="margin-top:40px;">
+                            <div id="collapsePendaftaran" class="panel-collapse collapse in" style="margin-top:40px;">
                               <div class="panel-body">
-                                <form class="form-horizontal">
+                                <form class="form-horizontal" id="pengajuan_cuti">
                                     <div class="row clearfix">
                                         <div class="col-lg-2 col-md-2 col-sm-4 form-control-label font-20 hidden-xs">
                                             <label for="email_address_2">No. Pengajuan :</label>
@@ -93,9 +93,12 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         </div>
                                         <div class="col-lg-4 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
-                                              <div class="form">
-                                                  <?php echo enumDropdown('pengajuan_cuti', 'urgensi', '&nbsp;', ''); ?>
+                                              <div class="form-line">
+                                                  <input type="text" class="form-control" id="urgensi" placeholder="Jenis Cuti">
                                               </div>
+                                              <span class="input-group-addon">
+                                                  <i class="material-icons" data-toggle="modal" data-target="#urgensiModal">attach_file</i>
+                                              </span>
                                           </div>
                                         </div>
                                     </div>
@@ -130,6 +133,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         <div class="col-lg-12 text-center">
                                             <button type="button" class="btn btn-lg btn-primary m-t-15 m-l-15 waves-effect" id="simpan">SIMPAN</button>
                                             <button type="button" class="btn btn-lg btn-info m-t-15 m-l-15 waves-effect" id="ganti">GANTI</button>
+                                            <button type="button" class="btn btn-lg btn-success m-t-15 m-l-15 waves-effect" id="reset">RESET</button>
                                             <button type="button" class="btn btn-lg btn-danger m-t-15 m-l-15 waves-effect" id="hapus">HAPUS</button>
                                         </div>
                                     </div>
@@ -139,7 +143,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                           </div>
                         </div>
                         <div class="body">
-                            <table id="datatable" class="table table-bordered table-striped table-hover display wrap" width="100%">
+                            <table class="table table-bordered table-striped table-hover display wrap" width="100%">
                               <thead>
                                 <tr>
                                   <th>Nomor</th>
@@ -171,6 +175,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                   data-alamat_tujuan="<?php echo $row['6']; ?>"
                                   data-tgl_awal="<?php echo $row['2']; ?>"
                                   data-tgl_akhir="<?php echo $row['3']; ?>"
+                                  data-urgensi="<?php echo $row['5']; ?>"
                                   data-alasan_cuti="<?php echo $row['8']; ?>"
                                   data-nik_pj="<?php echo $row['9']; ?>"
                                   data-nama_pj="<?php echo $row['11']; ?>"
@@ -222,18 +227,18 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
     </section>
 
     <div class="modal fade" id="atasanModal" tabindex="-1" role="dialog" aria-labelledby="atasanModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="atasanModalLabel">Database Pegawai</h4>
                 </div>
                 <div class="modal-body">
-                  <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                  <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                       <thead>
                           <tr>
-                              <th>Kode Kelurahan</th>
-                              <th>Nama Kelurahan</th>
+                              <th>Kode Pegawai</th>
+                              <th>Nama Pegawai</th>
                           </tr>
                       </thead>
                       <tbody>
@@ -254,34 +259,64 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
         </div>
     </div>
 
+    <div class="modal fade" id="urgensiModal" tabindex="-1" role="dialog" aria-labelledby="urgensiModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="urgensiModalLabel">Database Urgensi</h4>
+                </div>
+                <div class="modal-body">
+                  <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                      <thead>
+                          <tr>
+                              <th>Jenis Cuti</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                        <?php
+                        echo enumModal('pengajuan_cuti', 'urgensi', '&nbsp;', '');
+                        ?>
+                      </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <?php
 include_once('layout/footer.php');
 ?>
 <script>
 $(document).on('click', '.editcuti', function (e) {
-  document.getElementById("no_pengajuan").value = $(this).attr('data-no_pengajuan');
-  document.getElementById("tanggal_pengajuan").value = $(this).attr('data-tanggal_pengajuan');
-  document.getElementById("alamat_tujuan").value = $(this).attr('data-alamat_tujuan');
-  document.getElementById("tgl_awal").value = $(this).attr('data-tgl_awal');
-  document.getElementById("tgl_akhir").value = $(this).attr('data-tgl_akhir');
-  document.getElementById("alasan_cuti").value = $(this).attr('data-alasan_cuti');
-  document.getElementById("nik_pj").value = $(this).attr('data-nik_pj');
-  document.getElementById("nama_pj").value = $(this).attr('data-nama_pj');
+  $("#no_pengajuan")[0].value = $(this).attr('data-no_pengajuan');
+  $("#tanggal_pengajuan")[0].value = $(this).attr('data-tanggal_pengajuan');
+  $("#alamat_tujuan")[0].value = $(this).attr('data-alamat_tujuan');
+  $("#tgl_awal")[0].value = $(this).attr('data-tgl_awal');
+  $("#tgl_akhir")[0].value = $(this).attr('data-tgl_akhir');
+  $("#urgensi")[0].value = $(this).attr('data-urgensi');
+  $("#alasan_cuti")[0].value = $(this).attr('data-alasan_cuti');
+  $("#nik_pj")[0].value = $(this).attr('data-nik_pj');
+  $("#nama_pj")[0].value = $(this).attr('data-nama_pj');
+});
+$(document).on('click', '.pilih_urgensi', function (e) {
+  $("#urgensi")[0].value = $(this).attr('data-urgensi');
+  $('#urgensiModal').modal('hide');
 });
 $(document).on('click', '.pilihatasan', function (e) {
-  document.getElementById("nik_pj").value = $(this).attr('data-nik_pj');
-  document.getElementById("nama_pj").value = $(this).attr('data-nama_pj');
+  $("#nik_pj")[0].value = $(this).attr('data-nik_pj');
+  $("#nama_pj")[0].value = $(this).attr('data-nama_pj');
   $('#atasanModal').modal('hide');
 });
 $("#simpan").click(function(){
-    var no_pengajuan = document.getElementById("no_pengajuan").value;
-    var tanggal_pengajuan = document.getElementById("tanggal_pengajuan").value;
-    var alamat_tujuan = document.getElementById("alamat_tujuan").value;
-    var tgl_awal = document.getElementById("tgl_awal").value;
-    var tgl_akhir = document.getElementById("tgl_akhir").value;
-    var urgensi = document.getElementById("urgensi").value;
-    var alasan_cuti = document.getElementById("alasan_cuti").value;
-    var nik_pj = document.getElementById("nik_pj").value;
+  var no_pengajuan = $("#no_pengajuan")[0].value;
+  var tanggal_pengajuan = $("#tanggal_pengajuan")[0].value;
+  var alamat_tujuan = $("#alamat_tujuan")[0].value;
+  var tgl_awal = $("#tgl_awal")[0].value;
+  var tgl_akhir = $("#tgl_akhir")[0].value;
+  var urgensi = $("#urgensi")[0].value;
+  var alasan_cuti = $("#alasan_cuti")[0].value;
+  var nik_pj = $("#nik_pj")[0].value;
     $.ajax({
         url:'includes/cuti.php?p=add',
         method:'POST',
@@ -302,14 +337,14 @@ $("#simpan").click(function(){
     });
 });
 $("#ganti").click(function(){
-  var no_pengajuan = document.getElementById("no_pengajuan").value;
-  var tanggal_pengajuan = document.getElementById("tanggal_pengajuan").value;
-  var alamat_tujuan = document.getElementById("alamat_tujuan").value;
-  var tgl_awal = document.getElementById("tgl_awal").value;
-  var tgl_akhir = document.getElementById("tgl_akhir").value;
-  var urgensi = document.getElementById("urgensi").value;
-  var alasan_cuti = document.getElementById("alasan_cuti").value;
-  var nik_pj = document.getElementById("nik_pj").value;
+  var no_pengajuan = $("#no_pengajuan")[0].value;
+  var tanggal_pengajuan = $("#tanggal_pengajuan")[0].value;
+  var alamat_tujuan = $("#alamat_tujuan")[0].value;
+  var tgl_awal = $("#tgl_awal")[0].value;
+  var tgl_akhir = $("#tgl_akhir")[0].value;
+  var urgensi = $("#urgensi")[0].value;
+  var alasan_cuti = $("#alasan_cuti")[0].value;
+  var nik_pj = $("#nik_pj")[0].value;
     $.ajax({
         url:'includes/cuti.php?p=update',
         method:'POST',
@@ -329,7 +364,7 @@ $("#ganti").click(function(){
     });
 });
 $("#hapus").click(function(){
-    var no_pengajuan = document.getElementById("no_pengajuan").value;
+    var no_pengajuan = $("#no_pengajuan")[0].value;
     $.ajax({
         url:'includes/cuti.php?p=delete',
         method:'POST',
@@ -341,4 +376,10 @@ $("#hapus").click(function(){
         }
     });
 });
+$("#reset").click(function(){
+  $(':input').val('');
+  $("#no_pengajuan")[0].value = '<?php echo $next_no_pengajuan; ?>';
+  $("#tanggal_pengajuan")[0].value = '<?php echo $date; ?>';
+});
+
 </script>

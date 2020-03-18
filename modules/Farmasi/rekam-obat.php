@@ -44,7 +44,7 @@
                             <dd>Rp. <?php $angka = number_format($data_pasien['h_beli']); echo $angka; ?>,-</dd>
                         </dl>
                         <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-                        <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                        <table class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                             <thead>
                                 <tr>
                                     <th>No</th>

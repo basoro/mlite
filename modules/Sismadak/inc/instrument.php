@@ -1,6 +1,6 @@
 <div class="card">
   <div class="header">
-      <h2>Indikator Wajib</h2>
+      <h2>Instrument SNARS 1.1</h2>
   </div>
   <div class="body">
     <div class="table-responsive">
@@ -10,7 +10,7 @@
             <th>#</th>
             <th>Elemen</th>
             <th>Penjelasan</th>
-            <th>RDOWS</th>
+            <th>Cek List</th>
             <th>Skor</th>
           </tr>
         </thead>
@@ -24,7 +24,23 @@
               echo '<td>'.$data['id'].'</td>';
               echo '<td>'.$data['instrument'].'</td>';
               echo '<td>'.$data['name'].'</td>';
-              echo '<td>'.nl2br($data['RDOWS']).'</td>';
+              echo '<td>';
+              if(!empty($data['R'])) {
+                echo '<b>R:</b> <div class="m-l-20 m-t-10">'.nl2br($data['R']).'</div>';
+              }
+              if(!empty($data['D'])) {
+                echo '<b>D:</b> <div class="m-l-20">'.nl2br($data['D']).'</div>';
+              }
+              if(!empty($data['O'])) {
+                echo '<b>O:</b> <div class="m-l-20">'.nl2br($data['O']).'</div>';
+              }
+              if(!empty($data['W'])) {
+                echo '<b>W:</b> <div class="m-l-20">'.nl2br($data['W']).'</div>';
+              }
+              if(!empty($data['S'])) {
+                echo '<b>S:</b> <div class="m-l-20">'.nl2br($data['S']).'</div>';
+              }
+              echo '</td>';
               echo '<td>'.$data['score'].'</td>';
               echo '</tr>';
           }

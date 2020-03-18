@@ -22,7 +22,7 @@ define('DIR', 'Khanza-Lite/');
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_NAME', 'rshd_sik');
 define('PRODUCTION', true);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
@@ -169,6 +169,20 @@ function enumDropdown($table_name, $column_name, $label, $echo = false) {
         echo $selectDropdown;
 
     return $selectDropdown;
+}
+
+// Enum as modal
+function enumModal($table_name, $column_name, $label, $echo = false) {
+    $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '$table_name' AND COLUMN_NAME = '$column_name'");
+    $row = fetch_array($result);
+    $enum = "";
+    $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
+    foreach($enumList as $value)
+         $enum .= "<tr><td class=\"pilih_$column_name\" data-$column_name=\"$value\" >$value</td></tr>";
+    if ($echo)
+        echo $enum;
+
+    return $enum;
 }
 
 function remove_directory($directory) {

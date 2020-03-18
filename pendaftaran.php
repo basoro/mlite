@@ -55,7 +55,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                         $tgl_reg = date('Y/m/d', strtotime($date));
                         $no_rawat_akhir = fetch_array(query("SELECT max(no_rawat) FROM reg_periksa WHERE tgl_registrasi='$date'"));
                         $no_urut_rawat = substr($no_rawat_akhir[0], 11, 6);
-                        $no_rawat = $tgl_reg.'/'.sprintf('%06s', ($no_urut_rawat + 1));
+                        $next_no_rawat = $tgl_reg.'/'.sprintf('%06s', ($no_urut_rawat + 1));
 
                         ?>
                         <div class="panel-group" id="accordion">
@@ -95,7 +95,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                         <div class="col-lg-4 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
                                               <div class="form-line">
-                                                  <input type="text" class="form-control" id="no_rawat" value="<?php echo $no_rawat; ?>" placeholder="Nomor Rawat">
+                                                  <input type="text" class="form-control" id="no_rawat" value="<?php echo $next_no_rawat; ?>" placeholder="Nomor Rawat">
                                               </div>
                                           </div>
                                         </div>
@@ -192,6 +192,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                         <div class="col-lg-12 text-center">
                                             <button type="button" class="btn btn-lg btn-primary m-t-15 m-l-15 waves-effect" id="simpan">SIMPAN</button>
                                             <button type="button" class="btn btn-lg btn-info m-t-15 m-l-15 waves-effect" id="ganti">GANTI</button>
+                                            <button type="button" class="btn btn-lg btn-success m-t-15 m-l-15 waves-effect" id="reset">RESET</button>
                                             <button type="button" class="btn btn-lg btn-danger m-t-15 m-l-15 waves-effect" id="hapus">HAPUS</button>
                                         </div>
                                     </div>
@@ -201,7 +202,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                           </div>
                         </div>
                         <div class="body">
-                            <table id="pendaftaran" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                            <table id="pendaftaran" class="table table-bordered table-striped table-hover nowrap" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Nama Pasien</th>
@@ -791,7 +792,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
                                     </form>
                                     </div>
                                     <div class="body">
-                                    <table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                         <thead>
                                             <tr>
                                                 <th>Nama Tindakan</th>
@@ -917,14 +918,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
     </section>
 
     <div class="modal fade" id="pasienModal" tabindex="-1" role="dialog" aria-labelledby="pasienModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="pasienModalLabel">Database Pasien</h4>
                 </div>
                 <div class="modal-body">
-                  <table id="pasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                  <table id="pasien" class="table table-bordered table-striped table-hover nowrap" width="100%">
                       <thead>
                           <tr>
                             <th>Nama Pasien</th>
@@ -960,14 +961,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
     </div>
 
     <div class="modal fade" id="dokterModal" tabindex="-1" role="dialog" aria-labelledby="dokterModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="dokterModalLabel">Database Dokter</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="dokter" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="dokter" class="table table-bordered table-striped table-hover nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Kode Dokter</th>
@@ -983,14 +984,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
     </div>
 
     <div class="modal fade" id="unitModal" tabindex="-1" role="dialog" aria-labelledby="unitModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="unitModalLabel">Database Poliklinik</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="poliklinik" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="poliklinik" class="table table-bordered table-striped table-hover nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Kode Poli</th>
@@ -1006,14 +1007,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
     </div>
 
     <div class="modal fade" id="penjabModal" tabindex="-1" role="dialog" aria-labelledby="penjabModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="penjabModalLabel">Database Cara Bayar</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="penjab" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="penjab" class="table table-bordered table-striped table-hover nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Kode</th>
@@ -1029,14 +1030,14 @@ $action = isset($_GET['action'])?$_GET['action']:null;
     </div>
 
     <div class="modal fade" id="perujukModal" tabindex="-1" role="dialog" aria-labelledby="perujukModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="perujukModalLabel">Database Perujuk</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="perujuk" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table id="perujuk" class="table table-bordered table-striped table-hover nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Asal Rujukan</th>
@@ -1117,7 +1118,7 @@ include_once('layout/footer.php');
                 "sLast":     "»"
             }
         },
-        "order": [[ 0, "asc" ]]
+        "order": [[ 4, "desc" ]]
   } );
   $('#pasien').dataTable( {
         "bInfo" : true,
@@ -1292,19 +1293,25 @@ include_once('layout/footer.php');
 </script>
 <script type="text/javascript">
     $(document).on('click', '.pilihpasien', function (e) {
-        /*var no_rkm_medis = document.getElementById("no_rkm_medis").value;
+        var no_rkm_medis = $(this).attr('data-norm');
         $.ajax({
             url:'includes/pendaftaran.php?p=check',
-            method:'POST',
+            type:'POST',
+            dataType: "json",
             data:{
                 no_rkm_medis:no_rkm_medis
             },
            success:function(data){
               if(data.status == 'exist'){
-                alert('Belum bayar')
+                alert('Belum bayar, silahkan hubungi kasir!')
+                $('#pasienModal').modal('hide');
+                $(':input').val('');
+                $("#no_rawat")[0].value = '<?php echo $next_no_rawat; ?>';
+                $("#tgl_registrasi")[0].value = '<?php echo $date_time; ?>';
               }
+              //console.log(data);
            }
-        });*/
+        });
         document.getElementById("nm_pasien").value = $(this).attr('data-nmpasien');
         document.getElementById("no_rkm_medis").value = $(this).attr('data-norm');
         document.getElementById("namakeluarga").value = $(this).attr('data-namakeluarga');
@@ -1400,6 +1407,11 @@ include_once('layout/footer.php');
                window.location.reload(true)
            }
         });
+    });
+    $("#reset").click(function(){
+      $(':input').val('');
+      $("#no_rawat")[0].value = '<?php echo $next_no_rawat; ?>';
+      $("#tgl_registrasi")[0].value = '<?php echo $date_time; ?>';
     });
     $("#hapus").click(function(){
         var no_rawat = document.getElementById("no_rawat").value;

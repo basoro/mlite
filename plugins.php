@@ -84,7 +84,7 @@ include_once('layout/sidebar.php');
                             </div>
                           </div>
                           <div class="module">
-                            <table id="datatable" class="table table-bordered table-striped table-hover display wrap" width="100%">
+                            <table class="table table-bordered table-striped table-hover display wrap" width="100%">
                               <thead>
                                 <tr>
                                   <th>Plugins</th>

@@ -22,7 +22,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 		{
 		$query = "SELECT pegawai.nama, pegawai.alamat, pegawai.jbtn, petugas.no_telp FROM pegawai, petugas WHERE pegawai.nik = petugas.nip ORDER BY pegawai.nama";
 		$hasil = query($query);
-		echo '<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">';
+		echo '<table class="table table-bordered table-striped table-hover display nowrap" width="100%">';
 		echo "<thead><tr><th>Nama</th><th>Alamat</th><th>No. Telp</th><th>Group</th><th>Atur</th></tr></thead><tbody>";
 		while ($data = fetch_array($hasil))
 		{

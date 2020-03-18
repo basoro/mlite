@@ -92,7 +92,7 @@ if(isset($_POST['validasi'])) {
                         </div>
                         <div class="body table-responsive">
                             <form id="frm-booking_datatable" action="" method="POST">
-                            <table id="booking_datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                            <table id="booking_datatable" class="table responsive table-bordered table-striped table-hover nowrap js-exportable" width="100%">
                                 <thead>
                                     <tr>
                                         <th><input type="checkbox" id="basic_checkbox_1" /><label></label></th>
@@ -118,6 +118,7 @@ if(isset($_POST['validasi'])) {
                                 } else {
                                   	$sql .= " AND b.tanggal_periksa = '$date'";
                                 }
+                                $sql .= " ORDER BY b.no_reg ASC";
                                 $query = query($sql);
                                 while($row = fetch_array($query)) {
                                 ?>
@@ -184,6 +185,7 @@ include_once('layout/footer.php');
 
 $(document).ready(function() {
  var table = $('#booking_datatable').DataTable({
+   'bSort':false,
    'columnDefs': [
       {
          'targets': 0,
@@ -201,7 +203,7 @@ $(document).ready(function() {
       }
    ],
    'select': 'multi',
-   'order': [[1, 'asc']]
+   'order': [[2, 'asc']]
 });
 
  // Handle form submission event

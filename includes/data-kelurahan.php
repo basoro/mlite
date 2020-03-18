@@ -27,27 +27,13 @@ if($page=='add'){
     $insert = query("INSERT INTO kelurahan (kd_kel, nm_kel) VALUES (NULL, '{$_POST['nama_kelurahan']}')");
   }
 } else {
- ?>
-<table id="kelurahan" class="table table-bordered table-striped table-hover display nowrap" width="100%">
-    <thead>
-        <tr>
-            <th>Kode Kelurahan</th>
-            <th>Nama Kelurahan</th>
-        </tr>
-    </thead>
-    <tbody>
-      <?php
-      $sql_kelurahan = "SELECT * FROM kelurahan";
-      $result_kelurahan = query($sql_kelurahan);
-      while($row = fetch_array($result_kelurahan)) {
-        echo '<tr class="pilihkelurahan" data-kdkel="'.$row[0].'" data-nmkel="'.$row[1].'">';
-        echo '<td>'.$row[0].'</td>';
-        echo '<td>'.$row[1].'</td>';
-        echo '</tr>';
-      }
-      ?>
-    </tbody>
-</table>
-<?php
+  $sql_kelurahan = "SELECT * FROM kelurahan";
+  $result_kelurahan = query($sql_kelurahan);
+  while($row = fetch_array($result_kelurahan)) {
+    echo '<tr class="pilihkelurahan" data-kdkel="'.$row[0].'" data-nmkel="'.$row[1].'">';
+    echo '<td>'.$row[0].'</td>';
+    echo '<td>'.$row[1].'</td>';
+    echo '</tr>';
+  }
 }
 ?>

@@ -543,7 +543,7 @@ include_once('layout/sidebar.php');
                             </div>
                             <div role="tabpanel" class="tab-pane fade in" id="datapasien">
                                 <div class="body">
-                                    <table id="pasien" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                    <table id="pasien" class="table table-bordered table-striped table-hover nowrap" width="100%">
                                         <thead>
                                             <tr>
                                               <th>Nama Pasien</th>
@@ -613,7 +613,16 @@ include_once('layout/sidebar.php');
                           </div>
                       </div>
                   </div>
-                  <div class="datakelurahan"></div>
+                  <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                      <thead>
+                          <tr>
+                              <th>Kode Kelurahan</th>
+                              <th>Nama Kelurahan</th>
+                          </tr>
+                      </thead>
+                      <tbody class="datakelurahan">
+                      </tbody>
+                  </table>
                 </div>
             </div>
         </div>

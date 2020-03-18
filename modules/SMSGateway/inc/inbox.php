@@ -22,7 +22,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 <?php
 		if (!$op) {
 		?>
-								<table id="datatable" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+								<table class="table table-bordered table-striped table-hover display nowrap" width="100%">
 									<thead>
 										<tr>
 											<th>Isi SMS</th>
