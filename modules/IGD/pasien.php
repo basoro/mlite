@@ -206,7 +206,7 @@ if(isset($_GET['no_rawat'])) {
                                  <div class="tab-content m-t-20">
                                    <!-- riwayat -->
                                    <div role="tabpanel" class="tab-pane fade in active" id="riwayat">
-                                     <table id="riwayatmedis" class="table">
+                                     <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                        <thead>
                                          <tr>
                                            <th>Tanggal</th>
@@ -504,7 +504,7 @@ if(isset($_GET['no_rawat'])) {
                                      </form>
                                      </div>
                                      <div class="body">
-                                     <table id="datatab" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                     <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                          <thead>
                                              <tr>
                                                <th>Keluhan</th>

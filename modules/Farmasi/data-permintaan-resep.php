@@ -36,7 +36,7 @@
 							</button>
 							</form> <br><br>
 							<div class="form-line"></div>
-							<table class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+							<table class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
 							<thead>
 							<tr>
 								<th>No. Resep</th>

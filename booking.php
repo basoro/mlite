@@ -92,7 +92,7 @@ if(isset($_POST['validasi'])) {
                         </div>
                         <div class="body table-responsive">
                             <form id="frm-booking_datatable" action="" method="POST">
-                            <table id="booking_datatable" class="table responsive table-bordered table-striped table-hover nowrap js-exportable" width="100%">
+                            <table id="booking_datatable" class="table responsive table-bordered table-striped table-hover nowrap" width="100%">
                                 <thead>
                                     <tr>
                                         <th><input type="checkbox" id="basic_checkbox_1" /><label></label></th>

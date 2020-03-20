@@ -47,7 +47,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 							<div class="form-group">
 				          <input type="radio" name="kirim" value="group_pasien" id="group_pasien" class="with-gap">
 				          <label for="group_pasien">Kirim ke Pasien Poliklinik</label>
-				          <select class="form-control show-tick selectpicker" name="group_pasien" data-live-search="true" data-size="3">
+				          <select class="form-control show-tick selectpicker" name="group_pasien" data-live-search="true" data-size="5">
 				          <option value="">Pilih Poli</option>
 				          <?php
 				          $query = "SELECT * FROM poliklinik";
@@ -72,7 +72,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
 							<div class="form-group">
 				          <input type="radio" name="kirim" value="jabatan" id="jabatan" class="with-gap">
 				          <label for="jabatan">Kirim ke Group Jabatan</label>
-				          <select class="form-control show-tick selectpicker" name="group" data-live-search="true" data-size="3">
+				          <select class="form-control show-tick selectpicker" name="group" data-live-search="true" data-size="5">
 				          <option value="0">Semua Jabatan</option>
 				          <?php
 				          $query = "SELECT * FROM jabatan";

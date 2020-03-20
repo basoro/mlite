@@ -40,7 +40,7 @@ if(isset($_GET['no_rawat'])) {
                         if(!$action){
                         ?>
                         <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-                        <table class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                        <table class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
                             <thead>
                                 <tr>
                                     <th>Nama</th>
@@ -823,7 +823,7 @@ if(isset($_GET['no_rawat'])) {
       </form>
     </div>
     <div class="body">
-      <table id="hais" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+      <table id="hais" class="table responsive table-bordered table-striped table-hover display nowrap" width="100%">
         <thead>
           <tr>
             <th>Tanggal</th>

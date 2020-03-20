@@ -59,7 +59,7 @@ include('../../../init.php');
       <div class="col-9">
         <div class="card bg-dark text-white">
           <div class="embed-responsive embed-responsive-16by9">
-            <video class="embed-responsive-item" src="video/demo.mp4" controls width="576" auto height="447" loop></video>
+            <iframe class="embed-responsive-item" src="//www.youtube.com/embed/7tgiBhUI5Ac?version=3&autoplay=1&loop=1&playlist=7tgiBhUI5Ac"></iframe>
           </div>
         </div>
       </div>
@@ -67,30 +67,30 @@ include('../../../init.php');
         <a href="antrian.php?action=panggil_loket" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">A<span class="antrian_loket"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding-top:10px;padding-bottom:10px;margin-top:-45px;margin-bottom:-45px;">A<span class="antrian_loket"><span></div>
             </div>
-            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_loket"><span></div>
+            <div class="card-footer bg-transparent border-success" style="font-size:39px;padding-top:0;padding-bottom:0;">Loket <span class="get_loket"><span></div>
           </div>
         </a>
         <a href="antrian.php?action=panggil_cs" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">B<span class="antrian_cs"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding-top:10px;padding-bottom:10px;margin-top:-45px;margin-bottom:-45px;">B<span class="antrian_cs"><span></div>
             </div>
-            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_cs"><span></div>
+            <div class="card-footer bg-transparent border-success" style="font-size:39px;padding-top:0;padding-bottom:0;">Loket <span class="get_cs"><span></div>
           </div>
         </a>
         <a href="antrian.php?action=panggil_prioritas" style="text-decoration:none; color:#000;">
           <div class="card border-success mb-4">
             <div class="card-body text-success">
-              <div style="font-size:75px;font-weight:lighter;padding:0;margin-top:-45px;margin-bottom:-45px;">C<span class="antrian_prioritas"><span></div>
+              <div style="font-size:75px;font-weight:lighter;padding-top:10px;padding-bottom:10px;margin-top:-45px;margin-bottom:-45px;">C<span class="antrian_prioritas"><span></div>
             </div>
-            <div class="card-footer bg-transparent border-success" style="font-size:52px;padding-top:0;padding-bottom:0;">Loket <span class="get_prioritas"><span></div>
+            <div class="card-footer bg-transparent border-success" style="font-size:39px;padding-top:0;padding-bottom:0;">Loket <span class="get_prioritas"><span></div>
           </div>
         </a>
         <div class="card border-0 mb-4">
           <div class="card-body bg-danger text-white">
-            <div style="font-size:27px;font-weight:lighter;padding-top:5px;padding-bottom:5px;margin-top:-20px;margin-bottom:-25px;">
+            <div style="font-size:27px;font-weight:lighter;padding-top:3px;padding-bottom:5px;margin-top:-20px;margin-bottom:-25px;">
               <script type='text/javascript'>
           			<!--
           			var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];

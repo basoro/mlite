@@ -6,7 +6,7 @@
   </div>
   <div class="body">
 
-                                <table id="datatable_ralan" class="table table-bordered table-striped table-hover display nowrap">
+                                <table class="table table-bordered table-striped table-hover display nowrap">
                                     <thead>
                                         <tr>
                                           <th class="text-center">No. Rawat</th>

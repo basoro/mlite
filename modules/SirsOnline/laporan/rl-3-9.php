@@ -5,7 +5,7 @@
       </h2>
   </div>
   <div class="body">
-    <table class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
       <tr>
         <th>Masuk</th>
         <th>Keluar</th>

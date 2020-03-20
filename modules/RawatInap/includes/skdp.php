@@ -115,7 +115,7 @@
 
 </div>
 <div class="row clearfix">
-  <table class="table datatable responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+  <table class="table datatable responsive table-bordered table-striped table-hover display nowrap" width="100%">
     <tr>
       <th>No</th>
       <th>Tanggal Booking</th>

@@ -11,7 +11,7 @@
                         </div>
                         <div class="body">
                             <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-                            <table class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
+                            <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                 <thead>
                                     <tr>
                                         <th>Nama Obat</th>

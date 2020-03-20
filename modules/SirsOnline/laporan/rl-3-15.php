@@ -26,7 +26,7 @@
       <p><font size ='3' face = 'Arial'><strong>Nama RS		: <?php $bpt = fetch_array(query("SELECT setting.nama_instansi FROM setting"));echo $bpt['0'];?></strong></font></p>
       <p><font size ='3' face = 'Arial'><strong>Tahun	: <?php echo $tahun;?></strong></font></p>
         <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
-        <table class="table table-bordered table-striped table-hover table-responsive display nowrap js-exportable" width="100%">
+        <table class="table table-bordered table-striped table-hover table-responsive display nowrap" width="100%">
             <thead>
                 <tr>
                     <!--<th>Kode RS</th>

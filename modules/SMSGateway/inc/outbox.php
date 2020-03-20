@@ -18,7 +18,7 @@ if(num_rows(query("SHOW TABLES LIKE 'sms_inbox'")) !== 1) {
         </h2>
     </div>
     <div class="body">
-				<table class="table table-bordered display nowrap js-exportable" width="100%">
+				<table class="table table-bordered display nowrap" width="100%">
 						<thead>
 								<tr>
 										<th>No. Tujuan</th>

@@ -51,20 +51,10 @@
     <!-- Waves Effect Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/node-waves/waves.js"></script>
 
-    <!-- Jquery CountTo Plugin Js -->
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-countto/jquery.countTo.js"></script>
-
     <!-- Jquery DataTable Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/jquery.dataTables.js"></script>
     <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.js"></script>
     <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/responsive/js/dataTables.responsive.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>
-    <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>
     <script src="<?php echo URL; ?>/assets/plugins/jquery-datatable/extensions/jquery-datatables-checkboxes/dataTables.checkboxes.min.js"></script>
 
     <!-- Chart Plugins Js -->
@@ -84,8 +74,6 @@
 
     <!-- Bootstrap Material Datetime Picker Plugin Js -->
     <script src="<?php echo URL; ?>/assets/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js"></script>
-
-    <script src="<?php echo URL;?>/modules/Odontogram/js/odontogram.js" type="text/javascript"></script>
 
     <!-- Jquery-UI Js -->
     <script src="<?php echo URL; ?>/assets/js/jquery-ui.min.js"></script>
@@ -133,30 +121,6 @@
 
     <script>
 
-        $('#datatable').dataTable( {
-              "bStateSave": true,
-              "processing": true,
-              "responsive": true,
-              "oLanguage": {
-                  "sProcessing":   "Sedang memproses...",
-                  "sLengthMenu":   "Tampilkan _MENU_ entri",
-                  "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-                  "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                  "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-                  "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                  "sInfoPostFix":  "",
-                  "sSearch":       "Cari:",
-                  "sUrl":          "",
-                  "oPaginate": {
-                      "sFirst":    "«",
-                      "sPrevious": "‹",
-                      "sNext":     "›",
-                      "sLast":     "»"
-                  }
-              },
-              "order": [[ 0, "asc" ]]
-        } );
-
         $('table.display').dataTable( {
               "bStateSave": true,
               "processing": true,
@@ -181,9 +145,6 @@
               "order": [[ 0, "asc" ]]
         } );
 
-        $('#plugins').dataTable( {
-          "bStateSave": true
-        } );
         $(document).ready(function() {
             $('.datepicker').bootstrapMaterialDatePicker({
                 format: 'YYYY-MM-DD',
@@ -199,8 +160,6 @@
           	thumbnail: true,
           	selector: 'a'
       	});
-
-        $('.color').colorPicker();
 
 	  </script>
 

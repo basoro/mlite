@@ -44,7 +44,7 @@ $next_no_pengajuan = 'PC'.$tgl_reg.''.sprintf('%03s', ($no_urut_pengajuan + 1));
                                         <div class="col-lg-4 col-md-10 col-sm-8">
                                           <div class="input-group input-group-lg">
                                               <div class="form-line">
-                                                  <input type="text" class="form-control" id="no_pengajuan" value="<?php echo $next_no_pengajuan; ?>" placeholder="Nomor Pengajuan">
+                                                  <input type="text" class="form-control" id="no_pengajuan" value="<?php echo $next_no_pengajuan; ?>" placeholder="Nomor Pengajuan" disabled>
                                               </div>
                                           </div>
                                         </div>

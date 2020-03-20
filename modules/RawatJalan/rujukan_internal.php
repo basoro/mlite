@@ -10,7 +10,7 @@ $role = isset($_SESSION['role'])?$_SESSION['role']:null;
   <div class="body">
 
   <?php if(!$action){ ?>
-      <table id="datatable_ralan" class="table table-bordered table-striped table-hover display nowrap">
+      <table class="table table-bordered table-striped table-hover display nowrap">
           <thead>
               <tr>
                   <th>Nama Pasien</th>

@@ -114,7 +114,7 @@ include_once('layout/sidebar.php');
                           <div class="row clearfix">
                               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                   <div class="body">
-                                      <table id="datapengguna" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                                      <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                                           <thead>
                                               <tr>
                                                   <th>NAMA</th>
@@ -162,14 +162,14 @@ include_once('layout/sidebar.php');
     </section>
 
     <div class="modal fade" id="usersModal" tabindex="-1" role="dialog" aria-labelledby="usersModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="usersModalLabel">Database User</h4>
                 </div>
                 <div class="modal-body table-responsive">
-                    <table id="users" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>USER NAME</th>
@@ -197,14 +197,14 @@ include_once('layout/sidebar.php');
     </div>
 
     <div class="modal fade" id="rolesModal" tabindex="-1" role="dialog" aria-labelledby="rolesModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="rolesModalLabel">User Role</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="roles" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Role</th>
@@ -243,14 +243,14 @@ include_once('layout/sidebar.php');
     </div>
 
     <div class="modal fade" id="capsModal" tabindex="-1" role="dialog" aria-labelledby="capsModalLabel" aria-hidden="true">
-        <div class="modal-dialog" style="width:800px">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     <h4 class="modal-title" id="capsModalLabel">User Capability</h4>
                 </div>
                 <div class="modal-body">
-                    <table id="capabilities" class="table table-bordered table-striped table-hover display nowrap" width="100%">
+                    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
                         <thead>
                             <tr>
                                 <th>Kode</th>
@@ -282,96 +282,6 @@ include_once('layout/sidebar.php');
 include_once('layout/footer.php');
 ?>
 <script>
-  $('#datapengguna').dataTable( {
-        "bInfo" : true,
-      	"scrollX": true,
-        "processing": true,
-        "responsive": true,
-        "oLanguage": {
-            "sProcessing":   "Sedang memproses...",
-            "sLengthMenu":   "Tampilkan _MENU_ entri",
-            "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-            "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-            "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-            "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-            "sInfoPostFix":  "",
-            "sSearch":       "Cari:",
-            "sUrl":          "",
-            "oPaginate": {
-                "sFirst":    "«",
-                "sPrevious": "‹",
-                "sNext":     "›",
-                "sLast":     "»"
-            }
-        },
-        "order": [[ 0, "asc" ]]
-  } );
-  $('#users').dataTable({
-    "processing": true,
-    "responsive": true,
-    "oLanguage": {
-        "sProcessing":   "Sedang memproses...",
-        "sLengthMenu":   "Tampilkan _MENU_ entri",
-        "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-        "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-        "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-        "sInfoPostFix":  "",
-        "sSearch":       "Cari:",
-        "sUrl":          "",
-        "oPaginate": {
-            "sFirst":    "«",
-            "sPrevious": "‹",
-            "sNext":     "›",
-            "sLast":     "»"
-        }
-    },
-    "order": [[ 0, "asc" ]]
-  });
-  $('#roles').dataTable({
-    "processing": true,
-    "responsive": true,
-    "oLanguage": {
-        "sProcessing":   "Sedang memproses...",
-        "sLengthMenu":   "Tampilkan _MENU_ entri",
-        "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-        "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-        "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-        "sInfoPostFix":  "",
-        "sSearch":       "Cari:",
-        "sUrl":          "",
-        "oPaginate": {
-            "sFirst":    "«",
-            "sPrevious": "‹",
-            "sNext":     "›",
-            "sLast":     "»"
-        }
-    },
-    "order": [[ 0, "asc" ]]
-  });
-  $('#capabilities').dataTable({
-    "processing": true,
-    "responsive": true,
-    "oLanguage": {
-        "sProcessing":   "Sedang memproses...",
-        "sLengthMenu":   "Tampilkan _MENU_ entri",
-        "sZeroRecords":  "Tidak ditemukan data yang sesuai",
-        "sInfo":         "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-        "sInfoEmpty":    "Menampilkan 0 sampai 0 dari 0 entri",
-        "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-        "sInfoPostFix":  "",
-        "sSearch":       "Cari:",
-        "sUrl":          "",
-        "oPaginate": {
-            "sFirst":    "«",
-            "sPrevious": "‹",
-            "sNext":     "›",
-            "sLast":     "»"
-        }
-    },
-    "order": [[ 0, "asc" ]]
-  });
   $(document).on('click', '.pilihusername', function (e) {
       document.getElementById("username").value = $(this).attr('data-username');
       document.getElementById("nama").value = $(this).attr('data-nama');
