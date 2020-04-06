@@ -1,27 +1,27 @@
 <form method="post">
   <?php
-  if(isset($_POST['ok_skdp'])){
-    if(($no_rawat <> "")){
-      $year       = date("Y");
-      $date       = date('Y-m-d');
-      $time       = date('H:i:s');
-      $date_time  = date('Y-m-d H:i:s');
-      $nomor = query("SELECT no_antrian from skdp_bpjs WHERE no_antrian = '{$_POST['noan']}'");
-      if(num_rows($nomor) > 0 ){
-        echo "<script type='text/javascript'>alert(\"No SKDP Sudah Terpakai\");window.location=history.go(-1)</script>";
-      } else {
-        $insert = query("INSERT INTO skdp_bpjs VALUES ('{$year}','{$no_rkm_medis}','{$_POST['dx']}','{$_POST['terapi']}','{$_POST['alasan']}','-','{$_POST['tlj']}','-','{$_POST['tgl']}'
+  if (isset($_POST['ok_skdp'])) {
+      if (($no_rawat <> "")) {
+          $year       = date("Y");
+          $date       = date('Y-m-d');
+          $time       = date('H:i:s');
+          $date_time  = date('Y-m-d H:i:s');
+          $nomor = query("SELECT no_antrian from skdp_bpjs WHERE no_antrian = '{$_POST['noan']}'");
+          if (num_rows($nomor) > 0) {
+              echo "<script type='text/javascript'>alert(\"No SKDP Sudah Terpakai\");window.location=history.go(-1)</script>";
+          } else {
+              $insert = query("INSERT INTO skdp_bpjs VALUES ('{$year}','{$no_rkm_medis}','{$_POST['dx']}','{$_POST['terapi']}','{$_POST['alasan']}','-','{$_POST['tlj']}','-','{$_POST['tgl']}'
                     ,'{$date}','{$_POST['noan']}','{$_POST['dpjp']}','Menunggu')");
-        if($insert){
-          $insert2 = query("INSERT INTO booking_registrasi VALUES ('{$date}','{$time}','{$no_rkm_medis}','{$_POST['tgl']}','{$_POST['dpjp']}','{$_POST['kd_poli']}','{$_POST['noreg']}','{$_POST['kd_pj']}','0'
+              if ($insert) {
+                  $insert2 = query("INSERT INTO booking_registrasi VALUES ('{$date}','{$time}','{$no_rkm_medis}','{$_POST['tgl']}','{$_POST['dpjp']}','{$_POST['kd_poli']}','{$_POST['noreg']}','{$_POST['kd_pj']}','0'
                       ,'{$date_time}','Belum')");
-          if($insert2){
-            redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                  if ($insert2) {
+                      redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                  }
+              }
           }
-        }
+          // echo "{$get_tahun},{$date},{$time},{$date_time},{$no_rkm_medis},{$_POST['dx']},{$_POST['terapi']},{$_POST['alasan']},-,{$_POST['tlj']},'-',{$_POST['tgl']},'  {$date}','{$_POST['noan']}','{$_POST['dpjp']}','Menunggu'";
       }
-      // echo "{$get_tahun},{$date},{$time},{$date_time},{$no_rkm_medis},{$_POST['dx']},{$_POST['terapi']},{$_POST['alasan']},-,{$_POST['tlj']},'-',{$_POST['tgl']},'  {$date}','{$_POST['noan']}','{$_POST['dpjp']}','Menunggu'";
-    }
   };
   ?>
 <div class="row clearfix">
@@ -45,8 +45,6 @@
     <div class="form-group">
       <div class="form-line" id="antri">
         <dt>No SKDP</dt>
-        <dd><input type='text' id="antri" class='form-control antri' name='noan' value="" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" maxlength="6" required>
-        </dd>
       </div>
     </div>
   </div>
@@ -108,7 +106,7 @@
       <dd><button type="submit" name="ok_skdp" value="ok_skdp" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_skdp\'">SIMPAN</button></dd><br/>
     </div>
   </div>
-  
+
 </div>
 <div class="row clearfix">
   <table class="table datatable responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
@@ -124,7 +122,7 @@
     $query = query("SELECT tanggal_booking , tanggal_periksa , nm_poli , no_reg FROM booking_registrasi a , poliklinik b WHERE a.kd_poli = b.kd_poli AND no_rkm_medis = '{$no_rkm_medis}'");
     $no=1;
     while ($data = fetch_array($query)) {
-    ?>
+        ?>
     <tr>
       <td><?php echo $no; ?></td>
       <td><?php echo $data['0']; ?></td>
@@ -134,7 +132,8 @@
       <td><a class="btn bg-red waves-effect" href="./?module=RawatInap&page=index&action=delete_skdp&no_reg=<?php echo $data['3']; ?>&no_rkm_medis=<?php echo $no_rkm_medis; ?>">Hapus</a></td>
     </tr>
     <?php
-      $no++;}
+      $no++;
+    }
     ?>
   </table>
 </div>

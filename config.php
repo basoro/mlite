@@ -42,6 +42,11 @@ define('SisruteApiUrl', 'https://api.sisrute.kemkes.go.id/');
 define('IDSisrute', '');
 define('KeySisrute', '');
 
+define('InhealthApiUrl', 'https://app.inhealth.co.id/pelkesws2/');
+define('Token', '');
+define('Provider', '');
+
+
 $loket=['1','2','3']; // Loket harus angka maksimal 9
 $loket_cs=['7','8']; // Loket CS harus angka maximal 9
 $loket_prioritas=['9']; // Loket Prioritas harus angka maximal 9

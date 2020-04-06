@@ -9,19 +9,19 @@
 * Licence under GPL
 ***/
 
-if(isset($_GET['no_rawat'])) {
+if (isset($_GET['no_rawat'])) {
     $_sql = "SELECT a.no_rkm_medis, a.no_rawat, b.nm_pasien, b.umur FROM reg_periksa a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis AND a.no_rawat = '$_GET[no_rawat]'";
     $found_pasien = query($_sql);
-    if(num_rows($found_pasien) == 1) {
-      while($row = fetch_array($found_pasien)) {
-          $no_rkm_medis  = $row['0'];
-          $get_no_rawat	     = $row['1'];
-          $no_rawat	     = $row['1'];
-          $nm_pasien     = $row['2'];
-          $umur          = $row['3'];
-      }
+    if (num_rows($found_pasien) == 1) {
+        while ($row = fetch_array($found_pasien)) {
+            $no_rkm_medis  = $row['0'];
+            $get_no_rawat	     = $row['1'];
+            $no_rawat	     = $row['1'];
+            $nm_pasien     = $row['2'];
+            $umur          = $row['3'];
+        }
     } else {
-      redirect ('./?module=RawatInap&page=index');
+        redirect('./?module=RawatInap&page=index');
     }
 }
 
@@ -37,8 +37,8 @@ if(isset($_GET['no_rawat'])) {
                         $action = isset($_GET['action'])?$_GET['action']:null;
                         $jenis_poli = isset($_SESSION['jenis_poli'])?$_SESSION['jenis_poli']:null;
                         $role = isset($_SESSION['role'])?$_SESSION['role']:null;
-                        if(!$action){
-                        ?>
+                        if (!$action) {
+                            ?>
                         <table id="datatable" class="table responsive table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                             <thead>
                                 <tr>
@@ -84,14 +84,13 @@ if(isset($_GET['no_rawat'])) {
                                   reg_periksa.kd_pj = penjab.kd_pj
 
                             ";
-                            if($role == 'Paramedis_Ranap') {
-                              $sql .= " AND bangsal.kd_bangsal = '$jenis_poli'";
+                            if ($role == 'Paramedis_Ranap') {
+                                $sql .= " AND bangsal.kd_bangsal = '$jenis_poli'";
                             }
                             $sql .= " ORDER BY kamar_inap.kd_kamar ASC";
                             $result = query($sql);
-                            while($row = fetch_array($result)) {
-                              $get_no_rawat = $row['6'];
-                            ?>
+                            while ($row = fetch_array($result)) {
+                                $get_no_rawat = $row['6']; ?>
                                 <tr>
                                     <td><?php echo SUBSTR($row['0'], 0, 15).' ...'; ?></td>
                                     <td>
@@ -103,7 +102,7 @@ if(isset($_GET['no_rawat'])) {
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=berkas_digital&no_rawat=<?php echo $row['6']; ?>">Berkas Digital Perawatan</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=radiologi&no_rawat=<?php echo $row['6']; ?>">Berkas Radiologi</a></li>
                                                 <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=status_pulang&no_rawat=<?php echo $row['6']; ?>&bed=<?php echo $row['3']?>">Status Pulang</a></li>
-                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6'];?>&nm_pasien=<?php echo $row['nm_pasien'];?>&no_rkm_medis=<?php echo $row['no_rkm_medis'];?>&kd_kmr_sblmny=<?php echo $row['3'];?>">Pindah Kamar</a></li>
+                                                <li><a href="<?php echo URL; ?>/?module=RawatInap&page=index&action=pindah&no_rawat=<?php echo $row['6']; ?>&nm_pasien=<?php echo $row['nm_pasien']; ?>&no_rkm_medis=<?php echo $row['no_rkm_medis']; ?>&kd_kmr_sblmny=<?php echo $row['3']; ?>">Pindah Kamar</a></li>
                                           </ul>
                                         </div>
                                     </td>
@@ -111,11 +110,12 @@ if(isset($_GET['no_rawat'])) {
                                     <td><?php echo $row['3']; ?></td>
                                     <td><?php echo $row['4']; ?></td>
                                     <td><?php echo $row['5']; ?></td>
-                                    <td><?php $dpjp = query("SELECT dokter.nm_dokter FROM dpjp_ranap , dokter WHERE dpjp_ranap.kd_dokter = dokter.kd_dokter AND dpjp_ranap.no_rawat = '".$row['6']."'");$dpjpp = fetch_array($dpjp);echo $dpjpp['0'];?></td>
+                                    <td><?php $dpjp = query("SELECT dokter.nm_dokter FROM dpjp_ranap , dokter WHERE dpjp_ranap.kd_dokter = dokter.kd_dokter AND dpjp_ranap.no_rawat = '".$row['6']."'");
+                                $dpjpp = fetch_array($dpjp);
+                                echo $dpjpp['0']; ?></td>
                                 </tr>
                             <?php
-                            }
-                            ?>
+                            } ?>
                             </tbody>
                         </table>
                                 <div class="row clearfix">
@@ -144,38 +144,37 @@ if(isset($_GET['no_rawat'])) {
                                     </form>
                                 </div>
 
-                        <?php } ?>
                         <?php
-                        if($action == "tindakan"){
-                          if (isset($_POST['ok_tdk'])) {
-                                        if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
-                                              $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}')");
-                                              if ($insert) {
-                                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                                              };
-                                        };
-                                  };
+                        } ?>
+                        <?php
+                        if ($action == "tindakan") {
+                            if (isset($_POST['ok_tdk'])) {
+                                if (($_POST['kd_tdk'] <> "") and ($no_rawat <> "")) {
+                                    $insert = query("INSERT INTO rawat_inap_pr VALUES ('{$no_rawat}','{$_POST['kd_tdk']}','{$_SESSION['username']}','$date','$time','0','0','{$_POST['kdtdk']}','0','0','{$_POST['kdtdk']}')");
+                                    if ($insert) {
+                                        redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    };
+                                };
+                            };
 
-                          if(isset($_POST['ok_per'])){
-                                if(($no_rawat <> "")){
-                                  $insert = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
+                            if (isset($_POST['ok_per'])) {
+                                if (($no_rawat <> "")) {
+                                    $insert = query("INSERT INTO pemeriksaan_ranap VALUES ('{$no_rawat}',CURRENT_DATE(),CURRENT_TIME(),'{$_POST['suhu']}','{$_POST['tensi']}','{$_POST['nadi']}','{$_POST['respirasi']}','{$_POST['tinggi']}','{$_POST['berat']}'
                                               ,'{$_POST['gcs']}','{$_POST['keluhan']}','{$_POST['pemeriksaan']}','{$_POST['alergi']}','-','{$_POST['tndklnjt']}','-')");
-                                  if($insert){
-                                    redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                                  }
+                                    if ($insert) {
+                                        redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    }
                                 }
-                              };
-                          if(isset($_POST['edit_an'])){
-                                if(($no_rawat <> "")){
-                                  $insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
+                            };
+                            if (isset($_POST['edit_an'])) {
+                                if (($no_rawat <> "")) {
+                                    $insert = query("UPDATE pemeriksaan_ranap SET suhu_tubuh = '{$_POST['suhu']}', tensi = '{$_POST['tensi']}', nadi = '{$_POST['nadi']}', respirasi = '{$_POST['respirasi']}', tinggi = '{$_POST['tinggi']}', berat = '{$_POST['berat']}', gcs = '{$_POST['gcs']}', keluhan = '{$_POST['keluhan']}', pemeriksaan = '{$_POST['pemeriksaan']}', alergi = '{$_POST['alergi']}', rtl = '{$_POST['tndklnjt']}' WHERE no_rawat = '{$no_rawat}'");
 
-                                  if($insert){
-                                    redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                                  }
+                                    if ($insert) {
+                                        redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                                    }
                                 }
-                              };
-
-                          ?>
+                            }; ?>
                           <div class="row">
                             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                               <div class="body">
@@ -206,24 +205,22 @@ if(isset($_GET['no_rawat'])) {
                                              <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                              <?php
                                              $sql_rmlama = query("SELECT * FROM berkas_digital_perawatan WHERE kode = '003' AND no_rawat IN (SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis')");
-                                             $no=1;
-                                             while ($row_rmlama = fetch_array($sql_rmlama)) {
-                                                 echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
-                                                 echo '</div>';
-                                                 $no++;
-                                             }
-                                             ?>
+                            $no=1;
+                            while ($row_rmlama = fetch_array($sql_rmlama)) {
+                                echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                echo '</div>';
+                                $no++;
+                            } ?>
                                              <?php
                                              $sql_rmlama = query("SELECT * FROM berkas_digital_perawatan WHERE kode = '006' AND no_rawat IN (SELECT no_rawat FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis')");
-                                             $no=1;
-                                             while ($row_rmlama = fetch_array($sql_rmlama)) {
-                                                 echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                 echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
-                                                 echo '</div>';
-                                                 $no++;
-                                             }
-                                             ?>
+                            $no=1;
+                            while ($row_rmlama = fetch_array($sql_rmlama)) {
+                                echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rmlama[2].'"></a>';
+                                echo '</div>';
+                                $no++;
+                            } ?>
                                              </div>
                                  </div>
                                </div>
@@ -250,70 +247,66 @@ if(isset($_GET['no_rawat'])) {
                                        </thead>
                                        <tbody>
                                          <?php
-                                         $q_kunj = query ("SELECT tgl_registrasi, no_rawat, status_lanjut FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis' AND stts !='Batal'");
-                                         while ($data_kunj = fetch_array($q_kunj)) {
-                                             $tanggal_kunj   = $data_kunj[0];
-                                             $no_rawat_kunj = $data_kunj[1];
-                                             $status_lanjut_kunj = $data_kunj[2];
-                                         ?>
+                                         $q_kunj = query("SELECT tgl_registrasi, no_rawat, status_lanjut FROM reg_periksa WHERE no_rkm_medis = '$no_rkm_medis' AND stts !='Batal'");
+                            while ($data_kunj = fetch_array($q_kunj)) {
+                                $tanggal_kunj   = $data_kunj[0];
+                                $no_rawat_kunj = $data_kunj[1];
+                                $status_lanjut_kunj = $data_kunj[2]; ?>
                                          <tr>
                                            <td><?php echo $tanggal_kunj; ?></td>
                                            <td><?php echo $no_rawat_kunj; ?></td>
                                            <td>
                                              <?php
-                                             if($status_lanjut_kunj == 'Ralan') {
-                                               $sql_poli = fetch_assoc(query("SELECT a.nm_poli, c.nm_dokter FROM poliklinik a, reg_periksa b, dokter c WHERE b.no_rawat = '$no_rawat_kunj' AND a.kd_poli = b.kd_poli AND b.kd_dokter = c.kd_dokter"));
-                                               echo $sql_poli['nm_poli'];
-                                               echo '<br>';
-                                               echo "(".$sql_poli['nm_dokter'].")";
+                                             if ($status_lanjut_kunj == 'Ralan') {
+                                                 $sql_poli = fetch_assoc(query("SELECT a.nm_poli, c.nm_dokter FROM poliklinik a, reg_periksa b, dokter c WHERE b.no_rawat = '$no_rawat_kunj' AND a.kd_poli = b.kd_poli AND b.kd_dokter = c.kd_dokter"));
+                                                 echo $sql_poli['nm_poli'];
+                                                 echo '<br>';
+                                                 echo "(".$sql_poli['nm_dokter'].")";
                                              } else {
-                                               echo 'Rawat Inap';
-                                             }
-                                             ?>
+                                                 echo 'Rawat Inap';
+                                             } ?>
                                            </td>
                                              <?php
-                                             if($status_lanjut_kunj == 'Ralan') {
-                                               $sql_riksaralan = fetch_assoc(query("SELECT keluhan, pemeriksaan, tinggi, berat, suhu_tubuh, tensi, nadi, respirasi FROM pemeriksaan_ralan WHERE no_rawat = '$no_rawat_kunj'"));
-                                               echo "<td>".$sql_riksaralan['keluhan']."</td>";
-                                               echo "<td>";
-                                               echo "<ul style='list-style:none;margin:0;padding:0;'>";
-                                               echo "<li>".$sql_riksaralan['pemeriksaan']."</li>";
-                                               if(!empty($sql_riksaralan['tinggi'])) {
-                                               echo "<li>Tinggi : ".$sql_riksaralan['tinggi']." cm</li>";
-                                               }
-                                               if(!empty($sql_riksaralan['berat'])) {
-                                                 echo "<li>BB : ".$sql_riksaralan['berat']." Kg</li>";
-                                               }
-                                               if(!empty($sql_riksaralan['suhu_tubuh'])) {
-                                               echo "<li>Suhu : ".$sql_riksaralan['suhu_tubuh']." C</li>";
-                                               }
-                                               if(!empty($sql_riksaralan['tensi'])) {
-                                               echo "<li>Tensi : ".$sql_riksaralan['tensi']." mmHg</li>";
-                                               }
-                                               if(!empty($sql_riksaralan['nadi'])) {
-                                               echo "<li>Nadi : ".$sql_riksaralan['nadi']." x/mnt</li>";
-                                               }
-                                               if(!empty($sql_riksaralan['respirasi'])) {
-                                               echo "<li>RR : ".$sql_riksaralan['respirasi']." x/mnt</li>";
-                                               }
-                                               echo "</ul>";
-                                               echo "</td>";
+                                             if ($status_lanjut_kunj == 'Ralan') {
+                                                 $sql_riksaralan = fetch_assoc(query("SELECT keluhan, pemeriksaan, tinggi, berat, suhu_tubuh, tensi, nadi, respirasi FROM pemeriksaan_ralan WHERE no_rawat = '$no_rawat_kunj'"));
+                                                 echo "<td>".$sql_riksaralan['keluhan']."</td>";
+                                                 echo "<td>";
+                                                 echo "<ul style='list-style:none;margin:0;padding:0;'>";
+                                                 echo "<li>".$sql_riksaralan['pemeriksaan']."</li>";
+                                                 if (!empty($sql_riksaralan['tinggi'])) {
+                                                     echo "<li>Tinggi : ".$sql_riksaralan['tinggi']." cm</li>";
+                                                 }
+                                                 if (!empty($sql_riksaralan['berat'])) {
+                                                     echo "<li>BB : ".$sql_riksaralan['berat']." Kg</li>";
+                                                 }
+                                                 if (!empty($sql_riksaralan['suhu_tubuh'])) {
+                                                     echo "<li>Suhu : ".$sql_riksaralan['suhu_tubuh']." C</li>";
+                                                 }
+                                                 if (!empty($sql_riksaralan['tensi'])) {
+                                                     echo "<li>Tensi : ".$sql_riksaralan['tensi']." mmHg</li>";
+                                                 }
+                                                 if (!empty($sql_riksaralan['nadi'])) {
+                                                     echo "<li>Nadi : ".$sql_riksaralan['nadi']." x/mnt</li>";
+                                                 }
+                                                 if (!empty($sql_riksaralan['respirasi'])) {
+                                                     echo "<li>RR : ".$sql_riksaralan['respirasi']." x/mnt</li>";
+                                                 }
+                                                 echo "</ul>";
+                                                 echo "</td>";
                                              } else {
-                                               $sql_riksaranap = fetch_assoc(query("SELECT keluhan, pemeriksaan , berat , suhu_tubuh FROM pemeriksaan_ranap WHERE no_rawat = '$no_rawat_kunj'"));
-                                               echo "<td>".$sql_riksaranap['keluhan']."</td>";
-                                               echo "<td><ul style='list-style:none;margin:0;padding:0;'><li>Pemeriksaan=".$sql_riksaranap['pemeriksaan']."</li></br><li>BB=".$sql_riksaranap['berat']."</li></br><li>Suhu=".$sql_riksaranap['suhu_tubuh']."</li></ul></td>";
-                                             }
-                                             ?>
+                                                 $sql_riksaranap = fetch_assoc(query("SELECT keluhan, pemeriksaan , berat , suhu_tubuh FROM pemeriksaan_ranap WHERE no_rawat = '$no_rawat_kunj'"));
+                                                 echo "<td>".$sql_riksaranap['keluhan']."</td>";
+                                                 echo "<td><ul style='list-style:none;margin:0;padding:0;'><li>Pemeriksaan=".$sql_riksaranap['pemeriksaan']."</li></br><li>BB=".$sql_riksaranap['berat']."</li></br><li>Suhu=".$sql_riksaranap['suhu_tubuh']."</li></ul></td>";
+                                             } ?>
                                            <td>
                                                <ul style="list-style:none;">
                                                <?php
                                                $sql_dx = query("SELECT a.kd_penyakit, a.nm_penyakit FROM penyakit a, diagnosa_pasien b WHERE a.kd_penyakit = b.kd_penyakit AND b.no_rawat = '$no_rawat_kunj'");
-                                               $no=1;
-                                               while ($row_dx = fetch_array($sql_dx)) {
-                                                   echo '<li>'.$no.'. '.$row_dx[1].' ('.$row_dx[0].')</li>';
-                                                   $no++;
-                                               }
-                                               ?>
+                                $no=1;
+                                while ($row_dx = fetch_array($sql_dx)) {
+                                    echo '<li>'.$no.'. '.$row_dx[1].' ('.$row_dx[0].')</li>';
+                                    $no++;
+                                } ?>
                                                </ul>
                                            </td>
                                            <td>
@@ -321,33 +314,31 @@ if(isset($_GET['no_rawat'])) {
                          <ul style="list-style:none;margin-left:0;padding-left:0;">
                            <?php
                            $query = query("SELECT a.kode, b.deskripsi_pendek, a.prioritas FROM prosedur_pasien a, icd9 b, reg_periksa c WHERE a.kode = b.kode AND a.no_rawat = '{$no_rawat_kunj}' AND a.no_rawat = c.no_rawat ORDER BY a.prioritas ASC");
-                             $no=1;
-                           if(num_rows($query) !== 0){
-                           	echo '<li><b>Prosedur ICD 9</b></li>';
-                           }
-                            while ($data = fetch_array($query)) {
-                           ?>
+                                $no=1;
+                                if (num_rows($query) !== 0) {
+                                    echo '<li><b>Prosedur ICD 9</b></li>';
+                                }
+                                while ($data = fetch_array($query)) {
+                                    ?>
                                      <li><?php echo $no; ?>. <?php echo $data['0']; ?> - <?php echo $data['1']; ?></li>
                            <?php
                                  $no++;
-                           }
-                           ?>
+                                } ?>
                          </ul>
                          <ul style="list-style:none;margin-left:0;padding-left:0;">
 
                            <?php
                            $query = query("SELECT a.kd_jenis_prw, b.nm_perawatan FROM rawat_jl_dr a, jns_perawatan b, reg_periksa c WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat_kunj}' AND a.no_rawat = c.no_rawat");
-                             $no=1;
-                           if(num_rows($query) !== 0){
-                           	echo '<li><b>Jenis Perawatan</b></li>';
-                           }
-                           while ($data = fetch_array($query)) {
-                           ?>
+                                $no=1;
+                                if (num_rows($query) !== 0) {
+                                    echo '<li><b>Jenis Perawatan</b></li>';
+                                }
+                                while ($data = fetch_array($query)) {
+                                    ?>
                                      <li><?php echo $no; ?>. <?php echo $data['0']; ?> - <?php echo $data['1']; ?></li>
                            <?php
                                  $no++;
-                           }
-                           ?>
+                                } ?>
                          </ul>
 
                                            </td>
@@ -356,67 +347,63 @@ if(isset($_GET['no_rawat'])) {
                                                <?php
                                                //$sql_obat = query("select detail_pemberian_obat.jml, databarang.nama_brng, resep_dokter.aturan_pakai from detail_pemberian_obat inner join databarang on detail_pemberian_obat.kode_brng=databarang.kode_brng inner join resep_obat on detail_pemberian_obat.no_rawat=resep_obat.no_rawat inner join resep_dokter on resep_dokter.no_resep=resep_obat.no_resep where detail_pemberian_obat.no_rawat= '$no_rawat_kunj'");
                                                $sql_obat = query("select detail_pemberian_obat.jml, databarang.nama_brng, detail_pemberian_obat.no_rawat, databarang.kode_brng from detail_pemberian_obat inner join databarang on detail_pemberian_obat.kode_brng=databarang.kode_brng where detail_pemberian_obat.no_rawat= '$no_rawat_kunj'");
-                                               //$sql_obat = query("SELECT databarang.nama_brng, resep_dokter.jml, resep_dokter.aturan_pakai FROM resep_dokter, resep_obat, databarang WHERE resep_dokter.no_resep = resep_obat.no_resep AND resep_dokter.kode_brng = databarang.kode_brng AND resep_obat.no_rawat = '$no_rawat_kunj'");
-                                               $no=1;
-                                               while ($row_obat = fetch_array($sql_obat)) {
-                                                   $get_aturan = fetch_assoc(query("SELECT resep_dokter.aturan_pakai AS aturan FROM resep_dokter, resep_obat WHERE resep_dokter.no_resep = resep_obat.no_resep AND resep_obat.no_rawat = '$row_obat[2]' AND resep_dokter.kode_brng = '{$row_obat['3']}'"));
-                                                   echo '<li>'.$no.'. '.$row_obat[1].' - '.$get_aturan[aturan].' ('.$row_obat[0].')</li>';
-                                                   //echo '<li>'.$no.'. '.$row_obat[1].' ('.$row_obat[0].')</li>';
-                                                   $no++;
-                                               }
-                                               ?>
+                                //$sql_obat = query("SELECT databarang.nama_brng, resep_dokter.jml, resep_dokter.aturan_pakai FROM resep_dokter, resep_obat, databarang WHERE resep_dokter.no_resep = resep_obat.no_resep AND resep_dokter.kode_brng = databarang.kode_brng AND resep_obat.no_rawat = '$no_rawat_kunj'");
+                                $no=1;
+                                while ($row_obat = fetch_array($sql_obat)) {
+                                    $get_aturan = fetch_assoc(query("SELECT resep_dokter.aturan_pakai AS aturan FROM resep_dokter, resep_obat WHERE resep_dokter.no_resep = resep_obat.no_resep AND resep_obat.no_rawat = '$row_obat[2]' AND resep_dokter.kode_brng = '{$row_obat['3']}'"));
+                                    echo '<li>'.$no.'. '.$row_obat[1].' - '.$get_aturan[aturan].' ('.$row_obat[0].')</li>';
+                                    //echo '<li>'.$no.'. '.$row_obat[1].' ('.$row_obat[0].')</li>';
+                                    $no++;
+                                } ?>
                                                </ul>
                                            </td>
                                            <td>
                                                <ul style="list-style:none;">
                                                <?php
                                                $sql_lab = query("select template_laboratorium.Pemeriksaan, detail_periksa_lab.nilai, template_laboratorium.satuan, detail_periksa_lab.nilai_rujukan, detail_periksa_lab.keterangan from detail_periksa_lab inner join  template_laboratorium on detail_periksa_lab.id_template=template_laboratorium.id_template  where detail_periksa_lab.no_rawat= '$no_rawat_kunj'");
-                                               $no=1;
-                                               while ($row_lab = fetch_array($sql_lab)) {
-                                                   echo '<li>'.$no.'. '.$row_lab[0].' ('.$row_lab[3].') = '.$row_lab[1].' '.$row_lab[2].'</li>';
-                                                   $no++;
-                                               }
-                                               ?>
+                                $no=1;
+                                while ($row_lab = fetch_array($sql_lab)) {
+                                    echo '<li>'.$no.'. '.$row_lab[0].' ('.$row_lab[3].') = '.$row_lab[1].' '.$row_lab[2].'</li>';
+                                    $no++;
+                                } ?>
                                                </ul>
                                                <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                                <?php
                                                $sql_lab = query("select * from berkas_digital_perawatan where kode = '005' and no_rawat = '$no_rawat_kunj'");
-                                               $no=1;
-                                               while ($row_lab = fetch_array($sql_lab)) {
-                                                   echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=laboratorium&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_lab[2].'"></a>';
-                                                   echo '</div>';
-                                                   $no++;
-                                               }
-                                               ?>
+                                $no=1;
+                                while ($row_lab = fetch_array($sql_lab)) {
+                                    echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                    echo '<a href="'.$_SERVER['PHP_SELF'].'?action=laboratorium&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_lab[2].'"></a>';
+                                    echo '</div>';
+                                    $no++;
+                                } ?>
                                              </div>
                                            </td>
                                            <td>
                                                <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                                <?php
                                                $sql_rad = query("select * from gambar_radiologi where no_rawat= '$no_rawat_kunj'");
-                                               $no=1;
-                                               while ($row_rad = fetch_array($sql_rad)) {
-                                                   echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                   echo '<a href="'.$_SERVER['PHP_SELF'].'?action=radiologi&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
-                                                   echo '</div>';
-                                                   $no++;
-                                               }
-                                               ?>
+                                $no=1;
+                                while ($row_rad = fetch_array($sql_rad)) {
+                                    echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                    echo '<a href="'.$_SERVER['PHP_SELF'].'?action=radiologi&no_rawat='.$no_rawat_kunj.'" class="title"><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
+                                    echo '</div>';
+                                    $no++;
+                                } ?>
                                              </div>
                                            </td>
                                            <td>
                    	                    <?php
-                       	                $query = query("SELECT catatan FROM catatan_perawatan WHERE no_rawat = '{$no_rawat_kunj}'");
-                           	            while ($data = fetch_array($query)) {
-                               	        ?>
+                                           $query = query("SELECT catatan FROM catatan_perawatan WHERE no_rawat = '{$no_rawat_kunj}'");
+                                while ($data = fetch_array($query)) {
+                                    ?>
                                                  <?php echo nl2br($data['catatan']); ?>
                                    	    <?php
-                                       	}
-                                       	?>
+                                } ?>
                                            </td>
                                          </tr>
-                                         <?php } ?>
+                                         <?php
+                            } ?>
                                        </tbody>
                                      </table>
                                    </div>
@@ -547,8 +534,8 @@ if(isset($_GET['no_rawat'])) {
                                          <tbody>
                                          <?php
                                          $query_tindakan = query("SELECT * FROM pemeriksaan_ranap WHERE no_rawat = '{$no_rawat}'");
-                                         while ($data_tindakan = fetch_array($query_tindakan)) {
-                                         ?>
+                            while ($data_tindakan = fetch_array($query_tindakan)) {
+                                ?>
                                              <tr>
                                                <td><?php echo $data_tindakan['keluhan']; ?></td>
                                                <td><?php echo $data_tindakan['pemeriksaan']; ?></td>
@@ -561,8 +548,7 @@ if(isset($_GET['no_rawat'])) {
                                                <td><a href="#" data-toggle="modal" data-target="#edit_anamneseModal">Edit</a> <a href="./?module=RawatInap&action=delete_pemeriksaan&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
-                                         }
-                                         ?>
+                            } ?>
                                          </tbody>
                                      </table>
                                      </div>
@@ -591,9 +577,9 @@ if(isset($_GET['no_rawat'])) {
                                          </thead>
                                          <tbody>
                                          <?php
-                                         $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakanpr, b.nm_perawatan  FROM rawat_inap_pr a, jns_perawatan b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
-                                         while ($data_tindakan = fetch_array($query_tindakan)) {
-                                         ?>
+                                         $query_tindakan = query("SELECT a.kd_jenis_prw, a.tgl_perawatan, a.tarif_tindakanpr, b.nm_perawatan  FROM rawat_inap_pr a, jns_perawatan_inap b WHERE a.kd_jenis_prw = b.kd_jenis_prw AND a.no_rawat = '{$no_rawat}'");
+                            while ($data_tindakan = fetch_array($query_tindakan)) {
+                                ?>
                                              <tr>
                                                  <td><?php echo SUBSTR($data_tindakan['3'], 0, 20).' ...'; ?></td>
                                                  <td><?php echo $data_tindakan['1']; ?></td>
@@ -601,32 +587,30 @@ if(isset($_GET['no_rawat'])) {
                                                  <td><a href="./?module=RawatInap&page=index&action=delete_tindakan&kd_jenis_prw=<?php echo $data_tindakan['0']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
                                              </tr>
                                          <?php
-                                         }
-                                         ?>
+                            } ?>
                                          </tbody>
                                      </table>
                                      </div>
                                   </div>
                                   <div role="tabpanel" class="tab-pane fade in" id="skdp">
                                     <div class="body">
-                                    <?php include_once('includes/skdp.php');?>
+                                    <?php include_once('includes/skdp.php'); ?>
                                     </div>
                                   </div>
                                   <div role="tabpanel" class="tab-pane fade in" id="hais">
     <div class="body">
       <form method="POST">
-        <?php 
+        <?php
           if (isset($_POST['ok_hais'])) {
-            if (($_POST['tgl'] <> "") and ($no_rawat <> "")) {
-                $insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
+              if (($_POST['tgl'] <> "") and ($no_rawat <> "")) {
+                  $insert = query("INSERT INTO data_HAIs VALUES ('{$_POST['tgl']}','{$no_rawat}','{$_POST['ett']}','{$_POST['cvl']}','{$_POST['ivl']}','{$_POST['uc']}'
                     ,'{$_POST['vap']}','{$_POST['iad']}','{$_POST['pleb']}','{$_POST['isk']}','{$_POST['ilo']}','{$_POST['hap']}','{$_POST['tinea']}','{$_POST['scab']}','{$_POST['deku']}'
                     ,'{$_POST['sputum']}','{$_POST['darah']}','{$_POST['urine']}','{$_POST['anti']}','{$_POST['bed']}')");
-                    if ($insert) {
+                  if ($insert) {
                       redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                    };
-                };
-            };
-        ?>
+                  };
+              };
+          }; ?>
         <div class="row clearfix">
           <div class="col-md-3">
             <div class="form-group">
@@ -661,7 +645,7 @@ if(isset($_GET['no_rawat'])) {
             </div>
           </div>
         </div>
-        
+
         <div class="row clearfix">
           <div class="col-md-1">
             <div class="form-group">
@@ -760,14 +744,14 @@ if(isset($_GET['no_rawat'])) {
             </div>
           </div>
         </div>
-        
+
         <div class="row clearfix">
           <div class="col-md-2">
             <div class="form-group">
               <div class="form-line">
                 <dt>Bed</dt>
-          <?php $bed = fetch_array(query("SELECT kd_kamar from kamar_inap where no_rawat = '{$no_rawat}'"));?>
-                <dd><input type="text" class="form-control" name="bed" value="<?php echo $bed['0'];?>"></dd>
+          <?php $bed = fetch_array(query("SELECT kd_kamar from kamar_inap where no_rawat = '{$no_rawat}'")); ?>
+                <dd><input type="text" class="form-control" name="bed" value="<?php echo $bed['0']; ?>"></dd>
               </div>
             </div>
           </div>
@@ -788,7 +772,7 @@ if(isset($_GET['no_rawat'])) {
             </div>
           </div>
         </div>
-        
+
         <button type="submit" name="ok_hais" value="ok_hais" class="btn bg-indigo waves-effect" onclick="this.value=\'ok_hais\'">SIMPAN</button>
       </form>
     </div>
@@ -804,51 +788,51 @@ if(isset($_GET['no_rawat'])) {
         <tbody>
         <?php
         $query_tindakan = query("SELECT * FROM data_HAIs WHERE no_rawat = '{$no_rawat}'");
-        while ($data_tindakan = fetch_array($query_tindakan)) {
-        ?>
+                            while ($data_tindakan = fetch_array($query_tindakan)) {
+                                ?>
           <tr>
             <td><?php echo $data_tindakan['tanggal']; ?></td>
             <td><?php echo $data_tindakan['kd_kamar']; ?></td>
             <td><a href="./?module=RawatInap&page=index&action=delete_hais&tanggal=<?php echo $data_tindakan['tanggal']; ?>&no_rawat=<?php echo $no_rawat; ?>">Hapus</a></td>
           </tr>
         <?php
-          }
-        ?>
+                            } ?>
         </tbody>
       </table>
     </div>
   </div>
   <div role="tabpanel" class="tab-pane fade in" id="dokter">
-  <?php include_once('includes/dpjp.php');?>
+  <?php include_once('includes/dpjp.php'); ?>
   </div>
                                 </div>
-                            
-                          <?php } ?>
 
-                          <?php if($action == "berkas_digital") { ?>
+                          <?php
+                        } ?>
+
+                          <?php if ($action == "berkas_digital") { ?>
                           <?php
                             if (isset($_POST['ok_berdig'])) {
-                              $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
-                              $date = $periksa_radiologi['tgl_periksa'];
-                              $time = $periksa_radiologi['jam'];
-                              if($_FILES['file']['name']!='') {
-                                $tmp_name = $_FILES["file"]["tmp_name"];
-                                $namefile = $_FILES["file"]["name"];
-                                $explode = explode(".", $namefile);
-                                $ext = end($explode);
-                                if($_POST['masdig']=='001') {
-                                    $image_name = "berkasdigital-".time().".".$ext;
-                                }else{
-                                    $image_name = "rujukanfktp-".time().".".$ext;
+                                $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
+                                $date = $periksa_radiologi['tgl_periksa'];
+                                $time = $periksa_radiologi['jam'];
+                                if ($_FILES['file']['name']!='') {
+                                    $tmp_name = $_FILES["file"]["tmp_name"];
+                                    $namefile = $_FILES["file"]["name"];
+                                    $explode = explode(".", $namefile);
+                                    $ext = end($explode);
+                                    if ($_POST['masdig']=='001') {
+                                        $image_name = "berkasdigital-".time().".".$ext;
+                                    } else {
+                                        $image_name = "rujukanfktp-".time().".".$ext;
+                                    }
+                                    move_uploaded_file($tmp_name, "../berkasrawat/pages/upload/".$image_name);
+                                    $lokasi_berkas = 'pages/upload/'.$image_name;
+                                    $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
+                                    if ($insert_berkas) {
+                                        set_message('Berkas digital perawatan telah ditersimpan.');
+                                        redirect("./?module=RawatInap&page=index");
+                                    }
                                 }
-                                move_uploaded_file($tmp_name,"../berkasrawat/pages/upload/".$image_name);
-                                $lokasi_berkas = 'pages/upload/'.$image_name;
-                                $insert_berkas = query("INSERT INTO berkas_digital_perawatan VALUES('$no_rawat','{$_POST['masdig']}', '$lokasi_berkas')");
-                                if($insert_berkas) {
-                                  set_message('Berkas digital perawatan telah ditersimpan.');
-                                  redirect("./?module=RawatInap&page=index");
-                                }
-                              }
                             }
                           ?>
                                 <dl class="dl-horizontal">
@@ -867,10 +851,10 @@ if(isset($_GET['no_rawat'])) {
                                 $sql_rad = query("select * from berkas_digital_perawatan where no_rawat= '{$_GET['no_rawat']}'");
                                 $no=1;
                                 while ($row_rad = fetch_array($sql_rad)) {
-                                  echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                  echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'"></a>';
-                                  echo '</div>';
-                                  $no++;
+                                    echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                    echo '<a href="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/berkasrawat/'.$row_rad[2].'"></a>';
+                                    echo '</div>';
+                                    $no++;
                                 }
                               ?>
                               </div>
@@ -882,7 +866,7 @@ if(isset($_GET['no_rawat'])) {
                                       <div class="form-group">
                                           <select class="form-control" name="masdig">
                                           <?php $berkas = query("SELECT * FROM master_berkas_digital");
-                                          foreach($berkas as $berkas1):?>
+                                          foreach ($berkas as $berkas1):?>
                                             <option value="<?php echo $berkas1['kode'];?>"><?php echo $berkas1['nama'];?></option>
                                           <?php endforeach; ?>
                                           </select>
@@ -896,27 +880,26 @@ if(isset($_GET['no_rawat'])) {
                               </div>
                           <?php } ?>
                           <?php
-                          if($action == "radiologi"){
-                            if (isset($_POST['ok_radiologi'])) {
-                              $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
-                              $date = $periksa_radiologi['tgl_periksa'];
-                              $time = $periksa_radiologi['jam'];
-                              if($_FILES['file']['name']!='') {
-                              $tmp_name = $_FILES["file"]["tmp_name"];
-                              $namefile = $_FILES["file"]["name"];
-                              $explode = explode(".", $namefile);
-                              $ext = end($explode);
-                              $image_name = "berkasradiologi-".time().".".$ext;
-                              move_uploaded_file($tmp_name,"../radiologi/pages/upload/".$image_name);
-                              $lokasi_berkas = 'pages/upload/'.$image_name;
-                              $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
-                                if($insert_berkas) {
-                                set_message('Berkas digital radiologi telah ditersimpan.');
-                                    redirect("./?module=RawatInap&page=index&action=radiologi&no_rawat=$no_rawat");
-                                }
-                              }
-                            }
-                          ?>
+                          if ($action == "radiologi") {
+                              if (isset($_POST['ok_radiologi'])) {
+                                  $periksa_radiologi = fetch_assoc(query("SELECT tgl_periksa, jam FROM periksa_radiologi WHERE no_rawat = '{$no_rawat}'"));
+                                  $date = $periksa_radiologi['tgl_periksa'];
+                                  $time = $periksa_radiologi['jam'];
+                                  if ($_FILES['file']['name']!='') {
+                                      $tmp_name = $_FILES["file"]["tmp_name"];
+                                      $namefile = $_FILES["file"]["name"];
+                                      $explode = explode(".", $namefile);
+                                      $ext = end($explode);
+                                      $image_name = "berkasradiologi-".time().".".$ext;
+                                      move_uploaded_file($tmp_name, "../radiologi/pages/upload/".$image_name);
+                                      $lokasi_berkas = 'pages/upload/'.$image_name;
+                                      $insert_berkas = query("INSERT INTO gambar_radiologi VALUES('$no_rawat', '$date', '$time', '$lokasi_berkas')");
+                                      if ($insert_berkas) {
+                                          set_message('Berkas digital radiologi telah ditersimpan.');
+                                          redirect("./?module=RawatInap&page=index&action=radiologi&no_rawat=$no_rawat");
+                                      }
+                                  }
+                              } ?>
                               <div class="row">
                               <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                             <div class="body">
@@ -934,14 +917,13 @@ if(isset($_GET['no_rawat'])) {
                                             <div id="animated-thumbnails" class="list-unstyled row clearfix">
                                             <?php
                                             $sql_rad = query("select * from gambar_radiologi where no_rawat= '{$_GET['no_rawat']}'");
-                                            $no=1;
-                                            while ($row_rad = fetch_array($sql_rad)) {
-                                                echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
-                                                echo '<a href="'.URLSIMRS.'/radiologi/'.$row_rad[3].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
-                                                echo '</div>';
-                                                $no++;
-                                            }
-                                            ?>
+                              $no=1;
+                              while ($row_rad = fetch_array($sql_rad)) {
+                                  echo '<div class="col-lg-3 col-md-6 col-sm-12 col-xs-12">';
+                                  echo '<a href="'.URLSIMRS.'/radiologi/'.$row_rad[3].'" data-sub-html=""><img class="img-responsive thumbnail"  src="'.URLSIMRS.'/radiologi/'.$row_rad[3].'"></a>';
+                                  echo '</div>';
+                                  $no++;
+                              } ?>
 
                                           </div>
                             <hr>
@@ -959,19 +941,20 @@ if(isset($_GET['no_rawat'])) {
                                 </div>
                               </div>
                             </div>
-                          <?php } ?>
-                          <?php if($action == "status_pulang") { ?>
-                            <?php if(isset($_POST['simpan_stts_pulang'])){
-
-                                  if($_POST['stts_pulang'] == "Membaik"){
-                                    $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' , jam_keluar = '".$time."' , diagnosa_akhir = '".$_POST['dx']."' , stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
-                                    if($update){
+                          <?php
+                          } ?>
+                          <?php if ($action == "status_pulang") { ?>
+                            <?php if (isset($_POST['simpan_stts_pulang'])) {
+                              if ($_POST['stts_pulang'] == "Membaik") {
+                                  $update = query("UPDATE kamar_inap SET tgl_keluar = '".$_POST['tglplg']."' , jam_keluar = '".$time."' , diagnosa_akhir = '".$_POST['dx']."' , stts_pulang = '".$_POST['stts_pulang']."' WHERE no_rawat = '".$_POST['no_rawat']."'");
+                                  if ($update) {
                                       $update1 = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar = '".$_POST['bed']."'");
                                       redirect('./?module=RawatInap&page=index');
-                                    }
-                                  }else{echo "<script>alert('Pilih Membaik untuk Memulangkan')</script>";}
-
-                                }?>
+                                  }
+                              } else {
+                                  echo "<script>alert('Pilih Membaik untuk Memulangkan')</script>";
+                              }
+                          }?>
                                 <form action="" method="POST">
                                   <div class="modal-body">
                                     <div class="form-group">
@@ -995,7 +978,7 @@ if(isset($_GET['no_rawat'])) {
                                         $result = query("SELECT COLUMN_TYPE FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'kamar_inap' AND COLUMN_NAME = 'stts_pulang'");
                                         $row = fetch_array($result);
                                         $enumList = explode(",", str_replace("'", "", substr($row['COLUMN_TYPE'], 5, (strlen($row['COLUMN_TYPE'])-6))));
-                                        foreach($enumList as $value) {
+                                        foreach ($enumList as $value) {
                                             echo "<option value='$value'>$value</option>";
                                         }
                                         ?>
@@ -1009,70 +992,64 @@ if(isset($_GET['no_rawat'])) {
                                   </div>
                              	  </form>
                           <?php } ?>
-                          <?php if($action == "pindah") {
+                          <?php if ($action == "pindah") {
+                                            if ($_POST['stts_pindah'] == "2") {
+                                                $no_rawat	 = $_POST['no_rawat'];
+                                                $kd_kamar 	 = $_POST['kamar'];
+                                                $kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
 
-                            if ($_POST['stts_pindah'] == "2"){
-                          			$no_rawat	 = $_POST['no_rawat'];
-                          			$kd_kamar 	 = $_POST['kamar'];
-                          			$kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
+                                                $sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
+                                                $query		 =query($sql_kamar);
+                                                $data		 =fetch_assoc($query);
 
-                          			$sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
-                          			$query		 =query($sql_kamar);
-                          			$data		 =fetch_assoc($query);
+                                                $tarif_kamar = $data['trf_kamar'];
+                                                $tgl_masuk 	 = $_POST['tgl_masuk'];
+                                                $jam		 = $_POST['jam_masuk'];
 
-                          			$tarif_kamar = $data['trf_kamar'];
-                          			$tgl_masuk 	 = $_POST['tgl_masuk'];
-                          			$jam		 = $_POST['jam_masuk'];
+                                                $update = query("UPDATE kamar_inap SET kd_kamar = '".$_POST['kamar']."', trf_kamar ='".$data['trf_kamar']."', tgl_masuk ='".$_POST['tgl_masuk']."', lama = '1', ttl_biaya = '".$data['trf_kamar']."' WHERE no_rawat = '".$_POST['no_rawat']."' AND stts_pulang ='-' ");
+                                                $update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
+                                                $update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
+                                            } elseif ($_POST['stts_pindah'] == "3") {
+                                                $no_rawat	 = $_POST['no_rawat'];
+                                                $kd_kamar 	 = $_POST['kamar'];
+                                                $kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
 
-                          			$update = query("UPDATE kamar_inap SET kd_kamar = '".$_POST['kamar']."', trf_kamar ='".$data['trf_kamar']."', tgl_masuk ='".$_POST['tgl_masuk']."', lama = '1', ttl_biaya = '".$data['trf_kamar']."' WHERE no_rawat = '".$_POST['no_rawat']."' AND stts_pulang ='-' ");
-                          			$update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
-                          			$update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
+                                                $sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
+                                                $query		 =query($sql_kamar);
+                                                $data		 =fetch_assoc($query);
 
-                          	} else if ($_POST['stts_pindah'] == "3") {
-                          			$no_rawat	 = $_POST['no_rawat'];
-                          			$kd_kamar 	 = $_POST['kamar'];
-                          			$kd_kmr_sbl	 = $_POST['kd_kamar_sebelumnya'];
+                                                $tarif_kamar = $data['trf_kamar'];
 
-                          			$sql_kamar   = "SELECT trf_kamar FROM kamar WHERE kd_kamar ='{$_POST['kamar']}'";
-                          			$query		 =query($sql_kamar);
-                          			$data		 =fetch_assoc($query);
+                                                $tgl_masuk 	 = $_POST['tgl_masuk'];
+                                                $jam		 = $_POST['jam_masuk'];
 
-                          			$tarif_kamar = $data['trf_kamar'];
+                                                $tambah = query("INSERT INTO kamar_inap VALUES ('$no_rawat','$kd_kamar','$tarif_kamar','{$_POST['diagnosa_awal']}','-','$tgl_masuk','$jam','0000-00-00','00:00:00','1','$tarif_kamar','-')");
+                                                $update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
 
-                          			$tgl_masuk 	 = $_POST['tgl_masuk'];
-                          			$jam		 = $_POST['jam_masuk'];
+                                                $tgl_masuk2       = new DateTime($tgl_masuk);
 
-                          			$tambah = query("INSERT INTO kamar_inap VALUES ('$no_rawat','$kd_kamar','$tarif_kamar','{$_POST['diagnosa_awal']}','-','$tgl_masuk','$jam','0000-00-00','00:00:00','1','$tarif_kamar','-')");
-                          			$update_status_kamarbr = query("UPDATE kamar SET status = 'ISI' WHERE kd_kamar='$kd_kamar'");
+                                                $sql_kamar_2     = "SELECT tgl_masuk,trf_kamar FROM kamar_inap WHERE kd_kamar ='{$_POST['kd_kamar_sebelumnya']}' AND no_rawat ='{$_POST['no_rawat']}'";
+                                                $query2		     =query($sql_kamar_2);
+                                                $data		     =fetch_assoc($query2);
+                                                $data_tgl 		 = $data['tgl_masuk'];
+                                                $tgl_keluar			= new DateTime($data_tgl);
+                                                $tgl_keluar_post 	= $tgl_masuk2->diff($tgl_keluar);
+                                                $ttl_biaya 			= $tgl_keluar_post->days * $tarif_kamar;
+                                                $tgl_keluar_bujur 	= $tgl_keluar->format('Y-m-d');
 
-                          			$tgl_masuk2       = new DateTime($tgl_masuk);
-
-                          			$sql_kamar_2     = "SELECT tgl_masuk,trf_kamar FROM kamar_inap WHERE kd_kamar ='{$_POST['kd_kamar_sebelumnya']}' AND no_rawat ='{$_POST['no_rawat']}'";
-                          			$query2		     =query($sql_kamar_2);
-                          			$data		     =fetch_assoc($query2);
-                          			$data_tgl 		 = $data['tgl_masuk'];
-                          			$tgl_keluar			= new DateTime($data_tgl);
-                          			$tgl_keluar_post 	= $tgl_masuk2->diff($tgl_keluar);
-                          			$ttl_biaya 			= $tgl_keluar_post->days * $tarif_kamar;
-                          			$tgl_keluar_bujur 	= $tgl_keluar->format('Y-m-d');
-
-                          			$update_kamar_sebelumnya = query("UPDATE kamar_inap SET stts_pulang = 'Pindah Kamar', tgl_keluar = '$tgl_masuk',jam_keluar='$jam',lama = '".$tgl_keluar_post->d."', ttl_biaya = '$ttl_biaya' WHERE no_rawat = '".$_POST['no_rawat']."' AND kd_kamar='$kd_kmr_sbl' ");
-                          			$update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
-
-                          		} else {
-
-                              }
-
-                            ?>
+                                                $update_kamar_sebelumnya = query("UPDATE kamar_inap SET stts_pulang = 'Pindah Kamar', tgl_keluar = '$tgl_masuk',jam_keluar='$jam',lama = '".$tgl_keluar_post->d."', ttl_biaya = '$ttl_biaya' WHERE no_rawat = '".$_POST['no_rawat']."' AND kd_kamar='$kd_kmr_sbl' ");
+                                                $update_status_kamarsbl = query("UPDATE kamar SET status = 'KOSONG' WHERE kd_kamar='$kd_kmr_sbl'");
+                                            } else {
+                                            } ?>
 
                             <div class="row">
              							   <div class="body">
                                       		<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                                         		<div class="card">
              								  <div class="card-body" style="padding-top:15px;padding-left:15px;">
-             								   <h5><?php echo $_GET['nm_pasien'];?></h5>
+             								   <h5><?php echo $_GET['nm_pasien']; ?></h5>
              								   <?php
-             								     $sql ="SELECT
+                                                  $sql ="SELECT
              									a.no_rawat,
              									b.no_rkm_medis,
              									c.nm_pasien,
@@ -1100,18 +1077,21 @@ if(isset($_GET['no_rawat'])) {
              									a.no_rawat ='$nomor_rawat'
              									";
 
-             									$query=query($sql);
-             								    $no=1;
-             									while($data=$query->fetch_assoc()){  ?>
+                                            $query=query($sql);
+                                            $no=1;
+                                            while ($data=$query->fetch_assoc()) {  ?>
              									  <?php echo $no++;?>.
              									  <?php echo $data['nm_bangsal'];?>
              										&nbsp;&nbsp;/&nbsp;&nbsp;<?php echo $data['kd_kamar'];?>
              										&nbsp;&nbsp;/&nbsp;&nbsp;<?php echo $data['tgl_masuk'];?>
-             										&nbsp;&nbsp;/&nbsp;&nbsp;<?php if ($data['stts_pulang'] == "-"){echo "Belum Pulang";} else {echo $data['stts_pulang'];};?>
+             										&nbsp;&nbsp;/&nbsp;&nbsp;<?php if ($data['stts_pulang'] == "-") {
+                                                echo "Belum Pulang";
+                                            } else {
+                                                echo $data['stts_pulang'];
+                                            };?>
              								        <hr>
              								      <?php }
-             								      $no_rkm_medis=$data['no_rkm_medis'];
-             								      ?>
+                                            $no_rkm_medis=$data['no_rkm_medis']; ?>
              								  </div>
              								  </div>
              								</div>
@@ -1119,7 +1099,7 @@ if(isset($_GET['no_rawat'])) {
              									<div class="col-sm-3">
              										<div class="form-group">
              											<div class="form-line">
-             												<input type="text" class="form-control" name="no_rawat" value="<?php echo $_GET['no_rawat'];?>">
+             												<input type="text" class="form-control" name="no_rawat" value="<?php echo $_GET['no_rawat']; ?>">
              												<label class="form-label">Nomor Rawat</label>
              											</div>
              										</div>
@@ -1127,7 +1107,7 @@ if(isset($_GET['no_rawat'])) {
              									<div class="col-sm-2">
              										<div class="form-group">
              											<div class="form-line">
-             												<input type="text" class="form-control" name="no_rkm_medis" value="<?php echo $_GET['no_rkm_medis'];?>">
+             												<input type="text" class="form-control" name="no_rkm_medis" value="<?php echo $_GET['no_rkm_medis']; ?>">
              												<label class="form-label">Nomor Rekam Medik</label>
              											</div>
              										</div>
@@ -1135,7 +1115,7 @@ if(isset($_GET['no_rawat'])) {
              									<div class="col-sm-2">
              										<div class="form-group">
              											<div class="form-line">
-             												<input type="text" class="form-control" name="kd_kamar_sebelumnya" value="<?php echo $_GET['kd_kmr_sblmny'];?>">
+             												<input type="text" class="form-control" name="kd_kamar_sebelumnya" value="<?php echo $_GET['kd_kmr_sblmny']; ?>">
              												<label class="form-label">Kd Kamar Sebelumnya</label>
              											</div>
              										</div>
@@ -1143,7 +1123,7 @@ if(isset($_GET['no_rawat'])) {
              									<div class="col-sm-5">
              										<div class="form-group">
              											<div class="form-line">
-             												<input type="text" class="form-control" name="nm_pasien" value="<?php echo $_GET['nm_pasien'];?>">
+             												<input type="text" class="form-control" name="nm_pasien" value="<?php echo $_GET['nm_pasien']; ?>">
              												<label class="form-label">Nama Pasien</label>
              											</div>
              										</div>
@@ -1152,7 +1132,7 @@ if(isset($_GET['no_rawat'])) {
              										<div class="form-group">
              											<div class="form-line">
              												<label class="form-label">Tanggal Masuk</label>
-             												<input type="text" name="tgl_masuk" class="datepicker form-control" value="<?php echo date('Y-m-d');?>">
+             												<input type="text" name="tgl_masuk" class="datepicker form-control" value="<?php echo date('Y-m-d'); ?>">
              											</div>
              										</div>
              									</div>
@@ -1160,7 +1140,7 @@ if(isset($_GET['no_rawat'])) {
              										<div class="form-group">
              											<div class="form-line">
              												<label class="form-label">Jam Masuk</label>
-             												<input type="text" name="jam_masuk" class="form-control" value="<?php echo date('H:m:s');?>">
+             												<input type="text" name="jam_masuk" class="form-control" value="<?php echo date('H:m:s'); ?>">
              											</div>
              										</div>
              									</div>
@@ -1169,10 +1149,10 @@ if(isset($_GET['no_rawat'])) {
              											<div class="form-line">
              												<label class="form-label">Diagnosa Awal</label>
              												<input type="text" name="diagnosa_awal" class="form-control" value="<?php
-             														$sql_kamar   = "SELECT diagnosa_awal FROM kamar_inap WHERE no_rawat ='{$_GET['no_rawat']}'";
-             														$query		 =query($sql_kamar);
-             														$data		 =fetch_assoc($query);
-             														echo $data['diagnosa_awal'];?> ">
+                                                                     $sql_kamar   = "SELECT diagnosa_awal FROM kamar_inap WHERE no_rawat ='{$_GET['no_rawat']}'";
+                                            $query		 =query($sql_kamar);
+                                            $data		 =fetch_assoc($query);
+                                            echo $data['diagnosa_awal']; ?> ">
              											</div>
              										</div>
              									</div>
@@ -1195,8 +1175,9 @@ if(isset($_GET['no_rawat'])) {
                                              </form>
              						        </div>
              						  </div>
-                          <?php } ?>
-                          <?php if($action == "surveihais") { ?>
+                          <?php
+                                        } ?>
+                          <?php if ($action == "surveihais") { ?>
                               <div class="body">
                                   <dl class="dl-horizontal">
                                       <dt>Nama Lengkap</dt>
@@ -1218,7 +1199,9 @@ if(isset($_GET['no_rawat'])) {
                                   </div>
                                   <div class="tab-content">
                                       <div role="tabpanel" class="tab-pane fade in active" id="5">
+                                        <div>
                                           <?php include_once('includes/survei.php');?>
+                                        </div>
                                       </div>
                                       <div role="tabpanel" class="tab-pane fade" id="6">
                                           <?php include_once('includes/toperasi.php');?>
@@ -1234,40 +1217,40 @@ if(isset($_GET['no_rawat'])) {
                           <?php } ?>
                         <?php
                         if ($action == "delete_pemeriksaan") {
-                          $hapus = "DELETE FROM pemeriksaan_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}'";
-                          $hasil = query($hapus);
-                          if (($hasil)) {
-                            redirect("./?module=RawatInap&action=tindakan&no_rawat={$no_rawat}");
-                          }
+                            $hapus = "DELETE FROM pemeriksaan_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}'";
+                            $hasil = query($hapus);
+                            if (($hasil)) {
+                                redirect("./?module=RawatInap&action=tindakan&no_rawat={$no_rawat}");
+                            }
                         }
 
                         if ($action == "delete_tindakan") {
-                          $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
-                          $hasil = query($hapus);
-                          if (($hasil)) {
-                            redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                          }
+                            $hapus = "DELETE FROM rawat_inap_pr WHERE kd_jenis_prw='{$_REQUEST['kd_jenis_prw']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                            $hasil = query($hapus);
+                            if (($hasil)) {
+                                redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                            }
                         }
                           if ($action == "delete_hais") {
-                            $hapus = "DELETE FROM data_HAIs WHERE tanggal='{$_REQUEST['tanggal']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
-                            $hasil = query($hapus);
-                            if (($hasil)) {
-                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                            }
+                              $hapus = "DELETE FROM data_HAIs WHERE tanggal='{$_REQUEST['tanggal']}' AND no_rawat='{$_REQUEST['no_rawat']}'";
+                              $hasil = query($hapus);
+                              if (($hasil)) {
+                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                              }
                           }
                           if ($action == "delete_skdp") {
-                            $hapus = "DELETE FROM booking_registrasi WHERE no_reg='{$_REQUEST['no_reg']}' AND no_rkm_medis='{$_REQUEST['no_rkm_medis']}'";
-                            $hasil = query($hapus);
-                            if (($hasil)) {
-                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                            }
+                              $hapus = "DELETE FROM booking_registrasi WHERE no_reg='{$_REQUEST['no_reg']}' AND no_rkm_medis='{$_REQUEST['no_rkm_medis']}'";
+                              $hasil = query($hapus);
+                              if (($hasil)) {
+                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                              }
                           }
                           if ($action == "delete_dpjp") {
-                            $hapus = "DELETE FROM dpjp_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_dokter='{$_REQUEST['kd_dokter']}'";
-                            $hasil = query($hapus);
-                            if ($hasil) {
-                              redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
-                            }
+                              $hapus = "DELETE FROM dpjp_ranap WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_dokter='{$_REQUEST['kd_dokter']}'";
+                              $hasil = query($hapus);
+                              if ($hasil) {
+                                  redirect("./?module=RawatInap&page=index&action=tindakan&no_rawat={$no_rawat}");
+                              }
                           }
                         ?>
 </div>

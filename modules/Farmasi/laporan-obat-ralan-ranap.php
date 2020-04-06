@@ -6,10 +6,13 @@
                     <div class="card">
                         <div class="header">
                             <h2>
-                                LAPORAN OBAT RALAN - RANAP <?php if(isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) { echo "Periode ".date("d-m-Y",strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y",strtotime($_POST['tgl_akhir'])); } ?>
+                                LAPORAN OBAT RALAN - RANAP <?php if (isset($_POST['tgl_awal']) && isset($_POST['tgl_akhir'])) {
+    echo "Periode ".date("d-m-Y", strtotime($_POST['tgl_awal']))." s/d ".date("d-m-Y", strtotime($_POST['tgl_akhir']));
+} ?>
                             </h2>
                         </div>
                         <div class="body">
+                          <div id="buttons" class="align-center m-l-10 m-b-15 export-hidden"></div>
                             <table id="datatable" class="table table-bordered table-striped table-hover display nowrap js-exportable" width="100%">
                                 <thead>
                                     <tr>
@@ -24,11 +27,11 @@
                                 <?php
                                 $tgl_awal = isset($_POST['tgl_awal'])?$_POST['tgl_awal']:null;
                                 $tgl_akhir = isset($_POST['tgl_akhir'])?$_POST['tgl_akhir']:null;
-                                if($tgl_awal && $tgl_akhir) {
-                                  $sql = query("SELECT nama.nama_brng, nama.kode_brng, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND status='Ralan' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ralan, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE  kode_brng = nama.kode_brng AND status='Ranap' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ranap, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS total FROM (SELECT DISTINCT nama_brng, kode_brng FROM databarang WHERE kode_brng IN(SELECT kode_brng FROM detail_pemberian_obat)) AS nama ORDER BY nama.nama_brng ASC");
-                                  $no = 1;
-                                  while($row = fetch_array($sql)) {
-                                ?>
+                                if ($tgl_awal && $tgl_akhir) {
+                                    $sql = query("SELECT nama.nama_brng, nama.kode_brng, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND status='Ralan' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ralan, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE  kode_brng = nama.kode_brng AND status='Ranap' AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS ranap, (SELECT COUNT(jml) FROM detail_pemberian_obat WHERE kode_brng = nama.kode_brng AND tgl_perawatan BETWEEN '$tgl_awal' AND '$tgl_akhir') AS total FROM (SELECT DISTINCT nama_brng, kode_brng FROM databarang WHERE kode_brng IN(SELECT kode_brng FROM detail_pemberian_obat)) AS nama ORDER BY nama.nama_brng ASC");
+                                    $no = 1;
+                                    while ($row = fetch_array($sql)) {
+                                        ?>
                                     <tr>
                                         <th scope="row"><?php echo $no; ?></th>
                                         <td><?php echo $row['0']; ?></td>
@@ -38,7 +41,7 @@
                                     </tr>
                                 <?php
                                   $no++;
-                                  }
+                                    }
                                 }
                                 ?>
                                 </tbody>

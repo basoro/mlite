@@ -1,27 +1,31 @@
 <?php
-if(!defined('IS_IN_MODULE')) { die("NO DIRECT FILE ACCESS!"); }
+if (!defined('IS_IN_MODULE')) {
+    die("NO DIRECT FILE ACCESS!");
+}
 ?>
 
 <?php
-class APM {
-    function index() {
-      if(num_rows(query("SHOW TABLES LIKE 'antrian_loket'")) !== 1) {
-        echo '<div class="alert bg-pink alert-dismissible text-center">';
-        echo '<p class="lead">Belum terinstall Database Antrian Loket & CS</p>';
-        echo '<a href="'.URL.'/?module=APM&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
-        echo '</div>';
-      } else if(num_rows(query("SHOW TABLES LIKE 'antrics'")) !== 1) {
-        echo '<div class="alert bg-pink alert-dismissible text-center">';
-        echo '<p class="lead">Belum terinstall Database Antrian CS</p>';
-        echo '<a href="'.URL.'/?module=APM&page=install_antrics" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
-        echo '</div>';
-      } else if(num_rows(query("SHOW TABLES LIKE 'antriprioritas'")) !== 1) {
-        echo '<div class="alert bg-pink alert-dismissible text-center">';
-        echo '<p class="lead">Belum terinstall Database Antrian Prioritas</p>';
-        echo '<a href="'.URL.'/?module=APM&page=install_antriprioritas" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
-        echo '</div>';
-      } else {
-?>
+class APM
+{
+    public function index()
+    {
+        if (num_rows(query("SHOW TABLES LIKE 'antrian_loket'")) !== 1) {
+            echo '<div class="alert bg-pink alert-dismissible text-center">';
+            echo '<p class="lead">Belum terinstall Database Antrian Loket & CS</p>';
+            echo '<a href="'.URL.'/?module=APM&page=install" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+            echo '</div>';
+        } elseif (num_rows(query("SHOW TABLES LIKE 'antrics'")) !== 1) {
+            echo '<div class="alert bg-pink alert-dismissible text-center">';
+            echo '<p class="lead">Belum terinstall Database Antrian CS</p>';
+            echo '<a href="'.URL.'/?module=APM&page=install_antrics" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+            echo '</div>';
+        } elseif (num_rows(query("SHOW TABLES LIKE 'antriprioritas'")) !== 1) {
+            echo '<div class="alert bg-pink alert-dismissible text-center">';
+            echo '<p class="lead">Belum terinstall Database Antrian Prioritas</p>';
+            echo '<a href="'.URL.'/?module=APM&page=install_antriprioritas" class="btn btn-lg btn-primary m-t-20" style="color:#fff;">Install Sekarang</a>';
+            echo '</div>';
+        } else {
+            ?>
 <?php display_message(); ?>
 <div class="card">
   <div class="header">
@@ -40,6 +44,7 @@ class APM {
             <img src="<?php echo URL; ?>/modules/APM/images/sep.png" class="img-responsive">
           </div>
           <a href="<?php echo URL; ?>/modules/APM/inc/ceksep.php" class="btn btn-lg btn-danger  " target="_blank">Cetak SEP Mandiri</a>
+          <a href="<?php echo URL; ?>/modules/APM/inc/mapping.php" class="btn btn-lg btn-danger  " target="_blank">Mapping Dokter</a>
         </div>
       </div>
   </div>
@@ -70,11 +75,12 @@ class APM {
 </div>
 
 <?php
-      }
+        }
     }
-    function install() {
-      global $connection;
-      $sql_userwall = "CREATE TABLE `antrian_loket` (
+    public function install()
+    {
+        global $connection;
+        $sql_userwall = "CREATE TABLE `antrian_loket` (
         `kd` int(50) NOT NULL,
         `type` varchar(50) NOT NULL,
         `noantrian` varchar(50) NOT NULL,
@@ -99,16 +105,17 @@ class APM {
         ADD KEY `loket` (`loket`),
         ADD KEY `antrian` (`antrian`);";
 
-      if(mysqli_multi_query($connection,$sql_userwall)){
-          set_message ('Table created successfully.');
-          redirect ('./?module=APM&page=index');
-      } else{
-          echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
-      }
+        if (mysqli_multi_query($connection, $sql_userwall)) {
+            set_message('Table created successfully.');
+            redirect('./?module=APM&page=index');
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
+        }
     }
-    function install_antrics() {
-      global $connection;
-      $sql_userwall = "CREATE TABLE `antrics` (
+    public function install_antrics()
+    {
+        global $connection;
+        $sql_userwall = "CREATE TABLE `antrics` (
         `loket` int(11) NOT NULL,
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -116,16 +123,17 @@ class APM {
         ADD KEY `loket` (`loket`),
         ADD KEY `antrian` (`antrian`);";
 
-      if(mysqli_multi_query($connection,$sql_userwall)){
-          set_message ('Table created successfully.');
-          redirect ('./?module=APM&page=index');
-      } else{
-          echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
-      }
+        if (mysqli_multi_query($connection, $sql_userwall)) {
+            set_message('Table created successfully.');
+            redirect('./?module=APM&page=index');
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
+        }
     }
-    function install_antriprioritas() {
-      global $connection;
-      $sql_userwall = "CREATE TABLE `antriprioritas` (
+    public function install_antriprioritas()
+    {
+        global $connection;
+        $sql_userwall = "CREATE TABLE `antriprioritas` (
         `loket` int(11) NOT NULL,
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
@@ -133,12 +141,12 @@ class APM {
         ADD KEY `loket` (`loket`),
         ADD KEY `antrian` (`antrian`);";
 
-      if(mysqli_multi_query($connection,$sql_userwall)){
-          set_message ('Table created successfully.');
-          redirect ('./?module=APM&page=index');
-      } else{
-          echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
-      }
+        if (mysqli_multi_query($connection, $sql_userwall)) {
+            set_message('Table created successfully.');
+            redirect('./?module=APM&page=index');
+        } else {
+            echo "ERROR: Could not able to execute $sql. " . mysqli_error($con);
+        }
     }
 }
 ?>

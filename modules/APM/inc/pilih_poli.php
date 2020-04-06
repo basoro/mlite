@@ -83,34 +83,50 @@ text-align: center;
             <div class="card-body">
               <div class="form-signin">
                 <?php
-                      date_default_timezone_set('UTC');
-                      $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
-                      $signature = hash_hmac('sha256', ConsID."&".$tStamp, SecretKey, true);
-                      $encodedSignature = base64_encode($signature);
-                      $ch = curl_init();
-                      $headers = array(
-                      'X-cons-id: '.ConsID.'',
-                      'X-timestamp: '.$tStamp.'' ,
-                      'X-signature: '.$encodedSignature.'',
-                      'Content-Type:application/json',
-                      );
-                      curl_setopt($ch, CURLOPT_URL, BpjsApiUrl."Rujukan/List/Peserta/".$_GET['no_peserta']);
-                      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-                      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-                      curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-                      curl_setopt($ch, CURLOPT_HTTPGET, 1);
-                      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                      $content = curl_exec($ch);
-                      $err = curl_error($ch);
-                      curl_close($ch);
-                      $result = json_decode($content, true);
-                	?>
-				<div>
-					  <?php
-                      foreach($result['response']['rujukan'] as $kode => $val): ?>
-                      <a href="bikinsep.php?rujukan=<?php echo $val['noKunjungan'];?>&no_mr=<?php echo $_GET['no_rkm_medis'];?>" class="btn btn-lg btn-dark btn-block shadow text-uppercase"><?php echo $val['poliRujukan']['nama']; ?></a><br>
-                      <?php endforeach;?>
-				</div><br>
+                                if (!empty($_GET['no_peserta'])) {
+                                    ini_set("default_socket_timeout", "05");
+                                    set_time_limit(5);
+                                    $f=fopen('BpjsApiUrl', "r");
+                                    $r=fread($f, 1000);
+                                    fclose($f);
+                                    if (strlen($r) > 1) {
+                                        date_default_timezone_set('UTC');
+                                        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+                                        $signature = hash_hmac('sha256', ConsID."&".$tStamp, SecretKey, true);
+                                        $encodedSignature = base64_encode($signature);
+                                        $ch = curl_init();
+                                        $headers = array(
+                                        'X-cons-id: '.ConsID.'',
+                                        'X-timestamp: '.$tStamp.'' ,
+                                        'X-signature: '.$encodedSignature.'',
+                                        'Content-Type:application/json',
+                                        );
+                                        curl_setopt($ch, CURLOPT_URL, BpjsApiUrl."Rujukan/List/Peserta/".$_GET['no_peserta']);
+                                        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+                                        curl_setopt($ch, CURLOPT_HTTPGET, 1);
+                                        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                        $content = curl_exec($ch);
+                                        $err = curl_error($ch);
+                                        curl_close($ch);
+                                        $result = json_decode($content, true);
+                                        if ($result['metaData']['code'] == "201") {
+                                            echo '<div class="alert alert-danger" role="alert">'.$result['metaData']['message'].'</div>';
+                                        } else {
+                                            ?>
+																			<div>
+																				<?php
+
+                                  foreach ($result['response']['rujukan'] as $kode => $val):
+                                  if ($date < $val['tglKunjungan'] + 87) {?>
+																		<a href="bikinsep.php?rujukan=<?php echo $val['noKunjungan'];?>&no_mr=<?php echo $_GET['no_rkm_medis'];?>" class="btn btn-lg btn-dark btn-block shadow text-uppercase">POLI <?php echo $val['poliRujukan']['nama']; ?></a><br>
+																	<?php }
+                                            endforeach;
+                                        }
+                                    }
+                                }?>
+															</div><br>
               </div>
             </div>
           </div>

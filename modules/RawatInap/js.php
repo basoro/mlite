@@ -104,9 +104,9 @@
           bStateSave: true,
           responsive: true,
           order: [[ 4, 'asc' ]]
-        } );      
-    });   
-    
+        } );
+    });
+
     $('.dpjp').select2({
       placeholder: 'Pilih Dokter',
       ajax: {
@@ -127,7 +127,7 @@
     $('.kd_poli').select2({
       placeholder: 'Pilih poli',
       ajax: {
-        url: '<?php echo URL; ?>/modules/RawatJalan/includes/select-poli.php',
+        url: '<?php echo URL; ?>/modules/RawatInap/includes/select-poli.php',
         dataType: 'json',
         delay: 250,
         processResults: function (data) {
@@ -140,6 +140,10 @@
       templateResult: formatData,
       minimumInputLength: 3
     });
+
+    setInterval(function() {
+      $('#antri').load("<?php echo URL; ?>/modules/RawatInap/includes/ambil.php").fadeIn('slow');
+    }, 1000);
 
     $(".tglprk").on("change", function(e) {
       var kode = $("#tglprk").val();
@@ -154,4 +158,39 @@
         }
       })
     });
+
+    $(document).ready(function() {
+      $(".simpan").click(function(){
+        var data = $(".data").serialize();
+        $.ajax({
+          type: 'POST',
+          data: data,
+          url: '<?php echo URL; ?>/modules/RawatInap/includes/simpan-survei.php',
+          success: function(data) {
+            alert(data);
+          }
+        })
+      })
+    });
+    $("#mulai").datepicker({
+    minDate: 0,
+    maxDate: '+1Y+6M',
+    onSelect: function (dateStr) {
+        var min = $(this).datepicker('getDate'); // Get selected date
+        $("#akhir").datepicker('option', 'minDate', min || '0'); // Set other min, default to today
+    }
+    });
+
+      $("#akhir").datepicker({
+          minDate: '0',
+          maxDate: '+1Y+6M',
+          onSelect: function (dateStr) {
+              var max = $(this).datepicker('getDate'); // Get selected date
+              $('#datepicker').datepicker('option', 'maxDate', max || '+1Y+6M'); // Set other max, default to +18 months
+              var start = $("#mulai").datepicker("getDate");
+              var end = $("#akhir").datepicker("getDate");
+              var days = (end - start) / (1000 * 60 * 60 * 24);
+              $("#total").val(days);
+          }
+      });
 </script>

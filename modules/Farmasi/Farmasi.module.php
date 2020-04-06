@@ -62,5 +62,10 @@ class Farmasi
         global $dataSettings, $date;
         include('modules/Farmasi/laporan-stok-opname.php');
     }
+    public function lappelfar()
+    {
+        global $dataSettings, $date;
+        include('modules/Farmasi/lappelfar.php');
+    }
 }
 ?>

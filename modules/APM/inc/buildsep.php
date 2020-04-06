@@ -48,32 +48,40 @@ $data->request->t_sep = $sup;
 
 $sep = json_encode($data);
 
-date_default_timezone_set('UTC');
-$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
-$signature = hash_hmac('sha256', ConsID."&".$tStamp, SecretKey, true);
-$encodedSignature = base64_encode($signature);
-$ch = curl_init();
-$headers = array(
+
+    ini_set("default_socket_timeout", "05");
+    set_time_limit(5);
+    $f=fopen(BpjsApiUrl, "r");
+    $r=fread($f, 1000);
+    fclose($f);
+    if (strlen($r) > 1) {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+        $signature = hash_hmac('sha256', ConsID."&".$tStamp, SecretKey, true);
+        $encodedSignature = base64_encode($signature);
+        $ch = curl_init();
+        $headers = array(
   'X-cons-id: '.ConsID.'',
   'X-timestamp: '.$tStamp.'' ,
   'X-signature: '.$encodedSignature.'',
   'Content-Type:Application/x-www-form-urlencoded',
 );
-curl_setopt($ch, CURLOPT_URL, BpjsApiUrl."SEP/1.1/insert");
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-curl_setopt($ch, CURLOPT_TIMEOUT, 3);
-curl_setopt($ch, CURLOPT_POST, 1);
-curl_setopt($ch, CURLOPT_POSTFIELDS, $sep);
-curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-$content = curl_exec($ch);
-$err = curl_error($ch);
+        curl_setopt($ch, CURLOPT_URL, BpjsApiUrl."SEP/1.1/insert");
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $sep);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $content = curl_exec($ch);
+        $err = curl_error($ch);
 
-curl_close($ch);
-$result = json_decode($content,true);
-$meta = $result['metaData']['code'];
-$mets = $result['metaData']['message'];
-$sep = $result['response']['sep']['noSep'];
+        curl_close($ch);
+        $result = json_decode($content, true);
+        $meta = $result['metaData']['code'];
+        $mets = $result['metaData']['message'];
+        $sep = $result['response']['sep']['noSep'];
+    }
 
   /*echo "Kode : ".$meta."</br>";
   echo "Pesan : ".$mets."</br>";
@@ -204,47 +212,45 @@ $sep = $result['response']['sep']['noSep'];
     <div class="container">
       <?php
     if ($meta == "200") {
-      if ($_POST['suplesi'] == '0') {
-        $supl = '0. Tidak';
-      }else {
-        $supl = '1. Ya';
-      };
-      if ($_POST['eks'] == '0') {
-        $eks = '0. Tidak';
-      }else {
-        $eks = '1. Ya';
-      };
-      if ($_POST['cob'] == '0') {
-        $cob = '0. Tidak';
-      }else {
-        $cob = '1. Ya';
-      };
-      if ($_POST['ktrk'] == '0') {
-        $ktrk = '0. Tidak';
-      }else {
-        $ktrk = '1. Ya';
-      };
-      if ($_POST['fsks'] == '1') {
-        $fskes = '1. Faskes 1';
-      }else {
-        $fskes = '2. Faskes 2(RS)';
-      };
-      $insert = query("INSERT INTO bridging_sep VALUES (
+        if ($_POST['suplesi'] == '0') {
+            $supl = '0. Tidak';
+        } else {
+            $supl = '1. Ya';
+        };
+        if ($_POST['eks'] == '0') {
+            $eks = '0. Tidak';
+        } else {
+            $eks = '1. Ya';
+        };
+        if ($_POST['cob'] == '0') {
+            $cob = '0. Tidak';
+        } else {
+            $cob = '1. Ya';
+        };
+        if ($_POST['ktrk'] == '0') {
+            $ktrk = '0. Tidak';
+        } else {
+            $ktrk = '1. Ya';
+        };
+        if ($_POST['fsks'] == '1') {
+            $fskes = '1. Faskes 1';
+        } else {
+            $fskes = '2. Faskes 2(RS)';
+        };
+        $insert = query("INSERT INTO bridging_sep VALUES (
       '{$sep}','{$_POST['no_rawat']}','{$_POST['tglsep']}','{$_POST['tglrjk']}','{$_POST['no_rujuk']}','{$_POST['ppruj']}','{$_POST['nmruj']}',
       '{$_POST['ppk']}','{$_POST['nmrs']}','{$_POST['kdpl']}','{$_POST['cttn']}','{$_POST['kddx']}','{$_POST['nmdx']}','{$_POST['kdpoli']}',
       '{$_POST['nmpoli']}','{$_POST['kkls']}','{$_POST['lkln']}','loket1','{$_POST['norm']}','{$_POST['nmps']}','{$_POST['tgllhr']}',
       '{$_POST['psrt']}','{$_POST['jk']}','{$_POST['nops']}','{$_POST['tglplg']}','{$fskes}','{$eks}','{$cob}','','{$_POST['notlp']}',
       '{$ktrk}','{$_POST['tglkkl']}','{$_POST['ktrg']}','{$supl}','{$_POST['sepsup']}','','','','','','','{$_POST['skdp']}','{$_POST['dpjp']}','{$_POST['nmdpjp']}')");
-        echo "<h3>Kode : ".$meta."</h3></br>";
-        echo "<h3>Pesan : ".$mets."</h3></br>";
-        echo $_POST['dpjp'];
+        echo "<h3 class='alert alert-success' role='alert'>Kode : ".$meta."</h3></br>";
+        echo "<h3 class='alert alert-success' role='alert'>Pesan : ".$mets."</h3></br>";
         echo '<script>setTimeout(function() { window.location.href = "cetaksep.php?no_rawat='.$_POST['no_rawat'].'"; }, 1000);</script>';
-    }else {
-        echo "<h3>Kode : ".$meta."</h3></br>";
-        echo "<h3>Pesan : ".$mets."</h3></br>";
-        echo $_POST['dpjp'];
+    } else {
+        echo "<h3 class='alert alert-danger' role='alert'>Kode : ".$meta."</h3></br>";
+        echo "<h3 class='alert alert-danger' role='alert'>Pesan : ".$mets."</h3></br>";
         echo '<script>setTimeout(function() { window.location.href = "'.URL.'/modules/APM/inc/ceksep.php"; }, 10000);</script>';
-  };
+    };
 
   ?>
     </div>

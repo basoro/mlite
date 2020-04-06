@@ -93,5 +93,14 @@
             </a>
         </li>
         <?php } ?>
+        <?php if (FKTL == true) { ?>
+        <li class="<?php if ($params['module']=="Farmasi" && $params['page']=="lappelfar") {
+    echo "active";
+} ?>">
+            <a href="<?php echo URL; ?>/?module=Farmasi&page=lappelfar">
+                Laporan Pelayanan Kefarmasian
+            </a>
+        </li>
+        <?php } ?>
     </ul>
 </li>

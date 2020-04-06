@@ -19,6 +19,35 @@ include('../../../init.php');
   .col-md-3 { font-size: 20px;}
   .col-md-4 { font-size: 20px;}
   .col-md-8 { font-size: 20px;}
+  input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 30px;
+  width: 30px;
+  background-color: #eee;
+  border: solid black;
+  border-width: 1 1 1 1;
+}
+label {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 </style>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
@@ -45,8 +74,8 @@ include('../../../init.php');
                               </div>
                             </div>
                             <?php $sql = "SELECT * , DATE_ADD(tglrujukan , INTERVAL 90 DAY) as tgl_tempo FROM bridging_sep WHERE no_rawat = '{$_GET['no_rawat']}'";
-                            	$assoc = query($sql);
-                            	$cetak = mysqli_fetch_assoc($assoc);
+                                $assoc = query($sql);
+                                $cetak = mysqli_fetch_assoc($assoc);
                             ?>
                             <div class="row clearfix">
                               <div class="col-md-2">
@@ -98,7 +127,11 @@ include('../../../init.php');
                                 Jenis Kelamin
                               </div>
                               <div class="col-md-4">
-                                : <?php if($cetak['jkel'] == "L"){echo "Laki-Laki";}else{echo "Perempuan";};?>
+                                : <?php if ($cetak['jkel'] == "L") {
+                                echo "Laki-Laki";
+                            } else {
+                                echo "Perempuan";
+                            };?>
                               </div>
                             </div>
                             <div class="row clearfix">
@@ -168,7 +201,9 @@ include('../../../init.php');
                                 Jns. Rawat
                               </div>
                               <div class="col-md-4">
-                                : <?php if($cetak['jnspelayanan'] == 1){echo "Rawat Inap";}{echo "Rawat Jalan";};?>
+                                : <?php if ($cetak['jnspelayanan'] == 1) {
+                                echo "Rawat Inap";
+                            }{echo "Rawat Jalan";};?>
                               </div>
                             </div>
                             <div class="row clearfix">
@@ -368,21 +403,43 @@ include('../../../init.php');
 
                             <div class="row clearfix">
                               <div class="col-md-3">
-                                <br>
-                                Kunjungan Awal
-                              </div>
-                              <div class="col-md-7">
+                                Dirawat Inapkan :
 
                               </div>
-                              <div class="col-md-2">
+                              <div class="col-md-3">
+                                <label for="">Ya
+                                  <input type="checkbox">
+                                  <span class="checkmark"></span></label>
+                                  <label for="">Tidak
+                                    <input type="checkbox">
+                                    <span class="checkmark"></span></label>
+                              </div>
+                              <div class="col-md-6">
+
+                              </div>
+                            </div>
+                            <div class="row clearfix">
+                              <div class="col-md-3">
+                                Kunjungan Awal
+                              </div>
+                              <div class="col-md-3">
+                                <label for="">
+                                  <input type="checkbox">
+                                  <span class="checkmark"></span>
+                                </label>
+                              </div>
+                              <div class="col-md-6">
 
                               </div>
                             </div>
                             <div class="row clearfix">
                               <div class="col-md-3">
                                 Kunjungan Lanjutan
+
                               </div>
                               <div class="col-md-6">
+                                <label for=""><input type="checkbox">
+                                <span class="checkmark"></span></label>
 
                               </div>
                               <div class="col-md-3">
@@ -392,22 +449,28 @@ include('../../../init.php');
                             <div class="row clearfix">
                               <div class="col-md-3">
                                 Observasi
-                              </div>
-                              <div class="col-md-7">
 
                               </div>
-                              <div class="col-md-2">
+                              <div class="col-md-3">
+                                <label for=""><input type="checkbox">
+                                <span class="checkmark"></span></label>
+
+                              </div>
+                              <div class="col-md-6">
 
                               </div>
                             </div>
                             <div class="row clearfix">
                               <div class="col-md-3">
                                 Post Operasi
-                              </div>
-                              <div class="col-md-6">
 
                               </div>
                               <div class="col-md-3">
+                                <label for=""><input type="checkbox">
+                                <span class="checkmark"></span></label>
+
+                              </div>
+                              <div class="col-md-6">
 
                                 <br><br>
                               </div>
