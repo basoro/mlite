@@ -16,18 +16,19 @@ if (preg_match ('/config.php/', basename($_SERVER['PHP_SELF']))) die ('Unable to
 
 define('VERSION', '2.9');
 define('ABSPATH', dirname(__FILE__) . '/');
-define('URL', 'http://localhost/Khanza-Lite');
-define('URLSIMRS', 'http://localhost/webapps');
+define('URL', 'http://khanzalite.my.id/Khanza-Lite');
+define('URLSIMRS', 'http://khanzalite.my.id/webapps');
 define('DIR', 'Khanza-Lite/');
+define('ROOT_PATH', realpath(dirname(__FILE__)));
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', '');
-define('DB_NAME', 'sik');
+define('DB_NAME', 'rshd_sik');
 define('PRODUCTION', true);
 define('KODERS', '6307012');
 define('KODEPROP','63prop');
 define('IS_IN_MODULE', true);
-define('FKTL', false);
+define('FKTL', true);
 define('WEBAPPS', '../webapps');
 define('THEME', 'indigo'); // amber, black, blue, blue-grey, brown, cyan, deep-orange, deep-purple, green, grey, indigo, light-blue, lime, orange, pink, purple, red, teal, yellow
 define('PWA', false);

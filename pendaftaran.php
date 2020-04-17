@@ -1050,8 +1050,6 @@ $action = isset($_GET['action'])?$_GET['action']:null;
             </div>
         </div>
     </div>
-
-    <!-- delete -->
     <?php
     if($action == "delete_diagnosa"){
     	$hapus = "DELETE FROM diagnosa_pasien WHERE no_rawat='{$_REQUEST['no_rawat']}' AND kd_penyakit = '{$_REQUEST['kode']}' AND prioritas = '{$_REQUEST['prioritas']}'";
@@ -1092,8 +1090,6 @@ $action = isset($_GET['action'])?$_GET['action']:null;
 
     }
     ?>
-    <!-- end delete -->
-
 <?php
 include_once('layout/footer.php');
 ?>
