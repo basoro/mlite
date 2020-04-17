@@ -1,6 +1,5 @@
 <?php
-ini_set('display_errors', 0);
-error_reporting(E_ERROR | E_WARNING | E_PARSE);
+require('config.php');
 ini_set('max_execution_time', 300);
 ?>
 <!DOCTYPE html>
@@ -11,34 +10,14 @@ ini_set('max_execution_time', 300);
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <title>Khanza Lite Setup</title>
     <!-- Favicon-->
-    <link rel="icon" href="./assets/images/favicon.ico" type="image/x-icon">
-
-    <!-- Google Fonts -->
-    <link href="./assets/css/roboto.css" rel="stylesheet">
-
-    <!-- Material Icon Css -->
-    <link href="./assets/css/material-icon.css" rel="stylesheet">
-
-    <!-- Bootstrap Core Css -->
-    <link href="./assets/plugins/bootstrap/css/bootstrap.css" rel="stylesheet">
-
-    <!-- Waves Effect Css -->
-    <link href="./assets/plugins/node-waves/waves.css" rel="stylesheet" />
-
-    <!-- Animation Css -->
-    <link href="./assets/plugins/animate-css/animate.css" rel="stylesheet" />
-
-    <!-- Custom Css -->
-    <link href="./assets/css/style.css" rel="stylesheet">
-
-    <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
-    <link href="./assets/css/themes/all-themes.min.css" rel="stylesheet" />
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link href="assets/css/style.min.css" rel="stylesheet">
 </head>
 
 <body class="login-page">
     <div class="login-box" style="margin: 10px;">
         <div class="logo">
-            <div class="align-center p-b-15"><img src="assets/images/yaski.png"></div>
+            <div class="align-center p-b-15"><img src="assets/images/logo.png"></div>
             <a href="./index.php">Khanza Lite</a>
             <small>Installation</small>
         </div>
@@ -50,9 +29,7 @@ $action = isset($_GET['action'])?$_GET['action']:null;
 
 if(!$action) {
 
-require('config.php');
-
-if(num_rows(query("SHOW TABLES LIKE 'setting'"))  == 1) {
+if($mysqli->query("SHOW TABLES LIKE 'setting'")->num_rows  == 1) {
     header("Location: index.php");
 }
 
@@ -126,11 +103,10 @@ if($action == 'start') {
 }
 
 if($action == 'config') {
-
-  file_put_contents('config.php', str_replace("\ndefine('DB_HOST', 'localhost')", "\ndefine('DB_HOST', '".$_POST['DB_HOST']."')", file_get_contents('config.php')));
-  file_put_contents('config.php', str_replace("\ndefine('DB_USER', 'root')", "\ndefine('DB_USER', '".$_POST['DB_USER']."')", file_get_contents('config.php')));
+  file_put_contents('config.php', str_replace("\ndefine('DB_HOST', '')", "\ndefine('DB_HOST', '".$_POST['DB_HOST']."')", file_get_contents('config.php')));
+  file_put_contents('config.php', str_replace("\ndefine('DB_USER', '')", "\ndefine('DB_USER', '".$_POST['DB_USER']."')", file_get_contents('config.php')));
   file_put_contents('config.php', str_replace("\ndefine('DB_PASS', '')", "\ndefine('DB_PASS', '".$_POST['DB_PASS']."')", file_get_contents('config.php')));
-  file_put_contents('config.php', str_replace("\ndefine('DB_NAME', 'khanzalite')", "\ndefine('DB_NAME', '".$_POST['DB_NAME']."')", file_get_contents('config.php')));
+  file_put_contents('config.php', str_replace("\ndefine('DB_NAME', '')", "\ndefine('DB_NAME', '".$_POST['DB_NAME']."')", file_get_contents('config.php')));
 ?>
   <div class="body">
       <form id="sign_in" class="finish" method="POST" action="install.php?action=finish">
@@ -168,24 +144,45 @@ if($action == 'config') {
 
 if($action == 'finish') {
 
-  require('config.php');
-
-  if (!$connection) {
-  die("MySQL Connection error");
+  if ($mysqli->connect_errno) {
+      printf("Connect failed: %s\n", $mysqli->connect_error);
+      exit();
   }
 
   if(isset($_POST['finish'])) {
-    $templine = '';
+    /*$templine = '';
     $lines = file('sik.sql');
     foreach ($lines as $line) {
       if (substr($line, 0, 2) == '--' || $line == '')
         continue;
         $templine .= $line;
       if (substr(trim($line), -1, 1) == ';') {
-        mysqli_query($connection,$templine) or print('Error performing query \'<strong>' . $templine . '\': ' . mysqli_error() . '<br /><br />');
+        $mysqli->query($templine) or print('Error performing query \'<strong>' . $templine . '\': ' . $mysqli->error . '<br /><br />');
         $templine = '';
       }
-    }
+    }*/
+    $modul = "CREATE TABLE IF NOT EXISTS `lite_modul` (
+    `id_modul` int(5) NOT NULL,
+      `judul` varchar(50) NOT NULL,
+      `folder` varchar(50) NOT NULL,
+      `menu` enum('N','Y') NOT NULL,
+      `konten` enum('N','Y') NOT NULL,
+      `widget` enum('N','Y') NOT NULL,
+      `aktif` enum('Y','N') NOT NULL
+    ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
+    $add_key = "ALTER TABLE `lite_modul` ADD PRIMARY KEY (`id_modul`);";
+    $moify = "ALTER TABLE `lite_modul` MODIFY `id_modul` int(5) NOT NULL AUTO_INCREMENT;";
+    $roles = "CREATE TABLE `lite_users` (
+      `username` varchar(60) NOT NULL,
+      `password` varchar(50) NOT NULL,
+      `role` varchar(45) NOT NULL,
+      `cap` varchar(20) NOT NULL,
+      `module` text NOT NULL
+    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
+    $mysqli->query($modul);
+    $mysqli->query($add_key);
+    $mysqli->query($moify);
+    $mysqli->query($roles);
     ?>
     <div class="body">
       <div class="alert bg-pink alert-dismissible" role="alert">Instalasi Khanza Lite selesai!<br>Silahkan hapus file install.php untuk mencegah digunakan menggangu sistem anda.</div>
@@ -202,21 +199,7 @@ if($action == 'finish') {
 ?>
 </div>
 </div>
-
-<!-- Jquery Core Js -->
-<script src="./assets/plugins/jquery/jquery.min.js"></script>
-
-<!-- Bootstrap Core Js -->
-<script src="./assets/plugins/bootstrap/js/bootstrap.js"></script>
-
-<!-- Waves Effect Plugin Js -->
-<script src="./assets/plugins/node-waves/waves.js"></script>
-
-<!-- Validation Plugin Js -->
-<script src="./assets/plugins/jquery-validation/jquery.validate.js"></script>
-
-<!-- Custom Js -->
-<script src="./assets/js/admin.js"></script>
+<script src="assets/js/admin.js"></script>
 <script>
   $(".install-information").hide();
   $(".btn").click(function () {

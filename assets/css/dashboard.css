@@ -1,0 +1,47 @@
+.module .col-xs-6{
+    border-bottom:1px solid #ececfb;border-left:1px solid #ececfb;border-right:1px solid #ececfb;margin-right:-1px;margin-bottom:-1px;height:128px;cursor:pointer;padding:0;
+  }
+.module .col-lg-3{
+  border-bottom:1px solid #ececfb;border-left:1px solid #ececfb;border-right:1px solid #ececfb;margin-right:0px;margin-bottom:-1px;height:128px;cursor:pointer;padding:0;
+}
+.module .col-lg-3:hover{
+  box-shadow:0 0 38px rgba(0,0,0,.08) inset;-webkit-transition:all .25s ease;transition:all .25s ease;
+}
+.module a{
+  text-decoration: none;
+}
+.module .dashed-border{
+  border:1px dashed #20a53a;z-index:1;
+}
+.module .no-bg:hover{
+  box-shadow:0 0 38px rgba(0,0,0,.01) inset;-webkit-transition:all .15s ease;transition:all .15s ease;
+}
+.module .image {
+  height:40px;margin:0px 0 50px;padding-top:30px;text-align:center;
+}
+.module .image .icon i {
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .image .icon span {
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .sname{
+  text-align:center;color:#555;font-size:16px;
+}
+.module .image-plugins {
+  height:10px;margin:0px 0 50px;padding-top:0px;text-align:center;
+}
+.module .image-plugins .icon i {
+  text-align:center;
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .image-plugins .icon span {
+  font-size: 50px;
+  line-height: 50px;
+}
+.module .sname{
+  text-align:center;color:#555;font-size:16px;
+}
