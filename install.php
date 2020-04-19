@@ -41,7 +41,7 @@ if($mysqli->query("SHOW TABLES LIKE 'setting'")->num_rows  == 1) {
                 <div class="col-xs-3">
                 </div>
                 <div class="col-xs-6">
-                    <button class="btn btn-block bg-pink waves-effect" type="submit" name="start">LANJUTKAN</button>
+                    <button class="btn btn-lg btn-block bg-pink waves-effect" type="submit" name="start">LANJUTKAN</button>
                 </div>
                 <div class="col-xs-3">
                 </div>
@@ -92,7 +92,7 @@ if($action == 'start') {
               <div class="col-xs-3">
               </div>
               <div class="col-xs-6">
-                  <button class="btn btn-block bg-pink waves-effect" type="submit" name="config">SAVE CONFIG</button>
+                  <button class="btn btn-lg btn-block bg-pink waves-effect" type="submit" name="config">TEST CONFIG</button>
               </div>
               <div class="col-xs-3">
               </div>
@@ -113,12 +113,8 @@ if($action == 'config') {
           <div class="preinstall-information">
           <div class="msg">Koneksi ke database anda sukses. Silahkan klik tombol dibawah untuk memulai instalasi.</div>
           <div class="row">
-              <div class="col-xs-3">
-              </div>
-              <div class="col-xs-6">
-                  <button class="btn btn-block bg-pink waves-effect" type="submit" name="finish">INSTALL DATABASE</button>
-              </div>
-              <div class="col-xs-3">
+              <div class="col-xs-12">
+                  <button class="btn btn-lg btn-block bg-pink waves-effect" type="submit" name="finish">INSTALL DATABASE</button>
               </div>
           </div>
           </div>

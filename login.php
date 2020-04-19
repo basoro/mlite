@@ -37,7 +37,7 @@ include "functions/function_setting.php";
                 $data = $cekadmin->fetch_array();
                 $adminutama = $data['username'];
 
-                if (!file_exists($dbFile)) {
+                if (file_exists($dbFile)) {
                   $db->exec("CREATE TABLE lite_modules (id_modul integer NOT NULL PRIMARY KEY AUTOINCREMENT, judul TEXT, folder TEXT, menu TEXT, konten TEXT, widget TEXT, aktif TEXT)");
                   $db->exec("CREATE TABLE lite_roles (username TEXT, role TEXT, cap TEXT, module TEXT)");
                   $db->exec("INSERT INTO lite_roles (username, role, cap, module) VALUES ('$adminutama','admin','','')");

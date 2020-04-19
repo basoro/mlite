@@ -3,6 +3,9 @@ session_start();
 ob_start();
 define("INDEX",true);
 include("includes/init.php");
+if($mysqli->query("SHOW TABLES LIKE 'setting'")->num_rows  !== 1) {
+  header("Location: install.php");
+}
 $timeout = $_SESSION['timeout'];
 if(time()<$timeout){
 	$_SESSION['timeout'] = time()+5000;
