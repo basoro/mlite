@@ -80,13 +80,6 @@ function dataTablesJS() {
 	echo '<script src="assets/plugins/jquery-datatable/jquery.dataTables.js"></script>';
 	echo '<script src="assets/plugins/jquery-datatable/skin/bootstrap/js/dataTables.bootstrap.min.js"></script>';
 	echo '<script src="assets/plugins/jquery-datatable/extensions/responsive/js/dataTables.responsive.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/dataTables.buttons.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/buttons.flash.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/jszip.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/pdfmake.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/vfs_fonts.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/buttons.html5.min.js"></script>';
-	echo '<script src="assets/plugins/jquery-datatable/extensions/export/buttons.print.min.js"></script>';
 }
 function dataTablesDisplay() {
 ?>
@@ -115,16 +108,6 @@ function dataTablesDisplay() {
 		              "sLast":     "»"
 		          }
 		      },
-		      "paging": true,
-		      //"dom": 'Bfrtip',
-					"dom": "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-		      "buttons": [
-		        'copy',
-		        'csv',
-		        'excel',
-						'pdf',
-						'print'
-					]
 		    });
 		});
 		$("a.delete").click(function(e){

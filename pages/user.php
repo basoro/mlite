@@ -24,11 +24,14 @@ switch($show){
 			buka_section_body('Tabel Pengguna');
 			buka_tabel(array("Nama Lengkap", "Username", "Password", "Level"));
 			$no = 1;
-			$query = $mysqli->query("SELECT pegawai.nama, lite_roles.role, pegawai.nik, AES_DECRYPT(user.password,'windi') as password FROM pegawai, lite_roles, user WHERE pegawai.nik = lite_roles.username AND lite_roles.username = AES_DECRYPT(user.id_user,'nur') ORDER BY pegawai.nik");
-			if (!empty($query) && $query->num_rows > 0) {
-				while($data = $query->fetch_array()){
-					if($data['role']=="admin") isi_tabel($no, array($data['nama'], $data['nik'], $data['password'], $data['role']), $link, $data['nik'], true, false);
-					else isi_tabel($no, array($data['nama'], $data['nik'], $data['password'], $data['role']), $link, $data['nik'], true, true);
+			$adminutama = $mysqli->query("SELECT AES_DECRYPT(usere,'nur') FROM admin")->fetch_array();
+			$query = $db->query("SELECT * FROM lite_roles WHERE username !='$adminutama[0]'");
+			if (!empty($query)) {
+				while($data = $query->fetchArray()){
+					$query2 	= $mysqli->query("SELECT pegawai.nama, pegawai.nik, AES_DECRYPT(user.password,'windi') as password FROM pegawai, user WHERE pegawai.nik = AES_DECRYPT(user.id_user,'nur') AND pegawai.nik = '$data[username]'");
+					$data2	= $query2->fetch_array();
+					if($data['role']=="admin") isi_tabel($no, array($data2['nama'], $data2['nik'], $data2['password'], $data['role']), $link, $data2['nik'], true, false);
+					else isi_tabel($no, array($data2['nama'], $data2['nik'], $data2['password'], $data['role']), $link, $data2['nik'], true, true);
 					$no++;
 				}
 			}

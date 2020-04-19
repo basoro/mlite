@@ -457,12 +457,7 @@ $("#kasir").dataTable({
           "sNext":     "›",
           "sLast":     "»"
       }
-  },
-  //dom: 'Bfrtip',
-  dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-  buttons: [
-      'copy', 'csv', 'excel', 'pdf', 'print'
-  ]
+  }
 });
 $('#jns_perawatan').DataTable( {
     "bInfo" : true,
@@ -488,11 +483,7 @@ $('#jns_perawatan').DataTable( {
         }
     },
     "order": [[ 1, 'asc' ]],
-    "ajax": "ajax/jns_perawatan.php",
-    dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-    buttons: [
-        'copy', 'csv', 'excel', 'pdf', 'print'
-    ]
+    "ajax": "ajax/jns_perawatan.php"
 } );
 </script>
 <?php

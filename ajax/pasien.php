@@ -65,7 +65,6 @@ EOT;
 
 $primaryKey = 'no_rkm_medis';
 $columns = array(
-    //array( 'db' => 'no_rkm_medis','dt' => 0),
     array( 'db' => 'no_rkm_medis','dt' => 0,
         'formatter' => function( $d ) {
                 return '<a href="?module=pasien&show=form&id=' . $d . '"><b>' . $d . '</b></a>';

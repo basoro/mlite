@@ -46,12 +46,12 @@ if(empty($_SESSION['username']) or empty($_SESSION['password']) or $_SESSION['lo
 	$pdf->Text(3, 50, 'No. RM');
 	$pdf->Text(16, 50, ': '.reginfo($_GET['id'], 'no_rkm_medis'));
 	$pdf->Text(3, 55, 'Alamat');
-	$pdf->Text(16, 55, ': '.substr(reginfo($_GET['id'], 'alamat'),0,24));
-	$pdf->Text(17, 60, substr(reginfo($_GET['id'], 'alamat'),25,45));
+	$pdf->Text(16, 55, ': '.substr(reginfo($_GET['id'], 'alamat'),0,20));
+	$pdf->Text(17, 60, substr(reginfo($_GET['id'], 'alamat'),21,42));
 	$pdf->Text(3, 65, 'Ruang');
-	$pdf->Text(16, 65, ': '.substr(reginfo($_GET['id'], 'nm_poli'),0,24));
+	$pdf->Text(16, 65, ': '.substr(reginfo($_GET['id'], 'nm_poli'),0,20));
 	$pdf->Text(3, 70, 'Dokter');
-	$pdf->Text(16, 70, ': '.substr(reginfo($_GET['id'], 'nm_dokter'),0,24));
+	$pdf->Text(16, 70, ': '.substr(reginfo($_GET['id'], 'nm_dokter'),0,20));
 	$pdf->Text(3, 75, 'Bayar');
 	$pdf->Text(16, 75, ': '.reginfo($_GET['id'], 'png_jawab'));
 	$pdf->SetFont('Arial', '', 7);

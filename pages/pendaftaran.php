@@ -535,11 +535,7 @@ function addJS() {
 								$(row).attr('data-nmpasien', data[1]);
 								$(row).attr('data-namakeluarga', data[6]);
 								$(row).attr('data-alamatpj', data[21]);
-						},
-						dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix m-t-20'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-					  buttons: [
-					      'copy', 'csv', 'excel', 'pdf', 'print'
-					  ]
+						}
 		    } );
 				$('#pendaftaran').DataTable( {
 						"bInfo" : true,
@@ -564,11 +560,7 @@ function addJS() {
 										"sLast":     "»"
 								}
 						},
-						"order": [[ 2, 'desc' ]],
-						dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-						buttons: [
-								'copy', 'csv', 'excel', 'pdf', 'print'
-						]
+						"order": [[ 2, 'desc' ]]
 				} );
 				$(document).on('click', '.pilihpasien', function (e) {
 		        var no_rkm_medis = $(this).attr('data-norm');

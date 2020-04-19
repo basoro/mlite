@@ -9,10 +9,26 @@ function userinfo($parameter){
 }
 
 function userroles($parameter){
-	global $mysqli;
+	global $db;
 	$username = $_SESSION['username'];
-	$query = $mysqli->query("SELECT * FROM lite_roles WHERE username = '$username'");
-	$setting = $query->fetch_array();
+	$query = $db->query("SELECT * FROM lite_roles WHERE username = '$username'");
+	$setting = $query->fetchArray();
+	return $setting[$parameter];
+}
+
+function usercap($parameter){
+	global $db;
+	$username = $_SESSION['username'];
+	$query = $db->query("SELECT * FROM lite_roles WHERE username = '$username'");
+	$setting = $query->fetchArray();
+	return $setting[$parameter];
+}
+
+function usermodule($parameter){
+	global $db;
+	$username = $_SESSION['username'];
+	$query = $db->query("SELECT * FROM lite_roles WHERE username = '$username'");
+	$setting = $query->fetchArray();
 	return $setting[$parameter];
 }
 

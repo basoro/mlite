@@ -14,7 +14,6 @@ echo '</div>';
 switch($show){
 	default:
 		if (isset($_POST['setting'])) {
-
 		  $nama_instansi = $_POST['nama_instansi'];
 		  $alamat_instansi = $_POST['alamat_instansi'];
 		  $kabupaten =	$_POST['kabupaten'];
@@ -95,7 +94,7 @@ switch($show){
 		}
 		?>
 		<div class="row clearfix">
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
 						<div class="card">
 								<div class="header">
 										<h2>
@@ -117,7 +116,7 @@ switch($show){
 								?>
 						</div>
 				</div>
-				<div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+				<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
 						<div class="card">
 								<div class="header">
 										<h2>
@@ -126,7 +125,6 @@ switch($show){
 								</div>
 								<?php
 									$data = json_decode(file_get_contents_curl('https://khanza.basoro.id/lisensi.php?action=cek&email='.setting('email')), true);
-									//print_r($data);
 								?>
 								<div class="body">
 										<div class="text-center">

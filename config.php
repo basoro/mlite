@@ -9,11 +9,17 @@ define('DB_USER', 'root');
 define('DB_PASS', '');
 define('DB_NAME', 'rshd_sik');
 
+define('EXPORT', true);
+
 ini_set('memory_limit', '-1');
 //ini_set('max_execution_time', 300);
 
 //Menggunakan objek mysqli untuk membuat koneksi dan menyimpanya dalam variabel $mysqli	//
 $mysqli = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+
+//Menggunakan SQLite3 untuk menyimpan pengaturan Khanza Lite
+$dbFile = ABSPATH.'includes/khanzalite.db';
+$db= new SQLite3($dbFile);
 
 //Menentukan timezone //
 date_default_timezone_set('Asia/Jakarta');

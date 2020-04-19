@@ -29,10 +29,6 @@ include "functions/function_setting.php";
           	$username = antiinjeksi($_POST['username']);
           	$password = antiinjeksi($_POST['password']);
 
-            if($mysqli->query("SHOW TABLES LIKE 'lite_roles'")->num_rows !== 1) {
-                $errors[] = 'Tabel <code>lite_rolse</code> tidak ada. Baca tutorial!';
-            }
-
             $cekadmin  = $mysqli->query("SELECT AES_DECRYPT(usere,'nur') as username, AES_DECRYPT(passworde,'windi') as password FROM admin WHERE usere = AES_ENCRYPT('$username','nur')");
             $cekuser  = $mysqli->query("SELECT AES_DECRYPT(id_user,'nur') as username, AES_DECRYPT(password,'windi') as password FROM user WHERE id_user = AES_ENCRYPT('$username','nur')");
 
@@ -41,10 +37,10 @@ include "functions/function_setting.php";
                 $data = $cekadmin->fetch_array();
                 $adminutama = $data['username'];
 
-                $cekroles = $mysqli->query("SELECT * FROM lite_roles WHERE username = '$adminutama'");
-                if(!empty($cekroles) && $cekroles->num_rows == 0) {
-                  $insert = "INSERT INTO `lite_roles` (`username`, `role`, `cap`, `module`) VALUES ('$adminutama', 'admin', '', '');";
-                  $mysqli->query($insert);
+                if (!file_exists($dbFile)) {
+                  $db->exec("CREATE TABLE lite_modules (id_modul integer NOT NULL PRIMARY KEY AUTOINCREMENT, judul TEXT, folder TEXT, menu TEXT, konten TEXT, widget TEXT, aktif TEXT)");
+                  $db->exec("CREATE TABLE lite_roles (username TEXT, role TEXT, cap TEXT, module TEXT)");
+                  $db->exec("INSERT INTO lite_roles (username, role, cap, module) VALUES ('$adminutama','admin','','')");
                 }
 
                 if($data['password'] !== $password) {
@@ -54,13 +50,14 @@ include "functions/function_setting.php";
             } else {
 
                 $data = $cekuser->fetch_array();
-                $cekroles = $mysqli->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
+                $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
+                $result = $cekroles->fetchArray(SQLITE3_ASSOC);
 
-                if(!empty($cekroles) && $cekroles->num_rows == 0) {
+                if($result == false) {
                     $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
                 }
 
-                if(!empty($cekroles) && $cekroles->num_rows == 1 && $data['password'] !== $password) {
+                if($result != false && $data['password'] !== $password) {
                     $errors[] = 'Kata kunci tidak valid.';
                 }
 

@@ -150,7 +150,7 @@ if($action == 'finish') {
   }
 
   if(isset($_POST['finish'])) {
-    /*$templine = '';
+    $templine = '';
     $lines = file('sik.sql');
     foreach ($lines as $line) {
       if (substr($line, 0, 2) == '--' || $line == '')
@@ -160,29 +160,7 @@ if($action == 'finish') {
         $mysqli->query($templine) or print('Error performing query \'<strong>' . $templine . '\': ' . $mysqli->error . '<br /><br />');
         $templine = '';
       }
-    }*/
-    $modul = "CREATE TABLE IF NOT EXISTS `lite_modul` (
-    `id_modul` int(5) NOT NULL,
-      `judul` varchar(50) NOT NULL,
-      `folder` varchar(50) NOT NULL,
-      `menu` enum('N','Y') NOT NULL,
-      `konten` enum('N','Y') NOT NULL,
-      `widget` enum('N','Y') NOT NULL,
-      `aktif` enum('Y','N') NOT NULL
-    ) ENGINE=MyISAM  DEFAULT CHARSET=latin1;";
-    $add_key = "ALTER TABLE `lite_modul` ADD PRIMARY KEY (`id_modul`);";
-    $moify = "ALTER TABLE `lite_modul` MODIFY `id_modul` int(5) NOT NULL AUTO_INCREMENT;";
-    $roles = "CREATE TABLE `lite_users` (
-      `username` varchar(60) NOT NULL,
-      `password` varchar(50) NOT NULL,
-      `role` varchar(45) NOT NULL,
-      `cap` varchar(20) NOT NULL,
-      `module` text NOT NULL
-    ) ENGINE=MyISAM DEFAULT CHARSET=latin1;";
-    $mysqli->query($modul);
-    $mysqli->query($add_key);
-    $mysqli->query($moify);
-    $mysqli->query($roles);
+    }
     ?>
     <div class="body">
       <div class="alert bg-pink alert-dismissible" role="alert">Instalasi Khanza Lite selesai!<br>Silahkan hapus file install.php untuk mencegah digunakan menggangu sistem anda.</div>

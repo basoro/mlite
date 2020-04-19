@@ -251,12 +251,7 @@ function addJS() {
             }
         },
         "order": [[ 1, 'asc' ]],
-				"ajax": "ajax/pasien.php",
-				//dom: 'Bfrtip',
-				dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-			  buttons: [
-			      'copy', 'csv', 'excel', 'pdf', 'print'
-			  ]
+				"ajax": "ajax/pasien.php"
     } );
 		var data_kelurahan = $('#kelurahan').DataTable( {
 				"bInfo" : true,
@@ -286,12 +281,7 @@ function addJS() {
 						$(row).addClass('pilihkelurahan');
 						$(row).attr('data-kdkel', data[0]);
 						$(row).attr('data-nmkel', data[1]);
-				},
-				//dom: 'Bfrtip',
-				dom: "<'row'<'col-sm-6'l><'col-sm-6'f>><'row'<'col-sm-12'tr>><'row clearfix'<'col-sm-12'B>><'row'<'col-sm-5'i><'col-sm-7'p>>",
-			  buttons: [
-			      'copy', 'csv', 'excel', 'pdf', 'print'
-			  ]
+				}
     } );
 		$(document).on('click', '.pilihpropinsi', function (e) {
 				$("#kd_prop")[0].value = $(this).attr('data-kdprop');

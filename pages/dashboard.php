@@ -38,8 +38,8 @@ if(!defined("INDEX")) header('location: index.php');
                   <div class="row">
 
                     <?php
-										$query = $mysqli->query("SELECT * FROM lite_modul WHERE menu='Y' AND aktif='Y'");
-										while($data = $query->fetch_array()){
+										$query = $db->query("SELECT * FROM lite_modules WHERE menu='Y' AND aktif='Y'");
+										while($data = $query->fetchArray()){
 											if(file_exists("modules/$data[folder]/index.php")){
 												include "modules/$data[folder]/index.php";
 											}

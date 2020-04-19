@@ -21,13 +21,21 @@ switch($show){
 		buka_section_body('Tabel Modul');
 		buka_tabel(array("Judul", "Aktif"));
 		$no = 1;
-		$query = $mysqli->query("SELECT * FROM lite_modul ORDER BY aktif");
-		while($data = $query->fetch_array()){
-			if($data['aktif']=='Y') $aktif = '<a href="'.$link.'&show=deactivate&id='.$data['id_modul'].'" style="color: green"><i class="material-icons">done</i></a>';
-			else $aktif = '<a href="'.$link.'&show=activate&id='.$data['id_modul'].'" style="color: red"><i class="material-icons">not_interested</i></a>';
+		if (file_exists($dbFile)) {
+			$query = $db->query("SELECT * FROM lite_modules ORDER BY aktif DESC");
+			if(!empty($query)) {
+				while($data = $query->fetchArray()){
+					if($data['aktif']=='Y') $aktif = '<a href="'.$link.'&show=deactivate&id='.$data['id_modul'].'" style="color: green"><i class="material-icons">done</i></a>';
+					else $aktif = '<a href="'.$link.'&show=activate&id='.$data['id_modul'].'" style="color: red"><i class="material-icons">not_interested</i></a>';
 
-			isi_tabel($no, array($data['judul'], $aktif), $link, $data['id_modul']);
-			$no++;
+					isi_tabel($no, array($data['judul'], $aktif), $link, $data['id_modul']);
+					$no++;
+				}
+			} else {
+
+			}
+		} else {
+			echo validation_errors('Database Khanza Lite tidak ditemukan!');
 		}
 		tutup_tabel();
 		tutup_section_body();
@@ -44,8 +52,8 @@ switch($show){
 		echo '</div>';
 
 		if(isset($_GET['id'])){
-			$query 	= $mysqli->query("SELECT * FROM lite_modul WHERE id_modul='$_GET[id]'");
-			$data	= $query->fetch_array();
+			$query 	= $db->query("SELECT * FROM lite_modules WHERE id_modul='$_GET[id]'");
+			$data	= $query->fetchArray();
 			$aksi 	= "Edit";
 		}else{
 			$data = array("id_modul"=>"", "judul"=>"");
@@ -75,25 +83,19 @@ switch($show){
 					</script>';
 			}else{
 				unzip_file($filename, $source, "modules/");
-				$mysqli->query("INSERT INTO lite_modul SET
-					judul 		= '$_POST[judul]',
-					folder 		= '$nama[0]',
-					aktif		= 'N'
-				");
+				$db->exec("INSERT INTO lite_modules (judul, folder, menu, konten, widget, aktif) VALUES ('$_POST[judul]','$nama[0]','','','','N')");
 				header('location:'.$link);
 			}
 		}elseif($_POST['aksi'] == "edit"){
-			$mysqli->query("UPDATE lite_modul SET
-				judul 		= '$_POST[judul]'
-			WHERE id_modul='$_POST[id]'");
+			$db->exec("UPDATE lite_modules SET judul = '$_POST[judul]' WHERE id_modul='$_POST[id]'");
 			header('location:'.$link);
 		}
 	break;
 
 	//Menghapus data di database
 	case "delete":
-		$query 	= $mysqli->query("SELECT * FROM lite_modul WHERE id_modul='$_GET[id]'");
-		$data	= $query->fetch_array();
+		$query 	= $db->query("SELECT * FROM lite_modules WHERE id_modul='$_GET[id]'");
+		$data	= $query->fetchArray();
 
 		if(file_exists("modules/$data[folder]/function.php")){
 			include "modules/$data[folder]/function.php";
@@ -102,14 +104,14 @@ switch($show){
 
 		hapus_folder("modules/$data[folder]");
 
-		$mysqli->query("DELETE FROM lite_modul WHERE id_modul='$_GET[id]'");
+		$db->exec("DELETE FROM lite_modules WHERE id_modul='$_GET[id]'");
 		header('location:'.$link);
 	break;
 
 	//Mengaktifkan data
 	case "activate":
-		$query 	= $mysqli->query("SELECT * FROM lite_modul WHERE id_modul='$_GET[id]'");
-		$data	= $query->fetch_array();
+		$query 	= $db->query("SELECT * FROM lite_modules WHERE id_modul='$_GET[id]'");
+		$data	= $query->fetchArray();
 
 		$menu = (file_exists("modules/$data[folder]/menu.php")) ? 'Y' : 'N';
 		$konten = (file_exists("modules/$data[folder]/content.php")) ? 'Y' : 'N';
@@ -120,27 +122,22 @@ switch($show){
 			aktifkan_modul();
 		}
 
-		$mysqli->query("UPDATE lite_modul SET
-			aktif	= 'Y',
-			menu	= '$menu',
-			konten	= '$konten',
-			widget  = '$widget'
-		WHERE id_modul='$_GET[id]'");
+		$db->exec("UPDATE lite_modules SET aktif	= 'Y', menu	= '$menu', konten	= '$konten', widget  = '$widget' WHERE id_modul='$_GET[id]'");
 		header('location:'.$link);
 	break;
 
 	//Menonaktifkan data
 	case "deactivate":
 
-		$query 	= $mysqli->query("SELECT * FROM lite_modul WHERE id_modul='$_GET[id]'");
-		$data	= $query->fetch_array();
+		$query 	= $db->query("SELECT * FROM lite_modules WHERE id_modul='$_GET[id]'");
+		$data	= $query->fetchArray();
 
 		if(file_exists("modules/$data[folder]/function.php")){
 			include "modules/$data[folder]/function.php";
 			hapus_modul();
 		}
 
-		$mysqli->query("UPDATE lite_modul SET aktif='N' WHERE id_modul='$_GET[id]'");
+		$db->exec("UPDATE lite_modules SET aktif='N' WHERE id_modul='$_GET[id]'");
 		header('location:'.$link);
 	break;
 }
