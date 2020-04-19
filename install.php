@@ -36,7 +36,10 @@ if($mysqli->query("SHOW TABLES LIKE 'setting'")->num_rows  == 1) {
 ?>
     <div class="body">
         <form id="sign_in" method="POST" action="install.php?action=start">
-            <div class="msg">Anda ada dihalaman instalasi awal SIMKES Khanza versi Lite. <br>Jika anda sudah pernah menginstall sebelumnya, silahkan hapus file install.php di sistem anda.</div>
+            <div class="msg">
+              Anda ada dihalaman instalasi awal<br>
+              SIMKES Khanza versi Lite.<br>
+              Jika anda sudah pernah menginstall sebelumnya, silahkan hapus file install.php di sistem anda.</div>
             <div class="row">
                 <div class="col-xs-3">
                 </div>
