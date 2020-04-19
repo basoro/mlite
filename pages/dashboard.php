@@ -68,7 +68,7 @@ function addCSS() {
 <?php
 }
 function addJS() {
-  global $mysqli, $date, $thn_sekarang, $last_year, $year;
+  global $mysqli, $date, $last_year, $year;
 ?>
   <script src="assets/plugins/chartjs/Chart.bundle.js"></script>
   <script src="assets/plugins/jquery-countto/jquery.countTo.js"></script>
@@ -96,7 +96,7 @@ function addJS() {
 										?>
 									],
 									datasets: [{
-											label: "Tahun <?php echo $thn_sekarang; ?>",
+											label: "Tahun <?php echo $year; ?>",
 											data: [
 												<?php
 												$query = $mysqli->query("SELECT count(*) AS jumlah FROM reg_periksa WHERE tgl_registrasi = '$date' GROUP BY kd_poli");

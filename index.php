@@ -117,7 +117,7 @@ if(empty($_SESSION['username']) or empty($_SESSION['password']) or $_SESSION['lo
             </div>
             <div class="legal">
                 <div class="copyright">
-                    &copy; 2017 - <?php echo $thn_sekarang; ?> Made with <i class="material-icons" style="font-size:13px;color:red;">favorite</i> by <a href="javascript:void(0);">Basoro</a> (<b>V<?php echo VERSION; ?></b>)
+                    &copy; 2017 - <?php echo $year; ?> Made with <i class="material-icons" style="font-size:13px;color:red;">favorite</i> by <a href="javascript:void(0);">Basoro</a> (<b>V<?php echo VERSION; ?></b>)
                 </div>
             </div>
         </aside>

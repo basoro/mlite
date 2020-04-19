@@ -39,7 +39,7 @@ switch($show){
 			tutup_section_body();
 		}else{
 			$id_user = $_SESSION['username'];
-			$query 	= $mysqli->query("SELECT pegawai.nama, lite_roles.role, pegawai.nik, AES_DECRYPT(user.password,'windi') as password FROM pegawai, lite_roles, user WHERE pegawai.nik = lite_roles.username AND lite_roles.username = AES_DECRYPT(user.id_user,'nur') AND lite_roles.username='$id_user'");
+			$query 	= $mysqli->query("SELECT pegawai.nama, pegawai.nik, AES_DECRYPT(user.password,'windi') as password FROM pegawai, user WHERE pegawai.nik = AES_DECRYPT(user.id_user,'nur') AND pegawai.nik='$id_user'");
 			$data	= $query->fetch_array();
 			$aksi 	= "Edit";
 
@@ -57,8 +57,8 @@ switch($show){
 	//Menampilkan form input dan edit data
 	case "form":
 		if(isset($_GET['id'])){
-			$query 	= $mysqli->query("SELECT * FROM lite_roles WHERE username='$_GET[id]'");
-			$data	= $query->fetch_array();
+			$query 	= $db->query("SELECT * FROM lite_roles WHERE username='$_GET[id]'");
+			$data	= $query->fetchArray();
 			$aksi 	= "Edit";
 		}else{
 			$data = array(
@@ -126,15 +126,16 @@ switch($show){
 	//Menyisipkan atau mengedit data di database
 	case "action":
 		if($_POST['aksi'] == "tambah"){
-			$mysqli->query("INSERT INTO lite_roles SET
-				username 	= '$_POST[username]',
-				role 	= '$_POST[role]',
-				cap 	= '$_POST[cap]',
-				module 	= '$_POST[module]'
-			");
-			set_message('Data pengguna berhasil ditambah.');
+			$cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$_POST[username]'");
+			$result = $cekroles->fetchArray(SQLITE3_ASSOC);
+			if($result == false) {
+				$db->query("INSERT INTO lite_roles (username, role, cap, module) VALUES ('$_POST[username]', '$_POST[role]', '$_POST[cap]', '$_POST[module]')");
+				set_message('Data pengguna berhasil ditambah.');
+			} else {
+				set_message('Data pengguna sudah ada.');
+			}
 		}elseif($_POST['aksi'] == "edit"){
-			$mysqli->query("UPDATE lite_roles SET
+			$db->query("UPDATE lite_roles SET
 				role 	= '$_POST[role]',
 				cap 	= '$_POST[cap]',
 				module 	= '$_POST[module]'
@@ -146,7 +147,7 @@ switch($show){
 
 	//Menghapus data di database
 	case "delete":
-		$mysqli->query("DELETE FROM lite_roles WHERE username='$_GET[id]'");
+		$db->query("DELETE FROM lite_roles WHERE username='$_GET[id]'");
 		set_message('Data pengguna berhasil dihapus.');
 		header('location:'.$link);
 	break;

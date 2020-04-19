@@ -37,14 +37,18 @@ include "functions/function_setting.php";
                 $data = $cekadmin->fetch_array();
                 $adminutama = $data['username'];
 
-                if (file_exists($dbFile)) {
-                  $db->exec("CREATE TABLE lite_modules (id_modul integer NOT NULL PRIMARY KEY AUTOINCREMENT, judul TEXT, folder TEXT, menu TEXT, konten TEXT, widget TEXT, aktif TEXT)");
-                  $db->exec("CREATE TABLE lite_roles (username TEXT, role TEXT, cap TEXT, module TEXT)");
-                  $db->exec("INSERT INTO lite_roles (username, role, cap, module) VALUES ('$adminutama','admin','','')");
+                if($data['password'] !== $password) {
+                    $errors[] = 'Kata kunci admin utama tidak valid.';
                 }
 
-                if($data['password'] !== $password) {
-                    $errors[] = 'Kata kunci tidak valid.';
+                if (file_exists($dbFile)) {
+                  $db->exec("CREATE TABLE IF NOT EXISTS lite_modules (id_modul integer NOT NULL PRIMARY KEY AUTOINCREMENT, judul TEXT, folder TEXT, menu TEXT, konten TEXT, widget TEXT, aktif TEXT)");
+                  $db->exec("CREATE TABLE IF NOT EXISTS lite_roles (username TEXT, role TEXT, cap TEXT, module TEXT)");
+                  $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$adminutama'");
+                  $result = $cekroles->fetchArray(SQLITE3_ASSOC);
+                  if($result == false && $data['password'] == $password) {
+                    $db->exec("INSERT INTO lite_roles (username, role, cap, module) VALUES ('$adminutama','admin','','')");
+                  }
                 }
 
             } else {
@@ -52,6 +56,10 @@ include "functions/function_setting.php";
                 $data = $cekuser->fetch_array();
                 $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
                 $result = $cekroles->fetchArray(SQLITE3_ASSOC);
+
+                if($data['password'] !== $password) {
+                    $errors[] = 'Kata kunci tidak valid.';
+                }
 
                 if($result == false) {
                     $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';

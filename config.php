@@ -22,17 +22,6 @@ $db= new SQLite3($dbFile);
 date_default_timezone_set('Asia/Jakarta');
 
 //Membuat variabel yang menyimpan nilai waktu //
-$nama_hari 	  = array("Minggu","Senin","Selasa","Rabu","Kamis","Jumat","Sabtu");
-$hari         = date("w");
-$hari_ini     = $nama_hari[$hari];
-$tgl_sekarang = date("d");
-$bln_sekarang = date("m");
-$thn_sekarang = date("Y");
-$last_year    = $thn_sekarang-1;
-$next_year    = $thn_sekarang+1;
-$tanggal      = date('Ymd');
-$jam          = date("H:i:s");
-
 $year       = date('Y');
 $last_year  = $year-1;
 $next_year  = $year+1;
