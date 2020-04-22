@@ -60,7 +60,9 @@ include "functions/function_setting.php";
                 }
 
                 $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
-                $result = $cekroles->fetchArray(SQLITE3_ASSOC);
+                if(!empty($cekroles)) {
+                  $result = $cekroles->fetchArray(SQLITE3_ASSOC);                  
+                }
 
                 if($result == false) {
                     $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
