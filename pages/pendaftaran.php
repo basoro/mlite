@@ -509,7 +509,7 @@ function addJS() {
 		      	"scrollX": true,
 		        "processing": true,
 		        "serverSide": true,
-		        "responsive": true,
+		        "responsive": false,
 		        "oLanguage": {
 		            "sProcessing":   "Sedang memproses...",
 		            "sLengthMenu":   "Tampilkan _MENU_ entri",

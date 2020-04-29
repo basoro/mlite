@@ -51,23 +51,27 @@ include "functions/function_setting.php";
                   }
                 }
 
-            } else {
+            } else if($cekuser->num_rows == 1) {
 
                 $data = $cekuser->fetch_array();
-                $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
-                $result = $cekroles->fetchArray(SQLITE3_ASSOC);
 
                 if($data['password'] !== $password) {
                     $errors[] = 'Kata kunci tidak valid.';
+                }
+
+                $cekroles = $db->query("SELECT * FROM lite_roles WHERE username = '$data[username]'");
+                if(!empty($cekroles)) {
+                  $result = $cekroles->fetchArray(SQLITE3_ASSOC);                  
                 }
 
                 if($result == false) {
                     $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
                 }
 
-                if($result != false && $data['password'] !== $password) {
-                    $errors[] = 'Kata kunci tidak valid.';
-                }
+
+            } else {
+
+                $errors[] = 'Kode login tidak terdaftar atau tidak aktif.';
 
             }
 

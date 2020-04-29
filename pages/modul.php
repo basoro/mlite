@@ -17,28 +17,49 @@ switch($show){
 		echo '	<small>Periode '.tgl_indonesia($date).'</small>';
 		echo '</h2>';
 		echo '</div>';
+?>
 
-		buka_section_body('Tabel Modul');
-		buka_tabel(array("Judul", "Aktif"));
-		$no = 1;
-		if (file_exists($dbFile)) {
-			$query = $db->query("SELECT * FROM lite_modules ORDER BY aktif DESC");
-			if(!empty($query)) {
-				while($data = $query->fetchArray()){
-					if($data['aktif']=='Y') $aktif = '<a href="'.$link.'&show=deactivate&id='.$data['id_modul'].'" style="color: green"><i class="material-icons">done</i></a>';
-					else $aktif = '<a href="'.$link.'&show=activate&id='.$data['id_modul'].'" style="color: red"><i class="material-icons">not_interested</i></a>';
+<div class="card">
+		<div class="header">
+				<h2>
+						Data Modul Aktif
+				</h2>
+		</div>
+		<div class="body">
+        <table id="example1-tab1-dt" class="table table-striped table-bordered table-condensed display" cellspacing="0" width="100%">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Office</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+            <tbody>
+							<?php
+							$no = 1;
+							if (file_exists($dbFile)) {
+								$query = $db->query("SELECT * FROM lite_modules ORDER BY aktif DESC");
+								if(!empty($query)) {
+									while($data = $query->fetchArray()){
+										if($data['aktif']=='Y') $aktif = '<a href="'.$link.'&show=deactivate&id='.$data['id_modul'].'" style="color: green"><i class="material-icons">done</i></a>';
+										else $aktif = '<a href="'.$link.'&show=activate&id='.$data['id_modul'].'" style="color: red"><i class="material-icons">not_interested</i></a>';
 
-					isi_tabel($no, array($data['judul'], $aktif), $link, $data['id_modul']);
-					$no++;
-				}
-			} else {
+										isi_tabel($no, array($data['judul'], $aktif), $link, $data['id_modul'], false);
+										$no++;
+									}
+								} else {
 
-			}
-		} else {
-			echo validation_errors('Database Khanza Lite tidak ditemukan!');
-		}
-		tutup_tabel();
-		tutup_section_body();
+								}
+							} else {
+								echo validation_errors('Database Khanza Lite tidak ditemukan!');
+							}
+							?>
+            </tbody>
+        </table>
+		</div>
+</div>
+<?php
 
 	break;
 
@@ -83,7 +104,11 @@ switch($show){
 					</script>';
 			}else{
 				unzip_file($filename, $source, "modules/");
-				$db->exec("INSERT INTO lite_modules (judul, folder, menu, konten, widget, aktif) VALUES ('$_POST[judul]','$nama[0]','','','','N')");
+				if(file_exists("modules/$nama[0]/index.php")){
+					include "modules/$nama[0]/index.php";
+					$info_modul = info_modul();
+					$db->exec("INSERT INTO lite_modules (judul, folder, menu, konten, widget, aktif) VALUES ('$info_modul[module_title]','$nama[0]','','','','N')");
+				}
 				header('location:'.$link);
 			}
 		}elseif($_POST['aksi'] == "edit"){
@@ -99,7 +124,7 @@ switch($show){
 
 		if(file_exists("modules/$data[folder]/function.php")){
 			include "modules/$data[folder]/function.php";
-			hapus_modul();
+			//hapus_modul();
 		}
 
 		hapus_folder("modules/$data[folder]");
@@ -119,10 +144,13 @@ switch($show){
 
 		if(file_exists("modules/$data[folder]/function.php")){
 			include "modules/$data[folder]/function.php";
-			aktifkan_modul();
+			//aktifkan_modul();
 		}
-
-		$db->exec("UPDATE lite_modules SET aktif	= 'Y', menu	= '$menu', konten	= '$konten', widget  = '$widget' WHERE id_modul='$_GET[id]'");
+		if(file_exists("modules/$data[folder]/index.php")){
+			include "modules/$data[folder]/index.php";
+			$info_modul = info_modul();
+			$db->exec("UPDATE lite_modules SET aktif	= 'Y', menu	= '$menu', konten	= '$konten', widget  = '$widget' WHERE id_modul='$_GET[id]'");
+		}
 		header('location:'.$link);
 	break;
 
@@ -134,7 +162,7 @@ switch($show){
 
 		if(file_exists("modules/$data[folder]/function.php")){
 			include "modules/$data[folder]/function.php";
-			hapus_modul();
+			//hapus_modul();
 		}
 
 		$db->exec("UPDATE lite_modules SET aktif='N' WHERE id_modul='$_GET[id]'");
