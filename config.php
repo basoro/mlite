@@ -5,8 +5,8 @@
 define('VERSION', '3.0');
 define('ABSPATH', dirname(__FILE__) . '/');
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', 'sik');
+define('DB_PASS', 'sik');
 define('DB_NAME', 'sik');
 
 ini_set('memory_limit', '-1');
