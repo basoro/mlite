@@ -1,3 +1,7 @@
+<p align="right">
+    <b>Codename: Joyoboyo</b>
+</p>
+
 # Khanza LITE V3.0
 
 Khanza LITE 3  dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini Khanza LITE 3  dibangun lagi dari awal dengan berfokus pada kesederhanaan - bahkan programer pemula dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
