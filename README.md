@@ -38,11 +38,11 @@ Pemasangan
 
 2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
 
-3. Buat folder tmp/ dan admin/tmp. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+3. Buat folder `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
 4. Jika anda ingin memulai pemasangan dengan data kosong, buat database baru, misal `sik` (jika sudah ada silahkan lompat ke langkah ke 6).
 
-5. Navigasikan ke alamat pemasangan. Misalkan http://localhost/Khanza-Lite/install.php, anda akan melihat tampilan pemasangan.
+5. Navigasikan ke alamat pemasangan. Misalkan `http://localhost/Khanza-Lite/install.php`, anda akan melihat tampilan pemasangan.
 
 6. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 3 berada.
 
