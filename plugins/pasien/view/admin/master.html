@@ -1,0 +1,212 @@
+<article class="row">
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Cara Bayar <a href="{?=url(ADMIN.'/pasien/carabayaradd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive no-margin">
+                <table class="table table-striped display no-margin" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Kode Cara Bayar</th>
+                      <th>Nama Cara Bayar</th>
+                      <th>Nama Perusahaan</th>
+                      <th>Alamat Asuransi</th>
+                      <th>No. Telp</th>
+                      <th class="text-right">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        {if: !empty($pasien.cara_bayar)}
+                    {loop: $pasien.cara_bayar}
+                    <tr>
+                      <td>{$value.kd_pj}</td>
+                      <td>{$value.png_jawab}</td>
+                      <td>{$value.nama_perusahaan}</td>
+                      <td>{$value.alamat_asuransi}</td>
+                      <td>{$value.no_telp}</td>
+                      <td class="text-right">
+                        <a href="{$value.editURL}" class="btn btn-success btn-xs">
+                          <i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+                        </a>
+                        <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+                      </td>
+                    </tr>
+                    {/loop}
+                    {else}
+                    <tr><td colspan="9" class="text-center">Data cara bayar tidak ditemukan</td></tr>
+                    {/if}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Bahasa Pasien <a href="{?=url(ADMIN.'/pasien/bahasapasienadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Bahasa</th>
+    									<th>Nama Bahasa</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            						{if: !empty($pasien.bahasa_pasien)}
+    								{loop: $pasien.bahasa_pasien}
+    								<tr>
+    									<td>{$value.id}</td>
+    									<td>{$value.nama_bahasa}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data bahasa pasien tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Suku Bangsa Pasien <a href="{?=url(ADMIN.'/pasien/sukubangsaadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Suku Bangsa</th>
+    									<th>Nama Suku Bangsa</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            						{if: !empty($pasien.suku_bangsa)}
+    								{loop: $pasien.suku_bangsa}
+    								<tr>
+    									<td>{$value.id}</td>
+    									<td>{$value.nama_suku_bangsa}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data suku bangsa pasien tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Cacat Fisik Pasien <a href="{?=url(ADMIN.'/pasien/cacatfisikadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Cacat Fisik</th>
+    									<th>Nama Cacat Fisik</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            						{if: !empty($pasien.cacat_fisik)}
+    								{loop: $pasien.cacat_fisik}
+    								<tr>
+    									<td>{$value.id}</td>
+    									<td>{$value.nama_cacat}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data cacat fisik pasien tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Perusahaan Pasien <a href="{?=url(ADMIN.'/pasien/perusahaanpasienadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Perusahaan</th>
+    									<th>Nama Perusahaan</th>
+                      <th>Alamat</th>
+    									<th>Kota</th>
+                      <th>No. Telepon</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            						{if: !empty($pasien.perusahaan_pasien)}
+    								{loop: $pasien.perusahaan_pasien}
+    								<tr>
+    									<td>{$value.kode_perusahaan}</td>
+    									<td>{$value.nama_perusahaan}</td>
+                      <td>{$value.alamat}</td>
+    									<td>{$value.kota}</td>
+                      <td>{$value.no_telp}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data perusahaan pasien tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+    </div>
+</article>

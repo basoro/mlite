@@ -1,0 +1,122 @@
+<article class="row">
+    <form name="dokter" action="{?=url(ADMIN.'/master/doktersave/'.@$dokter.form.kd_dokter)?}" method="POST">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$dokter.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Nama Dokter</label>
+                        <select name="kd_dokter" id="kd_dokter" class="form-control">
+                          {loop: $dokter.kd_dokter}
+                            <option value="{$value.nik}"{if: $value.nik == $dokter.form.kd_dokter} selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                        <input type="hidden" name="nm_dokter" id="nm_dokter" class="form-control" value="{$dokter.form.nm_dokter}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Tinggal</label>
+                        <textarea name="almt_tgl" class="form-control" rows="4">{$dokter.form.almt_tgl}</textarea>
+                    </div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tempat Lahir</label>
+                                <input type="text" name="tmp_lahir" class="form-control" value="{$dokter.form.tmp_lahir}"/>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="text" name="tgl_lahir" class="form-control datepicker" value="{$dokter.form.tgl_lahir}"/>
+                            </div>
+												</div>
+										</div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" id="jk" class="form-control">
+                                  {loop: $dokter.jk}
+                                    <option value="{$value}"{if: $value == $dokter.form.jk} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Golongan Darah</label>
+                                <select name="gol_drh" id="gol_drh" class="form-control">
+                                  {loop: $dokter.gol_drh}
+                                    <option value="{$value}"{if: $value == $dokter.form.gol_drh} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+										</div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Agama</label>
+                                <select name="agama" id="agama" class="form-control">
+                                  {loop: $dokter.agama}
+                                    <option value="{$value}"{if: $value == $dokter.form.agama} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Status Pernikahan</label>
+                                <select name="stts_nikah" id="stts_nikah" class="form-control">
+                                  {loop: $dokter.stts_nikah}
+                                    <option value="{$value}"{if: $value == $dokter.form.stts_nikah} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+										</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+    		    <div class="panel panel-default">
+                <div class="panel-heading">
+		            <h3 class="panel-title">Informasi Tambahan</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Spesialis</label>
+                        <select name="kd_sps" id="kd_sps" class="form-control">
+                          {loop: $dokter.kd_sps}
+                            <option value="{$value.kd_sps}"{if: $value.kd_sps == $dokter.form.kd_sps} selected{/if}>{$value.nm_sps}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Telepon</label>
+                        <input type="text" name="no_telp" class="form-control" value="{$dokter.form.no_telp}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Alumni</label>
+                        <input type="text" name="alumni" class="form-control" value="{$dokter.form.alumni}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor SIP</label>
+                        <input type="text" name="no_ijn_praktek" class="form-control" value="{$dokter.form.no_ijn_praktek}"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                        <a href="#" class="btn btn-default">Batal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+{if: $dokter.form.kd_dokter !== ''}
+  <script>
+    $('#kd_dokter option:not(:selected)').remove();
+  </script>
+{/if}

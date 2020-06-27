@@ -1,0 +1,23 @@
+# Prevent directory listings
+Options -Indexes
+
+# Prevent visitors from viewing files directly
+<Files "\.(md|html|txt)$">
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+        Satisfy All
+    </IfModule>
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+</Files>
+
+# URL rewrites
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(systems/|themes/|tmp/).*\.(php|html)$ - [F,L]
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>

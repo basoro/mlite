@@ -1,0 +1,71 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$users.title}</h3>
+            </div>
+            <div class="panel-body">
+    		<form name="user" action="{?=url(ADMIN.'/users/save/'.@$users.form.id)?}" method="POST">
+    			<fieldset>
+
+                  <div class="form-group">
+                      <label>Pengguna</label>
+                      <select name="username" id="username" class="form-control">
+                          {loop: $users.user}
+                              <option value="{$value.nik}"{if: $value.nik == $users.form.username} selected{/if}>{$value.nama}</option>
+                          {/loop}
+                      </select>
+                  </div>
+                  <!--<div class="form-group">
+    	                <label>Kata kunci {if: isset($users.form.id)}<a href="#" id="passwordChange" class="btn btn-default btn-xs">Ubah</a>{/if}</label>
+    	                <input type="password" name="password" class="form-control" pattern=".{5,}" title="Kata kunci terlalu pendek" {if: isset($users.form.id)}value="********" placeholder="Kata kunci baru" disabled {else}required{/if}/>
+    	            </div>-->
+                  <div class="form-group">
+                      <label>Role</label>
+                      <select name="role" class="form-control">
+                        <option value="">Pilih Role</option>
+                        {loop: $users.role}
+                          <option value="{$value}"{if: $value == $users.form.role} selected{/if}>{$value}</option>
+                        {/loop}
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Capability</label>
+                      <select name="cap" class="form-control">
+                        <option value="">Pilih Cap</option>
+                        {loop: $users.cap}
+                          <option value="{$value.cap}"{if: $value.cap == $users.form.cap} selected{/if}>{$value.nm_cap}</option>
+                        {/loop}
+                      </select>
+                  </div>
+    	            <div class="form-group">
+    	                <label>Akses</label>
+    	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
+      	                	{loop: $users.modules}
+      	                	<option value="{$value.dir}" data-left="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
+      	                	{/loop}
+    	                </select>
+    	            </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </fieldset>
+            </form>
+            </div>
+        </div>
+    </div>
+</article>
+{if: $users.form.username !== ''}
+  <script>
+    $('#username option:not(:selected)').remove();
+  </script>
+{/if}
+
+<script>
+	// Password
+	$("#passwordChange").on("click", function() {
+		$("input[name=password]").val("").attr('disabled', false);
+		$(this).remove();
+		return false;
+	})
+</script>

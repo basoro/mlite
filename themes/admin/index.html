@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$opensimrs.title} - {$module.name}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link href="{$opensimrs.path}/assets/css/bootstrap.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/bootstrap-theme.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/animate.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$opensimrs.version)?}" rel="stylesheet">
+    <link href="{?=url(THEMES.'/admin/css/style.css?v='.$opensimrs.version)?}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/bootstrap.min.js?v={$opensimrs.version}"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/bootbox.min.js?v={$opensimrs.version}"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/html.sortable.min.js?v={$opensimrs.version}"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/tinynav.min.js?v={$opensimrs.version}"></script>
+    <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version)?}"></script>
+    <script src="{?=url(THEMES.'/admin/js/selectator.js?v='.$opensimrs.version)?}"></script>
+    <script>
+        var opensimrs = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
+    </script>
+    {loop: $opensimrs.header}{$value}{/loop}
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <aside id="sidebar-wrapper">
+            <div class="user-info">
+                <div class="image">
+                    <img src="{$opensimrs.avatarURL}" width="48" height="48" alt="User" />
+                </div>
+                <div class="info-container">
+                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{?=$opensimrs.nama ?}</div>
+                    <div class="email">{?=$opensimrs.username ?}</div>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+            {loop: $opensimrs.nav}
+                <li class="{$value.active}" data-module="{$value.dir}">
+                    <a href="{$value.url}"><i class="fa fa-{$value.icon}"></i>{$value.name}</a>
+                    {if: !empty($value.subnav)}
+                    <ul class="collapse">
+                        {loop: $value.subnav}
+                        <li class="{$value.active}"><a href="{$value.url}">{$value.name}</a></li>
+                        {/loop}
+                    </ul>
+                    {/if}
+                </li>
+            {/loop}
+            </ul>
+        </aside>
+
+        <div id="navbar-wrapper">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/admin/"><span class="first">{$opensimrs.title}</span></a></div>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>{?= sprintf('Apa kabar <strong>%s</strong>?', $opensimrs.nama) ?}</span></a></li>
+                        <li class="hidden-sm hidden-xs"><a href="{?=url('')?}" target="_blank" class="fa fa-globe" data-toggle="tooltip" data-placement="bottom" title="Tampilkan"></a></li>
+                        <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+		{if: $opensimrs.notify}
+        <div id="notify" class="alert alert-{$opensimrs.notify.type} alert-dismissible fade in" role="alert">
+            {$opensimrs.notify.text}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+		{/if}
+
+        <section id="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="content-title">{$module.name}</h2>
+                        {$module.content}
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="hidden-xs hidden-sm hidden-md">
+        Dikembangkan dengan <i class="fa fa-heart text-danger"></i> oleh <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a>
+    </footer>
+
+    <script src="{?= url(THEMES.'/admin/js/scripts.js?v='.$opensimrs.version) ?}"></script>
+    {loop: $opensimrs.footer}{$value}{/loop}
+</body>
+</html>

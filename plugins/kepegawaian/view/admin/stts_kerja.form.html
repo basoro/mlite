@@ -1,0 +1,28 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$master.title}</h3>
+            </div>
+            <div class="panel-body">
+    		        <form name="master" action="{?=url(ADMIN.'/kepegawaian/sttskerjasave/'.@$master.form.stts)?}" method="POST">
+                  <div class="form-group">
+                      <label>Status</label>
+                      <input type="text" name="stts" class="form-control" value="{$master.form.stts}" />
+                  </div>
+                  <div class="form-group">
+                    <label>Keterangan</label>
+                      <input type="text" name="ktg" class="form-control" value="{$master.form.ktg}"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Indek</label>
+                      <input type="text" name="indek" class="form-control" value="{$master.form.indek}"/>
+                  </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>

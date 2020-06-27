@@ -1,0 +1,113 @@
+<article class="row">
+    <form name="petugas" action="{?=url(ADMIN.'/master/petugassave/'.@$petugas.form.nip)?}" method="POST">
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$petugas.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Nama Petugas</label>
+                        <select name="nip" id="nip" class="form-control">
+                          {loop: $petugas.nip}
+                            <option value="{$value.nik}"{if: $value.nik == $petugas.form.nip} selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                        <input type="hidden" name="nama" id="nama" class="form-control" value="{$petugas.form.nama}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Tinggal</label>
+                        <textarea name="alamat" class="form-control" rows="4">{$petugas.form.alamat}</textarea>
+                    </div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tempat Lahir</label>
+                                <input type="text" name="tmp_lahir" class="form-control" value="{$petugas.form.tmp_lahir}"/>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Tanggal Lahir</label>
+                                <input type="text" name="tgl_lahir" class="form-control datepicker" value="{$petugas.form.tgl_lahir}"/>
+                            </div>
+												</div>
+										</div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Jenis Kelamin</label>
+                                <select name="jk" id="jk" class="form-control">
+                                  {loop: $petugas.jk}
+                                    <option value="{$value}"{if: $value == $petugas.form.jk} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Golongan Darah</label>
+                                <select name="gol_darah" id="gol_darah" class="form-control">
+                                  {loop: $petugas.gol_darah}
+                                    <option value="{$value}"{if: $value == $petugas.form.gol_darah} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+										</div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Agama</label>
+                                <select name="agama" id="agama" class="form-control">
+                                  {loop: $petugas.agama}
+                                    <option value="{$value}"{if: $value == $petugas.form.agama} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Status Pernikahan</label>
+                                <select name="stts_nikah" id="stts_nikah" class="form-control">
+                                  {loop: $petugas.stts_nikah}
+                                    <option value="{$value}"{if: $value == $petugas.form.stts_nikah} selected{/if}>{$value}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+												</div>
+										</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Informasi Tambahan</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Jabatan</label>
+                        <select name="kd_jbtn" id="kd_jbtn" class="form-control">
+                          {loop: $petugas.kd_jbtn}
+                            <option value="{$value.kd_jbtn}"{if: $value.kd_jbtn == $petugas.form.kd_jbtn} selected{/if}>{$value.nm_jbtn}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Telepon</label>
+                        <input type="text" name="no_telp" class="form-control" value="{$petugas.form.no_telp}"/>
+                    </div>
+                    <div class="form-group">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+{if: $petugas.form.nip !== ''}
+  <script>
+    $('#nip option:not(:selected)').remove();
+  </script>
+{/if}

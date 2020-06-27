@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$opensimrs.title}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link href="{$opensimrs.path}/assets/css/bootstrap.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/bootstrap-theme.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?= url(THEMES.'/admin/css/style.css?v='.$opensimrs.version) ?}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version) ?}"></script>
+</head>
+
+<body style="background-image: url({?= url(THEMES.'/admin/img/wallpaper.png')?}); background-repeat: no-repeat;  background-size: cover;">
+
+	<section id="login">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <img src="data:image/jpeg;base64,{?=base64_encode($opensimrs.logo)?}" alt="logo"> <h2><span>{$opensimrs.title}</span></h2>
+            </div>
+            <div class="panel-body">
+        		<form action="{$_SERVER['REQUEST_URI']}" method="POST">
+                  	<div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                            <input type="text" name="username" class="form-control" placeholder="Nama pengguna" required />
+                        </div>
+                  	</div>
+                  	<div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                            <input type="password" name="password" class="form-control" placeholder="Kata kunci" required />
+                        </div>
+                  	</div>
+                    <div class="form-group">
+                        <label class="remember-me pull-left">
+                            <input type="checkbox" name="remember_me" />
+                            Ingat saya
+                        </label>
+                        <button type="submit" name="login" class="btn btn-success pull-right">Log masuk</button>
+                    </div>
+        		</form>
+            </div>
+        </div>
+		{if: $opensimrs.notify}
+		<div id="notify" class="alert-{$opensimrs.notify.type} animated shake">{$opensimrs.notify.text}</div>
+		{/if}
+	</section>
+
+    <script>
+    $(':checkbox').kalypto();
+    </script>
+</body>
+</html>

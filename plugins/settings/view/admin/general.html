@@ -1,0 +1,100 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Aplikasi</h3>
+                </div>
+            	<div class="panel-body">
+                    <div class="form-group">
+                        <label>Nama Institusi</label>
+                        <input type="text" name="nama_instansi" class="form-control" value="{$settings.0.nama_instansi}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Institusi</label>
+                        <textarea class="form-control" name="alamat_instansi" placeholder="Alamat (optional)" rows="4">{$settings.0.alamat_instansi}</textarea>
+                    </div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>No. Telepon</label>
+                                <input type="text" name="kontak" class="form-control" value="{$settings.0.kontak}" required />
+                            </div>
+												</div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>E-Mail</label>
+                                <input type="email" name="email" class="form-control" value="{$settings.0.email}" required />
+                            </div>
+												</div>
+										</div>
+                    <div class="row clearfix">
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Kabupaten</label>
+                                <input type="text" name="kabupaten" class="form-control" value="{$settings.0.kabupaten}" required />
+                            </div>
+                        </div>
+												<div class="col-md-6">
+                            <div class="form-group">
+                                <label>Propinsi</label>
+                                <input type="text" name="propinsi" class="form-control" value="{$settings.0.propinsi}" required />
+                            </div>
+                        </div>
+										</div>
+                    <div class="form-group">
+                        <label>Kode PPK BPJS</label>
+                        <input type="text" name="kode_ppk" class="form-control" value="{$settings.0.kode_ppk}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Kode PPK Kemkes</label>
+                        <input type="text" name="kode_ppkkemenkes" class="form-control" value="{$settings.0.kode_ppkkemenkes}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Kode PPK Inhealth</label>
+                        <input type="text" name="kode_ppkinhealth" class="form-control" value="{$settings.0.kode_ppkinhealth}" required />
+                    </div>
+
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Informasi Sistem</h3>
+                </div>
+                <div class="panel-body">
+                    <dl class="dl-horizontal no-margin">
+                        <dt></dt>
+                        <dd><img src="../../themes/admin/img/logo.png"></dd>
+                    </dl>
+                    <hr />
+                    <dl class="dl-horizontal no-margin">
+                        <dt>Aplikasi</dt>
+                        <dd>Khanza LITE</dd>
+                        <dt>Versi</dt>
+                        <dd>{$settings.system.version}</dd>
+                    </dl>
+                    <hr />
+                    <dl class="dl-horizontal no-margin">
+                        <dt>Versi PHP</dt>
+                        <dd>{$settings.system.php}</dd>
+                        <dt>Versi MySQL</dt>
+                        <dd>{$settings.system.sqlite}</dd>
+                    </dl>
+                    <hr />
+                    <dl class="dl-horizontal no-margin">
+                        <dt>Ukuran aplikasi</dt>
+                        <dd>{$settings.system.system_size}</dd>
+                        <dt>Ukuran database</dt>
+                        <dd>{$settings.system.sqlite_size}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

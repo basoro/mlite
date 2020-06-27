@@ -1,0 +1,34 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/settings/saveAplikasi')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Aplikasi</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Halaman Depan</label>
+                        <select name="homepage" class="form-control" data-use-search="true">
+                            {loop: $settings.pages}
+                            <option value="{$value.slug}" {if: $settings.homepage == $value.slug}selected{/if}>{$value.title} ({$value.slug})</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>URL API BPJS</label>
+                        <input type="text" name="BpjsApiUrl" class="form-control" value="{$settings.BpjsApiUrl}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Cons ID BPJS</label>
+                        <input type="text" name="BpjsConsID" class="form-control" value="{$settings.BpjsConsID}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key BPJS</label>
+                        <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

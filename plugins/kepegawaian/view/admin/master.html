@@ -1,0 +1,379 @@
+<article class="row">
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Jenjang Jabatan <a href="{?=url(ADMIN.'/kepegawaian/jnjjabatanadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Jenjang Jabatan</th>
+    									<th>Nama Jenjang Jabatan</th>
+                      <th>Tunjangan</th>
+    									<th>Indek</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.jnj_jabatan)}
+    								{loop: $master.jnj_jabatan}
+    								<tr>
+    									<td>{$value.kode}</td>
+    									<td>{$value.nama}</td>
+                      <td>{$value.tnj}</td>
+    									<td>{$value.indek}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data jenjang jabatan tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Kelompok Jabatan <a href="{?=url(ADMIN.'/kepegawaian/kelompokjabatanadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Kelompok Jabatan</th>
+    									<th>Nama Kelompok Jabatan</th>
+    									<th>Indek</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.kelompok_jabatan)}
+    								{loop: $master.kelompok_jabatan}
+    								<tr>
+    									<td>{$value.kode_kelompok}</td>
+    									<td>{$value.nama_kelompok}</td>
+    									<td>{$value.indek}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data kelompok jabatan tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Resiko Kerja <a href="{?=url(ADMIN.'/kepegawaian/resikokerjaadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Resiko Kerja</th>
+    									<th>Nama Resiko Kerja</th>
+    									<th>Indek</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.resiko_kerja)}
+    								{loop: $master.resiko_kerja}
+    								<tr>
+    									<td>{$value.kode_resiko}</td>
+    									<td>{$value.nama_resiko}</td>
+    									<td>{$value.indek}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data resiko kerja tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Departemen <a href="{?=url(ADMIN.'/kepegawaian/departemenadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Departemen</th>
+    									<th>Nama Departemen</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.departemen)}
+    								{loop: $master.departemen}
+    								<tr>
+    									<td>{$value.dep_id}</td>
+    									<td>{$value.nama}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data departemen tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Bidang <a href="{?=url(ADMIN.'/kepegawaian/bidangadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Nama Kelompok Jabatan</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.bidang)}
+    								{loop: $master.bidang}
+    								<tr>
+    									<td>{$value.nama}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data bidang tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Status WP <a href="{?=url(ADMIN.'/kepegawaian/sttswpadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Status</th>
+    									<th>Keterangan</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.stts_wp)}
+    								{loop: $master.stts_wp}
+    								<tr>
+    									<td>{$value.stts}</td>
+    									<td>{$value.ktg}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data status WP tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Status Kerja <a href="{?=url(ADMIN.'/kepegawaian/sttskerjaadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Status</th>
+    									<th>Keterangan</th>
+    									<th>Indek</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.stts_kerja)}
+    								{loop: $master.stts_kerja}
+    								<tr>
+    									<td>{$value.stts}</td>
+    									<td>{$value.ktg}</td>
+    									<td>{$value.indek}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data status kerja tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Pendidikan <a href="{?=url(ADMIN.'/kepegawaian/pendidikanadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Tingkat Pendidikan</th>
+    									<th>Indek</th>
+                      <th>Gaji Pokok</th>
+                      <th>Kenaikan</th>
+                      <th>Maksimal</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.pendidikan)}
+    								{loop: $master.pendidikan}
+    								<tr>
+    									<td>{$value.tingkat}</td>
+    									<td>{$value.indek}</td>
+                      <td>{$value.gapok1}</td>
+                      <td>{$value.kenaikan}</td>
+                      <td>{$value.maksimal}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data pendidikan tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Bank <a href="{?=url(ADMIN.'/kepegawaian/bankadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+                      <th>Nama Bank</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.bank)}
+    								{loop: $master.bank}
+    								<tr>
+                      <td>{$value.namabank}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data bank tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Emergency Index <a href="{?=url(ADMIN.'/kepegawaian/emergencyindexadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Emergency</th>
+    									<th>Nama Emergency</th>
+    									<th>Indek</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.emergency_index)}
+    								{loop: $master.emergency_index}
+    								<tr>
+    									<td>{$value.kode_emergency}</td>
+    									<td>{$value.nama_emergency}</td>
+    									<td>{$value.indek}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data emergency index tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+    </div>
+</article>

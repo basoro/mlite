@@ -1,0 +1,25 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/pendaftaran/saveSettings')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Aplikasi</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Aktifkan Cek Status Bayar</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="pendaftaran[cekstatusbayar]" value="0" {if: $settings.cekstatusbayar == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="pendaftaran[cekstatusbayar]" value="1" {if: $settings.cekstatusbayar == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

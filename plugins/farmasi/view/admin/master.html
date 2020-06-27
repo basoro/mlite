@@ -1,0 +1,263 @@
+<article class="row">
+    <div class="col-md-12">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Satuan <a href="{?=url(ADMIN.'/farmasi/kodesatuanadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Satuan</th>
+    									<th>Nama Satuan</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.kodesatuan)}
+    								{loop: $master.kodesatuan}
+    								<tr>
+    									<td>{$value.kode_sat}</td>
+    									<td>{$value.satuan}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data satuan tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Jenis <a href="{?=url(ADMIN.'/farmasi/jenisadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Jenis</th>
+    									<th>Nama Jenis</th>
+                      <th>Keterangan</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.jenis)}
+    								{loop: $master.jenis}
+    								<tr>
+    									<td>{$value.kdjns}</td>
+    									<td>{$value.nama}</td>
+                      <td>{$value.keterangan}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data jenis tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Industri Farmasi <a href="{?=url(ADMIN.'/farmasi/kodeindustriadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Industri</th>
+    									<th>Nama Industri</th>
+                      <th>Alamat</th>
+                      <th>Kota</th>
+                      <th>No. Tlp</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.kodeindustri)}
+    								{loop: $master.kodeindustri}
+    								<tr>
+    									<td>{$value.kode_industri}</td>
+    									<td>{$value.nama_industri}</td>
+                      <td>{$value.alamat}</td>
+                      <td>{$value.kota}</td>
+                      <td>{$value.no_telp}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data kode industri tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Kategori <a href="{?=url(ADMIN.'/farmasi/kategoriadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Kategori</th>
+    									<th>Nama Kategori</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.kategori)}
+    								{loop: $master.kategori}
+    								<tr>
+    									<td>{$value.kode}</td>
+    									<td>{$value.nama}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data kategori tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Golongan <a href="{?=url(ADMIN.'/farmasi/golonganadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Golongan</th>
+    									<th>Nama Golongan</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.golongan)}
+    								{loop: $master.golongan}
+    								<tr>
+    									<td>{$value.kode}</td>
+    									<td>{$value.nama}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data golongan tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Aturan Pakai <a href="{?=url(ADMIN.'/farmasi/aturanpakaiadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Aturan Pakai</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.aturanpakai)}
+    								{loop: $master.aturanpakai}
+    								<tr>
+    									<td>{$value.aturan}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data aturan pakai tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Metode Racik <a href="{?=url(ADMIN.'/farmasi/metoderacikadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Racik</th>
+                      <th>Nama Racik</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.metoderacik)}
+    								{loop: $master.metoderacik}
+    								<tr>
+    									<td>{$value.kd_racik}</td>
+                      <td>{$value.nm_racik}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data metode racik tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+
+    </div>
+</article>

@@ -1,0 +1,74 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Pasien</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($pasien.totalRecords)?}</h3>
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped no-margin">
+    							<thead>
+    								<tr>
+    									<th>No. RM</th>
+    									<th>Nama Pasien</th>
+                      <th>No. KTP</th>
+    									<th>Alamat</th>
+                      <th>Pekerjaan</th>
+                      <th>No. Peserta</th>
+                      <th>Umur</th>
+                      <th>No. Telepon</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            						{if: !empty($pasien.list)}
+    								{loop: $pasien.list}
+    								<tr>
+    									<td><a href="{$value.editURL}">{$value.no_rkm_medis}</a></td>
+    									<td><a href="{$value.viewURL}">{$value.nm_pasien}</a></td>
+                      <td>{$value.no_ktp}</td>
+    									<td>{$value.alamat}</td>
+                      <td>{$value.pekerjaan}</td>
+                      <td>{$value.no_peserta}</td>
+                      <td>{$value.umur}</td>
+                      <td>{$value.no_tlp}</td>
+    									<td class="text-right">
+    										<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+    											<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+    										</a>
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
+    											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data pasien tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+					{$pasien.pagination}
+            </div>
+        </div>
+    </div>
+</article>

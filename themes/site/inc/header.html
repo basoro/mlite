@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}">
+    <title>{$page.title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{$opensimrs.path}/assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{$opensimrs.theme}/css/style.css">
+    <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{$opensimrs.theme}/js/theme.js"></script>
+    {loop: $opensimrs.header}{$value}{/loop}
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header page-scroll">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{$opensimrs.path}">{$settings.nama_instansi}</a>
+            </div>
+
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="{$opensimrs.path}">Home</a></li>
+                    <li><a href="{$opensimrs.path}/admin/">Login</a></li>
+                </ul>
+            </div>
+            <!-- /.navbar-collapse -->
+        </div>
+        <!-- /.container -->
+    </nav>
