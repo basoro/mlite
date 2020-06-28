@@ -52,7 +52,7 @@ ini_set('max_execution_time', 300);
             if($action == 'start') {
             ?>
             <form id="sign_in" method="POST" action="install.php?action=config">
-                <div id="notify" class="alert-danger animated shake" style="margin-bottom:20px;">Silahkan isikan konfirgurasi database anda</div>
+                <div id="notify" class="alert-danger animated shake" style="margin-bottom:20px;">Isikan konfigurasi database anda</div>
                 <div class="form-group">
                     <div class="input-group">
                         <div class="input-group-addon"><i class="fa fa-globe"></i></div>
@@ -93,14 +93,14 @@ ini_set('max_execution_time', 300);
                 <div class="col-xs-12">
                   <form id="sign_in" class="finish" method="POST" action="install.php?action=finish">
                       <div class="preinstall-information">
-                          <div id="notify" class="alert-success animated shake" style="margin-bottom:20px;">Koneksi ke database anda sukses. Silahkan klik tombol dibawah untuk memulai instalasi.</div>
+                          <div id="notify" class="alert-success animated shake" style="margin-bottom:20px;">Koneksi ke database anda sukses. Klik tombol dibawah untuk memulai instalasi.</div>
                           <button class="btn btn-danger btn-lg btn-block" type="submit" name="finish">INSTALL DATABASE</button>
                       </div>
                       <div class="install-information">
                           <div class="text-center">
                             <br><i class="fa fa-spinner fa-spin fa-5x"></i><br><br>
                           </div>
-                          <div id="notify" class="alert-danger animated shake" style="margin-bottom:20px;">Silahkan tunggu sebentar selama proses pemasangan database. Perkiraan waktu pemasangan tergantung spesifikasi sistem anda. Tapi rata-rata kurang dari 5 menit.</div>
+                          <div id="notify" class="alert-danger animated shake" style="margin-bottom:20px;">Tunggu sebentar selama proses pemasangan database. Perkiraan waktu pemasangan tergantung spesifikasi sistem anda. Tapi rata-rata kurang dari 5 menit.</div>
                       </div>
                   </form>
                 </div>
