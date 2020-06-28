@@ -25,6 +25,7 @@
 								</ul>
 								<a href="{$pasien.print_kartu}" target="_blank" class="btn btn-primary btn-block">CETAK KARTU</a>
 								<a href="{$pasien.print_rm}" target="_blank" class="btn btn-primary btn-block">CETAK REKAN MEDIK</a>
+								<a href="{$pasien.berkas_digital}" class="btn btn-primary btn-block" data-toggle="modal" data-target="#digitalModal">BERKAS DIGITAL</a>
 						</div>
 				</div>
 
@@ -195,3 +196,12 @@
 				</div>
 	  </div>
 </article>
+
+<!-- Modal -->
+<div class="modal fade" id="digitalModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>

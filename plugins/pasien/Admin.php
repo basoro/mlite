@@ -176,6 +176,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->assign['print_rm'] = url([ADMIN, 'pasien', 'print_rm', $no_rkm_medis]);
         $this->assign['print_kartu'] = url([ADMIN, 'pasien', 'print_kartu', $no_rkm_medis]);
+        $this->assign['berkas_digital'] = url([ADMIN, 'pasien', 'berkas_digital', $no_rkm_medis]);
         $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
         $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
 
@@ -662,6 +663,13 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+    public function getBerkas_digital($id)
+    {
+      $berkas_digital['title'] = 'Berkas Digital Pasien';
+      $this->tpl->set('berkas_digital', $berkas_digital);
+      echo $this->tpl->draw(MODULES.'/pasien/view/admin/berkas_digital.html', true);
+      exit();
+    }
     public function getPrint_kartu($id)
     {
       $pasien = $this->db('pasien')->where('no_rkm_medis', $id)->oneArray();
