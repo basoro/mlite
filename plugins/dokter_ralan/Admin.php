@@ -115,10 +115,15 @@ class Admin extends AdminModule
             $this->assign['view']['count_ralan'] = $count_ralan;
             $this->assign['view']['count_ranap'] = $count_ranap;
             $this->assign['soap'] = $this->db('pemeriksaan_ralan')->where('no_rawat', $id)->oneArray();
+            if($reg_periksa['status_lanjut'] == 'Ranap') {
+              $this->assign['soap'] = $this->db('pemeriksaan_ranap')->where('no_rawat', $id)->oneArray();
+            }
             $this->assign['metode_racik'] = $this->core->db('metode_racik')->toArray();
             $this->assign['diagnosa_pasien'] = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('no_rawat', $id)->toArray();
             $this->assign['prosedur_pasien'] = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_jl_dr'] = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_jl_pr'] = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_jl_drpr'] = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['catatan'] = $this->db('catatan_perawatan')->where('no_rawat', $id)->oneArray();
             $this->assign['permintaan_resep'] = $this->db('resep_obat')
                 ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')

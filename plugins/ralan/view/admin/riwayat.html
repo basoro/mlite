@@ -47,9 +47,25 @@
                           </ul>
                         {/if}
                         {if: !empty($value.rawat_jl_dr)}
-                          <div class="assessment-title">Perawatan:</div>
+                          <div class="assessment-title">Perawatan Dokter:</div>
                           <ul class="fa-ul">
                           {loop: $value.rawat_jl_dr as $data}
+                            <li><i class="fa-li fa fa-check-square"></i>{$data.nm_perawatan}</li>
+                          {/loop}
+                          </ul>
+                        {/if}
+                        {if: !empty($value.rawat_jl_drpr)}
+                          <div class="assessment-title">Perawatan Dokter & Perawat:</div>
+                          <ul class="fa-ul">
+                          {loop: $value.rawat_jl_drpr as $data}
+                            <li><i class="fa-li fa fa-check-square"></i>{$data.nm_perawatan}</li>
+                          {/loop}
+                          </ul>
+                        {/if}
+                        {if: !empty($value.rawat_jl_pr)}
+                          <div class="assessment-title">Perawatan Perawat:</div>
+                          <ul class="fa-ul">
+                          {loop: $value.rawat_jl_pr as $data}
                             <li><i class="fa-li fa fa-check-square"></i>{$data.nm_perawatan}</li>
                           {/loop}
                           </ul>
