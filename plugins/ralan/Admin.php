@@ -171,9 +171,14 @@ class Admin extends AdminModule
 
             foreach ($rows as &$row) {
                 $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->oneArray();
+                if($row['status_lanjut'] == 'Ranap') {
+                  $pemeriksaan_ralan = $this->db('pemeriksaan_ranap')->where('no_rawat', $row['no_rawat'])->oneArray();
+                }
                 $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('no_rawat', $row['no_rawat'])->toArray();
                 $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_jl_dr = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_jl_pr = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_jl_drpr = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $detail_pemberian_obat = $this->db('aturan_pakai')
                   ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
                   ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
@@ -203,6 +208,8 @@ class Admin extends AdminModule
                 $row['diagnosa_pasien'] = $diagnosa_pasien;
                 $row['prosedur_pasien'] = $prosedur_pasien;
                 $row['rawat_jl_dr'] = $rawat_jl_dr;
+                $row['rawat_jl_pr'] = $rawat_jl_pr;
+                $row['rawat_jl_drpr'] = $rawat_jl_drpr;
                 $row['detail_pemberian_obat'] = $detail_pemberian_obat;
                 $row['detail_periksa_lab'] = $detail_periksa_lab;
                 $this->assign['riwayat'][] = $row;
