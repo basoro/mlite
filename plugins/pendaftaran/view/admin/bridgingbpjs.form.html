@@ -31,7 +31,7 @@
 															<i class="fa fa-calendar"></i> {$bridging.rujukan.peserta.tglLahir}
 														</li>
 														<li>
-																<i class="fa fa-user"></i> {if: $bridging.rujukan.peserta.pisa == '1'} Ayah {else if: $bridging.rujukan.peserta.pisa == '2'} Ibu {else} Anak{/if}
+																<i class="fa fa-user"></i> {if: $bridging.rujukan.peserta.pisa == '1'} Ayah {elseif: $bridging.rujukan.peserta.pisa == '2'} Ibu {else} Anak{/if}
 														</li>
 														<li>
 																<i class="fa fa-hospital-o"></i> {$bridging.rujukan.peserta.hakKelas.keterangan}

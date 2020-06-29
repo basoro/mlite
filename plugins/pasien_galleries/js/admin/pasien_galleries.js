@@ -17,7 +17,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/pasien_galleries/ajax?show=pasien&no_rkm_medis=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/admin/pasien_galleries/ajax?show=pasien&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
