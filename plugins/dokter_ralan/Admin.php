@@ -121,6 +121,9 @@ class Admin extends AdminModule
             $this->assign['rawat_jl_dr'] = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_jl_pr'] = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_jl_drpr'] = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_inap_dr'] = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_inap_pr'] = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['catatan'] = $this->db('catatan_perawatan')->where('no_rawat', $id)->oneArray();
             $this->assign['permintaan_resep'] = $this->db('resep_obat')
                 ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
@@ -185,6 +188,9 @@ class Admin extends AdminModule
                 $rawat_jl_dr = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_jl_pr = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_jl_drpr = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_inap_dr = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_inap_pr = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_inap_drpr = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $detail_pemberian_obat = $this->db('aturan_pakai')
                   ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
                   ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
@@ -215,6 +221,9 @@ class Admin extends AdminModule
                 $row['rawat_jl_dr'] = $rawat_jl_dr;
                 $row['rawat_jl_pr'] = $rawat_jl_pr;
                 $row['rawat_jl_drpr'] = $rawat_jl_drpr;
+                $row['rawat_inap_dr'] = $rawat_inap_dr;
+                $row['rawat_inap_pr'] = $rawat_inap_pr;
+                $row['rawat_inap_drpr'] = $rawat_inap_drpr;
                 $row['detail_pemberian_obat'] = $detail_pemberian_obat;
                 $row['detail_periksa_lab'] = $detail_periksa_lab;
                 $this->assign['riwayat'][] = $row;
