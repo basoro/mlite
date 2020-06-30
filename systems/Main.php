@@ -191,12 +191,6 @@ abstract class Main
         return $row[0][$field];
     }
 
-    public function getPasienBPJS($field, $no_kartu)
-    {
-        $row = $this->db('pasien')->where('no_peserta', $no_kartu)->toArray();
-        return $row[0][$field];
-    }
-
     public function getRegPeriksaInfo($field, $no_rawat)
     {
         $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->toArray();
