@@ -316,6 +316,7 @@ class Admin extends AdminModule
 
       $pasien = $this->db('pasien')->where('no_peserta', $json['response']['rujukan']['peserta']['noKartu'])->oneArray();
       $this->assign['pasien'] = $pasien;
+      $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
 
       $this->assign['kode_ppk'] = $this->core->getSettings('kode_ppk');
 
@@ -347,27 +348,29 @@ class Admin extends AdminModule
     }
 
     public function postSaveSEP() {
-      $_POST['ppkPelayanan'] = $this->core->getSettings('kode_ppk');
       $date = date('Y-m-d');
       $consid = $this->options->get('settings.BpjsConsID');
       $secretkey = $this->options->get('settings.BpjsSecretKey');
 
+      $_POST['kdppkpelayanan'] = $this->core->getSettings('kode_ppk');
+      $_POST['user'] = $this->core->getUserInfo('username', null, true);
+
       $sup = new \StdClass();
-      $sup->noKartu = $_POST['noKartu']; #pass
-      $sup->tglSep = $_POST['tglSep']; #pass
-      $sup->ppkPelayanan = $_POST['ppkPelayanan']; #pass
-      $sup->jnsPelayanan = $_POST['jnsPelayanan']; #pass
-      $sup->klsRawat = $_POST['klsRawat']; #pass
-      $sup->noMR = $_POST['noMR']; #pass
+      $sup->noKartu = $_POST['no_kartu']; #pass
+      $sup->tglSep = $_POST['tglsep']; #pass
+      $sup->ppkPelayanan = $_POST['kdppkpelayanan']; #pass
+      $sup->jnsPelayanan = $_POST['jnspelayanan']; #pass
+      $sup->klsRawat = $_POST['klsrawat']; #pass
+      $sup->noMR = $_POST['nomr']; #pass
       $sup->rujukan = new \StdClass();
-      $sup->rujukan->asalRujukan = $_POST['asalRujukan']; #pass
-      $sup->rujukan->tglRujukan = $_POST['tglRujukan']; #pass
-      $sup->rujukan->noRujukan = $_POST['noRujukan']; #pass
-      $sup->rujukan->ppkRujukan = $_POST['ppkRujukan']; #pass
+      $sup->rujukan->asalRujukan = $_POST['asal_rujukan']; #pass
+      $sup->rujukan->tglRujukan = $_POST['tglrujukan']; #pass
+      $sup->rujukan->noRujukan = $_POST['no_rujukan']; #pass
+      $sup->rujukan->ppkRujukan = $_POST['kdppkrujukan']; #pass
       $sup->catatan = $_POST['catatan']; #pass
-      $sup->diagAwal = $_POST['diagAwal']; #pass
+      $sup->diagAwal = $_POST['diagawal']; #pass
       $sup->poli = new \StdClass();
-      $sup->poli->tujuan = $_POST['tujuan']; #pass
+      $sup->poli->tujuan = $_POST['kdpolitujuan']; #pass
       $sup->poli->eksekutif = $_POST['eksekutif']; #pass
       $sup->cob = new \StdClass();
       $sup->cob->cob = $_POST['cob']; #pass
@@ -377,42 +380,78 @@ class Admin extends AdminModule
       $sup->jaminan->lakaLantas = $_POST['lakaLantas']; #pass
       $sup->jaminan->penjamin = new \StdClass();
       $sup->jaminan->penjamin->penjamin = $_POST['penjamin']; #pass
-      $sup->jaminan->penjamin->tglKejadian = $_POST['tglKejadian']; #pass
-      $sup->jaminan->penjamin->keterangan = $_POST['keterangan']; #pass
+      $sup->jaminan->penjamin->tglKejadian = $_POST['tglkkl']; #pass
+      $sup->jaminan->penjamin->keterangan = $_POST['keterangankkl']; #pass
       $sup->jaminan->penjamin->suplesi = new \StdClass();
       $sup->jaminan->penjamin->suplesi->suplesi = $_POST['suplesi']; #pass
-      $sup->jaminan->penjamin->suplesi->noSepSuplesi = $_POST['noSepSuplesi']; #pass
+      $sup->jaminan->penjamin->suplesi->noSepSuplesi = $_POST['no_sep_suplesi']; #pass
       $sup->jaminan->penjamin->suplesi->lokasiLaka = new \StdClass();
-      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdPropinsi = $_POST['kdPropinsi']; #pass
-      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdKabupaten = $_POST['kdKabupaten']; #pass
-      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdKecamatan = $_POST['kdKecamatan']; #pass
+      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdPropinsi = $_POST['kdprop']; #pass
+      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdKabupaten = $_POST['kdkab']; #pass
+      $sup->jaminan->penjamin->suplesi->lokasiLaka->kdKecamatan = $_POST['kdkec']; #pass
       $sup->skdp = new \StdClass();
-      $sup->skdp->noSurat = $_POST['noSurat']; #pass
-      $sup->skdp->kodeDPJP = $_POST['kodeDPJP']; #pass
-      $sup->noTelp = $_POST['noTelp']; #pass
-      $sup->user = $this->core->getUserInfo('username', null, true);
+      $sup->skdp->noSurat = $_POST['noskdp']; #pass
+      $sup->skdp->kodeDPJP = $_POST['kddpjp']; #pass
+      $sup->noTelp = $_POST['notelep']; #pass
+      $sup->user = $_POST['user'];
 
       $data = new \StdClass();
       $data->request = new \StdClass();
       $data->request->t_sep = $sup;
 
-      $savesep = json_encode($data);
-      print_r($savesep);
+      //$savesep = json_encode($data);
+      //print_r($savesep);
 
-      ////$url = $this->options->get('settings.BpjsApiUrl').'SEP/1.1/insert';
-      ////$savesep = BpjsRequest::post($url, [$savesep], NULL, $consid, $secretkey);
+      $url = $this->options->get('settings.BpjsApiUrl').'SEP/1.1/insert';
+      //$savesep = BpjsRequest::post($url, [$savesep], NULL, $consid, $secretkey);
       //$getsep = BpjsRequest::get($url, $savesep, NULL, $consid, $secretkey);
-      ////$json = json_decode($savesep, true);
-      ////print("<pre>".print_r($json,true)."</pre>");
+      //$json = json_decode($getsep, true);
+      //print("<pre>".print_r($json,true)."</pre>");
       //print_r($json);
 
       $json['metaData']['code'] = '200';
       $code = $json['metaData']['code'];
-      $message = $json['metaData']['message'];
-      $no_sep = $json['response']['sep']['noSep'];
+      //$message = $json['metaData']['message'];
+      //$no_sep = $json['response']['sep']['noSep'];
 
       if($json['metaData']['code'] == '200') {
+
         unset($_POST['save']);
+
+        if ($_POST['suplesi'] == '0') {
+          $_POST['suplesi'] = '0. Tidak';
+        }else {
+          $_POST['suplesi'] = '1. Ya';
+        };
+        if ($_POST['eksekutif'] == '0') {
+          $_POST['eksekutif'] = '0. Tidak';
+        }else {
+          $_POST['eksekutif'] = '1. Ya';
+        };
+        if ($_POST['cob'] == '0') {
+          $_POST['cob'] = '0. Tidak';
+        }else {
+          $_POST['cob'] = '1. Ya';
+        };
+        if ($_POST['katarak'] == '0') {
+          $_POST['katarak'] = '0. Tidak';
+        }else {
+          $_POST['katarak'] = '1. Ya';
+        };
+        if ($_POST['asal_rujukan'] == '1') {
+          $_POST['asal_rujukan'] = '1. Faskes 1';
+        }else {
+          $_POST['asal_rujukan'] = '2. Faskes 2(RS)';
+        };
+
+        $_POST['nmppkpelayanan'] = $this->core->getSettings('nama_instansi');
+        $_POST['tglpulang'] = '1970-01-01 00:00:00';
+        $_POST['nmpolitujuan'] = 'NMPOLI'; #ambil dari ws bpjs
+        $_POST['nmdiagnosaawal'] = 'DX'; #ambil dari ws bpjs
+        $_POST['nmprop'] = 'PROP'; #ambil dari ws bpjs
+        $_POST['nmkab'] = 'KAB'; #ambil dari ws bpjs
+        $_POST['nmkec'] = 'KEC'; #ambil dari ws bpjs
+        $_POST['nmdpdjp'] = 'NMDPJP'; #ambil dari ws bpjs
 
         $query = $this->db('bridging_sep')->save($_POST);
 
