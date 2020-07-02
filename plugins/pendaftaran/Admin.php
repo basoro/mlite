@@ -106,7 +106,7 @@ class Admin extends AdminModule
         $this->assign['form']['tgl_registrasi'] = date('Y-m-d');
         $this->assign['form']['jam_reg'] = date('H:i:s');
         $this->assign['poliklinik'] = $this->core->db('poliklinik')->where('status', '1')->toArray();
-        $this->assign['dokter'] = $this->core->db('dokter')->toArray();
+        $this->assign['dokter'] = $this->core->db('dokter')->where('status', '1')->toArray();
         $this->assign['status_lanjut'] = $this->core->getEnum('reg_periksa', 'status_lanjut');
         $this->assign['status_bayar'] = $this->core->getEnum('reg_periksa', 'status_bayar');
         $this->assign['penjab'] = $this->core->db('penjab')->toArray();
