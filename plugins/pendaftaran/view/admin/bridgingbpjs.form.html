@@ -119,6 +119,14 @@
 														<div class="tab-content" style="margin-top:15px;">
 																<div role="tabpanel" class="tab-pane fade in active" id="satu">
 																		<dl class="dl-horizontal no-margin">
+																				<dt>Nomor Rawat <span style="color:red">*</span></dt>
+																				<dd>
+																					<select name="no_rawat" class="form-control">
+																						{loop: $bridging.reg_periksa}
+																							<option value="{$value.no_rawat}">{$value.no_rawat}</option>
+																						{/loop}
+																					</select>
+																				</dd>
 																				<dt>Jenis Pelayanan <span style="color:red">*</span></dt>
 																				<dd>
 																					<select class="form-control" name="jnspelayanan">
@@ -250,7 +258,7 @@
 														</li>
 														{if: $bridging.rujukan.noKunjungan == $bridging.bridging_sep.no_rujukan}
 														<li>
-																<input type="submit" class="btn btn-primary" name="" value="Cetak">
+																<a href="{$bridging.printSEP}" target="_blank" class="btn btn-success" style="color:#fff;">Cetak SEP</a>
 														</li>
 														{/if}
 														<li>
@@ -264,3 +272,12 @@
 		</div>
 		</form>
 </article>
+
+<!-- Modal -->
+<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>

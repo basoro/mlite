@@ -239,6 +239,22 @@ abstract class Main
         return $next_no_reg;
     }
 
+    public function setNoBooking($kd_dokter, $date)
+    {
+        //$date = date('Y-m-d');
+        // Get last no_rawat
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT MAX(no_reg) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg->execute();
+        $last_no_reg = $last_no_reg->fetch();
+        // Next no_rm
+        if(empty($last_no_reg[0])) {
+          $last_no_reg[0] = '000';
+        }
+        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        return $next_no_reg;
+    }
+
     public function setNoResep()
     {
         $date = date('Y-m-d');

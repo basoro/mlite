@@ -610,6 +610,50 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+    public function postKontrolSave($id = null)
+    {
+        $errors = 0;
+        $location = url([ADMIN, 'ralan', 'view', $id]);
+
+        if (checkEmptyFields(['kd_dokter','diagnosa','alasan1','tanggal_rujukan'], $_POST)) {
+            $this->notify('failure', 'Nama dokter masih kosong');
+            redirect($location, $_POST);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+            $no_rawat = revertNorawat($id);
+            $_POST['tahun'] = date('Y');
+            $_POST['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+            $_POST['no_antrian'] = $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tanggal_rujukan']);
+            $query = $this->db('skdp_bpjs')->save($_POST);
+
+            if ($query) {
+                $this->db('booking_registrasi')
+                  ->save([
+                    'tanggal_booking' => $_POST['tanggal_datang'],
+                    'jam_booking' => date('H:i:s'),
+                    'no_rkm_medis' => $_POST['no_rkm_medis'],
+                    'tanggal_periksa' => $_POST['tanggal_rujukan'],
+                    'kd_dokter' => $_POST['kd_dokter'],
+                    'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $no_rawat),
+                    'no_reg' => $_POST['no_antrian'],
+                    'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $no_rawat),
+                    'limit_reg' => 0,
+                    'waktu_kunjungan' => $_POST['tanggal_rujukan'].' '.date('H:i:s'),
+                    'status' => 'Belum'
+                  ]);
+                $this->notify('success', 'Simpan sukes');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+
+            redirect($location);
+        }
+
+        redirect($location, $_POST);
+    }
+
     public function getAjax()
     {
         header('Content-type: text/html');
@@ -730,9 +774,11 @@ class Admin extends AdminModule
     {
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
 
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'ralan', 'css']));

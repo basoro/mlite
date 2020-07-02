@@ -318,6 +318,8 @@ class Admin extends AdminModule
       $this->assign['pasien'] = $pasien;
       $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
 
+      $this->assign['reg_periksa'] = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->desc('no_rawat')->toArray();
+
       $this->assign['kode_ppk'] = $this->core->getSettings('kode_ppk');
 
       $url_referensi = $this->options->get('settings.BpjsApiUrl').'referensi/dokter/pelayanan/'.$json['response']['rujukan']['pelayanan']['kode'].'/tglPelayanan/'.$date.'/Spesialis/'.$json['response']['rujukan']['poliRujukan']['kode'];
@@ -333,11 +335,66 @@ class Admin extends AdminModule
       $json_rujukan = json_decode($url_rujukan, true);
       $this->assign['sepdetail'] = [];
       foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
-          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'norujukan', $value['noKunjungan']]);
+          //$get_sepdetail = $this->db('bridging_sep')->where('no_rujukan', $value['noKunjungan'])->oneArray();
+          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noKunjungan']]);
           $this->assign['sepdetail'][] = $value;
       }
 
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
+      $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
+      if(!empty($personal_pasien['gambar'])) {
+        $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
+      }
+
+      $this->assign['nama_instansi'] = $this->core->getSettings('nama_instansi');
+
+      return $this->draw('bridgingbpjs.form.html', ['bridging' => $this->assign]);
+    }
+
+    public function getSepDetail($id)
+    {
+      $this->_addProfileHeaderFiles();
+      $date = date('Y-m-d');
+      $bridging_sep = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
+      $this->assign['bridging_sep'] = $bridging_sep;
+
+      $consid = $this->options->get('settings.BpjsConsID');
+      $secretkey = $this->options->get('settings.BpjsSecretKey');
+
+      $url = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$bridging_sep['no_rujukan'];
+      $rujukan = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+      $json = json_decode($rujukan, true);
+      $this->assign['rujukan'] = $json['response']['rujukan'];
+      $no_kartu = $json['response']['rujukan']['peserta']['noKartu'];
+      $sex = $json['response']['rujukan']['peserta']['sex'];
+
+      $pasien = $this->db('pasien')->where('no_peserta', $json['response']['rujukan']['peserta']['noKartu'])->oneArray();
+      $this->assign['pasien'] = $pasien;
+      $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+
+      $this->assign['reg_periksa'] = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->desc('no_rawat')->toArray();
+
+      $this->assign['kode_ppk'] = $this->core->getSettings('kode_ppk');
+
+      $url_referensi = $this->options->get('settings.BpjsApiUrl').'referensi/dokter/pelayanan/'.$json['response']['rujukan']['pelayanan']['kode'].'/tglPelayanan/'.$date.'/Spesialis/'.$json['response']['rujukan']['poliRujukan']['kode'];
+      $dpjp = BpjsRequest::get($url_referensi, NULL, NULL, $consid, $secretkey);
+      $json = json_decode($dpjp, true);
+      $this->assign['dpjp'] = [];
+      foreach ($json['response']['list'] as $key=>$value) {
+          $this->assign['dpjp'][] = $value;
+      }
+
+      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/List/Peserta/'.$no_kartu;
+      $url_rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
+      $json_rujukan = json_decode($url_rujukan, true);
+      $this->assign['sepdetail'] = [];
+      foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
+          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noKunjungan']]);
+          $this->assign['sepdetail'][] = $value;
+      }
+
+      $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
+      $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
       if(!empty($personal_pasien['gambar'])) {
         $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
       }
@@ -399,11 +456,12 @@ class Admin extends AdminModule
       $data->request = new \StdClass();
       $data->request->t_sep = $sup;
 
-      //$savesep = json_encode($data);
+      $savesep = json_encode($data);
       //print_r($savesep);
+      echo $savesep;
 
-      $url = $this->options->get('settings.BpjsApiUrl').'SEP/1.1/insert';
-      //$savesep = BpjsRequest::post($url, [$savesep], NULL, $consid, $secretkey);
+      //$url = $this->options->get('settings.BpjsApiUrl').'SEP/1.1/insert';
+      //$savesep = BpjsRequest::post($url, $savesep, NULL, $consid, $secretkey);
       //$getsep = BpjsRequest::get($url, $savesep, NULL, $consid, $secretkey);
       //$json = json_decode($getsep, true);
       //print("<pre>".print_r($json,true)."</pre>");
@@ -627,6 +685,19 @@ class Admin extends AdminModule
         echo json_encode($json_diagnosa, true);
         break;
 
+        case "propinsi":
+        $phrase = '';
+        if(isset($_GET['s']))
+          $phrase = $_GET['s'];
+
+        $url_referensi = $this->options->get('settings.BpjsApiUrl').'referensi/propinsi';
+        $consid = $this->options->get('settings.BpjsConsID');
+        $secretkey = $this->options->get('settings.BpjsSecretKey');
+        $array = BpjsRequest::get($url_referensi, NULL, NULL, $consid, $secretkey);
+        $json = json_decode($array, true);
+        echo json_encode($json, true);
+        break;
+
       }
       exit();
     }
@@ -700,6 +771,16 @@ class Admin extends AdminModule
 
     }
 
+    public function getPrintSEP($id) {
+      $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
+      $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_rujukan', $id)->oneArray();
+      $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
+      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      $this->tpl->set('print_sep', $print_sep);
+      echo $this->tpl->draw(MODULES.'/pendaftaran/view/admin/cetak.sep.html', true);
+      exit();
+    }
     /**
     * check if pasien already exists
     * @return array

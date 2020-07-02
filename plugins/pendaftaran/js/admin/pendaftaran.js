@@ -12,12 +12,6 @@ $( function() {
   $('.timepicker').timepicker();
 } );
 $(document).ready(function(){
-    $('.display').DataTable({
-      "lengthChange": false,
-      "scrollX": true
-    });
-});
-$(document).ready(function(){
     var keyword = '';
     load_data(keyword);
     function load_data(keyword) {
@@ -127,5 +121,54 @@ $(document).ready(function () {
     valueField: 'kode',
     textField: 'nama'
   });
+  $('.propinsi').selectator({
+    labels: {
+      search: 'Cari Propinsi...'
+    },
+    load: function (search, callback) {
+      if (search.length < this.minSearchLength) return callback();
+      $.ajax({
+        url: '{?=url()?}/admin/pendaftaran/ajax?show=propinsi&t={?=$_SESSION['token']?}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          callback(data['response']['list'].slice(0, 100));
+          console.log(data['response']['list']);
+        },
+        error: function() {
+          callback();
+        }
+      });
+    },
+    delay: 300,
+    minSearchLength: 0,
+    valueField: 'kode',
+    textField: 'nama'
+  });
+  $('.kabupaten').selectator({
+    labels: {
+      search: 'Cari Kabupaten...'
+    },
+    load: function (search, callback) {
+      if (search.length < this.minSearchLength) return callback();
+      $.ajax({
+        url: '{?=url()?}/admin/pendaftaran/ajax?show=kabupaten&t={?=$_SESSION['token']?}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          callback(data['response']['list'].slice(0, 100));
+          console.log(data['response']['list']);
+        },
+        error: function() {
+          callback();
+        }
+      });
+    },
+    delay: 300,
+    minSearchLength: 0,
+    valueField: 'kode',
+    textField: 'nama'
+  });
+
   $('select').selectator();
 });

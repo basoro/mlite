@@ -6,6 +6,7 @@ $( function() {
     yearRange: "-100:+0",
   });
 } );
+
 $(document).ready(function() {
     if (location.hash) {
         $("a[href='" + location.hash + "']").tab("show");
