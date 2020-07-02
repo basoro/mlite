@@ -58,6 +58,8 @@
                         <th>Nama Pasien</th>
                         <th>No. RM</th>
                         <th>No. Reg</th>
+                        <th>Klinik</th>
+                        <th>Dokter</th>
       									<th>Jenis Bayar</th>
                         <th>Alamat</th>
                         <th>Tgl. Reg</th>
@@ -73,6 +75,8 @@
       									<td>{$value.nm_pasien}</td>
                         <td>{$value.no_rkm_medis}</td>
                         <td>{$value.no_reg}</td>
+                        <td>{$value.nm_poli}</td>
+                        <td>{$value.nm_dokter}</td>
                         <td>{$value.png_jawab}</td>
                         <td>{$value.almt_pj}</td>
                         <td>{$value.tgl_registrasi}</td>
@@ -81,7 +85,7 @@
       								</tr>
       								{/loop}
       								{else}
-      								<tr><td colspan="9" class="text-center">Data pasien tidak ditemukan</td></tr>
+      								<tr><td colspan="11" class="text-center">Data pasien tidak ditemukan</td></tr>
       							{/if}
       							</tbody>
       						</table>
