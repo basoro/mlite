@@ -63,6 +63,7 @@ class Admin extends AdminModule
           }
       }
 
+      $this->assign['options'] = htmlspecialchars_array($this->options('pendaftaran'));
       $this->assign['searchUrl'] =  url([ADMIN, 'pendaftaran', 'manage', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['pendaftaran' => $this->assign]);
 
@@ -249,8 +250,9 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-        $assign = htmlspecialchars_array($this->options('pendaftaran'));
-        return $this->draw('settings.html', ['settings' => $assign]);
+        $this->assign['penjab'] = $this->db('penjab')->toArray();
+        $this->assign['pendaftaran'] = htmlspecialchars_array($this->options('pendaftaran'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettings()

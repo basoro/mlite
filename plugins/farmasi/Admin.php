@@ -259,7 +259,6 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Pengaturan Modul Farmasi';
         $this->assign['bangsal'] = $this->db('bangsal')->toArray();
         $this->assign['farmasi'] = htmlspecialchars_array($this->options('farmasi'));
-        //print_r($this->assign['row']);
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
