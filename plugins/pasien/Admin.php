@@ -16,7 +16,8 @@ class Admin extends AdminModule
         return [
             'Kelola'    => 'manage',
             'Tambah Baru'                => 'add',
-            'Master Pasien'                => 'master'
+            'Master Pasien'                => 'master',
+            'Pengaturan'          => 'settings'
         ];
     }
 
@@ -885,9 +886,11 @@ RR: '.$pemeriksaan_ralan['respirasi'].' /mnt';
         }
 
         // check if pasien already exists
-        if ($this->_pasienAlreadyExists($_POST['no_rkm_medis'])) {
-            $errors++;
-            $this->notify('failure', 'Pasiens sudah terdaftar dengan nomor KTP '.$_POST['no_ktp']);
+        if($this->options->get('pasien.ceknoktp') == 1) {
+            if ($this->_pasienAlreadyExists($_POST['no_rkm_medis'])) {
+                $errors++;
+                $this->notify('failure', 'Pasiens sudah terdaftar dengan nomor KTP '.$_POST['no_ktp']);
+            }
         }
 
         // CREATE / EDIT
@@ -969,6 +972,21 @@ RR: '.$pemeriksaan_ralan['respirasi'].' /mnt';
             }
         }
         redirect(url([ADMIN, 'pasien', 'manage']));
+    }
+
+    public function getSettings()
+    {
+        $this->assign['pasien'] = htmlspecialchars_array($this->options('pasien'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['pasien'] as $key => $val) {
+            $this->options('pasien', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan pasien telah disimpan');
+        redirect(url([ADMIN, 'pasien', 'settings']));
     }
 
     public function getAjax()

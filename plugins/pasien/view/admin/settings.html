@@ -1,0 +1,25 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/pasien/saveSettings')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Pasien</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Aktifkan Cek No KTP</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="pasien[ceknoktp]" value="0" {if: $settings.pasien.ceknoktp == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="pasien[ceknoktp]" value="1" {if: $settings.pasien.ceknoktp == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
