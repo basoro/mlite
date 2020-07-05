@@ -7,7 +7,7 @@
                     <li class="dropdown {if: isset($_GET['start_date']) && $_GET['end_date'] !== date('Y-m-d') && $_GET['end_date'] !== date('Y-m-d', strtotime('1 days')) && $_GET['end_date'] !== date('Y-m-d', strtotime('7 days')) && $_GET['end_date'] !== date('Y-m-d', strtotime('30 days'))}active{else}{/if}">
                         <a class="dropdown-toggle" href="#tab-main" data-toggle="dropdown" role="tab">Kustom</a>
                         <div class="dropdown-menu" role="menu">
-                            <form action="{?=url(ADMIN.'/booking/manage')?}" style="padding:10px;">
+                            <form action="{?=url(ADMIN.'/pendaftaran/booking')?}" style="padding:10px;">
                                 <div class="input-group">
                                     <span>Tanggal Awal：<input class="datepicker" style="padding:3px;" type="text" name="start_date" value="{?=date('Y-m-d')?}"></span>
                                     <span>Tanggal Akhir：<input class="datepicker" style="padding:3px;" type="text" name="end_date" value="{?=date('Y-m-d')?}"></span>
@@ -18,16 +18,16 @@
                         </div>
                     </li>
                     <li class="{if: $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
-                        <a href="{?=url(ADMIN.'/booking/manage')?}" role="tab">Sekarang</a>
+                        <a href="{?=url(ADMIN.'/pendaftaran/booking')?}" role="tab">Sekarang</a>
                     </li>
                     <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('1 days'))}active{/if}">
-                        <a href="{?=url(ADMIN.'/booking/manage/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('1 days')))?}" role="tab">1 Hari Lagi</a>
+                        <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('1 days')))?}" role="tab">1 Hari Lagi</a>
                     </li>
                     <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('7 days'))}active{/if}">
-                        <a href="{?=url(ADMIN.'/booking/manage/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('7 days')))?}" role="tab">7 Hari Lagi</a>
+                        <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('7 days')))?}" role="tab">7 Hari Lagi</a>
                     </li>
                     <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('30 days'))}active{/if}">
-                        <a href="{?=url(ADMIN.'/booking/manage/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('30 days')))?}" role="tab">30 Hari Lagi</a>
+                        <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('30 days')))?}" role="tab">30 Hari Lagi</a>
                     </li>
 				        </ul>
             </div>
