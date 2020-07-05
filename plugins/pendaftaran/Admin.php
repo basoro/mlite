@@ -152,6 +152,7 @@ class Admin extends AdminModule
         $errors = 0;
 
         $date = date('Y-m-d');
+
         $cek_no_rawat = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->count();
 
         $_POST['hubunganpj'] = $this->core->getPasienInfo('keluarga', $_POST['no_rkm_medis']);
@@ -225,17 +226,33 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            if ($cek_no_rawat == 0) {    // new
-                $_POST['no_rawat'] = $this->core->setNoRawat();
-                $query = $this->db('reg_periksa')->save($_POST);
-            } else {        // edit
-                $dokter = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->where('kd_dokter', '<>', $_POST['kd_dokter'])->count();
-                if($dokter) {
-                  $_POST['no_reg'] = $this->core->setNoReg($_POST['kd_dokter']);
-                }
-                $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+            if($_POST['booking']) {
+              $query = $this->db('booking_registrasi')
+                ->save([
+                  'tanggal_booking' => date('Y-m-d'),
+                  'jam_booking' => date('H:i:s'),
+                  'no_rkm_medis' => $_POST['no_rkm_medis'],
+                  'tanggal_periksa' => $_POST['tgl_registrasi'],
+                  'kd_dokter' => $_POST['kd_dokter'],
+                  'kd_poli' => $_POST['kd_poli'],
+                  'no_reg' => $this->core->setNoReg($_POST['kd_dokter']),
+                  'kd_pj' => $_POST['kd_pj'],
+                  'limit_reg' => 0,
+                  'waktu_kunjungan' => $_POST['tgl_registrasi'].' '.$_POST['jam_reg'],
+                  'status' => 'Belum'
+                ]);
+            } else {
+              if ($cek_no_rawat == 0) {    // new
+                  $_POST['no_rawat'] = $this->core->setNoRawat();
+                  $query = $this->db('reg_periksa')->save($_POST);
+              } else {        // edit
+                  $dokter = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->where('kd_dokter', '<>', $_POST['kd_dokter'])->count();
+                  if($dokter) {
+                    $_POST['no_reg'] = $this->core->setNoReg($_POST['kd_dokter']);
+                  }
+                  $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+              }
             }
-
 
             if ($query) {
                 $this->notify('success', 'Simpan sukes');

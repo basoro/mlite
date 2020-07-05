@@ -51,13 +51,13 @@
 												<div class="col-md-6">
 														<div class="form-group">
 																<label>Tanggal Registrasi</label>
-																<input type="text" name="tgl_registrasi" class="form-control datepicker" required value="{$pendaftaran.form.tgl_registrasi}" readonly />
+																<input type="text" name="tgl_registrasi" class="form-control datepicker" required value="{$pendaftaran.form.tgl_registrasi}" />
 														</div>
 												</div>
 												<div class="col-md-6">
 														<div class="form-group">
 																<label>Jam Registrasi</label>
-																<input type="text" name="jam_reg" class="form-control" required value="{$pendaftaran.form.jam_reg}" readonly />
+																<input type="text" name="jam_reg" class="form-control timepicker" required value="{$pendaftaran.form.jam_reg}"  data-time-format="H:i:s" data-step="5" data-min-time="01:00" data-max-time="24:00" data-show-2400="true"/>
 														</div>
 												</div>
 										</div>
@@ -93,7 +93,7 @@
 			          </div>
 								<div class="panel-body">
 										<div class="form-group">
-												<label>Statu Lanjut</label>
+												<label>Status Lanjut</label>
 												<select name="status_lanjut" class="form-control">
 													{loop: $pendaftaran.status_lanjut}
 														<option value="{$value}"{if: $value == $pendaftaran.form.status_lanjut} selected{/if}>{$value}</option>
@@ -118,6 +118,7 @@
 										</div>
 				            <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
 										<a href="{$pendaftaran.manageURL}" class="btn btn-default">Batal</a>
+										<input type="submit" name="booking" value="Booking" class="btn btn-info pull-right" />
 			      	  </div>
 		        </div>
 		    </div>

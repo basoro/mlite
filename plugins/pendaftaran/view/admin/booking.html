@@ -67,7 +67,6 @@
                         <th>Jam. Booking</th>
                         <th>Tgl. Periksa</th>
                         <th>Status</th>
-      									<th class="text-right">Aksi</th>
       								</tr>
       							</thead>
       							<tbody>
@@ -85,17 +84,6 @@
                         <td>{$value.jam_booking}</td>
                         <td>{$value.tanggal_periksa}</td>
                         <td>{$value.status}</td>
-      									<td class="text-right">
-      										<a href="{$value.print_buktidaftar}" target="_blank" class="btn btn-primary btn-xs">
-      											<i class="fa fa-print"></i> <span class="hidden-xs">Cetak</span>
-      										</a>
-      										<a href="{$value.editURL}" class="btn btn-success btn-xs">
-      											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
-      										</a>
-      										<a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
-      										</a>
-      									</td>
       								</tr>
       								{/loop}
       								{else}
