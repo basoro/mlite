@@ -55,9 +55,6 @@
                       <td>{if: $value.status == '1'} Aktif {else} Tidak Aktif {/if}</td>
     									<td class="text-right">{?=number_format($value.registrasi,0,",",".")?}</td>
     									<td class="text-right">
-    										<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
-    											<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
-    										</a>
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
