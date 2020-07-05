@@ -15,6 +15,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola'    => 'manage',
+            'Booking'          => 'booking',
             'Tambah Baru'                => 'add',
             'Jadwal Dokter'          => 'jadwal',
             'Pengaturan'          => 'settings'
@@ -153,24 +154,24 @@ class Admin extends AdminModule
         $date = date('Y-m-d');
         $cek_no_rawat = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->count();
 
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['kd_poli'])->oneArray();
-        $_POST['hubunganpj'] = $pasien['hubunganpj'];
+        $_POST['hubunganpj'] = $this->core->getPasienInfo('keluarga', $_POST['no_rkm_medis']);
 
         $_POST['stts'] = 'Belum';
 
-        $_POST['stts_daftar'] = 'Baru';
         $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->count();
+        $_POST['stts_daftar'] = 'Baru';
         if($cek_stts_daftar > 0) {
           $_POST['stts_daftar'] = 'Lama';
         }
 
         $biaya_reg = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+        $_POST['biaya_reg'] = $biaya_reg['registrasi'];
         if($_POST['stts_daftar'] == 'Lama') {
           $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
         }
 
-        $_POST['status_poli'] = 'Baru';
         $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('kd_poli', $_POST['kd_poli'])->count();
+        $_POST['status_poli'] = 'Baru';
         if($cek_status_poli > 0) {
           $_POST['status_poli'] = 'Lama';
         }
@@ -246,6 +247,129 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    public function anyBooking($page = 1)
+    {
+
+      if (isset($_POST['valid'])) {
+          if (isset($_POST['no_rkm_medis']) && !empty($_POST['no_rkm_medis'])) {
+              foreach ($_POST['no_rkm_medis'] as $item) {
+                  $row = $this->db('booking_registrasi')->where('no_rkm_medis', $item)->orWhere('tanggal_periksa', date('Y-m-d'))->oneArray();
+
+                  $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $row['no_rkm_medis'])->count();
+                  $_POST['stts_daftar'] = 'Baru';
+                  if($cek_stts_daftar > 0) {
+                    $_POST['stts_daftar'] = 'Lama';
+                  }
+
+                  $biaya_reg = $this->db('poliklinik')->where('kd_poli', $row['kd_poli'])->oneArray();
+                  $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+                  if($_POST['stts_daftar'] == 'Lama') {
+                    $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+                  }
+
+                  $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $row['no_rkm_medis'])->where('kd_poli', $row['kd_poli'])->count();
+                  $_POST['status_poli'] = 'Baru';
+                  if($cek_status_poli > 0) {
+                    $_POST['status_poli'] = 'Lama';
+                  }
+
+                  // set umur
+                  $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $row['no_rkm_medis']));
+                  $today = new \DateTime(date('Y-m-d'));
+                  $y = $today->diff($tanggal)->y;
+                  $m = $today->diff($tanggal)->m;
+                  $d = $today->diff($tanggal)->d;
+
+                  $umur="0";
+                  $sttsumur="Th";
+                  if($y>0){
+                      $umur=$y;
+                      $sttsumur="Th";
+                  }else if($y==0){
+                      if($m>0){
+                          $umur=$m;
+                          $sttsumur="Bl";
+                      }else if($m==0){
+                          $umur=$d;
+                          $sttsumur="Hr";
+                      }
+                  }
+
+                  if($row['status'] == 'Belum') {
+                      if ($this->db('reg_periksa')
+                        ->save([
+                          'no_reg' => $row['no_reg'],
+                          'no_rawat' => $this->core->setNoRawat(),
+                          'tgl_registrasi' => date('Y-m-d'),
+                          'jam_reg' => date('H:i:s'),
+                          'kd_dokter' => $row['kd_dokter'],
+                          'no_rkm_medis' => $row['no_rkm_medis'],
+                          'kd_poli' => $row['kd_poli'],
+                          'p_jawab' => $this->core->getPasienInfo('namakeluarga', $row['no_rkm_medis']),
+                          'almt_pj' => $this->core->getPasienInfo('alamatpj', $row['no_rkm_medis']),
+                          'hubunganpj' => $this->core->getPasienInfo('keluarga', $row['no_rkm_medis']),
+                          'biaya_reg' => $_POST['biaya_reg'],
+                          'stts' => 'Belum',
+                          'stts_daftar' => $_POST['stts_daftar'],
+                          'status_lanjut' => 'Ralan',
+                          'kd_pj' => $row['kd_pj'],
+                          'umurdaftar' => $umur,
+                          'sttsumur' => $sttsumur,
+                          'status_bayar' => 'Belum Bayar',
+                          'status_poli' => $_POST['status_poli']
+                        ])
+                      ) {
+                          $this->db('booking_registrasi')->where('no_rkm_medis', $row['no_rkm_medis'])->orWhere('tanggal_periksa', date('Y-m-d'))->update('status', 'Terdaftar');
+                          $this->notify('success', 'Validasi sukses');
+                      } else {
+                          $this->notify('failure', 'Validasi gagal');
+                      }
+                  }
+              }
+
+              redirect(url([ADMIN, 'pendaftaran', 'booking']));
+          }
+      }
+
+      $this->_addHeaderFiles();
+      $start_date = date('Y-m-d');
+      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
+        $start_date = $_GET['start_date'];
+      $end_date = date('Y-m-d');
+      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
+        $end_date = $_GET['end_date'];
+      $perpage = '10';
+      $phrase = '';
+      if(isset($_GET['s']))
+        $phrase = $_GET['s'];
+
+      // pagination
+      $totalRecords = $this->db()->pdo()->prepare("SELECT booking_registrasi.* FROM booking_registrasi, pasien WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date'");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $totalRecords->fetchAll();
+
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'pendaftaran', 'booking', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+      $this->assign['pagination'] = $pagination->nav('pagination','5');
+      $this->assign['totalRecords'] = $totalRecords;
+
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT booking_registrasi.*, pasien.nm_pasien, pasien.alamat, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, pasien.no_peserta FROM booking_registrasi, pasien, dokter, poliklinik, penjab WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND booking_registrasi.kd_dokter = dokter.kd_dokter AND booking_registrasi.kd_poli = poliklinik.kd_poli AND booking_registrasi.kd_pj = penjab.kd_pj AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%']);
+      $rows = $query->fetchAll();
+
+      $this->assign['list'] = [];
+      if (count($rows)) {
+          foreach ($rows as $row) {
+              $row = htmlspecialchars_array($row);
+              $this->assign['list'][] = $row;
+          }
+      }
+
+      $this->assign['searchUrl'] =  url([ADMIN, 'pendaftaran', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      return $this->draw('booking.html', ['booking' => $this->assign]);
+
     }
 
     public function getSettings()
