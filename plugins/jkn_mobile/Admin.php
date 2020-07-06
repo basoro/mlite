@@ -4,33 +4,37 @@ namespace Plugins\JKN_Mobile;
 
 use Systems\AdminModule;
 
-/**
- * Sample admin class
- */
 class Admin extends AdminModule
 {
-    /**
-     * Module navigation
-     * Items of the returned array will be displayed in the administration sidebar
-     *
-     * @return array
-     */
+
     public function navigation()
     {
         return [
-            'Index' => 'index',
+            'Kelola' => 'index',
+            'Pengaturan' => 'settings',
         ];
     }
 
-    /**
-     * GET: /admin/sample/index
-     * Subpage method of the module
-     *
-     * @return string
-     */
     public function getIndex()
     {
         $title = 'Khanza JKN Mobile';
         return $this->draw('index.html', ['title' => $title]);
     }
+
+    public function getSettings()
+    {
+        $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
+        $this->assign['jkn_mobile'] = htmlspecialchars_array($this->options('jkn_mobile'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['jkn_mobile'] as $key => $val) {
+            $this->options('jkn_mobile', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'jkn_mobile', 'settings']));
+    }
+
 }

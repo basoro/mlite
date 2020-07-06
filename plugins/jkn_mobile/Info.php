@@ -5,13 +5,13 @@ return [
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '3.*',
-    'icon'          =>  'code',                                 // Icon from http://fontawesome.io/icons/
-
-    // Registering page for possible use as a homepage
+    'icon'          =>  'code',
     'pages'            =>  ['JKN Mobile' => 'jknmobile'],
-
     'install'       =>  function () use ($core) {
+        $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'username', '')");
+        $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'password', '')");
     },
     'uninstall'     =>  function () use ($core) {
+        $core->db()->pdo()->exec("DELETE FROM `lite_options` WHERE `module` = 'jkn_mobile'");
     }
 ];
