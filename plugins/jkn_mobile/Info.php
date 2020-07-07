@@ -18,10 +18,10 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
-            ADD PRIMARY KEY (`id`);');
+            ADD PRIMARY KEY (`kd`);');
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
-            MODIFY `id` int(50) NOT NULL AUTO_INCREMENT;');
+            MODIFY `kd` int(50) NOT NULL AUTO_INCREMENT;');
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_antrian_referensi` (
           `tanggal_periksa` date NOT NULL,

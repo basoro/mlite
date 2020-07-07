@@ -120,7 +120,7 @@ class Site extends SiteModule
             $cek_kouta->execute();
             $cek_kouta = $cek_kouta->fetch();
 
-            $cek_referensi = $this->db('antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
+            $cek_referensi = $this->db('lite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
 
             if($cek_referensi > 0) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$cek_referensi['tanggal_periksa'];
@@ -195,7 +195,7 @@ class Site extends SiteModule
                 if ($cek_kouta['sisa_kouta'] > 0) {
                     if($data_pasien == 0){
                         // Get antrian loket
-                        $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(noantrian) FROM antrian_loket WHERE type = 'Loket' AND postdate='$decode[tanggalperiksa]'");
+                        $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(noantrian) FROM lite_antrian_loket WHERE type = 'Loket' AND postdate='$decode[tanggalperiksa]'");
                         $no_reg_akhir->execute();
                         $no_reg_akhir = $no_reg_akhir->fetch();
                         $no_urut_reg = '000';
@@ -206,7 +206,7 @@ class Site extends SiteModule
                         $jenisantrean = 1;
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
-                        $query = $this->db('antrian_loket')->save([
+                        $query = $this->db('lite_antrian_loket')->save([
                           'kd' => NULL,
                           'type' => 'Loket',
                           'noantrian' => $no_reg,
@@ -254,7 +254,7 @@ class Site extends SiteModule
                             )
                         );
                         if(!empty($decode['nomorreferensi'])) {
-                          $this->db('antrian_referensi')->save([
+                          $this->db('lite_antrian_referensi')->save([
                               'tanggal_periksa' => $decode['tanggalperiksa'],
                               'nomor_referensi' => $decode['nomorreferensi']
                           ]);
