@@ -272,6 +272,7 @@ class Admin extends AdminModule
       if (isset($_POST['valid'])) {
           if (isset($_POST['no_rkm_medis']) && !empty($_POST['no_rkm_medis'])) {
               foreach ($_POST['no_rkm_medis'] as $item) {
+
                   $row = $this->db('booking_registrasi')->where('no_rkm_medis', $item)->orWhere('tanggal_periksa', date('Y-m-d'))->oneArray();
 
                   $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $item)->count();
@@ -314,7 +315,7 @@ class Admin extends AdminModule
                       }
                   }
 
-                  if($row['status'] == 'Belum') {
+                  //if($row['status'] == 'Belum') {
                     $insert = $this->db('reg_periksa')
                       ->save([
                         'no_reg' => $row['no_reg'],
@@ -344,7 +345,7 @@ class Admin extends AdminModule
                       } else {
                           $this->notify('failure', 'Validasi gagal');
                       }
-                  }
+                  //}
               }
 
               redirect(url([ADMIN, 'pendaftaran', 'booking']));
