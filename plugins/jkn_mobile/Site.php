@@ -123,7 +123,7 @@ class Site extends SiteModule
             $cek_referensi = $this->db('antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
 
             if($cek_referensi > 0) {
-               $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama.';
+               $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$cek_referensi['tanggal_periksa'];
             }
             if(empty($decode['nomorkartu'])) {
                $errors[] = 'Nomor kartu tidak boleh kosong';
