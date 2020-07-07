@@ -274,7 +274,7 @@ class Admin extends AdminModule
               foreach ($_POST['no_rkm_medis'] as $item) {
                   $row = $this->db('booking_registrasi')->where('no_rkm_medis', $item)->orWhere('tanggal_periksa', date('Y-m-d'))->oneArray();
 
-                  $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $row['no_rkm_medis'])->count();
+                  $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $item)->count();
                   $_POST['stts_daftar'] = 'Baru';
                   if($cek_stts_daftar > 0) {
                     $_POST['stts_daftar'] = 'Lama';
@@ -286,14 +286,14 @@ class Admin extends AdminModule
                     $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
                   }
 
-                  $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $row['no_rkm_medis'])->where('kd_poli', $row['kd_poli'])->count();
+                  $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $item)->where('kd_poli', $row['kd_poli'])->count();
                   $_POST['status_poli'] = 'Baru';
                   if($cek_status_poli > 0) {
                     $_POST['status_poli'] = 'Lama';
                   }
 
                   // set umur
-                  $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $row['no_rkm_medis']));
+                  $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $item));
                   $today = new \DateTime(date('Y-m-d'));
                   $y = $today->diff($tanggal)->y;
                   $m = $today->diff($tanggal)->m;
@@ -315,30 +315,31 @@ class Admin extends AdminModule
                   }
 
                   if($row['status'] == 'Belum') {
-                      if ($this->db('reg_periksa')
-                        ->save([
-                          'no_reg' => $row['no_reg'],
-                          'no_rawat' => $this->core->setNoRawat(),
-                          'tgl_registrasi' => date('Y-m-d'),
-                          'jam_reg' => date('H:i:s'),
-                          'kd_dokter' => $row['kd_dokter'],
-                          'no_rkm_medis' => $row['no_rkm_medis'],
-                          'kd_poli' => $row['kd_poli'],
-                          'p_jawab' => $this->core->getPasienInfo('namakeluarga', $row['no_rkm_medis']),
-                          'almt_pj' => $this->core->getPasienInfo('alamatpj', $row['no_rkm_medis']),
-                          'hubunganpj' => $this->core->getPasienInfo('keluarga', $row['no_rkm_medis']),
-                          'biaya_reg' => $_POST['biaya_reg'],
-                          'stts' => 'Belum',
-                          'stts_daftar' => $_POST['stts_daftar'],
-                          'status_lanjut' => 'Ralan',
-                          'kd_pj' => $row['kd_pj'],
-                          'umurdaftar' => $umur,
-                          'sttsumur' => $sttsumur,
-                          'status_bayar' => 'Belum Bayar',
-                          'status_poli' => $_POST['status_poli']
-                        ])
-                      ) {
-                          $this->db('booking_registrasi')->where('no_rkm_medis', $row['no_rkm_medis'])->orWhere('tanggal_periksa', date('Y-m-d'))->update('status', 'Terdaftar');
+                    $insert = $this->db('reg_periksa')
+                      ->save([
+                        'no_reg' => $row['no_reg'],
+                        'no_rawat' => $this->core->setNoRawat(),
+                        'tgl_registrasi' => date('Y-m-d'),
+                        'jam_reg' => date('H:i:s'),
+                        'kd_dokter' => $row['kd_dokter'],
+                        'no_rkm_medis' => $item,
+                        'kd_poli' => $row['kd_poli'],
+                        'p_jawab' => $this->core->getPasienInfo('namakeluarga', $item),
+                        'almt_pj' => $this->core->getPasienInfo('alamatpj', $item),
+                        'hubunganpj' => $this->core->getPasienInfo('keluarga', $item),
+                        'biaya_reg' => $_POST['biaya_reg'],
+                        'stts' => 'Belum',
+                        'stts_daftar' => $_POST['stts_daftar'],
+                        'status_lanjut' => 'Ralan',
+                        'kd_pj' => $row['kd_pj'],
+                        'umurdaftar' => $umur,
+                        'sttsumur' => $sttsumur,
+                        'status_bayar' => 'Belum Bayar',
+                        'status_poli' => $_POST['status_poli']
+                      ]);
+
+                      if ($insert) {
+                          //$this->db('booking_registrasi')->where('no_rkm_medis', $item)->orWhere('tanggal_periksa', date('Y-m-d'))->update('status', 'Terdaftar');
                           $this->notify('success', 'Validasi sukses');
                       } else {
                           $this->notify('failure', 'Validasi gagal');

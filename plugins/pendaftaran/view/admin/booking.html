@@ -17,16 +17,16 @@
                             </form>
                         </div>
                     </li>
-                    <li class="{if: $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
+                    <li class="{if: isset($_GET['start_date']) && isset($_GET['end_date']) && $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/booking')?}" role="tab">Sekarang</a>
                     </li>
-                    <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('1 days'))}active{/if}">
+                    <li class="{if: isset($_GET['end_date']) && $_GET['end_date'] == date('Y-m-d', strtotime('1 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('1 days')))?}" role="tab">1 Hari Lagi</a>
                     </li>
-                    <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('7 days'))}active{/if}">
+                    <li class="{if: isset($_GET['end_date']) && $_GET['end_date'] == date('Y-m-d', strtotime('7 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('7 days')))?}" role="tab">7 Hari Lagi</a>
                     </li>
-                    <li class="{if: $_GET['end_date'] == date('Y-m-d', strtotime('30 days'))}active{/if}">
+                    <li class="{if: isset($_GET['end_date']) && $_GET['end_date'] == date('Y-m-d', strtotime('30 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/booking/?start_date='.date('Y-m-d').'&end_date='.date('Y-m-d', strtotime('30 days')))?}" role="tab">30 Hari Lagi</a>
                     </li>
 				        </ul>

@@ -253,6 +253,26 @@ class Admin extends AdminModule
 
     /* End Databarang Section */
 
+    public function getPengadaan()
+    {
+
+    }
+
+    public function getPembelian()
+    {
+
+    }
+
+    public function getOpname()
+    {
+
+    }
+
+    public function getMutasi()
+    {
+
+    }
+
     /* Settings Farmasi Section */
     public function getSettings()
     {

@@ -17,16 +17,16 @@
                             </form>
                         </div>
                     </li>
-                    <li class="{if: $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
+                    <li class="{if: isset($_GET['start_date']) && isset($_GET['end_date']) && $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/manage')?}" role="tab">Sekarang</a>
                     </li>
-                    <li class="{if: $_GET['start_date'] == date('Y-m-d', strtotime('-1 days'))}active{/if}">
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-1 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/manage/?start_date='.date('Y-m-d', strtotime('-1 days')).'&end_date='.date('Y-m-d'))?}" role="tab">1 Hari Terakhir</a>
                     </li>
-                    <li class="{if: $_GET['start_date'] == date('Y-m-d', strtotime('-7 days'))}active{/if}">
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-7 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/manage/?start_date='.date('Y-m-d', strtotime('-7 days')).'&end_date='.date('Y-m-d'))?}" role="tab">7 Hari Terakhir</a>
                     </li>
-                    <li class="{if: $_GET['start_date'] == date('Y-m-d', strtotime('-30 days'))}active{/if}">
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-30 days'))}active{/if}">
                         <a href="{?=url(ADMIN.'/pendaftaran/manage/?start_date='.date('Y-m-d', strtotime('-30 days')).'&end_date='.date('Y-m-d'))?}" role="tab">30 Hari Terakhir</a>
                     </li>
 				        </ul>
