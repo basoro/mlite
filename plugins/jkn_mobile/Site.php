@@ -395,6 +395,9 @@ class Site extends SiteModule
             if($cek_nopeserta == 0) {
                $errors[] = 'Nomor peserta tidak ditemukan';
             }
+            if (!empty($decode['nopeserta']) && !ctype_digit($decode['nopeserta']) ){
+               $errors[] = 'Nomor kartu harus mengandung angka saja!!';
+            }
             if(!empty($errors)) {
                 foreach($errors as $error) {
                     $response = array(
