@@ -296,3 +296,18 @@ function cv($variable)
 
     return $variable;
 }
+
+if (!function_exists('apache_request_headers')) {
+    function apache_request_headers() {
+        $return = array();
+        foreach($_SERVER as $key=>$value) {
+            if (substr($key,0,5)=="HTTP_") {
+                $key=str_replace(" ","-",ucwords(strtolower(str_replace("_"," ",substr($key,5)))));
+                $return[$key]=$value;
+            }else{
+                $return[$key]=$value;
+	        }
+        }
+        return $return;
+    }
+}
