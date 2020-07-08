@@ -183,6 +183,19 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'pasien_galleries', 'edit', $id]));
     }
 
+    public function postSaveImages($id, $page)
+    {
+        foreach ($_POST['img'] as $key => $val) {
+            $query = $this->db('lite_pasien_galleries_items')->where($key)->save(['title' => $val['title']]);
+        }
+
+        if ($query) {
+            $this->notify('success', 'Simpan sukses');
+        }
+
+        redirect(url([ADMIN, 'pasien_galleries', 'edit', $id, $page]));
+    }
+
     /**
     * image uploading
     */
@@ -264,11 +277,15 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
+
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'pasien_galleries', 'javascript']), 'footer');

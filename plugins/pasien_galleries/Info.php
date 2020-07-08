@@ -26,7 +26,8 @@ return [
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_pasien_galleries_items` (
             `id` int(11) NOT NULL,
             `gallery` varchar(50) NOT NULL,
-            `src` text NOT NULL
+            `src` text NOT NULL,
+            `title` varchar(50) DEFAULT NULL
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_pasien_galleries_items`

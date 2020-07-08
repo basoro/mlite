@@ -1,3 +1,9 @@
+$(document).ready(function(){
+    $('.display').DataTable({
+      "lengthChange": false,
+      "scrollX": true
+    });
+});
 $(document).ready(function () {
   var strip_tags = function(str) {
     return (str + '').replace(/<\/?[^>]+(>|$)/g, '')

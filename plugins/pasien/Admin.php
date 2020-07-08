@@ -665,9 +665,26 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
-    public function getBerkas_digital($id)
+    public function getBerkas_Digital($id)
     {
       $berkas_digital['title'] = 'Berkas Digital Pasien';
+      $rows = $this->db('lite_pasien_galleries_items')
+        ->join('lite_pasien_galleries', 'lite_pasien_galleries.id = lite_pasien_galleries_items.gallery')
+        ->where('lite_pasien_galleries.slug', $id)
+        ->toArray();
+
+      if (count($rows)) {
+          foreach ($rows as $row) {
+              $row['src'] = unserialize($row['src']);
+
+              if (!isset($row['src']['sm'])) {
+                  $row['src']['sm'] = isset($row['src']['xs']) ? $row['src']['xs'] : $row['src']['lg'];
+              }
+
+              $berkas_digital['list'][] = $row;
+          }
+      }
+
       $this->tpl->set('berkas_digital', $berkas_digital);
       echo $this->tpl->draw(MODULES.'/pasien/view/admin/berkas_digital.html', true);
       exit();
