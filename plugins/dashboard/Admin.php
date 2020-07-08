@@ -105,7 +105,7 @@ class Admin extends AdminModule
 
         $query = $this->db('reg_periksa')
             ->select([
-              'count'        => 'COUNT(*)',
+              'count'        => 'COUNT(DISTINCT no_rawat)',
               'formatedDate' => 'tgl_registrasi',
             ])
             ->where('tgl_registrasi', '>=', $date)
