@@ -3,7 +3,7 @@ return [
     'name'          =>  'JKN Mobile',
     'description'   =>  'Modul Khanza JKN Mobile API',
     'author'        =>  'Basoro',
-    'version'       =>  '1.0',
+    'version'       =>  '1.1',
     'compatibility' =>  '3.*',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile' => 'jknmobile'],
