@@ -31,6 +31,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('pasien')
+          ->select('no_rkm_medis')
           ->like('no_rkm_medis', '%'.$phrase.'%')
           ->orLike('nm_pasien', '%'.$phrase.'%')
           ->orLike('no_ktp', '%'.$phrase.'%')
