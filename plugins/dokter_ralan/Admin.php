@@ -37,7 +37,7 @@ class Admin extends AdminModule
 
       // pagination
       $totalRecords = $this->db()->pdo()
-        ->prepare("SELECT reg_periksa.*
+        ->prepare("SELECT reg_periksa.no_rawat
           FROM reg_periksa, pasien
           WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
           AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?)

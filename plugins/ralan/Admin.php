@@ -35,7 +35,7 @@ class Admin extends AdminModule
 
       // pagination
       $totalRecords = $this->db()->pdo()
-        ->prepare("SELECT reg_periksa.*
+        ->prepare("SELECT reg_periksa.no_rawat
           FROM reg_periksa, pasien
           WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
           AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?)
@@ -152,6 +152,7 @@ class Admin extends AdminModule
             }
             $this->assign['manageURL'] = url([ADMIN, 'ralan', 'manage']);
             $totalRecords = $this->db('reg_periksa')
+                ->select('no_rawat')
                 ->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])
                 ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                 ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')

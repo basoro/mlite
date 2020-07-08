@@ -36,6 +36,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('dokter')
+          ->select('kd_dokter')
           ->like('kd_dokter', '%'.$phrase.'%')
           ->like('nm_dokter', '%'.$phrase.'%')
           ->where('status', $status)
@@ -370,6 +371,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('poliklinik')
+            ->select('kd_poli')
             ->where('status', $status)
             ->like('kd_poli', '%'.$phrase.'%')
             ->like('nm_poli', '%'.$phrase.'%')
@@ -552,6 +554,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('bangsal')
+            ->select('kd_bangsal')
             ->where('status', $status)
             ->like('kd_bangsal', '%'.$phrase.'%')
             ->like('nm_bangsal', '%'.$phrase.'%')
@@ -731,6 +734,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('databarang')
+            ->select('kode_brng')
             ->where('status', $status)
             ->like('kode_brng', '%'.$phrase.'%')
             ->like('nama_brng', '%'.$phrase.'%')
@@ -964,6 +968,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('jns_perawatan')
+            ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
             ->like('nm_perawatan', '%'.$phrase.'%')
@@ -1166,6 +1171,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('jns_perawatan_lab')
+            ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
             ->like('nm_perawatan', '%'.$phrase.'%')
@@ -1364,6 +1370,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('jns_perawatan_radiologi')
+            ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
             ->like('nm_perawatan', '%'.$phrase.'%')

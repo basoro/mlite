@@ -36,6 +36,7 @@ class Admin extends AdminModule
 
         // pagination
         $totalRecords = $this->db('databarang')
+            ->select('kode_brng')
             ->where('status', $status)
             ->like('kode_brng', '%'.$phrase.'%')
             ->orLike('nama_brng', '%'.$phrase.'%')

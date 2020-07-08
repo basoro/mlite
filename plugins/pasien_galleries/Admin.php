@@ -129,7 +129,7 @@ class Admin extends AdminModule
         $assign['settings'] = $this->db('lite_pasien_galleries')->oneArray($id);
 
         // pagination
-        $totalRecords = $this->db('lite_pasien_galleries_items')->where('gallery', $id)->toArray();
+        $totalRecords = $this->db('lite_pasien_galleries_items')->select('id')->where('gallery', $id)->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'pasien_galleries', 'edit', $id, '%d']));
         $assign['pagination'] = $pagination->nav();
         $assign['page'] = $page;
