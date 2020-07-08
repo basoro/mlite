@@ -3,11 +3,11 @@
 html {
     height: 100%;
 }
-    body {
-        padding-bottom: 30px;
-        position: relative;
-        min-height: 100%;
-    }
+body {
+    padding-bottom: 30px;
+    position: relative;
+    min-height: 100%;
+}
 a {
   color: #4C9A2A;
 }
