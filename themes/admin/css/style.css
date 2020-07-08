@@ -8,7 +8,13 @@ html {
         position: relative;
         min-height: 100%;
     }
-
+a {
+  color: #4C9A2A;
+}
+td a {
+  color: #4C9A2A;
+  font-weight: bold;
+}
 a, .btn {
     transition: background 0.2s, color 0.2s;
 }
