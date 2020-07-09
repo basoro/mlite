@@ -306,6 +306,22 @@ abstract class Main
         return $next_no_order;
     }
 
+    public function setNoSKDP()
+    {
+        $year = date('Y');
+        // Get last no_rawat
+        $last_no = $this->db()->pdo()->prepare("SELECT MAX(no_antrian) FROM skdp_bpjs WHERE tahun = '$year'");
+        $last_no->execute();
+        $last_no = $last_no->fetch();
+        // Next no_rm
+        if(empty($last_no[0])) {
+          $last_no[0] = '000000';
+        }
+        $next_no = sprintf('%06s', ($last_no[0] + 1));
+
+        return $next_no;
+    }
+
     public function loadModules()
     {
         if ($this->module == null) {

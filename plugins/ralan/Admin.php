@@ -626,7 +626,7 @@ class Admin extends AdminModule
             $no_rawat = revertNorawat($id);
             $_POST['tahun'] = date('Y');
             $_POST['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
-            $_POST['no_antrian'] = $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tanggal_rujukan']);
+            $_POST['no_antrian'] = $this->core->setNoSKDP();
             $query = $this->db('skdp_bpjs')->save($_POST);
 
             if ($query) {
