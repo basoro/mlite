@@ -436,7 +436,7 @@ class Admin extends AdminModule
           $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'norujukan', $value['noKunjungan']]);
           $sep['detail'][] = $value;
       }
-      $sep['title'] = 'Data SEP BPJS';
+      $sep['title'] = 'Ajukan SEP BPJS';
       $this->tpl->set('bridging', $sep);
       echo $this->tpl->draw(MODULES.'/pendaftaran/view/admin/manage.rujukan.html', true);
       exit();
