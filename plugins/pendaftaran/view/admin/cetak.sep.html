@@ -94,7 +94,7 @@
                                 Jns. Rawat
                               </div>
                               <div class="col-md-4">
-                                : {if: $print_sep.bridging_sep.jnspelayanan == 2}Rawat Jalan{else}Rawat Inap{/if}
+                                : {if: $print_sep.bridging_sep.jnspelayanan == 2}R.Jalan{else}R.Inap{/if}
                               </div>
                             </div>
                             <div class="row clearfix">
@@ -108,7 +108,7 @@
                                 Kls. Rawat
                               </div>
                               <div class="col-md-4">
-                                : {$print_sep.bridging_sep.klsrawat}
+                                : {if: $print_sep.bridging_sep.klsrawat == 1}Kelas 1{elseif: $print_sep.bridging_sep.klsrawat == 2}Kelas 2{elseif: $print_sep.bridging_sep.klsrawat == 3}Kelas 3{else}{/if}
                               </div>
                             </div>
                             <div class="row clearfix">
