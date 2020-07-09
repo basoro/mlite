@@ -19,12 +19,12 @@
               {if: !empty($bridging.detail)}
                 {loop: $bridging.detail}
                 <tr>
-                    <td><a href="{$value.NoRujukanURL}">{$value.noKunjungan}</a></td>
-                    <td>{$value.peserta.mr.SEP}</td>
-                    <td>{$value.peserta.mr.noMR}</td>
-                    <td>{$value.peserta.nama}</td>
-                    <td>{$value.poliRujukan.nama}</td>
-                    <td>[{$value.diagnosa.kode}] {$value.diagnosa.nama}</td>
+                    <td><a href="{$value.NoRujukanURL}">{$value.no_rujukan}</a></td>
+                    <td>{$value.no_sep}</td>
+                    <td>{$value.nomr}</td>
+                    <td>{$value.nama_pasien}</td>
+                    <td>{$value.nmpolitujuan}</td>
+                    <td>[{$value.diagawal}] {$value.nmdiagnosaawal}</td>
                 </tr>
                 {/loop}
               {/if}

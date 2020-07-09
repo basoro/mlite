@@ -409,7 +409,7 @@ class Admin extends AdminModule
 
     public function getDataSEP($id)
     {
-      $rows = $this->db('bridging_sep')->where('nomr', $id)->toArray();
+      $rows = $this->db('bridging_sep')->where('no_kartu', $id)->toArray();
       $sep['detail'] = [];
       foreach ($rows as $row) {
           $row = htmlspecialchars_array($row);
@@ -553,6 +553,7 @@ class Admin extends AdminModule
       $date = date('Y-m-d');
       $consid = $this->options->get('settings.BpjsConsID');
       $secretkey = $this->options->get('settings.BpjsSecretKey');
+      $bpjsapiurl = $this->options->get('settings.BpjsApiUrl');
 
       $_POST['kdppkpelayanan'] = $this->core->getSettings('kode_ppk');
       $_POST['user'] = $this->core->getUserInfo('username', null, true);
@@ -601,23 +602,40 @@ class Admin extends AdminModule
       $data->request = new \StdClass();
       $data->request->t_sep = $sup;
 
-      $savesep = json_encode($data);
-      //print_r($savesep);
-      echo $savesep;
+      $sep = json_encode($data);
 
-      //$url = $this->options->get('settings.BpjsApiUrl').'SEP/1.1/insert';
-      //$savesep = BpjsRequest::post($url, $savesep, NULL, $consid, $secretkey);
-      //$getsep = BpjsRequest::get($url, $savesep, NULL, $consid, $secretkey);
-      //$json = json_decode($getsep, true);
-      //print("<pre>".print_r($json,true)."</pre>");
-      //print_r($json);
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+      $signature = hash_hmac('sha256', $consid."&".$tStamp, $secretkey, true);
+      $encodedSignature = base64_encode($signature);
+      $ch = curl_init();
+      $headers = array(
+        'X-cons-id: '.$consid.'',
+        'X-timestamp: '.$tStamp.'' ,
+        'X-signature: '.$encodedSignature.'',
+        'Content-Type:Application/x-www-form-urlencoded',
+      );
+      curl_setopt($ch, CURLOPT_URL, $bpjsapiurl."SEP/1.1/insert");
+      curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $sep);
+      curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+      $content = curl_exec($ch);
+      $err = curl_error($ch);
+      //print_r($content);
+      //print_r($err);
 
-      $json['metaData']['code'] = '200';
-      $code = $json['metaData']['code'];
-      //$message = $json['metaData']['message'];
-      //$no_sep = $json['response']['sep']['noSep'];
+      curl_close($ch);
+      $result = json_decode($content,true);
+      $meta = $result['metaData']['code'];
+      $mets = $result['metaData']['message'];
+      $sep = $result['response']['sep']['noSep'];
 
-      if($json['metaData']['code'] == '200') {
+      $location = url([ADMIN, 'pendaftaran', 'norujukan', $_POST['no_rujukan']]);
+
+      if($meta == '200') {
 
         unset($_POST['save']);
 
@@ -647,14 +665,22 @@ class Admin extends AdminModule
           $_POST['asal_rujukan'] = '2. Faskes 2(RS)';
         };
 
+        $_POST['no_sep'] = $sep; #ambil dari ws bpjs
         $_POST['nmppkpelayanan'] = $this->core->getSettings('nama_instansi');
         $_POST['tglpulang'] = '1970-01-01 00:00:00';
-        $_POST['nmpolitujuan'] = 'NMPOLI'; #ambil dari ws bpjs
-        $_POST['nmdiagnosaawal'] = 'DX'; #ambil dari ws bpjs
+        $_POST['nmpolitujuan'] = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['kdpolitujuan'])->oneArray()['nm_poli_bpjs']; #ambil dari ws bpjs
+        $_POST['nmdiagnosaawal'] = $this->db('penyakit')->where('kd_penyakit', $_POST['diagawal'])->oneArray()['nm_penyakit']; #ambil dari ws bpjs
+		    /*
+		    $_POST['nmprop'] = $this->db('propinsi')->where('kd_prop', $_POST['kdprop'])->oneArray()['nm_prop']; #ambil dari ws bpjs
+        $_POST['nmkab'] = $this->db('kabupaten')->where('kd_kab', $_POST['kdkab'])->oneArray()['nm_kab']; #ambil dari ws bpjs
+        $_POST['nmkec'] = $this->db('kecamatan')->where('kd_kec', $_POST['kdkec'])->oneArray()['nm_kec']; #ambil dari ws bpjs
+        */
+        $_POST['nmdpdjp'] = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray()['nm_dokter_bpjs']; #ambil dari ws bpjs
         $_POST['nmprop'] = 'PROP'; #ambil dari ws bpjs
         $_POST['nmkab'] = 'KAB'; #ambil dari ws bpjs
         $_POST['nmkec'] = 'KEC'; #ambil dari ws bpjs
-        $_POST['nmdpdjp'] = 'NMDPJP'; #ambil dari ws bpjs
+
+
 
         $query = $this->db('bridging_sep')->save($_POST);
 
@@ -664,7 +690,13 @@ class Admin extends AdminModule
             $this->notify('failure', 'Simpan gagal');
         }
 
-        //redirect($location);
+        redirect($location);
+
+      } else {
+
+        $this->notify('failure', 'Simpan gagal!! '.$mets);
+
+        redirect($location);
 
       }
 
