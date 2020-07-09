@@ -193,7 +193,7 @@ class Site extends SiteModule
                     );
                 }
             } else {
-                if ($cek_kouta['sisa_kouta'] == 0) {
+                if ($cek_kouta['sisa_kouta'] > 0) {
                     if($data_pasien == 0 && $this->options->get('jkn_mobile.autoregis') == 0){
                         // Get antrian loket
                         $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(noantrian) FROM lite_antrian_loket WHERE type = 'Loket' AND postdate='$decode[tanggalperiksa]'");
