@@ -7,11 +7,6 @@ use Systems\Lib\BpjsRequest;
 
 class Site extends SiteModule
 {
-    protected $foo;
-
-    public function init()
-    {
-    }
 
     public function routes()
     {
