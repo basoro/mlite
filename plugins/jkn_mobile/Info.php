@@ -18,7 +18,7 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
-            ADD PRIMARY KEY (`kd`);');
+            DROP PRIMARY KEY, ADD PRIMARY KEY (`kd`);');
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
             MODIFY `kd` int(50) NOT NULL AUTO_INCREMENT;');
@@ -29,10 +29,11 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_referensi`
-            ADD PRIMARY KEY (`nomor_referensi`);');
+            DROP PRIMARY KEY, ADD PRIMARY KEY (`nomor_referensi`);');
 
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'username', '')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'password', '')");
+        $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'header', 'X-Token')");
     },
     'uninstall'     =>  function () use ($core) {
         $core->db()->pdo()->exec("DELETE FROM `lite_options` WHERE `module` = 'jkn_mobile'");

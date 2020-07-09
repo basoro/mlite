@@ -86,7 +86,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if ($header['X-Token'] == $this->_getToken()) {
+        if ($header[$this->options->get('jkn_mobile.header')] == $this->_getToken()) {
             $tanggal=$decode['tanggalperiksa'];
             $tentukan_hari=date('D',strtotime($tanggal));
             $day = array(
@@ -304,7 +304,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if ($header['X-Token'] == $this->_getToken()) {
+        if ($header[$this->options->get('jkn_mobile.header')] == $this->_getToken()) {
             $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
             $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli, count(reg_periksa.kd_poli) as jumlah,
             (select count(*) from reg_periksa WHERE reg_periksa.stts='Sudah' AND reg_periksa.kd_poli=poliklinik.kd_poli AND reg_periksa.tgl_registrasi='$decode[tanggalperiksa]') as terlayani
@@ -385,7 +385,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if ($header['X-Token'] == $this->_getToken()) {
+        if ($header[$this->options->get('jkn_mobile.header')] == $this->_getToken()) {
             $data = array();
             $cek_nopeserta = $this->db('pasien')->where('no_peserta', $decode['nopeserta'])->oneArray();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan, maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND pasien.no_peserta = '$decode[nopeserta]'  GROUP BY booking_operasi.no_rawat");
@@ -472,7 +472,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if ($header['X-Token'] == $this->_getToken()) {
+        if ($header[$this->options->get('jkn_mobile.header')] == $this->_getToken()) {
             $data = array();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan,  maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana, pasien.no_peserta AS nopeserta FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND booking_operasi.tanggal BETWEEN '$decode[tanggalawal]' AND '$decode[tanggalakhir]' GROUP BY booking_operasi.no_rawat");
             $sql->execute();
