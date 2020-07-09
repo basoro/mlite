@@ -18,6 +18,17 @@
                         <label>Header</label>
                         <input type="text" name="jkn_mobile[header]" class="form-control" value="{$settings.jkn_mobile.header}" />
                     </div>
+                    <div class="form-group">
+                        <label>Aktifkan Auto Register Pasien</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="jkn_mobile[autoregis]" value="0" {if: $settings.jkn_mobile.autoregis == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="jkn_mobile[autoregis]" value="1" {if: $settings.jkn_mobile.autoregis == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>

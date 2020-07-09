@@ -3,6 +3,7 @@
 namespace Plugins\JKN_Mobile;
 
 use Systems\SiteModule;
+use Systems\Lib\BpjsRequest;
 
 class Site extends SiteModule
 {
@@ -192,8 +193,8 @@ class Site extends SiteModule
                     );
                 }
             } else {
-                if ($cek_kouta['sisa_kouta'] > 0) {
-                    if($data_pasien == 0){
+                if ($cek_kouta['sisa_kouta'] == 0) {
+                    if($data_pasien == 0 && $this->options->get('jkn_mobile.autoregis') == 0){
                         // Get antrian loket
                         $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(noantrian) FROM lite_antrian_loket WHERE type = 'Loket' AND postdate='$decode[tanggalperiksa]'");
                         $no_reg_akhir->execute();
@@ -214,6 +215,79 @@ class Site extends SiteModule
                           'start_time' => $cek_kouta['jam_mulai'],
                           'end_time' => '00:00:00'
                         ]);
+                    } else if($data_pasien == 0 && $this->options->get('jkn_mobile.autoregis') == 1){
+
+                        $date = date('Y-m-d');
+                        $url = $this->options->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
+                        $consid = $this->options->get('settings.BpjsConsID');
+                        $secretkey = $this->options->get('settings.BpjsSecretKey');
+                        $output = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+                        $output = json_decode($output, true);
+
+                        $_POST['no_rkm_medis'] = $this->core->setNoRM();
+                        $_POST['nm_pasien'] = $output['response']['peserta']['nama'];
+                        $_POST['no_ktp'] = $output['response']['peserta']['nik'];
+                        $_POST['jk'] = $output['response']['peserta']['sex'];
+                        $_POST['tmp_lahir'] = '-';
+                        $_POST['tgl_lahir'] = $output['response']['peserta']['tglLahir'];
+                        $_POST['nm_ibu'] = '-';
+                        $_POST['alamat'] = '-';
+                        $_POST['gol_darah'] = '-';
+                        $_POST['pekerjaan'] = $output['response']['peserta']['jenisPeserta']['keterangan'];
+                        $_POST['stts_nikah'] = 'JOMBLO';
+                        $_POST['agama'] = '-';
+                        $_POST['tgl_daftar'] = $date;
+                        $_POST['no_tlp'] = $output['response']['peserta']['mr']['noTelepon'];
+                        $_POST['umur'] = $this->_setUmur($output['response']['peserta']['tglLahir']);;
+                        $_POST['pnd'] = '-';
+                        $_POST['keluarga'] = 'AYAH';
+                        $_POST['namakeluarga'] = '-';
+                        $_POST['kd_pj'] = $this->options->get('pendaftaran.bpjs');
+                        $_POST['no_peserta'] = $output['response']['peserta']['noKartu'];
+                        $_POST['kd_kel'] = '1';
+                        $_POST['kd_kec'] = '1';
+                        $_POST['kd_kab'] = '1';
+                        $_POST['pekerjaanpj'] = '-';
+                        $_POST['alamatpj'] = '-';
+                        $_POST['kelurahanpj'] = '-';
+                        $_POST['kecamatanpj'] = '-';
+                        $_POST['kabupatenpj'] = '-';
+                        $_POST['perusahaan_pasien'] = '-';
+                        $_POST['suku_bangsa'] = '1';
+                        $_POST['bahasa_pasien'] = '1';
+                        $_POST['cacat_fisik'] = '1';
+                        $_POST['email'] = '';
+                        $_POST['nip'] = '';
+                        $_POST['kd_prop'] = '1';
+                        $_POST['propinsipj'] = '-';
+
+                        $query = $this->db('pasien')->save($_POST);
+                        $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+
+                        if($query) {
+                            // Get antrian poli
+                            $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
+                            $no_reg_akhir->execute();
+                            $no_reg_akhir = $no_reg_akhir->fetch();
+                            $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
+                            $no_reg = sprintf('%03s', ($no_urut_reg + 1));
+                            $jenisantrean = 2;
+                            $minutes = $no_urut_reg * 10;
+                            $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
+                            $query = $this->db('booking_registrasi')->save([
+                                'tanggal_booking' => date('Y-m-d'),
+                                'jam_booking' => date('H:i:s'),
+                                'no_rkm_medis' => $_POST['no_rkm_medis'],
+                                'tanggal_periksa' => $decode['tanggalperiksa'],
+                                'kd_dokter' => $cek_kouta['kd_dokter'],
+                                'kd_poli' => $cek_kouta['kd_poli'],
+                                'no_reg' => $no_reg,
+                                'kd_pj' => $this->options->get('pendaftaran.bpjs'),
+                                'limit_reg' => 0,
+                                'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
+                                'status' => 'Belum'
+                            ]);
+                        }
                     } else {
                         // Get antrian poli
                         $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
@@ -545,6 +619,15 @@ class Site extends SiteModule
         }
         echo json_encode($response);
     }
+
+    private function _setUmur($tanggal)
+    {
+        list($cY, $cm, $cd) = explode('-', date('Y-m-d'));
+        list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($tanggal)));
+        $umur = $cY - $Y;
+        return $umur;
+    }
+
     private function _getToken()
     {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
