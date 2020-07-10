@@ -10,13 +10,14 @@ class Site extends SiteModule
     public function routes()
     {
         $this->route('vedika', 'getIndex');
+        $this->route('vedika/pdf/(:str)', 'getPDF');
     }
 
     public function getIndex()
     {
         $page = [
-            'title' => 'e-Vedika',
-            'desc' => 'Your page description here',
+            'title' => 'Vedika LITE',
+            'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getManage($page = 1)
         ];
 
@@ -33,23 +34,8 @@ class Site extends SiteModule
       $end_date = date('Y-m-d');
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
-      $perpage = '10';
-      $phrase = '';
-      if(isset($_GET['s']))
-        $phrase = $_GET['s'];
-
-      // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
-      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
-      $totalRecords = $totalRecords->fetchAll();
-
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'manage', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
-      $this->assign['pagination'] = $pagination->nav('pagination','5');
-      $this->assign['totalRecords'] = $totalRecords;
-
-      $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
-      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $query->execute();
       $rows = $query->fetchAll();
 
       $this->assign['list'] = [];
@@ -86,29 +72,17 @@ class Site extends SiteModule
               $row['nm_penyakit'] = $this->_getDiagnosa('nm_penyakit', $row['no_rawat'], $row['status_lanjut']);
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
-              $row['sepURL'] = url([ADMIN, 'vedika', 'sep', $row['no_sep']]);
-              $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', convertNorawat($row['no_rawat'])]);
-              $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', convertNorawat($row['no_rawat'])]);
-              $row['billingURL'] = url([ADMIN, 'vedika', 'billing', convertNorawat($row['no_rawat'])]);
+              $row['sepURL'] = url(['vedika', 'sep', $row['no_sep']]);
+              $row['pdfURL'] = url(['vedika', 'pdf', convertNorawat($row['no_rawat'])]);
+              $row['resumeURL']  = url(['vedika', 'resume', convertNorawat($row['no_rawat'])]);
+              $row['billingURL'] = url(['vedika', 'billing', convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
 
-      $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'manage', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      $this->assign['searchUrl'] =  url(['vedika', 'manage', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['vedika' => $this->assign]);
 
-    }
-
-    public function getSEP($id)
-    {
-      $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
-      $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-      $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
-      $this->tpl->set('print_sep', $print_sep);
-      echo $this->tpl->draw(MODULES.'/vedika/view/admin/sep.html', true);
-      exit();
     }
 
     public function getPDF($id)
@@ -137,21 +111,7 @@ class Site extends SiteModule
           }
       }
 
-      $this->tpl->set('berkas_digital', $berkas_digital);
-      $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
-      echo $this->tpl->draw(MODULES.'/vedika/view/admin/pdf.html', true);
-      exit();
-    }
-
-    public function getResume()
-    {
-      echo $this->tpl->draw(MODULES.'/vedika/view/admin/resume.html', true);
-      exit();
-    }
-
-    public function getBilling($no_rawat)
-    {
-      $no_rawat = revertNorawat($no_rawat);
+      $no_rawat = revertNorawat($id);
       $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
       $query->execute();
       $rows = $query->fetchAll();
@@ -173,7 +133,26 @@ class Site extends SiteModule
       $this->tpl->set('billing', $rows);
       $this->tpl->set('instansi', $instansi);
 
-      echo $this->tpl->draw(MODULES.'/vedika/view/admin/billing.html', true);
+      $print_sep = array();
+      if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
+        $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
+        $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
+        $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+      }
+      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
+      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      $this->tpl->set('print_sep', $print_sep);
+
+      $resume_pasien = $this->db('resume_pasien')
+        ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $this->tpl->set('resume_pasien', $resume_pasien);
+
+
+      $this->tpl->set('berkas_digital', $berkas_digital);
+      $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+      echo $this->tpl->draw(MODULES.'/vedika/view/pdf.html', true);
       exit();
     }
 
@@ -217,8 +196,8 @@ class Site extends SiteModule
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
-        $this->core->addCSS(url([ADMIN, 'vedika', 'css']));
-        $this->core->addJS(url([ADMIN, 'vedika', 'javascript']), 'footer');
+        $this->core->addCSS(url(['vedika', 'css']));
+        $this->core->addJS(url(['vedika', 'javascript']), 'footer');
     }
 
 }

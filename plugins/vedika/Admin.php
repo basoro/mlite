@@ -10,6 +10,7 @@ class Admin extends AdminModule
     {
         return [
             'Manage' => 'manage',
+            'Pengaturan' => 'settings',
         ];
     }
 
@@ -149,7 +150,7 @@ class Admin extends AdminModule
       $this->tpl->set('instansi', $instansi);
 
       $print_sep = array();
-      if($this->_getSEPInfo('no_sep', $no_rawat)) {
+      if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
         $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
         $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
         $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
@@ -220,6 +221,23 @@ class Admin extends AdminModule
     {
         $row = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', $no_rawat)->where('diagnosa_pasien.prioritas', 1)->where('diagnosa_pasien.status', $status_lanjut)->oneArray();
         return $row[$field];
+    }
+
+    public function getSettings()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['title'] = 'Pengaturan Modul Vedika';
+        $this->assign['vedika'] = htmlspecialchars_array($this->options('vedika'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['vedika'] as $key => $val) {
+            $this->options('vedika', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'vedika', 'settings']));
     }
 
     public function getJavascript()
