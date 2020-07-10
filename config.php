@@ -37,10 +37,11 @@ define('BASIC_MODULES', serialize([
 	0 => 'dashboard',
 	1 => 'pasien',
 	2 => 'pendaftaran',
+	3 => 'ralan',
 	9996 => 'master',
 	9998 => 'users',
 	9997 => 'modules',
 ]));
 
 // Developer mode
-define('DEV_MODE', true);
+define('DEV_MODE', false);
