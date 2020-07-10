@@ -264,6 +264,9 @@ class Site extends SiteModule
                             $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
                             $no_reg_akhir->execute();
                             $no_reg_akhir = $no_reg_akhir->fetch();
+                            if(empty($no_reg_akhir['0'])) {
+                                $no_reg_akhir['0'] = '000';
+                            }
                             $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
                             $no_reg = sprintf('%03s', ($no_urut_reg + 1));
                             $jenisantrean = 2;
