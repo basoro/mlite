@@ -147,12 +147,15 @@ class Admin extends AdminModule
 
       $this->tpl->set('billing', $rows);
       $this->tpl->set('instansi', $instansi);
-
-      $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-      $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
-      $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      
+      $print_sep = '';
+      if($this->_getSEPInfo('no_sep', $no_rawat)) {
+        $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
+        $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
+        $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+        $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
+        $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      }
       $this->tpl->set('print_sep', $print_sep);
 
       $resume_pasien = $this->db('resume_pasien')

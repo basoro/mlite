@@ -18,13 +18,13 @@
         {loop: $berkas_digital_pasien}
             <tr class='isi8'>
                     <td width='99%'>
-                      <img src="{?=url()?}/{$value.src.sm}">
+                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;">
                     </td>
             </tr>
         {/loop}
         {loop: $berkas_digital}
         <tr>
-          <td>- <a href="{?=url(WEBAPPS_PATH)?}{$value.lokasi_file}" target="_blank">{$value.nama}</a></td>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
         </tr>
         {/loop}
     </table>
