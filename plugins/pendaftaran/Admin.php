@@ -447,6 +447,7 @@ class Admin extends AdminModule
       $this->_addProfileHeaderFiles();
       $date = date('Y-m-d');
       $bridging_sep = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
+      $skdp_bpjs = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
       $this->assign['bridging_sep'] = $bridging_sep;
 
       $consid = $this->options->get('settings.BpjsConsID');

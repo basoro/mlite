@@ -187,14 +187,14 @@ abstract class Main
 
     public function getPasienInfo($field, $no_rkm_medis)
     {
-        $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->toArray();
-        return $row[0][$field];
+        $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+        return $row[$field];
     }
 
     public function getRegPeriksaInfo($field, $no_rawat)
     {
-        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->toArray();
-        return $row[0][$field];
+        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
     }
 
     public function setNoRM()

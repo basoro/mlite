@@ -172,5 +172,3 @@ $(document).ready(function () {
 
   $('select').selectator();
 });
-
-$( "#myselect option:selected" ).text();

@@ -18,7 +18,6 @@ class Admin extends AdminModule
     {
 
       $this->_addHeaderFiles();
-      //$username = $_SESSION['opensimrs_username'];
       $username = $this->core->getUserInfo('username', null, true);
       if ($this->core->getUserInfo('role') == 'admin') {
         $username = $this->db('dokter')->select('kd_dokter')->toArray();

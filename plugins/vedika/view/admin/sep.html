@@ -1,0 +1,206 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Data SEP</h4>
+</div>
+<div class="modal-body">
+      <section class="content">
+          <div class="container-fluid">
+              <div class="row clearfix">
+                  <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                      <div class="card">
+                          <div class="body">
+                            <div class="container" style="margin-top : 50px;" action="cetak">
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  <div class="form-group">
+                                    <img src="{$print_sep.logoURL}" height="60" width="350">
+                                  </div>
+                                </div>
+                                <div class="col-md-10">
+                                  <div class="form-group">
+                                    <h2><center>SURAT ELEGIBILITAS PESERTA</center></h2>
+                                    <h5><center>{$print_sep.nama_instansi}</center></h5>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  No. SEP
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.no_sep}
+                                </div>
+                                <div class="col-md-2">
+                                </div>
+                                <div class="col-md-4">
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Tgl. SEP
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.tglsep}
+                                </div>
+                                <div class="col-md-2">
+                                  No. Rawat
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.no_rawat}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  No. Kartu
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.no_kartu} ( MR: {$print_sep.bridging_sep.nomr})
+                                </div>
+                                <div class="col-md-2">
+                                  Peserta
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.peserta}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Nama Peserta
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.nama_pasien}
+                                </div>
+                                <div class="col-md-2">
+                                  COB
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.cob}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Tgl. Lahir
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.tanggal_lahir} Kelamin: {$print_sep.bridging_sep.jkel}
+                                </div>
+                                <div class="col-md-2">
+                                  Jns. Rawat
+                                </div>
+                                <div class="col-md-4">
+                                  : {if: $print_sep.bridging_sep.jnspelayanan == 2}R.Jalan{else}R.Inap{/if}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  No.Telepon
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.notelep}
+                                </div>
+                                <div class="col-md-2">
+                                  Kls. Rawat
+                                </div>
+                                <div class="col-md-4">
+                                  : {if: $print_sep.bridging_sep.klsrawat == 1}Kelas 1{elseif: $print_sep.bridging_sep.klsrawat == 2}Kelas 2{elseif: $print_sep.bridging_sep.klsrawat == 3}Kelas 3{else}{/if}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Faskes Perujuk
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.nmppkrujukan}
+                                </div>
+                                <div class="col-md-2">
+                                  Penjamin
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.penjamin}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Diagnosa Awal
+                                </div>
+                                <div class="col-md-10">
+                                  : {$print_sep.bridging_sep.nmdiagnosaawal}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Sub/Spesialis
+                                </div>
+                                <div class="col-md-10">
+                                  : {$print_sep.bridging_sep.nmpolitujuan}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  DPJP Yg Melayani
+                                </div>
+                                <div class="col-md-10">
+                                  : {$print_sep.bridging_sep.nmdpdjp}
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-2">
+                                  Catatan
+                                </div>
+                                <div class="col-md-4">
+                                  : {$print_sep.bridging_sep.catatan}
+                                </div>
+                                <div class="col-md-6" style="left: 90px;">
+                                  Pasien/Keluarga Pasien
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-6">
+                                  <small><em><font size="1px">*Saya Menyetujui BPJS Kesehatan menggunakan informasi Medis Pasien jika diperlukan.</font></em></small>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-6">
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-6">
+                                  <small><em><font size="1px">**SEP bukan sebagai bukti penjaminan peserta</font></em></small>
+                                </div>
+                                <div class="col-md-6">
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-1">
+                                  <small><em><font size="1px">Cetakan ke 1</font></em></small>
+                                </div>
+                                <div class="col-md-11">
+                                  <small><em><font size="1px">{?=date("d/m/Y h:i:s A")?}</font></em></small>
+                                </div>
+                              </div>
+                              <div class="row clearfix">
+                                <div class="col-md-1">
+                                  <small><em><font size="1px">Masa berlaku</font></em></small>
+                                </div>
+                                <div class="col-md-5">
+                                  <small><em><font size="1px">{$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}</font></em></small>
+                                </div>
+                                <div class="col-md-6" style="left: 90px;">
+                                  ----------------
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </section>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

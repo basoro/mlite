@@ -1,0 +1,163 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola e-Vedika</h3>
+                <ul class="nav nav-tabs">
+                    <li class="dropdown {if: isset($_GET['start_date']) && $_GET['start_date'] !== date('Y-m-d') && $_GET['start_date'] !== date('Y-m-d', strtotime('-1 days')) && $_GET['start_date'] !== date('Y-m-d', strtotime('-7 days')) && $_GET['start_date'] !== date('Y-m-d', strtotime('-30 days'))}active{else}{/if}">
+                        <a class="dropdown-toggle" href="#tab-main" data-toggle="dropdown" role="tab">Kustom</a>
+                        <div class="dropdown-menu" role="menu">
+                            <form action="{?=url(ADMIN.'/vedika')?}" style="padding:10px;">
+                                <div class="input-group">
+                                    <span>Tanggal Awal：<input class="datepicker" style="padding:3px;" type="text" name="start_date" value="{?=date('Y-m-d')?}"></span>
+                                    <span>Tanggal Akhir：<input class="datepicker" style="padding:3px;" type="text" name="end_date" value="{?=date('Y-m-d')?}"></span>
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <button class="btn btn-xs pull-right" style="margin-top:10px;">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && isset($_GET['end_date']) && $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
+                        <a href="{?=url(ADMIN.'/vedika')?}" role="tab">Sekarang</a>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-1 days'))}active{/if}">
+                        <a href="{?=url(ADMIN.'/vedika/?start_date='.date('Y-m-d', strtotime('-1 days')).'&end_date='.date('Y-m-d'))?}" role="tab">1 Hari Terakhir</a>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-7 days'))}active{/if}">
+                        <a href="{?=url(ADMIN.'/vedika/?start_date='.date('Y-m-d', strtotime('-7 days')).'&end_date='.date('Y-m-d'))?}" role="tab">7 Hari Terakhir</a>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-30 days'))}active{/if}">
+                        <a href="{?=url(ADMIN.'/vedika/?start_date='.date('Y-m-d', strtotime('-30 days')).'&end_date='.date('Y-m-d'))?}" role="tab">30 Hari Terakhir</a>
+                    </li>
+				        </ul>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                  <div class="col col-md-6">
+                    <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}</h3>
+                  </div>
+                  <div class="col col-md-6">
+                    <form action="{$vedika.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                        <div class="input-group">
+                            <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                            <input type="hidden" name="start_date" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}">
+                            <input type="hidden" name="end_date" value="{if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}">
+                            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                            </span>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+      					<div class="table-responsive no-margin">
+      						<table class="table table-striped no-margin">
+      							<thead>
+      								<tr>
+                        <th>Aksi dan Proses</th>
+                        <th>Data Pasien</th>
+                        <th>Berkas Digital</th>
+      								</tr>
+      							</thead>
+      							<tbody>
+              			{if: !empty($vedika.list)}
+      								{loop: $vedika.list}
+      								<tr>
+                        <td>
+                          <a href="{$value.sepURL}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">
+                            <i class="fa fa-folder-open"></i> {$value.no_sep}
+                          </a><br/>
+                          <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
+      											<i class="fa fa-print"></i> View PDF
+      										</a><br/>
+      										<a href="{$value.resumeURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
+      											<i class="fa fa-trash-o"></i> Resume
+      										</a><br/>
+                          <a href="{$value.billingURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#moduleModal">
+      											<i class="fa fa-pencil"></i> Billing
+      										</a>
+                        </td>
+      									<td>
+                          <table>
+                            <tr>
+                              <td width='150px'>No.Rawat</td><td>: {$value.no_rawat}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>No.RM</td><td>: {$value.no_rkm_medis}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Nama Pasien</td><td>: {$value.nm_pasien}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Umur</td><td>: {$value.umur} {$value.sttsumur}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Jenis Kelamin</td><td>: {if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Alamat Pasien</td><td>: {$value.almt_pj}</td>
+                            </tr>
+                          </table>
+                          <table>
+                            <tr>
+                              <td width='150px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
+                            </tr>
+                          </table>
+                          <table>
+                            <tr>
+                              <td width='150px'>No. Kunjungan</td><td>: {$value.no_rujukan}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>No. Kartu</td><td>: {$value.no_peserta}</td>
+                            </tr>
+                            <tr>
+                              <td width='150px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td>
+                          <table>
+                            {if: !empty($value.berkas_digital_pasien)}
+                            {loop: $value.berkas_digital_pasien as $data}
+                            <tr>
+                              <td>- <a href="{?=url($data.src.sm)?}" target="_blank">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
+                            </tr>
+                            {/loop}
+                            {/if}
+                            {loop: $value.berkas_digital as $data}
+                            <tr>
+                              <td>- <a href="{?=url(WEBAPPS_PATH)?}{$data.lokasi_file}" target="_blank">{$data.nama}</a></td>
+                            </tr>
+                            {/loop}
+                          </table>
+                        </td>
+      								</tr>
+      								{/loop}
+      								{else}
+      								<tr><td colspan="6" class="text-center">Data pasien tidak ditemukan</td></tr>
+      							{/if}
+      							</tbody>
+      						</table>
+      					</div>
+                {$vedika.pagination}
+            </div>
+        </div>
+    </div>
+</article>
+<!-- Modal -->
+<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" style="width:1120px;" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
