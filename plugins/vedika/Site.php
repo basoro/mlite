@@ -80,6 +80,9 @@ class Site extends SiteModule
           }
       }
 
+      $this->assign['vedika_username'] = $this->options->get('vedika.username');
+      $this->assign['vedika_password'] = $this->options->get('vedika.password');
+
       $this->assign['searchUrl'] =  url(['vedika', 'manage', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['vedika' => $this->assign]);
 
