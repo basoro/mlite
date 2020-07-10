@@ -117,9 +117,13 @@ class Site extends SiteModule
             $cek_kouta = $cek_kouta->fetch();
 
             $cek_referensi = $this->db('lite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
+            $cek_referensi_noka = $this->db('lite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if($cek_referensi > 0) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$cek_referensi['tanggal_periksa'];
+            }
+            if($cek_referensi_noka > 0) {
+               $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
             }
             if(empty($decode['nomorkartu'])) {
                $errors[] = 'Nomor kartu tidak boleh kosong';
@@ -328,6 +332,7 @@ class Site extends SiteModule
                         if(!empty($decode['nomorreferensi'])) {
                           $this->db('lite_antrian_referensi')->save([
                               'tanggal_periksa' => $decode['tanggalperiksa'],
+                              'nomor_kartu' => $decode['nomorkartu'],
                               'nomor_referensi' => $decode['nomorreferensi']
                           ]);
                         }

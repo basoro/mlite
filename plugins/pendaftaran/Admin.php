@@ -222,6 +222,13 @@ class Admin extends AdminModule
           }
         }
 
+        if($this->options->get('pendaftaran.ceklimit') == 1) {
+          if ($this->_cekLimitKuota($_POST['kd_dokter'], $_POST['tgl_registrasi'])) {
+              $errors++;
+              $this->notify('failure', 'Kuota pendaftaran sudah terpenuhi. Silahkan hubungi petugas.');
+          }
+        }
+
         // CREATE / EDIT
         if (!$errors) {
             unset($_POST['save']);
@@ -996,6 +1003,29 @@ class Admin extends AdminModule
         }
     }
 
+    private function _cekLimitKuota($id = null, $tgl_registrasi = null)
+    {
+        $tanggal=$_POST['tgl_registrasi'];
+        $tentukan_hari=date('D',strtotime($tanggal));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $cek_limit = $this->db('jadwal')->where('kd_dokter', $_POST['kd_dokter'])->where('hari_kerja', $hari)->oneArray();
+
+        if ($cek_limit['kuota'] > 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public function getJavascript()
     {

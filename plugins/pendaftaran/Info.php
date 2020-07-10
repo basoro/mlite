@@ -11,6 +11,7 @@ return [
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('pendaftaran', 'cekstatusbayar', '0')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('pendaftaran', 'bpjs', 'BPJ')");
+        $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('pendaftaran', 'ceklimit', '0')");
     },
     'uninstall'     =>  function () use ($core) {
         $core->db()->pdo()->exec("DELETE FROM `lite_options` WHERE `module` = 'pendaftaran'");

@@ -25,6 +25,7 @@ return [
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_antrian_referensi` (
           `tanggal_periksa` date NOT NULL,
+          `nomor_kartu` varchar(50) NOT NULL, 
           `nomor_referensi` varchar(50) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
