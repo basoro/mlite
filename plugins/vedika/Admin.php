@@ -155,6 +155,12 @@ class Admin extends AdminModule
       $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
       $this->tpl->set('print_sep', $print_sep);
 
+      $resume_pasien = $this->db('resume_pasien')
+        ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $this->tpl->set('resume_pasien', $resume_pasien);
+
 
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
@@ -162,8 +168,13 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getResume()
+    public function getResume($id)
     {
+      $resume_pasien = $this->db('resume_pasien')
+        ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $this->tpl->set('resume_pasien', $resume_pasien);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/resume.html', true);
       exit();
     }
