@@ -8,41 +8,39 @@
             <div class="panel-body">
                 {if: !empty($gallery.images)}
                 <form action="{?=url([ADMIN, 'pasien_galleries', 'saveImages', $gallery['id'], $gallery['page']])?}" method="POST">
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <th>Thumbnail</th>
-                                <th>Nama Berkas Pasien</th>
-                                <th>Aksi</th>
-                            </thead>
-                            <tbody>
-                                {loop: $gallery.images}
-                                <tr>
-                                    <td class="text-center">
-                                        <a href="{?=url($value.src.lg)?}" class="gallery">
-                                            <img src="{?=url($value.src.sm)?}" class="img-responsive" alt="" />
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <div class="form-group">
-                                            <select name="img[{$value.id}][title]" class="form-control">
-                                                <option value="ktp" {if: $value.title == 'ktp'}selected{/if}>KTP</option>
-                                                <option value="kk" {if: $value.title == 'kk'}selected{/if}>Kartu Keluarga</option>
-                                                <option value="bpjs" {if: $value.title == 'bpjs'}selected{/if}>Kartu BPJS</option>
-                                                <option value="inhealth" {if: $value.title == 'inhealth'}selected{/if}>Kartu Inhealth</option>
-                                            </select>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <a href="{?=url(ADMIN.'/pasien_galleries/deleteImage/'.$value.id)?}" class="btn btn-xs btn-danger" data-confirm="Yakin ingin menghapus?">
-                                            <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
-                                        </a>
-                                    </td>
-                                </tr>
-                                {/loop}
-                            </tbody>
-                        </table>
-                    </div>
+                    <table class="table table-striped">
+                        <thead>
+                            <th>Thumbnail</th>
+                            <th>Nama Berkas Pasien</th>
+                            <th>Aksi</th>
+                        </thead>
+                        <tbody>
+                            {loop: $gallery.images}
+                            <tr>
+                                <td class="text-center">
+                                    <a href="{?=url($value.src.lg)?}" class="gallery">
+                                        <img src="{?=url($value.src.sm)?}" class="img-responsive" alt="" />
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        <select name="img[{$value.id}][title]" class="form-control">
+                                            <option value="ktp" {if: $value.title == 'ktp'}selected{/if}>KTP</option>
+                                            <option value="kk" {if: $value.title == 'kk'}selected{/if}>Kartu Keluarga</option>
+                                            <option value="bpjs" {if: $value.title == 'bpjs'}selected{/if}>Kartu BPJS</option>
+                                            <option value="inhealth" {if: $value.title == 'inhealth'}selected{/if}>Kartu Inhealth</option>
+                                        </select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{?=url(ADMIN.'/pasien_galleries/deleteImage/'.$value.id)?}" class="btn btn-xs btn-danger" data-confirm="Yakin ingin menghapus?">
+                                        <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+                                    </a>
+                                </td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
                     <input type="submit" class="btn btn-primary" value="Simpan" />
                 </form>
                 {$gallery.pagination}
