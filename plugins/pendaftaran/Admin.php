@@ -1018,9 +1018,11 @@ class Admin extends AdminModule
         );
         $hari=$day[$tentukan_hari];
 
+        $cek_register = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_dokter', $_POST['kd_dokter'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray();
         $cek_limit = $this->db('jadwal')->where('kd_dokter', $_POST['kd_dokter'])->where('hari_kerja', $hari)->oneArray();
+        $limit = $cek_limit['kuota']-$cek_register['count'];
 
-        if ($cek_limit['kuota'] > 0) {
+        if ($limit <= 0) {
             return true;
         } else {
             return false;
