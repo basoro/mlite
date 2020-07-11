@@ -173,6 +173,31 @@
 						            </table>
 						          </div>
 						          {/if}
+											{if: !empty($value.gambar_radiologi)}
+						          <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;margin-left:10px;margin-right:10px;">Gambar dan Hasil Radiologi</h4>
+						          <div class="">
+						              <div class="gallery">
+						              {loop: $value.gambar_radiologi as $data}
+						                  <div class="col-sm-6 col-md-6">
+						                      <div class="thumbnail">
+						                          <a href="{?=url(WEBAPPS_PATH.'/radiologi/'.$data.lokasi_gambar)?}" class="gallery">
+						                              <img src="{?=url(WEBAPPS_PATH.'/radiologi/'.$data.lokasi_gambar)?}" class="img-responsive">
+						                          </a>
+						                      </div>
+						                  </div>
+						              {/loop}
+						              </div>
+						          </div>
+						          {/if}
+						          {if: $value.hasil_radiologi}
+						          <div class="">
+						              <div class="col-sm-12 col-md-12">
+						                  <div class="caption">
+						                      {$value.hasil_radiologi}
+						                  </div>
+						              </div>
+						          </div>
+						          {/if}
 									</div>
 									<div class="panel-footer">
 											<ul>
@@ -205,3 +230,9 @@
         </div>
     </div>
 </div>
+
+<script>
+$(document).ready(function(){
+$('.gallery').lightbox();
+});
+</script>

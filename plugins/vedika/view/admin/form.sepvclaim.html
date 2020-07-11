@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Ambil Data SEP dari VClaim</h4>
+</div>
+<div class="modal-body">
+  <article class="row">
+  	<form name="vedika" action="{?=url(ADMIN.'/vedika/savesep/'.@$vedika.no_sep)?}" method="POST" enctype="multipart/form-data">
+  		<div class="col-md-12">
+        <div class="input-group">
+          <input type="text" name="no_sep" class="form-control" placeholder="Nomor SEP" required value="" />
+          <span class="input-group-btn" style="width:0px;"></span>
+          <input type="text" name="asal_rujukan" class="form-control" placeholder="Faske 1 atau 2" required value="" />
+          <input type="hidden" name="no_rawat" class="form-control" value="{?=$_GET['no_rawat']?}" />
+          <div class="input-group-btn">
+            <button class="btn btn-default" type="submit">Simpan Ke SIMRS</button>
+          </div>
+        </div>
+      </div>
+  	</form>
+  </article>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

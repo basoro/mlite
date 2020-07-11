@@ -3,6 +3,7 @@
 namespace Plugins\Vedika;
 
 use Systems\AdminModule;
+use Systems\Lib\BpjsRequest;
 
 class Admin extends AdminModule
 {
@@ -77,6 +78,7 @@ class Admin extends AdminModule
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['sepURL'] = url([ADMIN, 'vedika', 'sep', $row['no_sep']]);
+              $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
               $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', convertNorawat($row['no_rawat'])]);
@@ -101,6 +103,86 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getFormSEPVClaim()
+    {
+      $cek_sep = array();
+      $this->tpl->set('cek_sep', $cek_sep);
+      echo $this->tpl->draw(MODULES.'/vedika/view/admin/form.sepvclaim.html', true);
+      exit();
+    }
+
+    public function postSaveSEP()
+    {
+      header('Content-type: text/html');
+      $date = date('Y-m-d');
+      $url = $this->options->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
+      $consid = $this->options->get('settings.BpjsConsID');
+      $secretkey = $this->options->get('settings.BpjsSecretKey');
+      $output = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+      $data = json_decode($output, true);
+
+      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$data['response']['noRujukan'];
+      $rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
+      $data_rujukan = json_decode($rujukan, true);
+
+      if($data['metaData']['code'] == 200)
+      {
+        $insert = $this->db('bridging_sep')
+          ->save([
+            'no_sep' => $data['response']['noSep'],
+            'no_rawat' => $_POST['no_rawat'],
+            'tglsep' => $data['response']['tglSep'],
+            'tglrujukan' => $data_rujukan['response']['rujukan']['tglKunjungan'],
+            'no_rujukan' => $data['response']['noRujukan'],
+            'kdppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['kode'],
+            'nmppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['nama'],
+            'kdppkpelayanan' => $this->core->getSettings('kode_ppk'),
+            'nmppkpelayanan' => $this->core->getSettings('nama_instansi'),
+            'jnspelayanan' => $data_rujukan['response']['rujukan']['pelayanan']['kode'],
+            'catatan' => $data['response']['catatan'],
+            'diagawal' => $data_rujukan['response']['rujukan']['diagnosa']['kode'],
+            'nmdiagnosaawal' => $data_rujukan['response']['rujukan']['diagnosa']['nama'],
+            'kdpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray()['kd_poli_bpjs'],
+            'nmpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray()['nm_poli_bpjs'],
+            'klsrawat' =>  $data_rujukan['response']['rujukan']['peserta']['hakKelas']['kode'],
+            'lakalantas' => '0',
+            'user' => $this->core->getUserInfo('username', null, true),
+            'nomr' => $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']),
+            'nama_pasien' => $data['response']['peserta']['nama'],
+            'tanggal_lahir' => $data['response']['peserta']['tglLahir'],
+            'peserta' => $data['response']['peserta']['jnsPeserta'],
+            'jkel' => $data['response']['peserta']['kelamin'],
+            'no_kartu' => $data['response']['peserta']['noKartu'],
+            'tglpulang' => '1900-01-01 00:00:00',
+            'asal_rujukan' => $_POST['asal_rujukan'],
+            'eksekutif' => $data['response']['poliEksekutif'],
+            'cob' => '0',
+            'penjamin' => '-',
+            'notelep' => $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'],
+            'katarak' => '0',
+            'tglkkl' => '1900-01-01',
+            'keterangankkl' => '-',
+            'suplesi' => '0',
+            'no_sep_suplesi' => '-',
+            'kdprop' => '-',
+            'nmprop' => '-',
+            'kdkab' => '-',
+            'nmkab' => '-',
+            'kdkec' => '-',
+            'nmkec' => '-',
+            'noskdp' => '0',
+            'kddpjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']))->oneArray()['kd_dokter_bpjs'],
+            'nmdpdjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']))->oneArray()['nm_dokter_bpjs']
+          ]);
+      }
+
+      if ($insert) {
+          $this->notify('success', 'Simpan sukes');
+      } else {
+          $this->notify('failure', 'Simpan gagal');
+      }
+      redirect(url([ADMIN, 'vedika', 'manage']));
+    }
     public function getPDF($id)
     {
       $berkas_digital = $this->db('berkas_digital_perawatan')

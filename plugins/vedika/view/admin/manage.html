@@ -64,7 +64,7 @@
       								{loop: $vedika.list}
       								<tr>
                         <td>
-                          <a href="{$value.sepURL}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">
+                          <a href="{if: $value.no_sep == ''}{$value.formSepURL}{else}{$value.sepURL}{/if}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">
                             <i class="fa fa-folder-open"></i> {$value.no_sep}
                           </a><br/>
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">

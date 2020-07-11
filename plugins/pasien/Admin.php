@@ -214,6 +214,8 @@ class Admin extends AdminModule
                   ->group('detail_pemberian_obat.kode_brng')
                   ->toArray();
                 $detail_periksa_lab = $this->db('detail_periksa_lab')->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')->where('no_rawat', $row['no_rawat'])->toArray();
+                $hasil_radiologi = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
+                $gambar_radiologi = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
                 $row['keluhan'] = $pemeriksaan_ralan['keluhan'];
                 $row['suhu_tubuh'] = $pemeriksaan_ralan['suhu_tubuh'];
                 $row['tensi'] = $pemeriksaan_ralan['tensi'];
@@ -229,6 +231,8 @@ class Admin extends AdminModule
                 $row['rawat_jl_dr'] = $rawat_jl_dr;
                 $row['detail_pemberian_obat'] = $detail_pemberian_obat;
                 $row['detail_periksa_lab'] = $detail_periksa_lab;
+                $row['hasil_radiologi'] = str_replace("\n","<br>",$hasil_radiologi['hasil']);
+                $row['gambar_radiologi'] = $gambar_radiologi;
               $this->assign['riwayat'][] = $row;
             }
 
@@ -1122,9 +1126,11 @@ RR: '.$pemeriksaan_ralan['respirasi'].' /mnt';
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 

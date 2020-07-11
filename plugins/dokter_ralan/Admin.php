@@ -203,6 +203,7 @@ class Admin extends AdminModule
                   ->toArray();
                 $detail_periksa_lab = $this->db('detail_periksa_lab')->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')->where('no_rawat', $row['no_rawat'])->toArray();
                 $hasil_radiologi = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
+                $gambar_radiologi = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
                 $catatan_perawatan = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
                 $row['keluhan'] = $pemeriksaan_ralan['keluhan'];
                 $row['suhu_tubuh'] = $pemeriksaan_ralan['suhu_tubuh'];
@@ -225,6 +226,8 @@ class Admin extends AdminModule
                 $row['rawat_inap_drpr'] = $rawat_inap_drpr;
                 $row['detail_pemberian_obat'] = $detail_pemberian_obat;
                 $row['detail_periksa_lab'] = $detail_periksa_lab;
+                $row['hasil_radiologi'] = str_replace("\n","<br>",$hasil_radiologi['hasil']);
+                $row['gambar_radiologi'] = $gambar_radiologi;
                 $this->assign['riwayat'][] = $row;
             }
 
@@ -756,9 +759,11 @@ class Admin extends AdminModule
     {
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
 
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'dokter_ralan', 'css']));
