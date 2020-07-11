@@ -1003,7 +1003,7 @@ class Admin extends AdminModule
         }
     }
 
-    private function _cekLimitKuota($id = null, $tgl_registrasi = null)
+    private function _cekLimitKuota($id = null, $tgl_registrasi = null, $booking = null)
     {
         $tanggal=$_POST['tgl_registrasi'];
         $tentukan_hari=date('D',strtotime($tanggal));
@@ -1019,6 +1019,9 @@ class Admin extends AdminModule
         $hari=$day[$tentukan_hari];
 
         $cek_register = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_dokter', $_POST['kd_dokter'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray();
+        if($_POST['booking']) {
+            $cek_register = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_rkm_medis)'])->where('kd_dokter', $_POST['kd_dokter'])->where('tanggal_periksa', $_POST['tgl_registrasi'])->oneArray();
+        }
         $cek_limit = $this->db('jadwal')->where('kd_dokter', $_POST['kd_dokter'])->where('hari_kerja', $hari)->oneArray();
         $limit = $cek_limit['kuota']-$cek_register['count'];
 
