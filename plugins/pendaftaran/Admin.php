@@ -242,7 +242,7 @@ class Admin extends AdminModule
                   'tanggal_periksa' => $_POST['tgl_registrasi'],
                   'kd_dokter' => $_POST['kd_dokter'],
                   'kd_poli' => $_POST['kd_poli'],
-                  'no_reg' => $this->core->setNoReg($_POST['kd_dokter']),
+                  'no_reg' => $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tgl_registrasi']),
                   'kd_pj' => $_POST['kd_pj'],
                   'limit_reg' => 0,
                   'waktu_kunjungan' => $_POST['tgl_registrasi'].' '.$_POST['jam_reg'],
