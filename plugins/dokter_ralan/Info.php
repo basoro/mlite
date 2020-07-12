@@ -1,6 +1,6 @@
 <?php
 return [
-    'name'          =>  'e-Dokter Ralan',
+    'name'          =>  'Dokter Ralan',
     'description'   =>  'Pengelolaan data pasien untuk dokter rawat jalan.',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',

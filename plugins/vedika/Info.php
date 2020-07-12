@@ -1,6 +1,6 @@
 <?php
 return [
-    'name'          =>  'e-Vedika',
+    'name'          =>  'Vedika',
     'description'   =>  'Modul klaim online Vedika BPJS',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
