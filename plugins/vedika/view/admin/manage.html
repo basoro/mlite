@@ -126,6 +126,7 @@
                         </td>
                         <td>
                           <table>
+                            <tr><td><a href="{$value.berkasPasien}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">Berkas Pasien</a></td></tr>
                             {if: !empty($value.berkas_digital_pasien)}
                             {loop: $value.berkas_digital_pasien as $data}
                             <tr>
@@ -133,6 +134,7 @@
                             </tr>
                             {/loop}
                             {/if}
+                            <tr><td><br><a href="{$value.berkasPerawatan}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">Berkas Perawatan</button></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
                               <td>- <a href="{?=url(WEBAPPS_PATH)?}{$data.lokasi_file}" target="_blank">{$data.nama}</a></td>
@@ -143,7 +145,7 @@
       								</tr>
       								{/loop}
       								{else}
-      								<tr><td colspan="6" class="text-center">Data pasien tidak ditemukan</td></tr>
+      								<tr><td colspan="4" class="text-center">Data pasien tidak ditemukan</td></tr>
       							{/if}
       							</tbody>
       						</table>

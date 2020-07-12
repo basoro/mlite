@@ -82,6 +82,8 @@ class Admin extends AdminModule
               $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', convertNorawat($row['no_rawat'])]);
+              $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
+              $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
@@ -293,6 +295,17 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getBerkasPasien()
+    {
+      echo $this->tpl->draw(MODULES.'/vedika/view/admin/berkaspasien.html', true);
+      exit();
+    }
+
+    public function getBerkasPerawatan()
+    {
+      echo $this->tpl->draw(MODULES.'/vedika/view/admin/berkasperawatan.html', true);
+      exit();
+    }
     private function _getSEPInfo($field, $no_rawat)
     {
         $row = $this->db('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
