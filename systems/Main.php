@@ -243,7 +243,7 @@ abstract class Main
     {
         //$date = date('Y-m-d');
         // Get last no_rawat
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT MAX(no_reg) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT MAX(no_reg) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
         // Next no_rm
