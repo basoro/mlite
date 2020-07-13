@@ -488,9 +488,9 @@ class Site extends SiteModule
                 if ($decode['nopeserta'] != '') {
                     foreach ($sql as $data) {
                         if($data['terlaksana'] == 'Menunggu') {
-                          $data['terlaksana'] = '0';
+                          $data['terlaksana'] = 0;
                         } else {
-                          $data['terlaksana'] = '1';
+                          $data['terlaksana'] = 1;
                         }
                         $data_array[] = array(
                                 'kodebooking' => $data['kodebooking'],
@@ -577,9 +577,9 @@ class Site extends SiteModule
                 if (count($sql) > 0) {
                     foreach ($sql as $data) {
                         if($data['terlaksana'] == 'Menunggu') {
-                          $data['terlaksana'] = '0';
+                          $data['terlaksana'] = 0;
                         } else {
-                          $data['terlaksana'] = '1';
+                          $data['terlaksana'] = 1;
                         }
                         $data_array[] = array(
                                 'kodebooking' => $data['kodebooking'],
