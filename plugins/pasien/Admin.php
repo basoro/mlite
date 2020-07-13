@@ -50,6 +50,7 @@ class Admin extends AdminModule
           ->orLike('no_peserta', '%'.$phrase.'%')
           ->offset($offset)
           ->limit($perpage)
+          ->desc('no_rkm_medis')
           ->toArray();
 
         $this->assign['list'] = [];

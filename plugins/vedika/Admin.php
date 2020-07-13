@@ -88,6 +88,9 @@ class Admin extends AdminModule
           }
       }
 
+      $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+      $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+
       $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'manage', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['vedika' => $this->assign]);
 

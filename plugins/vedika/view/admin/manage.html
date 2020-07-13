@@ -130,14 +130,14 @@
                             {if: !empty($value.berkas_digital_pasien)}
                             {loop: $value.berkas_digital_pasien as $data}
                             <tr>
-                              <td>- <a href="{?=url($data.src.sm)?}" target="_blank">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
+                              <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
                             </tr>
                             {/loop}
                             {/if}
                             <tr><td><br><a href="{$value.berkasPerawatan}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_PATH)?}{$data.lokasi_file}" target="_blank">{$data.nama}</a></td>
+                              <td>- <a href="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
                             </tr>
                             {/loop}
                           </table>
@@ -163,3 +163,6 @@
         </div>
     </div>
 </div>
+<script>
+$('.gallery').lightbox();
+</script>
