@@ -226,3 +226,7 @@ $(document).ready(function () {
   });
   $('select').selectator();
 });
+
+$(document).ready(function(){
+  $('.gallery').lightbox();
+});
