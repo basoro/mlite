@@ -623,16 +623,16 @@ class Admin extends AdminModule
             if ($query) {
               $this->db('booking_registrasi')
                 ->save([
-                  'tanggal_booking' => $_POST['tanggal_datang'],
+                  'tanggal_booking' => date('Y-m-d'),
                   'jam_booking' => date('H:i:s'),
                   'no_rkm_medis' => $_POST['no_rkm_medis'],
-                  'tanggal_periksa' => $_POST['tanggal_rujukan'],
+                  'tanggal_periksa' => $_POST['tanggal_datang'],
                   'kd_dokter' => $_POST['kd_dokter'],
                   'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $no_rawat),
                   'no_reg' => $this->core->setNoBooking($_POST['kd_dokter'], $_POST['tanggal_rujukan']),
                   'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $no_rawat),
                   'limit_reg' => 0,
-                  'waktu_kunjungan' => $_POST['tanggal_rujukan'].' '.date('H:i:s'),
+                  'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
                   'status' => 'Belum'
                 ]);
                 $this->notify('success', 'Simpan sukes');
