@@ -469,7 +469,6 @@ class Admin extends AdminModule
       $this->_addProfileHeaderFiles();
       $date = date('Y-m-d');
       $bridging_sep = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
-      $skdp_bpjs = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
       $this->assign['bridging_sep'] = $bridging_sep;
 
       $consid = $this->options->get('settings.BpjsConsID');
@@ -509,6 +508,7 @@ class Admin extends AdminModule
       }
 
       $this->assign['get_noskdp'] = $this->db('skdp_bpjs')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_datang', date('Y-m-d'))->oneArray();
+      $this->assign['get_noskdp_alt'] = $this->core->setNoSKDP();
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
       $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
       if(!empty($personal_pasien['gambar'])) {
@@ -525,7 +525,6 @@ class Admin extends AdminModule
       $this->_addProfileHeaderFiles();
       $date = date('Y-m-d');
       $bridging_sep = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
-      $skdp_bpjs = $this->db('bridging_sep')->where('no_rujukan', $id)->oneArray();
       $this->assign['bridging_sep'] = $bridging_sep;
 
       $consid = $this->options->get('settings.BpjsConsID');
@@ -565,6 +564,7 @@ class Admin extends AdminModule
       }
 
       $this->assign['get_noskdp'] = $this->db('skdp_bpjs')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_datang', date('Y-m-d'))->oneArray();
+      $this->assign['get_noskdp_alt'] = $this->core->setNoSKDP();
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
       $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
       if(!empty($personal_pasien['gambar'])) {
@@ -766,6 +766,24 @@ class Admin extends AdminModule
 
         if ($query) {
             $this->notify('success', 'Simpan sukes');
+            if(empty($this->db('skdp_bpjs')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->where('tanggal_datang', date('Y-m-d'))->oneArray()['no_antrian'])){
+              $this->db('skdp_bpjs')
+                ->save([
+                  'tahun' => date('Y'),
+                  'no_rkm_medis' => $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']),
+                  'diagnosa' => $_POST['nmdiagnosaawal'],
+                  'terapi' => '',
+                  'alasan1' => '',
+                  'alasan2' => '',
+                  'rtl1' => '',
+                  'rtl2' => '',
+                  'tanggal_datang' => date('Y-m-d'),
+                  'tanggal_rujukan' => $_POST['tglrujukan'],
+                  'no_antrian' => $_POST['noskdp'],
+                  'kd_dokter' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kddpjp'])->oneArray()['kd_dokter'],
+                  'status' => 'Menunggu'
+                ]);
+            }
         } else {
             $this->notify('failure', 'Simpan gagal');
         }

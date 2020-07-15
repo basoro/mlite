@@ -179,7 +179,7 @@
 																						</select>
 																				</dd>
 																				<dt>No. SKDP <span style="color:red">*</span></dt>
-																				<dd><input type="text" class="form-control" name="noskdp" value="{$bridging.get_noskdp.no_antrian}"></dd>
+																				<dd><input type="text" class="form-control" name="noskdp" value="{if: $bridging.get_noskdp.no_antrian == ''}{$bridging.get_noskdp_alt}{else}{$bridging.get_noskdp.no_antrian}{/if}"></dd>
 																				<dt>Tgl. SEP <span style="color:red">*</span></dt>
 																				<dd><input type="text" class="form-control datepicker" name="tglsep" value="{?=date('Y-m-d')?}"></dd>
 																				<dt>Diagnosa <span style="color:red">*</span></dt>
