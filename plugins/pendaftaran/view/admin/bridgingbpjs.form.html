@@ -110,7 +110,7 @@
 									<div class="panel-body">
 											<div class="post">
 													<div class="post-content sep">
-														{*<h4 class="pull-right">{$bridging.rujukan.pelayanan.nama}</h4>*}
+														<h4 class="pull-right">{$bridging.rujukan.pelayanan.nama}</h4>
 														<div class="clearfix"></div>
 														<ul class="nav nav-tabs" role="tablist">
 																<li role="presentation" class="active"><a href="#satu" aria-controls="satu" role="tab" data-toggle="tab">Informasi Rujukan</a></li>
@@ -179,7 +179,7 @@
 																						</select>
 																				</dd>
 																				<dt>No. SKDP <span style="color:red">*</span></dt>
-																				<dd><input type="text" class="form-control" name="noskdp" value=""></dd>
+																				<dd><input type="text" class="form-control" name="noskdp" value="{$bridging.get_noskdp.no_antrian}"></dd>
 																				<dt>Tgl. SEP <span style="color:red">*</span></dt>
 																				<dd><input type="text" class="form-control datepicker" name="tglsep" value="{?=date('Y-m-d')?}"></dd>
 																				<dt>Diagnosa <span style="color:red">*</span></dt>

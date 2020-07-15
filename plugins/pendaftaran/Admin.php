@@ -508,6 +508,7 @@ class Admin extends AdminModule
           $this->assign['sepdetail'][] = $value;
       }
 
+      $this->assign['get_noskdp'] = $this->db('skdp_bpjs')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_datang', date('Y-m-d'))->oneArray();
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
       $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
       if(!empty($personal_pasien['gambar'])) {
@@ -563,6 +564,7 @@ class Admin extends AdminModule
           $this->assign['sepdetail'][] = $value;
       }
 
+      $this->assign['get_noskdp'] = $this->db('skdp_bpjs')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_datang', date('Y-m-d'))->oneArray();
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
       $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
       if(!empty($personal_pasien['gambar'])) {
