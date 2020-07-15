@@ -10,6 +10,7 @@ $( function() {
 $(document).ready(function() {
     if (location.hash) {
         $("a[href='" + location.hash + "']").tab("show");
+        $('.images a').lightbox();
     }
     $(document.body).on("click", "a[data-toggle='tab']", function(event) {
         location.hash = this.getAttribute("href");
@@ -225,8 +226,4 @@ $(document).ready(function () {
     textField: 'nm_dokter'
   });
   $('select').selectator();
-});
-
-$(document).ready(function(){
-  $('.gallery').lightbox();
 });
