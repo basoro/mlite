@@ -94,6 +94,7 @@ class Admin extends AdminModule
                 }
             } else {
                 $this->notify('failure', 'Sudah ada');
+                $location = [ADMIN, 'pasien_galleries', 'edit', $this->db('lite_pasien_galleries')->where('slug', $name)->oneArray()['id']];
             }
         } else {
             $this->notify('failure', 'Masih ada yg kosong');

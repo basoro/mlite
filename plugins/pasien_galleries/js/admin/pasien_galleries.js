@@ -35,8 +35,8 @@ $(document).ready(function () {
         }
       });
     },
-    delay: 300,
-    minSearchLength: 1,
+    delay: 500,
+    minSearchLength: 4,
     valueField: 'no_rkm_medis',
     textField: 'nm_pasien'
   });
