@@ -22,7 +22,6 @@ class Admin extends AdminModule
     public function getManage()
     {
         $this->_addHeaderFiles();
-        //$rows = $this->db('lite_roles')->where('id', '!=', '1')->toArray();
         $rows = $this->db()->pdo()->prepare("SELECT lite_roles.*, pegawai.nama as nama, AES_DECRYPT(user.password,'windi') as password FROM lite_roles, pegawai, user WHERE pegawai.nik = lite_roles.username AND pegawai.nik = AES_DECRYPT(user.id_user,'nur') AND lite_roles.id !=1");
         $rows->execute();
         $rows = $rows->fetchAll();

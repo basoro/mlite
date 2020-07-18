@@ -3,7 +3,7 @@
 namespace Systems\Lib;
 
 /**
- * Khanza LITE QueryBuilder class
+ * QueryBuilder class
  */
 class QueryBuilder
 {

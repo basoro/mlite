@@ -65,7 +65,7 @@ class Admin extends Main
                     $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
                 } else {
                     http_response_code(404);
-                    $this->setNotify('failure', "[@{$method}] Rute yang anda minta tidak ada");
+                    $this->setNotify('failure', "[@{$method}] Url yang anda minta tidak tersedia");
                     $details['content'] = null;
                 }
 

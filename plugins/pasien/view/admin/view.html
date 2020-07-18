@@ -25,7 +25,9 @@
 								</ul>
 								<a href="{$pasien.print_kartu}" target="_blank" class="btn btn-primary btn-block">CETAK KARTU</a>
 								<a href="{$pasien.print_rm}" target="_blank" class="btn btn-primary btn-block">CETAK REKAN MEDIK</a>
+								{if: !empty($pasien.cek_pasien_galleries)}
 								<a href="{$pasien.berkas_digital}" class="btn btn-primary btn-block" data-toggle="modal" data-target="#digitalModal">BERKAS DIGITAL</a>
+								{/if}
 						</div>
 				</div>
 

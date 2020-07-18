@@ -18,19 +18,19 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
-            DROP PRIMARY KEY, ADD PRIMARY KEY (`kd`);');
+            DROP INDEX IF EXISTS `PRIMARY`, ADD PRIMARY KEY (`kd`);');
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_loket`
             MODIFY `kd` int(50) NOT NULL AUTO_INCREMENT;');
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_antrian_referensi` (
           `tanggal_periksa` date NOT NULL,
-          `nomor_kartu` varchar(50) NOT NULL, 
+          `nomor_kartu` varchar(50) NOT NULL,
           `nomor_referensi` varchar(50) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec('ALTER TABLE `lite_antrian_referensi`
-            DROP PRIMARY KEY, ADD PRIMARY KEY (`nomor_referensi`);');
+            DROP INDEX IF EXISTS `PRIMARY`, ADD PRIMARY KEY (`nomor_referensi`);');
 
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'username', '')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('jkn_mobile', 'password', '')");

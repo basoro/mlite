@@ -1,5 +1,5 @@
 <article class="row">
-    <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST">
+    <form action="{?=url(ADMIN.'/settings/saveGeneral')?}" method="POST" enctype="multipart/form-data">
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -54,7 +54,13 @@
                         <label>Kode PPK Inhealth</label>
                         <input type="text" name="kode_ppkinhealth" class="form-control" value="{$settings.0.kode_ppkinhealth}" required />
                     </div>
-
+                    <div class="form-group">
+                        <label>Logo</label>
+                        <div>
+  	                      <img src="{$settings.logoURL}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
+  	                      <input type="file" name="logo" class="form-control hidden" />
+  	                    </div>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
@@ -84,17 +90,27 @@
                         <dt>Versi PHP</dt>
                         <dd>{$settings.system.php}</dd>
                         <dt>Versi MySQL</dt>
-                        <dd>{$settings.system.sqlite}</dd>
+                        <dd>{$settings.system.mysql}</dd>
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
                         <dt>Ukuran aplikasi</dt>
                         <dd>{$settings.system.system_size}</dd>
                         <dt>Ukuran database</dt>
-                        <dd>{$settings.system.sqlite_size}</dd>
+                        <dd>{$settings.system.mysql_size}</dd>
                     </dl>
                 </div>
             </div>
         </div>
     </form>
 </article>
+<script type="text/javascript">
+  // Avatar
+  var reader  = new FileReader();
+  reader.addEventListener("load", function() {
+    $("#logoPreview").attr('src', reader.result);
+  }, false);
+  $("input[name=logo]").change(function() {
+    reader.readAsDataURL(this.files[0]);
+  });
+</script>

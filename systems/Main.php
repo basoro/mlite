@@ -199,7 +199,6 @@ abstract class Main
 
     public function setNoRM()
     {
-        // Get last no_rm
         $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
         $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
         $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
@@ -209,11 +208,9 @@ abstract class Main
     public function setNoRawat()
     {
         $date = date('Y-m-d');
-        // Get last no_rawat
         $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
         $last_no_rawat->execute();
         $last_no_rawat = $last_no_rawat->fetch();
-        // Next no_rm
         if(empty($last_no_rawat[0])) {
           $last_no_rawat[0] = '000000';
         }
@@ -226,11 +223,9 @@ abstract class Main
     public function setNoReg($kd_dokter)
     {
         $date = date('Y-m-d');
-        // Get last no_rawat
         $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_dokter = '$kd_dokter'");
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
-        // Next no_rm
         if(empty($last_no_reg[0])) {
           $last_no_reg[0] = '000';
         }
@@ -241,12 +236,9 @@ abstract class Main
 
     public function setNoBooking($kd_dokter, $date)
     {
-        //$date = date('Y-m-d');
-        // Get last no_rawat
         $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
-        // Next no_rm
         if(empty($last_no_reg[0])) {
           $last_no_reg[0] = '000';
         }
@@ -258,11 +250,9 @@ abstract class Main
     public function setNoResep()
     {
         $date = date('Y-m-d');
-        // Get last no_resep
         $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
-        // Next no_resep
         if(empty($last_no_resep[0])) {
           $last_no_resep[0] = '000000';
         }
@@ -275,11 +265,9 @@ abstract class Main
     public function setNoOrderLab()
     {
         $date = date('Y-m-d');
-        // Get last no_resep
         $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
-        // Next no_resep
         if(empty($last_no_order[0])) {
           $last_no_order[0] = '0000';
         }
@@ -292,11 +280,9 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        // Get last no_resep
         $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
-        // Next no_resep
         if(empty($last_no_order[0])) {
           $last_no_order[0] = '0000';
         }
@@ -309,11 +295,9 @@ abstract class Main
     public function setNoSKDP()
     {
         $year = date('Y');
-        // Get last no_rawat
         $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
         $last_no->execute();
         $last_no = $last_no->fetch();
-        // Next no_rm
         if(empty($last_no[0])) {
           $last_no[0] = '000000';
         }

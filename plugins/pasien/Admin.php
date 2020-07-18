@@ -237,6 +237,7 @@ class Admin extends AdminModule
               $this->assign['riwayat'][] = $row;
             }
 
+            $this->assign['cek_pasien_galleries'] = $this->db('lite_modules')->where('dir', 'pasien_galleries')->oneArray();
             $this->assign['manageURL'] = url([ADMIN, 'pasien', 'manage']);
 
             return $this->draw('view.html', ['pasien' => $this->assign]);

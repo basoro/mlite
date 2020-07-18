@@ -27,8 +27,8 @@ class Admin extends AdminModule
         $settings['system'] = [
             'version'       => $this->options->get('settings.version'),
             'php'           => PHP_VERSION,
-            'sqlite'        => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0],
-            'sqlite_size'        => $this->roundSize($this->db()->pdo()->query("SELECT ROUND(SUM(data_length + index_length), 1) FROM information_schema.tables WHERE table_schema = '".DBNAME."' GROUP BY table_schema")->fetch()[0]),
+            'mysql'         => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0],
+            'mysql_size'    => $this->roundSize($this->db()->pdo()->query("SELECT ROUND(SUM(data_length + index_length), 1) FROM information_schema.tables WHERE table_schema = '".DBNAME."' GROUP BY table_schema")->fetch()[0]),
             'system_size'   => $this->roundSize($this->_directorySize(BASE_DIR)),
         ];
 
@@ -36,6 +36,10 @@ class Admin extends AdminModule
             $settings = array_merge($settings, $redirectData);
         }
 
+        $settings['logoURL'] = url(THEMES.'/admin/img/logo.png');
+        if(!empty($this->core->getSettings('logo'))) {
+          $settings['logoURL'] = "data:image/jpeg;base64,".base64_encode($this->core->getSettings('logo'));
+        }
 
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
@@ -52,6 +56,12 @@ class Admin extends AdminModule
         } else {
             $errors = 0;
 
+            if(($photo = isset_or($_FILES['logo']['tmp_name'], false))) {
+              $logo = file_get_contents($photo);
+            } else {
+              $logo = $this->core->getSettings('logo');
+            }
+
             $this->db('setting')
             ->where('aktifkan', 'Yes')
             ->orWhere('aktifkan', 'No')
@@ -66,7 +76,7 @@ class Admin extends AdminModule
               'kode_ppkinhealth' => $_POST['kode_ppkinhealth'],
               'kode_ppkkemenkes' => $_POST['kode_ppkkemenkes'],
               'wallpaper' => $this->core->getSettings('wallpaper'),
-              'logo' => $this->core->getSettings('logo')
+              'logo' => $logo
             ]);
 
             if (!$errors) {
