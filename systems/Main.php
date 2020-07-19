@@ -307,7 +307,7 @@ abstract class Main
 
     public function setNoNotaRalan()
     {
-        $date = date('Y-m-d');
+        $date = date('Y-m');
         $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
         $last_no->execute();
         $last_no = $last_no->fetch();

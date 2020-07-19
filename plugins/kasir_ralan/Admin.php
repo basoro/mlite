@@ -57,8 +57,9 @@ class Admin extends AdminModule
 
     public function getView($no_rawat)
     {
-        $cekbiling = $this->db('billing')->select(['count' => 'COUNT(no_rawat)'])->where('no_rawat', revertNorawat($no_rawat))->oneArray();
+        $cekbiling = $this->db('billing')->where('no_rawat', revertNorawat($no_rawat))->group('no_rawat')->oneArray();
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', revertNorawat($no_rawat))->oneArray();
+        $nota_jalan = $this->db('nota_jalan')->where('no_rawat', revertNorawat($no_rawat))->oneArray();
         /*
         sqlpscarirm="select no_rkm_medis from reg_periksa where no_rawat=?",
         sqlpscaripasien="select nm_pasien from pasien where no_rkm_medis=? ",
@@ -194,6 +195,9 @@ class Admin extends AdminModule
             $this->assign['cekbiling'] = $cekbiling;
             $this->assign['no_rawat'] = revertNorawat($no_rawat);
             $this->assign['no_nota'] = $this->core->setNoNotaRalan();
+            if(!empty($cekbiling['no_rawat'])) {
+              $this->assign['no_nota'] = $nota_jalan['no_nota'];
+            }
             $this->assign['poliklinik'] = $this->db('poliklinik')->where('kd_poli', $this->core->getRegPeriksaInfo('kd_poli', revertNorawat($no_rawat)))->oneArray();
             $this->assign['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($no_rawat));
             $this->assign['pasien'] = $this->db('pasien')->join('kelurahan', 'kelurahan.kd_kel = pasien.kd_kel')->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')->where('pasien.no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($no_rawat)))->oneArray();
@@ -254,19 +258,6 @@ class Admin extends AdminModule
               ->where('periksa_lab.no_rawat', revertNorawat($no_rawat))
               ->group('periksa_lab.kd_jenis_prw')
               ->toArray();
-            $this->assign['obat'] = $this->db('detail_pemberian_obat')
-              ->select('databarang.nama_brng')
-              ->select('detail_pemberian_obat.biaya_obat')
-              ->select(['jml' => 'SUM(detail_pemberian_obat.jml)'])
-              ->select(['tambahan' => 'SUM(detail_pemberian_obat.embalase+detail_pemberian_obat.tuslah)'])
-              ->select(['total' => '(SUM(detail_pemberian_obat.total)-SUM(detail_pemberian_obat.embalase+detail_pemberian_obat.tuslah))'])
-              ->select(['totalbeli' => 'SUM((detail_pemberian_obat.h_beli*detail_pemberian_obat.jml))'])
-              ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
-              ->join('jenis', 'jenis.kdjns = databarang.kdjns')
-              ->where('detail_pemberian_obat.no_rawat', revertNorawat($no_rawat))
-              ->group('detail_pemberian_obat.kode_brng')
-              ->asc('jenis.nama')
-              ->toArray();
             $this->assign['radiologi'] = $this->db('periksa_radiologi')
               ->select('jns_perawatan_radiologi.nm_perawatan')
               ->select(['jml' => 'COUNT(periksa_radiologi.kd_jenis_prw)'])
@@ -281,6 +272,26 @@ class Admin extends AdminModule
               ->where('periksa_radiologi.no_rawat', revertNorawat($no_rawat))
               ->group('periksa_radiologi.kd_jenis_prw')
               ->toArray();
+            $this->assign['obat'] = $this->db('detail_pemberian_obat')
+              ->select('databarang.nama_brng')
+              ->select('detail_pemberian_obat.biaya_obat')
+              ->select(['jml' => 'SUM(detail_pemberian_obat.jml)'])
+              ->select(['tambahan' => 'SUM(detail_pemberian_obat.embalase+detail_pemberian_obat.tuslah)'])
+              ->select(['total' => '(SUM(detail_pemberian_obat.total)-SUM(detail_pemberian_obat.embalase+detail_pemberian_obat.tuslah))'])
+              ->select(['totalbeli' => 'SUM((detail_pemberian_obat.h_beli*detail_pemberian_obat.jml))'])
+              ->join('databarang', 'databarang.kode_brng = detail_pemberian_obat.kode_brng')
+              ->join('jenis', 'jenis.kdjns = databarang.kdjns')
+              ->where('detail_pemberian_obat.no_rawat', revertNorawat($no_rawat))
+              ->group('detail_pemberian_obat.kode_brng')
+              ->asc('jenis.nama')
+              ->toArray();
+            $total_obat=0;
+            foreach ($this->assign['obat'] as $key => $value) {
+              $total_obat += $value['total'];
+            }
+            $total_obat = $total_obat;
+            $this->assign['total_obat'] = $total_obat;
+
             $this->core->addJS(url('assets/jscripts/are-you-sure.min.js'));
             $this->assign['manageURL'] = url([ADMIN, 'kasir_ralan', 'manage']);
             return $this->draw('view.html', ['kasir_ralan' => $this->assign]);
