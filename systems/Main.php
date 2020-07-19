@@ -302,7 +302,20 @@ abstract class Main
           $last_no[0] = '000000';
         }
         $next_no = sprintf('%06s', ($last_no[0] + 1));
+        return $next_no;
+    }
 
+    public function setNoNotaRalan()
+    {
+        $date = date('Y-m-d');
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
+        $last_no->execute();
+        $last_no = $last_no->fetch();
+        if(empty($last_no[0])) {
+          $last_no[0] = '000000';
+        }
+        $next_no = sprintf('%06s', ($last_no[0] + 1));
+        $next_no = date('Y').'/'.date('m').'/RJ/'.$next_no;
         return $next_no;
     }
 

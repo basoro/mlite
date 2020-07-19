@@ -311,3 +311,7 @@ if (!function_exists('apache_request_headers')) {
         return $return;
     }
 }
+
+function formatDuit($duit){
+    return "Rp. ".number_format($duit,0,",",".").",-";
+}
