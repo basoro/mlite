@@ -17,8 +17,7 @@ class Admin extends AdminModule
 
     public function getIndex()
     {
-        $title = 'Khanza JKN Mobile';
-        return $this->draw('index.html', ['title' => $title]);
+        return $this->draw('index.html');
     }
 
     public function getSettings()
