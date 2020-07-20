@@ -1,0 +1,48 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{?=url(THEMES)?}/js/theme.js"></script>
+</head>
+<body>
+<div class="container-fluid">
+<h1 class="display-3 text-center text-white m-3">Antrian Poliklinik {$settings.nama_instansi}</h1>
+<table class="table table-bordered table-striped lead">
+  <thead class="bg-primary">
+    <tr>
+      <th>Dokter/Klinik</th>
+      <th>Dalam Pemeriksaan</th>
+      <th>Nomor Urut Berikutnya</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $display}
+    <tr>
+      <th>{$value.nm_dokter} - {$value.nm_poli}<br>[ Antrian: 1 - Terlayani: 0 ]</th>
+      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
+      <td>
+        <marquee scrollamount="3">
+          {if: !empty($value.selanjutnya)}
+            {loop: $value.selanjutnya as $data}
+              - {$data.nm_pasien} (<strong>{$data.no_reg}</strong>)
+            {/loop}
+          {/if}
+        </marquee>
+      </td>
+    </tr>
+    {/loop}
+  </tbody>
+</table>
+</div>
+</body>
+</html>

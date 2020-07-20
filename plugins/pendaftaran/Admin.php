@@ -983,11 +983,24 @@ class Admin extends AdminModule
         $rows = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->toArray();
         $this->assign['jadwal'] = [];
         foreach ($rows as $row) {
+            $row['delURL'] = url([ADMIN, 'pendaftaran', 'jadwaldel', $row['kd_dokter'], $row['hari_kerja']]);
             $row['editURL'] = url([ADMIN, 'pendaftaran', 'jadwaledit', $row['kd_dokter'], $row['hari_kerja']]);
             $this->assign['jadwal'][] = $row;
         }
 
         return $this->draw('jadwal.html', ['pendaftaran' => $this->assign]);
+    }
+
+    public function getJadwalDel($kd_dokter, $hari_kerja)
+    {
+        if ($pendaftaran = $this->db('jadwal')->where('kd_dokter', $kd_dokter)->where('hari_kerja', $hari_kerja)->oneArray()) {
+            if ($this->db('jadwal')->where('kd_dokter', $kd_dokter)->where('hari_kerja', $hari_kerja)->delete()) {
+                $this->notify('success', 'Hapus sukses');
+            } else {
+                $this->notify('failure', 'Hapus gagal');
+            }
+        }
+        redirect(url([ADMIN, 'pendaftaran', 'jadwal']));
     }
 
     public function getPrint_BuktiDaftar($id)

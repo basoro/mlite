@@ -22,6 +22,7 @@ class Site extends SiteModule
     public function getIndex()
     {
         $page = [
+            'title' => 'Display Antrian Poliklinik',
             'content' => $this->draw('index.html', ['referensi_poli' => $this->db('maping_poli_bpjs')->toArray()])
         ];
 
@@ -31,8 +32,10 @@ class Site extends SiteModule
 
     public function getDisplayAntrian()
     {
+        $display = $this->_resultDisplayAntrian();
+        //print("<pre>".print_r($display,true)."</pre>");
         $page = [
-            'content' => $this->_resultDisplayAntrian()
+            'content' => $this->draw('display.html', ['display' => $display, 'title' => 'Display Antrian Poliklinik'])
         ];
 
         $this->setTemplate('canvas.html');
@@ -41,12 +44,52 @@ class Site extends SiteModule
 
     public function _resultDisplayAntrian()
     {
-        $page = [
-            'content' => $this->_resultDisplayAntrian()
-        ];
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
 
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        $poliklinik = str_replace(",","','", $this->options->get('jkn_mobile.display'));
+        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Berkas Diterima')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->limit(1)
+                  ->oneArray();
+                $row['selanjutnya'] = $this->db('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Belum')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->asc('no_reg')
+                  ->toArray();
+                $result[] = $row;
+            }
+        }
+
+        return $result;
     }
 
     public function getToken()

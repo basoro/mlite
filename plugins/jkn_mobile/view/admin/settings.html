@@ -19,6 +19,14 @@
                         <input type="text" name="jkn_mobile[header]" class="form-control" value="{$settings.jkn_mobile.header}" />
                     </div>
                     <div class="form-group">
+                        <label>Tampilkan Poli</label>
+                        <select name="jkn_mobile[display][]" class="form-control" multiple>
+                          {loop: $settings.poliklinik}
+                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Aktifkan Auto Register Pasien</label>
                         <div class="radio">
                             <label class="radio-inline">
