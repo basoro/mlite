@@ -239,18 +239,14 @@ class Admin extends AdminModule
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
 
-            // Run upgrade script
-            $version = $this->options->get('settings.version');
-            $new_version = $request['version'];
-
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
             deleteDir(BASE_DIR.'/tmp/update');
 
-            $this->options('settings', 'version', $new_version);
-            $this->options('settings', 'update_version', 0);
-            $this->options('settings', 'update_changelog', '');
+            $this->options('settings', 'version', $request['version']);
+            $this->options('settings', 'update_version', $request['version']);
+            $this->options('settings', 'update_changelog', $request['changelog']);
 
             sleep(2);
             redirect(url([ADMIN, 'settings', 'updates']));
