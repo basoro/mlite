@@ -11,6 +11,7 @@ class Site extends SiteModule
     public function routes()
     {
         $this->route('jknmobile', 'getIndex');
+        $this->route('jknmobile/display', 'getDisplayAntrian');
         $this->route('jknmobile/token', 'getToken');
         $this->route('jknmobile/antrian', 'getAntrian');
         $this->route('jknmobile/rekapantrian', 'getRekapAntrian');
@@ -22,6 +23,26 @@ class Site extends SiteModule
     {
         $page = [
             'content' => $this->draw('index.html', ['referensi_poli' => $this->db('maping_poli_bpjs')->toArray()])
+        ];
+
+        $this->setTemplate('canvas.html');
+        $this->tpl->set('page', $page);
+    }
+
+    public function getDisplayAntrian()
+    {
+        $page = [
+            'content' => $this->_resultDisplayAntrian()
+        ];
+
+        $this->setTemplate('canvas.html');
+        $this->tpl->set('page', $page);
+    }
+
+    public function _resultDisplayAntrian()
+    {
+        $page = [
+            'content' => $this->_resultDisplayAntrian()
         ];
 
         $this->setTemplate('canvas.html');
