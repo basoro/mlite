@@ -45,7 +45,7 @@
                     <h3>Changelog:</h3>
                     <pre style="max-height:200px;">{$settings['update_changelog']}</pre>
                 {elseif: isset($settings['update_version']) && cmpver($settings['update_version'], $settings['version']) === 0}
-                    <p class="alert alert-success">Bagus! Khanza LITE sudah yang terbaru :) ({$settings['update_version']})</p>
+                    <p class="alert alert-success">Bagus! Khanza LITE anda sudah yang terbaru :) ({$settings['update_version']})</p>
                     <form method="post">
                         <input type="submit" class="btn btn-primary" name="check" value="Check update" />
                     </form>
