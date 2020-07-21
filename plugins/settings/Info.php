@@ -13,7 +13,7 @@ return [
             `id` int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `module` varchar(50) NOT NULL,
             `field` varchar(250) NOT NULL,
-            `value` varchar(250) DEFAULT NULL
+            `value` text DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('settings', 'version', '3.0')");
