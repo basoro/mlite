@@ -14,7 +14,7 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://khanza.basoro.id/updates/";
+    private $feed_url = "https://basoro.id/khanza/";
 
     public function navigation()
     {
