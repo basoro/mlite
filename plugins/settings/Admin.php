@@ -14,7 +14,7 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://khanza.basoro.id/changelog.php";
+    private $feed_url = "https://khanza.basoro.id/updates/";
 
     public function navigation()
     {
@@ -231,10 +231,10 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            //$this->rcopy(BASE_DIR.'/tmp/update/systems', BASE_DIR.'/systems');
-            //$this->rcopy(BASE_DIR.'/tmp/update/plugins', BASE_DIR.'/plugins');
-            //$this->rcopy(BASE_DIR.'/tmp/update/assets', BASE_DIR.'/assets');
-            //$this->rcopy(BASE_DIR.'/tmp/update/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
