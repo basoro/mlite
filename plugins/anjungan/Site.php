@@ -85,15 +85,15 @@ class Site extends SiteModule
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
                   ->where('reg_periksa.kd_poli', $row['kd_poli'])
-                  ->group('reg_periksa.kd_poli')
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->oneArray();
                 $row['sudah_dilayani'] = $this->db('reg_periksa')
                   ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
                   ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->where('reg_periksa.stts', 'Sudah')
-                  ->group('reg_periksa.kd_poli')
                   ->oneArray();
                 $row['sudah_dilayani']['jumlah'] = 0;
                 if(!empty($row['sudah_dilayani'])) {
@@ -101,6 +101,7 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
+                  ->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -109,6 +110,24 @@ class Site extends SiteModule
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
+                $row['get_no_reg'] = $this->db('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
+                  ->where('tgl_registrasi', $date)
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  $minutes = $value['no_urut_reg'] * $interval;
+                  $row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
                 $result[] = $row;
             }
         }
