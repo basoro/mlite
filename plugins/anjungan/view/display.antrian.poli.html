@@ -44,7 +44,7 @@
   <tbody>
     {loop: $display}
     <tr>
-      <th>{$value.nm_dokter} <small>- {$value.nm_poli}</small><br>[ Antrian: 1 - Terlayani: 0 ]</th>
+      <th>{$value.nm_dokter} <small>- {$value.nm_poli}</small><br>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</th>
       <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
       <td>
         <marquee scrollamount="3">

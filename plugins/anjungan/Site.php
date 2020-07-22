@@ -63,7 +63,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $poliklinik = str_replace(",","','", $this->options->get('anjungan.display_poli'));
-        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
+        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -80,15 +80,34 @@ class Site extends SiteModule
                   ->where('kd_dokter', $row['kd_dokter'])
                   ->limit(1)
                   ->oneArray();
+                $row['dalam_antrian'] = $this->db('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->group('reg_periksa.kd_poli')
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->db('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->group('reg_periksa.kd_poli')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
                 $row['selanjutnya'] = $this->db('reg_periksa')
-                  ->select('no_reg')
-                  ->select('nm_pasien')
+                  ->select('reg_periksa.no_reg')
+                  ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-                  ->where('tgl_registrasi', $date)
-                  ->where('stts', 'Belum')
-                  ->where('kd_poli', $row['kd_poli'])
-                  ->where('kd_dokter', $row['kd_dokter'])
-                  ->asc('no_reg')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
                   ->toArray();
                 $result[] = $row;
             }
@@ -97,6 +116,20 @@ class Site extends SiteModule
         return $result;
     }
 
+    public function getDisplayAntrianLoket()
+    {
+        $display = $this->_resultDisplayAntrianLoket();
+        $page = [
+            'content' => $this->draw('display.antrian.loket.html', ['display' => $display, 'title' => 'Display Antrian Loket'])
+        ];
+
+        $this->setTemplate('canvas.html');
+        $this->tpl->set('page', $page);
+    }
+
+    public function _resultDisplayAntrianLoket()
+    {
+    }
     public function getAjax()
     {
       $show = isset($_GET['show']) ? $_GET['show'] : "";

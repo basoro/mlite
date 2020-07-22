@@ -32,33 +32,7 @@
 </head>
 <body>
 <div class="container-fluid">
-<h1 class="display-3 text-center text-white m-3">Antrian Poliklinik {$settings.nama_instansi}</h1>
-<table class="table table-bordered table-striped lead text-primary">
-  <thead class="bg-primary">
-    <tr>
-      <th>Dokter/Klinik</th>
-      <th>Dalam Pemeriksaan</th>
-      <th>Nomor Urut Berikutnya</th>
-    </tr>
-  </thead>
-  <tbody>
-    {loop: $display}
-    <tr>
-      <th>{$value.nm_dokter} <small>- {$value.nm_poli}</small><br>[ Antrian: 1 - Terlayani: 0 ]</th>
-      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
-      <td>
-        <marquee scrollamount="3">
-          {if: !empty($value.selanjutnya)}
-            {loop: $value.selanjutnya as $data}
-              - {$data.nm_pasien} (<strong>{$data.no_reg}</strong>)
-            {/loop}
-          {/if}
-        </marquee>
-      </td>
-    </tr>
-    {/loop}
-  </tbody>
-</table>
+
 </div>
 </body>
 </html>
