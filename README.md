@@ -40,7 +40,7 @@ Pemasangan
 
 3. Buat folder `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-4. <span style="color:red">*Jika anda ingin memulai pemasangan dengan data kosong, buat database baru, misal `sik` (jika sudah ada silahkan lompat ke langkah ke 6).*<span>
+4. <span style="color:red">```diff````Jika anda ingin memulai pemasangan dengan data kosong, buat database baru, misal `sik` (jika sudah ada silahkan lompat ke langkah ke 6).```diff````<span>
 
 5. Navigasikan ke alamat pemasangan. Misalkan `http://localhost/Khanza-Lite/install.php`, anda akan melihat tampilan pemasangan.
 
