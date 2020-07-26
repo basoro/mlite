@@ -81,6 +81,7 @@ class Admin extends AdminModule
               $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
               $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', convertNorawat($row['no_rawat'])]);
+              $row['riwayatURL']  = url([ADMIN, 'vedika', 'riwayat', convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', convertNorawat($row['no_rawat'])]);
               $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
               $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', convertNorawat($row['no_rawat'])]);
@@ -252,6 +253,49 @@ class Admin extends AdminModule
         ->oneArray();
       $this->tpl->set('resume_pasien', $resume_pasien);
 
+      $pasien = $this->db('pasien')
+        ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
+        ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
+        ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($id)))
+        ->oneArray();
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+        ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+        ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+        ->where('stts', '<>', 'Batal')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $rujukan_internal = $this->db('rujukan_internal_poli')
+        ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $diagnosa_pasien = $this->db('diagnosa_pasien')
+        ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', revertNorawat($id))
+        ->toArray();
+      $prosedur_pasien = $this->db('prosedur_pasien')
+        ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
+        ->where('no_rawat', revertNorawat($id))
+        ->toArray();
+      $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+        ->where('no_rawat', revertNorawat($id))
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+      $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', revertNorawat($id))
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+
+      $this->tpl->set('pasien', $pasien);
+      $this->tpl->set('reg_periksa', $reg_periksa);
+      $this->tpl->set('rujukan_internal', $rujukan_internal);
+      $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
+      $this->tpl->set('prosedur_pasien', $prosedur_pasien);
+      $this->tpl->set('pemeriksaan_ralan', $pemeriksaan_ralan);
+      $this->tpl->set('pemeriksaan_ranap', $pemeriksaan_ranap);
 
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
@@ -267,6 +311,55 @@ class Admin extends AdminModule
         ->oneArray();
       $this->tpl->set('resume_pasien', $resume_pasien);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/resume.html', true);
+      exit();
+    }
+
+    public function getRiwayat($id)
+    {
+      $pasien = $this->db('pasien')
+        ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
+        ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
+        ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($id)))
+        ->oneArray();
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+        ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+        ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+        ->where('stts', '<>', 'Batal')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $rujukan_internal = $this->db('rujukan_internal_poli')
+        ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+        ->where('no_rawat', revertNorawat($id))
+        ->oneArray();
+      $diagnosa_pasien = $this->db('diagnosa_pasien')
+        ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', revertNorawat($id))
+        ->toArray();
+      $prosedur_pasien = $this->db('prosedur_pasien')
+        ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
+        ->where('no_rawat', revertNorawat($id))
+        ->toArray();
+      $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
+        ->where('no_rawat', revertNorawat($id))
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+      $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
+        ->where('no_rawat', revertNorawat($id))
+        ->asc('tgl_perawatan')
+        ->asc('jam_rawat')
+        ->toArray();
+
+      $this->tpl->set('pasien', $pasien);
+      $this->tpl->set('reg_periksa', $reg_periksa);
+      $this->tpl->set('rujukan_internal', $rujukan_internal);
+      $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
+      $this->tpl->set('prosedur_pasien', $prosedur_pasien);
+      $this->tpl->set('pemeriksaan_ralan', $pemeriksaan_ralan);
+      $this->tpl->set('pemeriksaan_ranap', $pemeriksaan_ranap);
+      echo $this->tpl->draw(MODULES.'/vedika/view/admin/riwayat.html', true);
       exit();
     }
 
