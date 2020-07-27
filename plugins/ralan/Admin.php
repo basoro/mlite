@@ -6,6 +6,8 @@ use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
+    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
+
     public function navigation()
     {
         return [
@@ -150,6 +152,9 @@ class Admin extends AdminModule
             if(!empty($personal_pasien['gambar'])) {
               $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
             }
+            $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
+            $this->assign['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $id)->toArray();
+
             $this->assign['manageURL'] = url([ADMIN, 'ralan', 'manage']);
             $totalRecords = $this->db('reg_periksa')
                 ->select('no_rawat')
@@ -195,6 +200,7 @@ class Admin extends AdminModule
                 $hasil_radiologi = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
                 $gambar_radiologi = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
                 $catatan_perawatan = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
+                $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $row['no_rawat'])->toArray();
                 $row['reg_periksa'] = $reg_periksa;
                 $row['keluhan'] = $pemeriksaan_ralan['keluhan'];
                 $row['suhu_tubuh'] = $pemeriksaan_ralan['suhu_tubuh'];
@@ -216,6 +222,7 @@ class Admin extends AdminModule
                 $row['detail_periksa_lab'] = $detail_periksa_lab;
                 $row['hasil_radiologi'] = str_replace("\n","<br>",$hasil_radiologi['hasil']);
                 $row['gambar_radiologi'] = $gambar_radiologi;
+                $row['berkas_digital'] = $berkas_digital;
                 $this->assign['riwayat'][] = $row;
             }
 
@@ -658,6 +665,33 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+    public function postUploadDigital($id = null) {
+      $dir    = $this->_uploads;
+      $cntr   = 0;
+
+      if (!is_uploaded_file($_FILES['files']['tmp_name'][0])) {
+          $this->notify('failure', 'Tidak ada berkas');
+      } else {
+          foreach ($_FILES['files']['tmp_name'] as $image) {
+              $img = new \Systems\Lib\Image();
+
+              if ($img->load($image)) {
+                  $imgName = time().$cntr++;
+                  $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+                  $lokasi_file = 'berkasrawat/pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+                  $img->save($imgPath);
+                  $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => revertNorawat($id), 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+              } else {
+                  $this->notify('failure', 'Exstensi berkas salah', 'jpg, png, gif');
+              }
+          }
+
+          if ($query) {
+              $this->notify('success', 'Sukses menambahkan gambar');
+          };
+      }
+      redirect(url([ADMIN, 'ralan', 'view', $id]));
+    }
     public function getAjax()
     {
         header('Content-type: text/html');

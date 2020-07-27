@@ -83,7 +83,7 @@ class Admin extends AdminModule
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', convertNorawat($row['no_rawat'])]);
               $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
-              $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', convertNorawat($row['no_rawat'])]);
+              $row['berkasPerawatan'] = url([ADMIN, 'ralan', 'view', convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
