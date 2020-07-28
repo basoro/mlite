@@ -178,6 +178,22 @@
               </div>
           </div>
           {/if}
+        {if: !empty($value.berkas_digital)}
+        <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Berkas Digital</h4>
+        <div class="row">
+            <div class="gallery">
+            {loop: $value.berkas_digital as $data}
+                <div class="col-sm-6 col-md-6">
+                    <div class="thumbnail">
+                        <a href="{?=url(WEBAPPS_PATH.'/berkasrawat/'.$data.lokasi_file)?}" class="images">
+                            <img src="{?=url(WEBAPPS_PATH.'/berkasrawat/'.$data.lokasi_file)?}" class="img-responsive">
+                        </a>
+                    </div>
+                </div>
+            {/loop}
+            </div>
+        </div>
+        {/if}
       </div>
       <div class="panel-footer">
           <ul>
@@ -199,8 +215,3 @@
 {/if}
 {$dokter_ralan.pagination}
 </div>
-<script>
-$(document).ready(function(){
-$('.gallery').lightbox();
-});
-</script>

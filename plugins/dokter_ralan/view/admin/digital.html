@@ -1,10 +1,10 @@
 <div class="panel-default">
     <div class="panel-body">
-        {if: !empty($ralan.berkas_digital)}
+        {if: !empty($dokter_ralan.berkas_digital)}
         <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Berkas Digital Perawatan</h4>
         <div class="row">
             <div class="gallery">
-            {loop: $ralan.berkas_digital}
+            {loop: $dokter_ralan.berkas_digital}
                 <div class="col-sm-6 col-md-6">
                     <div class="thumbnail">
                         <a href="{?=url(WEBAPPS_PATH.'/berkasrawat/'.$value.lokasi_file)?}" class="images">
@@ -16,11 +16,11 @@
             </div>
         </div>
         {/if}
-        <form action="{?=url(ADMIN.'/ralan/uploaddigital/'.@$ralan.no_rawat)?}#digital" method="POST" enctype="multipart/form-data">
+        <form action="{?=url(ADMIN.'/dokter_ralan/uploaddigital/'.@$ralan.no_rawat)?}#digital" method="POST" enctype="multipart/form-data">
             <div class="form-group">
                 <label>Kategori Berkas</label>
                 <select name="kode" class="form-control">
-                  {loop: $ralan.master_berkas_digital}
+                  {loop: $dokter_ralan.master_berkas_digital}
                     <option value="{$value.kode}">{$value.nama}</option>
                   {/loop}
                 </select>

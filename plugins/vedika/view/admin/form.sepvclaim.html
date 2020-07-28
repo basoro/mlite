@@ -5,15 +5,57 @@
 <div class="modal-body">
   <article class="row">
   	<form name="vedika" action="{?=url(ADMIN.'/vedika/savesep/'.@$vedika.no_sep)?}" method="POST" enctype="multipart/form-data">
-  		<div class="col-md-12">
-        <div class="input-group">
-          <input type="text" name="no_sep" class="form-control" placeholder="Nomor SEP" required value="" />
-          <span class="input-group-btn" style="width:0px;"></span>
-          <input type="text" name="asal_rujukan" class="form-control" placeholder="Faske 1 atau 2" required value="" />
-          <input type="hidden" name="no_rawat" class="form-control" value="{?=$_GET['no_rawat']?}" />
-          <div class="input-group-btn">
-            <button class="btn btn-default" type="submit">Simpan Ke SIMRS</button>
-          </div>
+      <input type="hidden" name="no_rawat" class="form-control" value="{?=$_GET['no_rawat']?}" />
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Nomor SEP</label>
+            <input type="text" name="no_sep" class="form-control" placeholder="Nomor SEP" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Asal Rujukan</label>
+            <select name="asal_rujukan" class="form-control">
+                <option value="1">Faskes 1</option>
+                <option value="2">Faskes 2</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Tanggal Rujukan</label>
+            <input type="text" name="tgl_kunjungan" class="form-control datepicker" placeholder="Tanggal Rujukan" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Kode Diagnosa</label>
+            <input type="text" name="kd_diagnosa" class="form-control" placeholder="Kode ICD-X" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Poli Tujuan</label>
+            <select name="kd_poli" class="form-control" data-use-search="true">
+                {loop: $poliklinik}
+                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                {/loop}
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Dokter Penanggung Jawab</label>
+            <select name="kd_dokter" class="form-control">
+                {loop: $dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary" value="Simpan Ke SIMRS" />
         </div>
       </div>
   	</form>
@@ -22,3 +64,11 @@
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
 </div>
+<script type="text/javascript">
+  $('select').selectator();
+    $( ".datepicker" ).datepicker({
+    dateFormat: "yy-mm-dd",
+    changeMonth: true,
+    changeYear: true,
+  });
+</script>
