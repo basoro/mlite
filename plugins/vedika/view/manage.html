@@ -48,6 +48,9 @@
                         <td>
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
                             <i class="fa fa-folder-open"></i> {$value.no_sep}
+      										</a><br>
+                          <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
+                            <i class="fa fa-folder-open"></i> Catatan Verifikator
       										</a>
                         </td>
       									<td>
@@ -127,9 +130,25 @@
 </article>
 <!-- Modal -->
 <div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
-    <div class="modal-dialog modal-lg" style="width:1280px;" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
-            ...
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">Catatan Verifikator</h4>
+          </div>
+          <div class="modal-body">
+            <form name="pasien" action="" method="POST">
+                <div class="form-group">
+                    <label>Catatan Dan Umpan Balik</label>
+                    <textarea class="form-control" name="catatan" placeholder="Catatan dan umpan balik Verifikator (optional)" rows="6"></textarea>
+                </div>
+                <input type="submit" name="save" class="btn btn-success" value="Disetujui" />
+                <input type="submit" name="save" class="btn btn-danger" value="Perbaiki" />
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+          </div>
         </div>
     </div>
 </div>
