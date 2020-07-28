@@ -38,25 +38,25 @@
                         <input type="submit" class="btn btn-primary" value="Update" disabled/>
                     {/if}
                 {elseif: cmpver($settings['update_version'], $settings['version']) === 1}
-                    <p class="alert alert-success">Versi baru tersedia ({$settings['update_version']})</p>
+                    <p class="alert alert-success">Wao...!! Versi baru tersedia ({$settings['update_version']})</p>
                     <form method="post">
                         <input type="submit" class="btn btn-primary" name="update" value="Update" />
                     </form>
                     <h3>Changelog:</h3>
                     <pre style="max-height:200px;">{$settings['update_changelog']}</pre>
                 {elseif: isset($settings['update_version']) && cmpver($settings['update_version'], $settings['version']) === 0}
-                    <p class="alert alert-success">Bagus! Khanza LITE anda sudah yang terbaru :) ({$settings['update_version']})</p>
+                    <p class="alert alert-success">Bagus..! Khanza LITE yang terpasang sudah sama dengan versi update :) ({$settings['update_version']})</p>
                     <form method="post">
-                        <input type="submit" class="btn btn-primary" name="check" value="Check update" />
+                        <input type="submit" class="btn btn-primary" name="check" value="Check Update" />
                     </form>
                 {elseif: isset($settings['update_version']) && cmpver($settings['update_version'], $settings['version']) === -1}
-                    <p class="alert alert-success">Waduh..! Sepertinya nda memiliki versi yang lebih baru daripada kami: D ({$settings['update_version']})</p>
+                    <p class="alert alert-success">Waduh..! Sepertinya anda memiliki versi yang lebih baru daripada kami: D ({$settings['update_version']})</p>
                     <form method="post">
-                        <input type="submit" class="btn btn-primary" name="check" value="Check update" />
+                        <input type="submit" class="btn btn-primary" name="check" value="Check Update" />
                     </form>
                 {else}
                     <form method="post">
-                        <input type="submit" class="btn btn-primary" name="check" value="Check update" />
+                        <input type="submit" class="btn btn-primary" name="check" value="Check Update" />
                     </form>
                 {/if}
             </div>
