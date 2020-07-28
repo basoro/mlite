@@ -184,7 +184,7 @@ class Site extends SiteModule
             $cek_referensi_noka = $this->db('lite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if($cek_referensi > 0) {
-               $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggal_periksa'];
+               $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
             }
             if($cek_referensi_noka > 0) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi_noka['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
@@ -276,7 +276,7 @@ class Site extends SiteModule
                           'noantrian' => $no_reg,
                           'postdate' => $decode['tanggalperiksa'],
                           'start_time' => $cek_kouta['jam_mulai'],
-                          'end_time' => '00:00:00'
+                          'end_time' => '00:00:01'
                         ]);
                     } else if($data_pasien == 0 && $this->options->get('jkn_mobile.autoregis') == 1){
 

@@ -333,6 +333,13 @@ class Admin extends AdminModule
             $this->assign['emergency_index'][] = $row;
         }
 
+        $rows = $this->db('spesialis')->toArray();
+        $this->assign['spesialis'] = [];
+        foreach ($rows as $row) {
+            $row['editURL'] = url([ADMIN, 'kepegawaian', 'spesialis', $row['kd_sps']]);
+            $this->assign['spesialis'][] = $row;
+        }
+
         return $this->draw('master.html', ['master' => $this->assign]);
     }
 
@@ -989,6 +996,72 @@ class Admin extends AdminModule
                 $query = $this->db('emergency_index')->save($_POST);
             } else {        // edit
                 $query = $this->db('emergency_index')->where('kode_emergency', $_POST['kode_emergency'])->save($_POST);
+            }
+
+            if ($query) {
+                $this->notify('success', 'Simpan sukes');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+
+            redirect($location);
+        }
+
+        redirect($location, $_POST);
+    }
+
+    public function getSpesialisAdd()
+    {
+        if (!empty($redirectData = getRedirectData())) {
+            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+        } else {
+            $this->assign['form'] = [
+              'kd_sps' => '',
+              'nm_sps' => '',
+            ];
+        }
+        $this->assign['title'] = 'Tambah Master Spesialis';
+
+        return $this->draw('spesialis.form.html', ['master' => $this->assign]);
+    }
+
+    public function getSpesialisEdit($id)
+    {
+        $row = $this->db('spesialis')->where('kd_sps', $id)->oneArray();
+        if (!empty($row)) {
+            $this->assign['form'] = $row;
+            $this->assign['title'] = 'Edit Master Spesialis';
+
+            return $this->draw('spesialis.form.html', ['master' => $this->assign]);
+        } else {
+            redirect(url([ADMIN, 'kepegawaian', 'master']));
+        }
+    }
+
+    public function postSpesialisSave($id = null)
+    {
+        $errors = 0;
+
+        $cek_penjab = $this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->count();
+
+        if (!$id) {
+            $location = url([ADMIN, 'kepegawaian', 'master']);
+        } else {
+            $location = url([ADMIN, 'kepegawaian', 'spesialis', $id]);
+        }
+
+        if (checkEmptyFields(['kd_sps', 'nm_sps'], $_POST)) {
+            $this->notify('failure', 'Isian ada yang masih kosong');
+            redirect($location, $_POST);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+
+            if (!$cek_penjab) {    // new
+                $query = $this->db('spesialis')->save($_POST);
+            } else {        // edit
+                $query = $this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->save($_POST);
             }
 
             if ($query) {

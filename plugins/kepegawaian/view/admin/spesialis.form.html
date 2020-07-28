@@ -1,0 +1,24 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$master.title}</h3>
+            </div>
+            <div class="panel-body">
+    		        <form name="master" action="{?=url(ADMIN.'/kepegawaian/spesialissave/'.@$master.form.kd_sps)?}" method="POST">
+                  <div class="form-group">
+                      <label>Kode Spesialis</label>
+                      <input type="text" name="kd_sps" class="form-control" value="{$master.form.kd_sps}" />
+                  </div>
+                  <div class="form-group">
+                      <label>Nama Spesialis</label>
+                      <input type="text" name="nm_sps" class="form-control" value="{$master.form.nm_sps}"/>
+                  </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>

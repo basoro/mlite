@@ -374,6 +374,41 @@
     					</div>
             </div>
         </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Master Spesialis <a href="{?=url(ADMIN.'/kepegawaian/spesialisadd/')?}" class="pull-right" role="tab">[ + ]</a></h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped display no-margin" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Spesialis</th>
+    									<th>Nama Spesialis</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+      						{if: !empty($master.spesialis)}
+    								{loop: $master.spesialis}
+    								<tr>
+    									<td>{$value.kd_sps}</td>
+    									<td>{$value.nm_sps}</td>
+    									<td class="text-right">
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="9" class="text-center">Data spesialis tidak ditemukan</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
 
     </div>
 </article>
