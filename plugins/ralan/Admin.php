@@ -678,7 +678,7 @@ class Admin extends AdminModule
               if ($img->load($image)) {
                   $imgName = time().$cntr++;
                   $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
-                  $lokasi_file = 'berkasrawat/pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+                  $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
                   $img->save($imgPath);
                   $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => revertNorawat($id), 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
               } else {
