@@ -42,7 +42,7 @@ class Site extends SiteModule
         $this->tpl->set('page', $page);
     }
 
-    public function _resultDisplayAntrian()
+    private function _resultDisplayAntrian()
     {
         $date = date('Y-m-d');
         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
