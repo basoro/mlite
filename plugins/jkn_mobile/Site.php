@@ -471,7 +471,7 @@ class Site extends SiteModule
                 foreach($errors as $error) {
                     $response = array(
                         'metadata' => array(
-                            'message' => validation_errors($error),
+                            'message' => $this->_getErrors($error),
                             'code' => 401
                         )
                     );
