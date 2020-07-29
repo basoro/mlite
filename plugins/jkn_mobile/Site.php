@@ -447,13 +447,22 @@ class Site extends SiteModule
         $response = array();
         if ($header[$this->options->get('jkn_mobile.header')] == $this->_getToken()) {
             $poli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
-            $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli, count(reg_periksa.kd_poli) as jumlah,
-            (select count(*) from reg_periksa WHERE reg_periksa.stts='Sudah' AND reg_periksa.kd_poli=poliklinik.kd_poli AND reg_periksa.tgl_registrasi='$decode[tanggalperiksa]') as terlayani
-            FROM reg_periksa
-            INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=reg_periksa.kd_poli
-            INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
-            WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' and maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]'
-            GROUP BY reg_periksa.kd_poli");
+            $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli, count(booking_registrasi.kd_poli) as jumlah,
+            (select count(*) from booking_registrasi WHERE booking_registrasi.status='Terdaftar' AND booking_registrasi.kd_poli=poliklinik.kd_poli AND booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]') as terlayani
+            FROM booking_registrasi
+            INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=booking_registrasi.kd_poli
+            INNER JOIN poliklinik ON poliklinik.kd_poli=booking_registrasi.kd_poli
+            WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' and maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]'
+            GROUP BY booking_registrasi.kd_poli");
+            if($decode['tanggalperiksa'] == date('Y-m-d')) {
+              $data = $this->db()->pdo()->prepare("SELECT poliklinik.nm_poli, count(reg_periksa.kd_poli) as jumlah,
+              (select count(*) from reg_periksa WHERE reg_periksa.stts='Sudah' AND reg_periksa.kd_poli=poliklinik.kd_poli AND reg_periksa.tgl_registrasi='$decode[tanggalperiksa]') as terlayani
+              FROM reg_periksa
+              INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=reg_periksa.kd_poli
+              INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
+              WHERE reg_periksa.tgl_registrasi='$decode[tanggalperiksa]' and maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]'
+              GROUP BY reg_periksa.kd_poli");
+            }
             $data->execute();
             $data = $data->fetch();
 
