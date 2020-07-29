@@ -58,7 +58,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $poliklinik = str_replace(",","','", $this->options->get('jkn_mobile.display'));
-        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
+        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -66,8 +66,6 @@ class Site extends SiteModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
-                  ->select('no_reg')
-                  ->select('nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('tgl_registrasi', $date)
                   ->where('stts', 'Berkas Diterima')
@@ -75,16 +73,54 @@ class Site extends SiteModule
                   ->where('kd_dokter', $row['kd_dokter'])
                   ->limit(1)
                   ->oneArray();
+                $row['dalam_antrian'] = $this->db('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->db('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
                 $row['selanjutnya'] = $this->db('reg_periksa')
-                  ->select('no_reg')
-                  ->select('nm_pasien')
+                  ->select('reg_periksa.no_reg')
+                  ->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
+                  ->toArray();
+                $row['get_no_reg'] = $this->db('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
-                  ->where('stts', 'Belum')
                   ->where('kd_poli', $row['kd_poli'])
                   ->where('kd_dokter', $row['kd_dokter'])
-                  ->asc('no_reg')
-                  ->toArray();
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  $minutes = $value['no_urut_reg'] * $interval;
+                  $row['jam_mulai_selanjutnya'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
                 $result[] = $row;
             }
         }

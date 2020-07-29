@@ -44,13 +44,13 @@
   <tbody>
     {loop: $display}
     <tr>
-      <th>{$value.nm_dokter} <small>- {$value.nm_poli}</small><br>[ Antrian: 1 - Terlayani: 0 ]</th>
+      <th>{$value.nm_dokter}<small> - {$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
       <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
       <td>
         <marquee scrollamount="3">
           {if: !empty($value.selanjutnya)}
             {loop: $value.selanjutnya as $data}
-              - {$data.nm_pasien} (<strong>{$data.no_reg}</strong>)
+              - {$data.nm_pasien} (<strong>{$data.no_reg} - {$value.jam_mulai_selanjutnya}</strong>)
             {/loop}
           {/if}
         </marquee>
