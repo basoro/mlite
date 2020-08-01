@@ -315,3 +315,15 @@ if (!function_exists('apache_request_headers')) {
 function formatDuit($duit){
     return "Rp. ".number_format($duit,0,",",".").",-";
 }
+
+function hitungUmur($tanggal_lahir){
+  	$birthDate = new DateTime($tanggal_lahir);
+  	$today = new DateTime("today");
+  	if ($birthDate > $today) {
+  	    exit("0 Th 0 Bl 0 Hr");
+  	}
+  	$y = $today->diff($birthDate)->y;
+  	$m = $today->diff($birthDate)->m;
+  	$d = $today->diff($birthDate)->d;
+  	return $y." Th ".$m." Bl ".$d." Hr";
+}

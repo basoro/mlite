@@ -952,7 +952,7 @@ RR: '.$pemeriksaan_ralan['respirasi'].' /mnt';
 
             if ($cek_no_rkm_medis == 0) {    // new
                 $_POST['no_rkm_medis'] = $this->core->setNoRM();
-                $_POST['umur'] = $this->_setUmur($_POST['tgl_lahir']);
+                $_POST['umur'] = hitungUmur($_POST['tgl_lahir']);
                 $query = $this->db('pasien')->save($_POST);
                 $this->db('personal_pasien')->save(['no_rkm_medis' => $_POST['no_rkm_medis'], 'gambar' => $gambar, 'password' => $_POST['no_rkm_medis']]);
                 $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
