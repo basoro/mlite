@@ -3,9 +3,11 @@
 namespace Plugins\Dashboard;
 
 use Systems\AdminModule;
+use Systems\Lib\HttpRequest;
 
 class Admin extends AdminModule
 {
+    private $feed_url = "https://basoro.id/khanza/";
     public function navigation()
     {
         return [
@@ -27,6 +29,7 @@ class Admin extends AdminModule
 
         return $this->draw('dashboard.html', [
           'stats' => $stats,
+          'berita' => $this->_getUpdate(),
           'modules' => $this->_modulesList()
         ]);
 
@@ -138,6 +141,17 @@ class Admin extends AdminModule
             }
 
         return $return;
+    }
+
+    private function _getUpdate()
+    {
+        $output = HttpRequest::get($this->feed_url);
+        if ($output === false) {
+            $output = HttpRequest::getStatus();
+        } else {
+            $output = json_decode($output, true);
+        }
+        return $output;
     }
 
 }
