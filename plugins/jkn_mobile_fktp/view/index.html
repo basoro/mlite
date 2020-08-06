@@ -61,7 +61,7 @@
                 <div class="overflow-hidden content-section" id="content-get-started">
                     <h1 id="get-started">Get started</h1>
                     <p>
-                        Selamat datang di Khanza JKN Mobile AP.<br>
+                        Selamat datang di FKTP Khanza JKN Mobile API.<br>
                         Layanan ini diperuntukkan untuk bridging antara server SIMRS Khanza dengan server JKN Mobile BPJS.<br>
                     </p>
                     <pre>
@@ -831,22 +831,22 @@ Response :
                 <div class="overflow-hidden content-section" id="content-get-referensipoli">
                     <h2 id="get-referensipoli">referensi poli</h2>
                     <p>
-                        Mapping Poli Rumah Sakit dengan Poli BPJS
+                        Mapping Poli FKTP dengan Poli BPJS
                     </p>
                     <table>
                         <thead>
                             <tr>
-                                <th>Kode Poli RS</th>
-                                <th>Kode Poli BPJS</th>
-                                <th>Nama Poli BPJS</th>
+                                <th>Kode Poli FKTP</th>
+                                <th>Kode Poli Pcare</th>
+                                <th>Nama Poli Pcare</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loop: $referensi_poli}
                             <tr>
                                 <td>{$value.kd_poli_rs}</td>
-                                <td>{$value.kd_poli_bpjs}</td>
-                                <td>{$value.nm_poli_bpjs}</td>
+                                <td>{$value.kd_poli_pcare}</td>
+                                <td>{$value.nm_poli_pcare}</td>
                             </tr>
                             {/loop}
                         </tbody>
