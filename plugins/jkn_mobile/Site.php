@@ -22,7 +22,6 @@ class Site extends SiteModule
     public function getIndex()
     {
         $page = [
-            'title' => 'Display Antrian Poliklinik',
             'content' => $this->draw('index.html', ['referensi_poli' => $this->db('maping_poli_bpjs')->toArray()])
         ];
 
@@ -33,7 +32,6 @@ class Site extends SiteModule
     public function getDisplayAntrian()
     {
         $display = $this->_resultDisplayAntrian();
-        //print("<pre>".print_r($display,true)."</pre>");
         $page = [
             'content' => $this->draw('display.html', ['display' => $display, 'title' => 'Display Antrian Poliklinik'])
         ];
