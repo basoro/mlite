@@ -755,7 +755,7 @@ class Admin extends AdminModule
           if(isset($_GET['s']))
             $phrase = $_GET['s'];
 
-          $rows = $this->db('icd9')->like('kode', '%'.$phrase.'%')->orLike('deskripsi_panjang', '%'.$phrase.'%')->where('status', '1')->toArray();
+          $rows = $this->db('icd9')->like('kode', '%'.$phrase.'%')->orLike('deskripsi_panjang', '%'.$phrase.'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
                 'kode' => $row['kode'],
