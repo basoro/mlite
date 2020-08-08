@@ -14,6 +14,30 @@
                         <label>Password</label>
                         <input type="text" name="vedika[password]" class="form-control" value="{$settings.vedika.password}" />
                     </div>
+                    <div class="form-group">
+                        <label>Berkas SEP</label>
+                        <select name="vedika[sep]" class="form-control">
+                          {loop: $settings.master_berkas_digital}
+                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.sep}selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Berkas SKDP</label>
+                        <select name="vedika[skdp]" class="form-control">
+                          {loop: $settings.master_berkas_digital}
+                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.skdp}selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Berkas Laporan Operasi</label>
+                        <select name="vedika[operasi]" class="form-control">
+                          {loop: $settings.master_berkas_digital}
+                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.operasi}selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>

@@ -12,27 +12,31 @@
       .col-md-8 { font-size: 18px;}
     </style>
 </head>
-<body>
-  <fieldset style="page-break-before:always;">
-    <h2><center>Berkas Digital</center></h2>
+<!--
+Ranap
+1. Sep
+2. Berkas Identitas pasien ( kartu, ktp, kk)
+3. Berkas srt kontrol dpjp atau SKDP
+4. Riwayat (SOAP)
+5. Billing
+6. Berkas perawatan atau penunjang (eco, ekg, dll)
+7. Surat pengantar rawat inap
+8. Resume medis
+9. Lap op (after katarak dan laser unt px katarak yg komplikasi dm)
 
-    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
-        {loop: $berkas_digital_pasien}
-            <tr class="isi8">
-                    <td width="99%">
-                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;">
-                    </td>
-            </tr>
-        {/loop}
-        {loop: $berkas_digital}
-        <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
-        </tr>
-        {/loop}
-    </table>
-  </fieldset>
-    <br><br>
-    <fieldset style="page-break-before:always;">
+Ralan :
+1. Sep
+2. Berkas Identitas pasien ( kartu, ktp, kk)
+3. Skdp/form dpjp
+4. Riwayat (SOAP)
+5. Billing
+6. Berkas perawatan atau penunjang (eco, ekg, dll)
+7. Resume Medis
+8. Lap op (after katarak dan laser unt px katarak yg komplikasi dm)
+-->
+<body>
+  <br><br>
+  <fieldset style="page-break-before:always;">
     <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
         <div class="card">
             <div class="body">
@@ -225,83 +229,51 @@
         </div>
     </div>
   </fieldset>
-    <br><br><br>
+  <br><br><br>
+  <!-- Berkas Digital SEP -->
   <fieldset style="page-break-before:always;">
-
-    <div class="block-header">
-             <h2><center>RESUME PERAWATAN<br>NO.{$resume_pasien.no_rawat}</center></h2>
-         </div>
-         <div class="row clearfix">
-             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                 <div class="card">
-                     <div class="body">
-                         <div class="table-responsive">
-                             <table class="table">
-                                 <tr>
-                                    <td width="30%">Dokter DPJP</td>
-                                    <td width="70%"> : {$resume_pasien.nm_dokter}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Kondisi Pulang</td>
-                                    <td> : {$resume_pasien.kondisi_pulang}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Keluhan Utama Riwayat Penyakit Yang Positif</td>
-                                    <td> : {$resume_pasien.keluhan_utama}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Jalannya Penyakit Selama Perawatan</td>
-                                    <td> : {$resume_pasien.jalannya_penyakit}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Pemeriksaan Penunjang Yang Positif</td>
-                                    <td> : {$resume_pasien.pemeriksaan_penunjang}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Hasil Laboratorium Yang Positif</td>
-                                    <td> : {$resume_pasien.hasil_laborat}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Diagnosa Utama</td><td width="70%">: {$resume_pasien.diagnosa_utama}</td><td width="10%"> {$resume_pasien.kd_diagnosa_utama}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Diagnosa Sekunder 1</td><td width="70%">: {$resume_pasien.diagnosa_sekunder}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Diagnosa Sekunder 2</td><td width="70%">: {$resume_pasien.diagnosa_sekunder2}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder2}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Diagnosa Sekunder 3</td><td width="70%">: {$resume_pasien.diagnosa_sekunder3}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder3}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Diagnosa Sekunder 4</td><td width="70%">: {$resume_pasien.diagnosa_sekunder4}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder4}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Prosedur Utama</td><td width="70%">: {$resume_pasien.prosedur_utama}</td><td width="10%"> {$resume_pasien.kd_prosedur_utama}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Prosedur Sekunder 1</td><td width="70%">: {$resume_pasien.prosedur_sekunder}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Prosedur Sekunder 2</td><td width="70%">: {$resume_pasien.prosedur_sekunder2}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder2}</td>
-                                 </tr>
-                                 <tr align="left">
-                                     <td width="20%">Prosedur Sekunder 3</td><td width="70%">: {$resume_pasien.prosedur_sekunder3}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder3}</td>
-                                 </tr>
-                                 <tr>
-                                    <td>Obat-obatan Waktu Pulang/Nasihat</td>
-                                    <td> : {$resume_pasien.obat_pulang}</td>
-                                 </tr>
-                            </table>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
+    <h2><center>Berkas Digital SEP</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital}
+        {if: $value.kode == $vedika.sep}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+        </tr>
+        {/if}
+        {/loop}
+    </table>
   </fieldset>
-    <br><br><br>
-    <fieldset style="page-break-before:always;">
-    <h2><center>SOAP</center></h2>
+  <br><br><br>
+  <!-- Berkas Digital -->
+  <fieldset style="page-break-before:always;">
+    <h2><center>Identitas (Berkas Digital) Pasien</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital_pasien}
+            <tr class="isi8">
+                    <td width="99%">
+                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;">
+                    </td>
+            </tr>
+        {/loop}
+    </table>
+  </fieldset>
+  <br><br><br>
+  <!-- Berkas SKDP -->
+  <fieldset style="page-break-before:always;">
+    <h2><center>Berkas Digital SKDP / Surat Kontrol</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital}
+      	{if: $value.kode == $vedika.skdp}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+        </tr>
+      	{/if}
+        {/loop}
+    </table>
+  </fieldset>
+  <br><br><br>
+  <fieldset style="page-break-before:always;">
+    <h2><center>SOAP dan Riawayat Perawatan</center></h2>
     <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
       <tr class="isi">
         <td valign="top" width="20%">No.RM</td>
@@ -557,101 +529,214 @@
         </td>
       </tr>
     </table>
-  	</fieldset>
-    <br><br><br>
+  </fieldset>
+  <br><br><br>
+  <!-- Berkas Digital -->
+  <fieldset style="page-break-before:always;">
+    <h2><center>Berkas Digital Radiologi</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $gambar_radiologi}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/radiologi/{$value.lokasi_gambar}" style="max-width: 800px;"></td>
+        </tr>
+        {/loop}
+      <p>{$hasil_radiologi.hasil}</p>
+    </table>
+  </fieldset>
+  <br><br><br>
+  <!-- Berkas Digital -->
+  <fieldset style="page-break-before:always;">
+    <h2><center>Berkas Digital Perawatan</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital}
+        {if: $value.kode != $vedika.sep}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+        </tr>
+        {/if}
+        {/loop}
+    </table>
+  </fieldset>
+  <br><br><br>
   <fieldset style="page-break-before:always;">
     <h2><center>Billing</center></h2>
     <table width="100%" bgcolor="#ffffff" align="left" border="0" padding="0" cellspacing="0" cellpadding="0">
-    <tr class="isi12" padding="0">
-    <td colspan="7" padding="0">
-           <table width="100%" bgcolor="#ffffff" align="left" border="0" cellspacing="0" cellpadding="0">
-                <tr>
-                    <td  width="20%">
-<img width="45" height="45" src="data:image/jpeg;base64,{?=base64_encode($instansi.logo)?}"/>
-  </td>
-  <td>
-<center>
-    <font color="000000" size="3"  face="Tahoma">{$instansi.nama_instansi}</font><br>
-    <font color="000000" size="1"  face="Tahoma">
-  {$instansi.alamat_instansi}, {$instansi.kabupaten}, {$instansi.propinsi}<br>
-              Telepon: {$instansi.kontak} - e-Mail : {$instansi.email}
-                            </font>
-</center>
-  </td>
-                    <td  width="20%">
-&nbsp;
-  </td>
-                </tr>
-          </table>
-    </td>
-    </tr>
-    <tr>
-      <td colspan="7" padding="0">
-       <hr/>
-        <center><font color="333333" size="1"  face="Tahoma">BILLING</font> </center>
-      </td>
-    </tr>
-{loop: $billing}
-<tr class="isi12" padding="0">
-<td padding="0" width="18%"><font color="111111" size="1"  face="Tahoma">{$value.0}</td>
-<td padding="0" width="40%"><font color="111111" size="1"  face="Tahoma">{$value.1}</td>
-<td padding="0" width="2%"><font color="111111" size="1"  face="Tahoma">{$value.2}</td>
-<td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.3}</td>
-<td padding="0" width="5%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.4}</td>
-<td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.5}</td>
-<td padding="0" width="15%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.6}</td>
-</tr>
-{/loop}
-
         <tr class="isi12" padding="0">
-                    <td padding="0" width="18%"><font color="111111" size="1"  face="Tahoma"><b>TOTAL BIAYA</b></td>
-                    <td padding="0" width="40%"><font color="111111" size="1"  face="Tahoma"><b>:</b></td>
-                    <td padding="0" width="2%"><font color="111111" size="1"  face="Tahoma"></td>
-                    <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
-                    <td padding="0" width="5%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
-                    <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
-                    <td padding="0" width="15%" align="right"><font color="111111" size="1"  face="Tahoma"><b>{$total}</b></td>
-                </tr>
-                <tr class="isi12" padding="0">
-  <td colspan="7" padding="0">
-                        <table width="100%" bgcolor="#ffffff" align="left" border="0" padding="0" cellspacing="0" cellpadding="0">
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">&nbsp;</font></td>
-                            </tr>
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">Keluarga Pasien</td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma"></font></td>
-                            </tr>
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma"></td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">Kasir</font></td>
-                            </tr>
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%"><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="right"><font color="000000" size="1"  face="Tahoma"></font></td>
-                            </tr>
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%"><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="right"><font color="000000" size="1"  face="Tahoma"></font></td>
-                            </tr>
-                            <tr class="isi12" padding="0">
-                             <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">( ............................. )</td>
-                             <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
-                             <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">( ............................. )</font></td>
-                            </tr>
-                      </table>
-                    </td>
-                </tr>
-                <tr class="isi12" padding="0">
-  <td colspan="7" padding="0">&nbsp</td>
-                </tr>
-        </table>
+        <td colspan="7" padding="0">
+          <table width="100%" bgcolor="#ffffff" align="left" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                  <td  width="20%">
+                      <img width="45" height="45" src="data:image/jpeg;base64,{?=base64_encode($instansi.logo)?}"/>
+                  </td>
+                  <td>
+                      <center>
+                      <font color="000000" size="3"  face="Tahoma">{$instansi.nama_instansi}</font><br>
+                      <font color="000000" size="1"  face="Tahoma">
+                          {$instansi.alamat_instansi}, {$instansi.kabupaten}, {$instansi.propinsi}<br>
+                          Telepon: {$instansi.kontak} - e-Mail : {$instansi.email}
+                      </font>
+                      </center>
+                  </td>
+                  <td  width="20%">
+                    &nbsp;
+                  </td>
+              </tr>
+          </table>
+        </td>
+        </tr>
+        <tr>
+          <td colspan="7" padding="0">
+           <hr/>
+            <center><font color="333333" size="1"  face="Tahoma">BILLING</font> </center>
+          </td>
+        </tr>
+        {loop: $billing}
+        <tr class="isi12" padding="0">
+          <td padding="0" width="18%"><font color="111111" size="1"  face="Tahoma">{$value.0}</td>
+          <td padding="0" width="40%"><font color="111111" size="1"  face="Tahoma">{$value.1}</td>
+          <td padding="0" width="2%"><font color="111111" size="1"  face="Tahoma">{$value.2}</td>
+          <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.3}</td>
+          <td padding="0" width="5%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.4}</td>
+          <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.5}</td>
+          <td padding="0" width="15%" align="right"><font color="111111" size="1"  face="Tahoma">{$value.6}</td>
+        </tr>
+        {/loop}
+        <tr class="isi12" padding="0">
+            <td padding="0" width="18%"><font color="111111" size="1"  face="Tahoma"><b>TOTAL BIAYA</b></td>
+            <td padding="0" width="40%"><font color="111111" size="1"  face="Tahoma"><b>:</b></td>
+            <td padding="0" width="2%"><font color="111111" size="1"  face="Tahoma"></td>
+            <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
+            <td padding="0" width="5%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
+            <td padding="0" width="10%" align="right"><font color="111111" size="1"  face="Tahoma"></td>
+            <td padding="0" width="15%" align="right"><font color="111111" size="1"  face="Tahoma"><b>{$total}</b></td>
+        </tr>
+        <tr class="isi12" padding="0">
+            <td colspan="7" padding="0">
+                <table width="100%" bgcolor="#ffffff" align="left" border="0" padding="0" cellspacing="0" cellpadding="0">
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">&nbsp;</font></td>
+                    </tr>
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">Keluarga Pasien</td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma"></font></td>
+                    </tr>
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma"></td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">Kasir</font></td>
+                    </tr>
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%"><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="right"><font color="000000" size="1"  face="Tahoma"></font></td>
+                    </tr>
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%"><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="right"><font color="000000" size="1"  face="Tahoma"></font></td>
+                    </tr>
+                    <tr class="isi12" padding="0">
+                       <td padding="0" width="40%" align=center><font color="000000" size="1"  face="Tahoma">( ............................. )</td>
+                       <td padding="0" width="20%" align=center><font color="000000" size="1"  face="Tahoma">&nbsp;</td>
+                       <td padding="0" width="40%" align="center"><font color="000000" size="1"  face="Tahoma">( ............................. )</font></td>
+                    </tr>
+              </table>
+            </td>
+        </tr>
+        <tr class="isi12" padding="0">
+            <td colspan="7" padding="0">&nbsp</td>
+        </tr>
+    </table>
+  </fieldset>
+  <br><br><br>
+  <fieldset style="page-break-before:always;">
+    <div class="block-header">
+             <h2><center>RESUME PERAWATAN<br>NO.{$resume_pasien.no_rawat}</center></h2>
+         </div>
+         <div class="row clearfix">
+             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                 <div class="card">
+                     <div class="body">
+                         <div class="table-responsive">
+                             <table class="table">
+                                 <tr>
+                                    <td width="30%">Dokter DPJP</td>
+                                    <td width="70%"> : {$resume_pasien.nm_dokter}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Kondisi Pulang</td>
+                                    <td> : {$resume_pasien.kondisi_pulang}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Keluhan Utama Riwayat Penyakit Yang Positif</td>
+                                    <td> : {$resume_pasien.keluhan_utama}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Jalannya Penyakit Selama Perawatan</td>
+                                    <td> : {$resume_pasien.jalannya_penyakit}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Pemeriksaan Penunjang Yang Positif</td>
+                                    <td> : {$resume_pasien.pemeriksaan_penunjang}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Hasil Laboratorium Yang Positif</td>
+                                    <td> : {$resume_pasien.hasil_laborat}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Diagnosa Utama</td><td width="70%">: {$resume_pasien.diagnosa_utama}</td><td width="10%"> {$resume_pasien.kd_diagnosa_utama}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Diagnosa Sekunder 1</td><td width="70%">: {$resume_pasien.diagnosa_sekunder}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Diagnosa Sekunder 2</td><td width="70%">: {$resume_pasien.diagnosa_sekunder2}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder2}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Diagnosa Sekunder 3</td><td width="70%">: {$resume_pasien.diagnosa_sekunder3}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder3}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Diagnosa Sekunder 4</td><td width="70%">: {$resume_pasien.diagnosa_sekunder4}</td><td width="10%"> {$resume_pasien.kd_diagnosa_sekunder4}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Prosedur Utama</td><td width="70%">: {$resume_pasien.prosedur_utama}</td><td width="10%"> {$resume_pasien.kd_prosedur_utama}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Prosedur Sekunder 1</td><td width="70%">: {$resume_pasien.prosedur_sekunder}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Prosedur Sekunder 2</td><td width="70%">: {$resume_pasien.prosedur_sekunder2}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder2}</td>
+                                 </tr>
+                                 <tr align="left">
+                                     <td width="20%">Prosedur Sekunder 3</td><td width="70%">: {$resume_pasien.prosedur_sekunder3}</td><td width="10%"> {$resume_pasien.kd_prosedur_sekunder3}</td>
+                                 </tr>
+                                 <tr>
+                                    <td>Obat-obatan Waktu Pulang/Nasihat</td>
+                                    <td> : {$resume_pasien.obat_pulang}</td>
+                                 </tr>
+                            </table>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         </div>
+  </fieldset>
+  <br><br><br>
+  <!-- Berkas Digital -->
+  <fieldset style="page-break-before:always;">
+    <h2><center>Berkas Laporan Operasi</center></h2>
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital}
+        {if: $value.kode == $vedika.operasi}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+        </tr>
+        {/if}
+        {/loop}
+    </table>
   </fieldset>
 </body>
 </html>

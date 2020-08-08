@@ -225,7 +225,6 @@ class Admin extends AdminModule
         ->join('lite_pasien_galleries', 'lite_pasien_galleries.id = lite_pasien_galleries_items.gallery')
         ->where('lite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($id)))
         ->toArray();
-
       $berkas_digital_pasien = array();
       if (count($galleri_pasien)) {
           foreach ($galleri_pasien as $galleri) {
@@ -323,6 +322,9 @@ class Admin extends AdminModule
 
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+      $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', revertNorawat($id))->oneArray());
+      $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', revertNorawat($id))->toArray());
+      $this->tpl->set('vedika', htmlspecialchars_array($this->options('vedika')));
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/pdf.html', true);
       exit();
     }
@@ -443,6 +445,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul Vedika';
         $this->assign['vedika'] = htmlspecialchars_array($this->options('vedika'));
+        $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
