@@ -1,0 +1,39 @@
+<article class="row">
+		<div class="col-md-12 col-lg-12">
+				<div class="card">
+						<div class="body" style="padding: 5px !important;">
+								<div class="kasir_ralan_view">
+										<ul class="nav nav-tabs" role="tablist">
+												<li role="presentation" class="active"><a href="#tindakan" aria-controls="tindakan" role="tab" data-toggle="tab">Tindakan</a></li>
+                        <li role="presentation"><a href="#obat" aria-controls="obat" role="tab" data-toggle="tab">Obat</a></li>
+												<li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
+												<li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
+                        <li role="presentation"><a href="#operasi" aria-controls="operasi" role="tab" data-toggle="tab">Operasi</a></li>
+												<li role="presentation"><a href="#tambahan_biaya" aria-controls="tambahan_biaya" role="tab" data-toggle="tab">Tambahan Biaya</a></li>
+										</ul>
+
+										<div class="tab-content">
+												<div role="tabpanel" class="tab-pane fade in active tindakan" id="tindakan">
+														{include: ../plugins/kasir_ralan/view/admin/tindakan.html}
+												</div>
+                        <div role="tabpanel" class="tab-pane fade in resep" id="obat">
+														{*include: ../plugins/ralan/view/admin/resep.html*}
+												</div>
+												<div role="tabpanel" class="tab-pane fade in" id="lab">
+														{*include: ../plugins/ralan/view/admin/laboratorium.html*}
+												</div>
+												<div role="tabpanel" class="tab-pane fade in" id="rad">
+														{*include: ../plugins/ralan/view/admin/radiologi.html*}
+												</div>
+												<div role="tabpanel" class="tab-pane fade in" id="operasi">
+														{*include: ../plugins/ralan/view/admin/digital.html*}
+												</div>
+												<div role="tabpanel" class="tab-pane fade in" id="tambahan_biaya">
+														{*include: ../plugins/ralan/view/admin/kontrol.html*}
+												</div>
+										</div>
+								</div>
+						</div>
+				</div>
+	  </div>
+</article>

@@ -1,0 +1,44 @@
+th, td {
+  white-space: nowrap;
+}
+.kasir_ralan_view .nav-tabs {
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: -webkit-box;
+  display: -moz-box;
+}
+.kasir_ralan_view .nav-tabs>li {
+  float: none;
+}
+
+.tindakan ul.nav-tabs > li {
+  width: 33.33%;
+  text-align: center;
+}
+.card {
+  background: #fff;
+  min-height: 50px;
+  position: relative;
+  margin-bottom: 30px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  -ms-border-radius: 2px;
+  border-radius: 2px;
+}
+.card .body {
+  font-size: 14px;
+  color: #555;
+  padding: 20px;
+}
+.card .header {
+  color: #555;
+  padding: 20px;
+  position: relative;
+  border-bottom: 1px solid rgba(204, 204, 204, 0.35);
+}
+.card .header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: normal;
+  color: #111;
+}

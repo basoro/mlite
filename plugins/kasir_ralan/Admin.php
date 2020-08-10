@@ -9,7 +9,8 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Manage' => 'manage',
+            'Kelola' => 'manage',
+            'Tambah Biaya' => 'add',
         ];
     }
 
@@ -294,10 +295,58 @@ class Admin extends AdminModule
 
             $this->core->addJS(url('assets/jscripts/are-you-sure.min.js'));
             $this->assign['manageURL'] = url([ADMIN, 'kasir_ralan', 'manage']);
+            $this->assign['addURL'] = url([ADMIN, 'kasir_ralan', 'add', $no_rawat]);
             return $this->draw('view.html', ['kasir_ralan' => $this->assign]);
         } else {
             redirect(url([ADMIN, 'kasir_ralan', 'manage']));
         }
+    }
+
+    public function getAdd($no_rawat = NULL)
+    {
+        $this->_addHeaderFiles();
+        $cekbiling = $this->db('billing')->where('no_rawat', revertNorawat($no_rawat))->group('no_rawat')->oneArray();
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', revertNorawat($no_rawat))->oneArray();
+        $nota_jalan = $this->db('nota_jalan')->where('no_rawat', revertNorawat($no_rawat))->oneArray();
+        if($no_rawat != NULL) {
+          if (!empty($reg_periksa)) {
+            $this->assign['manageURL'] = url([ADMIN, 'kasir_ralan', 'manage']);
+            return $this->draw('add.html', ['kasir_ralan' => $this->assign]);
+          } else {
+              redirect(url([ADMIN, 'kasir_ralan', 'manage']));
+          }
+        } else {
+          redirect(url([ADMIN, 'kasir_ralan', 'manage']));
+        }
+    }
+
+    public function getJavascript()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/kasir_ralan/js/admin/kasir_ralan.js');
+        exit();
+    }
+
+    public function getCss()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES.'/kasir_ralan/css/admin/kasir_ralan.css');
+        exit();
+    }
+
+    private function _addHeaderFiles()
+    {
+        // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
+
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
+
+        // MODULE SCRIPTS
+        $this->core->addCSS(url([ADMIN, 'kasir_ralan', 'css']));
+        $this->core->addJS(url([ADMIN, 'kasir_ralan', 'javascript']), 'footer');
     }
 
 }
