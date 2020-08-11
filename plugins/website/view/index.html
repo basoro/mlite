@@ -14,6 +14,9 @@
 <body class="clinic_version">
 <div id="preloader"><img class="preloader" src="{?=url(MODULES.'/website/img/loaders/heart-loading2.gif')?}" alt="{$setting.nama_instansi}"></div>
 <header>
+  {if: $notify}
+  <div id="notify" class="alert alert-{$notify.type}">{$notify.text}</div>
+  {/if}
   <div class="header-top wow fadeIn">
     <div class="container"><a class="navbar-brand" href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$website.logo)?}" alt="{$setting.nama_instansi}"></a>
       <div class="right-header">
@@ -189,36 +192,50 @@
         <div class="appointment-form">
           <h3><span>+</span> Pendaftaran Poliklinik</h3>
           <div class="form">
-            <form action="#" method="post">
+            <form action="{?=url('website/save')?}" method="post">
               <fieldset>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <input type="text" name="no_ktp" placeholder="Nomor KTP">
+                      <input type="text" name="nama" placeholder="Nama Pasien">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                  <div class="row">
+                    <div class="form-group">
+                      <input type="text" name="no_telp" placeholder="Nomor Telepon / HP">
+                    </div>
+                  </div>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                  <div class="row">
+                    <div class="form-group">
+                      <input type="email" placeholder="Email" name="email">
                     </div>
                   </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <input type="email" placeholder="Nomor Telepon / HP" name="no_tlp">
+                      <textarea rows="4" name="alamat" class="form-control" placeholder="Alamat..."></textarea>
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <input type="email" placeholder="Tanggal Berobat" name="tanggal_periksa" class="datepicker">
+                      <input type="text" placeholder="Tanggal Berobat" name="tanggal" class="datepicker">
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <select class="form-control">
+                      <select name="kd_poli" class="form-control">
                         <option>Poliklinik</option>
                         {loop: $poliklinik}
-                        <option>{$value.nm_poli}</option>
+                        <option value="{$value.kd_poli}">{$value.nm_poli}</option>
                         {/loop}
                       </select>
                     </div>
@@ -227,7 +244,7 @@
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <textarea rows="4" id="textarea_message" class="form-control" placeholder="Catatan... (opsional)"></textarea>
+                      <textarea rows="4" name="tambahan_pesan" class="form-control" placeholder="Catatan... (opsional)"></textarea>
                     </div>
                   </div>
                 </div>
@@ -235,7 +252,7 @@
                   <div class="row">
                     <div class="form-group">
                       <div class="center">
-                        <button type="submit">Submit</button>
+                        <button type="submit" name="daftar">Submit</button>
                       </div>
                     </div>
                   </div>
