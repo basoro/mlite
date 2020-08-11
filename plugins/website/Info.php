@@ -8,6 +8,7 @@ return [
     'icon'          =>  'globe',
     'pages'         =>  ['Modul Website' => 'website'],
     'install'       =>  function () use ($core) {
+        $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('website', 'login', '1')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('website', 'logo', 'website/logo.png')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('website', 'logo_icon', 'website/icon-logo.png')");
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('website', 'slider_bg', 'website/slider-bg.jpg')");

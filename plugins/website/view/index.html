@@ -20,7 +20,7 @@
         <div class="header-info">
           <div class="info-inner"><span class="icontop"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$setting.kontak}</a></span></div>
           <div class="info-inner"><span class="icontop"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$setting.email}</a></span></div>
-          <div class="info-inner"><span class="icontop"><i class="fa fa-lock" aria-hidden="true"></i></span><span class="iconcont"><a href="{?=url('admin')?}">Login</a></span></div>
+          {if: $website.login == 1}<div class="info-inner"><span class="icontop"><i class="fa fa-lock" aria-hidden="true"></i></span><span class="iconcont"><a href="{?=url(ADMIN)?}">Login</a></span></div>{/if}
         </div>
       </div>
     </div>

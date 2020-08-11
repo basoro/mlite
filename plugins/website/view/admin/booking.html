@@ -1,0 +1,44 @@
+<article class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+              <div class="panel-heading">
+                    <h3 class="panel-title">{$text}</h3>
+              </div>
+              <div class="panel-body">
+                  <table class="table table-bordered display" width="100%">
+                      <thead>
+                        <tr>
+                          <th>Nomor Booking</th>
+                          <th>Tanggal Booking</th>
+                          <th>Nama Pasien</th>
+                          <th>Nomor Telp/HP</th>
+                          <th>Poli Tujuan</th>
+                          <th>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {loop: $booking}
+                        <tr>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                          <td></td>
+                        </tr>
+                        {/loop}
+                      </tbody>
+                  </table>
+              </div>
+        </div>
+
+    </div>
+</article>
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('.display').DataTable({
+        "lengthChange": false,
+        "scrollX": true
+      });
+  });
+</script>

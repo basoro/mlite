@@ -11,6 +11,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola' => 'index',
+            'Booking Daftar' => 'booking',
             'Pengaturan' => 'settings'
         ];
     }
@@ -19,6 +20,22 @@ class Admin extends AdminModule
     {
         $text = 'Website Module';
         return $this->draw('index.html', ['text' => $text]);
+    }
+
+    public function getBooking()
+    {
+        $date = date('Y-m-d');
+        $text = 'Booking Pendaftaran';
+
+        // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+
+        return $this->draw('booking.html', ['text' => $text, 'booking' => $this->db('booking_periksa')->where('tanggal', $date)->toArray()]);
     }
 
     public function getSettings()

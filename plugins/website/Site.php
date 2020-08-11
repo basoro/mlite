@@ -29,4 +29,9 @@ class Site extends SiteModule
         $this->setTemplate('canvas.html');
         $this->tpl->set('page', $page);
     }
+
+    public function postSave()
+    {
+        
+    }
 }
