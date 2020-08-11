@@ -84,3 +84,7 @@
         .news-item .news-content {
             font-size: 14px;
         }
+
+.badge-success {
+  background-color: #4C9A2A;
+}
