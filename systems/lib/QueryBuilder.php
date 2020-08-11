@@ -573,6 +573,19 @@ class QueryBuilder
     }
 
     /**
+    * ORDER BY RAND
+    *
+    * @param string $column
+    *
+    * @return \Systems\Lib\QueryBuilder
+    */
+    public function rand()
+    {
+        array_push($this->orders, "RAND()");
+        return $this;
+    }
+
+    /**
     * GROUP BY
     *
     * @param mixed $column
