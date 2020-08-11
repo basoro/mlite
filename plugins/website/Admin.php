@@ -35,7 +35,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
-        return $this->draw('booking.html', ['text' => $text, 'booking' => $this->db('booking_periksa')->where('tanggal', $date)->toArray()]);
+        return $this->draw('booking.html', ['text' => $text, 'booking' => $this->db('booking_periksa')->toArray()]);
     }
 
     public function getSettings()

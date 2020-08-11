@@ -5,30 +5,34 @@
                     <h3 class="panel-title">{$text}</h3>
               </div>
               <div class="panel-body">
-                  <table class="table table-bordered display" width="100%">
-                      <thead>
-                        <tr>
-                          <th>Nomor Booking</th>
-                          <th>Tanggal Booking</th>
-                          <th>Nama Pasien</th>
-                          <th>Nomor Telp/HP</th>
-                          <th>Poli Tujuan</th>
-                          <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {loop: $booking}
-                        <tr>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                        </tr>
-                        {/loop}
-                      </tbody>
-                  </table>
+                  <div class="table-responsive no-margin">
+                      <table class="table table-bordered display" width="100%">
+                          <thead>
+                            <tr>
+                              <th>Nomor Booking</th>
+                              <th>Tanggal Periksa</th>
+                              <th>Nama Pasien</th>
+                              <th>Nomor Telp/HP</th>
+                              <th>Poli Tujuan</th>
+                              <th>Status</th>
+                              <th>Tanggal Booking</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {loop: $booking}
+                            <tr>
+                              <td>{$value.no_booking}</td>
+                              <td>{$value.tanggal}</td>
+                              <td>{$value.nama}</td>
+                              <td>{$value.no_telp}</td>
+                              <td>{$value.kd_poli}</td>
+                              <td>{$value.status}</td>
+                              <td>{$value.tanggal_booking}</td>
+                            </tr>
+                            {/loop}
+                          </tbody>
+                      </table>
+                  </div>
               </div>
         </div>
 
