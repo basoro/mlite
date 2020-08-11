@@ -160,7 +160,7 @@ class Site extends SiteModule
                 )
             );
         }
-        echo json_encode(array("response" => $response));
+        echo json_encode($response);
     }
 
     public function getAntrean()
