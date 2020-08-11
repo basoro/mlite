@@ -132,7 +132,7 @@ class Admin extends AdminModule
             ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
             ->where('tgl_registrasi', '>=', date('Y-m-d'))
             ->group(['reg_periksa.kd_poli'])
-            ->asc('count');
+            ->desc('nm_poli');
 
 
             $data = $query->toArray();
