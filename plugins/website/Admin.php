@@ -35,7 +35,23 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
-        return $this->draw('booking.html', ['text' => $text, 'booking' => $this->db('booking_periksa')->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')->toArray()]);
+        return $this->draw('booking.html',
+          [
+            'text' => $text,
+            'booking' => $this->db('booking_periksa')
+              ->select([
+                'no_booking' => 'booking_periksa.no_booking',
+                'tanggal' => 'booking_periksa.tanggal',
+                'nama' => 'booking_periksa.nama',
+                'no_telp' => 'booking_periksa.no_telp',
+                'nm_poli' => 'poliklinik.nm_poli',
+                'status' => 'booking_periksa.status',
+                'tanggal_booking' => 'booking_periksa.tanggal_booking'
+              ])
+              ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
+              ->toArray()
+          ]
+        );
     }
 
     public function getSettings()
