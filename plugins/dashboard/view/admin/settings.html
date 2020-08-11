@@ -16,7 +16,7 @@
                     </div>
                     <div class="form-group">
                         <label>Cara Bayar BPJS</label>
-                        <select name="dashboard[umum]" class="form-control">
+                        <select name="dashboard[bpjs]" class="form-control">
                           {loop: $settings.penjab}
                             <option value="{$value.kd_pj}" {if: $value.kd_pj == $settings.dashboard.bpjs}selected{/if}>{$value.png_jawab}</option>
                           {/loop}
