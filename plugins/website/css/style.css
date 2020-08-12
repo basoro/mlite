@@ -3062,8 +3062,8 @@ header {
 }
 
 .icon img {
-    width: 50px;
-    margin-top: 2px
+    width: 80px;
+    margin: 0px
 }
 
 .text-contant .center {
@@ -3226,7 +3226,7 @@ body.clinic_version .first-section h2 {
 }
 
 .icon-logo img {
-    width: 60px
+    width: 80px
 }
 
 .heading h2::after {
