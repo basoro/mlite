@@ -9,10 +9,16 @@ class Admin extends AdminModule
 {
     public function navigation()
     {
-        return [
-            'Main' => 'main',
-            'Pengaturan' => 'settings'
-        ];
+        if ($this->core->getUserInfo('id') == 1) {
+            return [
+                'Main' => 'main',
+                'Pengaturan' => 'settings'
+            ];
+        } else {
+            return [
+                'Main' => 'main'
+            ];
+        }
     }
 
     public function getMain()
