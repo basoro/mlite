@@ -92,29 +92,31 @@
                 <h3 class="panel-title">Pasien Terbaru Hari Ini</h3>
             </div>
             <div class="panel-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>No. RM</th>
-                            <th>Name</th>
-                            <th>Pekerjaan</th>
-                            <th>Cara Bayar</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {loop: $pasien}
-                        <tr>
-                            <td>{$value.no_rkm_medis}</td>
-                            <td>
-                                <img src="{?=url(MODULES.'/pasien/img/'.$value.jk.'.png')?}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
-                                <div style="display:inline;padding-left:10px;padding-top:10px;">{$value.nm_pasien}</div>
-                            </td>
-                            <td>{$value.pekerjaan}</td>
-                            <td><span class="badge {if: $value.kd_pj == 'BPJ'}badge-success{/if}">{$value.png_jawab}</span></td>
-                        </tr>
-                        {/loop}
-                    </tbody>
-                </table>
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>No. RM</th>
+                                <th>Name</th>
+                                <th>Pekerjaan</th>
+                                <th>Cara Bayar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $pasien}
+                            <tr>
+                                <td>{$value.no_rkm_medis}</td>
+                                <td>
+                                    <img src="{?=url(MODULES.'/pasien/img/'.$value.jk.'.png')?}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">{$value.nm_pasien}</div>
+                                </td>
+                                <td>{$value.pekerjaan}</td>
+                                <td><span class="badge {if: $value.kd_pj == 'BPJ'}badge-success{/if}">{$value.png_jawab}</span></td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
