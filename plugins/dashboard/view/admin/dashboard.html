@@ -88,7 +88,7 @@
     <div class="col-md-8 col-lg-8">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <a class="pull-right badge" href="#" style="background-color:#ffcc00;">Semua</a>
+                <a class="pull-right badge" href="{?=url(ADMIN.'/pasien/manage')?}" style="background-color:#ffcc00;">Semua</a>
                 <h3 class="panel-title">Pasien Terbaru Hari Ini</h3>
             </div>
             <div class="panel-body">
@@ -126,18 +126,18 @@
     <div class="col-md-4 col-lg-4">
         <div class="panel panel-default doctor-list">
             <div class="panel-heading">
-                <a class="pull-right badge" href="#">Semua</a>
+                <a class="pull-right badge" href="{?=url(ADMIN.'/pendaftaran/jadwal')?}">Semua</a>
                 <h3 class="panel-title">Jadwal Dokter Hari Ini</h3>
             </div>
             <div class="list-group">
                 {loop: $dokter}
-                <a class="list-group-item" href="javascript:void(0);">
+                <div class="list-group-item">
                     <img src="{?=url(MODULES.'/pasien/img/default.png')?}" style="border-radius:50%;float:left;" width="40">
                     <div style="display:inline-block;padding-left:10px;">
                         <b>{$value.nm_dokter}</b><br>
                         {$value.nm_sps}
                     </div>
-                </a>
+                </div>
                 {/loop}
             </div>
         </div>
