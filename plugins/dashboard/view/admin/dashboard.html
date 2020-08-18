@@ -1,39 +1,75 @@
 <article class="row">
-    <div class="col-sm-4">
-
+    <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-heading">
-                    <h3 class="panel-title">Total Pasien</h3>
-              </div>
-              <div class="panel-body total_pasien">
-                    <h1 class="text-center stat-bold">{?= $stats.getPasiens ?}</h1>
-              </div>
-        </div>
-
-    </div>
-    <div class="col-sm-4">
-
-        <div class="panel panel-default">
-              <div class="panel-heading">
-                    <h3 class="panel-title">Total Kunjungan</h3>
-              </div>
               <div class="panel-body">
-                    <h1 class="text-center stat-bold">{?= $stats.getVisities ?}</h1>
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-danger"></i>
+                        <i class="fa fa-calendar-plus-o fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-danger">Total Kunjungan</div>
+                    <div class="stat-bold">
+                        {?= $stats.getVisities ?}
+                        <span class="text-{if: $stats.percentTotal >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentTotal ?}%)
+                        </span>
+                    </div>
               </div>
         </div>
-
     </div>
-    <div class="col-sm-4">
-
+    <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-heading">
-                    <h3 class="panel-title">Pasien Hari Ini</h3>
-              </div>
               <div class="panel-body">
-                    <h1 class="text-center stat-bold">{?= $stats.getCurrentVisities ?}</h1>
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-info"></i>
+                        <i class="fa fa-calendar fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-info">Kunjungan Tahun Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getYearVisities ?}
+                        <span class="text-{if: $stats.percentYear >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentYear >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentYear ?}%)
+                        </span>
+                    </div>
               </div>
         </div>
-
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-warning"></i>
+                        <i class="fa fa-users fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-warning">Kunjungan Bulan Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getMonthVisities ?}
+                        <span class="text-{if: $stats.percentMonth >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentMonth >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentMonth ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-success"></i>
+                        <i class="fa fa-wheelchair fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-success">Kunjungan Hari Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getCurrentVisities ?}
+                        <span class="text-{if: $stats.percentDays >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentDays >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentDays ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
     </div>
 </article>
 

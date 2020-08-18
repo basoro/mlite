@@ -24,14 +24,23 @@ class Admin extends AdminModule
     public function getMain()
     {
 
-        $this->core->addCSS(url(MODULES.'/dashboard/css/style.css?v={$opensimrs.version}'));
+        $this->core->addCSS(url(MODULES.'/dashboard/css/admin/style.css?v={$opensimrs.version}'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
         $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'));
 
         $settings = htmlspecialchars_array($this->options('dashboard'));
         $stats['getPasiens'] = number_format($this->countPasien(),0,'','.');
         $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
+        $stats['getYearVisities'] = number_format($this->countYearVisite(),0,'','.');
+        $stats['getMonthVisities'] = number_format($this->countMonthVisite(),0,'','.');
         $stats['getCurrentVisities'] = number_format($this->countCurrentVisite(),0,'','.');
+        $stats['getLastYearVisities'] = number_format($this->countLastYearVisite(),0,'','.');
+        $stats['getLastMonthVisities'] = number_format($this->countLastMonthVisite(),0,'','.');
+        $stats['getLastCurrentVisities'] = number_format($this->countLastCurrentVisite(),0,'','.');
+        $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        $stats['percentYear'] = number_format((($this->countYearVisite()-$this->countLastYearVisite())/$this->countYearVisite())*100,0,'','.');
+        $stats['percentMonth'] = number_format((($this->countMonthVisite()-$this->countLastMonthVisite())/$this->countMonthVisite())*100,0,'','.');
+        $stats['percentDays'] = number_format((($this->countCurrentVisite()-$this->countLastCurrentVisite())/$this->countCurrentVisite())*100,0,'','.');
         $stats['poliChart'] = $this->poliChart();
         $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();
         $stats['RanapTahunChart'] = $this->RanapTahunChart();
@@ -55,41 +64,9 @@ class Admin extends AdminModule
           'settings' => $settings,
           'stats' => $stats,
           'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
-          'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray(),
-          'modules' => $this->_modulesList()
+          'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray()
         ]);
 
-    }
-
-    private function _modulesList()
-    {
-        $modules = array_column($this->db('lite_modules')->toArray(), 'dir');
-        $result = [];
-
-        if ($this->core->getUserInfo('access') != 'all') {
-            $modules = array_intersect($modules, explode(',', $this->core->getUserInfo('access')));
-        }
-
-        foreach ($modules as $name) {
-            $files = [
-                'info'  => MODULES.'/'.$name.'/Info.php',
-                'admin' => MODULES.'/'.$name.'/Admin.php',
-            ];
-
-            if (file_exists($files['info']) && file_exists($files['admin'])) {
-                $details        = $this->core->getModuleInfo($name);
-                $features       = $this->core->getModuleNav($name);
-
-                if (empty($features)) {
-                    continue;
-                }
-
-                $details['url'] = url([ADMIN, $name, array_shift($features)]);
-
-                $result[] = $details;
-            }
-        }
-        return $result;
     }
 
     public function countVisite()
@@ -103,9 +80,87 @@ class Admin extends AdminModule
         return $record['count'];
     }
 
+    public function countVisiteNoRM()
+    {
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->group('no_rkm_medis')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countYearVisite()
+    {
+        $date = date('Y');
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_registrasi', $date.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastYearVisite()
+    {
+        $date = date('Y', strtotime('-1 year'));
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_registrasi', $date.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countMonthVisite()
+    {
+        $date = date('Y-m');
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_registrasi', $date.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastMonthVisite()
+    {
+        $date = date('Y-m', strtotime('-1 month'));
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_registrasi', $date.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+
     public function countCurrentVisite()
     {
         $date = date('Y-m-d');
+        $record = $this->db('reg_periksa')
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->where('tgl_registrasi', $date)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastCurrentVisite()
+    {
+        $date = date('Y-m-d', strtotime('-1 days'));
         $record = $this->db('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
