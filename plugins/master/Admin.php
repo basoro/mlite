@@ -38,7 +38,7 @@ class Admin extends AdminModule
         $totalRecords = $this->db('dokter')
           ->select('kd_dokter')
           ->like('kd_dokter', '%'.$phrase.'%')
-          ->like('nm_dokter', '%'.$phrase.'%')
+          ->orLike('nm_dokter', '%'.$phrase.'%')
           ->where('status', $status)
           ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'dokter', '%d']));
@@ -49,7 +49,7 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
         $rows = $this->db('dokter')
           ->like('kd_dokter', '%'.$phrase.'%')
-          ->like('nm_dokter', '%'.$phrase.'%')
+          ->orLike('nm_dokter', '%'.$phrase.'%')
           ->where('status', $status)
           ->offset($offset)
           ->limit($perpage)
@@ -205,7 +205,7 @@ class Admin extends AdminModule
         $totalRecords = $this->db('petugas')
             ->where('status', $status)
             ->like('nip', '%'.$phrase.'%')
-            ->like('nama', '%'.$phrase.'%')
+            ->orLike('nama', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'petugas', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -216,7 +216,7 @@ class Admin extends AdminModule
         $rows = $this->db('petugas')
             ->where('status', $status)
             ->like('nip', '%'.$phrase.'%')
-            ->like('nama', '%'.$phrase.'%')
+            ->orLike('nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -374,7 +374,7 @@ class Admin extends AdminModule
             ->select('kd_poli')
             ->where('status', $status)
             ->like('kd_poli', '%'.$phrase.'%')
-            ->like('nm_poli', '%'.$phrase.'%')
+            ->orLike('nm_poli', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'poliklinik', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -385,7 +385,7 @@ class Admin extends AdminModule
         $rows = $this->db('poliklinik')
             ->where('status', $status)
             ->like('kd_poli', '%'.$phrase.'%')
-            ->like('nm_poli', '%'.$phrase.'%')
+            ->orLike('nm_poli', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -557,7 +557,7 @@ class Admin extends AdminModule
             ->select('kd_bangsal')
             ->where('status', $status)
             ->like('kd_bangsal', '%'.$phrase.'%')
-            ->like('nm_bangsal', '%'.$phrase.'%')
+            ->orLike('nm_bangsal', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'bangsal', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -568,7 +568,7 @@ class Admin extends AdminModule
         $rows = $this->db('bangsal')
             ->where('status', $status)
             ->like('kd_bangsal', '%'.$phrase.'%')
-            ->like('nm_bangsal', '%'.$phrase.'%')
+            ->orLike('nm_bangsal', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -737,7 +737,7 @@ class Admin extends AdminModule
             ->select('kode_brng')
             ->where('status', $status)
             ->like('kode_brng', '%'.$phrase.'%')
-            ->like('nama_brng', '%'.$phrase.'%')
+            ->orLike('nama_brng', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'databarang', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -748,7 +748,7 @@ class Admin extends AdminModule
         $rows = $this->db('databarang')
             ->where('status', $status)
             ->like('kode_brng', '%'.$phrase.'%')
-            ->like('nama_brng', '%'.$phrase.'%')
+            ->orLike('nama_brng', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -971,7 +971,7 @@ class Admin extends AdminModule
             ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'jnsperawatan', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -982,7 +982,7 @@ class Admin extends AdminModule
         $rows = $this->db('jns_perawatan')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -1174,7 +1174,7 @@ class Admin extends AdminModule
             ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'jnsperawatanlab', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -1185,7 +1185,7 @@ class Admin extends AdminModule
         $rows = $this->db('jns_perawatan_lab')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -1373,7 +1373,7 @@ class Admin extends AdminModule
             ->select('kd_jenis_prw')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'jns_perawatan_radiologi', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -1384,7 +1384,7 @@ class Admin extends AdminModule
         $rows = $this->db('jns_perawatan_radiologi')
             ->where('status', $status)
             ->like('kd_jenis_prw', '%'.$phrase.'%')
-            ->like('nm_perawatan', '%'.$phrase.'%')
+            ->orLike('nm_perawatan', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
