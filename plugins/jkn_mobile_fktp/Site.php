@@ -22,23 +22,17 @@ class Site extends SiteModule
 
     public function getIndex()
     {
-        $page = [
-            'content' => $this->draw('index.html', ['referensi_poli' => $this->db('maping_poliklinik_pcare')->toArray()])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        $referensi_poli = $this->db('maping_poliklinik_pcare')->toArray();
+        echo $this->draw('index.html', ['referensi_poli' => $referensi_poli]);
+        exit();
     }
 
     public function getDisplayAntrian()
     {
+        $title = 'Display Antrian Poliklinik';
         $display = $this->_resultDisplayAntrian();
-        $page = [
-            'content' => $this->draw('display.html', ['display' => $display, 'title' => 'Display Antrian Poliklinik'])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('display.html', ['title' => $title, 'display' => $display]);
+        exit();
     }
 
     private function _resultDisplayAntrian()
@@ -129,12 +123,8 @@ class Site extends SiteModule
 
     public function getAuth()
     {
-        $page = [
-            'content' => $this->_resultAuth()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultAuth();
+        exit();
     }
 
     private function _resultAuth()
@@ -165,12 +155,8 @@ class Site extends SiteModule
 
     public function getAntrean()
     {
-        $page = [
-            'content' => $this->_resultAntrean()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultAntrean();
+        exit();
     }
 
     private function _resultAntrean()
@@ -319,12 +305,8 @@ class Site extends SiteModule
 
     public function getStatusAntrean()
     {
-        $page = [
-            'content' => $this->_resultStatusAntrean()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultStatusAntrean();
+        exit();
     }
 
     private function _resultStatusAntrean()
@@ -395,12 +377,8 @@ class Site extends SiteModule
 
     public function getSisaAntrean()
     {
-        $page = [
-            'content' => $this->_resultSisaAntrean()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultSisaAntrean();
+        exit();
     }
 
     private function _resultSisaAntrean()
@@ -422,12 +400,8 @@ class Site extends SiteModule
 
     public function getBatalAntrean()
     {
-        $page = [
-            'content' => $this->_resultBatalAntrean()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultBatalAntrean();
+        exit();
     }
 
     private function _resultBatalAntrean()
@@ -484,12 +458,8 @@ class Site extends SiteModule
 
     public function getPeserta()
     {
-        $page = [
-            'content' => $this->_resultPeserta()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultPeserta();
+        exit();
     }
 
     private function _resultPeserta()

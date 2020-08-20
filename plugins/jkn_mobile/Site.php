@@ -21,23 +21,17 @@ class Site extends SiteModule
 
     public function getIndex()
     {
-        $page = [
-            'content' => $this->draw('index.html', ['referensi_poli' => $this->db('maping_poli_bpjs')->toArray()])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        $referensi_poli = $this->db('maping_poli_bpjs')->toArray();
+        echo $this->draw('index.html', ['referensi_poli' => $referensi_poli]);
+        exit();
     }
 
     public function getDisplayAntrian()
     {
+        $title = 'Display Antrian Poliklinik';
         $display = $this->_resultDisplayAntrian();
-        $page = [
-            'content' => $this->draw('display.html', ['display' => $display, 'title' => 'Display Antrian Poliklinik'])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('display.html', ['title' => $title, 'display' => $display]);
+        exit();
     }
 
     private function _resultDisplayAntrian()
@@ -128,12 +122,8 @@ class Site extends SiteModule
 
     public function getToken()
     {
-        $page = [
-            'content' => $this->_resultToken()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultToken();
+        exit();
     }
 
     private function _resultToken()
@@ -165,12 +155,8 @@ class Site extends SiteModule
 
     public function getAntrian()
     {
-        $page = [
-            'content' => $this->_resultAntrian()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultAntrian();
+        exit();
     }
 
     private function _resultAntrian()
@@ -464,12 +450,8 @@ class Site extends SiteModule
 
     public function getRekapAntrian()
     {
-        $page = [
-            'content' => $this->_resultRekapAntrian()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultRekapAntrian();
+        exit();
     }
 
     private function _resultRekapAntrian()
@@ -554,12 +536,8 @@ class Site extends SiteModule
     }
     public function getOperasi()
     {
-        $page = [
-            'content' => $this->_resultOperasi()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultOperasi();
+        exit();
     }
 
     private function _resultOperasi()
@@ -641,12 +619,8 @@ class Site extends SiteModule
 
     public function getJadwalOperasi()
     {
-        $page = [
-            'content' => $this->_resultJadwalOperasi()
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->_resultJadwalOperasi();
+        exit();
     }
 
     private function _resultJadwalOperasi()

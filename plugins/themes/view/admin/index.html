@@ -1,0 +1,23 @@
+<article class="row">
+    {loop: $themes}
+    <div class="col-md-4 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$value.name}</h3>
+            </div>
+            <div class="panel-body">
+                <a href="{?= url(['themes', $value.dir, $value.thumb]) ?}" class="theme-preview gallery">
+                    <img src="{?= url(['themes', $value.dir, $value.thumb]) ?}" class="img-responsive">
+                </a>
+            </div>
+            <div class="panel-footer">
+                {if: $settings.theme == $value.dir}
+                <a href="#" class="btn btn-primary btn-block btn-xs disabled">Aktif</a>
+                {else}
+                <a href="{?= url([ADMIN, 'themes', 'index', $value.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Aktifkan</a>
+                {/if}
+            </div>
+        </div>
+    </div>
+    {/loop}
+</article>

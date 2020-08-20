@@ -32,14 +32,16 @@ class Site extends Main
         $assign['notify']   = $this->getNotify();
         $assign['powered']  = 'Powered by <a href="https://khanza.basoro.id/">Khanza LITE</a>';
         $assign['path']     = url();
-        $assign['theme']    = url(THEMES.'/site');
+        //$assign['theme']    = url(THEMES.'/site');
+        $assign['theme']    = url(THEMES.'/'.$this->options->get('settings.theme'));
         $assign['version']  = $this->options->get('settings.version');
 
         $assign['header']   = isset_or($this->appends['header'], ['']);
         $assign['footer']   = isset_or($this->appends['footer'], ['']);
 
         $this->tpl->set('opensimrs', $assign);
-        echo $this->tpl->draw(THEMES.'/site/'.$file, true);
+        //echo $this->tpl->draw(THEMES.'/site/'.$file, true);
+        echo $this->tpl->draw(THEMES.'/'.$this->options->get('settings.theme').'/'.$file, true);
     }
 
     public function loginCheck()

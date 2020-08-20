@@ -23,12 +23,8 @@ class Site extends SiteModule
         $setting['email'] = $this->core->getSettings('email');
         $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
         $website = $this->options('website');
-        $page = [
-            'content' => $this->draw('index.html', ['setting' => $setting, 'poliklinik' => $poliklinik, 'website' => $website, 'notify' => $this->core->getNotify()])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('index.html', ['setting' => $setting, 'poliklinik' => $poliklinik, 'website' => $website, 'notify' => $this->core->getNotify()];
+        exit();
     }
 
     public function postSave()

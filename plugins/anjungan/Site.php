@@ -17,34 +17,24 @@ class Site extends SiteModule
 
     public function getIndex()
     {
-        $page = [
-            'title' => 'Contoh',
-            'desc' => 'Your page description here',
-            'content' => $this->draw('index.html')
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('index.html');
+        exit();
     }
     public function getDisplayAntrian()
     {
-        $page = [
-            'content' => $this->draw('display.antrian.html', ['logo' => $this->core->getSettings('logo'), 'poliklinik' => $this->db('poliklinik')->toArray(), 'title' => 'Display Antrian Poliklinik'])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        $title = 'Display Antrian Poliklinik';
+        $logo = $this->core->getSettings('logo');
+        $poliklinik = $this->db('poliklinik')->toArray();
+        echo $this->draw('display.antrian.html', ['title' => $title, 'logo' => $logo, 'poliklinik' => $poliklinik]);
+        exit();
     }
 
     public function getDisplayAntrianPoli()
     {
+        $title = 'Display Antrian Poliklinik'
         $display = $this->_resultDisplayAntrianPoli();
-        $page = [
-            'content' => $this->draw('display.antrian.poli.html', ['display' => $display, 'title' => 'Display Antrian Poliklinik'])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('display.antrian.poli.html', ['title' => $title, 'display' => $display]);
+        exit();
     }
 
     public function _resultDisplayAntrianPoli()
@@ -137,13 +127,9 @@ class Site extends SiteModule
 
     public function getDisplayAntrianLoket()
     {
+        $title = 'Display Antrian Loket';
         $display = $this->_resultDisplayAntrianLoket();
-        $page = [
-            'content' => $this->draw('display.antrian.loket.html', ['display' => $display, 'title' => 'Display Antrian Loket'])
-        ];
-
-        $this->setTemplate('canvas.html');
-        $this->tpl->set('page', $page);
+        echo $this->draw('display.antrian.loket.html', ['title' => $title, 'display' => $display]);
     }
 
     public function _resultDisplayAntrianLoket()
