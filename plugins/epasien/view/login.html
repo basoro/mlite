@@ -1,0 +1,21 @@
+<section class="login-form">
+          <form action="{$_SERVER['REQUEST_URI']}" method="POST">
+                  <center>
+                    <img src="data:image/jpeg;base64,{?=base64_encode($logo)?}" alt="logo">
+                    <h2>Login Pasien</h2>
+                  </center>
+                  <br>
+                  <div class="form-group">
+                          <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor RM / Kartu" required />
+                  </div>
+                  <div class="form-group">
+                          <input type="password" name="password" class="form-control" placeholder="Kata kunci" required />
+                  </div>
+                  <div class="form-group">
+                      <button type="submit" name="login" class="btn btn-success btn-block">Log masuk</button>
+                  </div>
+          </form>
+  {if: $notify}
+  <div id="notify" class="alert-{$notify.type} animated shake">{$notify.text}</div>
+  {/if}
+</section>

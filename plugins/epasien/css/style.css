@@ -1,0 +1,68 @@
+.intro-header {
+  margin:0;
+  padding:0;
+}
+.intro-header .site-heading,
+.intro-header .post-heading,
+.intro-header .page-heading {
+    padding: 60px 0 50px;
+    color: white;
+}
+
+.login-form {
+  width: 300px;
+    margin: 20px auto;
+}
+.login-form form {
+    margin-bottom: 15px;
+    background: #f7f7f7;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    padding: 10px;
+}
+.login-form h2 {
+    margin: 0 0 15px;
+}
+.form-control, .btn {
+    min-height: 38px;
+    border-radius: 2px;
+}
+.btn {
+    font-size: 15px;
+    font-weight: bold;
+}
+
+.login-form .form-group {
+    font-size: 14px;
+    position: relative;
+    margin-bottom: 0;
+    padding-bottom: 1.5em;
+    padding-right: 5px;
+    padding-left: 5px;
+    border-bottom: 0px solid #eeeeee;
+}
+.login-form form .form-group:last-of-type {
+    margin-bottom: 25px
+}
+.login-form form .btn {
+    margin-left: 0px
+}
+.login-form .form-group input, .login-form .form-group input:focus {
+    z-index: 1;
+    position: relative;
+    padding-right: 0;
+    padding: 10px;
+    border: none;
+    font-size: 1.5em;
+    background: none;
+    box-shadow: none !important;
+    resize: none;
+    border: 2px solid #eeeeee;
+    height: 38px;
+}
+.login-form .form-group::not(:first-child) {
+    padding-left: 14px;
+    border-left: 1px solid #eeeeee;
+}
+.login-form form .row:first-child .form-group {
+    border-top: 1px solid #eeeeee
+}
