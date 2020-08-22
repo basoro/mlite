@@ -23,7 +23,7 @@ class Site extends SiteModule
         $setting['email'] = $this->core->getSettings('email');
         $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
         $website = $this->options('website');
-        echo $this->draw('index.html', ['setting' => $setting, 'poliklinik' => $poliklinik, 'website' => $website, 'notify' => $this->core->getNotify()];
+        echo $this->draw('index.html', ['setting' => $setting, 'poliklinik' => $poliklinik, 'website' => $website, 'notify' => $this->core->getNotify()]);
         exit();
     }
 
