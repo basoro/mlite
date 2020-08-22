@@ -369,7 +369,7 @@ class Site extends SiteModule
                                 'kd_poli' => $cek_kouta['kd_poli'],
                                 'no_reg' => $no_reg,
                                 'kd_pj' => $this->options->get('pendaftaran.bpjs'),
-                                'limit_reg' => 0,
+                                'limit_reg' => 1,
                                 'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
                                 'status' => 'Belum'
                             ]);
@@ -393,7 +393,7 @@ class Site extends SiteModule
                             'kd_poli' => $cek_kouta['kd_poli'],
                             'no_reg' => $no_reg,
                             'kd_pj' => $this->options->get('pendaftaran.bpjs'),
-                            'limit_reg' => 0,
+                            'limit_reg' => 1,
                             'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
                             'status' => 'Belum'
                         ]);
