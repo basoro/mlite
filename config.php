@@ -38,6 +38,7 @@ define('BASIC_MODULES', serialize([
 	1 => 'pasien',
 	2 => 'pendaftaran',
 	3 => 'ralan',
+	9995 => 'themes',
 	9996 => 'master',
 	9998 => 'users',
 	9997 => 'modules',
