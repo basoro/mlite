@@ -31,7 +31,7 @@ class Site extends SiteModule
 
     public function getDisplayAntrianPoli()
     {
-        $title = 'Display Antrian Poliklinik'
+        $title = 'Display Antrian Poliklinik';
         $display = $this->_resultDisplayAntrianPoli();
         echo $this->draw('display.antrian.poli.html', ['title' => $title, 'display' => $display]);
         exit();
