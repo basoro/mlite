@@ -57,41 +57,13 @@
     <div class="col-md-4">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <h3 class="panel-title">Pengaturan</h3>
+                <h3 class="panel-title">Unggah Dokumen</h3>
             </div>
             <div class="panel-body">
-        		<form action="{?=url(ADMIN.'/pasien_galleries/saveSettings/'.$gallery.id)?}" method="POST">
-                     <div class="form-group">
-                         <label>Nama Pasien</label>
-                         <input type="text" name="name" required class="form-control" value="{$gallery.settings.name}" disabled/>
-                     </div>
-                     <!--
-                     <div class="form-group">
-                         <label>Perhalaman</label>
-                         <input type="number" name="img_per_page" min="0" class="form-control" required value="{$gallery.settings.img_per_page}"/>
-                     </div>
-                     -->
-                     <div class="form-group">
-                         <label>Urutan</label>
-                            <div class="radio">
-                                <label class="radio-inline">
-                                    <input type="radio" name="sort" value="DESC" {if: $gallery.settings.sort == 'DESC'}checked{/if} /> DESC
-                                </label>
-                                <label class="radio-inline">
-                                    <input type="radio" name="sort" value="ASC" {if: $gallery.settings.sort == 'ASC'}checked{/if} /> ASC
-                                </label>
-                            </div>
-                     </div>
-                     <input type="submit" class="btn btn-primary" value="Simpan" />
-                </form>
-            </div>
-        </div>
-
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Tambah</h3>
-            </div>
-            <div class="panel-body">
+                <div class="form-group">
+                    <label>Nama Pasien</label>
+                    <input type="text" name="name" required class="form-control" value="{$gallery.settings.name}" disabled/>
+                </div>
                 <form action="{?=url(ADMIN.'/pasien_galleries/upload/'.@$gallery.id)?}" method="POST" enctype="multipart/form-data">
                     <div class="form-group">
                         <input type="file" name="files[]" accept="image/*" multiple class="form-control" />
