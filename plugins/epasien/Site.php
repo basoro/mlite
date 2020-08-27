@@ -29,7 +29,8 @@ class Site extends SiteModule
     public function routes()
     {
         $this->route('epasien', 'getIndex');
-        $this->route('epasien/booking', 'getBooking');
+        $this->route('epasien/booking/pilih', 'getBooking');
+        $this->route('epasien/booking/riwayat', 'getBookingRiwayat');
         $this->route('epasien/riwayat', 'getRiwayat');
         $this->route('epasien/surat/sakit', 'getSuratSakit');
         $this->route('epasien/surat/hamil', 'getSuratHamil');
@@ -55,7 +56,7 @@ class Site extends SiteModule
     public function getIndex()
     {
         $opensimrs = $this->opensimrs;
-        $page['title']               = 'Pemeriksaan Terakhir';
+        $page['title']               = 'Tanda Vital';
         $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
         $page['content']             = '';
 
@@ -108,6 +109,22 @@ class Site extends SiteModule
 
         if ($this->_loginCheck()) {
             $page['title']               = 'Booking';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('epasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getBookingRiwayat()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Riwayat Booking';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
             $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
@@ -475,7 +492,7 @@ class Site extends SiteModule
 
     private function logout()
     {
-        $_SESSION = [];
+        //$_SESSION = [];
         // Delete remember_me token from database and cookie
         if (isset($_COOKIE['opensimrs_pasien_remember'])) {
             $token = explode(':', $_COOKIE['opensimrs_pasien_remember']);

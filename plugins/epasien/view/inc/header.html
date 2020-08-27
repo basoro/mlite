@@ -97,7 +97,15 @@
                   <a href="{?=url(['epasien', ''])?}"><i class="fa fa-home"></i>Dashboard</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'booking'} class="active"{/if}>
-                  <a href="{?=url('epasien/booking')?}"><i class="fa fa-address-book-o"></i>Booking Registrasi</a>
+                  <a href=""><i class="fa fa-address-book-o"></i>Booking Registrasi</a>
+                  <ul class="collapse">
+                      <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'pilih'} class="active"{/if}>
+                          <a href="{?=url('epasien/booking/pilih')?}">Pilih Booking</a>
+                      </li>
+                      <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'riwayat'} class="active"{/if}>
+                          <a href="{?=url('epasien/booking/riwayat')?}">Riwayat Booking</a>
+                      </li>
+                  </ul>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'riwayat'} class="active"{/if}>
                   <a href="{?=url('epasien/riwayat')?}"><i class="fa fa-file"></i>Riwayat Periksa</a>
