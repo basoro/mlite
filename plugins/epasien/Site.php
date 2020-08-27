@@ -57,27 +57,25 @@ class Site extends SiteModule
         $opensimrs = $this->opensimrs;
         $page['title']               = 'e-Pasien';
         $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-        $page['content'] = $this->draw('login.html', ['page' => $page, 'opensimrs' => $this->opensimrs]);
+        $page['content']             = '';
 
         if ($this->_loginCheck()) {
             $page['content']             = $this->draw('index.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             if (isset($_POST['login'])) {
-                if ($this->_login($_POST['no_rkm_medis'], $_POST['password'])) {
-                    redirect(url('pasien'));
+                if ($this->_login($_POST['no_rkm_medis'], $_POST['password'], isset($_POST['remember_me']) )) {
+                    if (count($arrayURL = parseURL()) > 1) {
+                        $url = array_merge(['pasien'], $arrayURL);
+                        redirect(url($url));
+                    }
                 }
-            } else {
-                $page['content'] = $this->draw('login.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+                redirect(url('pasien'));
             }
+            $page['content'] = $this->draw('login.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         }
-
-        $this->core->addCSS(url(MODULES.'/epasien/css/style.css'));
-        $this->core->addJS(url(MODULES.'/epasien/js/app.js'));
 
         echo $page['content'];
         exit();
-        //$this->setTemplate('index.html');
-        //$this->tpl->set('page', $page);
     }
 
     public function getBooking()
@@ -208,7 +206,7 @@ class Site extends SiteModule
         exit();
     }
 
-    private function _login($username, $password)
+    private function _login($username, $password, $remember_me = false)
     {
         // Check attempt
         $attempt = $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
@@ -240,6 +238,14 @@ class Site extends SiteModule
             $_SESSION['opensimrs_pasien_token']      = bin2hex(openssl_random_pseudo_bytes(6));
             $_SESSION['pasien_userAgent']            = $_SERVER['HTTP_USER_AGENT'];
             $_SESSION['pasien_IPaddress']            = $_SERVER['REMOTE_ADDR'];
+
+            if ($remember_me) {
+                $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
+
+                $this->db('lite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
+
+                setcookie('opensimrs_pasien_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
+            }
 
             return true;
         } else {
@@ -279,6 +285,12 @@ class Site extends SiteModule
     private function logout()
     {
         $_SESSION = [];
+        // Delete remember_me token from database and cookie
+        if (isset($_COOKIE['opensimrs_pasien_remember'])) {
+            $token = explode(':', $_COOKIE['opensimrs_pasien_remember']);
+            $this->db('lite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
+            setcookie('opensimrs_pasien_remember', null, -1, '/');
+        }
 
         session_unset();
         session_destroy();
