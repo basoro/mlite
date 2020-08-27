@@ -187,7 +187,7 @@ function url($data = null)
         $url = addToken($url);
     }
 
-    if (strpos($url, '/pasien/') !== false) {
+    if (strpos($url, '/epasien/') !== false) {
         $url = addTokenPasien($url);
     }
 

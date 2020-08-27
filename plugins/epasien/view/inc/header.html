@@ -70,10 +70,12 @@
     <script src="{$opensimrs.path}/assets/jscripts/tinynav.min.js?v={$opensimrs.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version)?}"></script>
     <script src="{?=url(THEMES.'/admin/js/selectator.js?v='.$opensimrs.version)?}"></script>
+    <script src="{$opensimrs.path}/assets/jscripts/Chart.bundle.min.js"></script>
+    <script src="{?=url(MODULES.'/epasien/css/style.css?v='.$opensimrs.version)?}"></script>
+    <script src="{?=url(MODULES.'/epasien/js/app.js?v='.$opensimrs.version)?}"></script>
     <script>
         var opensimrs = {token:"{$_SESSION['opensimrs_pasien_token']}", url:"{?=url()?}", pasien:"pasien"};
     </script>
-    {loop: $opensimrs.header}{$value}{/loop}
 </head>
 
 <body>
@@ -92,34 +94,34 @@
           </div>
           <ul class="sidebar-nav">
               <li{if: empty($opensimrs.slug.1)} class="active"{/if}>
-                  <a href="{?=url(['pasien', ''])?}"><i class="fa fa-home"></i>Dashboard</a>
+                  <a href="{?=url(['epasien', ''])?}"><i class="fa fa-home"></i>Dashboard</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'booking'} class="active"{/if}>
-                  <a href="{?=url('pasien/booking')?}"><i class="fa fa-address-book-o"></i>Booking Registrasi</a>
+                  <a href="{?=url('epasien/booking')?}"><i class="fa fa-address-book-o"></i>Booking Registrasi</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'riwayat'} class="active"{/if}>
-                  <a href="{?=url('pasien/riwayat')?}"><i class="fa fa-file"></i>Riwayat Periksa</a>
+                  <a href="{?=url('epasien/riwayat')?}"><i class="fa fa-file"></i>Riwayat Periksa</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'surat'} class="active"{/if}>
                   <a href=""><i class="fa fa-file-pdf-o"></i>Permintaan Surat</a>
                   <ul class="collapse">
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'sakit'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/sakit')?}">Cuti Sakit</a>
+                          <a href="{?=url('epasien/surat/sakit')?}">Cuti Sakit</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'hamil'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/hamil')?}">Hamil/Tidak</a>
+                          <a href="{?=url('epasien/surat/hamil')?}">Hamil/Tidak</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'narkoba'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/narkoba')?}">Bebas Narkoba</a>
+                          <a href="{?=url('epasien/surat/narkoba')?}">Bebas Narkoba</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'kontrol'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/kontrol')?}">Kontrol/SKDP</a>
+                          <a href="{?=url('epasien/surat/kontrol')?}">Kontrol/SKDP</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'rujukan'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/rujukan')?}">Rujukan</a>
+                          <a href="{?=url('epasien/surat/rujukan')?}">Rujukan</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'covid'} class="active"{/if}>
-                          <a href="{?=url('pasien/surat/covid')?}">Keterangan Covid</a>
+                          <a href="{?=url('epasien/surat/covid')?}">Keterangan Covid</a>
                       </li>
                   </ul>
               </li>
@@ -127,36 +129,36 @@
                   <a href=""><i class="fa fa-hospital-o"></i>Fasilitas & Tarif</a>
                   <ul class="collapse">
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'kamar'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/kamar')?}">Kamar</a>
+                          <a href="{?=url('epasien/tarif/kamar')?}">Kamar</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'radiologi'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/radiologi')?}">Radiologi</a>
+                          <a href="{?=url('epasien/tarif/radiologi')?}">Radiologi</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'laboratorium'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/laboratorium')?}">Laboratorium</a>
+                          <a href="{?=url('epasien/tarif/laboratorium')?}">Laboratorium</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'operasi'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/operasi')?}">Operasi</a>
+                          <a href="{?=url('epasien/tarif/operasi')?}">Operasi</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'konsultasi'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/konsultasi')?}">Konsultasi Online</a>
+                          <a href="{?=url('epasien/tarif/konsultasi')?}">Konsultasi Online</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'poliklinik'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/poliklinik')?}">Poliklinik</a>
+                          <a href="{?=url('epasien/tarif/poliklinik')?}">Poliklinik</a>
                       </li>
                       <li{if: !empty($opensimrs.slug.2) && $opensimrs.slug.2 == 'asuransi'} class="active"{/if}>
-                          <a href="{?=url('pasien/tarif/asuransi')?}">Asuransi</a>
+                          <a href="{?=url('epasien/tarif/asuransi')?}">Asuransi</a>
                       </li>
                   </ul>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'jadwal'} class="active"{/if}>
-                  <a href="{?=url('pasien/jadwal')?}"><i class="fa fa-calendar"></i>Jadwal Dokter</a>
+                  <a href="{?=url('epasien/jadwal')?}"><i class="fa fa-calendar"></i>Jadwal Dokter</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'kamar'} class="active"{/if}>
-                  <a href="{?=url('pasien/kamar')?}"><i class="fa fa-hotel"></i>Ketersediaan Kamar</a>
+                  <a href="{?=url('epasien/kamar')?}"><i class="fa fa-hotel"></i>Ketersediaan Kamar</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'pengaduan'} class="active"{/if}>
-                  <a href="{?=url('pasien/pengaduan')?}"><i class="fa fa-comments-o"></i>Pengaduan</a>
+                  <a href="{?=url('epasien/pengaduan')?}"><i class="fa fa-comments-o"></i>Pengaduan</a>
               </li>
           </ul>
       </aside>
@@ -165,11 +167,11 @@
           <nav class="navbar navbar-inverse">
               <div class="container-fluid">
                   <div class="navbar-header">
-                      <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/pasien/"><span class="first">{$opensimrs.nama_instansi}</span></a></div>
+                      <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/pasien/"><span class="hidden-sm hidden-xs">e-Pasien </span><span class="first">{$opensimrs.nama_instansi}</span></a></div>
                   </div>
                   <ul class="nav navbar-nav navbar-right">
                       <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>{?= sprintf('Apa kabar <strong>%s</strong>?', $opensimrs.nm_pasien) ?}</span></a></li>
-                      <li><a href="{?=url(['pasien', 'logout'])?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
+                      <li><a href="{?=url(['epasien', 'logout'])?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
                   </ul>
               </div>
           </nav>

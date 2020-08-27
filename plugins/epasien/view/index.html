@@ -9,14 +9,164 @@
         </div>
 		{/if}
 
-        <section id="content-wrapper">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <h2 class="content-title">{$page.title}</h2>
-                    </div>
-                </div>
-            </div>
-        </section>
+	  <section id="content-wrapper">
+	      <div class="container-fluid">
+	          <div class="row">
+	              <div class="col-lg-12">
+	                  <h2 class="content-title">{$page.title}</h2>
+	              </div>
+								<!-- start widget -->
+								<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+									<div class="row clearfix">
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div style='font-size:45px;'>36<span style='font-size:20px;vertical-align:text-top;display:inline;'>&#8451;</span></div>
+													<div
+														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
+														<div class="progress-bar progress-bar-success" role="progressbar"
+															aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+															style="width: 100%;"></div>
+													</div>
+													<span class="text-small margin-top-10 full-width">Suhu Tubuh</span>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div style='font-size:45px;'>36<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>/menit</span></div>
+													<div
+														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
+														<div class="progress-bar progress-bar-danger" role="progressbar"
+															aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+															style="width: 100%;"></div>
+													</div>
+													<span class="text-small margin-top-10 full-width">Rerata Pernafasan</span>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div style='font-size:45px;'>120/80<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>mmHg</span></div>
+													<div
+														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
+														<div class="progress-bar progress-bar-warning" role="progressbar"
+															aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+															style="width: 100%;"></div>
+													</div>
+													<span class="text-small margin-top-10 full-width">Tekanan Darah</span>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6 col-sm-6 col-xs-12">
+											<div class="panel panel-default">
+												<div class="panel-body">
+													<div style='font-size:45px;'>19,53<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>kg/m2</span></div>
+													<div
+														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
+														<div class="progress-bar progress-bar-info" role="progressbar"
+															aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
+															style="width: 100%;"></div>
+													</div>
+													<span class="text-small margin-top-10 full-width">Index Massa Tubuh</span>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+												<h3 class="panel-title">Grafik Tekanan Darah</h3>
+										</div>
+			              <div class="panel-body">
+			                    <canvas id="visits"
+			                    style="width:100%; height:240px;"
+			                    data-chart="line"
+			                    data-labels='["1","2","3","4","5","6","7"]'
+			                    data-datasets='[
+			                        {
+			                            label: "Sistole",
+			                            data: [120,110,100,130,140,110,120],
+			                            backgroundColor: "rgba(255, 87, 34, 0.2)",
+			                            borderColor: "rgba(255, 87, 34, 1)"
+			                        },
+															{
+			                            label: "Diastole",
+			                            data: [80,70,70,60,100,90,80],
+			                            backgroundColor: "rgba(30, 30, 45, 0.2)",
+			                            borderColor: "rgba(255, 87, 34, 1)"
+			                        }
+			                    ]'></canvas>
+			              </div>
+									</div>
+								</div>
+								<!-- end widget -->
+	          </div>
+						<div class="row" style="margin-top:20px;">
+								<div class="col-sm-4">
+										<div class="panel panel-default">
+												<div class="panel-heading">
+															<h3 class="panel-title">Riwayat Kunjungan</h3>
+												</div>
+												<div class="list-group" style="height:400px;overflow-y: auto;overflow-x: hidden;">
+														{loop: $reg_periksa}
+														<div class="list-group-item">
+																<img src="{?=url(MODULES.'/pasien/img/default.png')?}" style="border-radius:50%;float:left;" width="40">
+																<div style="display:inline-block;padding-left:10px;">
+																		<b>{$value.nm_dokter}</b><br>
+																		{$value.nm_poli}
+																</div>
+														</div>
+														{/loop}
+					              </div>
+										</div>
+
+								</div>
+						    <div class="col-sm-4">
+						        <div class="panel panel-default">
+					              <div class="panel-heading">
+					                    <h3 class="panel-title">Riwayat Obat</h3>
+					              </div>
+												<div class="list-group" style="height:400px;overflow-y: auto;overflow-x: hidden;">
+						                {loop: $pemeriksaan_ralan}
+						                <div class="list-group-item">
+						                    <div style="display:inline-block;">
+						                        <b>{$value.keluhan}</b><br>
+						                        {$value.pemeriksaan}
+						                    </div>
+						                </div>
+						                {/loop}
+					              </div>
+						        </div>
+						    </div>
+						    <div class="col-sm-4">
+
+						        <div class="panel panel-default">
+						              <div class="panel-heading">
+						                    <h3 class="panel-title">Cara Bayar</h3>
+						              </div>
+													<div class="panel-body" style="height:400px;overflow-y: auto;overflow-x: hidden;">
+														<canvas id="carabayar"
+				                    style="width:100%; height:600px; margin-top:20px;"
+				                    data-chart="doughnut"
+				                    data-labels='["Umum","BPJS","Lain-Lain"]'
+				                    data-datasets='[
+				                        {
+																	backgroundColor: ["#4caf50", "#34316E", "#F58634"],
+							                    pointRadius: 0,
+							                    data: [{$stats.tunai.count}, {$stats.bpjs.count}, {$stats.lainnya.count}]
+				                        }
+				                    ]'></canvas>
+						              </div>
+						        </div>
+
+						    </div>
+						</div>
+	      </div>
+	  </section>
+
 
 {include: plugins/epasien/view/inc/footer.html}

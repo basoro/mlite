@@ -15,7 +15,7 @@ class Admin extends AdminModule
 
     public function getIndex()
     {
-        $text = 'Hello World';
+        $text = 'Modul e-Pasien';
         return $this->draw('index.html', ['text' => $text]);
     }
 }
