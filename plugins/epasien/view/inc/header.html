@@ -11,6 +11,57 @@
     <link href="{$opensimrs.path}/assets/css/animate.min.css?v={$opensimrs.version}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$opensimrs.version)?}" rel="stylesheet">
+    <style>
+    a {
+      color: #FF1493;
+    }
+    .sidebar-brand h2.first {
+        color: #FF1493;
+    }
+    .sidebar-nav > li > a:hover,
+    .sidebar-nav > li.active > a {
+        text-decoration: none;
+        color: #fff;
+        background: #FF1493;
+    }
+    .user-info {
+        background: url('{?=url()?}/plugins/epasien/img/user-info-bg.jpg') no-repeat no-repeat;
+    }
+    #navbar-wrapper .navbar .navbar-header .navbar-brand .first {
+        font-weight: bold;
+        color: #FF1493;
+    }
+    #navbar-wrapper .navbar ul.navbar-nav li:not(.hello) a {
+        color: #FF1493;
+    }
+    #login .panel-heading {
+        background-color: #222;
+        color: #FF1493;
+        text-align: center;
+        border: 0;
+        margin-top: -1px;
+    }
+    .toggle.checked:after {
+        content: '\2713';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #FF1493;
+        font-weight: bold;
+    }
+    .toggleR.checked:after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 10px;
+        height: 10px;
+        margin: -5px 0 0 -5px;
+        background-color: #FF1493;
+        border-radius: 50%;
+    }
+    </style>
     <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
     <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
     <script src="{$opensimrs.path}/assets/jscripts/bootstrap.min.js?v={$opensimrs.version}"></script>
@@ -19,6 +70,10 @@
     <script src="{$opensimrs.path}/assets/jscripts/tinynav.min.js?v={$opensimrs.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version)?}"></script>
     <script src="{?=url(THEMES.'/admin/js/selectator.js?v='.$opensimrs.version)?}"></script>
+    <script>
+        var opensimrs = {token:"{$_SESSION['opensimrs_pasien_token']}", url:"{?=url()?}", pasien:"pasien"};
+    </script>
+    {loop: $opensimrs.header}{$value}{/loop}
 </head>
 
 <body>
@@ -37,7 +92,7 @@
           </div>
           <ul class="sidebar-nav">
               <li{if: empty($opensimrs.slug.1)} class="active"{/if}>
-                  <a href="{?=url('pasien')?}"><i class="fa fa-home"></i>Dashboard</a>
+                  <a href="{?=url(['pasien', ''])?}"><i class="fa fa-home"></i>Dashboard</a>
               </li>
               <li{if: !empty($opensimrs.slug.1) && $opensimrs.slug.1 == 'booking'} class="active"{/if}>
                   <a href="{?=url('pasien/booking')?}"><i class="fa fa-address-book-o"></i>Booking Registrasi</a>

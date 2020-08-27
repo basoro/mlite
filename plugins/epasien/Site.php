@@ -16,7 +16,7 @@ class Site extends SiteModule
         $this->opensimrs['nama_instansi']  = $this->core->getSettings('nama_instansi');
         $this->opensimrs['path']           = url();
         $this->opensimrs['version']        = $this->core->options->get('settings.version');
-        $this->opensimrs['token']          = '';
+        $this->opensimrs['token']          = $_SESSION['opensimrs_pasien_token'];
         if ($this->_loginCheck()) {
             $this->opensimrs['avatarURL']      = url(MODULES.'/pasien/img/'.$this->core->getPasienInfo('jk', $_SESSION['opensimrs_pasien_user']).'.png');
             $this->opensimrs['nm_pasien']      = $this->core->getPasienInfo('nm_pasien', $_SESSION['opensimrs_pasien_user']);
@@ -37,16 +37,16 @@ class Site extends SiteModule
         $this->route('pasien/surat/kontrol', 'getSuratKontrol');
         $this->route('pasien/surat/rujukan', 'getSuratRujukan');
         $this->route('pasien/surat/covid', 'getSuratCovid');
-        $this->route('pasien/tarif/kamar', 'getIndex');
-        $this->route('pasien/tarif/radiologi', 'getIndex');
-        $this->route('pasien/tarif/laboratorium', 'getIndex');
-        $this->route('pasien/tarif/operasi', 'getIndex');
-        $this->route('pasien/tarif/konsultasi', 'getIndex');
-        $this->route('pasien/tarif/poliklinik', 'getIndex');
-        $this->route('pasien/tarif/asuransi', 'getIndex');
-        $this->route('pasien/jadwal', 'getIndex');
-        $this->route('pasien/kamar', 'getIndex');
-        $this->route('pasien/pengaduan', 'getIndex');
+        $this->route('pasien/tarif/kamar', 'getTarifKamar');
+        $this->route('pasien/tarif/radiologi', 'getTarifRadiologi');
+        $this->route('pasien/tarif/laboratorium', 'getTarifLaboratorium');
+        $this->route('pasien/tarif/operasi', 'getTarifOperasi');
+        $this->route('pasien/tarif/konsultasi', 'getTarifKonsultasi');
+        $this->route('pasien/tarif/poliklinik', 'getTarifPoliklinik');
+        $this->route('pasien/tarif/asuransi', 'getTarifAsuransi');
+        $this->route('pasien/jadwal', 'getJadwal');
+        $this->route('pasien/kamar', 'getKamar');
+        $this->route('pasien/pengaduan', 'getPengaduan');
         $this->route('pasien/logout', function () {
             $this->logout();
         });
@@ -55,7 +55,7 @@ class Site extends SiteModule
     public function getIndex()
     {
         $opensimrs = $this->opensimrs;
-        $page['title']               = 'e-Pasien';
+        $page['title']               = 'Dashboard e-Pasien';
         $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
         $page['content']             = '';
 
@@ -69,7 +69,7 @@ class Site extends SiteModule
                         redirect(url($url));
                     }
                 }
-                redirect(url('pasien'));
+                redirect(url(['pasien', '']));
             }
             $page['content'] = $this->draw('login.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         }
@@ -206,6 +206,166 @@ class Site extends SiteModule
         exit();
     }
 
+    public function getTarifKamar()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Kamar';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifRadiologi()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Radiologi';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifLaboratorium()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Laboratorium';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifOperasi()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Operasi';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifKonsultasi()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Konsultasi Online';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifPoliklinik()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Poliklinik';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getTarifAsuransi()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Fasilitas & Tarif Asuransi';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getJadwal()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Jadwal Dokter';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getKamar()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Ketersediaan Kamar';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getPengaduan()
+    {
+        $opensimrs = $this->opensimrs;
+
+        if ($this->_loginCheck()) {
+            $page['title']               = 'Pengaduan Pasien';
+            $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+        } else {
+            redirect(url('pasien'));
+        }
+
+        echo $page['content'];
+        exit();
+    }
+
     private function _login($username, $password, $remember_me = false)
     {
         // Check attempt
@@ -276,6 +436,13 @@ class Site extends SiteModule
             if ($_SESSION['pasien_userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
                 return false;
             }
+
+            if (empty(parseURL(1))) {
+                redirect(url('pasien'));
+            } elseif (!isset($_GET['t']) || ($_SESSION['opensimrs_pasien_token'] != @$_GET['t'])) {
+                return false;
+            }
+
             return true;
         }
 
@@ -292,8 +459,13 @@ class Site extends SiteModule
             setcookie('opensimrs_pasien_remember', null, -1, '/');
         }
 
-        session_unset();
-        session_destroy();
+        unset($_SESSION['opensimrs_pasien_user']);
+        unset($_SESSION['opensimrs_pasien_token']);
+        unset($_SESSION['pasien_userAgent']);
+        unset($_SESSION['pasien_IPaddress']);
+
+        //session_unset();
+        //session_destroy();
         redirect(url('pasien'));
     }
 

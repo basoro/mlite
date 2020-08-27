@@ -141,6 +141,19 @@ function addToken($url)
     return $url;
 }
 
+function addTokenPasien($url)
+{
+    if (isset($_SESSION['opensimrs_pasien_token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['opensimrs_pasien_token'];
+        } else {
+            return $url.'?t='.$_SESSION['opensimrs_pasien_token'];
+        }
+    }
+
+    return $url;
+}
+
 function url($data = null)
 {
     if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
@@ -172,6 +185,10 @@ function url($data = null)
 
     if (strpos($url, '/'.ADMIN.'/') !== false) {
         $url = addToken($url);
+    }
+
+    if (strpos($url, '/pasien/') !== false) {
+        $url = addTokenPasien($url);
     }
 
     return $url;
