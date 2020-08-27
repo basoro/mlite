@@ -107,7 +107,10 @@ class Site extends SiteModule
                   ->where('kd_dokter', $row['kd_dokter'])
                   ->oneArray();
                 $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
-                $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                $row['interval'] = 0;
+                if($row['diff'] == 0) {
+                  $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                }
                 if($row['interval'] > 10){
                   $interval = 10;
                 } else {
