@@ -10,6 +10,8 @@ class Site extends SiteModule
     public function routes()
     {
         $this->route('vedika', 'getIndex');
+        $this->route('vedika/css', 'getCss');
+        $this->route('vedika/javascript', 'getJavascript');
         $this->route('vedika/pdf/(:str)', 'getPDF');
     }
 
@@ -217,14 +219,14 @@ class Site extends SiteModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/vedika/js/admin/scripts.js');
+        echo $this->draw(MODULES.'/vedika/js/scripts.js');
         exit();
     }
 
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/vedika/css/admin/styles.css');
+        echo $this->draw(MODULES.'/vedika/css/styles.css');
         exit();
     }
 

@@ -1,0 +1,15 @@
+th, td {
+  white-space: nowrap;
+  vertical-align: top !important;
+}
+
+.intro-header {
+  margin:0;
+  padding:0;
+}
+.intro-header .site-heading,
+.intro-header .post-heading,
+.intro-header .page-heading {
+    padding: 80px 0 70px;
+    color: white;
+}
