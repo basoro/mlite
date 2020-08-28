@@ -308,7 +308,7 @@ class Admin extends AdminModule
                       'tarif_tindakandr' => $row['tarif_tindakandr'],
                       'kso' => $row['kso'],
                       'menejemen' => $row['menejemen'],
-                      'biaya_rawat' => $row['biaya_rawat'],
+                      'biaya_rawat' => $row['total_byrdr'],
                       'stts_bayar' => 'Belum'
                   ]);
               }
@@ -386,7 +386,7 @@ class Admin extends AdminModule
                       'tarif_tindakandr' => $row['tarif_tindakandr'],
                       'kso' => $row['kso'],
                       'menejemen' => $row['menejemen'],
-                      'biaya_rawat' => $row['biaya_rawat'],
+                      'biaya_rawat' => $row['total_byrdr'],
                       'stts_bayar' => 'Belum'
                   ]);
               }
