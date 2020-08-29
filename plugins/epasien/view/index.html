@@ -21,7 +21,7 @@
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											<div class="panel panel-default">
 												<div class="panel-body">
-													<div style='font-size:45px;'>36<span style='font-size:20px;vertical-align:text-top;display:inline;'>&#8451;</span></div>
+													<div style='font-size:45px;'>{$tanda_vital.suhu_tubuh}<span style='font-size:20px;vertical-align:text-top;display:inline;'>&#8451;</span></div>
 													<div
 														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
 														<div class="progress-bar progress-bar-success" role="progressbar"
@@ -35,7 +35,7 @@
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											<div class="panel panel-default">
 												<div class="panel-body">
-													<div style='font-size:45px;'>36<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>/menit</span></div>
+													<div style='font-size:45px;'>{$tanda_vital.respirasi}<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>/menit</span></div>
 													<div
 														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
 														<div class="progress-bar progress-bar-danger" role="progressbar"
@@ -49,7 +49,7 @@
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											<div class="panel panel-default">
 												<div class="panel-body">
-													<div style='font-size:45px;'>120/80<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>mmHg</span></div>
+													<div style='font-size:45px;'>{$tanda_vital.tensi}<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>mmHg</span></div>
 													<div
 														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
 														<div class="progress-bar progress-bar-warning" role="progressbar"
@@ -63,14 +63,14 @@
 										<div class="col-md-6 col-sm-6 col-xs-12">
 											<div class="panel panel-default">
 												<div class="panel-body">
-													<div style='font-size:45px;'>19,53<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>kg/m2</span></div>
+													<div style='font-size:45px;'>{$tanda_vital.nadi}<span style='font-size:20px;vertical-align:text-bottom;display:inline;'>denyut/menit</span></div>
 													<div
 														class="progressbar-xs progress-rounded progress-striped progress ng-isolate-scope active">
 														<div class="progress-bar progress-bar-info" role="progressbar"
 															aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"
 															style="width: 100%;"></div>
 													</div>
-													<span class="text-small margin-top-10 full-width">Index Massa Tubuh</span>
+													<span class="text-small margin-top-10 full-width">Denyut Nadi</span>
 												</div>
 											</div>
 										</div>
@@ -85,17 +85,17 @@
 			                    <canvas id="tekanan_darah"
 			                    style="width:100%;height:240px;"
 			                    data-chart="line"
-			                    data-labels='["1","2","3","4","5","6","7"]'
+			                    data-labels='["1","2","3","4","5","6"]'
 			                    data-datasets='[
 			                        {
 			                            label: "Sistole",
-			                            data: [120,110,100,130,140,110,120],
+																	data: [{loop: $tekanan_darah}{?=strtok($value.tensi, '/')?},{/loop}],
 																	backgroundColor: "rgba(52, 49, 110, 0.2)",
 			                            borderColor: "rgba(52, 49, 110, 1)"
 			                        },
 															{
 			                            label: "Diastole",
-			                            data: [80,70,70,60,100,90,80],
+																	data: [{loop: $tekanan_darah}{?=substr($value.tensi, strrpos($value.tensi, '/' )+1)?},{/loop}],
 																	backgroundColor: "rgba(255, 87, 34, 0.2)",
 			                            borderColor: "rgba(255, 87, 34, 1)"
 			                        }
@@ -128,14 +128,15 @@
 						    <div class="col-sm-4">
 						        <div class="panel panel-default">
 					              <div class="panel-heading">
-					                    <h3 class="panel-title">Riwayat Obat</h3>
+					                    <h3 class="panel-title">Riwayat Keluhan</h3>
 					              </div>
 												<div class="list-group" style="height:400px;overflow-y: auto;overflow-x: hidden;">
 						                {loop: $pemeriksaan_ralan}
 						                <div class="list-group-item">
 						                    <div style="display:inline-block;">
-						                        <b>{$value.keluhan}</b><br>
-						                        {$value.pemeriksaan}
+						                        <b>{$value.tgl_perawatan}</b><br>
+						                        <b>Keluhan</b>: {$value.keluhan}<br>
+																		<b>Pemeriksaan</b>: {$value.pemeriksaan}<br>
 						                    </div>
 						                </div>
 						                {/loop}

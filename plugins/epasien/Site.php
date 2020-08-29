@@ -56,7 +56,7 @@ class Site extends SiteModule
     public function getIndex()
     {
         $opensimrs = $this->opensimrs;
-        $page['title']               = 'Tanda Vital';
+        $page['title']               = 'Tanda Vital Terakhir';
         $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
         $page['content']             = '';
 
@@ -84,7 +84,9 @@ class Site extends SiteModule
               'opensimrs' => $opensimrs,
               'stats' => $stats,
               'reg_periksa' => $this->db('reg_periksa')->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('reg_periksa.tgl_registrasi')->limit('5')->toArray(),
-              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('keluhan')->select('pemeriksaan')->desc('tgl_perawatan')->limit('6')->toArray()
+              'tanda_vital' => $this->db('pemeriksaan_ralan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('1')->oneArray(),
+              'tekanan_darah' => $this->db('pemeriksaan_ralan')->select('tensi')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->asc('tgl_perawatan')->limit('6')->toArray(),
+              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('tgl_perawatan')->select('keluhan')->select('pemeriksaan')->desc('tgl_perawatan')->limit('6')->toArray()
             ]);
         } else {
             if (isset($_POST['login'])) {
