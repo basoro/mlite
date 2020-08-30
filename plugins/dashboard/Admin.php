@@ -39,10 +39,13 @@ class Admin extends AdminModule
         $stats['getLastCurrentVisities'] = number_format($this->countLastCurrentVisite(),0,'','.');
         $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
         $stats['percentYear'] = number_format((($this->countYearVisite()-$this->countLastYearVisite())/$this->countYearVisite())*100,0,'','.');
-        $stats['percentMonth'] = number_format((($this->countMonthVisite()-$this->countLastMonthVisite())/$this->countMonthVisite())*100,0,'','.');
+        $stats['percentMonth'] = 0;
+        if($this->countMonthVisite() != 0) {
+          $stats['percentMonth'] = number_format((($this->countMonthVisite()-$this->countLastMonthVisite())/$this->countMonthVisite())*100,0,'','.');
+        }
         $stats['percentDays'] = 0;
         if($this->countCurrentVisite() != 0) {
-          $stats['percentDays'] = number_format((($this->countCurrentVisite()-$this->countLastCurrentVisite())/$this->countCurrentVisite())*100,0,'','.');          
+          $stats['percentDays'] = number_format((($this->countCurrentVisite()-$this->countLastCurrentVisite())/$this->countCurrentVisite())*100,0,'','.');
         }
         $stats['poliChart'] = $this->poliChart();
         $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();

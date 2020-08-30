@@ -9,11 +9,18 @@
         </div>
 		{/if}
 
+		<a href="" id="notify" class="btn btn-lg btn-danger alert alert-danger alert-dismissible fade in" role="alert">
+				Pemeriksaan Mandiri Covid-19
+				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+				</button>
+		</a>
+
 	  <section id="content-wrapper">
 	      <div class="container-fluid">
 	          <div class="row">
 	              <div class="col-lg-12">
-	                  <h2 class="content-title">{$page.title}</h2>
+										<h2 class="content-title">{$page.title}</h2>
 	              </div>
 								<!-- start widget -->
 								<div class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
@@ -109,7 +116,7 @@
 								<div class="col-sm-4">
 										<div class="panel panel-default">
 												<div class="panel-heading">
-															<h3 class="panel-title">Riwayat Kunjungan</h3>
+															<h3 class="panel-title">Riwayat Kunjungan Terakhir</h3>
 												</div>
 												<div class="list-group" style="height:400px;overflow-y: auto;overflow-x: hidden;">
 														{loop: $reg_periksa}
@@ -134,9 +141,9 @@
 						                {loop: $pemeriksaan_ralan}
 						                <div class="list-group-item">
 						                    <div style="display:inline-block;">
-						                        <b>{$value.tgl_perawatan}</b><br>
-						                        <b>Keluhan</b>: {$value.keluhan}<br>
-																		<b>Pemeriksaan</b>: {$value.pemeriksaan}<br>
+						                        <b>Tanggal:</b>{$value.tgl_perawatan}<br>
+						                        <b>Keluhan:</b> {$value.keluhan}<br>
+																		<b>Pemeriksaan:</b> {$value.pemeriksaan}
 						                    </div>
 						                </div>
 						                {/loop}

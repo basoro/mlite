@@ -1,0 +1,22 @@
+{include: plugins/epasien/view/inc/header.html}
+
+		{if: $opensimrs.notify}
+        <div id="notify" class="alert alert-{$opensimrs.notify.type} alert-dismissible fade in" role="alert">
+            {$opensimrs.notify.text}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+		{/if}
+
+        <section id="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="content-title">{$page.title}</h2>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+{include: plugins/epasien/view/inc/footer.html}

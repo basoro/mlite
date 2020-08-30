@@ -1,0 +1,58 @@
+{include: plugins/epasien/view/inc/header.html}
+
+		{if: $opensimrs.notify}
+        <div id="notify" class="alert alert-{$opensimrs.notify.type} alert-dismissible fade in" role="alert">
+            {$opensimrs.notify.text}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+		{/if}
+
+        <section id="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="content-title">{$page.title}</h2>
+                    </div>
+										<div class="col-lg-12">
+												<div class="clearfix">
+														<div class="panel panel-default">
+																<div class="panel-body">
+																		<div class="table-responsive no-margin">
+											                <table class="table table-striped display no-margin" width="100%">
+											                  <thead>
+											                    <tr>
+											                      <th>Nomor Bed</th>
+											                      <th>Nama Kamar</th>
+											                      <th>Kelas</th>
+											                      <th>Tarif Kamar</th>
+											                      <th>Status Kamar</th>
+											                    </tr>
+											                  </thead>
+											                  <tbody>
+											                   	{if: !empty($tarif_kamar)}
+											                    {loop: $tarif_kamar}
+											                    <tr>
+											                      <td>{$value.kd_kamar}</td>
+											                      <td>{$value.nm_bangsal}</td>
+											                      <td>{$value.kelas}</td>
+											                      <td>{?=formatDuit($value.trf_kamar)?}</td>
+											                      <td>{$value.status}</td>
+											                    </tr>
+											                    {/loop}
+											                    {else}
+											                    <tr><td colspan="9" class="text-center">Data kamar tidak ditemukan</td></tr>
+											                    {/if}
+											                  </tbody>
+											                </table>
+											              </div>
+																</div>
+														</div>
+												</div>
+										</div>
+                </div>
+            </div>
+        </section>
+
+{include: plugins/epasien/view/inc/footer.html}

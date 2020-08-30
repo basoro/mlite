@@ -86,7 +86,7 @@ class Site extends SiteModule
               'reg_periksa' => $this->db('reg_periksa')->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('reg_periksa.tgl_registrasi')->limit('5')->toArray(),
               'tanda_vital' => $this->db('pemeriksaan_ralan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('1')->oneArray(),
               'tekanan_darah' => $this->db('pemeriksaan_ralan')->select('tensi')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->asc('tgl_perawatan')->limit('6')->toArray(),
-              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('tgl_perawatan')->select('keluhan')->select('pemeriksaan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('6')->toArray()
+              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('tgl_perawatan')->select('keluhan')->select('pemeriksaan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('3')->toArray()
             ]);
         } else {
             if (isset($_POST['login'])) {
@@ -128,7 +128,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Riwayat Booking';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('booking.riwayat.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -144,7 +144,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Riwayat';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('riwayat.periksa.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -160,7 +160,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Sakit';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.sakit.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -176,7 +176,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Hamil';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.hamil.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -192,7 +192,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Narkoba';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.narkoba.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -208,7 +208,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Kontrol/SKDP';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.kontrol.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -224,7 +224,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Rujukan';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.rujukan.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -240,7 +240,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Surat Covid-19';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('surat.covid.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -256,7 +256,8 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Kamar';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $tarif_kamar                 = $this->db('bangsal')->join('kamar', 'kamar.kd_bangsal = bangsal.kd_bangsal')->where('kamar.status', '1')->toArray();
+            $page['content']             = $this->draw('tarif.kamar.html', ['page' => $page, 'opensimrs' => $opensimrs, 'tarif_kamar' => $tarif_kamar]);
         } else {
             redirect(url('epasien'));
         }
@@ -272,7 +273,8 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Radiologi';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $tarif_radiologi             = $this->db('jns_perawatan_radiologi')->join('penjab', 'penjab.kd_pj=jns_perawatan_radiologi.kd_pj')->where('jns_perawatan_radiologi.status', '1')->toArray();
+            $page['content']             = $this->draw('tarif.radiologi.html', ['page' => $page, 'opensimrs' => $opensimrs, 'tarif_radiologi' => $tarif_radiologi]);
         } else {
             redirect(url('epasien'));
         }
@@ -288,7 +290,8 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Laboratorium';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $tarif_laboratorium          = $this->db('jns_perawatan_lab')->join('penjab', 'penjab.kd_pj=jns_perawatan_lab.kd_pj')->where('jns_perawatan_lab.status', '1')->toArray();
+            $page['content']             = $this->draw('tarif.laboratorium.html', ['page' => $page, 'opensimrs' => $opensimrs, 'tarif_laboratorium' => $tarif_laboratorium]);
         } else {
             redirect(url('epasien'));
         }
@@ -304,7 +307,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Operasi';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('tarif.operasi.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -320,7 +323,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Konsultasi Online';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('tarif.konsultasi.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -336,7 +339,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Poliklinik';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('tarif.poliklinik.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -352,7 +355,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Fasilitas & Tarif Asuransi';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('tarif.asuransi.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -368,7 +371,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Jadwal Dokter';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('jadwal.dokter.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -384,7 +387,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Ketersediaan Kamar';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('ketersediaan.kamar.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }
@@ -400,7 +403,7 @@ class Site extends SiteModule
         if ($this->_loginCheck()) {
             $page['title']               = 'Pengaduan Pasien';
             $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
-            $page['content']             = $this->draw('booking.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+            $page['content']             = $this->draw('pengaduan.html', ['page' => $page, 'opensimrs' => $opensimrs]);
         } else {
             redirect(url('epasien'));
         }

@@ -54,3 +54,11 @@ $(document).ready(function() {
         });
     });
 });
+
+$(document).ready(function(){
+    $('.display').DataTable({
+      "pagingType": 'simple', 
+      "lengthChange": false,
+      "scrollX": true
+    });
+});
