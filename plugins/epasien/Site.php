@@ -48,6 +48,10 @@ class Site extends SiteModule
         $this->route('epasien/jadwal', 'getJadwal');
         $this->route('epasien/kamar', 'getKamar');
         $this->route('epasien/pengaduan', 'getPengaduan');
+        $this->route('epasien/register', 'getRegister');
+        $this->route('epasien/lostpassword', 'getLostPassword');
+        $this->route('epasien/saveregister', 'postSaveRegister');
+        $this->route('epasien/sendmail', 'getSendmail');
         $this->route('epasien/logout', function () {
             $this->logout();
         });
@@ -410,6 +414,185 @@ class Site extends SiteModule
 
         echo $page['content'];
         exit();
+    }
+
+    public function getLostPassword()
+    {
+        $opensimrs = $this->opensimrs;
+
+        $page['title']               = 'Lost Password Pasien';
+        $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+        $page['content']             = $this->draw('lostpassword.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getRegister()
+    {
+        $opensimrs = $this->opensimrs;
+
+        $page['title']               = 'Pendaftaran Pasien';
+        $page['desc']                = 'Dashboard SIMKES Khanza untuk Pasien';
+        $page['content']             = $this->draw('register.html', ['page' => $page, 'opensimrs' => $opensimrs]);
+
+        echo $page['content'];
+        exit();
+    }
+
+    public function getSendmail()
+    {
+        if(isset($_SESSION['reg_wait'])) {
+          if(time() - $_SESSION['reg_wait'] < 60) {
+            exit("Your operation is too frequent. Please try again later.");
+          }
+        }
+        if(!isset($_POST['email']) || $_POST['email'] == "") {
+          exit("Please enter your email!");
+        }
+        if(!$this->checkEmail($_POST['email'])) {
+          exit("Incorrect email format!");
+        }
+        $rand = mt_rand(100000, 999999);
+        $_SESSION['reg_verifycode'] = $rand;
+        $_SESSION['reg_wait'] = time();
+        $_SESSION['reg_email'] = $_POST['email'];
+
+        $this->sendRegisterEmail($_POST['email'], $rand);
+        exit("An email has been sent to your mailbox, please check it.");
+
+    }
+
+    private function sendRegisterEmail($email, $number)
+  	{
+
+  		$temp  = @file_get_contents(MODULES."/epasien/email/welcome.html");
+
+  		$temp  = str_replace("{SITENAME}", $this->core->getSettings('nama_instansi'), $temp);
+      $temp  = str_replace("{ADDRESS}", $this->core->getSettings('alamat_instansi')." - ".$this->core->getSettings('kabupaten'), $temp);
+      $temp  = str_replace("{TELP}", $this->core->getSettings('kontak'), $temp);
+  		$temp  = str_replace("{NUMBER}", $number, $temp);
+
+  		$smtp  = new \Systems\Lib\Smtp(
+  			$this->options->get('epasien.smtp_host'),
+  			$this->options->get('epasien.smtp_port'),
+  			true,
+  			$this->options->get('epasien.smtp_username'),
+  			$this->options->get('epasien.smtp_password')
+  		);
+
+  		$smtp->debug = false;
+  		$smtp->sendMail($email, $this->core->getSettings('email'), "Verifikasi pendaftaran anda di ".$this->core->getSettings('nama_instansi'), $temp, "HTML");
+  	}
+
+    private function checkEmail($email)
+  	{
+  		return preg_match("/^\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,48}$/", $email) ? true : false;
+  	}
+
+    public function postSaveRegister()
+    {
+        $opensimrs = $this->opensimrs;
+
+    		if(!isset($_POST['email']) || !isset($_POST['no_ktp']) || empty($_POST['email']) || empty($_POST['no_ktp'])) {
+          $this->notify('failure', 'Please complete the information');
+          redirect(url(['epasien', 'register']));
+    		}
+
+  			if(!isset($_POST['verifycode']) || empty($_POST['verifycode'])) {
+          $this->notify('failure', 'Please enter verification code');
+          redirect(url(['epasien', 'register']));
+  			} else {
+  				if(!isset($_SESSION['reg_verifycode']) || $_SESSION['reg_verifycode'] == "") {
+            $this->notify('failure', 'The verification code has expired, please get the email again');
+            redirect(url(['epasien', 'register']));
+  				}
+  				if(isset($_SESSION['reg_wait'])) {
+  					if(time() - $_SESSION['reg_wait'] > 900) {
+              $this->notify('failure', 'The verification code has expired, please get the email again');
+              redirect(url(['epasien', 'register']));
+  					}
+  				}
+  				if($_SESSION['reg_email'] !== $_POST['email']) {
+            $this->notify('failure', 'Please re-verify the email address before you can register');
+            redirect(url(['epasien', 'register']));
+  				}
+  				if(Intval($_SESSION['reg_verifycode']) !== Intval($_POST['verifycode'])) {
+            $this->notify('failure', 'The verification code is wrong, please check');
+            redirect(url(['epasien', 'register']));
+  				}
+  			}
+
+        $output = file_get_contents("https://bpjs.basoro.id/ktp.php?no=".$_POST['no_ktp']);
+        $output = json_decode($output, true);
+
+        if($output['metaData']['message'] !== 'OK') {
+          $this->notify('failure', 'Nomor Induk Kependudukan anda tidak terdaftar dalam database '.$this->core->getSettings('nama_instansi'));
+          redirect(url(['epasien', 'register']));
+    		}
+
+        unset($_POST['save']);
+        unset($_POST['verifycode']);
+        unset($_POST['no_ktp']);
+
+    		// Perform registration
+        $_POST['no_rkm_medis'] = $this->core->setNoRM();
+        $_POST['nm_pasien'] = $output['response']['peserta']['nama'];
+        $_POST['no_ktp'] = $output['response']['peserta']['nik'];
+        $_POST['jk'] = $output['response']['peserta']['sex'];
+        $_POST['tmp_lahir'] = '-';
+        $_POST['tgl_lahir'] = $output['response']['peserta']['tglLahir'];
+        $_POST['nm_ibu'] = '-';
+        $_POST['alamat'] = '-';
+        $_POST['gol_darah'] = '-';
+        $_POST['pekerjaan'] = $output['response']['peserta']['jenisPeserta']['keterangan'];
+        $_POST['stts_nikah'] = 'JOMBLO';
+        $_POST['agama'] = '-';
+        $_POST['tgl_daftar'] = date('Y-m-d');
+        $_POST['no_tlp'] = $output['response']['peserta']['mr']['noTelepon'];
+        $_POST['umur'] = $this->_setUmur($output['response']['peserta']['tglLahir']);;
+        $_POST['pnd'] = '-';
+        $_POST['keluarga'] = 'AYAH';
+        $_POST['namakeluarga'] = '-';
+        $_POST['kd_pj'] = $this->options->get('pendaftaran.bpjs');
+        $_POST['no_peserta'] = $output['response']['peserta']['noKartu'];
+        $_POST['kd_kel'] = $this->options->get('epasien.kdkel');
+        $_POST['kd_kec'] = $this->options->get('epasien.kdkec');
+        $_POST['kd_kab'] = $this->options->get('epasien.kdkab');
+        $_POST['pekerjaanpj'] = '-';
+        $_POST['alamatpj'] = '-';
+        $_POST['kelurahanpj'] = '-';
+        $_POST['kecamatanpj'] = '-';
+        $_POST['kabupatenpj'] = '-';
+        $_POST['perusahaan_pasien'] = $this->options->get('epasien.perusahaan_pasien');
+        $_POST['suku_bangsa'] = $this->options->get('epasien.suku_bangsa');
+        $_POST['bahasa_pasien'] = $this->options->get('epasien.bahasa_pasien');
+        $_POST['cacat_fisik'] = $this->options->get('epasien.cacat_fisik');
+        //$_POST['email'] = '';
+        $_POST['nip'] = '';
+        $_POST['kd_prop'] = $this->options->get('epasien.kdprop');
+        $_POST['propinsipj'] = '-';
+
+        $gambar = '';
+        $query = $this->db('pasien')->save($_POST);
+        $this->core->db()->pdo()->exec("INSERT INTO `personal_pasien` (`no_rkm_medis`, `gambar`, `password`) VALUES ('{$_POST['no_rkm_medis']}', '$gambar', AES_ENCRYPT('{$_POST['no_rkm_medis']}','windi'))");
+        $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+        if($query) {
+            $this->notify('success', 'Account registration is successful! Please login immediately..');
+        }else{
+            $this->notify('failure', 'Account registration is unsuccessful! Please re-register..');
+        }
+        redirect(url(['epasien', '']));
+        exit();
+
+    }
+
+    private function _setUmur($tanggal)
+    {
+        list($cY, $cm, $cd) = explode('-', date('Y-m-d'));
+        list($Y, $m, $d) = explode('-', date('Y-m-d', strtotime($tanggal)));
+        $umur = $cY - $Y;
+        return $umur;
     }
 
     private function _login($username, $password, $remember_me = false)

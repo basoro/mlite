@@ -69,11 +69,21 @@
 										<ul class="nav nav-tabs" role="tablist">
 												<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Riwayat Medis</a></li>
 												<li role="presentation"><a href="#soap" aria-controls="soap" role="tab" data-toggle="tab">S O A P</a></li>
+												{if: $ralan.settings.tab_resep == 1}
 												<li role="presentation"><a href="#resep" aria-controls="resep" role="tab" data-toggle="tab">Resep</a></li>
+												{/if}
+												{if: $ralan.settings.tab_laboratoriump == 1}
 												<li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
+												{/if}
+												{if: $ralan.settings.tab_radiologi == 1}
 												<li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
+												{/if}
+												{if: $ralan.settings.tab_digital == 1}
 												<li role="presentation"><a href="#digital" aria-controls="kontrol" role="tab" data-toggle="tab">Digital</a></li>
+												{/if}
+												{if: $ralan.settings.tab_kontrol == 1}
 												<li role="presentation"><a href="#kontrol" aria-controls="kontrol" role="tab" data-toggle="tab">Kontrol</a></li>
+												{/if}
 										</ul>
 
 										<div class="tab-content">
@@ -83,21 +93,31 @@
 												<div role="tabpanel" class="tab-pane fade in" id="soap">
 														{include: ../plugins/ralan/view/admin/soap.html}
 												</div>
+												{if: $ralan.settings.tab_resep == 1}
 												<div role="tabpanel" class="tab-pane fade in resep" id="resep">
 														{include: ../plugins/ralan/view/admin/resep.html}
 												</div>
+												{/if}
+												{if: $ralan.settings.tab_laboratorium == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="lab">
 														{include: ../plugins/ralan/view/admin/laboratorium.html}
 												</div>
+												{/if}
+												{if: $ralan.settings.tab_radiologi == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="rad">
 														{include: ../plugins/ralan/view/admin/radiologi.html}
 												</div>
+												{/if}
+												{if: $ralan.settings.tab_digital == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="digital">
 														{include: ../plugins/ralan/view/admin/digital.html}
 												</div>
+												{/if}
+												{if: $ralan.settings.tab_kontrol == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="kontrol">
 														{include: ../plugins/ralan/view/admin/kontrol.html}
 												</div>
+												{/if}
 										</div>
 								</div>
 						</div>

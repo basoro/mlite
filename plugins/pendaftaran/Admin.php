@@ -13,13 +13,22 @@ class Admin extends AdminModule
 
     public function navigation()
     {
-        return [
-            'Kelola'    => 'manage',
-            'Booking'          => 'booking',
-            'Tambah Baru'                => 'add',
-            'Jadwal Dokter'          => 'jadwal',
-            'Pengaturan'          => 'settings'
-        ];
+        if ($this->core->getUserInfo('id') == 1) {
+            return [
+                'Kelola'    => 'manage',
+                'Booking'          => 'booking',
+                'Tambah Baru'                => 'add',
+                'Jadwal Dokter'          => 'jadwal',
+                'Pengaturan'          => 'settings'
+            ];
+        }else{
+            return [
+                'Kelola'    => 'manage',
+                'Booking'          => 'booking',
+                'Tambah Baru'                => 'add',
+                'Jadwal Dokter'          => 'jadwal',
+            ];
+        }
     }
 
     public function getManage($page = 1)

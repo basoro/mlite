@@ -1,49 +1,47 @@
 <article class="row">
-    <form action="{?=url(ADMIN.'/jkn_mobile/saveSettings')?}" method="POST">
-        <div class="col-md-6">
+    <form action="{?=url(ADMIN.'/epasien/saveSettings')?}" method="POST">
+        <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">{$settings.title}</h3>
                 </div>
             	  <div class="panel-body">
-                    <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="jkn_mobile[username]" class="form-control" value="{$settings.jkn_mobile.username}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Password</label>
-                        <input type="text" name="jkn_mobile[password]" class="form-control" value="{$settings.jkn_mobile.password}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Header</label>
-                        <input type="text" name="jkn_mobile[header]" class="form-control" value="{$settings.jkn_mobile.header}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Tampilkan Poli</label>
-                        <select name="jkn_mobile[display][]" class="form-control" multiple>
-                          {loop: $settings.poliklinik}
-                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
-                          {/loop}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Aktifkan Auto Register Pasien</label>
-                        <div class="radio">
-                            <label class="radio-inline">
-                               <input type="radio" name="jkn_mobile[autoregis]" value="0" {if: $settings.jkn_mobile.autoregis == '0'}checked{/if} /> Tidak
-                            </label>
-                            <label class="radio-inline">
-                               <input type="radio" name="jkn_mobile[autoregis]" value="1" {if: $settings.jkn_mobile.autoregis == '1'}checked{/if} /> Ya
-                            </label>
+                    <h3>Pengaturan SMTP</h3>
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>SMTP Server</label>
+                                <input type="text" name="epasien[smtp_host]" class="form-control" value="{$settings.epasien.smtp_host}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>SMTP Port</label>
+                                <input type="text" name="epasien[smtp_port]" class="form-control" value="{$settings.epasien.smtp_port}">
+                            </div>
                         </div>
                     </div>
-                    {if: $settings.jkn_mobile.autoregis == '1'}
+                    <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>SMTP Username</label>
+                                <input type="text" name="epasien[smtp_username]" class="form-control" value="{$settings.epasien.smtp_username}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>SMTP Password</label>
+                                <input type="text" name="epasien[smtp_password]" class="form-control" value="{$settings.epasien.smtp_password}">
+                            </div>
+                        </div>
+                    </div>
+                    <h3>Pengaturan Pasien Baru</h3>
                     <div class="row clearfix">
                         <div class="col-md-6">
         										<div class="form-group">
         	    	                <label>Provinsi</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdprop]" value="{$settings.jkn_mobile.kdprop}" id="kd_prop">
+        														<input type="hidden" name="epasien[kdprop]" value="{$settings.epasien.kdprop}" id="kd_prop">
         														<input type="text" value="{$settings.propinsi.nm_prop}" id="namaprop" class="form-control" placeholder="Propinsi">
         														<span class="input-group-addon" data-toggle="modal" data-target="#propinsiModal">
         																<i class="fa fa-paperclip"></i>
@@ -55,7 +53,7 @@
         										<div class="form-group">
         	    	                <label>Kabupaten / Kota</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdkab]" value="{$settings.jkn_mobile.kdkab}" id="kd_kab">
+        														<input type="hidden" name="epasien[kdkab]" value="{$settings.epasien.kdkab}" id="kd_kab">
         														<input type="text" value="{$settings.kabupaten.nm_kab}" id="namakab" class="form-control" placeholder="Kabupaten">
         														<span class="input-group-addon" data-toggle="modal" data-target="#kabupatenModal">
         																<i class="fa fa-paperclip"></i>
@@ -69,7 +67,7 @@
         										<div class="form-group">
         	    	                <label>Kecamatan</label>
         												<div class="input-group">
-        														<input type="hidden" name="jkn_mobile[kdkec]" value="{$settings.jkn_mobile.kdkec}" id="kd_kec">
+        														<input type="hidden" name="epasien[kdkec]" value="{$settings.epasien.kdkec}" id="kd_kec">
         														<input type="text" value="{$settings.kecamatan.nm_kec}" id="namakec" class="form-control" placeholder="Kecamatan">
         														<span class="input-group-addon" data-toggle="modal" data-target="#kecamatanModal">
         																<i class="fa fa-paperclip"></i>
@@ -81,7 +79,7 @@
                             <div class="form-group">
                                 <label>Kelurahan</label>
                                 <div class="input-group">
-                                    <input type="hidden" name="jkn_mobile[kdkel]" value="{$settings.jkn_mobile.kdkel}" id="kd_kel">
+                                    <input type="hidden" name="epasien[kdkel]" value="{$settings.epasien.kdkel}" id="kd_kel">
                                     <input type="text" value="{$settings.kelurahan.nm_kel}" id="namakel" class="form-control" placeholder="Kelurahan">
                                     <span class="input-group-addon" data-toggle="modal" data-target="#kelurahanModal">
                                         <i class="fa fa-paperclip"></i>
@@ -94,9 +92,9 @@
                         <div class="col-md-6">
         										<div class="form-group">
         	    	                <label>Perusahaan Pasien</label>
-                                <select name="jkn_mobile[perusahaan_pasien]" class="form-control">
+                                <select name="epasien[perusahaan_pasien]" class="form-control">
           												{loop: $settings.perusahaan_pasien}
-          													<option value="{$value.kode_perusahaan}"{if: $value.kode_perusahaan == $settings.jkn_mobile.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
+          													<option value="{$value.kode_perusahaan}"{if: $value.kode_perusahaan == $settings.epasien.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -104,9 +102,9 @@
                         <div class="col-md-6">
         										<div class="form-group">
         	    	                <label>Bahasa Pasien</label>
-                                <select name="jkn_mobile[suku_bangsa]" class="form-control">
+                                <select name="epasien[suku_bangsa]" class="form-control">
           												{loop: $settings.suku_bangsa}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
+          													<option value="{$value.id}"{if: $value.id == $settings.epasien.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -116,9 +114,9 @@
                         <div class="col-md-6">
         										<div class="form-group">
         	    	                <label>Suku Bangsa Pasien</label>
-                                <select name="jkn_mobile[bahasa_pasien]" class="form-control">
+                                <select name="epasien[bahasa_pasien]" class="form-control">
           												{loop: $settings.bahasa_pasien}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
+          													<option value="{$value.id}"{if: $value.id == $settings.epasien.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
           												{/loop}
           											</select>
         	    	            </div>
@@ -126,15 +124,14 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>Cacat Fisik</label>
-                                <select name="jkn_mobile[cacat_fisik]" class="form-control">
+                                <select name="epasien[cacat_fisik]" class="form-control">
           												{loop: $settings.cacat_fisik}
-          													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
+          													<option value="{$value.id}"{if: $value.id == $settings.epasien.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
           												{/loop}
           											</select>
                             </div>
                         </div>
                     </div>
-                  {/if}
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
@@ -239,7 +236,7 @@
   $(document).ready(function(){
       $.ajax({
         type: 'GET',
-        url: '{?=url()?}/admin/jkn_mobile/ajax?show=propinsi&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/admin/epasien/ajax?show=propinsi&t={?=$_SESSION['token']?}',
         success: function(response) {
           $('#propinsi').html(response);
           $('.propinsi').DataTable({
@@ -257,7 +254,7 @@
     $('#propinsiModal').modal('hide');
     $.ajax({
       type: 'GET',
-      url: '{?=url()?}/admin/jkn_mobile/ajax?show=kabupaten&t={?=$_SESSION['token']?}',
+      url: '{?=url()?}/admin/epasien/ajax?show=kabupaten&t={?=$_SESSION['token']?}',
       success: function(response) {
         $('#kabupaten').html(response);
         $('.kabupaten').DataTable({
@@ -275,7 +272,7 @@
     $('#kabupatenModal').modal('hide');
     $.ajax({
       type: 'GET',
-      url: '{?=url()?}/admin/jkn_mobile/ajax?show=kecamatan&t={?=$_SESSION['token']?}',
+      url: '{?=url()?}/admin/epasien/ajax?show=kecamatan&t={?=$_SESSION['token']?}',
       success: function(response) {
         $('#kecamatan').html(response);
         $('.kecamatan').DataTable({
@@ -293,7 +290,7 @@
     $('#kecamatanModal').modal('hide');
     $.ajax({
       type: 'GET',
-      url: '{?=url()?}/admin/jkn_mobile/ajax?show=kelurahan&t={?=$_SESSION['token']?}',
+      url: '{?=url()?}/admin/epasien/ajax?show=kelurahan&t={?=$_SESSION['token']?}',
       success: function(response) {
         $('#kelurahan').html(response);
         $('.kelurahan').DataTable({

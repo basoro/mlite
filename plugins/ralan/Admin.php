@@ -10,9 +10,16 @@ class Admin extends AdminModule
 
     public function navigation()
     {
-        return [
-            'Manage' => 'manage',
-        ];
+        if ($this->core->getUserInfo('id') == 1) {
+            return [
+                'Manage' => 'manage',
+                'Pengaturan' => 'settings'
+            ];
+        } else {
+            return [
+                'Manage' => 'manage'
+            ];
+        }
     }
 
     public function getManage( $page = 1 )
@@ -99,6 +106,7 @@ class Admin extends AdminModule
         $count_ralan = $this->db('reg_periksa')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('status_lanjut', 'Ralan')->count();
         $count_ranap = $this->db('reg_periksa')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('status_lanjut', 'Ranap')->count();
         $this->assign['print_rm'] = url([ADMIN, 'ralan', 'print_rm', $reg_periksa['no_rkm_medis']]);
+        $this->assign['settings'] = $this->options('ralan');
 
         if (!empty($reg_periksa)) {
 	        $perpage = '5';
@@ -792,6 +800,21 @@ class Admin extends AdminModule
           break;
         }
         exit();
+    }
+
+    public function getSettings()
+    {
+        $this->assign['ralan'] = htmlspecialchars_array($this->options('ralan'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['ralan'] as $key => $val) {
+            $this->options('ralan', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan rawat jalan telah disimpan');
+        redirect(url([ADMIN, 'ralan', 'settings']));
     }
 
     public function getJavascript()

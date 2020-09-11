@@ -1,0 +1,77 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$opensimrs.nama_instansi}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link href="{$opensimrs.path}/assets/css/bootstrap.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/bootstrap-theme.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?= url(THEMES.'/admin/css/style.css?v='.$opensimrs.version) ?}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version) ?}"></script>
+</head>
+
+<body style="background: #222;">
+
+	<section id="register">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <img src="data:image/jpeg;base64,{?=base64_encode($opensimrs.logo)?}" alt="logo">
+                <h2>
+                  <span class="clearfix" style="color:#FF1493;">Daftar e-Pasien</span>
+                  <span class="small">{$opensimrs.nama_instansi}</span>
+                </h2>
+            </div>
+            <div class="panel-body">
+        		<form action="{?=url()?}/epasien/saveregister/" method="POST">
+								<div class="form-group">
+										<label>e-Mail</label>
+										<input type="email" name="email" id="email" class="form-control" placeholder="e-Mail" required />
+								</div>
+								<div class="form-group">
+										<label>Verification code [<a href="javascript:sendcode()">send code</a>]</label>
+										<input type="number" name="verifycode" id="verifycode" class="form-control" placeholder="Verification code" required />
+								</div>
+								<div class="form-group">
+										<label>No KTP</label>
+										<input type="number" name="no_ktp" class="form-control" placeholder="Nomor Induk Kependudukan" required />
+								</div>
+                <div class="form-group">
+                    <label class="remember-me pull-left">
+                    </label>
+                    <button type="submit" name="save" class="btn pull-right" style="background-color:#FF1493;color:#fff;">Daftarkan Saya</button>
+                </div>
+        		</form>
+            </div>
+            <div class="" style="margin-top:15px;"><a href="{?=url('/epasien/')?}">Login</a> | <a href="{?=url('/epasien/lostpassword/')?}">Lost Password</a></div>
+        </div>
+		{if: $opensimrs.notify}
+		<div id="notify" class="alert-{$opensimrs.notify.type} animated shake">{$opensimrs.notify.text}</div>
+		{/if}
+	</section>
+
+	<script type="text/javascript">
+		function sendcode() {
+			var htmlobj = $.ajax({
+				type: 'POST',
+				url: "{?=url()?}/epasien/sendmail/",
+				data: {
+					email: $("#email").val()
+				},
+				async:true,
+				error: function() {
+					return;
+				},
+				success: function() {
+					alert(htmlobj.responseText);
+					return;
+				}
+			});
+		}
+	</script>
+
+</body>
+</html>
