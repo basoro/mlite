@@ -104,3 +104,9 @@ a.text-white:focus,a.text-white:hover{color:#ffffff}
 .badge-success {
   background-color: #4C9A2A;
 }
+
+.btn-group .btn-fab{
+    position: fixed !important;
+    right: 20px;
+    bottom: 40px;
+}

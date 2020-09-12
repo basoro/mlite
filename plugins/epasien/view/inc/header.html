@@ -178,7 +178,7 @@
           <nav class="navbar navbar-inverse">
               <div class="container-fluid">
                   <div class="navbar-header">
-                      <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/pasien/"><span class="hidden-sm hidden-xs">e-Pasien </span><span class="first">{$opensimrs.nama_instansi}</span></a></div>
+                      <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/epasien?t={?=$_SESSION['opensimrs_pasien_token']?}"><span class="hidden-sm hidden-xs">e-Pasien </span><span class="first">{$opensimrs.nama_instansi}</span></a></div>
                   </div>
                   <ul class="nav navbar-nav navbar-right">
                       <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>{?= sprintf('Apa kabar <strong>%s</strong>?', $opensimrs.nm_pasien) ?}</span></a></li>

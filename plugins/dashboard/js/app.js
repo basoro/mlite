@@ -5,7 +5,7 @@ $(document).ready(function() {
     var charts = [];
     $('[data-chart]').each(function() {
         var name = $(this).attr('id') || false;
-        
+
         if(name === false)
             return;
 
@@ -24,7 +24,7 @@ $(document).ready(function() {
                     }]
                 }});
         }
-        
+
         var backgroundColor = function() {
             if(type == 'pie')
                 return defaultColors;
@@ -52,4 +52,25 @@ $(document).ready(function() {
             options: options
         });
     });
+});
+
+$(document).ready(function() {
+    $('#myModal').on('show.bs.modal', function() {
+      Webcam.set({
+          width:240,
+          height:240,
+          image_format:'jpeg',
+          jpeg_quality:90,
+          facingMode: {
+            exact: 'environment'
+          }
+      });
+      Webcam.attach('#camera');
+      function take_snapshot(){
+          Webcam.snap(function(data_uri){
+              $("#image-tag").val(data_uri);
+              document.getElementById('results').innerHTML = '<img src="'+data_uri+'"/>';
+          });
+      }
+    })
 });

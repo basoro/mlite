@@ -79,18 +79,33 @@ class Site extends SiteModule
 
             $settings = htmlspecialchars_array($this->options('dashboard'));
 
-            $stats['tunai'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->where('kd_pj', $settings['umum'])->oneArray();
-            $stats['bpjs'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->where('kd_pj', $settings['bpjs'])->oneArray();
-            $stats['lainnya'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->where('kd_pj', '!=', $settings['umum'])->where('kd_pj', '!=', $settings['bpjs'])->oneArray();
+            $antrian = $this->db('reg_periksa')
+              ->select([
+                'tgl_registrasi' => 'reg_periksa.tgl_registrasi',
+                'jam_reg' => 'reg_periksa.jam_reg',
+                'nm_poli' => 'poliklinik.nm_poli',
+                'nm_pasien' => 'pasien.nm_pasien',
+                'nm_dokter' => 'dokter.nm_dokter',
+                'no_reg' => 'reg_periksa.no_reg',
+                'stts' => 'reg_periksa.stts'
+              ])
+              ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+              ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+              ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+              ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+              ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+              ->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])
+              ->oneArray();
 
             $page['content'] = $this->draw('index.html', [
               'page' => $page,
               'opensimrs' => $opensimrs,
-              'stats' => $stats,
               'reg_periksa' => $this->db('reg_periksa')->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('reg_periksa.tgl_registrasi')->limit('5')->toArray(),
               'tanda_vital' => $this->db('pemeriksaan_ralan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('1')->oneArray(),
               'tekanan_darah' => $this->db('pemeriksaan_ralan')->select('tensi')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->asc('tgl_perawatan')->limit('6')->toArray(),
-              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('tgl_perawatan')->select('keluhan')->select('pemeriksaan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('3')->toArray()
+              'pemeriksaan_ralan' => $this->db('pemeriksaan_ralan')->select('tgl_perawatan')->select('keluhan')->select('pemeriksaan')->join('reg_periksa', 'reg_periksa.no_rawat = pemeriksaan_ralan.no_rawat')->where('reg_periksa.no_rkm_medis', $_SESSION['opensimrs_pasien_user'])->desc('tgl_perawatan')->limit('3')->toArray(),
+              'antrian' => $antrian,
+              'bookingURL' => url().'/epasien/booking/pilih?t='.$_SESSION['opensimrs_pasien_token']
             ]);
         } else {
             if (isset($_POST['login'])) {
@@ -428,6 +443,71 @@ class Site extends SiteModule
         exit();
     }
 
+    public function getFindpass()
+    {
+  		if(isset($_SESSION['sendmail']) && time() - $_SESSION['sendmail'] <= 60)
+        return Array("status" => false, "message" => "Your operation frequency is too high, please try again later");
+  		if($data['username'] == "")
+        return Array("status" => false, "message" => "Please fill in the account or email address where the password is retrieved");
+
+  		$rs     = $this->getInfoByUser($data['username']);
+  		$link   = sha1(md5($rs['username'] . $rs['password'] . time() . mt_rand(0, 9999999)) . md5(mt_rand(0, 9999999)));
+  		$found = false;
+
+  		if($rs) {
+  			$this->sendFindpassEmail($rs['username'], $rs['email'], $link);
+  			$found = true;
+  		} else {
+  			$rs = $this->getInfoByEmail($data['username']);
+  			if($rs) {
+  				$this->sendFindpassEmail($rs['username'], $rs['email'], $link);
+  				$found = true;
+  			}
+  		}
+
+  		if($found) {
+  			$ms = Database::querySingleLine("findpass", Array("username" => $rs['username']));
+  			if($ms) {
+  				Database::delete("findpass", Array("username" => $rs['username']));
+  			}
+  			Database::insert("findpass", Array(
+  				"username" => $rs['username'],
+  				"link"     => $link,
+  				"time"     => time()
+  			));
+  		}
+
+  		$_SESSION['sendmail'] = time();
+
+  		return Array("status" => true, "message" => "We have tried to send an email to the mailbox of this account, please check.");
+  	}
+
+  	public function sendFindpassEmail($username, $email, $link)
+  	{
+
+  		$type  = $this->isHttps() ? "https" : "http";
+  		$token = $this->getUserToken($username);
+  		$url   = "{$type}://{$_SERVER['SERVER_NAME']}/?page=findpass&link={$link}";
+  		$temp  = @file_get_contents(ROOT . "/assets/email/findpass.html");
+
+  		$temp  = str_replace("{SITENAME}", $_config['sitename'], $temp);
+  		$temp  = str_replace("{SITEDESCRIPTION}", $_config['description'], $temp);
+  		$temp  = str_replace("{USERNAME}", $username, $temp);
+  		$temp  = str_replace("{TOKEN}", $token, $temp);
+  		$temp  = str_replace("{URL}", $url, $temp);
+
+  		$smtp  = new \Systems\Lib\Smtp(
+  			$_config['smtp']['host'],
+  			$_config['smtp']['port'],
+  			true,
+  			$_config['smtp']['user'],
+  			$_config['smtp']['pass']
+  		);
+
+  		$smtp->debug = false;
+  		$smtp->sendMail($email, $_config['smtp']['mail'], "Find your {$_config['sitename']} password", $temp, "HTML");
+  	}
+
     public function getRegister()
     {
         $opensimrs = $this->opensimrs;
@@ -586,6 +666,23 @@ class Site extends SiteModule
         exit();
 
     }
+
+    private function isHttps()
+  	{
+  		if (!isset($_SERVER['HTTPS'])) {
+  			return false;
+  		}
+  		if ($_SERVER['HTTPS'] === 1) {
+  			return true;
+  		} elseif ($_SERVER['HTTPS'] === 'on') {
+  			return true;
+  		} elseif ($_SERVER['SERVER_PORT'] == 443) {
+  			return true;
+  		} elseif ($_SERVER['REQUEST_SCHEME'] == "https") {
+  			return true;
+  		}
+  		return false;
+  	}
 
     private function _setUmur($tanggal)
     {

@@ -182,6 +182,28 @@
 
 </article>
 
+<div class="btn-group">
+    <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
+        <i class="fa fa-plus"></i> Presensi Online
+    </button>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="myModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal body -->
+      <div class="modal-body">
+        <div id="camera"></div><br>
+        <div>
+        <input type="button" class="btn btn-info" value="Ambil Foto" onClick="take_snapshot()">
+        <input type="hidden" name="image" id="image-tag">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="text/javascript">
     $(function () {
         //line chart

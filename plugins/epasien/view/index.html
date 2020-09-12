@@ -10,10 +10,7 @@
 		{/if}
 
 		<a href="" id="notify" class="btn btn-lg btn-danger alert alert-danger alert-dismissible fade in" role="alert">
-				Pemeriksaan Mandiri Covid-19
-				<button type="button" class="close" data-dismiss="alert" aria-label="Close">
-						<span aria-hidden="true">&times;</span>
-				</button>
+				Periksa Mandiri Covid-19
 		</a>
 
 	  <section id="content-wrapper">
@@ -154,20 +151,23 @@
 
 						        <div class="panel panel-default">
 						              <div class="panel-heading">
-						                    <h3 class="panel-title">Cara Bayar</h3>
+						                    <h3 class="panel-title">Antrian Anda</h3>
 						              </div>
-													<div class="panel-body" style="height:400px;overflow-y: auto;overflow-x: hidden;">
-														<canvas id="carabayar"
-				                    style="width:100%; height:600px; margin-top:20px;"
-				                    data-chart="doughnut"
-				                    data-labels='["Umum","BPJS","Lain-Lain"]'
-				                    data-datasets='[
-				                        {
-																	backgroundColor: ["#4caf50", "#34316E", "#F58634"],
-							                    pointRadius: 0,
-							                    data: [{$stats.tunai.count}, {$stats.bpjs.count}, {$stats.lainnya.count}]
-				                        }
-				                    ]'></canvas>
+													<div class="panel-body" style="height:400px;overflow-y: auto;overflow-x: hidden;text-align:center;">
+														{if: $antrian}
+		                        <div style="text-size:20px;">{$antrian.nm_pasien}</div>
+		                        <div class="font-50">{$antrian.no_reg}</div>
+		                        <div class="font-15">{$antrian.tgl_registrasi}</div>
+		                        <div class="font-20">{$antrian.nm_poli}</div>
+		                        <div class="font-20">{$antrian.nm_dokter}</div>
+		                        <div class="font-24">{$antrian.stts}</div>
+		                        <hr>
+														<div class="font-24"><span class="getantrian"></span> Antrian Lagi</div>
+														{else}
+														<div style="font-size:30px;">Anda belum terdaftar dalam antrian Poliklinik</div>
+		                        <a href="{$bookingURL}" class="btn btn-success btn-lg" style="margin:40px 20px;">Daftarkan Saya</a>
+		                        <div style="font-size:20px;">Silahkan klik tombol diatas untuk mendaftar antrian On-Line</div>
+														{/if}
 						              </div>
 						        </div>
 
