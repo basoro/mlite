@@ -26,8 +26,8 @@ class Admin extends AdminModule
 
         $this->core->addCSS(url(MODULES.'/dashboard/css/admin/style.css?v={$opensimrs.version}'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
-        $this->core->addJS(url(MODULES.'/dashboard/js/webcam.js?v={$opensimrs.version}'), footer);
-        $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'), footer);
+        $this->core->addJS(url(MODULES.'/dashboard/js/webcam.js?v={$opensimrs.version}'), 'footer');
+        $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'), 'footer');
 
         $settings = htmlspecialchars_array($this->options('dashboard'));
         $stats['getPasiens'] = number_format($this->countPasien(),0,'','.');
