@@ -1,4 +1,4 @@
-<form name="ralan" action="{?=url(ADMIN.'/ralan/soapsave/'.@$ralan.no_rawat)?}#soap" method="POST">
+<form name="ranap" action="{?=url(ADMIN.'/ranap/soapsave/'.@$ranap.no_rawat)?}#soap" method="POST">
 <div class="panel-default">
     <div class="panel-heading">
         <h3 class="panel-title">Dokter Penanggung Jawab Pasien (DPJP)</h3>
@@ -23,7 +23,7 @@
             <div class="post-content">
                 <div class="form-group">
                     <label>Keluhan</label>
-                    <textarea name="keluhan" class="form-control" rows="4">{$ralan.soap.keluhan}</textarea>
+                    <textarea name="keluhan" class="form-control" rows="4">{$ranap.soap.keluhan}</textarea>
                 </div>
             </div>
         </div>
@@ -38,13 +38,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Pemeriksaan</label>
-                            <textarea name="pemeriksaan" class="form-control" rows="3">{$ralan.soap.pemeriksaan}</textarea>
+                            <textarea name="pemeriksaan" class="form-control" rows="3">{$ranap.soap.pemeriksaan}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>GCS</label>
-                            <textarea name="gcs" class="form-control" rows="3">{$ralan.soap.gcs}</textarea>
+                            <textarea name="gcs" class="form-control" rows="3">{$ranap.soap.gcs}</textarea>
                         </div>
                     </div>
                 </div>
@@ -53,7 +53,7 @@
                         <div class="form-group">
                             <label>Tensi</label>
                             <div class="input-group">
-                                <input type="text" name="tensi" class="form-control" value="{$ralan.soap.tensi}" />
+                                <input type="text" name="tensi" class="form-control" value="{$ranap.soap.tensi}" />
                                 <span class="input-group-addon">mmHg</span>
                             </div>
                         </div>
@@ -62,7 +62,7 @@
                         <div class="form-group">
                             <label>Nadi</label>
                             <div class="input-group">
-                                <input type="text" name="nadi" class="form-control" value="{$ralan.soap.nadi}" />
+                                <input type="text" name="nadi" class="form-control" value="{$ranap.soap.nadi}" />
                                 <span class="input-group-addon">x/menit</span>
                             </div>
                         </div>
@@ -71,7 +71,7 @@
                         <div class="form-group">
                             <label>RR</label>
                             <div class="input-group">
-                                <input type="text" name="respirasi" class="form-control" value="{$ralan.soap.respirasi}" />
+                                <input type="text" name="respirasi" class="form-control" value="{$ranap.soap.respirasi}" />
                                 <span class="input-group-addon">x/menit</span>
                             </div>
                         </div>
@@ -82,7 +82,7 @@
                         <div class="form-group">
                             <label>Suhu</label>
                             <div class="input-group">
-                                <input type="text" name="suhu_tubuh" class="form-control" value="{$ralan.soap.suhu_tubuh}" />
+                                <input type="text" name="suhu_tubuh" class="form-control" value="{$ranap.soap.suhu_tubuh}" />
                                 <span class="input-group-addon">&#8451;</span>
                             </div>
                         </div>
@@ -91,7 +91,7 @@
                         <div class="form-group">
                             <label>Tinggi</label>
                             <div class="input-group">
-                                <input type="text" name="tinggi" class="form-control" value="{$ralan.soap.tinggi}" />
+                                <input type="text" name="tinggi" class="form-control" value="{$ranap.soap.tinggi}" />
                                 <span class="input-group-addon">cm</span>
                             </div>
                         </div>
@@ -100,7 +100,7 @@
                         <div class="form-group">
                             <label>Berat</label>
                             <div class="input-group">
-                                <input type="text" name="berat" class="form-control" value="{$ralan.soap.berat}" />
+                                <input type="text" name="berat" class="form-control" value="{$ranap.soap.berat}" />
                                 <span class="input-group-addon">kg</span>
                             </div>
                         </div>
@@ -120,7 +120,7 @@
                         <div class="form-group">
                             <label>Diagnosa (ICD-10)</label>
                             <select name="kd_penyakit[]" class="form-control icd10" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                                {loop: $ralan.diagnosa_pasien}
+                                {loop: $ranap.diagnosa_pasien}
                                 <option value="{$value.kd_penyakit}" selected>{$value.nm_penyakit}</option>
                                 {/loop}
                             </select>
@@ -130,7 +130,7 @@
                         <div class="form-group">
                             <label>Tindakan (ICD-9)</label>
                             <select name="kode[]" class="form-control icd9" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                                {loop: $ralan.prosedur_pasien}
+                                {loop: $ranap.prosedur_pasien}
                                 <option value="{$value.kode}" selected>{$value.deskripsi_pendek}</option>
                                 {/loop}
                             </select>
@@ -140,7 +140,7 @@
                         <div class="form-group">
                             <label>Perawatan</label>
                             <select name="kd_jenis_prw[]" class="form-control jns_perawatan" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                                {loop: $ralan.rawat_dr}
+                                {loop: $ranap.rawat_dr}
                                 <option value="{$value.kd_jenis_prw}" selected>{$value.nm_perawatan}</option>
                                 {/loop}
                             </select>
@@ -160,13 +160,13 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Rencana Tindak Lanjut</label>
-                            <textarea name="rtl" class="form-control" rows="2">{$ralan.soap.rtl}</textarea>
+                            <textarea name="rtl" class="form-control" rows="2">{$ranap.soap.rtl}</textarea>
                         </div>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group">
                             <label>Catatan Perawatan</label>
-                            <textarea name="catatan" class="form-control" rows="2">{$ralan.catatan.catatan}</textarea>
+                            <textarea name="catatan" class="form-control" rows="2">{$ranap.catatan.catatan}</textarea>
                         </div>
                     </div>
                 </div>

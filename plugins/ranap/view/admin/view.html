@@ -4,23 +4,23 @@
 						<div class="profile-header">&nbsp;</div>
 						<div class="profile-body">
 								<div class="image-area">
-										<img src="{$ralan.fotoURL}" width="120" height="120" class="img-thumbnail" alt="Profile Image" />
-										<h4>{$ralan.view.pasien.nm_pasien}</h4>
+										<img src="{$ranap.fotoURL}" width="120" height="120" class="img-thumbnail" alt="Profile Image" />
+										<h4>{$ranap.view.pasien.nm_pasien}</h4>
 								</div>
 								<div class="content-area">
-										<p>{$ralan.view.pasien.no_ktp}</p>
-										<p>{$ralan.view.pasien.no_rkm_medis}</p>
+										<p>{$ranap.view.pasien.no_ktp}</p>
+										<p>{$ranap.view.pasien.no_rkm_medis}</p>
 								</div>
 						</div>
 						<div class="profile-footer visible-lg">
 								<ul>
 										<li>
 												<span>Rawat Jalan</span>
-												<span>{$ralan.view.count_ralan}</span>
+												<span>{$ranap.view.count_ralan}</span>
 										</li>
 										<li>
 												<span>Rawat Inap</span>
-												<span>{$ralan.view.count_ranap}</span>
+												<span>{$ranap.view.count_ranap}</span>
 										</li>
 								</ul>
 						</div>
@@ -37,7 +37,7 @@
 														Alamat
 												</div>
 												<div class="content">
-														{$ralan.view.pasien.alamat}
+														{$ranap.view.pasien.alamat}
 												</div>
 										</li>
 										<li>
@@ -46,7 +46,7 @@
 														Jenis Kelamin
 												</div>
 												<div class="content">
-														{$ralan.view.pasien.jk}
+														{$ranap.view.pasien.jk}
 												</div>
 										</li>
 										<li>
@@ -55,7 +55,7 @@
 														Tempat / Tanggal Lahir
 												</div>
 												<div class="content">
-														{$ralan.view.pasien.tmp_lahir} / {$ralan.view.pasien.tgl_lahir}
+														{$ranap.view.pasien.tmp_lahir} / {$ranap.view.pasien.tgl_lahir}
 												</div>
 										</li>
 								</ul>
@@ -69,53 +69,53 @@
 										<ul class="nav nav-tabs" role="tablist">
 												<li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Riwayat Medis</a></li>
 												<li role="presentation"><a href="#soap" aria-controls="soap" role="tab" data-toggle="tab">S O A P</a></li>
-												{if: $ralan.settings.tab_resep == 1}
+												{if: $ranap.settings.tab_resep == 1}
 												<li role="presentation"><a href="#resep" aria-controls="resep" role="tab" data-toggle="tab">Resep</a></li>
 												{/if}
-												{if: $ralan.settings.tab_laboratorium == 1}
+												{if: $ranap.settings.tab_laboratorium == 1}
 												<li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
 												{/if}
-												{if: $ralan.settings.tab_radiologi == 1}
+												{if: $ranap.settings.tab_radiologi == 1}
 												<li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
 												{/if}
-												{if: $ralan.settings.tab_digital == 1}
+												{if: $ranap.settings.tab_digital == 1}
 												<li role="presentation"><a href="#digital" aria-controls="kontrol" role="tab" data-toggle="tab">Digital</a></li>
 												{/if}
-												{if: $ralan.settings.tab_kontrol == 1}
+												{if: $ranap.settings.tab_kontrol == 1}
 												<li role="presentation"><a href="#kontrol" aria-controls="kontrol" role="tab" data-toggle="tab">Kontrol</a></li>
 												{/if}
 										</ul>
 
 										<div class="tab-content">
 												<div role="tabpanel" class="tab-pane fade in active" id="home">
-														{include: ../plugins/ralan/view/admin/riwayat.html}
+														{include: ../plugins/ranap/view/admin/riwayat.html}
 												</div>
 												<div role="tabpanel" class="tab-pane fade in" id="soap">
-														{include: ../plugins/ralan/view/admin/soap.html}
+														{include: ../plugins/ranap/view/admin/soap.html}
 												</div>
-												{if: $ralan.settings.tab_resep == 1}
+												{if: $ranap.settings.tab_resep == 1}
 												<div role="tabpanel" class="tab-pane fade in resep" id="resep">
-														{include: ../plugins/ralan/view/admin/resep.html}
+														{include: ../plugins/ranap/view/admin/resep.html}
 												</div>
 												{/if}
-												{if: $ralan.settings.tab_laboratorium == 1}
+												{if: $ranap.settings.tab_laboratorium == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="lab">
-														{include: ../plugins/ralan/view/admin/laboratorium.html}
+														{include: ../plugins/ranap/view/admin/laboratorium.html}
 												</div>
 												{/if}
-												{if: $ralan.settings.tab_radiologi == 1}
+												{if: $ranap.settings.tab_radiologi == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="rad">
-														{include: ../plugins/ralan/view/admin/radiologi.html}
+														{include: ../plugins/ranap/view/admin/radiologi.html}
 												</div>
 												{/if}
-												{if: $ralan.settings.tab_digital == 1}
+												{if: $ranap.settings.tab_digital == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="digital">
-														{include: ../plugins/ralan/view/admin/digital.html}
+														{include: ../plugins/ranap/view/admin/digital.html}
 												</div>
 												{/if}
-												{if: $ralan.settings.tab_kontrol == 1}
+												{if: $ranap.settings.tab_kontrol == 1}
 												<div role="tabpanel" class="tab-pane fade in" id="kontrol">
-														{include: ../plugins/ralan/view/admin/kontrol.html}
+														{include: ../plugins/ranap/view/admin/kontrol.html}
 												</div>
 												{/if}
 										</div>

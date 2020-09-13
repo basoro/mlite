@@ -1,13 +1,11 @@
 <?php
 
-namespace Plugins\Ralan;
+namespace Plugins\Ranap;
 
 use Systems\AdminModule;
 
 class Admin extends AdminModule
 {
-    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
-
     public function navigation()
     {
         if ($this->core->getUserInfo('id') == 1) {
@@ -22,78 +20,27 @@ class Admin extends AdminModule
         }
     }
 
-    public function getManage( $page = 1 )
+    public function getManage()
     {
 
-      $this->_addHeaderFiles();
-      $poliklinik = $this->core->getUserInfo('cap', null, true);
-      if ($this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'manajemen' || $this->core->getUserInfo('role') == 'rekammedis') {
-        $poliklinik = $this->db('poliklinik')->select('kd_poli')->toArray();
-        $poliklinik = implode("','", array_map(function($obj) { foreach ($obj as $p => $v) { return $v;} }, $poliklinik));
-      }
-      $start_date = date('Y-m-d');
-      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
-        $start_date = $_GET['start_date'];
-      $end_date = date('Y-m-d');
-      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
-        $end_date = $_GET['end_date'];
-      $perpage = '10';
-      $phrase = '';
-      if(isset($_GET['s']))
-        $phrase = $_GET['s'];
-
-      // pagination
-      $totalRecords = $this->db()->pdo()
-        ->prepare("SELECT reg_periksa.no_rawat
-          FROM reg_periksa, pasien
-          WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-          AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?)
-          AND reg_periksa.status_lanjut = 'Ralan'
-          AND reg_periksa.kd_poli IN ('$poliklinik')
-          AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
-      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
-      $totalRecords = $totalRecords->fetchAll();
-
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'ralan', 'manage', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
-      $this->assign['pagination'] = $pagination->nav('pagination','5');
-      $this->assign['totalRecords'] = $totalRecords;
-
-      $offset = $pagination->offset();
-      $query = $this->db()->pdo()
-        ->prepare("SELECT reg_periksa.*,
-            pasien.nm_pasien,
-            pasien.alamat,
-            dokter.nm_dokter,
-            poliklinik.nm_poli,
-            penjab.png_jawab
-          FROM reg_periksa, pasien, dokter, poliklinik, penjab
-          WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-          AND reg_periksa.status_lanjut = 'Ralan'
-          AND reg_periksa.kd_poli IN ('$poliklinik')
-          AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'
-          AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?)
-          AND reg_periksa.kd_dokter = dokter.kd_dokter
-          AND reg_periksa.kd_poli = poliklinik.kd_poli
-          AND reg_periksa.kd_pj = penjab.kd_pj
-          LIMIT $perpage
-          OFFSET $offset");
-      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
-      $rows = $query->fetchAll();
-
-      $this->assign['list'] = [];
-      if (count($rows)) {
-          foreach ($rows as $row) {
-              $row = htmlspecialchars_array($row);
-              $row['editURL'] = url([ADMIN, 'ralan', 'edit', convertNorawat($row['no_rawat'])]);
-              $row['viewURL'] = url([ADMIN, 'ralan', 'view', convertNorawat($row['no_rawat'])]);
-              $this->assign['list'][] = $row;
-          }
-      }
-
-      $this->assign['searchUrl'] =  url([ADMIN, 'ralan', 'manage', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-
-      return $this->draw('manage.html', ['ralan' => $this->assign]);
-
+        $this->_addHeaderFiles();
+        $rows = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+          ->join('kamar_inap', 'kamar_inap.no_rawat = reg_periksa.no_rawat')
+          ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+          ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+          ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+          ->where('status_lanjut', 'Ranap')
+          ->where('kamar_inap.stts_pulang', '-')
+          ->toArray();
+        foreach ($rows as &$row) {
+            $row = htmlspecialchars_array($row);
+            $row['editURL'] = url([ADMIN, 'ranap', 'edit', convertNorawat($row['no_rawat'])]);
+            $row['viewURL'] = url([ADMIN, 'ranap', 'view', convertNorawat($row['no_rawat'])]);
+            $row['dpjp'] = $this->db('dpjp_ranap')->select('nm_dokter')->join('dokter', 'dokter.kd_dokter = dpjp_ranap.kd_dokter')->where('no_rawat', $row['no_rawat'])->oneArray();
+            $this->assign['list'][] = $row;
+        }
+        return $this->draw('manage.html', ['ranap' => $this->assign]);
     }
 
     public function getView($id, $page = 1)
@@ -105,11 +52,11 @@ class Admin extends AdminModule
         $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
         $count_ralan = $this->db('reg_periksa')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('status_lanjut', 'Ralan')->count();
         $count_ranap = $this->db('reg_periksa')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('status_lanjut', 'Ranap')->count();
-        $this->assign['print_rm'] = url([ADMIN, 'ralan', 'print_rm', $reg_periksa['no_rkm_medis']]);
-        $this->assign['settings'] = $this->options('ralan');
+        $this->assign['print_rm'] = url([ADMIN, 'ranap', 'print_rm', $reg_periksa['no_rkm_medis']]);
+        $this->assign['settings'] = $this->options('ranap');
 
         if (!empty($reg_periksa)) {
-	        $perpage = '5';
+	          $perpage = '5';
             $this->assign['no_rawat'] = convertNorawat($id);
             $this->assign['view'] = $reg_periksa;
             $this->assign['view']['pasien'] = $pasien;
@@ -159,14 +106,14 @@ class Admin extends AdminModule
                 ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw = permintaan_pemeriksaan_radiologi.kd_jenis_prw')
                 ->where('no_rawat', $id)
                 ->toArray();
-            $this->assign['fotoURL'] = url(MODULES.'/ralan/img/'.$pasien['jk'].'.png');
+            $this->assign['fotoURL'] = url(MODULES.'/ranap/img/'.$pasien['jk'].'.png');
             if(!empty($personal_pasien['gambar'])) {
               $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
             }
             $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
             $this->assign['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $id)->toArray();
 
-            $this->assign['manageURL'] = url([ADMIN, 'ralan', 'manage']);
+            $this->assign['manageURL'] = url([ADMIN, 'ranap', 'manage']);
             $totalRecords = $this->db('reg_periksa')
                 ->select('no_rawat')
                 ->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])
@@ -174,7 +121,7 @@ class Admin extends AdminModule
                 ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
                 ->desc('tgl_registrasi')
                 ->toArray();
-  	        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'ralan', 'view', convertNorawat($id), '%d']));
+  	        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'ranap', 'view', convertNorawat($id), '%d']));
   	        $this->assign['pagination'] = $pagination->nav('pagination','5');
   	        $offset = $pagination->offset();
             $rows = $this->db('reg_periksa')
@@ -187,15 +134,22 @@ class Admin extends AdminModule
                 ->toArray();
 
             foreach ($rows as &$row) {
-                $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->oneArray();
+                $pemeriksaan = $this->db('pemeriksaan_ralan')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_dr = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_pr = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_drpr = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $row['nm_poli'] = $row['nm_poli'];
                 if($row['status_lanjut'] == 'Ranap') {
-                  $pemeriksaan_ralan = $this->db('pemeriksaan_ranap')->where('no_rawat', $row['no_rawat'])->oneArray();
+                  $pemeriksaan = $this->db('pemeriksaan_ranap')->where('no_rawat', $row['no_rawat'])->toArray();
                   $rawat_dr = $this->db('rawat_inap_dr')->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                   $rawat_pr = $this->db('rawat_inap_pr')->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                   $rawat_drpr = $this->db('rawat_inap_drpr')->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                  $bangsal = $this->db('kamar_inap')
+                    ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
+                    ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+                    ->where('no_rawat', $row['no_rawat'])
+                    ->oneArray();
+                  $row['nm_poli'] = $bangsal['nm_bangsal'].' - '.$bangsal['kd_kamar'];
                 }
                 $diagnosa_pasien = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('no_rawat', $row['no_rawat'])->toArray();
                 $prosedur_pasien = $this->db('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('no_rawat', $row['no_rawat'])->toArray();
@@ -216,16 +170,16 @@ class Admin extends AdminModule
                 $catatan_perawatan = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
                 $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $row['no_rawat'])->toArray();
                 $row['reg_periksa'] = $reg_periksa;
-                $row['keluhan'] = $pemeriksaan_ralan['keluhan'];
-                $row['suhu_tubuh'] = $pemeriksaan_ralan['suhu_tubuh'];
-                $row['tensi'] = $pemeriksaan_ralan['tensi'];
-                $row['nadi'] = $pemeriksaan_ralan['nadi'];
-                $row['respirasi'] = $pemeriksaan_ralan['respirasi'];
-                $row['tinggi'] = $pemeriksaan_ralan['tinggi'];
-                $row['berat'] = $pemeriksaan_ralan['berat'];
-                $row['gcs'] = $pemeriksaan_ralan['gcs'];
-                $row['pemeriksaan'] = $pemeriksaan_ralan['pemeriksaan'];
-                $row['rtl'] = $pemeriksaan_ralan['rtl'];
+                $row['keluhan'] = $pemeriksaan['keluhan'];
+                $row['suhu_tubuh'] = $pemeriksaan['suhu_tubuh'];
+                $row['tensi'] = $pemeriksaan['tensi'];
+                $row['nadi'] = $pemeriksaan['nadi'];
+                $row['respirasi'] = $pemeriksaan['respirasi'];
+                $row['tinggi'] = $pemeriksaan['tinggi'];
+                $row['berat'] = $pemeriksaan['berat'];
+                $row['gcs'] = $pemeriksaan['gcs'];
+                $row['pemeriksaan'] = $pemeriksaan['pemeriksaan'];
+                $row['rtl'] = $pemeriksaan['rtl'];
                 $row['catatan_perawatan'] = $catatan_perawatan['catatan'];
                 $row['diagnosa_pasien'] = $diagnosa_pasien;
                 $row['prosedur_pasien'] = $prosedur_pasien;
@@ -240,16 +194,16 @@ class Admin extends AdminModule
                 $this->assign['riwayat'][] = $row;
             }
 
-            return $this->draw('view.html', ['ralan' => $this->assign]);
+            return $this->draw('view.html', ['ranap' => $this->assign]);
         } else {
-            redirect(url([ADMIN, 'ralan', 'manage']));
+            redirect(url([ADMIN, 'ranap', 'manage']));
         }
     }
 
     public function postSOAPSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -259,9 +213,9 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            $cek_no_rawat = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNorawat($id))->oneArray();
+            $cek_no_rawat = $this->db('pemeriksaan_ranap')->where('no_rawat', revertNorawat($id))->oneArray();
             if(empty($cek_no_rawat['no_rawat'])) {
-              $query = $this->db('pemeriksaan_ralan')
+              $query = $this->db('pemeriksaan_ranap')
                 ->save([
                   'no_rawat' => revertNorawat($id),
                   'tgl_perawatan' => date('Y-m-d'),
@@ -276,7 +230,6 @@ class Admin extends AdminModule
                   'keluhan' => $_POST['keluhan'],
                   'pemeriksaan' => $_POST['pemeriksaan'],
                   'alergi' => '-',
-                  'imun_ke' => '1',
                   'rtl' => $_POST['rtl'],
                   'penilaian' => 'penilaiannya'
               ]);
@@ -309,8 +262,8 @@ class Admin extends AdminModule
               $get_kd_jenis_prw = $_POST['kd_jenis_prw'];
               for ($i = 0; $i < count($get_kd_jenis_prw); $i++) {
                   $kd_jenis_prw = $get_kd_jenis_prw[$i];
-                  $row = $this->db('jns_perawatan')->where('kd_jenis_prw', $kd_jenis_prw)->oneArray();
-                  $query = $this->db('rawat_jl_dr')
+                  $row = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $kd_jenis_prw)->oneArray();
+                  $query = $this->db('rawat_inap_dr')
                     ->save([
                       'no_rawat' => revertNorawat($id),
                       'kd_jenis_prw' => $kd_jenis_prw,
@@ -322,8 +275,7 @@ class Admin extends AdminModule
                       'tarif_tindakandr' => $row['tarif_tindakandr'],
                       'kso' => $row['kso'],
                       'menejemen' => $row['menejemen'],
-                      'biaya_rawat' => $row['total_byrdr'],
-                      'stts_bayar' => 'Belum'
+                      'biaya_rawat' => $row['total_byrdr']
                   ]);
               }
 
@@ -338,7 +290,7 @@ class Admin extends AdminModule
 
             } else {
 
-              $query = $this->db('pemeriksaan_ralan')
+              $query = $this->db('pemeriksaan_ranap')
                 ->where('no_rawat', revertNorawat($id))
                 ->update([
                   'suhu_tubuh' => $_POST['suhu_tubuh'],
@@ -351,7 +303,6 @@ class Admin extends AdminModule
                   'keluhan' => $_POST['keluhan'],
                   'pemeriksaan' => $_POST['pemeriksaan'],
                   'alergi' => '-',
-                  'imun_ke' => '1',
                   'rtl' => $_POST['rtl'],
                   'penilaian' => 'penilaiannya'
               ]);
@@ -384,11 +335,11 @@ class Admin extends AdminModule
               }
 
               $get_kd_jenis_prw = $_POST['kd_jenis_prw'];
-              $this->db('rawat_jl_dr')->where('no_rawat', revertNorawat($id))->delete();
+              $this->db('rawat_inap_dr')->where('no_rawat', revertNorawat($id))->delete();
               for ($i = 0; $i < count($get_kd_jenis_prw); $i++) {
                   $kd_jenis_prw = $get_kd_jenis_prw[$i];
-                  $row = $this->db('jns_perawatan')->where('kd_jenis_prw', $kd_jenis_prw)->oneArray();
-                  $query = $this->db('rawat_jl_dr')
+                  $row = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $kd_jenis_prw)->oneArray();
+                  $query = $this->db('rawat_inap_dr')
                     ->save([
                       'no_rawat' => revertNorawat($id),
                       'kd_jenis_prw' => $kd_jenis_prw,
@@ -400,8 +351,7 @@ class Admin extends AdminModule
                       'tarif_tindakandr' => $row['tarif_tindakandr'],
                       'kso' => $row['kso'],
                       'menejemen' => $row['menejemen'],
-                      'biaya_rawat' => $row['total_byrdr'],
-                      'stts_bayar' => 'Belum'
+                      'biaya_rawat' => $row['total_byrdr']
                   ]);
               }
 
@@ -429,7 +379,7 @@ class Admin extends AdminModule
     public function postRadiologiSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -450,7 +400,7 @@ class Admin extends AdminModule
                 'tgl_hasil' => '0000-00-00',
                 'jam_hasil' => '00:00:00',
                 'dokter_perujuk' => $_POST['kd_dokter'],
-                'status' => 'ralan',
+                'status' => 'ranap',
                 'informasi_tambahan' => $_POST['informasi_tambahan'],
                 'diagnosa_klinis' => $_POST['diagnosa_klinis']
               ]);
@@ -478,7 +428,7 @@ class Admin extends AdminModule
     public function postLaboratoriumSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -499,7 +449,7 @@ class Admin extends AdminModule
                 'tgl_hasil' => '0000-00-00',
                 'jam_hasil' => '00:00:00',
                 'dokter_perujuk' => $_POST['kd_dokter'],
-                'status' => 'ralan',
+                'status' => 'ranap',
                 'informasi_tambahan' => $_POST['informasi_tambahan'],
                 'diagnosa_klinis' => $_POST['diagnosa_klinis']
               ]);
@@ -527,7 +477,7 @@ class Admin extends AdminModule
     public function postResepSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -546,7 +496,7 @@ class Admin extends AdminModule
                 'kd_dokter' => $_POST['kd_dokter'],
                 'tgl_peresepan' => date('Y-m-d'),
                 'jam_peresepan' => date('H:i:s'),
-                'status' => 'ralan'
+                'status' => 'ranap'
               ]);
 
             if ($query) {
@@ -573,7 +523,7 @@ class Admin extends AdminModule
     public function postResepRacikanSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -592,7 +542,7 @@ class Admin extends AdminModule
                 'kd_dokter' => $_POST['kd_dokter'],
                 'tgl_peresepan' => date('Y-m-d'),
                 'jam_peresepan' => date('H:i:s'),
-                'status' => 'ralan'
+                'status' => 'ranap'
               ]);
 
             if ($query) {
@@ -638,7 +588,7 @@ class Admin extends AdminModule
     public function postKontrolSave($id = null)
     {
         $errors = 0;
-        $location = url([ADMIN, 'ralan', 'view', $id]);
+        $location = url([ADMIN, 'ranap', 'view', $id]);
 
         if (checkEmptyFields(['kd_dokter','diagnosa','alasan1','tanggal_rujukan'], $_POST)) {
             $this->notify('failure', 'Nama dokter masih kosong');
@@ -704,8 +654,9 @@ class Admin extends AdminModule
               $this->notify('success', 'Sukses menambahkan gambar');
           };
       }
-      redirect(url([ADMIN, 'ralan', 'view', $id]));
+      redirect(url([ADMIN, 'ranap', 'view', $id]));
     }
+
     public function getAjax()
     {
         header('Content-type: text/html');
@@ -733,7 +684,7 @@ class Admin extends AdminModule
           echo json_encode($array, true);
           break;
           case "jns_perawatan":
-          $rows = $this->db('jns_perawatan')->like('nm_perawatan', '%'.$_GET['nm_perawatan'].'%')->toArray();
+          $rows = $this->db('jns_perawatan_inap')->like('nm_perawatan', '%'.$_GET['nm_perawatan'].'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
                 'kd_jenis_prw' => $row['kd_jenis_prw'],
@@ -810,30 +761,30 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-        $this->assign['ralan'] = htmlspecialchars_array($this->options('ralan'));
+        $this->assign['ranap'] = htmlspecialchars_array($this->options('ranap'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettings()
     {
-        foreach ($_POST['ralan'] as $key => $val) {
-            $this->options('ralan', $key, $val);
+        foreach ($_POST['ranap'] as $key => $val) {
+            $this->options('ranap', $key, $val);
         }
-        $this->notify('success', 'Pengaturan rawat jalan telah disimpan');
-        redirect(url([ADMIN, 'ralan', 'settings']));
+        $this->notify('success', 'Pengaturan rawat inap telah disimpan');
+        redirect(url([ADMIN, 'ranap', 'settings']));
     }
 
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/ralan/js/admin/ralan.js');
+        echo $this->draw(MODULES.'/ranap/js/admin/ranap.js');
         exit();
     }
 
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/ralan/css/admin/ralan.css');
+        echo $this->draw(MODULES.'/ranap/css/admin/ranap.css');
         exit();
     }
 
@@ -842,14 +793,17 @@ class Admin extends AdminModule
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
+        $this->core->addCSS(url(BASE_DIR.'/assets/css/dataTables.bootstrap.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
-        $this->core->addCSS(url([ADMIN, 'ralan', 'css']));
-        $this->core->addJS(url([ADMIN, 'ralan', 'javascript']), 'footer');
+        $this->core->addCSS(url([ADMIN, 'ranap', 'css']));
+        $this->core->addJS(url([ADMIN, 'ranap', 'javascript']), 'footer');
     }
 
 }

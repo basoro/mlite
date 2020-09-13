@@ -1,0 +1,62 @@
+<div class="row">
+  <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pasien Rawat Jalan</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table id="patient-datatable" class="table table-striped no-margin display">
+            <thead>
+              <tr>
+                <th>No. Rawat</th>
+                <th>Nama Pasien</th>
+                <th>No. RM</th>
+                <th>Bangsal</th>
+                <th>Kamar</th>
+                <th>Dokter</th>
+                <th>Jenis Bayar</th>
+                <th>Alamat</th>
+                <th>Tgl. Masuk</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+            {if: !empty($ranap.list)}
+              {loop: $ranap.list}
+              <tr>
+                <td><a href="{$value.viewURL}">{$value.no_rawat}</a></td>
+                <td>{$value.nm_pasien}</td>
+                <td>{$value.no_rkm_medis}</td>
+                <td>{$value.nm_bangsal}</td>
+                <td>{$value.kd_kamar}</td>
+                <td>{if: empty($value.dpjp.nm_dokter)}-{else}{$value.dpjp.nm_dokter}{/if}</td>
+                <td>{$value.png_jawab}</td>
+                <td>{$value.almt_pj}</td>
+                <td>{$value.tgl_masuk} {$value.jam_masuk}</td>
+                <td>{$value.status_bayar}</td>
+              </tr>
+              {/loop}
+              {else}
+              <tr><td colspan="11" class="text-center">Data pasien tidak ditemukan</td></tr>
+            {/if}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('.display').DataTable({
+        "lengthChange": false,
+        "scrollX": true,
+        "language": { "search": "" },
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      var t = $(".display").DataTable().rows().count();
+      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  });
+</script>
