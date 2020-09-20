@@ -189,15 +189,19 @@
 </div>
 
 <!-- The Modal -->
-<div class="modal" id="myModal">
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">
     <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url(ADMIN)?}">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
       <!-- Modal body -->
       <div class="modal-body">
         <center>
-        <div id="camera"></div><br>
-        <input type="button" class="btn btn-info" value="Simpan Presensi" onClick="take_snapshot()">
-        <input type="hidden" name="image" id="image-tag">
+          <div id="camera"></div><br>
+          <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
         </center>
       </div>
     </div>
@@ -341,4 +345,41 @@
             }
         });
     });
+
+    $(document).ready(function() {
+        $('#myModal').on('show.bs.modal', function() {
+          Webcam.set({
+              width:240,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+        });
+        $("#myModal").on("hidden.bs.modal", function () {
+
+            var shutter = new Audio();
+            shutter.autoplay = false;
+            shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
+            shutter.play();
+
+            Webcam.snap(function(data_uri){
+                document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+            });
+
+            var base64image = document.getElementById("imageprev").src;
+
+            Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}', function(code, text) {
+            });
+
+            Webcam.reset();
+
+            window.location.href = '{?=url(ADMIN.'/dashboard/main/')?}';
+
+        });
+    });
+
 </script>
