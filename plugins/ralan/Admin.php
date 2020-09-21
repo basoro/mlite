@@ -26,7 +26,7 @@ class Admin extends AdminModule
     {
 
       $this->_addHeaderFiles();
-      $poliklinik = $this->core->getUserInfo('cap', null, true);
+      $poliklinik = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
       if ($this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'manajemen' || $this->core->getUserInfo('role') == 'rekammedis') {
         $poliklinik = $this->db('poliklinik')->select('kd_poli')->toArray();
         $poliklinik = implode("','", array_map(function($obj) { foreach ($obj as $p => $v) { return $v;} }, $poliklinik));

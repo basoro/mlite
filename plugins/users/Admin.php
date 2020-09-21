@@ -46,7 +46,6 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->_addInfoUser();
         $this->_addInfoRole();
-        $this->_addInfoCap();
 
         if (!empty($redirectData = getRedirectData())) {
             $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
@@ -56,6 +55,7 @@ class Admin extends AdminModule
 
         $this->assign['title'] = 'Pengguna baru';
         $this->assign['modules'] = $this->_getModules('all');
+        $this->assign['cap'] = $this->_getInfoCap();
 
         return $this->draw('form.html', ['users' => $this->assign]);
     }
@@ -70,12 +70,12 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $this->_addInfoUser();
         $this->_addInfoRole();
-        $this->_addInfoCap();
 
         if (!empty($row)) {
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit pengguna';
             $this->assign['modules'] = $this->_getModules($row['access']);
+            $this->assign['cap'] = $this->_getInfoCap($row['cap']);
 
             return $this->draw('form.html', ['users' => $this->assign]);
         } else {
@@ -125,6 +125,9 @@ class Admin extends AdminModule
             $_POST['access'][] = 'dashboard';
             $_POST['access'] = implode(',', $_POST['access']);
         }
+
+        //$_POST['cap'][] = 'dashboard';
+        $_POST['cap'] = implode(',', $_POST['cap']);
 
         // CREATE / EDIT
         if (!$errors) {
@@ -277,18 +280,32 @@ class Admin extends AdminModule
       }
     }
 
-    private function _addInfoCap() {
-      $cap = $this->db()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
-      //$cap = $this->db()->pdo()->prepare("SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik");
-      $cap->execute();
-      $cap = $cap->fetchAll();
+    private function _getInfoCap($kd_poli = null)
+    {
+        $result = [];
+        $rows = $this->db()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
+        $rows->execute();
+        $rows = $rows->fetchAll();
 
-      if (count($cap)) {
-        $this->assign['cap'] = [];
-        foreach($cap as $row) {
-            $this->assign['cap'][] = $row;
+        if (!$kd_poli) {
+            $kd_poliArray = [];
+        } else {
+            $kd_poliArray = explode(',', $kd_poli);
         }
-      }
+
+        foreach ($rows as $row) {
+            if (empty($kd_poliArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['cap'], $kd_poliArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['cap' => $row['cap'], 'nm_cap' => $row['nm_cap'], 'attr' => $attr];
+        }
+        return $result;
     }
 
 }

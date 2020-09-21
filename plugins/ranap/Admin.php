@@ -24,15 +24,36 @@ class Admin extends AdminModule
     {
 
         $this->_addHeaderFiles();
-        $rows = $this->db('reg_periksa')
-          ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
-          ->join('kamar_inap', 'kamar_inap.no_rawat = reg_periksa.no_rawat')
-          ->join('kamar', 'kamar.kd_kamar = kamar_inap.kd_kamar')
-          ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
-          ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
-          ->where('status_lanjut', 'Ranap')
-          ->where('kamar_inap.stts_pulang', '-')
-          ->toArray();
+        $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
+        if ($this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'manajemen' || $this->core->getUserInfo('role') == 'rekammedis') {
+          $bangsal = $this->db('bangsal')->select('kd_bangsal')->toArray();
+          $bangsal = implode("','", array_map(function($obj) { foreach ($obj as $p => $v) { return $v;} }, $bangsal));
+        }
+
+        $query = $this->db()->pdo()
+          ->prepare("SELECT reg_periksa.*,
+              pasien.nm_pasien,
+              pasien.alamat,
+              kamar.kd_kamar,
+              kamar_inap.tgl_masuk,
+              kamar_inap.jam_masuk,
+              dokter.nm_dokter,
+              bangsal.nm_bangsal,
+              penjab.png_jawab
+            FROM reg_periksa, pasien, dokter, kamar_inap, kamar, bangsal, penjab
+            WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
+            AND kamar_inap.no_rawat = reg_periksa.no_rawat
+            AND kamar.kd_kamar = kamar_inap.kd_kamar
+            AND bangsal.kd_bangsal = kamar.kd_bangsal
+            AND reg_periksa.status_lanjut = 'Ranap'
+            AND bangsal.kd_bangsal IN ('$bangsal')
+            AND reg_periksa.kd_dokter = dokter.kd_dokter
+            AND kamar_inap.stts_pulang = '-'
+            AND reg_periksa.kd_pj = penjab.kd_pj");
+        $query->execute();
+        $rows = $query->fetchAll();
+
+        $this->assign['list'] = [];
         foreach ($rows as &$row) {
             $row = htmlspecialchars_array($row);
             $row['editURL'] = url([ADMIN, 'ranap', 'edit', convertNorawat($row['no_rawat'])]);
