@@ -1,0 +1,42 @@
+<article class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$kamar.title}</h3>
+            </div>
+            <div class="panel-body">
+    		<form name="kamar" action="{?=url(ADMIN.'/master/kamarsave/'.@$kamar.form.kd_kamar)?}" method="POST">
+    			<fieldset>
+                  <div class="form-group">
+                      <label>Kode Kamar</label>
+                      <input type="text" name="kd_kamar" class="form-control" value="{$kamar.form.kd_kamar}" />
+                  </div>
+                  <div class="form-group">
+                      <label>Kode Bangsal</label>
+                      <input type="text" name="kd_bangsal" class="form-control" value="{$kamar.form.kd_bangsal}" />
+                  </div>
+                  <div class="form-group">
+                      <label>Tarif Kamar</label>
+                      <input type="text" name="trf_kamar" class="form-control" value="{$kamar.form.trf_kamar}"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Status Kamar</label>
+                      <input type="text" name="status" class="form-control" value="{$kamar.form.status}"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Kelas</label>
+                      <input type="text" name="kelas" class="form-control" value="{$kamar.form.kelas}"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Aktif</label>
+                      <input type="text" name="statusdata" class="form-control" value="{$kamar.form.statusdata}"/>
+                  </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </fieldset>
+            </form>
+            </div>
+        </div>
+    </div>
+</article>

@@ -14,6 +14,7 @@ class Admin extends AdminModule
             'Petugas' => 'petugas',
             'Poliklinik' => 'poliklinik',
             'Bangsal' => 'bangsal',
+            'Kamar' => 'kamar',
             'Data Barang' => 'databarang',
             'Perawatan Ralan' => 'jnsperawatan',
             'Perawatan Laboratorium' => 'jnsperawatanlab',
@@ -718,6 +719,189 @@ class Admin extends AdminModule
 
     }
     /* End Master Bangsal Section */
+
+    /* Master Kamar Section */
+    public function getKamar($page = 1)
+    {
+        $this->_addHeaderFiles();
+        $perpage = '10';
+
+        $phrase = '';
+        if(isset($_GET['s']))
+          $phrase = $_GET['s'];
+
+        $status = '1';
+        if(isset($_GET['status']))
+          $status = $_GET['status'];
+
+        // pagination
+        $totalRecords = $this->db('kamar')
+            ->where('statusdata', $status)
+            ->like('kd_bangsal', '%'.$phrase.'%')
+            ->orLike('kd_kamar', '%'.$phrase.'%')
+            ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'kamar', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination','5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        $rows = $this->db('kamar')
+            ->where('statusdata', $status)
+            ->like('kd_bangsal', '%'.$phrase.'%')
+            ->orLike('kd_kamar', '%'.$phrase.'%')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'master', 'kamaredit', $row['kd_kamar']]);
+                $row['delURL']  = url([ADMIN, 'master', 'kamardelete', $row['kd_kamar']]);
+                $row['restoreURL']  = url([ADMIN, 'master', 'kamarrestore', $row['kd_kamar']]);
+                $row['viewURL'] = url([ADMIN, 'master', 'kamarview', $row['kd_kamar']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['addURL'] = url([ADMIN, 'master', 'kamaradd']);
+        $this->assign['printURL'] = url([ADMIN, 'master', 'kamarprint']);
+
+        return $this->draw('kamar.manage.html', ['kamar' => $this->assign]);
+
+    }
+
+    public function getKamarAdd()
+    {
+        $this->_addHeaderFiles();
+        if (!empty($redirectData = getRedirectData())) {
+            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+        } else {
+            $this->assign['form'] = [
+              'kd_kamar' => '',
+              'kd_bangsal' => '',
+              'trf_kamar' => '',
+              'status' => '',
+              'kelas' => '',
+              'statusdata' => ''
+            ];
+        }
+
+        $this->assign['title'] = 'Tambah Kamar';
+
+        return $this->draw('kamar.form.html', ['kamar' => $this->assign]);
+    }
+
+    public function getKamarEdit($id)
+    {
+        $this->_addHeaderFiles();
+        $row = $this->db('kamar')->where('kd_kamar', $id)->oneArray();
+        if (!empty($row)) {
+            $this->assign['form'] = $row;
+            $this->assign['title'] = 'Edit Kamar';
+
+            return $this->draw('kamar.form.html', ['kamar' => $this->assign]);
+        } else {
+            redirect(url([ADMIN, 'master', 'kamar']));
+        }
+    }
+
+    public function getKamarDelete($id)
+    {
+        if ($this->core->db('kamar')->where('kd_kamar', $id)->update('statusdata', '0')) {
+            $this->notify('success', 'Hapus sukses');
+        } else {
+            $this->notify('failure', 'Hapus gagal');
+        }
+        redirect(url([ADMIN, 'master', 'kamar']));
+    }
+
+    public function getKamarRestore($id)
+    {
+        if ($this->core->db('kamar')->where('kd_kamar', $id)->update('statusdata', '1')) {
+            $this->notify('success', 'Restore sukses');
+        } else {
+            $this->notify('failure', 'Restore gagal');
+        }
+        redirect(url([ADMIN, 'master', 'kamar']));
+    }
+
+    public function postKamarSave($id = null)
+    {
+        $errors = 0;
+
+        if (!$id) {
+            $location = url([ADMIN, 'master', 'kamaradd']);
+        } else {
+            $location = url([ADMIN, 'master', 'kamaredit', $id]);
+        }
+
+        if (checkEmptyFields(['kd_kamar', 'kd_bangsal'], $_POST)) {
+            $this->notify('failure', 'Isian kosong');
+            redirect($location, $_POST);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+
+            if (!$id) {    // new
+                $_POST['status'] = '1';
+                $query = $this->db('kamar')->save($_POST);
+            } else {        // edit
+                $query = $this->db('kamar')->where('kd_kamar', $id)->save($_POST);
+            }
+
+            if ($query) {
+                $this->notify('success', 'Simpan sukes');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+
+            redirect($location);
+        }
+
+        redirect($location, $_POST);
+    }
+
+    public function getKamarPrint()
+    {
+      $pasien = $this->db('kamar')->toArray();
+      $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
+
+      $pdf = new PDF_MC_Table();
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image($logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
+      $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+      $pdf->Line(10, 30, 200, 30);
+      $pdf->Line(10, 31, 200, 31);
+      $pdf->Text(10, 40, 'DATA Bangsal');
+      $pdf->Ln(34);
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->SetWidths(array(30,120,40));
+      $pdf->Row(array('Kode Kamar','Kode Bangsal','Status'));
+      foreach ($pasien as $hasil) {
+        $status = 'Aktif';
+        if($hasil['statusdata'] == '0') {
+          $status = 'Tidak Aktif';
+        }
+        $pdf->Row(array($hasil['kd_kamar'],$hasil['kd_bangsal'],$status));
+      }
+      $pdf->Output('laporan_kamar_'.date('Y-m-d').'.pdf','I');
+
+    }
+    /* End Master Kamar Section */
 
     /* Master Databarang Section */
     public function getDatabarang($page = 1)
