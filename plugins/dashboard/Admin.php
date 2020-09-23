@@ -444,4 +444,25 @@ class Admin extends AdminModule
 
       exit();
     }
+
+    public function postGeolocation()
+    {
+
+      $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+
+      if(isset($_POST['lat'], $_POST['lng'])) {
+          if(!$this->db('geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
+              $this->db('geolocation_presensi')
+                ->save([
+                  'id' => $idpeg['id'],
+                  'tanggal' => date('Y-m-d'),
+                  'latitude' => $_POST['lat'],
+                  'longitude' => $_POST['lng']
+              ]);
+          }
+      }
+
+      exit();
+    }
+
 }
