@@ -109,14 +109,85 @@ class Admin extends AdminModule
           }
           break;
           case "kelurahan":
-          $kelurahan = $this->db('kelurahan')->toArray();
-          foreach ($kelurahan as $row) {
-            echo '<tr class="pilihkelurahan" data-kdkel="'.$row['kd_kel'].'" data-namakel="'.$row['nm_kel'].'">';
-      			echo '<td>'.$row['kd_kel'].'</td>';
-      			echo '<td>'.$row['nm_kel'].'</td>';
-      			echo '</tr>';
+          // Alternative SQL join in Datatables
+          $id_table = 'kd_kel';
+          $columns = array(
+                       'kd_kel',
+                       'nm_kel'
+                     );
+          $action = '"Test" as action';
+          // gunakan join disini
+          $from = 'kelurahan';
+
+          $id_table = $id_table != '' ? $id_table . ',' : '';
+          // custom SQL
+          $sql = "SELECT {$id_table} ".implode(',', $columns)." FROM {$from}";
+
+          // search
+          if (isset($_GET['search']['value']) && $_GET['search']['value'] != '') {
+              $search = $_GET['search']['value'];
+              $where  = '';
+              // create parameter pencarian kesemua kolom yang tertulis
+              // di $columns
+              for ($i=0; $i < count($columns); $i++) {
+                  $where .= $columns[$i] . ' LIKE "%'.$search.'%"';
+
+                  // agar tidak menambahkan 'OR' diakhir Looping
+                  if ($i < count($columns)-1) {
+                      $where .= ' OR ';
+                  }
+              }
+
+              $sql .= ' WHERE ' . $where;
           }
+
+          //SORT Kolom
+          $sortColumn = isset($_GET['order'][0]['column']) ? $_GET['order'][0]['column'] : 0;
+          $sortDir    = isset($_GET['order'][0]['dir']) ? $_GET['order'][0]['dir'] : 'asc';
+
+          $sortColumn = $columns[$sortColumn];
+
+          $sql .= " ORDER BY {$sortColumn} {$sortDir}";
+
+          $query = $this->db()->pdo()->prepare($sql);
+          $query->execute();
+          $query = $query->fetchAll();
+
+          // var_dump($sql);
+          //$count = $database->query($sql);
+          // hitung semua data
+          $totaldata = count($query);
+
+          // memberi Limit
+          $start  = isset($_GET['start']) ? $_GET['start'] : 0;
+          $length = isset($_GET['length']) ? $_GET['length'] : 10;
+
+
+          $sql .= " LIMIT {$start}, {$length}";
+
+          $data = $this->db()->pdo()->prepare($sql);
+          $data->execute();
+          $data = $data->fetchAll();
+
+          // create json format
+          $datatable['draw']            = isset($_GET['draw']) ? $_GET['draw'] : 1;
+          $datatable['recordsTotal']    = $totaldata;
+          $datatable['recordsFiltered'] = $totaldata;
+          $datatable['data']            = array();
+
+          foreach ($data as $row) {
+
+              $fields = array();
+              $fields['0'] = $row['kd_kel'];
+              $fields['1'] = '<span class="pilihkelurahan" data-kdkel="'.$row['kd_kel'].'" data-namakel="'.$row['nm_kel'].'">'.$row['nm_kel'].'</span>';
+              $datatable['data'][] = $fields;
+
+          }
+
+          echo json_encode($datatable);
+
           break;
+
         }
         exit();
     }
