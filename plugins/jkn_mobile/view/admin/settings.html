@@ -244,7 +244,7 @@
             "lengthChange": false,
             "scrollX": true
           });
-          console.log(response);
+          //console.log(response);
         }
       })
   });
@@ -262,7 +262,7 @@
           "lengthChange": false,
           "scrollX": true
         });
-        console.log(kd_prop);
+        //console.log(kd_prop);
       }
     })
   });
@@ -280,7 +280,7 @@
           "lengthChange": false,
           "scrollX": true
         });
-        console.log(response);
+        //console.log(response);
       }
     })
   });
@@ -289,21 +289,13 @@
     $("#kd_kec")[0].value = $(this).attr('data-kdkec');
     $("#namakec")[0].value = $(this).attr('data-namakec');
     $('#kecamatanModal').modal('hide');
-    //$.ajax({
-      //type: 'GET',
-      //url: '{?=url()?}/admin/jkn_mobile/ajax?show=kelurahan&t={?=$_SESSION['token']?}',
-      //success: function(response) {
-        //$('#kelurahan').html(response);
-        $('#kelurahan_datatable').DataTable({
-          //"lengthChange": false,
-          //"scrollX": true,
-          processing: true,
-          serverSide: true,
-          ajax: '{?=url()?}/admin/jkn_mobile/ajax?show=kelurahan&t={?=$_SESSION['token']?}'
-        });
-        //console.log(response);
-      //}
-    //})
+    $('#kelurahan_datatable').DataTable({
+      lengthChange: false,
+      scrollX: true,
+      processing: true,
+      serverSide: true,
+      ajax: '{?=url()?}/admin/jkn_mobile/ajax?show=kelurahan&t={?=$_SESSION['token']?}'
+    });
   });
 
   $(document).on('click', '.pilihkelurahan', function (e) {
