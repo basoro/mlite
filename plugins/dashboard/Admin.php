@@ -339,8 +339,10 @@ class Admin extends AdminModule
               $urlnya         = WEBAPPS_URL.'/presensi/'.$gambar;
               $barcode        = $this->core->getUserInfo('username', null, true);
 
+              $h = date('d');
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
               $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
+              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$h, $_GET['shift'])->oneArray();
 
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
@@ -436,7 +438,7 @@ class Admin extends AdminModule
                       }
                   }
               }elseif (empty($idpeg['id'])||empty($jam_jaga['shift'])){
-                  $this->notify('failure', 'ID Pegawai atau Jam Masuk ada yang salah, Silahkan pilih berdasarkan shift departemen anda');
+                  $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai. Silahkan pilih berdasarkan shift departemen anda!');
               }
           }
       }
