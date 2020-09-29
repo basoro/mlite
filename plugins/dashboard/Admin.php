@@ -340,8 +340,7 @@ class Admin extends AdminModule
               $barcode        = $this->core->getUserInfo('username', null, true);
 
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
-
-              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.jam_masuk', '<=', date('H:i:s'))->where('jam_jaga.jam_pulang', '>', date('H:i:s'))->oneArray();
+              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
 
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];

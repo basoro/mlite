@@ -198,7 +198,13 @@
       <!-- Modal body -->
       <div class="modal-body">
         <center>
-          <div id="camera"></div><br>
+          <div id="camera"></div>
+          <select class="form-control" id="shift" style="width:140px;">
+            <option value="">Pilih Shift</option>
+            <option value="Pagi">Pagi</option>
+            <option value="Siang">Siang</option>
+            <option value="Malam">Malam</option>
+          </select><br><br>
           <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
           <input type="hidden" name="image" id="image-tag">
           <div id="results"></div>
@@ -348,6 +354,10 @@
 
     $(document).ready(function() {
 
+        $('#shift').on('change', function() {
+          var shift = this.text;
+        });
+
         $('#myModal').on('show.bs.modal', function() {
 
             if (navigator.geolocation) {
@@ -370,6 +380,7 @@
         });
         $("#myModal").on("hidden.bs.modal", function () {
 
+            var getshift = shift.value;
             var shutter = new Audio();
             shutter.autoplay = false;
             shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
@@ -381,7 +392,7 @@
 
             var base64image = document.getElementById("imageprev").src;
 
-            Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}', function(code, text) {
+            Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}&shift=' + getshift, function(code, text) {
             });
 
             Webcam.reset();
