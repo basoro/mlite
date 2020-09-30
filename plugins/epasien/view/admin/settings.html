@@ -240,10 +240,14 @@
         success: function(response) {
           $('#propinsi').html(response);
           $('.propinsi').DataTable({
+            "language": { "search": "", "searchPlaceholder": "Search..." },
             "lengthChange": false,
-            "scrollX": true
+            "scrollX": true,
+            dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
           });
-          console.log(response);
+          var t = $(".propinsi").DataTable().rows().count();
+          $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+          //console.log(response);
         }
       })
   });
@@ -258,10 +262,14 @@
       success: function(response) {
         $('#kabupaten').html(response);
         $('.kabupaten').DataTable({
+          "language": { "search": "", "searchPlaceholder": "Search..." },
           "lengthChange": false,
-          "scrollX": true
+          "scrollX": true,
+          dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
         });
-        console.log(kd_prop);
+        var t = $(".kabupaten").DataTable().rows().count();
+        $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+        //console.log(kd_prop);
       }
     })
   });
@@ -276,10 +284,14 @@
       success: function(response) {
         $('#kecamatan').html(response);
         $('.kecamatan').DataTable({
+          "language": { "search": "", "searchPlaceholder": "Search..." },
           "lengthChange": false,
-          "scrollX": true
+          "scrollX": true,
+          dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
         });
-        console.log(response);
+        var t = $(".kecamatan").DataTable().rows().count();
+        $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+        //console.log(response);
       }
     })
   });
@@ -294,10 +306,14 @@
       success: function(response) {
         $('#kelurahan').html(response);
         $('.kelurahan').DataTable({
+          "language": { "search": "", "searchPlaceholder": "Search..." },
           "lengthChange": false,
-          "scrollX": true
+          "scrollX": true,
+          dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
         });
-        console.log(response);
+        var t = $(".kelurahan").DataTable().rows().count();
+        $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+        //console.log(response);
       }
     })
   });
