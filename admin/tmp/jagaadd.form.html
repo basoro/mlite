@@ -1,0 +1,90 @@
+<article class="row">
+  <div class="col-md-12">
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">Tambah Data Jam Jaga</h3>
+              <ul class="nav nav-tabs">
+                  <li class="">
+                      <a href="http://localhost/Khanza-Lite/admin/presensi/jamjaga?t=0cb9c77dac19" role="tab">Jam Jaga</a>
+                  </li>
+                  <!-- <li class="">
+                      <a href="http://localhost/Khanza-Lite/admin/master/petugas?status=0&t=0cb9c77dac19" role="tab">Tidak Aktif</a>
+                  </li> -->
+                  <!-- <li>
+                      <a href="<br />
+<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jagaadd.form.html</b> on line <b>14</b><br />
+" target="_blank" role="tab">Cetak</a>
+                  </li> -->
+                  <!-- <li class="<br />
+<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jagaadd.form.html</b> on line <b>16</b><br />
+">
+                      <a href="<br />
+<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jagaadd.form.html</b> on line <b>17</b><br />
+" role="tab">Tambah</a>
+                  </li> -->
+              </ul>
+          </div>
+          <div class="panel-body">
+            <form name="jagaadd" action="http://localhost/Khanza-Lite/admin/presensi/jagasave?t=0cb9c77dac19" method="POST">
+              <div class="form-group">
+                <label>Departemen</label>
+                <select name="dep_id" id="dep_id" class="form-control">
+                                      <option value="-">-</option>
+                                      <option value="IT">Bagian IT/Programer/EDP</option>
+                                      <option value="SP">Dokter Spesialis</option>
+                                      <option value="UM">Dokter Umum</option>
+                                      <option value="IGD">instalasi gawat darurat</option>
+                                      <option value="KPG">Kepegawaian</option>
+                                      <option value="KEP">Keperawatan</option>
+                                      <option value="KEU">Keuangan</option>
+                                      <option value="MR">Medical Record</option>
+                                      <option value="YM">Pelayanan Medik</option>
+                                      <option value="PJ">Penunjang</option>
+                                      <option value="PL">Perencanaan dan Pelaporan</option>
+                                      <option value="RI">Rawat Inap</option>
+                                      <option value="RJ">Rawat Jalan</option>
+                                      <option value="SPR">Sarana dan Prasarana</option>
+                                      <option value="TU">Tata Usaha</option>
+                                  </select>
+                <!-- <input type="text" name="nama" id="nama" class="form-control" value="<br />
+<b>Notice</b>:  Undefined index: nama in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jagaadd.form.html</b> on line <b>30</b><br />
+"/> -->
+              </div>
+              <div class="form-group">
+                <label>Shift</label>
+                <select name="shift" id="shift" class="form-control">
+                                      <option value="Pagi">Pagi</option>
+                                      <option value="Siang">Siang</option>
+                                      <option value="Malam">Malam</option>
+                                  </select>
+              </div>
+              <div class="row clearfix">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Jam Masuk</label>
+                    <select name="jam_masuk" id="jam_masuk" class="form-control">
+                                              <option value="07:30:00">07:30:00</option>
+                                              <option value="14:30:00">14:30:00</option>
+                                              <option value="20:30:00">20:30:00</option>
+                                          </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Jam Pulang</label>
+                    <select name="jam_pulang" id="jam_pulang" class="form-control">
+                                              <option value="14:30:00">14:30:00</option>
+                                              <option value="20:30:00">20:30:00</option>
+                                              <option value="08:30:00">08:30:00</option>
+                                          </select>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+              </div>                
+            </form>
+          </div>
+      </div>
+  </div>
+</article>

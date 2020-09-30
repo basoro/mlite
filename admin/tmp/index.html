@@ -1,0 +1,244 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RSUD H. DAMANHURI - Presensi</title>
+    <link rel="icon" href="http://localhost/Khanza-Lite/favicon.png" type="image/x-icon">
+    <link href="http://localhost/Khanza-Lite/assets/css/bootstrap.min.css?v=3.2" rel="stylesheet">
+    <link href="http://localhost/Khanza-Lite/assets/css/bootstrap-theme.min.css?v=3.2" rel="stylesheet">
+    <link href="http://localhost/Khanza-Lite/assets/css/animate.min.css?v=3.2" rel="stylesheet">
+    <link href="http://localhost/Khanza-Lite/themes/admin/css/selectator.css?v=3.2&t=007cd6e23873" rel="stylesheet">
+    <link href="http://localhost/Khanza-Lite/themes/admin/css/style.css?v=3.2&t=007cd6e23873" rel="stylesheet">
+    <link href="http://localhost/Khanza-Lite/assets/css/font-awesome.css?v=3.2" rel="stylesheet">
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/jquery.min.js"></script>
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/bootstrap.min.js?v=3.2"></script>
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/bootbox.min.js?v=3.2"></script>
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/html.sortable.min.js?v=3.2"></script>
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/tinynav.min.js?v=3.2"></script>
+    <script src="http://localhost/Khanza-Lite/themes/admin/js/kalypto.min.js?v=3.2&t=007cd6e23873"></script>
+    <script src="http://localhost/Khanza-Lite/themes/admin/js/selectator.js?v=3.2&t=007cd6e23873"></script>
+    <script>
+        var opensimrs = {token:"007cd6e23873", url:"http://localhost/Khanza-Lite", admin:"admin"};
+    </script>
+    <meta name="generator" content="PinkMED" />
+<link rel="stylesheet" href="http://localhost/Khanza-Lite/assets/jscripts/lightbox/lightbox.min.css">
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <aside id="sidebar-wrapper">
+            <div class="user-info">
+                <div class="image">
+                    <img src="http://localhost/Khanza-Lite/plugins/users/img/default.png" width="48" height="48" alt="User" />
+                </div>
+                <div class="info-container">
+                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Administrator</div>
+                    <div class="email">admin</div>
+                </div>
+            </div>
+            <ul class="sidebar-nav">
+                            <li class="" data-module="dashboard">
+                    <a href="#"><i class="fa fa-home"></i>Dashboard</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/dashboard/main?t=007cd6e23873">Main</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/dashboard/settings?t=007cd6e23873">Pengaturan</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="pasien">
+                    <a href="#"><i class="fa fa-users"></i>Pasien</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pasien/manage?t=007cd6e23873">Kelola</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pasien/add?t=007cd6e23873">Tambah Baru</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pasien/master?t=007cd6e23873">Master Pasien</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pasien/settings?t=007cd6e23873">Pengaturan</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="kepegawaian">
+                    <a href="#"><i class="fa fa-group"></i>Kepegawaian</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/kepegawaian/manage?t=007cd6e23873">Data Pegawai</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/kepegawaian/add?t=007cd6e23873">Tambah Baru</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/kepegawaian/master?t=007cd6e23873">Master Pegawai</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="active" data-module="presensi">
+                    <a href="#"><i class="fa fa-user-o"></i>Presensi</a>
+                                        <ul class="collapse">
+                                                <li class="active"><a href="http://localhost/Khanza-Lite/admin/presensi/presensi?t=007cd6e23873">Presensi Masuk</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/presensi/rekap_presensi?t=007cd6e23873">Rekap Presensi</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/presensi/jamjaga?t=007cd6e23873">Jam Jaga</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/presensi/jadwal?t=007cd6e23873">Jadwal Pegawai</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="dokter_ralan">
+                    <a href="#"><i class="fa fa-wheelchair"></i>Dokter Ralan</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/dokter_ralan/manage?t=007cd6e23873">Manage</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/dokter_ralan/telemedicine?t=007cd6e23873">Telemedicine</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="pendaftaran">
+                    <a href="#"><i class="fa fa-user-plus"></i>Pendaftaran</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pendaftaran/manage?t=007cd6e23873">Kelola</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pendaftaran/booking?t=007cd6e23873">Booking</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pendaftaran/add?t=007cd6e23873">Tambah Baru</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pendaftaran/jadwal?t=007cd6e23873">Jadwal Dokter</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/pendaftaran/settings?t=007cd6e23873">Pengaturan</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="ralan">
+                    <a href="#"><i class="fa fa-wheelchair"></i>Rawat Jalan</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/ralan/manage?t=007cd6e23873">Manage</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/ralan/settings?t=007cd6e23873">Pengaturan</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="themes">
+                    <a href="http://localhost/Khanza-Lite/admin/themes/index?t=007cd6e23873"><i class="fa fa-paint-brush"></i>Tema Situs</a>
+                                    </li>
+                            <li class="" data-module="master">
+                    <a href="#"><i class="fa fa-cubes"></i>Data Master</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/dokter?t=007cd6e23873">Dokter</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/petugas?t=007cd6e23873">Petugas</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/poliklinik?t=007cd6e23873">Poliklinik</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/bangsal?t=007cd6e23873">Bangsal</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/kamar?t=007cd6e23873">Kamar</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/databarang?t=007cd6e23873">Data Barang</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/jnsperawatan?t=007cd6e23873">Perawatan Ralan</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/jnsperawatanlab?t=007cd6e23873">Perawatan Laboratorium</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/master/jnsperawatanrad?t=007cd6e23873">Perawatan Radiologi</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="modules">
+                    <a href="#"><i class="fa fa-plug"></i>Modul-Modul</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/modules/manage?t=007cd6e23873">Kelola</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/modules/upload?t=007cd6e23873">Upload</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="users">
+                    <a href="#"><i class="fa fa-user-md"></i>Pengguna</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/users/manage?t=007cd6e23873">Kelola</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/users/add?t=007cd6e23873">Tambah Baru</a></li>
+                                            </ul>
+                                    </li>
+                            <li class="" data-module="settings">
+                    <a href="#"><i class="fa fa-wrench"></i>Pengaturan</a>
+                                        <ul class="collapse">
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/settings/general?t=007cd6e23873">Instansi</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/settings/aplikasi?t=007cd6e23873">Aplikasi</a></li>
+                                                <li class=""><a href="http://localhost/Khanza-Lite/admin/settings/updates?t=007cd6e23873">Update</a></li>
+                                            </ul>
+                                    </li>
+                        </ul>
+        </aside>
+
+        <div id="navbar-wrapper">
+            <nav class="navbar navbar-inverse">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="http://localhost/Khanza-Lite/admin/"><span class="first">RSUD H. DAMANHURI</span></a></div>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>Apa kabar <strong>Administrator</strong>?</span></a></li>
+                        <li class="hidden-sm hidden-xs"><a href="http://localhost/Khanza-Lite" target="_blank" class="fa fa-globe" data-toggle="tooltip" data-placement="bottom" title="Tampilkan"></a></li>
+                        <li><a href="http://localhost/Khanza-Lite/admin/logout?t=007cd6e23873" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+
+		
+        <section id="content-wrapper">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h2 class="content-title">Presensi</h2>
+                        <article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Presensi Masuk</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: 0</h3>
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                          <input type="hidden" name="t" value="007cd6e23873">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="table-responsive no-margin">
+                <table id="presensi" class="table table-striped no-margin" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th>Shift</th>
+                      <th>Jam Datang</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                                        <tr>
+                      <td colspan="4" class="text-center">Kosong</td>
+                    </tr>
+                                      </tbody>
+                </table>
+              </div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Lokasi Presensi</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $('.gallery').lightbox();
+});
+</script>
+
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="hidden-xs hidden-sm hidden-md">
+        Dikembangkan dengan <i class="fa fa-heart text-danger"></i> oleh <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a>
+    </footer>
+
+    <script src="http://localhost/Khanza-Lite/themes/admin/js/scripts.js?v=3.2&t=007cd6e23873"></script>
+    <script src="http://localhost/Khanza-Lite/assets/jscripts/lightbox/lightbox.min.js"></script>
+<script src="http://localhost/Khanza-Lite/admin/presensi/javascript?t=007cd6e23873"></script>
+</body>
+</html>

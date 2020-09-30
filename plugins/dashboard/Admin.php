@@ -341,8 +341,8 @@ class Admin extends AdminModule
 
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
 
-              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('id', $idpeg['id'])->oneArray();
-
+            //   $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('id', $idpeg['id'])->oneArray();
+                $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->oneArray();
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
               $terlambat1     = $set_keterlambatan['terlambat1'];
