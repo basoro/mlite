@@ -45,4 +45,4 @@ define('BASIC_MODULES', serialize([
 ]));
 
 // Developer mode
-define('DEV_MODE', false);
+define('DEV_MODE', true);

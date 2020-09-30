@@ -1,0 +1,442 @@
+<article class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-danger"></i>
+                        <i class="fa fa-calendar-plus-o fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-danger">Total Kunjungan</div>
+                    <div class="stat-bold">
+                        299.197                        <span class="text-success stat-up-down">
+                            <i class="fa fa-arrow-circle-up"></i>
+                            (100%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-info"></i>
+                        <i class="fa fa-calendar fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-info">Kunjungan Tahun Ini</div>
+                    <div class="stat-bold">
+                        31.556                        <span class="text-danger stat-up-down">
+                            <i class="fa fa-arrow-circle-down"></i>
+                            (-236%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-warning"></i>
+                        <i class="fa fa-users fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-warning">Kunjungan Bulan Ini</div>
+                    <div class="stat-bold">
+                        0                        <span class="text-success stat-up-down">
+                            <i class="fa fa-arrow-circle-up"></i>
+                            (0%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body">
+                    <span class="fa-2x fa-stack fa-lg">
+                        <i class="fa fa-circle fa-stack-2x text-success"></i>
+                        <i class="fa fa-wheelchair fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-success">Kunjungan Hari Ini</div>
+                    <div class="stat-bold">
+                        0                        <span class="text-success stat-up-down">
+                            <i class="fa fa-arrow-circle-up"></i>
+                            (0%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+</article>
+
+<article class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Poliklinik Hari Ini</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="line-chartcanvas" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+</article>
+
+<article class="row">
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Status Perawatan 2020</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="medical-treatment-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kunjungan Tahun 2020</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="heart-surgery-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cara Bayar Tahun 2020</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="total-revenue-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</article>
+
+<article class="row">
+    <!-- New Patients -->
+    <div class="col-md-8 col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a class="pull-right badge" href="http://localhost/Khanza-Lite/admin/pasien/manage?t=007cd6e23873" style="background-color:#ffcc00;">Semua</a>
+                <h3 class="panel-title">Pasien Terbaru Hari Ini</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>No. RM</th>
+                                <th>Name</th>
+                                <th>Pekerjaan</th>
+                                <th>Cara Bayar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                                        <tr>
+                                <td>113266</td>
+                                <td>
+                                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/L.png" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">BY. NY. HAYATI</div>
+                                </td>
+                                <td></td>
+                                <td><span class="badge badge-success">BPJS</span></td>
+                            </tr>
+                                                        <tr>
+                                <td>113267</td>
+                                <td>
+                                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/L.png" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">BY.NY MAHMUDAH</div>
+                                </td>
+                                <td></td>
+                                <td><span class="badge badge-success">BPJS</span></td>
+                            </tr>
+                                                        <tr>
+                                <td>113230</td>
+                                <td>
+                                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/L.png" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">MUHAMMAD RADHIKA RAHMAN</div>
+                                </td>
+                                <td>PEGAWAI SWASTA</td>
+                                <td><span class="badge badge-success">BPJS</span></td>
+                            </tr>
+                                                        <tr>
+                                <td>113231</td>
+                                <td>
+                                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/L.png" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">BY. NY. SAIDA FITRIANI</div>
+                                </td>
+                                <td></td>
+                                <td><span class="badge badge-success">BPJS</span></td>
+                            </tr>
+                                                        <tr>
+                                <td>113232</td>
+                                <td>
+                                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/P.png" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">FATHUL JANAH BINTI H. SUHAIMI</div>
+                                </td>
+                                <td>PBI (APBN)</td>
+                                <td><span class="badge badge-success">BPJS</span></td>
+                            </tr>
+                                                    </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End New Patients -->
+
+    <!-- Doctors List -->
+    <div class="col-md-4 col-lg-4">
+        <div class="panel panel-default doctor-list">
+            <div class="panel-heading">
+                <a class="pull-right badge" href="http://localhost/Khanza-Lite/admin/pendaftaran/jadwal?t=007cd6e23873">Semua</a>
+                <h3 class="panel-title">Jadwal Dokter Hari Ini</h3>
+            </div>
+            <div class="list-group">
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>drg. Sulaima Athalmi Sani</b><br>
+                        Dokter Gigi                    </div>
+                </div>
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>drg. Faisol Basoro</b><br>
+                        Dokter Gigi                    </div>
+                </div>
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>dr. Iin Trilistiyanti Nugrahani, M. Biomed, Sp. A</b><br>
+                        Anak                    </div>
+                </div>
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>drg. Jully Rhenny Sp. KG</b><br>
+                        Konservasi Gigi                    </div>
+                </div>
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>dr. Hj. Siti Rahmaniah, Sp. OG</b><br>
+                        Obsgyn                    </div>
+                </div>
+                                <div class="list-group-item">
+                    <img src="http://localhost/Khanza-Lite/plugins/pasien/img/default.png" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>dr. Muhammad Yusar, Sp.PD</b><br>
+                        Dalam                    </div>
+                </div>
+                            </div>
+        </div>
+    </div>
+    <!-- End Doctors List -->
+
+</article>
+
+<div class="btn-group">
+    <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
+        <i class="fa fa-plus"></i> Presensi Online
+    </button>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="http://localhost/Khanza-Lite/admin">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <input type="button" class="btn btn-info" value="Presensi Masuk" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //line chart
+        var ctx = document.getElementById("line-chartcanvas");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["POLI MCU"],
+                datasets: [{
+                        label: "Pasien",
+                        borderColor: "#34316E",
+                        borderWidth: "2",
+                        backgroundColor: "rgba(30, 30, 45, 0.2)",
+                        pointHighlightStroke: "#1e1e2d",
+                        pointRadius: 0,
+                        data: [1],
+                    }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        //Medical treatment chart
+        var ctx2 = document.getElementById("medical-treatment-chart");
+        var myChart2 = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ["Jan","Feb","Mar","Apr"],
+                datasets: [
+                {
+                    label: "Dirawat",
+                    borderColor: "#F58634",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [1352,1008,1157,157],
+                },
+                {
+                    label: "Dirujuk",
+                    borderColor: "#34316E",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [127,140,113,9],
+                }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        //Heart surgery chart
+        var ctx1 = document.getElementById("heart-surgery-chart");
+        var myChart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ["Jan","Feb","Mar","Apr","Aug","Dec"],
+                datasets: [
+                {
+                    label: "2020",
+                    borderColor: "#F58634",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [10679,9232,10059,1584,1,1],
+                }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        //Toal Revenue Doughnut chart
+        var ctx2 = document.getElementById("total-revenue-chart");
+        var myChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    "Tunai",
+                    "BPJS",
+                    "Lain-Lain"
+                ],
+                datasets: [{
+                    backgroundColor: ["#4caf50", "#34316E", "#F58634"],
+                    pointRadius: 0,
+                    data: [0, 23065, 8491],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+
+    $(document).ready(function() {
+        $('#myModal').on('show.bs.modal', function() {
+          Webcam.set({
+              width:240,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+        });
+        $("#myModal").on("hidden.bs.modal", function () {
+
+            var shutter = new Audio();
+            shutter.autoplay = false;
+            shutter.src = navigator.userAgent.match(/Firefox/) ? 'http://localhost/Khanza-Lite/plugins/dashboard/audio/shutter.ogg' : 'http://localhost/Khanza-Lite/plugins/dashboard/audio/shutter.mp3';
+            shutter.play();
+
+            Webcam.snap(function(data_uri){
+                document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+            });
+
+            var base64image = document.getElementById("imageprev").src;
+
+            Webcam.upload(base64image, 'http://localhost/Khanza-Lite/admin/dashboard/upload?t=007cd6e23873', function(code, text) {
+            });
+
+            Webcam.reset();
+
+            window.location.href = 'http://localhost/Khanza-Lite/admin/dashboard/main?t=007cd6e23873';
+
+        });
+    });
+
+</script>
