@@ -11,9 +11,10 @@ class Admin extends AdminModule
     {
         return [
             'Presensi Masuk' => 'presensi',
-            'Rekap Presensi' => 'rekap_presensi', 
+            'Rekap Presensi' => 'rekap_presensi',
+            'Barcode Presensi' => 'barcode',
             'Jam Jaga' => 'jamjaga',
-            'Jadwal Pegawai' => 'jadwal' 
+            'Jadwal Pegawai' => 'jadwal'
         ];
     }
 
@@ -72,7 +73,7 @@ class Admin extends AdminModule
         if(!empty($redirectData = getRedirectData())){
             $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
         } else {
-            $this->assign['form'] = 
+            $this->assign['form'] =
             [
                 'no_id' => '',
                 'dep_id' => '',
@@ -125,7 +126,7 @@ class Admin extends AdminModule
     }
 
     public function getJadwal($page = 1)
-    { 
+    {
         $this->_addHeaderFiles();
         $perpage = '10';
         $phrase = '';
@@ -244,7 +245,7 @@ class Admin extends AdminModule
         } else {
             redirect(url([ADMIN,'presensi','jadwal']));
         }
-        
+
     }
 
     public function postJadwalSave($id = null)
@@ -311,13 +312,13 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
         $rows = $this->db('rekap_presensi')
             ->select([
-              'nama' => 'pegawai.nama', 
-              'id' => 'rekap_presensi.id', 
-              'shift' => 'rekap_presensi.shift', 
-              'jam_datang' => 'rekap_presensi.jam_datang', 
-              'jam_pulang' => 'rekap_presensi.jam_pulang', 
-              'status' => 'rekap_presensi.status', 
-              'durasi' => 'rekap_presensi.durasi', 
+              'nama' => 'pegawai.nama',
+              'id' => 'rekap_presensi.id',
+              'shift' => 'rekap_presensi.shift',
+              'jam_datang' => 'rekap_presensi.jam_datang',
+              'jam_pulang' => 'rekap_presensi.jam_pulang',
+              'status' => 'rekap_presensi.status',
+              'durasi' => 'rekap_presensi.durasi',
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
@@ -340,7 +341,7 @@ class Admin extends AdminModule
 
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
-  
+
     public function getGoogleMap($id,$tanggal)
     {
       $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
@@ -375,11 +376,11 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
         $rows = $this->db('temporary_presensi')
             ->select([
-              'nama' => 'pegawai.nama', 
-              'id' => 'temporary_presensi.id', 
-              'shift' => 'temporary_presensi.shift', 
-              'jam_datang' => 'temporary_presensi.jam_datang', 
-              'status' => 'temporary_presensi.status', 
+              'nama' => 'pegawai.nama',
+              'id' => 'temporary_presensi.id',
+              'shift' => 'temporary_presensi.shift',
+              'jam_datang' => 'temporary_presensi.jam_datang',
+              'status' => 'temporary_presensi.status',
               'photo' => 'temporary_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = temporary_presensi.id')
@@ -397,10 +398,144 @@ class Admin extends AdminModule
                 $this->assign['list'][] = $row;
             }
         }
-      
+
         return $this->draw('presensi.html', ['presensi' => $this->assign]);
-    }  
- 
+    }
+
+    /* Master Barcode Section */
+    public function getBarcode($page = 1)
+    {
+        $this->_addHeaderFiles();
+        $perpage = '10';
+
+        $phrase = '';
+        if(isset($_GET['s']))
+          $phrase = $_GET['s'];
+
+        // pagination
+        $totalRecords = $this->db('barcode')
+            ->select('id')
+            ->like('barcode', '%'.$phrase.'%')
+            ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'barcode', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination','5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        $rows = $this->db('barcode')
+            ->like('barcode', '%'.$phrase.'%')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'presensi', 'barcodeedit', $row['id']]);
+                $row['delURL']  = url([ADMIN, 'presensi', 'barcodedelete', $row['id']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['addURL'] = url([ADMIN, 'presensi', 'barcodeadd']);
+
+        return $this->draw('barcode.manage.html', ['barcode' => $this->assign]);
+
+    }
+
+    public function getBarcodeAdd()
+    {
+        $this->_addHeaderFiles();
+        if (!empty($redirectData = getRedirectData())) {
+            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
+        } else {
+            $this->assign['form'] = [
+              'id' => '',
+              'barcode' => ''
+            ];
+        }
+
+        $this->assign['title'] = 'Tambah Barcode';
+        $this->assign['pegawai'] = $this->db('pegawai')
+          ->select([
+            'id' => 'id',
+            'nik' => 'nik',
+            'nama' => 'nama'
+          ])
+          ->toArray();
+
+        return $this->draw('barcode.form.html', ['barcode' => $this->assign]);
+    }
+
+    public function getBarcodeEdit($id)
+    {
+        $this->_addHeaderFiles();
+        $row = $this->db('barcode')->oneArray($id);
+        if (!empty($row)) {
+            $this->assign['form'] = $row;
+            $this->assign['title'] = 'Edit Barcode';
+            $this->assign['pegawai'] = $this->db('pegawai')
+              ->select([
+                'id' => 'id',
+                'nik' => 'nik',
+                'nama' => 'nama'
+              ])
+              ->toArray();
+
+            return $this->draw('barcode.form.html', ['barcode' => $this->assign]);
+        } else {
+            redirect(url([ADMIN, 'presensi', 'barcode']));
+        }
+    }
+
+    public function getBarcodeDelete($id)
+    {
+        if ($this->core->db('barcode')->delete($id)) {
+            $this->notify('success', 'Hapus sukses');
+        } else {
+            $this->notify('failure', 'Hapus gagal');
+        }
+        redirect(url([ADMIN, 'presensi', 'barcode']));
+    }
+
+    public function postBarcodeSave($id = null)
+    {
+        $errors = 0;
+
+        if (!$id) {
+            $location = url([ADMIN, 'presensi', 'barcodeadd']);
+        } else {
+            $location = url([ADMIN, 'presensi', 'barcodeedit', $id]);
+        }
+
+        if (checkEmptyFields(['id', 'barcode'], $_POST)) {
+            $this->notify('failure', 'Isian kosong');
+            redirect($location, $_POST);
+        }
+
+        if (!$errors) {
+            unset($_POST['save']);
+
+            if (!$id) {    // new
+                $query = $this->db('barcode')->save($_POST);
+            } else {        // edit
+                $query = $this->db('barcode')->where('id', $id)->save($_POST);
+            }
+
+            if ($query) {
+                $this->notify('success', 'Simpan sukes');
+            } else {
+                $this->notify('failure', 'Simpan gagal');
+            }
+
+            redirect($location);
+        }
+
+        redirect($location, $_POST);
+    }
+
     public function getAjax()
     {
         header('Content-type: text/html');
