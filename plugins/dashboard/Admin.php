@@ -74,6 +74,7 @@ class Admin extends AdminModule
           'settings' => $settings,
           'stats' => $stats,
           'cek_presensi' => $cek_presensi,
+          'jam_jaga' => $this->db('jam_jaga')->group('shift')->toArray(), 
           'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
           'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray()
         ]);
