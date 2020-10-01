@@ -339,10 +339,9 @@ class Admin extends AdminModule
               $urlnya         = WEBAPPS_URL.'/presensi/'.$gambar;
               $barcode        = $this->core->getUserInfo('username', null, true);
 
-              $h = date('d');
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
               $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
-              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$h, $_GET['shift'])->oneArray();
+              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->oneArray();
 
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
@@ -353,7 +352,7 @@ class Admin extends AdminModule
 
               if($valid){
                   $this->notify('failure', 'Anda sudah presensi untuk tanggal '.date('Y-m-d'));
-              }elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&(!$valid)) {
+              }elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_pegawai)&&(!$valid)) {
                   $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 
                   if(!$cek){
