@@ -31,6 +31,7 @@
     							<thead>
     								<tr>
     									<th>ID Pegawai</th>
+                      <th>Nama Pegawai</th>
     									<th>Barcode</th>
     									<th class="text-right">Aksi</th>
     								</tr>
@@ -40,6 +41,7 @@
     								{loop: $barcode.list}
     								<tr>
     									<td>{$value.id}</td>
+                      <td>{$value.nama}</td>
     									<td>{$value.barcode}</td>
     									<td class="text-right">
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">

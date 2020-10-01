@@ -424,6 +424,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
         $rows = $this->db('barcode')
+            ->join('pegawai', 'pegawai.id = barcode.id')
             ->like('barcode', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
