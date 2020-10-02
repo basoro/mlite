@@ -136,7 +136,7 @@ class Templates
     public function draw($file, $last = false)
     {
         if (preg_match('#plugins(\/modules\/[^"]*\/)view\/([^"]*.'.pathinfo($file, PATHINFO_EXTENSION).')#', $file, $m)) {
-            $themeFile = THEMES.'/site'.$m[1].$m[2];
+            $themeFile = THEMES.'/'.$this->core->options->get('settings.theme').$m[1].$m[2];
             if (is_file($themeFile)) {
                 $file = $themeFile;
             }
