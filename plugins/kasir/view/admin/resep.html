@@ -1,14 +1,13 @@
 <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#dokter" aria-controls="dokter" role="tab" data-toggle="tab">Dokter</a></li>
-    <li role="presentation"><a href="#perawat" aria-controls="perawat" role="tab" data-toggle="tab">Perawat</a></li>
-    <li role="presentation"><a href="#dokter_perawat" aria-controls="dokter_perawat" role="tab" data-toggle="tab">Dokter & Perawat</a></li>
+    <li role="presentation" class="active"><a href="#resep_umum" aria-controls="resep_umum" role="tab" data-toggle="tab">Umum</a></li>
+    <li role="presentation"><a href="#resep_racikan" aria-controls="resep_racikan" role="tab" data-toggle="tab">Racikan</a></li>
 </ul>
 
 <div class="panel-default">
     <div class="panel-body">
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane fade in active" id="dokter">
-                <form name="ralan" action="{?=url(ADMIN.'/kasir_ralan/tindakansave/'.@$kasir_ralan.no_rawat)?}#dokter" method="POST">
+            <div role="tabpanel" class="tab-pane fade in active" id="resep_umum">
+                <form name="ralan" action="{?=url(ADMIN.'/ralan/resepsave/'.@$ralan.no_rawat)?}#resep" method="POST">
                 <div class="row clearfix" id="item_resep">
                     <div class="col-md-12">
                         <div class="form-group">
@@ -19,7 +18,7 @@
                     </div>
                     <div class="col-md-5">
                         <div class="form-group">
-                            <label>Nama Tindakan</label>
+                            <label>Nama Obat</label>
                             <select name="kode_brng[]" class="form-control databarang_ajax">
                             </select>
                         </div>
@@ -32,7 +31,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group">
-                            <label>Biaya</label>
+                            <label>Aturan Pakai</label>
                             <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
                             </select>
                         </div>
@@ -45,90 +44,72 @@
                 <a href="" class="btn btn-default">Batal</a>
                 </form>
             </div>
-            <div role="tabpanel" class="tab-pane fade in" id="perawat">
-                <form name="ralan" action="{?=url(ADMIN.'/kasir_ralan/tindakansave/'.@$kasir_ralan.no_rawat)?}#perawat" method="POST">
-                <div class="row clearfix" id="item_resep">
-                    <div class="col-md-12">
-                        <div class="form-group">
-                            <label>Nama Perawat</label>
-                            <select name="kd_dokter" class="form-control dokter" data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label>Nama Tindakan</label>
-                            <select name="kode_brng[]" class="form-control databarang_ajax">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Jumlah</label>
-                            <input type="text" name="jml[]" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Biaya</label>
-                            <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                    </div>
-                </div>
-                <span class="btn btn-default btn-success add">Tambah</span>
-                <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                <a href="" class="btn btn-default">Batal</a>
-                </form>
+            <div role="tabpanel" class="tab-pane fade in" id="resep_racikan">
+              <form method="post" action="{?=url(ADMIN.'/ralan/resepracikansave/'.@$ralan.no_rawat)?}#resep">
+              <div class="row clearfix">
+                  <div class="col-md-12">
+                      <div class="form-group">
+                          <label>Nama Dokter</label>
+                          <select name="kd_dokter" class="form-control dokter" data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-md-3">
+                      <div class="form-group">
+                          <label>Nama Racikan</label>
+                          <input type="text" name="nama_racik" class="form-control" />
+                      </div>
+                  </div>
+                  <div class="col-md-2">
+                      <div class="form-group">
+                          <label>Metode Racik</label>
+                          <select name="kd_racik" class="form-control">
+                              {loop: $ralan.metode_racik}
+                              <option value="{$value.kd_racik}" selected>{$value.nm_racik}</option>
+                              {/loop}
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-md-2">
+                      <div class="form-group">
+                          <label>Jumlah</label>
+                          <input type="text" name="jml_dr" class="form-control" />
+                      </div>
+                  </div>
+                  <div class="col-md-5">
+                      <div class="form-group">
+                          <label>Aturan Pakai</label>
+                          <select name="aturan_pakai" class="form-control master_aturan_pakai">
+                          </select>
+                      </div>
+                  </div>
+              </div>
+              <div class="form-group">
+                  <label>Keterangan</label>
+                  <textarea name="keterangan" class="form-control"></textarea>
+              </div>
+              <div class="row clearfix" id="item_racikan">
+                  <div class="col-md-9">
+                      <div class="form-group">
+                          <label>Nama Obat</label>
+                          <select name="kode_brng[]" class="form-control databarang_ajax">
+                          </select>
+                      </div>
+                  </div>
+                  <div class="col-md-2">
+                      <div class="form-group">
+                          <label>Kandungan</label>
+                          <input type="text" name="kandungan[]" class="form-control" />
+                      </div>
+                  </div>
+                  <div class="col-md-1">
+                  </div>
+              </div>
+              <span class="btn btn-default btn-success add_racikan">Tambah</span>
+              <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
+              <a href="" class="btn btn-default">Batal</a>
+              </form>
             </div>
-            <div role="tabpanel" class="tab-pane fade in" id="dokter_perawat">
-                <form name="ralan" action="{?=url(ADMIN.'/kasir_ralan/tindakansave/'.@$kasir_ralan.no_rawat)?}#dokter_perawat" method="POST">
-                <div class="row clearfix" id="item_resep">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Nama Dokter</label>
-                            <select name="kd_dokter" class="form-control dokter" data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label>Nama Perawat</label>
-                            <select name="kd_dokter" class="form-control dokter" data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-5">
-                        <div class="form-group">
-                            <label>Nama Tindakan</label>
-                            <select name="kode_brng[]" class="form-control databarang_ajax">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Jumlah</label>
-                            <input type="text" name="jml[]" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Biaya</label>
-                            <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                    </div>
-                </div>
-                <span class="btn btn-default btn-success add">Tambah</span>
-                <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                <a href="" class="btn btn-default">Batal</a>
-                </form>
-            </div>
-
         </div>
     </div>
 </div>
