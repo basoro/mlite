@@ -145,7 +145,7 @@ class Site extends SiteModule
        default:
         break;
         case "tampilloket":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -161,7 +161,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printloket":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -186,7 +186,7 @@ class Site extends SiteModule
         					data:$(this).serialize(),
         					success:function(data){
         						setTimeout('$("#loading").hide()',1000);
-        						window.location.href = "{?=url('anjungan/antrian')?}";
+        						//window.location.href = "{?=url('anjungan/antrian')?}";
         						}
         					});
         				return false;
@@ -206,10 +206,10 @@ class Site extends SiteModule
               'start_time' => date('H:i:s'),
               'end_time' => '00:00:00'
             ]);
-          redirect(url('anjungan/antrian'));
+          //redirect(url('anjungan/antrian'));
         break;
         case "tampilcs":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -225,7 +225,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printcs":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
