@@ -140,7 +140,8 @@ class Site extends SiteModule
           break;
           case "panggil_loket":
             $display = 'Panggil Loket';
-            $loket=['1','2','3'];
+            $setting_antrian_loket = str_replace(",","','", $this->options->get('anjungan.antrian_loket'));
+            $loket = explode(",", $this->options->get('anjungan.antrian_loket'));
             $get_antrian = $this->db('lite_antrian_loket')
               ->select([
                 'noantrian' => 'MAX(noantrian)'
@@ -203,7 +204,7 @@ class Site extends SiteModule
           break;
           case "panggil_cs":
             $display = 'Panggil CS';
-            $loket=['4','5'];
+            $loket = explode(",", $this->options->get('anjungan.antrian_cs'));
             $get_antrian = $this->db('lite_antrian_loket')
               ->select([
                 'noantrian' => 'MAX(noantrian)'
@@ -266,7 +267,7 @@ class Site extends SiteModule
           break;
           case "panggil_prioritas":
             $display = 'Panggil Prioritas';
-            $loket=['6','7'];
+            $loket = explode(",", $this->options->get('anjungan.antrian_prioritas'));
             $get_antrian = $this->db('lite_antrian_loket')
               ->select([
                 'noantrian' => 'MAX(noantrian)'
