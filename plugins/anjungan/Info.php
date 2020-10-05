@@ -2,7 +2,7 @@
 return [
     'name'          =>  'Anjungan',
     'description'   =>  'Modul anjungan pasien rawat jalan',
-    'author'        =>  'Sruu.pl',
+    'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '3.*',
     'icon'          =>  'desktop',
@@ -10,6 +10,9 @@ return [
     'install'       =>  function () use ($core) {
       $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'display_poli', '')");
       $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'carabayar_umum', '')");
+      $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_loket', '')");
+      $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_cs', '')");
+      $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'antrian_prioritas', '')");
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_antrian_loket` (
         `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `type` varchar(50) NOT NULL,
