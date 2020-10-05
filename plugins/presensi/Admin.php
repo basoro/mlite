@@ -301,10 +301,13 @@ class Admin extends AdminModule
         // $dt = $date->format('Y-m');
         $totalRecords = $this->db('rekap_presensi')
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->like('jam_datang', '%'.date('Y-m').'%')
+            ->where('jam_datang', '>', date('Y-m').'-01')
+            ->where('jam_datang', '<', date('Y-m').'-31')
+            ->like('nama', '%'.$phrase.'%')
+            ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->toArray();
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d']));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -322,7 +325,10 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->like('jam_datang', '%'.date('Y-m').'%')
+            ->where('jam_datang', '>', date('Y-m').'-01')
+            ->where('jam_datang', '<', date('Y-m').'-31')
+            ->like('nama', '%'.$phrase.'%')
+            ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
             ->limit($perpage)

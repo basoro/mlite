@@ -180,7 +180,7 @@
       				  <div class="panel" style="color:#000;">
       			      <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
       				    <div class="panel-body">
-      							<h5 class="panel-title" style="font-size:72px;">{$namaloket}{$antrian}</h5>
+      							<h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
       				    </div>
       				    <div class="panel-footer">
       							<div class="btn-group btn-group-justified">
@@ -228,7 +228,7 @@
     function mulai{$value}(){
       $("#antrian")[0].play()
       totalwaktu=document.getElementById('antrian').duration*1200;
-      setTimeout(function() { $("#a")[0].play() }, totalwaktu);
+      setTimeout(function() { $("#{$namaloket}")[0].play() }, totalwaktu);
       totalwaktu=totalwaktu+1000;
       {if: $antrian < 10}
         setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
