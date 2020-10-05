@@ -15,7 +15,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Nama</label>
-                            <select id="id" class="form-control">
+                            <select name="id" id="id" class="form-control">
                               {loop: $jadwal.id}
                                 <option value="{$value.id}"{if: $value.id == $jadwal.form.id} selected{/if}>{$value.nama}</option>
                               {/loop}

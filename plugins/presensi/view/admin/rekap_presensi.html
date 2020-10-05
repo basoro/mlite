@@ -39,30 +39,30 @@
     				    <table class="table table-striped no-margin">
     					    <thead>
     						    <tr>
-                                    <th>Nama</th>
-                                    <th>Shift</th>
-                                    <th>Jam Datang</th>
-    								<th>Jam Pulang</th>
-                                    <th>Status</th>
-                                    <th>Durasi</th>
+                        <th>Nama</th>
+                        <th>Shift</th>
+                        <th>Jam Datang</th>
+    								    <th>Jam Pulang</th>
+                        <th>Status</th>
+                        <th>Durasi</th>
     								<!-- <th class="text-right">Aksi</th> -->
     							</tr>
     						</thead>
     						<tbody>
-        						{if: !empty($rekap.list)}
-								{loop: $rekap.list}
+        				  {if: !empty($rekap.list)}
+								  {loop: $rekap.list}
     								<tr>
-                                        <td>
-                                          <a href="{$value.photo}" class="gallery">
-                                          <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
-                                          </a>
-                                          <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
-                                      	</td>
-                                        <td>{$value.shift}</td>
+                      <td>
+                        <a href="{$value.photo}" class="gallery">
+                          <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                        </a>
+                        <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
+                      </td>
+                      <td>{$value.shift}</td>
     									<td>{$value.jam_datang}</td>
     									<td>{$value.jam_pulang}</td>
-                                        <td>{$value.status}</td>
-                                        <td>{$value.durasi}</td>
+                      <td>{$value.status}</td>
+                      <td>{$value.durasi}</td>
     									<!-- <td class="text-right">
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
@@ -81,8 +81,8 @@
     								{/loop}
     								{else}
     								<tr>
-                                        <td colspan="4" class="text-center">Kosong</td>
-                                    </tr>
+                      <td colspan="4" class="text-center">Kosong</td>
+                    </tr>
     								{/if}
     							</tbody>
     						</table>

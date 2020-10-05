@@ -139,9 +139,9 @@ class Admin extends AdminModule
         // pagination
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
+            ->like('pegawai.nama', '%'.$phrase.'%')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            // ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -151,9 +151,9 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
         $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
+            ->like('pegawai.nama', '%'.$phrase.'%')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            // ->where('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -301,6 +301,7 @@ class Admin extends AdminModule
         $totalRecords = $this->db('rekap_presensi')
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->like('jam_datang', '%'.date('Y-m').'%')
+            ->orLike('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d']));
@@ -322,6 +323,7 @@ class Admin extends AdminModule
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->like('jam_datang', '%'.date('Y-m').'%')
+            ->orLike('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
             ->limit($perpage)

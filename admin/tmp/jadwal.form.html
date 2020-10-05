@@ -5,32 +5,17 @@
                 <h3 class="panel-title">Tambah Jadwal Presensi</h3>
                 <ul class="nav nav-tabs">
                     <li class="">
-                        <a href="http://localhost/Khanza-Lite/admin/presensi/jadwal?t=968f0a7db98a" role="tab">Jadwal</a>
+                        <a href="http://localhost/Khanza-Lite/admin/presensi/jadwal?t=007cd6e23873" role="tab">Jadwal</a>
                     </li>
-                    <!-- <li class="">
-                        <a href="http://localhost/Khanza-Lite/admin/master/petugas?status=0&t=968f0a7db98a" role="tab">Tidak Aktif</a>
-                    </li> -->
-                    <!-- <li>
-                        <a href="<br />
-<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jadwal.form.html</b> on line <b>14</b><br />
-" target="_blank" role="tab">Cetak</a>
-                    </li> -->
-                    <!-- <li class="<br />
-<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jadwal.form.html</b> on line <b>16</b><br />
-">
-                        <a href="<br />
-<b>Notice</b>:  Undefined variable: jamjaga in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jadwal.form.html</b> on line <b>17</b><br />
-" role="tab">Tambah</a>
-                    </li> -->
                 </ul>
             </div>
             <div class="panel-body">
-              <form name="jadwalaadd" action="http://localhost/Khanza-Lite/admin/presensi/jadwalsave/259?t=968f0a7db98a" method="POST">
+              <form name="jadwalaadd" action="http://localhost/Khanza-Lite/admin/presensi/jadwalsave?t=007cd6e23873" method="POST">
                 <div class="row clearfix">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Nama</label>
-                            <select id="id" class="form-control">
+                            <select name="id" id="id" class="form-control">
                                                               <option value="1">paramadis Penyakit Dalam</option>
                                                               <option value="2">Muammar</option>
                                                               <option value="3">Paramedis Al-Adan Lantai 1</option>
@@ -283,7 +268,7 @@
                                                               <option value="256">Muhammad Ma`ruf, S Kom</option>
                                                               <option value="257">Muhammad Ridha Alfian S Kom</option>
                                                               <option value="258">Zailani</option>
-                                                              <option value="259" selected>M. Adly Hidayat, S Kom</option>
+                                                              <option value="259">M. Adly Hidayat, S Kom</option>
                                                               <option value="260">M. Juliannur Ade S, AMK</option>
                                                               <option value="261">Fauzan Rozali</option>
                                                               <option value="262">Rifki Gunawan Adi Saputra, SE</option>
@@ -725,10 +710,11 @@
                                                               <option value="822">Muhammad Firdaus</option>
                                                               <option value="823">Asnawati</option>
                                                               <option value="824">Muhammad Syahdillah</option>
+                                                              <option value="825">Muhammad Harunoorrasid</option>
+                                                              <option value="826">Muhammad Wahyudi Rahman</option>
+                                                              <option value="827">Siti Aminah</option>
+                                                              <option value="828">Yuspa Sadillah</option>
                                                           </select>
-                            <!-- <input type="text" name="nama" id="nama" class="form-control" value="<br />
-<b>Notice</b>:  Undefined variable: jagaadd in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jadwal.form.html</b> on line <b>32</b><br />
-"/> -->
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -741,7 +727,7 @@
                         <div class="form-group">
                             <label>Bulan</label>
                             <select name="bulan" id="bulan" class="form-control">
-                                                              <option value=""></option>
+                                                              <option value="" selected></option>
                                                               <option value="01">01</option>
                                                               <option value="02">02</option>
                                                               <option value="03">03</option>
@@ -750,14 +736,11 @@
                                                               <option value="06">06</option>
                                                               <option value="07">07</option>
                                                               <option value="08">08</option>
-                                                              <option value="09" selected>09</option>
+                                                              <option value="09">09</option>
                                                               <option value="10">10</option>
                                                               <option value="11">11</option>
                                                               <option value="12">12</option>
                                                           </select>
-                            <!-- <input type="text" name="nama" id="nama" class="form-control" value="<br />
-<b>Notice</b>:  Undefined variable: jagaadd in <b>/Users/keuangan/Sites/Khanza-Lite/admin/tmp/jadwal.form.html</b> on line <b>49</b><br />
-"/> -->
                         </div>
                     </div>
                 </div>
@@ -767,10 +750,10 @@
                     <div class="form-group">
                       <label>01</label>
                       <select name="h1" id="h1" class="form-control">
-                                                  <option value=""></option>
-                                                  <option value="Pagi" selected>Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="" selected></option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -779,9 +762,9 @@
                       <label>02</label>
                       <select name="h2" id="h2" class="form-control">
                                                   <option value="" selected></option>
-                                                  <option value="Pagi">Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -790,9 +773,9 @@
                       <label>03</label>
                       <select name="h3" id="h3" class="form-control">
                                                   <option value="" selected></option>
-                                                  <option value="Pagi">Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -801,9 +784,9 @@
                       <label>04</label>
                       <select name="h4" id="h4" class="form-control">
                                                   <option value="" selected></option>
-                                                  <option value="Pagi">Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -812,9 +795,9 @@
                       <label>05</label>
                       <select name="h5" id="h5" class="form-control">
                                                   <option value="" selected></option>
-                                                  <option value="Pagi">Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -823,9 +806,9 @@
                       <label>06</label>
                       <select name="h6" id="h6" class="form-control">
                                                   <option value="" selected></option>
-                                                  <option value="Pagi">Pagi</option>
-                                                  <option value="Siang">Siang</option>
-                                                  <option value="Malam">Malam</option>
+                                                  <option value="PAGI">PAGI</option>
+                                                  <option value="SIANG">SIANG</option>
+                                                  <option value="MALAM">MALAM</option>
                                               </select>
                     </div>
                   </div>
@@ -836,9 +819,9 @@
                         <label>07</label>
                         <select name="h7" id="h7" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -847,9 +830,9 @@
                         <label>08</label>
                         <select name="h8" id="h8" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -858,9 +841,9 @@
                         <label>09</label>
                         <select name="h9" id="h9" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -869,9 +852,9 @@
                         <label>10</label>
                         <select name="h10" id="h10" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -880,9 +863,9 @@
                         <label>11</label>
                         <select name="h11" id="h11" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -891,9 +874,9 @@
                         <label>12</label>
                         <select name="h12" id="h12" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -904,9 +887,9 @@
                         <label>13</label>
                         <select name="h13" id="h13" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -915,9 +898,9 @@
                         <label>14</label>
                         <select name="h14" id="h14" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -926,9 +909,9 @@
                         <label>15</label>
                         <select name="h15" id="h15" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -937,9 +920,9 @@
                         <label>16</label>
                         <select name="h16" id="h16" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -948,9 +931,9 @@
                         <label>17</label>
                         <select name="h17" id="h17" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -959,9 +942,9 @@
                         <label>18</label>
                         <select name="h18" id="h18" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -972,9 +955,9 @@
                         <label>19</label>
                         <select name="h19" id="h19" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -983,9 +966,9 @@
                         <label>20</label>
                         <select name="h20" id="h20" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -994,9 +977,9 @@
                         <label>21</label>
                         <select name="h21" id="h21" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1005,9 +988,9 @@
                         <label>22</label>
                         <select name="h22" id="h22" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1016,9 +999,9 @@
                         <label>23</label>
                         <select name="h23" id="h23" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1027,9 +1010,9 @@
                         <label>24</label>
                         <select name="h24" id="h24" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1040,9 +1023,9 @@
                         <label>25</label>
                         <select name="h25" id="h25" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1050,10 +1033,10 @@
                       <div class="form-group">
                         <label>26</label>
                         <select name="h26" id="h26" class="form-control">
-                                                      <option value=""></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam" selected>Malam</option>
+                                                      <option value="" selected></option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1061,10 +1044,10 @@
                       <div class="form-group">
                         <label>27</label>
                         <select name="h27" id="h27" class="form-control">
-                                                      <option value=""></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam" selected>Malam</option>
+                                                      <option value="" selected></option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1073,9 +1056,9 @@
                         <label>28</label>
                         <select name="h28" id="h28" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1084,9 +1067,9 @@
                         <label>29</label>
                         <select name="h29" id="h29" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1095,9 +1078,9 @@
                         <label>30</label>
                         <select name="h30" id="h30" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
@@ -1108,9 +1091,9 @@
                         <label>31</label>
                         <select name="h31" id="h31" class="form-control">
                                                       <option value="" selected></option>
-                                                      <option value="Pagi">Pagi</option>
-                                                      <option value="Siang">Siang</option>
-                                                      <option value="Malam">Malam</option>
+                                                      <option value="PAGI">PAGI</option>
+                                                      <option value="SIANG">SIANG</option>
+                                                      <option value="MALAM">MALAM</option>
                                                   </select>
                       </div>
                     </div>
