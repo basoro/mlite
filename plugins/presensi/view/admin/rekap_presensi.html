@@ -3,20 +3,6 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Rekap Presensi</h3>
-                <!-- <ul class="nav nav-tabs">
-                    <li class="{if: empty($jamjaga.getStatus)}active{/if}">
-                        <a href="{?=url(ADMIN.'/presensi/jamjaga')?}" role="tab">Rekap</a>
-                    </li>
-                    <li class="{if: !empty($jamjaga.getStatus)}active{/if}">
-                        <a href="{?=url(ADMIN.'/master/petugas?status=0')?}" role="tab">Tidak Aktif</a>
-                    </li> -->
-                    <!-- <li>
-                        <a href="{$jamjaga.printURL}" target="_blank" role="tab">Cetak</a>
-                    </li>
-                    <li class="{if: $jamjaga.addUrl}active{/if}">
-                        <a href="{$jamjaga.addURL}" role="tab">Tambah</a>
-                    </li>
-                </ul> -->
             </div>
             <div class="panel-body">
               <div class="row clearfix">
@@ -63,25 +49,11 @@
     									<td>{$value.jam_pulang}</td>
                                         <td>{$value.status}</td>
                                         <td>{$value.durasi}</td>
-    									<!-- <td class="text-right">
-    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
-    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
-    										</a>
-                                        {if: $value.status == '1'}
-                                            <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
-      										</a>
-                                        {else}
-                                            <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Restrore</span>
-      										</a>
-                                        {/if}
-    									</td> -->
     								</tr>
     								{/loop}
     								{else}
     								<tr>
-                                        <td colspan="4" class="text-center">Kosong</td>
+                                        <td colspan="6" class="text-center">Kosong</td>
                                     </tr>
     								{/if}
     							</tbody>
@@ -119,9 +91,8 @@ $('#myModal').on('shown.bs.modal', (function() {
       $('.modal-body').html('<iframe src="https://maps.google.com/maps?q=-3.4497701,114.8532037&z=17&output=embed" width="100%" height="100%" frameborder="0" style="border:0"></iframe>');
 
       mapIsAdded = true;
-    }    
+    }
   };
 })());
-*/  
+*/
 </script>
-
