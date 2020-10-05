@@ -194,7 +194,6 @@ class Admin extends AdminModule
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
 
         if (isset($_POST['check'])) {
-            //$request = $this->updateRequest();
 
             $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
             $opts = [
@@ -209,15 +208,12 @@ class Admin extends AdminModule
             $json = file_get_contents($url, false, stream_context_create($opts));
             $obj = json_decode($json, true);
             $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-            //if (new \DateTime('2020-10-01 12:00:00') < new \DateTime($new_date_format)) {
-            //  $settings['test_tanggal'] = $new_date_format;
-            //}
 
             if (!is_array($obj)) {
                 $this->tpl->set('error', $obj);
             } else {
                 if(mb_strlen($this->options->get('settings.version'), 'UTF-8') < 5) {
-                  $this->options('settings', 'version', '2020-01-01 00:00:00');                  
+                  $this->options('settings', 'version', '2020-01-01 00:00:00');
                 }
                 $this->options('settings', 'update_version', $new_date_format);
                 $this->options('settings', 'update_changelog', $obj['commit']['message']);
@@ -228,8 +224,6 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                //$request = $this->updateRequest();
-                //$this->download($request['download'], BASE_DIR.'/tmp/latest.zip');
                 $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
                 $opts = [
                     'http' => [
