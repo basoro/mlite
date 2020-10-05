@@ -25,7 +25,12 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo = $this->core->getSettings('logo');
         $poliklinik = $this->db('poliklinik')->toArray();
-        echo $this->draw('display.antrian.html', ['title' => $title, 'logo' => $logo, 'poliklinik' => $poliklinik]);
+        echo $this->draw('display.antrian.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'running_text' => $this->options->get('anjungan.text_anjungan'),
+          'poliklinik' => $poliklinik
+        ]);
         exit();
     }
 
@@ -33,7 +38,11 @@ class Site extends SiteModule
     {
         $title = 'Display Antrian Poliklinik';
         $display = $this->_resultDisplayAntrianPoli();
-        echo $this->draw('display.antrian.poli.html', ['title' => $title, 'display' => $display]);
+        echo $this->draw('display.antrian.poli.html', [
+          'title' => $title,
+          'running_text' => $this->options->get('anjungan.text_poli'),
+          'display' => $display
+        ]);
         exit();
     }
 
@@ -136,7 +145,12 @@ class Site extends SiteModule
         switch($show){
           default:
             $display = 'Depan';
-            echo $this->draw('display.antrian.loket.html', ['title' => $title, 'show' => $show, 'display' => $display]);
+            echo $this->draw('display.antrian.loket.html', [
+              'title' => $title,
+              'show' => $show,
+              'running_text' => $this->options->get('anjungan.text_loket'),
+              'display' => $display
+            ]);
           break;
           case "panggil_loket":
             $display = 'Panggil Loket';
