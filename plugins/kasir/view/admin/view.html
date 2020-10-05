@@ -1,0 +1,261 @@
+<form method="post">
+<div class="row">
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+							<div class="panel-heading">
+										<h3 class="panel-title">Tampil Detail Pembayaran</h3>
+							</div>
+							<div class="panel-body">
+	      					<div class="table-responsive no-margin">
+	      						<table class="table table-striped no-margin">
+	      							<thead>
+	      								<tr>
+	                        <th>Pilih</th>
+	                        <th>Keterangan</th>
+	                        <th>Tagihan/Tindakan/Terapi</th>
+	                        <th></th>
+	                        <th>Biaya</th>
+	                        <th>Jml</th>
+	      									<th>Tambahan</th>
+	                        <th>Total Biaya</th>
+	      								</tr>
+	      							</thead>
+	      							<tbody>
+	      								<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>No.Nota</td>
+	                        <td>: {$kasir.no_nota}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Unit/Instansi</td>
+	                        <td>: {$kasir.poliklinik.nm_poli}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Tanggal/Jam</td>
+	                        <td>: {?=date('Y-m-d')?} {?=date('H:i:s')?}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>No.RM</td>
+													<td>: {$kasir.no_rkm_medis}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Nama Pasien</td>
+													<td>: {$kasir.pasien.nm_pasien}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Alamat Pasien</td>
+													<td>: {$kasir.pasien.alamat} - {$kasir.pasien.nm_kel} - {$kasir.pasien.nm_kec}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Dokter</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$kasir.dokter.nm_dokter}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												{if: $kasir.dokter2.nm_dokter}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$kasir.dokter2.nm_dokter}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												{/if}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Registrasi</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($kasir.biaya_reg) ?}</td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Tindakan</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												{loop: $kasir.ralan_dr}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$value.nm_perawatan}</td>
+	                        <td>:</td>
+	                        <td align="right">{?= formatDuit($value.tarif_tindakandr)?}</td>
+	      									<td>{$value.jml}</td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($value.totaltarif_tindakandr)?}</td>
+	      								</tr>
+												{/loop}
+												{loop: $kasir.ralan_drpr}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$value.nm_perawatan}</td>
+	                        <td>:</td>
+	                        <td align="right">{?= formatDuit($value.tarif_tindakandr)?}</td>
+	      									<td>{$value.jml}</td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($value.totaltarif_tindakandr)?}</td>
+	      								</tr>
+												{/loop}
+												{loop: $kasir.ralan_pr}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$value.nm_perawatan}</td>
+	                        <td>:</td>
+	                        <td align="right">{?= formatDuit($value.tarif_tindakanpr)?}</td>
+	      									<td>{$value.jml}</td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($value.totaltarif_tindakanpr)?}</td>
+	      								</tr>
+												{/loop}
+												{loop: $kasir.lab}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$value.nm_perawatan}</td>
+	                        <td>:</td>
+	                        <td align="right">{?= formatDuit($value.biaya)?}</td>
+	      									<td>{$value.jml}</td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($value.total)?}</td>
+	      								</tr>
+												{/loop}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Obat & BHP</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												{loop: $kasir.obat}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{$value.nama_brng}</td>
+	                        <td>:</td>
+	                        <td align="right">{?= formatDuit($value.biaya_obat)?}</td>
+	      									<td>{$value.jml}</td>
+	                        <td></td>
+	                        <td align="right">{?= formatDuit($value.total)?}</td>
+	      								</tr>
+												{/loop}
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td></td>
+													<td>{?= formatDuit($kasir.total_obat)?}</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Tambahan Biaya</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+												<tr>
+	                        <td><input type="checkbox" name="no_rawat[]" class="list-item" value="{$kasir.no_rawat}" checked /></td>
+	      									<td>Potongan Biaya</td>
+													<td>:</td>
+	                        <td></td>
+	                        <td></td>
+	      									<td></td>
+	                        <td></td>
+	                        <td></td>
+	      								</tr>
+	      							</tbody>
+	      						</table>
+	      					</div>
+							</div>
+				</div>
+		</div>
+</div>
+<a href="{$kasir.addURL}" class="btn btn-default" data-toggle="modal" data-target="#moduleTambah">Tambah</a>
+<input type="submit" name="save" value="Simpan" class="btn btn-primary" />
+<input type="submit" name="nota" value="Nota" class="btn btn-info" />
+<input type="submit" name="kwintansi" value="Kwitansi" class="btn btn-success" />
+<input type="submit" name="batal" value="Batal" class="btn btn-danger" />
+</form>
+
+<!-- Modal -->
+<div class="modal fade" id="moduleTambah" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+
+<script>
+$('form').areYouSure( {'message':'Ada perubahan belum disimpan! Yakin ingin meninggalkan halaman ini?'} );
+</script>

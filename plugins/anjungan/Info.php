@@ -19,6 +19,33 @@ return [
         `end_time` time NOT NULL DEFAULT '00:00:00'
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
+      //$core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `antriloket` (
+      //  `loket` int(11) NOT NULL,
+      //  `antrian` int(11) NOT NULL
+      //) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+
+      //$core->db()->pdo()->exec("ALTER TABLE `antriloket`
+      //  ADD KEY `loket` (`loket`),
+      //  ADD KEY `antrian` (`antrian`);");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `antrics` (
+        `loket` int(11) NOT NULL,
+        `antrian` int(11) NOT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `antrics`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `antriprioritas` (
+        `loket` int(11) NOT NULL,
+        `antrian` int(11) NOT NULL
+      ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `antriprioritas`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);");
+
     },
     'uninstall'     =>  function () use ($core) {
       $core->db()->pdo()->exec("DELETE FROM `lite_options` WHERE `module` = 'anjungan'");

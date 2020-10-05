@@ -10,7 +10,7 @@ class Site extends SiteModule
     {
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/antrian', 'getDisplayAntrian');
-        $this->route('anjungan/loket', 'getDisplayAntrian');
+        $this->route('anjungan/loket', 'getDisplayAntrianLoket');
         $this->route('anjungan/poli', 'getDisplayAntrianPoli');
         $this->route('anjungan/ajax', 'getAjax');
     }
@@ -131,13 +131,206 @@ class Site extends SiteModule
     public function getDisplayAntrianLoket()
     {
         $title = 'Display Antrian Loket';
-        $display = $this->_resultDisplayAntrianLoket();
-        echo $this->draw('display.antrian.loket.html', ['title' => $title, 'display' => $display]);
+        $display = '';
+        $show = isset($_GET['show']) ? $_GET['show'] : "";
+        switch($show){
+          default:
+            $display = 'Depan';
+            echo $this->draw('display.antrian.loket.html', ['title' => $title, 'show' => $show, 'display' => $display]);
+          break;
+          case "panggil_loket":
+            $display = 'Panggil Loket';
+            $loket=['1','2','3'];
+            $get_antrian = $this->db('lite_antrian_loket')
+              ->select([
+                'noantrian' => 'MAX(noantrian)'
+              ])
+              ->where('type', 'Loket')
+              ->like('postdate', date('Y-m-d'))
+              ->oneArray();
+            $noantrian = 0;
+            if(!empty($get_antrian['noantrian'])) {
+              $noantrian = $get_antrian['noantrian'];
+            }
+
+            $antriloket = $this->db('antriloket')->oneArray();
+            $tcounter = $antriloket['antrian'];
+            $_tcounter = 1;
+            if(!empty($tcounter)) {
+              $_tcounter = $tcounter + 1;
+            }
+            if(isset($_GET['loket'])) {
+              $this->db('lite_antrian_loket')
+                ->where('type', 'Loket')
+                ->where('noantrian', $tcounter)
+                ->where('postdate', date('Y-m-d'))
+                ->save(['end_time' => date('H:i:s')]);
+              $this->db()->pdo()->exec("DELETE FROM `antriloket`");
+              $this->db('antriloket')->save([
+                'loket' => $_GET['loket'],
+                'antrian' => $_tcounter
+              ]);
+            }
+            if(isset($_GET['antrian'])) {
+              $this->db()->pdo()->exec("DELETE FROM `antriloket`");
+              $this->db('antriloket')->save([
+                'loket' => $_GET['reset'],
+                'antrian' => $_GET['antrian']
+              ]);
+            }
+            $hitung_antrian = $this->db('lite_antrian_loket')
+              ->where('type', 'Loket')
+              ->like('postdate', date('Y-m-d'))
+              ->toArray();
+            $counter = strlen($tcounter);
+            $xcounter = [];
+            for($i=0;$i<$counter;$i++){
+            	$xcounter[] = '<audio id="suarabel'.$i.'" src="{?=url()?}/plugins/anjungan/suara/'.substr($tcounter,$i,1).'.wav" ></audio>';
+            };
+
+            echo $this->draw('display.antrian.loket.html', [
+              'title' => $title,
+              'show' => $show,
+              'loket' => $loket,
+              'namaloket' => 'A',
+              'panggil_loket' => 'panggil_loket',
+              'antrian' => $tcounter,
+              'hitung_antrian' => $hitung_antrian,
+              'xcounter' => $xcounter,
+              'noantrian' =>$noantrian,
+              'display' => $display
+            ]);
+          break;
+          case "panggil_cs":
+            $display = 'Panggil CS';
+            $loket=['4','5'];
+            $get_antrian = $this->db('lite_antrian_loket')
+              ->select([
+                'noantrian' => 'MAX(noantrian)'
+              ])
+              ->where('type', 'CS')
+              ->like('postdate', date('Y-m-d'))
+              ->oneArray();
+            $noantrian = 0;
+            if(!empty($get_antrian['noantrian'])) {
+              $noantrian = $get_antrian['noantrian'];
+            }
+
+            $antriloket = $this->db('antrics')->oneArray();
+            $tcounter = $antriloket['antrian'];
+            $_tcounter = 1;
+            if(!empty($tcounter)) {
+              $_tcounter = $tcounter + 1;
+            }
+            if(isset($_GET['loket'])) {
+              $this->db('lite_antrian_loket')
+                ->where('type', 'CS')
+                ->where('noantrian', $tcounter)
+                ->where('postdate', date('Y-m-d'))
+                ->save(['end_time' => date('H:i:s')]);
+              $this->db()->pdo()->exec("DELETE FROM `antrics`");
+              $this->db('antrics')->save([
+                'loket' => $_GET['loket'],
+                'antrian' => $_tcounter
+              ]);
+            }
+            if(isset($_GET['antrian'])) {
+              $this->db()->pdo()->exec("DELETE FROM `antrics`");
+              $this->db('antrics')->save([
+                'loket' => $_GET['reset'],
+                'antrian' => $_GET['antrian']
+              ]);
+            }
+            $hitung_antrian = $this->db('lite_antrian_loket')
+              ->where('type', 'CS')
+              ->like('postdate', date('Y-m-d'))
+              ->toArray();
+            $counter = strlen($tcounter);
+            $xcounter = [];
+            for($i=0;$i<$counter;$i++){
+              $xcounter[] = '<audio id="suarabel'.$i.'" src="{?=url()?}/plugins/anjungan/suara/'.substr($tcounter,$i,1).'.wav" ></audio>';
+            };
+
+            echo $this->draw('display.antrian.loket.html', [
+              'title' => $title,
+              'show' => $show,
+              'loket' => $loket,
+              'namaloket' => 'B',
+              'panggil_loket' => 'panggil_cs',
+              'antrian' => $tcounter,
+              'hitung_antrian' => $hitung_antrian,
+              'xcounter' => $xcounter,
+              'noantrian' =>$noantrian,
+              'display' => $display
+            ]);
+          break;
+          case "panggil_prioritas":
+            $display = 'Panggil Prioritas';
+            $loket=['6','7'];
+            $get_antrian = $this->db('lite_antrian_loket')
+              ->select([
+                'noantrian' => 'MAX(noantrian)'
+              ])
+              ->where('type', 'Prioritas')
+              ->like('postdate', date('Y-m-d'))
+              ->oneArray();
+            $noantrian = 0;
+            if(!empty($get_antrian['noantrian'])) {
+              $noantrian = $get_antrian['noantrian'];
+            }
+
+            $antriloket = $this->db('antriprioritas')->oneArray();
+            $tcounter = $antriloket['antrian'];
+            $_tcounter = 1;
+            if(!empty($tcounter)) {
+              $_tcounter = $tcounter + 1;
+            }
+            if(isset($_GET['loket'])) {
+              $this->db('lite_antrian_loket')
+                ->where('type', 'Prioritas')
+                ->where('noantrian', $tcounter)
+                ->where('postdate', date('Y-m-d'))
+                ->save(['end_time' => date('H:i:s')]);
+              $this->db()->pdo()->exec("DELETE FROM `antriloket`");
+              $this->db('antriprioritas')->save([
+                'loket' => $_GET['loket'],
+                'antrian' => $_tcounter
+              ]);
+            }
+            if(isset($_GET['antrian'])) {
+              $this->db()->pdo()->exec("DELETE FROM `antriprioritas`");
+              $this->db('antriprioritas')->save([
+                'loket' => $_GET['reset'],
+                'antrian' => $_GET['antrian']
+              ]);
+            }
+            $hitung_antrian = $this->db('lite_antrian_loket')
+              ->where('type', 'Prioritas')
+              ->like('postdate', date('Y-m-d'))
+              ->toArray();
+            $counter = strlen($tcounter);
+            $xcounter = [];
+            for($i=0;$i<$counter;$i++){
+              $xcounter[] = '<audio id="suarabel'.$i.'" src="{?=url()?}/plugins/anjungan/suara/'.substr($tcounter,$i,1).'.wav" ></audio>';
+            };
+
+            echo $this->draw('display.antrian.loket.html', [
+              'title' => $title,
+              'show' => $show,
+              'loket' => $loket,
+              'namaloket' => 'C',
+              'panggil_loket' => 'panggil_prioritas', 
+              'antrian' => $tcounter,
+              'hitung_antrian' => $hitung_antrian,
+              'xcounter' => $xcounter,
+              'noantrian' =>$noantrian,
+              'display' => $display
+            ]);
+          break;
+        }
+        exit();
     }
 
-    public function _resultDisplayAntrianLoket()
-    {
-    }
     public function getAjax()
     {
       $show = isset($_GET['show']) ? $_GET['show'] : "";
@@ -145,7 +338,7 @@ class Site extends SiteModule
        default:
         break;
         case "tampilloket":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -161,7 +354,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printloket":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -186,7 +379,7 @@ class Site extends SiteModule
         					data:$(this).serialize(),
         					success:function(data){
         						setTimeout('$("#loading").hide()',1000);
-        						window.location.href = "{?=url('anjungan/antrian')?}";
+        						//window.location.href = "{?=url('anjungan/antrian')?}";
         						}
         					});
         				return false;
@@ -206,10 +399,10 @@ class Site extends SiteModule
               'start_time' => date('H:i:s'),
               'end_time' => '00:00:00'
             ]);
-          redirect(url('anjungan/antrian'));
+          //redirect(url('anjungan/antrian'));
         break;
         case "tampilcs":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -225,7 +418,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printcs":
-          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+          $result = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -271,6 +464,45 @@ class Site extends SiteModule
               'end_time' => '00:00:00'
             ]);
           redirect(url('anjungan/antrian'));
+        break;
+        case "loket":
+          $antrian = $this->db('antriloket')->oneArray();
+          echo $antrian['loket'];
+        break;
+        case "antriloket":
+          $antrian = $this->db('antriloket')->oneArray();
+          $antrian = $antrian['antrian'] - 1;
+          if($antrian == '-1') {
+            echo '0';
+          } else {
+            echo $antrian;
+          }
+        break;
+        case "cs":
+          $antrian = $this->db('antrics')->oneArray();
+          echo $antrian['loket'];
+        break;
+        case "antrics":
+          $antrian = $this->db('antrics')->oneArray();
+          $antrian = $antrian['antrian'] - 1;
+          if($antrian == '-1') {
+            echo '0';
+          } else {
+            echo $antrian;
+          }
+        break;
+        case "prioritas":
+          $antrian = $this->db('antriprioritas')->oneArray();
+          echo $antrian['loket'];
+        break;
+        case "antriprioritas":
+          $antrian = $this->db('antriprioritas')->oneArray();
+          $antrian = $antrian['antrian'] - 1;
+          if($antrian == '-1') {
+            echo '0';
+          } else {
+            echo $antrian;
+          }
         break;
         case "get-skdp":
           if(!empty($_POST['no_rkm_medis'])){

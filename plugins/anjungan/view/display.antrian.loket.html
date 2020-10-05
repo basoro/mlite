@@ -12,27 +12,445 @@
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
-    <script src="{?=url(THEMES)?}/js/theme.js"></script>
     <style media="screen">
       body {
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         color: #fff;
-      	background: #0264d6; /* Old browsers */
-      	background: -moz-radial-gradient(center, ellipse cover,  #0264d6 1%, #1c2b5a 100%); /* FF3.6+ */
-      	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(1%,#0264d6), color-stop(100%,#1c2b5a)); /* Chrome,Safari4+ */
-      	background: -webkit-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Chrome10+,Safari5.1+ */
-      	background: -o-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Opera 12+ */
-      	background: -ms-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* IE10+ */
-      	background: radial-gradient(ellipse at center,  #0264d6 1%,#1c2b5a 100%); /* W3C */
-      	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0264d6', endColorstr='#1c2b5a',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+      	background: #0264d6;
       	height:calc(100vh);
       	width:100%;
+      }
+      .antrian_judul {
+        font-size:56px;
+        padding-bottom:20px;
+      }
+      .loket {
+        padding: 0;
+      }
+      .loket a {
+        text-decoration: none;
+      }
+      .kiri {
+        float: left;
+        width:80%;
+        padding: 10px;
+      }
+      .kanan {
+        float: right;
+        width:20%;
+        padding: 10px;
+      }
+      .panel-body .no_antrian {
+        font-size:100px;
+        font-weight:lighter;
+        padding:0;
+        margin-top:-45px;
+        margin-bottom:-45px;
+      }
+      .panel-footer .no_loket {
+        font-size:40px;
+        color: #000;
+        padding-top:0;
+        padding-bottom:0;
+      }
+      .panel-body .date {
+        font-size:21px;
+        color: #FF0000;
+        font-weight:lighter;
+        padding-top:5px;
+        padding-bottom:5px;
+        margin-top:-20px;
+        margin-bottom:-25px;
+      }
+      .panel-footer .clock {
+        font-size:26px;
+        color: #000;
+        padding-top:0;
+        padding-bottom:0;
+      }
+      .panel-title.marquee {
+         font-size:36px;
+         padding-top: 10px;
+         padding-bottom: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+         color: #FF0000;
+         background-color: #fff;
       }
     </style>
 </head>
 <body>
-<div class="container-fluid">
+  <div class="container-fluid">
+    {if: !$show}
+    <h1 class="text-center text-white antrian_judul">Antrian Loket {$settings.nama_instansi}</h1>
+    <div class="row loket">
+      <div class="kiri">
+        <div class="card bg-dark text-white">
+          <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="kanan">
+          <a href="{?=url()?}/anjungan/loket?show=panggil_loket" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body text-success">
+                <div class="no_antrian">A<span class="antrian_loket"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_loket"><span></div>
+              </div>
+            </div>
+          </a>
+          <a href="{?=url()?}/anjungan/loket?show=panggil_cs" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body text-success">
+                <div class="no_antrian">B<span class="antrian_cs"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_cs"><span></div>
+                </div>
+            </div>
+          </a>
+          <a href="{?=url()?}/anjungan/loket?show=panggil_prioritas" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body text-success">
+                <div class="no_antrian">C<span class="antrian_prioritas"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_prioritas"><span></div>
+              </div>
+            </div>
+          </a>
+          <div class="panel border-success">
+            <div class="panel-body text-success">
+              <div class="date">
+                <script type='text/javascript'>
+            			<!--
+            			var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+            			var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+            			var date = new Date();
+            			var day = date.getDate();
+            			var month = date.getMonth();
+            			var thisDay = date.getDay(),
+            			    thisDay = myDays[thisDay];
+            			var yy = date.getYear();
+            			var year = (yy < 1000) ? yy + 1900 : yy;
+            			document.write(thisDay + ', ' + day + ' ' + months[month] + ' ' + year);
+            			//-->
+            		</script>
+              </div>
+            </div>
+            <div class="panel-footer border-success" style="background-color:#ffcc00;">
+              <div class="clock"><span id="clock"><span></div>
+            </div>
+          </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="panel-title marquee">
+        <marquee>Test</marquee>
+      </div>
+    </div>
+    {/if}
+    {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
+      <audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
+      <audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
+      <audio id="a" src="{?=url()?}/plugins/anjungan/suara/a.wav"></audio>
+      <audio id="counter" src="{?=url()?}/plugins/anjungan/suara/counter.wav"></audio>
+      <audio id="nol" src="{?=url()?}/plugins/anjungan/suara/nol.wav"></audio>
+      <audio id="belas" src="{?=url()?}/plugins/anjungan/suara/belas.wav"></audio>
+      <audio id="sebelas" src="{?=url()?}/plugins/anjungan/suara/sebelas.wav"></audio>
+      <audio id="puluh" src="{?=url()?}/plugins/anjungan/suara/puluh.wav"></audio>
+      <audio id="sepuluh" src="{?=url()?}/plugins/anjungan/suara/sepuluh.wav"></audio>
+      <audio id="ratus" src="{?=url()?}/plugins/anjungan/suara/ratus.wav"></audio>
+      <audio id="seratus" src="{?=url()?}/plugins/anjungan/suara/seratus.wav"></audio>
+      {loop: $loket}
+        <audio id="suarabelloket{$value}" src="{?=url()?}/plugins/anjungan/suara/{$value}.wav"></audio>
+      {/loop}
+      {loop: $xcounter}
+        {$value}
+      {/loop}
+      <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;">Pemanggil Antrian Loket</div>
+      <div class="container text-center">
+        <div class="row">
+      		<div class="card-deck">
+              {loop: $loket}
+      				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 mb-5">
+      				  <div class="panel" style="color:#000;">
+      			      <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
+      				    <div class="panel-body">
+      							<h5 class="panel-title" style="font-size:72px;">{$namaloket}{$antrian}</h5>
+      				    </div>
+      				    <div class="panel-footer">
+      							<div class="btn-group btn-group-justified">
+      							  <a href="#" class="btn btn-primary" style="font-size:32px;">{$noantrian}</a>
+      							  <a href="#" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-bullhorn" onclick="mulai{$value}()"></i></a>
+      							  <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
+      							</div>
+      				    </div>
+      				  </div>
+      				</div>
+              {/loop}
+      		</div>
+      	</div>
+      </div>
+      <div class="text-center" style="width: 300px;margin: 20px auto;">
+        <form action="">
+          <input type="hidden" name="show" value="{$panggil_loket}">
+          <input type="hidden" name="reset" value="{?=isset($_GET['loket'])?$_GET['loket']:'1'?}">
+          <div class="row">
+            <div class="col">
+                <div class="input-group input-group-lg">
+                    <input type="text" class="form-control form-control-lg" name="antrian" placeholder="Input Nomor Antrian">
+                    <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
+                        <button class="btn btn-danger" type="submit">Reset</button>
+                    </span>
+                </div>
+            </div>
+          </div>
+        </form>
+      </div>
 
-</div>
+      <div class="text-center text-white" style="font-size:20px;">
+        # Klik 1X Tombol <i class="fa fa-forward"></i> Untuk Antrian Nomor Urut Selanjutnya dan Klik Tombol <i class="fa fa-bullhorn"></i> Untuk Memanggil </br>
+        # Untuk Menyesuaikan Urutan, Masukan Nomor Urut Yang Akan dipanggil kemudian Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
+        # Untuk Reset Nomor Antrian, masukkan nomor antrian, Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
+        # Angka di Sebelah Kiri Tombol Pemanggil Menunjukan Jumlah Nomor Antrian Yang Telah diambil Pasien</br>
+      </div>
+    {/if}
+  </div>
 </body>
 </html>
+{if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
+  {loop: $loket}
+    <script>
+    function mulai{$value}(){
+      $("#antrian")[0].play()
+      totalwaktu=document.getElementById('antrian').duration*1200;
+      setTimeout(function() { $("#a")[0].play() }, totalwaktu);
+      totalwaktu=totalwaktu+1000;
+      {if: $antrian < 10}
+        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+        totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 10}
+        setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
+        totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 11}
+    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian < 20}
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 20}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian <= 99}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+900;
+      {elseif: $antrian == 100}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian <= 109}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 110}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 111}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 119}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian ==120 or $antrian ==130 or $antrian ==140 or $antrian ==150 or $antrian ==160 or $antrian ==170 or $antrian ==180 or $antrian ==190}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 199}
+    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 200}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian <= 209}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000
+      {elseif: $antrian == 210}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian == 211}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian ==220 or $antrian ==230 or $antrian ==240 or $antrian ==250 or $antrian ==260 or $antrian ==270 or $antrian ==280 or $antrian ==290}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {elseif: $antrian <= 299}
+    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
+    		totalwaktu=totalwaktu+1000;
+      {else}
+        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
+        totalwaktu=totalwaktu+1000;
+        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
+        totalwaktu=totalwaktu+1000;
+      {/if}
+      totalwaktu=totalwaktu+1000;
+      setTimeout(function() { $("#counter")[0].play() }, totalwaktu);
+      totalwaktu=totalwaktu+1000;
+      setTimeout(function() { $("#suarabelloket{$value}")[0].play() }, totalwaktu);
+      totalwaktu=totalwaktu+1000;
+      setTimeout(function() { $("#notif")[0].play() }, totalwaktu);
+    }
+    </script>
+  {/loop}
+{/if}
+<script>
+
+setInterval(function(){ getAntrianLoket(); }, 2000);
+
+function getAntrianLoket() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=antriloket',
+    type: 'post',
+    success: function(data) {
+      $('.antrian_loket').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getAntrianCS(); }, 2000);
+
+function getAntrianCS() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=antrics',
+    type: 'post',
+    success: function(data) {
+      $('.antrian_cs').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getAntrianPrioritas(); }, 2000);
+
+function getAntrianPrioritas() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=antriprioritas',
+    type: 'post',
+    success: function(data) {
+      $('.antrian_prioritas').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getLoket(); }, 2000);
+
+function getLoket() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=loket',
+    type: 'post',
+    success: function(data) {
+      $('.get_loket').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getCS(); }, 2000);
+
+function getCS() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=cs',
+    type: 'post',
+    success: function(data) {
+      $('.get_cs').html(data);
+    }
+  });
+};
+
+setInterval(function(){ getPrioritas(); }, 2000);
+
+function getPrioritas() {
+  $.ajax({
+    url: '{?=url()?}/anjungan/ajax?show=antriprioritas',
+    type: 'post',
+    success: function(data) {
+      $('.get_prioritas').html(data);
+    }
+  });
+};
+
+function showTime() {
+    var a_p = "WIB";
+    var today = new Date();
+    var curr_hour = today.getHours();
+    var curr_minute = today.getMinutes();
+    var curr_second = today.getSeconds();
+    curr_hour = checkTime(curr_hour);
+    curr_minute = checkTime(curr_minute);
+    curr_second = checkTime(curr_second);
+ document.getElementById('clock').innerHTML=curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+    }
+
+function checkTime(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
+{if: !$show}
+setInterval(showTime, 500);
+{/if}
+
+</script>

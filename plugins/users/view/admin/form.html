@@ -12,7 +12,7 @@
                       <label>Pengguna</label>
                       <select name="username" id="username" class="form-control">
                           {loop: $users.user}
-                              <option value="{$value.nik}"{if: $value.nik == $users.form.username} selected{/if}>{$value.nama}</option>
+                              <option value="{$value.nik}"{if: $value.nik == $users.form.username} selected{/if}>{$value.nama} - {$value.nik}</option>
                           {/loop}
                       </select>
                   </div>
@@ -34,7 +34,7 @@
                       <select name="cap[]" multiple class="form-control">
                         <option value="">Pilih Cap</option>
                         {loop: $users.cap}
-                          <option value="{$value.cap}" {$value.attr}>{$value.nm_cap}</option>
+                          <option value="{$value.cap}" {$value.attr}>{$value.nm_cap} - {$value.cap}</option>
                         {/loop}
                       </select>
                   </div>

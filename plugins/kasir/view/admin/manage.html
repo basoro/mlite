@@ -1,0 +1,64 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Pembayaran</h3>
+                <ul class="nav nav-tabs">
+                    <li class="{if: $tab == 'ralan'}active{/if}">
+                        <a href="{?=url(ADMIN.'/kasir/manage/ralan')?}" role="tab">Rawat Jalan</a>
+                    </li>
+                    <li class="{if: $tab == 'ranap'}active{/if}">
+                        <a href="{?=url(ADMIN.'/kasir/manage/ranap')?}" role="tab">Rawat Inap</a>
+                    </li>
+				        </ul>
+            </div>
+            <div class="panel-body">
+      					<div class="table-responsive no-margin">
+      						<table class="table table-striped no-margin display" width="100%">
+      							<thead>
+      								<tr>
+                        <th>No. Rawat</th>
+                        <th>No. RM</th>
+                        <th>No. Reg</th>
+                        <th>Alamat</th>
+                        <th>Tgl. Reg</th>
+                        <th>Jam. Reg</th>
+                        <th>Status</th>
+      								</tr>
+      							</thead>
+      							<tbody>
+              			{if: !empty($pasien)}
+      								{loop: $pasien}
+      								<tr>
+                        <td><a href="{$value.viewURL}">{$value.no_rawat}</a></td>
+                        <td>{$value.no_rkm_medis}</td>
+                        <td>{$value.no_reg}</td>
+                        <td>{$value.almt_pj}</td>
+                        <td>{$value.tgl_registrasi}</td>
+                        <td>{$value.jam_reg}</td>
+                        <td>{$value.status_bayar} - {$value.status_lanjut}</td>
+      								</tr>
+      								{/loop}
+      								{else}
+      								<tr><td colspan="12" class="text-center">Data pasien tidak ditemukan</td></tr>
+      							{/if}
+      							</tbody>
+      						</table>
+      					</div>
+            </div>
+        </div>
+    </div>
+</article>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+      $('.display').DataTable({
+        "lengthChange": false,
+        "scrollX": true,
+        "language": { "search": "" },
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      var t = $(".display").DataTable().rows().count();
+      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  });
+</script>

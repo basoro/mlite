@@ -198,13 +198,15 @@
       <!-- Modal body -->
       <div class="modal-body">
         <center>
-          <div id="camera"></div>
+          <div id="camera"></div><br>
+          {if: empty($cek_presensi)}
           <select class="form-control" id="shift" style="width:140px;">
             <option value="">Pilih Shift</option>
-            <option value="Pagi">Pagi</option>
-            <option value="Siang">Siang</option>
-            <option value="Malam">Malam</option>
+            {loop: $jam_jaga}
+            <option value="{$value.shift}">{$value.shift}</option>
+            {/loop}
           </select><br><br>
+          {/if}
           <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
           <input type="hidden" name="image" id="image-tag">
           <div id="results"></div>
