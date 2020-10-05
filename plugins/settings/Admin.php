@@ -216,6 +216,9 @@ class Admin extends AdminModule
             if (!is_array($obj)) {
                 $this->tpl->set('error', $obj);
             } else {
+                if(mb_strlen($this->options->get('settings.version'), 'UTF-8') < 5) {
+                  $this->options('settings', 'version', '2020-01-01 00:00:00');                  
+                }
                 $this->options('settings', 'update_version', $new_date_format);
                 $this->options('settings', 'update_changelog', $obj['commit']['message']);
             }
