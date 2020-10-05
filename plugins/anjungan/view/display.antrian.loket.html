@@ -156,7 +156,7 @@
     {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
       <audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
       <audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
-      <audio id="{$namaloket}" src="{?=url()?}/plugins/anjungan/suara/a.wav"></audio>
+      <audio id="{$namaloket}" src="{?=url()?}/plugins/anjungan/suara/{$namaloket}.wav"></audio>
       <audio id="counter" src="{?=url()?}/plugins/anjungan/suara/counter.wav"></audio>
       <audio id="nol" src="{?=url()?}/plugins/anjungan/suara/nol.wav"></audio>
       <audio id="belas" src="{?=url()?}/plugins/anjungan/suara/belas.wav"></audio>
