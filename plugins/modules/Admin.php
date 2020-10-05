@@ -244,6 +244,6 @@ class Admin extends AdminModule
     {
         $systemVersion = $this->options->get('settings.version');
         $version = str_replace(['.', '*'], ['\\.', '[0-9]+'], $version);
-        return preg_match('/^'.$version.'[a-z]*$/', $systemVersion);
+        return preg_match('/^'.$version.'[a-z]*$/', substr($systemVersion, 0, 4));
     }
 }

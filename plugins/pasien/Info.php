@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan data pasien.',
     'author'        =>  'Basoro',
     'version'       =>  '1.3',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('pasien', 'ceknoktp', '0')");

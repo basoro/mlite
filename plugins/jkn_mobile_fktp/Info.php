@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul Khanza JKN Mobile API untuk FKTP',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile FKTP' => 'jknmobilefktp'],
     'install'       =>  function () use ($core) {

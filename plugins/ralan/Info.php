@@ -4,7 +4,7 @@ return [
     'description'   =>  'Pengelolaan data pasien rawat jalan.',
     'author'        =>  'Basoro',
     'version'       =>  '1.2',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'wheelchair',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('ralan', 'tab_resep', '0')");

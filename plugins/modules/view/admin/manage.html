@@ -20,7 +20,7 @@
 							<tr>
 								<th colspan="2">Module</th>
 								<th>Versi</th>
-                                <!--<th>Status</th>-->
+                                <th>Status</th>
 								<th class="text-right">Aksi</th>
 							</tr>
 						</thead>
@@ -36,13 +36,13 @@
                                         <p>{$value.description|cut:54}</p>
                                     </td>
                                     <td>{$value.version}</td>
-                                    <!--<td>
+                                    <td>
                                         {if: !$value.compatible}
                                             <span class="label label-danger">Lawas</span>
                                         {else}
                                             <span class="label label-primary">Sesuai</span>
                                         {/if}
-                                    </td>-->
+                                    </td>
                                     <td class="text-right">
                                         <a href="{$value.detailsUrl}" class="btn btn-primary btn-xs" data-toggle="modal" data-target="#moduleModal">
                                             <i class="fa fa-search"></i> <span class="hidden-xs">Detil</span>

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Kumpulan data digital pasien',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'camera',
 
     'install'       =>  function () use ($core) {

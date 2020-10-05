@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul pasien rawat inap',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'hotel', // Icon from https://fontawesome.com/v4.7.0/icons/
 
     // Registering page for possible use as a homepage

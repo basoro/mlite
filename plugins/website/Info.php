@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul website untuk Rumah Sakit',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'globe',
     'pages'         =>  ['Modul Website' => 'website'],
     'install'       =>  function () use ($core) {
