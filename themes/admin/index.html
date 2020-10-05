@@ -62,6 +62,7 @@
                         <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/admin/"><span class="first">{$opensimrs.title}</span></a></div>
                     </div>
                     <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden-sm hidden-xs"><a href="{?= url([ADMIN, 'settings', 'updates']) ?}" class="small"><span class="label label-danger">{$opensimrs.get_version}</span></a></li>
                         <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>{?= sprintf('Apa kabar <strong>%s</strong>?', $opensimrs.nama) ?}</span></a></li>
                         <li class="hidden-sm hidden-xs"><a href="{?=url('')?}" target="_blank" class="fa fa-globe" data-toggle="tooltip" data-placement="bottom" title="Tampilkan"></a></li>
                         <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
