@@ -24,7 +24,7 @@ class Admin extends AdminModule
     {
         $result = [];
 
-        foreach ($this->db('reg_periksa')->where('status_lanjut', $status_lanjut)->toArray() as $row) {
+        foreach ($this->db('reg_periksa')->where('status_lanjut', $status_lanjut)->where('status_bayar', 'Belum Bayar')->toArray() as $row) {
             $row['viewURL'] = url([ADMIN, 'kasir', 'view', convertNorawat($row['no_rawat'])]);
             $result[] = $row;
         }
