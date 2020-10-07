@@ -2,8 +2,8 @@
 const cacheName = 'cache-v2';
 const precacheResources = [
   '/',
-  'bootstrap.min.js',
-  '../css/bootstrap.min.css',
+  'assets/jscripts/bootstrap.min.js',
+  'assets/css/bootstrap.min.css',
 ];
 
 self.addEventListener('install', event => {

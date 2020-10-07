@@ -43,7 +43,7 @@
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
-        .register("{$opensimrs.path}/assets/jscripts/service-worker.js")
+        .register("{$opensimrs.path}/service-worker.js")
         .then((swReg) => {
           console.log("Service Worker is registered", swReg);
         })
