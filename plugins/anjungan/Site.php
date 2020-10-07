@@ -156,13 +156,7 @@ class Site extends SiteModule
             $display = 'Panggil Loket';
             $setting_antrian_loket = str_replace(",","','", $this->options->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->options->get('anjungan.antrian_loket'));
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'Loket')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -219,13 +213,7 @@ class Site extends SiteModule
           case "panggil_cs":
             $display = 'Panggil CS';
             $loket = explode(",", $this->options->get('anjungan.antrian_cs'));
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'CS')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -282,13 +270,7 @@ class Site extends SiteModule
           case "panggil_prioritas":
             $display = 'Panggil Prioritas';
             $loket = explode(",", $this->options->get('anjungan.antrian_prioritas'));
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'Prioritas')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Prioritas')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
