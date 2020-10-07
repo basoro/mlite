@@ -12,7 +12,7 @@
     <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
-    <link rel="manifest" href="{$opensimrs.path}/manifest.json" />
+    <link rel="manifest" href="{$opensimrs.path}/assets/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="application-name" content="Space Missions" />
@@ -120,7 +120,7 @@
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
-        .register("{$opensimrs.path}/service-worker.js")
+        .register("{$opensimrs.path}/assets/jscripts/service-worker.js")
         .then((swReg) => {
           console.log("Service Worker is registered", swReg);
         })

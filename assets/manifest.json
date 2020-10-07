@@ -8,23 +8,23 @@
   "background_color": "#4C9A2A",
   "icons": [
     {
-      "src": "assets/images/icon-128x128.png",
+      "src": "images/icon-128x128.png",
       "sizes": "128x128"
     },
     {
-      "src": "assets/images/icon-192x192.png",
+      "src": "images/icon-192x192.png",
       "sizes": "192x192"
     },
     {
-      "src": "assets/images/icon-256x256.png",
+      "src": "images/icon-256x256.png",
       "sizes": "256x256"
     },
     {
-      "src": "assets/images/icon-384x384.png",
+      "src": "images/icon-384x384.png",
       "sizes": "384x384"
     },
     {
-      "src": "assets/images/icon-512x512.png",
+      "src": "images/icon-512x512.png",
       "sizes": "512x512"
     }
   ]
