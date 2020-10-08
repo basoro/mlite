@@ -4,8 +4,8 @@ return [
     'name'          =>  'Pengguna',
     'description'   =>  'Pengelolaan akun pengguna.',
     'author'        =>  'Basoro',
-    'version'       =>  '1.0',
-    'compatibility' =>  '2020',
+    'version'       =>  '1.1',
+    'compatibility' =>  '3.*',
     'icon'          =>  'user-md',
 
     'install'       =>  function () use ($core) {

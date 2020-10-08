@@ -4,9 +4,12 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Kelola Data Pegawai</h3>
                 <ul class="nav nav-tabs">
-                    <li class="active">
-                        <a href="{?=url(ADMIN.'/master/pegawai/')?}" role="tab">Pegawai</a>
+                    <li class="{if: empty($pegawai.getStatus)}active{/if}">
+                        <a href="{?=url(ADMIN.'/kepegawaian/manage/')?}" role="tab">Aktif</a>
                     </li>
+                    <li class="{if: !empty($pegawai.getStatus)}active{/if}">
+                      <a href="{?=url(ADMIN.'/kepegawaian/manage?status=KELUAR')?}" role="tab">Non Aktif</a>
+                  </li>
                     <li>
                         <a href="{$pegawai.printURL}" target="_blank" role="tab">Cetak</a>
                     </li>

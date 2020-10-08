@@ -6,18 +6,18 @@
             </div>
             <div class="panel-body">
               <div class="row clearfix">
-                <div class="col col-md-6">
+                <div class="col col-md-5">
                   <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?}</h3>
                 </div>
-                <div class="col col-md-6">
+                <div class="col col-md-7">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                      <div class="input-group">
-                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
-                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                          <span class="input-group-btn">
-                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                      </div>
+                    <div class="input-group">
+                      <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                      </span>
+                    </div>
                   </form>
                 </div>
               </div>
@@ -25,36 +25,35 @@
     				    <table class="table table-striped no-margin">
     					    <thead>
     						    <tr>
-                                    <th>Nama</th>
-                                    <th>Shift</th>
-                                    <th>Jam Datang</th>
-    								<th>Jam Pulang</th>
-                                    <th>Status</th>
-                                    <th>Durasi</th>
-    								<!-- <th class="text-right">Aksi</th> -->
+                        <th>Nama</th>
+                        <th>Shift</th>
+                        <th>Jam Datang</th>
+    								    <th>Jam Pulang</th>
+                        <th>Status</th>
+                        <th>Durasi</th>
     							</tr>
     						</thead>
     						<tbody>
-        						{if: !empty($rekap.list)}
-								{loop: $rekap.list}
+        				  {if: !empty($rekap.list)}
+								  {loop: $rekap.list}
     								<tr>
-                                        <td>
-                                          <a href="{$value.photo}" class="gallery">
-                                          <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
-                                          </a>
-                                          <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
-                                      	</td>
-                                        <td>{$value.shift}</td>
+                      <td>
+                        <a href="{$value.photo}" class="gallery">
+                          <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                        </a>
+                        <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
+                      </td>
+                      <td>{$value.shift}</td>
     									<td>{$value.jam_datang}</td>
     									<td>{$value.jam_pulang}</td>
-                                        <td>{$value.status}</td>
-                                        <td>{$value.durasi}</td>
+                      <td>{$value.status}</td>
+                      <td>{$value.durasi}</td>
     								</tr>
     								{/loop}
     								{else}
     								<tr>
-                                        <td colspan="6" class="text-center">Kosong</td>
-                                    </tr>
+                      <td colspan="4" class="text-center">Kosong</td>
+                    </tr>
     								{/if}
     							</tbody>
     						</table>

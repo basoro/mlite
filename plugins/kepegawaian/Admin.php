@@ -24,15 +24,30 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
+        $status = 'AKTIF';
+        if(isset($_GET['status']))
+            $status = $_GET['status'];
+    
         // pagination
-        $totalRecords = $this->db('pegawai')->select('nik')->like('nik', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d']));
+        $totalRecords = $this->db('pegawai')->select('nik')->like('nik', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')
+        ->orLike('departemen', '%'.$phrase.'%')
+        ->orLike('bidang', '%'.$phrase.'%')
+        ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d?s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
         // list
         $offset = $pagination->offset();
-        $rows = $this->db('pegawai')->like('nik', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->offset($offset)->limit($perpage)->toArray();
+        $rows = $this->db('pegawai')
+                    ->where('stts_aktif', $status)
+                    ->like('nik', '%'.$phrase.'%')
+                    ->orLike('nama', '%'.$phrase.'%')
+                    ->orLike('departemen', '%'.$phrase.'%')
+                    ->orLike('bidang', '%'.$phrase.'%')
+                    ->offset($offset)
+                    ->limit($perpage)
+                    ->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {
