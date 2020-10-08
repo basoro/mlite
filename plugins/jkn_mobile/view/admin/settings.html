@@ -103,7 +103,7 @@
                         </div>
                         <div class="col-md-6">
         										<div class="form-group">
-        	    	                <label>Bahasa Pasien</label>
+        	    	                <label>Suku Bangsa Pasien</label>
                                 <select name="jkn_mobile[suku_bangsa]" class="form-control">
           												{loop: $settings.suku_bangsa}
           													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
@@ -115,7 +115,7 @@
                     <div class="row clearfix">
                         <div class="col-md-6">
         										<div class="form-group">
-        	    	                <label>Suku Bangsa Pasien</label>
+        	    	                <label>Bahasa Pasien</label>
                                 <select name="jkn_mobile[bahasa_pasien]" class="form-control">
           												{loop: $settings.bahasa_pasien}
           													<option value="{$value.id}"{if: $value.id == $settings.jkn_mobile.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>

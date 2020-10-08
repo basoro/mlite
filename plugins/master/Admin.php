@@ -38,8 +38,7 @@ class Admin extends AdminModule
         // pagination
         $totalRecords = $this->db('dokter')
           ->select('kd_dokter')
-          ->like('kd_dokter', '%'.$phrase.'%')
-          ->orLike('nm_dokter', '%'.$phrase.'%')
+          ->like('nm_dokter', '%'.$phrase.'%')
           ->where('status', $status)
           ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'master', 'dokter', '%d']));
@@ -49,8 +48,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
         $rows = $this->db('dokter')
-          ->like('kd_dokter', '%'.$phrase.'%')
-          ->orLike('nm_dokter', '%'.$phrase.'%')
+          ->like('nm_dokter', '%'.$phrase.'%')
           ->where('status', $status)
           ->offset($offset)
           ->limit($perpage)

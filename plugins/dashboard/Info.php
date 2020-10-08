@@ -5,7 +5,7 @@ return [
     'description'   =>  'Statistik, grafik dan akses modul.',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'home',
     'pages'         =>  ['Dashboard' => 'dashboard'],
     'install'       =>  function () use ($core) {

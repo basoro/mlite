@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul epasien',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'heartbeat',
     'pages'         =>  ['e-Pasien' => 'pasien'],
     'install'       =>  function () use ($core) {

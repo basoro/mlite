@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengaturan umum Khanza LITE.',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'wrench',
 
     'install'       =>  function () use ($core) {

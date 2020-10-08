@@ -10,6 +10,26 @@
     <link href="{$opensimrs.path}/assets/css/bootstrap-theme.min.css?v={$opensimrs.version}" rel="stylesheet">
     <link href="{?= url(THEMES.'/admin/css/style.css?v='.$opensimrs.version) ?}" rel="stylesheet">
     <link href="{$opensimrs.path}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <link rel="manifest" href="{$opensimrs.path}/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="Khanza LITE" />
+    <meta name="apple-mobile-web-app-title" content="Khanza LITE" />
+    <meta name="theme-color" content="#4C9A2A" />
+    <meta name="msapplication-navbutton-color" content="#4C9A2A" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="green-translucent" />
+    <meta name="msapplication-starturl" content="{$opensimrs.dashboard}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" sizes="128x128" href="{$opensimrs.path}/assets/images/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="{$opensimrs.path}/assets/images/icon-128x128.png" />
+    <link rel="icon" sizes="192x192" href="{$opensimrs.path}/assets/images/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="{$opensimrs.path}/assets/images/icon-192x192.png" />
+    <link rel="icon" sizes="256x256" href="{$opensimrs.path}/assets/images/icon-256x256.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="{$opensimrs.path}/assets/images/ticon-256x256.png" />
+    <link rel="icon" sizes="384x384" href="{$opensimrs.path}/assets/images/icon-384x384.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="{$opensimrs.path}/assets/images/icon-384x384.png" />
+    <link rel="icon" sizes="512x512" href="{$opensimrs.path}/assets/images/icon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="{$opensimrs.path}/assets/images/icon-512x512.png" />
     <script src="{$opensimrs.path}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$opensimrs.version) ?}"></script>
 </head>
@@ -50,8 +70,23 @@
 		{/if}
 	</section>
 
-    <script>
-    $(':checkbox').kalypto();
-    </script>
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+      .register("{$opensimrs.path}/service-worker.js")
+      .then((swReg) => {
+        console.log("Service Worker is registered", swReg);
+      })
+      .catch((err) => {
+        console.error("Service Worker Error", err);
+      });
+    });
+  }
+  </script>
+
+  <script>
+  $(':checkbox').kalypto();
+  </script>
 </body>
 </html>

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan modul-modul Khanza LITE.',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'plug',
 
     'install'       =>  function () use ($core) {

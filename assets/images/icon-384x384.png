@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="9CM5AwE9D8cnFy7CzgSTGiZX96zHRjUNmLCCsvcc">
+
+    <title>Aplikasi Manajemen Praktik Dokter Gigi Mandiri</title>
+
+    <!-- Scripts -->
+
+    <!-- Fonts -->
+    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://gigi.pangodingan.com/css/style.css">
+    
+      <link rel="manifest" href="manifest.json" />
+
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="application-name" content="Space Missions" />
+  <meta name="apple-mobile-web-app-title" content="Space Missions" />
+  <meta name="theme-color" content="#FF9800" />
+  <meta name="msapplication-navbutton-color" content="#FF9800" />
+  <meta
+   name="apple-mobile-web-app-status-bar-style"
+   content="black-translucent"
+  />
+  <meta name="msapplication-starturl" content="/index.html" />
+  <meta
+   name="viewport"
+   content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  />
+
+  <link rel="icon" sizes="128x128" href="/images/touch/icon-128x128.png" />
+  <link
+   rel="apple-touch-icon"
+   sizes="128x128"
+   href="/images/touch/icon-128x128.png"
+  />
+  <link rel="icon" sizes="192x192" href="/images/touch/icon-192x192.png" />
+  <link
+   rel="apple-touch-icon"
+   sizes="192x192"
+   href="/images/touch/icon-192x192.png"
+  />
+  <link rel="icon" sizes="256x256" href="/images/touch/icon-256x256.png" />
+  <link
+   rel="apple-touch-icon"
+   sizes="256x256"
+   href="/images/touch/icon-256x256.png"
+  />
+  <link rel="icon" sizes="384x384" href="/images/touch/icon-384x384.png" />
+  <link
+   rel="apple-touch-icon"
+   sizes="384x384"
+   href="/images/touch/icon-384x384.png"
+  />
+  <link rel="icon" sizes="512x512" href="/images/touch/icon-512x512.png" />
+  <link
+   rel="apple-touch-icon"
+   sizes="512x512"
+   href="/images/touch/icon-512x512.png"
+  />
+</head>
+<body>
+    <div id="app">
+        <div class="container">
+            <div class="card">
+                <div class="imgBx">
+                    <p class="myIp"><b>185.237.145.1</b></p>
+                    
+                </div>
+                <div class="loginBox">
+                    
+                    <h2>Aplikasi Manajemen Praktik Dokter Gigi Mandiri<small>Ver.1.0.0</small></h2>
+                                        <form id="form-login" action="/login" method="POST">
+                        <input type="hidden" name="_token" value="9CM5AwE9D8cnFy7CzgSTGiZX96zHRjUNmLCCsvcc">                        <div class="group">      
+                            <input class="text-input" autocomplete="off" type="text" name="email" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label class="text-box">Username</label>
+                        </div>
+                        
+                        <div class="group">      
+                            <input class="text-input" autocomplete="off" type="password" name="password" required>
+                            <span class="highlight"></span>
+                            <span class="bar"></span>
+                            <label class="text-box">Password</label>
+                        </div>
+                        <div>      
+                            <input type="checkbox" name="remember" class="css-checkbox" id="checkbox1" />
+						    <label for="checkbox1" name="checkbox1_lbl" class="css-label lite-green-check">Ingat Saya !</label>
+                        </div>
+                        <br>
+                        <div class="pesan-fail">
+                                                                                </div>
+                        <div>
+                            <button class="btn-login">Login</button>
+                        </div>
+                    </form>
+                                    </div>
+            </div> 
+        </div>   
+    </div>  
+    
+      <script>
+   if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+     navigator.serviceWorker
+      .register("service-worker.js")
+      .then((swReg) => {
+       console.log("Service Worker is registered", swReg);
+      })
+      .catch((err) => {
+       console.error("Service Worker Error", err);
+      });
+    });
+   }
+  </script>
+  
+</body>
+</html>

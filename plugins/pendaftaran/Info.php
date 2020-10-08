@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan data pendaftaran pasien.',
     'author'        =>  'Basoro',
     'version'       =>  '1.3',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'user-plus',
 
     'install'       =>  function () use ($core) {

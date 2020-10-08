@@ -4,6 +4,6 @@ return [
     'description'   =>  'Modul tampilan situs',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.0',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'paint-brush'
 ];

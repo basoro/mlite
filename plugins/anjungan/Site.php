@@ -25,7 +25,12 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo = $this->core->getSettings('logo');
         $poliklinik = $this->db('poliklinik')->toArray();
-        echo $this->draw('display.antrian.html', ['title' => $title, 'logo' => $logo, 'poliklinik' => $poliklinik]);
+        echo $this->draw('display.antrian.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'running_text' => $this->options->get('anjungan.text_anjungan'),
+          'poliklinik' => $poliklinik
+        ]);
         exit();
     }
 
@@ -33,7 +38,11 @@ class Site extends SiteModule
     {
         $title = 'Display Antrian Poliklinik';
         $display = $this->_resultDisplayAntrianPoli();
-        echo $this->draw('display.antrian.poli.html', ['title' => $title, 'display' => $display]);
+        echo $this->draw('display.antrian.poli.html', [
+          'title' => $title,
+          'running_text' => $this->options->get('anjungan.text_poli'),
+          'display' => $display
+        ]);
         exit();
     }
 
@@ -136,18 +145,18 @@ class Site extends SiteModule
         switch($show){
           default:
             $display = 'Depan';
-            echo $this->draw('display.antrian.loket.html', ['title' => $title, 'show' => $show, 'display' => $display]);
+            echo $this->draw('display.antrian.loket.html', [
+              'title' => $title,
+              'show' => $show,
+              'running_text' => $this->options->get('anjungan.text_loket'),
+              'display' => $display
+            ]);
           break;
           case "panggil_loket":
             $display = 'Panggil Loket';
-            $loket=['1','2','3'];
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'Loket')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $setting_antrian_loket = str_replace(",","','", $this->options->get('anjungan.antrian_loket'));
+            $loket = explode(",", $this->options->get('anjungan.antrian_loket'));
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -192,7 +201,7 @@ class Site extends SiteModule
               'title' => $title,
               'show' => $show,
               'loket' => $loket,
-              'namaloket' => 'A',
+              'namaloket' => 'a',
               'panggil_loket' => 'panggil_loket',
               'antrian' => $tcounter,
               'hitung_antrian' => $hitung_antrian,
@@ -203,14 +212,8 @@ class Site extends SiteModule
           break;
           case "panggil_cs":
             $display = 'Panggil CS';
-            $loket=['4','5'];
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'CS')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $loket = explode(",", $this->options->get('anjungan.antrian_cs'));
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -255,7 +258,7 @@ class Site extends SiteModule
               'title' => $title,
               'show' => $show,
               'loket' => $loket,
-              'namaloket' => 'B',
+              'namaloket' => 'b',
               'panggil_loket' => 'panggil_cs',
               'antrian' => $tcounter,
               'hitung_antrian' => $hitung_antrian,
@@ -266,14 +269,8 @@ class Site extends SiteModule
           break;
           case "panggil_prioritas":
             $display = 'Panggil Prioritas';
-            $loket=['6','7'];
-            $get_antrian = $this->db('lite_antrian_loket')
-              ->select([
-                'noantrian' => 'MAX(noantrian)'
-              ])
-              ->where('type', 'Prioritas')
-              ->like('postdate', date('Y-m-d'))
-              ->oneArray();
+            $loket = explode(",", $this->options->get('anjungan.antrian_prioritas'));
+            $get_antrian = $this->db('lite_antrian_loket')->select('noantrian')->where('type', 'Prioritas')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -318,8 +315,8 @@ class Site extends SiteModule
               'title' => $title,
               'show' => $show,
               'loket' => $loket,
-              'namaloket' => 'C',
-              'panggil_loket' => 'panggil_prioritas', 
+              'namaloket' => 'c',
+              'panggil_loket' => 'panggil_prioritas',
               'antrian' => $tcounter,
               'hitung_antrian' => $hitung_antrian,
               'xcounter' => $xcounter,

@@ -149,14 +149,14 @@
     </div>
     <div class="row">
       <div class="panel-title marquee">
-        <marquee>Test</marquee>
+        <marquee>{$running_text}</marquee>
       </div>
     </div>
     {/if}
     {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
       <audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
       <audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
-      <audio id="a" src="{?=url()?}/plugins/anjungan/suara/a.wav"></audio>
+      <audio id="{$namaloket}" src="{?=url()?}/plugins/anjungan/suara/{$namaloket}.wav"></audio>
       <audio id="counter" src="{?=url()?}/plugins/anjungan/suara/counter.wav"></audio>
       <audio id="nol" src="{?=url()?}/plugins/anjungan/suara/nol.wav"></audio>
       <audio id="belas" src="{?=url()?}/plugins/anjungan/suara/belas.wav"></audio>
@@ -180,7 +180,7 @@
       				  <div class="panel" style="color:#000;">
       			      <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
       				    <div class="panel-body">
-      							<h5 class="panel-title" style="font-size:72px;">{$namaloket}{$antrian}</h5>
+      							<h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
       				    </div>
       				    <div class="panel-footer">
       							<div class="btn-group btn-group-justified">
@@ -228,7 +228,7 @@
     function mulai{$value}(){
       $("#antrian")[0].play()
       totalwaktu=document.getElementById('antrian').duration*1200;
-      setTimeout(function() { $("#a")[0].play() }, totalwaktu);
+      setTimeout(function() { $("#{$namaloket}")[0].play() }, totalwaktu);
       totalwaktu=totalwaktu+1000;
       {if: $antrian < 10}
         setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
