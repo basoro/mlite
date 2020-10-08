@@ -185,6 +185,12 @@ abstract class Main
         return self::$userCache[$field];
     }
 
+    public function getPegawaiInfo($field, $nik)
+    {
+        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
+        return $row[$field];
+    }
+
     public function getPasienInfo($field, $no_rkm_medis)
     {
         $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
