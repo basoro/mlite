@@ -109,6 +109,10 @@ class Admin extends AdminModule
 
     public function getJadwal($page = 1)
     {
+
+        $array_hari = array(1=>'Senin','Selasa','Rabu','Kamis','Jumat', 'Sabtu','Minggu');
+        $array_bulan = array(1=>'Januari','Februari','Maret', 'April', 'Mei', 'Juni','Juli','Agustus','September','Oktober', 'November','Desember');
+
         $this->_addHeaderFiles();
         $perpage = '10';
         $phrase = '';
@@ -122,7 +126,7 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
@@ -134,7 +138,7 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            ->where('nik',$username) 
+            ->where('nik',$username)
             // ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
@@ -144,7 +148,7 @@ class Admin extends AdminModule
 
         // list
         $offset = $pagination->offset();
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
@@ -158,7 +162,7 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            ->where('nik',$username) 
+            ->where('nik',$username)
             // ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -180,7 +184,7 @@ class Admin extends AdminModule
         $month = date('m');
         $day = cal_days_in_month(CAL_GREGORIAN,$month,$year);
 
-        for ($i=1; $i < $day+1; $i++) { 
+        for ($i=1; $i < $day+1; $i++) {
             $i;
         }
 
@@ -188,7 +192,7 @@ class Admin extends AdminModule
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
 
-        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
+        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign, 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
     }
 
     public function getRekap_Presensi($page = 1)
@@ -205,7 +209,7 @@ class Admin extends AdminModule
 
         $username = $this->core->getUserInfo('username', null, true);
 
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-m').'-01')
@@ -219,7 +223,7 @@ class Admin extends AdminModule
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-m').'-01')
                 ->where('jam_datang', '<', date('Y-m').'-31')
-                ->where('nik',$username) 
+                ->where('nik',$username)
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
@@ -231,7 +235,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
 
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -269,7 +273,7 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->where('jam_datang', '>', date('Y-m').'-01')
             ->where('jam_datang', '<', date('Y-m').'-31')
-            ->where('nik',$username) 
+            ->where('nik',$username)
             ->like('nama', '%'.$phrase.'%')
             // ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -302,7 +306,6 @@ class Admin extends AdminModule
       echo $this->tpl->draw(MODULES.'/presensi/view/admin/google_map.html', true);
       exit();
     }
-    
     public function getPresensi($page = 1)
     {
         $this->_addHeaderFiles();
@@ -315,7 +318,7 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
             ->like('nama', '%'.$phrase.'%')
@@ -336,7 +339,7 @@ class Admin extends AdminModule
 
         // list
         $offset = $pagination->offset();
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $rows = $this->db('temporary_presensi')
             ->select([
               'nama' => 'pegawai.nama',

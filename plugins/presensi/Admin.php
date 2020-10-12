@@ -9,7 +9,7 @@ class Admin extends AdminModule
 
     public function navigation()
     {
-        if ($this->core->getUserInfo('username') == 'admin') {
+        if ($this->core->getUserInfo('id') == 1) {
             return [
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
@@ -148,7 +148,7 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
@@ -160,8 +160,8 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username)) 
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username)) 
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
@@ -171,7 +171,7 @@ class Admin extends AdminModule
 
         // list
         $offset = $pagination->offset();
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
@@ -185,8 +185,8 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',date('m'))
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username)) 
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username)) 
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -371,7 +371,7 @@ class Admin extends AdminModule
 
         $username = $this->core->getUserInfo('username', null, true);
 
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-m').'-01')
@@ -385,8 +385,8 @@ class Admin extends AdminModule
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-m').'-01')
                 ->where('jam_datang', '<', date('Y-m').'-31')
-                ->where('departemen', $this->core->getPegawaiInfo('departemen',$username)) 
-                ->where('bidang', $this->core->getPegawaiInfo('bidang',$username)) 
+                ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
@@ -398,7 +398,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
 
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -441,7 +441,7 @@ class Admin extends AdminModule
             ->where('jam_datang', '>', date('Y-m').'-01')
             ->where('jam_datang', '<', date('Y-m').'-31')
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))  
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             // ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -487,7 +487,7 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
             ->like('nama', '%'.$phrase.'%')
@@ -509,7 +509,7 @@ class Admin extends AdminModule
 
         // list
         $offset = $pagination->offset();
-        if($username == 'admin'){
+        if($this->core->getUserInfo('id') == 1){
         $rows = $this->db('temporary_presensi')
             ->select([
               'nama' => 'pegawai.nama',
