@@ -176,6 +176,14 @@ class Admin extends AdminModule
             }
         }
 
+        $year = date('Y');
+        $month = date('m');
+        $day = cal_days_in_month(CAL_GREGORIAN,$month,$year);
+
+        for ($i=1; $i < $day+1; $i++) {
+            $i;
+        }
+
         $this->assign['getStatus'] = isset($_GET['status']);
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
@@ -282,6 +290,17 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
 
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+    }
+
+    public function getGoogleMap($id,$tanggal)
+    {
+      $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+      $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
+
+      $this->tpl->set('geo', $geo);
+      $this->tpl->set('pegawai', $pegawai);
+      echo $this->tpl->draw(MODULES.'/presensi/view/admin/google_map.html', true);
+      exit();
     }
 
     public function getPresensi($page = 1)
@@ -430,7 +449,7 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/presensi/js/admin/app.js');
+        echo $this->draw(MODULES.'/profil/js/admin/app.js');
         exit();
     }
 
@@ -438,12 +457,16 @@ class Admin extends AdminModule
     {
 
         // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'),'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
 
         // MODULE SCRIPTS
-        $this->core->addJS(url([ADMIN, 'presensi', 'javascript']), 'footer');
+        $this->core->addJS(url([ADMIN, 'profil', 'javascript']), 'footer');
     }
 }
