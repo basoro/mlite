@@ -329,6 +329,46 @@ class Admin extends AdminModule
         if(isset($_GET['status']))
           $status = $_GET['status'];
 
+        $day = array(
+            'Sun' => 'AKHAD',
+            'Mon' => 'SENIN',
+            'Tue' => 'SELASA',
+            'Wed' => 'RABU',
+            'Thu' => 'KAMIS',
+            'Fri' => 'JUMAT',
+            'Sat' => 'SABTU'
+        );
+
+        $hari=$day[date('D',strtotime(date('Y-m-d')))];
+
+        switch ($hari) {
+            case 'SENIN':
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+            break;
+            case 'SELASA':
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+            break;
+            case 'RABU':
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+            break;
+            case 'KAMIS':
+                $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+            break;
+            case 'JUMAT':
+                $interval = 'INTERVAL 3 HOUR';
+                $efektif = 'INTERVAL 30 MINUTE';
+            break;
+                
+            default:
+                $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
+                $efektif = 'INTERVAL 1 HOUR';
+            break;
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($username == 'admin'){
@@ -369,7 +409,9 @@ class Admin extends AdminModule
               'jam_pulang' => 'rekap_presensi.jam_pulang',
               'status' => 'rekap_presensi.status',
               'durasi' => 'rekap_presensi.durasi',
-              'photo' => 'rekap_presensi.photo'
+              'photo' => 'rekap_presensi.photo',
+              'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
+              'kurang' => 'CAST(rekap_presensi.durasi as TIME) - '.$interval
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->where('jam_datang', '>', date('Y-m').'-01')
@@ -391,7 +433,9 @@ class Admin extends AdminModule
               'jam_pulang' => 'rekap_presensi.jam_pulang',
               'status' => 'rekap_presensi.status',
               'durasi' => 'rekap_presensi.durasi',
-              'photo' => 'rekap_presensi.photo'
+              'photo' => 'rekap_presensi.photo',
+              'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
+              'kurang' => 'CAST(rekap_presensi.durasi as TIME) - '.$interval
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->where('jam_datang', '>', date('Y-m').'-01')

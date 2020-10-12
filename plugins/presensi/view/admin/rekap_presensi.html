@@ -29,8 +29,9 @@
                         <th>Shift</th>
                         <th>Jam Datang</th>
     								    <th>Jam Pulang</th>
-                        <th>Status</th>
                         <th>Durasi</th>
+                        <th>Efektif</th>
+                        <th>Selisih</th>
     							</tr>
     						</thead>
     						<tbody>
@@ -46,8 +47,9 @@
                       <td>{$value.shift}</td>
     									<td>{$value.jam_datang}</td>
     									<td>{$value.jam_pulang}</td>
-                      <td>{$value.status}</td>
                       <td>{$value.durasi}</td>
+                      <td>{$value.efektif}</td>
+                      <td>{$value.kurang}</td>
     								</tr>
     								{/loop}
     								{else}
