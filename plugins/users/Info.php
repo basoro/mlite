@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan akun pengguna.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
-    'compatibility' =>  '3.*',
+    'compatibility' =>  '2020',
     'icon'          =>  'user-md',
 
     'install'       =>  function () use ($core) {
