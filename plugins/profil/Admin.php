@@ -109,6 +109,10 @@ class Admin extends AdminModule
 
     public function getJadwal($page = 1)
     {
+
+        $array_hari = array(1=>'Senin','Selasa','Rabu','Kamis','Jumat', 'Sabtu','Minggu');
+        $array_bulan = array(1=>'Januari','Februari','Maret', 'April', 'Mei', 'Juni','Juli','Agustus','September','Oktober', 'November','Desember');
+
         $this->_addHeaderFiles();
         $perpage = '10';
         $phrase = '';
@@ -188,7 +192,7 @@ class Admin extends AdminModule
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
 
-        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
+        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign, 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
     }
 
     public function getRekap_Presensi($page = 1)
