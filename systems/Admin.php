@@ -46,22 +46,25 @@ class Admin extends Main
         $this->assign['header']         = isset_or($this->appends['header'], ['']);
         $this->assign['footer']         = isset_or($this->appends['footer'], ['']);
 
-        $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
-        $opts = [
-            'http' => [
-                'method' => 'GET',
-                'header' => [
-                        'User-Agent: PHP'
-                ]
-            ]
-        ];
-
-        $json = file_get_contents($url, false, stream_context_create($opts));
-        $obj = json_decode($json, true);
         $this->assign['get_version'] = '';
-        $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-        if (new \DateTime($this->options->get('settings.version')) < new \DateTime($new_date_format)) {
-          $this->assign['get_version'] = 'Ada Update';
+
+        if ($this->options->get('settings.cekupdate') == 2) {
+          $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
+          $opts = [
+              'http' => [
+                  'method' => 'GET',
+                  'header' => [
+                          'User-Agent: PHP'
+                  ]
+              ]
+          ];
+
+          $json = file_get_contents($url, false, stream_context_create($opts));
+          $obj = json_decode($json, true);
+          $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
+          if (new \DateTime($this->options->get('settings.version')) < new \DateTime($new_date_format)) {
+            $this->assign['get_version'] = 'Ada Update';
+          }
         }
 
         $this->tpl->set('opensimrs', $this->assign);

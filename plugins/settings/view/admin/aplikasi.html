@@ -15,6 +15,17 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Aktifkan Cek Update</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="cekupdate" value="1" {if: $settings.cekupdate == '1'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="cekupdate" value="2" {if: $settings.cekupdate == '2'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>URL API BPJS</label>
                         <input type="text" name="BpjsApiUrl" class="form-control" value="{$settings.BpjsApiUrl}" />
                     </div>
