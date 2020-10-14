@@ -3,6 +3,30 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Rekap Presensi</h3>
+                <ul class="nav nav-tabs">
+                    <li class="dropdown {if: isset($_GET['start_date']) && $_GET['start_date'] !== date('Y-m-d') && $_GET['start_date'] !== date('Y-m-d', strtotime('-1 days'))}active{else}{/if}">
+                        <a class="dropdown-toggle" href="#tab-main" data-toggle="dropdown" role="tab">Periode</a>
+                        <div class="dropdown-menu" role="menu">
+                            <form action="{?=url(ADMIN.'/presensi/rekap_presensi')?}" style="padding:10px;">
+                                <div class="input-group">
+                                    <span>Tanggal<input class="datepicker" style="padding:3px;" type="text" name="tanggal" value="{?=date('Y-m-d')?}"></span>
+                                    <input type="hidden" name="s" value="{?=$_GET['s']?}">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <button class="btn btn-xs pull-right" style="margin-top:10px;">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && isset($_GET['end_date']) && $_GET['start_date'] == date('Y-m-d') && $_GET['end_date'] == date('Y-m-d') || empty($_GET['start_date'])}active{/if}">
+                        <a href="{?=url(ADMIN.'/presensi/rekap_presensi')?}" role="tab">Sekarang</a>
+                    </li>
+                    <li class="{if: isset($_GET['start_date']) && $_GET['start_date'] == date('Y-m-d', strtotime('-1 days'))}active{/if}">
+                        <a href="{?=url(ADMIN.'/presensi/rekap_presensi/?start_date='.date('Y-m-d', strtotime('-1 days')).'&end_date='.date('Y-m-d'))?}" role="tab">1 Hari Terakhir</a>
+                    </li>
+                    <li>
+                        <a href="{?=url(ADMIN)?}/presensi/print?s={?=$_GET['s']?}&tanggal={?=$_GET['tanggal']?}&t={?=$_SESSION['token']?}" target="_blank" role="tab">Print</a>
+                    </li>
+                </ul>
             </div>
             <div class="panel-body">
               <div class="row clearfix">
@@ -13,6 +37,7 @@
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
                     <div class="input-group">
                       <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                      <input type="hidden" name="tanggal">
                       <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                       <span class="input-group-btn">
                         <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
