@@ -7,6 +7,7 @@ return [
     'version'       =>  '1.1',
     'compatibility' =>  '2020',
     'icon'          =>  'user-md',
+    'pages'            =>  ['Login' => 'login'],
 
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_roles` (

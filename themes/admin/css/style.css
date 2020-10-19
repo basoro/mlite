@@ -931,3 +931,17 @@ select[multiple].form-control {
 .m-r-xl { margin-right: 3em; }
 .m-b-xl { margin-bottom: 3em; }
 .m-l-xl { margin-left: 3em; }
+
+@media (max-width: 767px) {
+    .mobile-fixed-top {
+        position: fixed;
+        width: 100%;
+        top: auto;
+    }
+    .truncate {
+      width: 250px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+}
