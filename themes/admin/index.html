@@ -50,14 +50,9 @@
     <div id="wrapper">
 
         <aside id="sidebar-wrapper">
-            <div class="user-info">
-                <div class="image">
-                    <img src="{$opensimrs.avatarURL}" width="48" height="48" alt="User" />
-                </div>
-                <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{?=$opensimrs.nama ?}</div>
-                    <div class="email">{?=$opensimrs.username ?}</div>
-                </div>
+            <div class="sidebar-brand">
+                <img src="{?= url(THEMES.'/admin/img/logo.png') ?}" alt="logo">
+                <h2 class="text-danger">Khanza<span>LITE</span></h2>
             </div>
             <ul class="sidebar-nav">
             {loop: $opensimrs.nav}

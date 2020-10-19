@@ -79,52 +79,9 @@ a, .btn {
             color: #fff;
         }
 
-
-
-.user-info {
-padding: 13px 15px 12px 15px;
-white-space: nowrap;
-position: relative;
-background: url("../img/user-info-bg.jpg") no-repeat no-repeat;
-height: 135px; }
-.user-info .image {
-margin-right: 12px;
-display: inline-block; }
-.user-info .image img {
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%;
-  -ms-border-radius: 50%;
-  border-radius: 50%;
-  vertical-align: bottom !important; }
-.user-info .info-container {
-cursor: default;
-display: block;
-position: relative;
-top: 25px; }
-.user-info .info-container .name {
-  white-space: nowrap;
-  -ms-text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 14px;
-  font-weight: 700;
-  max-width: 200px;
-  color: #000; }
-.user-info .info-container .email {
-  white-space: nowrap;
-  -ms-text-overflow: ellipsis;
-  -o-text-overflow: ellipsis;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  font-size: 12px;
-  max-width: 200px;
-  color: #000; }
-
-
 .sidebar-nav {
     position: absolute;
-    top: 135px;
+    top: 80px;
     width: 250px;
     margin: 0;
     padding: 0;

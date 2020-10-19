@@ -38,8 +38,14 @@ class Admin extends AdminModule
         $stats['getLastYearVisities'] = number_format($this->countLastYearVisite(),0,'','.');
         $stats['getLastMonthVisities'] = number_format($this->countLastMonthVisite(),0,'','.');
         $stats['getLastCurrentVisities'] = number_format($this->countLastCurrentVisite(),0,'','.');
-        $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
-        $stats['percentYear'] = number_format((($this->countYearVisite()-$this->countLastYearVisite())/$this->countYearVisite())*100,0,'','.');
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+          $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+        $stats['percentYear'] = 0;
+        if($this->countYearVisite() != 0) {
+          $stats['percentYear'] = number_format((($this->countYearVisite()-$this->countLastYearVisite())/$this->countYearVisite())*100,0,'','.');
+        }
         $stats['percentMonth'] = 0;
         if($this->countMonthVisite() != 0) {
           $stats['percentMonth'] = number_format((($this->countMonthVisite()-$this->countLastMonthVisite())/$this->countMonthVisite())*100,0,'','.');
