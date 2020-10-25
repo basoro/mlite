@@ -148,6 +148,7 @@ class Site extends SiteModule
             echo $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'show' => $show,
+              'vidio' => $this->options->get('anjungan.vidio'),
               'running_text' => $this->options->get('anjungan.text_loket'),
               'display' => $display
             ]);
