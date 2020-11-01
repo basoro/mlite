@@ -13,6 +13,127 @@
     <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <style>
+    .user-info {
+    padding: 13px 15px 12px 15px;
+    white-space: nowrap;
+    position: relative;
+    background: url("../img/user-info-bg.jpg") no-repeat no-repeat;
+    height: 135px; }
+    .user-info .image {
+    margin-right: 12px;
+    display: inline-block; }
+    .user-info .image img {
+      -webkit-border-radius: 50%;
+      -moz-border-radius: 50%;
+      -ms-border-radius: 50%;
+      border-radius: 50%;
+      vertical-align: bottom !important; }
+    .user-info .info-container {
+    cursor: default;
+    display: block;
+    position: relative;
+    top: 25px; }
+    .user-info .info-container .name {
+      white-space: nowrap;
+      -ms-text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 14px;
+      font-weight: 700;
+      max-width: 200px;
+      color: #000; }
+    .user-info .info-container .email {
+      white-space: nowrap;
+      -ms-text-overflow: ellipsis;
+      -o-text-overflow: ellipsis;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      font-size: 12px;
+      max-width: 200px;
+      color: #000; }
+
+
+    .sidebar-nav {
+        position: absolute;
+        top: 135px;
+        width: 250px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+        .sidebar-nav > li {
+            text-indent: 10px;
+            line-height: 42px;
+        }
+            .sidebar-nav > li.sortable-placeholder {
+               background: rgba(255,255,255,0.03);
+               border-top: 1px solid rgba(255,255,255,0.075);
+               border-bottom: 1px solid rgba(255,255,255,0.075);
+               padding: 21px 0;
+            }
+            .sidebar-nav > li a {
+                display: block;
+                text-decoration: none;
+                color: #757575;
+                font-weight: 600;
+            }
+                .sidebar-nav > li > a:hover,
+                .sidebar-nav > li.active > a {
+                    text-decoration: none;
+                    color: #fff;
+                    background: #4C9A2A;
+                }
+                .sidebar-nav > li > a:active,
+                .sidebar-nav > li > a:focus {
+                    text-decoration: none;
+                }
+                .sidebar-nav > li > a i.fa {
+                    padding-right: 10px;
+                    font-size: 14px;
+                    cursor: move;
+                }
+            .sidebar-nav > li > ul {
+                background: rgba(255,255,255,0.03);
+                list-style: none;
+                margin: 0;
+                padding: 0 0 0 24px;
+                border-left: 1px solid #222;
+                position: relative;
+            }
+                .sidebar-nav > li > ul:before {
+                    content: "";
+                    height: 100%;
+                    width: 1px;
+                    position: absolute;
+                    background: rgba(255,255,255,0.075);
+                    left: 24px;
+                    top: 0;
+                }
+                .sidebar-nav > li > ul li {
+                    line-height: 35px;
+                }
+                    .sidebar-nav > li > ul li a {
+                        font-weight: 400;
+                        font-size: 90%;
+                        padding: 0 8px;
+                        position: relative;
+                    }
+                        .sidebar-nav > li > ul li a:hover {
+                            color: #fff;
+                        }
+                        .sidebar-nav > li > ul li a:before {
+                            content: "";
+                            width: 8px;
+                            height: 1px;
+                            background: rgba(255,255,255,0.075);
+                            position: absolute;
+                            left: 1px;
+                            top: 17px;
+                        }
+                    .sidebar-nav > li > ul li.active a {
+                        color: #fff;
+                    }
     a {
       color: #FF1493;
     }
@@ -25,6 +146,7 @@
         color: #fff;
         background: #FF1493;
     }
+
     .user-info {
         background: url('{?=url()?}/plugins/epasien/img/user-info-bg.jpg') no-repeat no-repeat;
     }

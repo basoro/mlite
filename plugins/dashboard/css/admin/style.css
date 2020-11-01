@@ -6,13 +6,13 @@
 }
 .stat-bold {
   padding:0;
-  margin-top:-10px;
+  margin-top:0px;
   margin-bottom:-10px;
-  font-size:36px;
+  font-size:28px;
   font-weight:bold;
 }
 .stat-up-down {
-  font-size:16px;
+  font-size:14px;
   font-weight:bold;
 }
 .text-white{color:#ffffff}
