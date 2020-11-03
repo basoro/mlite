@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Survei Kepuasan</title>
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <style media="screen">
+      body{
+        max-width: 500px;
+        margin: 0 auto;
+      }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="text-center">
+      <h1>Survei Kepuasan Pelanggan</h1>
+      <h3>{$settings.nama_instansi}</h3>
+      <h4>{$settings.alamat_instansi}</h4>
+      {if: $notify}
+      <div id="notify" class="alert alert-{$notify.type}">{$notify.text}</div>
+      {/if}
+      <div class="row" style="margin-top:50px;">
+        <div class="col-md-6">
+          <a href="{?=url()?}/survei_kepuasan/save?opsi=1" style="text-decoration:none;">
+            <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                <span class="fa fa-smile-o fa-5x"></span>
+                <h3>Puas</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-6">
+          <a href="{?=url()?}/survei_kepuasan/save?opsi=2" style="text-decoration:none;">
+            <div class="panel panel-default">
+              <div class="panel-body bg-danger">
+                <span class="fa fa-frown-o fa-5x"></span>
+                <h3>Tidak Puas</h3>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      window.setTimeout(function() {
+          $(".alert").fadeTo(500, 0).slideUp(500, function(){
+              $(this).remove();
+          });
+      }, 5000);
+    </script>
+  </body>
+</html>

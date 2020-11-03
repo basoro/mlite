@@ -20,7 +20,7 @@
     <meta name="theme-color" content="#4C9A2A" />
     <meta name="msapplication-navbutton-color" content="#4C9A2A" />
     <meta name="apple-mobile-web-app-status-bar-style" content="green-translucent" />
-    <meta name="msapplication-starturl" content="{$opensimrs.dashboard}" />
+    <meta name="msapplication-starturl" content="{$opensimrs.path}" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <link rel="icon" sizes="128x128" href="{$opensimrs.path}/assets/images/icon-128x128.png" />
     <link rel="apple-touch-icon" sizes="128x128" href="{$opensimrs.path}/assets/images/icon-128x128.png" />
@@ -50,14 +50,9 @@
     <div id="wrapper">
 
         <aside id="sidebar-wrapper">
-            <div class="user-info">
-                <div class="image">
-                    <img src="{$opensimrs.avatarURL}" width="48" height="48" alt="User" />
-                </div>
-                <div class="info-container">
-                    <div class="name" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{?=$opensimrs.nama ?}</div>
-                    <div class="email">{?=$opensimrs.username ?}</div>
-                </div>
+            <div class="sidebar-brand">
+                <img src="{?= url(THEMES.'/admin/img/logo.png') ?}" alt="logo">
+                <h2 class="text-danger">Khanza<span>LITE</span></h2>
             </div>
             <ul class="sidebar-nav">
             {loop: $opensimrs.nav}
@@ -76,10 +71,10 @@
         </aside>
 
         <div id="navbar-wrapper">
-            <nav class="navbar navbar-inverse">
+            <nav class="navbar navbar-inverse mobile-fixed-top">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand"><a href="{$opensimrs.path}/admin/"><span class="first">{$opensimrs.title}</span></a></div>
+                        <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand truncate"><a href="{$opensimrs.path}/admin/"><span class="first">{$opensimrs.title}</span></a></div>
                     </div>
                     <ul class="nav navbar-nav navbar-right">
                         <li class="hidden-sm hidden-xs"><a href="{?= url([ADMIN, 'settings', 'updates']) ?}" class="small"><span class="label label-danger">{$opensimrs.get_version}</span></a></li>

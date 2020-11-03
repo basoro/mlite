@@ -1,8 +1,8 @@
 <article class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-body">
-                    <span class="fa-2x fa-stack fa-lg">
+              <div class="panel-body bg-danger">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-circle fa-stack-2x text-danger"></i>
                         <i class="fa fa-calendar-plus-o fa-stack-1x text-white"></i>
                     </span>
@@ -19,8 +19,8 @@
     </div>
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-body">
-                    <span class="fa-2x fa-stack fa-lg">
+              <div class="panel-body bg-info">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-circle fa-stack-2x text-info"></i>
                         <i class="fa fa-calendar fa-stack-1x text-white"></i>
                     </span>
@@ -37,8 +37,8 @@
     </div>
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-body">
-                    <span class="fa-2x fa-stack fa-lg">
+              <div class="panel-body bg-warning">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-circle fa-stack-2x text-warning"></i>
                         <i class="fa fa-users fa-stack-1x text-white"></i>
                     </span>
@@ -55,8 +55,8 @@
     </div>
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
-              <div class="panel-body">
-                    <span class="fa-2x fa-stack fa-lg">
+              <div class="panel-body bg-success">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-circle fa-stack-2x text-success"></i>
                         <i class="fa fa-wheelchair fa-stack-1x text-white"></i>
                     </span>
@@ -199,14 +199,12 @@
       <div class="modal-body">
         <center>
           <div id="camera"></div><br>
-          {if: empty($cek_presensi)}
           <select class="form-control" id="shift" style="width:140px;">
             <option value="">Pilih Shift</option>
             {loop: $jam_jaga}
             <option value="{$value.shift}">{$value.shift}</option>
             {/loop}
           </select><br><br>
-          {/if}
           <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
           <input type="hidden" name="image" id="image-tag">
           <div id="results"></div>

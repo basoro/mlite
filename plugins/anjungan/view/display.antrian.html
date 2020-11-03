@@ -472,10 +472,12 @@
     });
   });
   $(document).ready(function() {
-    $("#display_nomor_loket").load("{?=url()?}/anjungan/ajax?show=tampilloket");
-    $("#print_nomor_loket").load("{?=url()?}/anjungan/ajax?show=printloket");
-    $("#display_nomor_cs").load("{?=url()?}/anjungan/ajax?show=tampilcs");
-    $("#print_nomor_cs").load("{?=url()?}/anjungan/ajax?show=printcs");
+    setInterval(function(){
+      $("#display_nomor_loket").load("{?=url()?}/anjungan/ajax?show=tampilloket");
+      $("#print_nomor_loket").load("{?=url()?}/anjungan/ajax?show=printloket");
+      $("#display_nomor_cs").load("{?=url()?}/anjungan/ajax?show=tampilcs");
+      $("#print_nomor_cs").load("{?=url()?}/anjungan/ajax?show=printcs");
+    }, 1000);
   })
   function printDiv(eleId){
       var PW = window.open('', '_blank', 'Print content');

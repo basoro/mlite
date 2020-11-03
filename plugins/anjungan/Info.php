@@ -16,6 +16,7 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....')");
       $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'text_loket', 'Running text display antrian loket.....')");
       $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'text_poli', 'Running text display antrian poliklinik.....')");
+      $core->db()->pdo()->exec("INSERT INTO `lite_options` (`module`, `field`, `value`) VALUES ('anjungan', 'vidio', 'G4im8_n0OoI')");
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_antrian_loket` (
         `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `type` varchar(50) NOT NULL,
@@ -30,23 +31,23 @@ return [
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `antriloket`
-        ADD KEY `loket` (`loket`),
-        ADD KEY `antrian` (`antrian`);");
-
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `antrics` (
         `loket` int(11) NOT NULL,
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `antrics`
-        ADD KEY `loket` (`loket`),
-        ADD KEY `antrian` (`antrian`);");
-
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `antriprioritas` (
         `loket` int(11) NOT NULL,
         `antrian` int(11) NOT NULL
       ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `antriloket`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);");
+
+      $core->db()->pdo()->exec("ALTER TABLE `antrics`
+        ADD KEY `loket` (`loket`),
+        ADD KEY `antrian` (`antrian`);");
 
       $core->db()->pdo()->exec("ALTER TABLE `antriprioritas`
         ADD KEY `loket` (`loket`),

@@ -353,7 +353,7 @@ class Admin extends AdminModule
 
         $username = $this->core->getUserInfo('username', null, true);
 
-        if($this->core->getUserInfo('id') == 1 or $this->core->getUserInfo('id') == 528 or $this->core->getUserInfo('id') == 5){
+        if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
@@ -361,8 +361,8 @@ class Admin extends AdminModule
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
-            }else{
-                $totalRecords = $this->db('rekap_presensi')
+        }else{
+            $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
                 ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
@@ -371,7 +371,7 @@ class Admin extends AdminModule
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
-            }
+        }
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
@@ -379,7 +379,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
 
-        if($this->core->getUserInfo('id') == 1 or $this->core->getUserInfo('id') == 528 or $this->core->getUserInfo('id') == 5){
+        if($this->core->getUserInfo('id') == 1){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -1030,6 +1030,62 @@ class Admin extends AdminModule
   
     }
 
+    public function getPrint($phrase = null, $tanggal = null)
+    {
+      $phrase = '';
+      if(isset($_GET['s']))
+        $phrase = $_GET['s'];
+      $tanggal = '';
+      if(isset($_GET['tanggal']))
+        $tanggal = $_GET['tanggal'];
+
+      $rekap_presensi = $this->db('rekap_presensi')
+          ->select([
+            'nama' => 'pegawai.nama',
+            'departemen' => 'pegawai.departemen',
+            'id' => 'rekap_presensi.id',
+            'shift' => 'rekap_presensi.shift',
+            'jam_datang' => 'rekap_presensi.jam_datang',
+            'jam_pulang' => 'rekap_presensi.jam_pulang',
+            'status' => 'rekap_presensi.status',
+            'durasi' => 'rekap_presensi.durasi',
+            'photo' => 'rekap_presensi.photo'
+          ])
+          ->join('pegawai','pegawai.id = rekap_presensi.id')
+          ->like('jam_datang', $tanggal.'%')
+          ->like('nama', '%'.$phrase.'%')
+          ->orLike('shift', '%'.$phrase.'%')
+          ->asc('jam_datang')
+          ->toArray();
+      $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
+
+      $pdf = new PDF_MC_Table('L','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image($logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
+      $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+      $pdf->Line(10, 30, 350, 30);
+      $pdf->Line(10, 31, 350, 31);
+      $pdf->Text(10, 40, 'DATA REKAP PRESENSI PEGAWAI');
+      $pdf->Ln(34);
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->SetWidths(array(110,30,40,40,40,40,40));
+      $pdf->Row(array('Nama Pegawai','Shift','Jam Datang', 'Jam Pulang', 'Durasi', 'Efektif', 'Kekurangan'));
+      foreach ($rekap_presensi as $hasil) {
+        $pdf->Row(array($hasil['nama'],$hasil['shift'],$hasil['jam_datang'],$hasil['jam_pulang'],$hasil['durasi'],'00:00:00','00:00:00'));
+      }
+      $pdf->Output('laporan_pasien_'.date('Y-m-d').'.pdf','I');
+
+    }
+
     public function getGoogleMap($id,$tanggal)
     {
       $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
@@ -1268,11 +1324,12 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
-
         // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
 
         // MODULE SCRIPTS
