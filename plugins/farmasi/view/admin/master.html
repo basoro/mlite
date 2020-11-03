@@ -48,17 +48,17 @@
     								<tr>
     									<th>Kode Jenis</th>
     									<th>Nama Jenis</th>
-                      <th>Keterangan</th>
+                      					<th>Keterangan</th>
     									<th class="text-right">Aksi</th>
     								</tr>
     							</thead>
     							<tbody>
-      						{if: !empty($master.jenis)}
+      								{if: !empty($master.jenis)}
     								{loop: $master.jenis}
     								<tr>
     									<td>{$value.kdjns}</td>
     									<td>{$value.nama}</td>
-                      <td>{$value.keterangan}</td>
+                      					<td>{$value.keterangan}</td>
     									<td class="text-right">
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>

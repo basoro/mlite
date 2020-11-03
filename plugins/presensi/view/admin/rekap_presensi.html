@@ -3,14 +3,26 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">Rekap Presensi</h3>
+                <ul class="nav nav-tabs">
+                  <li class="{if: $rekap.printURL}active{/if}">
+                      <a href="{$rekap.printURL}" role="tab">Cetak</a>
+                  </li>
+              </ul>
             </div>
             <div class="panel-body">
               <div class="row clearfix">
-                <div class="col col-md-5">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?}</h3>
+                <div class="col col-md-8">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3>
                 </div>
-                <div class="col col-md-7">
+                <div class="col col-md-4">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                    <div class="input-group">
+                      <select name="b" id="bulan" class="form-control" placeholder="Bulan">
+                        {loop: $rekap.bulan}
+                          <option value="{$value}">{$value}</option>
+                        {/loop}
+                      </select>
+                    </div>
                     <div class="input-group">
                       <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
                       <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
@@ -48,8 +60,9 @@
     									<td>{$value.jam_datang}</td>
     									<td>{$value.jam_pulang}</td>
                       <td>{$value.durasi}</td>
-                      <td>{$value.efektif}</td>
-                      <td>{$value.kurang}</td>
+                      <td>{$value.efektif.efektif}</td>
+                      <td>{$value.efektif.kurang}</td>
+                      <td>{$value.date}</td>
     								</tr>
     								{/loop}
     								{else}
