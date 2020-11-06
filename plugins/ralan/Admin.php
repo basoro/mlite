@@ -25,7 +25,7 @@ class Admin extends AdminModule
     public function getManage( $page = 1 )
     {
 
-      $this->_addHeaderFiles();
+      //$this->_addHeaderFiles();
       $poliklinik = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
       if ($this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'manajemen' || $this->core->getUserInfo('role') == 'rekammedis') {
         $poliklinik = $this->db('poliklinik')->select('kd_poli')->toArray();
