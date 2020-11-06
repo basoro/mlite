@@ -7,9 +7,9 @@
                     <li class="{if: empty($pegawai.getStatus)}active{/if}">
                         <a href="{?=url(ADMIN.'/kepegawaian/manage/')?}" role="tab">Aktif</a>
                     </li>
-                    <li class="{if: !empty($pegawai.getStatus)}active{/if}">
+                    <!-- <li class="{if: !empty($pegawai.getStatus)}active{/if}">
                       <a href="{?=url(ADMIN.'/kepegawaian/manage?status=KELUAR')?}" role="tab">Non Aktif</a>
-                  </li>
+                  </li> -->
                     <li>
                         <a href="{$pegawai.printURL}" target="_blank" role="tab">Cetak</a>
                     </li>
@@ -18,7 +18,7 @@
             <div class="panel-body">
               <div class="row clearfix">
                 <div class="col col-md-6">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($pegawai.totalRecords)?}</h3>
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($pegawai.totalRecords)?} {$pegawai.time}</h3>
                 </div>
                 <div class="col col-md-6">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
@@ -47,7 +47,7 @@
     								</tr>
     							</thead>
     							<tbody>
-            						{if: !empty($pegawai.list)}
+            				{if: !empty($pegawai.list)}
     								{loop: $pegawai.list}
     								<tr>
     									<td>{$value.nik}</td>
