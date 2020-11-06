@@ -1,10 +1,8 @@
-<div class="kasir_view">
-<ul class="nav nav-tabs" role="tablist" style="overflow-x: auto;">
+<ul class="nav nav-tabs" role="tablist">
     <li role="presentation" class="active"><a href="#dokter" aria-controls="dokter" role="tab" data-toggle="tab">Dokter</a></li>
     <li role="presentation"><a href="#perawat" aria-controls="perawat" role="tab" data-toggle="tab">Perawat</a></li>
     <li role="presentation"><a href="#dokter_perawat" aria-controls="dokter_perawat" role="tab" data-toggle="tab">Dokter & Perawat</a></li>
 </ul>
-</div>
 
 <div class="panel-default">
     <div class="panel-body">
@@ -19,32 +17,18 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label>Nama Tindakan</label>
-                            <select name="kode_brng[]" class="form-control databarang_ajax">
+                            <select name="kd_jenis_prw[]" class="form-control jns_perawatan" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                                {loop: $ralan.rawat_dr}
+                                <option value="{$value.kd_jenis_prw}" selected>{$value.nm_perawatan}</option>
+                                {/loop}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Jumlah</label>
-                            <input type="text" name="jml[]" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Biaya</label>
-                            <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
                     </div>
                 </div>
-                <span class="btn btn-default btn-success add">Tambah</span>
                 <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                <a href="" class="btn btn-default">Batal</a>
                 </form>
             </div>
             <div role="tabpanel" class="tab-pane fade in" id="perawat">
@@ -57,32 +41,18 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label>Nama Tindakan</label>
-                            <select name="kode_brng[]" class="form-control databarang_ajax">
+                            <select name="kd_jenis_prw[]" class="form-control jns_perawatan" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                                {loop: $ralan.rawat_dr}
+                                <option value="{$value.kd_jenis_prw}" selected>{$value.nm_perawatan}</option>
+                                {/loop}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Jumlah</label>
-                            <input type="text" name="jml[]" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Biaya</label>
-                            <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
                     </div>
                 </div>
-                <span class="btn btn-default btn-success add">Tambah</span>
                 <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                <a href="" class="btn btn-default">Batal</a>
                 </form>
             </div>
             <div role="tabpanel" class="tab-pane fade in" id="dokter_perawat">
@@ -102,32 +72,18 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-md-12">
                         <div class="form-group">
                             <label>Nama Tindakan</label>
-                            <select name="kode_brng[]" class="form-control databarang_ajax">
+                            <select name="kd_jenis_prw[]" class="form-control jns_perawatan" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                                {loop: $ralan.rawat_dr}
+                                <option value="{$value.kd_jenis_prw}" selected>{$value.nm_perawatan}</option>
+                                {/loop}
                             </select>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>Jumlah</label>
-                            <input type="text" name="jml[]" class="form-control" />
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label>Biaya</label>
-                            <select name="aturan_pakai[]" class="form-control master_aturan_pakai">
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
                     </div>
                 </div>
-                <span class="btn btn-default btn-success add">Tambah</span>
                 <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">Batal</button>
                 </form>
             </div>
 
@@ -138,7 +94,7 @@
 <script>
   $(document).ready(function() {
       $('select').selectator();
-      $(document).on('click', '.add', function(){
+      $(document).on('click', '.add_tindakan', function(){
           var html = '';
           html += '<div class="clearfix row_resep">';
           html += '   <div class="col-md-5">';
@@ -244,111 +200,6 @@
 
       $(document).on('click', '.remove', function(){
           $(this).closest('.row_resep').remove();
-      });
-
-      var count=2;
-      $(document).on('click', '.add_racikan', function(){
-          var html = '';
-          html += '<div class="clearfix row_racikan">';
-          html += '    <div class="col-md-9">';
-          html += '        <div class="form-group">';
-          html += '            <label>Nama Obat</label>';
-          html += '            <select name="kode_brng[]" class="form-control databarang_ajax">';
-          html += '            </select>';
-          html += '        </div>';
-          html += '    </div>';
-          html += '    <div class="col-md-2">';
-          html += '        <div class="form-group">';
-          html += '            <label>Kandungan</label>';
-          html += '            <input type="text" name="kandungan[]" class="form-control" />';
-          html += '        </div>';
-          html += '    </div>';
-          html += '    <div class="col-md-1">';
-          html += '      <div class="form-group">';
-          html += '            <label>Aksi</label>';
-          html += '            <button class="btn btn-danger remove_racikan">-</button>';
-          html += '        </div>';
-          html += '    </div>';
-          html += '</div>';
-          $('#item_racikan').append(html);
-          count++;
-          console.log(html);
-          var strip_tags = function(str) {
-            return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
-          };
-          var truncate_string = function(str, chars) {
-            if ($.trim(str).length <= chars) {
-              return str;
-            } else {
-              return $.trim(str.substr(0, chars)) + '…';
-            }
-          };
-          $('.databarang_ajax').selectator({
-            labels: {
-              search: 'Cari obat...'
-            },
-            load: function (search, callback) {
-              if (search.length < this.minSearchLength) return callback();
-              $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                  callback(data.slice(0, 100));
-                  console.log(data);
-                },
-                error: function() {
-                  callback();
-                }
-              });
-            },
-            delay: 300,
-            minSearchLength: 1,
-            valueField: 'kode_brng',
-            textField: 'nama_brng'
-          });
-          $('.master_aturan_pakai').selectator({
-            labels: {
-              search: 'Cari aturan pakai...'
-            },
-            load: function (search, callback) {
-              if (search.length < this.minSearchLength) return callback();
-              $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
-                type: 'GET',
-                dataType: 'json',
-                success: function(data) {
-                  callback(data.slice(0, 100));
-                  console.log(data);
-                },
-                error: function() {
-                  callback();
-                }
-              });
-            },
-            delay: 300,
-            minSearchLength: 1,
-            valueField: 'aturan',
-            textField: 'aturan'
-          });
-          $('select').each(function () {
-              var options = {
-                  useDimmer: true,
-                  useSearch: true,
-                  labels: {
-                      search: '...'
-                  }
-              };
-              $.each($(this).data(), function (key, value) {
-                  options[key] = value;
-              });
-              $(this).selectator(options);
-          });
-
-      });
-
-      $(document).on('click', '.remove_racikan', function(){
-          $(this).closest('.row_racikan').remove();
       });
 
   });
