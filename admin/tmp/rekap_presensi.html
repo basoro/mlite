@@ -1,0 +1,102 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Rekap Presensi</h3>
+                <ul class="nav nav-tabs">
+                  <li class="active">
+                      <a href="http://localhost/Khanza-Lite/admin/presensi/cetakrekap/?b=10&s=zainu&t=efdeb446ae8f" role="tab">Cetak</a>
+                  </li>
+              </ul>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-8">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: 0 | Total Kurang: -0:0:0 | Total Lebih: 0:0:0</h3>
+                </div>
+                <div class="col col-md-4">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                    <div class="input-group">
+                      <select name="b" id="bulan" class="form-control" placeholder="Bulan">
+                                                  <option value=""></option>
+                                                  <option value="01">01</option>
+                                                  <option value="02">02</option>
+                                                  <option value="03">03</option>
+                                                  <option value="04">04</option>
+                                                  <option value="05">05</option>
+                                                  <option value="06">06</option>
+                                                  <option value="07">07</option>
+                                                  <option value="08">08</option>
+                                                  <option value="09">09</option>
+                                                  <option value="10">10</option>
+                                                  <option value="11">11</option>
+                                                  <option value="12">12</option>
+                                              </select>
+                    </div>
+                    <div class="input-group">
+                      <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                      <input type="hidden" name="tanggal">
+                      <input type="hidden" name="t" value="efdeb446ae8f">
+                      <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                      </span>
+                    </div>
+                  </form>
+                </div>
+              </div>
+    				<div class="table-responsive no-margin">
+    				    <table class="table table-striped no-margin">
+    					    <thead>
+    						    <tr>
+                        <th>Nama</th>
+                        <th>Shift</th>
+                        <th>Jam Datang</th>
+    								    <th>Jam Pulang</th>
+                        <th>Durasi</th>
+                        <th>Efektif</th>
+                        <th>Selisih</th>
+    							</tr>
+    						</thead>
+    						<tbody>
+        				      								<tr>
+                      <td colspan="4" class="text-center">Kosong</td>
+                    </tr>
+    								    							</tbody>
+    						</table>
+    					</div>
+					            </div>
+        </div>
+    </div>
+</article>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Lokasi Presensi</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function(){
+	$('.gallery').lightbox();
+});
+/*
+$('#myModal').on('shown.bs.modal', (function() {
+  var mapIsAdded = false;
+
+  return function() {
+    if (!mapIsAdded) {
+      $('.modal-body').html('<iframe src="https://maps.google.com/maps?q=-3.4497701,114.8532037&z=17&output=embed" width="100%" height="100%" frameborder="0" style="border:0"></iframe>');
+
+      mapIsAdded = true;
+    }
+  };
+})());
+*/
+</script>

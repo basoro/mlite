@@ -142,10 +142,6 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
-        $status = '1';
-        if(isset($_GET['status']))
-          $status = $_GET['status'];
-
         $bulan = date('m');
         if (isset($_GET['b'])) {
             $bulan = $_GET['b'];
@@ -675,6 +671,7 @@ class Admin extends AdminModule
         foreach ($this->assign['list'] as $time) {
             list($hour,$minute,$second) = explode(':',$time['efektif']['kurang']);
             if (strpos($hour, '-') !== false) {
+                $hour = 0 - $hour;
                 $secondplus += $hour*3600;
                 $secondplus += $minute*60;
                 $secondplus += $second;
@@ -684,6 +681,7 @@ class Admin extends AdminModule
                 $secondminus += $second;
             }
         }
+
         $hours = floor($secondplus/3600);
         $secondplus -= $hours*3600;
         $minutes = floor($secondplus/60);
@@ -696,7 +694,7 @@ class Admin extends AdminModule
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
         
-        $this->assign['totalminus'] = $timesplus;
+        $this->assign['totalminus'] = '-'.$timesplus;
     
         $this->assign['totalplus'] = $timesminus;
         
@@ -999,6 +997,7 @@ class Admin extends AdminModule
         foreach ($total as $time) {
             list($hour,$minute,$second) = explode(':',$time['efektif']['kurang']);
             if (strpos($hour, '-') !== false) {
+                $hour = 0 - $hour;
                 $secondplus += $hour*3600;
                 $secondplus += $minute*60;
                 $secondplus += $second;
@@ -1024,7 +1023,7 @@ class Admin extends AdminModule
         $pdf->SetFont('Arial', '', 10);
         $pdf->SetAligns(array("C", "C" , "C"));
         $pdf->SetWidths(array(63, 63, 63));
-        $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: ".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
+        $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: -".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
         
         $pdf->Output('laporan_presensi_'.date('Y-m-d').'.pdf','I');
   
