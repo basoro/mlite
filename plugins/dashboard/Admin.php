@@ -23,9 +23,13 @@ class Admin extends AdminModule
 
     public function getMain()
     {
+        $this->assign['nama_instansi']  = $this->core->getSettings('nama_instansi');
+        $this->assign['logo']           = $this->core->getSettings('logo');
+        $this->assign['address']        = $this->core->getSettings('alamat_instansi');
+
         $this->core->addJS(url(MODULES.'/dashboard/js/webcam.js?v={$opensimrs.version}'), 'footer');
         $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'), 'footer');
-        return $this->draw('main.html');
+        return $this->draw('main.html', ['settings' => $this->assign]);
     }
 
     public function getMenu()

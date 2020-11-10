@@ -46,9 +46,9 @@
 </style>
 
 <div class="dashboard_wall">
-  <img src="{?=url()?}/themes/admin/img/logo.png" class="logo_yaski" width="120px" alt="">
-  <p class="title">RS Masa Kini</p>
-  <p class="alamat">Jl. Perintis Kemerdekaan No. 45 Telp. 0351-333555</p>
+  <img src="data:image/jpeg;base64,{?=base64_encode($settings.logo)?}" class="logo_yaski" width="120px" alt="">
+  <p class="title">{$settings.nama_instansi}</p>
+  <p class="alamat">{$settings.address}</p>
 </div>
 
 <div class="btn-group">
