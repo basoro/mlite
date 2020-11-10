@@ -23,6 +23,45 @@ class Admin extends AdminModule
 
     public function getMain()
     {
+        $this->core->addJS(url(MODULES.'/dashboard/js/webcam.js?v={$opensimrs.version}'), 'footer');
+        $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'), 'footer');
+        return $this->draw('main.html');
+    }
+
+    public function getMenu()
+    {
+
+        $this->core->addCSS(url(MODULES.'/dashboard/css/admin/style.css?v={$opensimrs.version}'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $this->core->addJS(url(MODULES.'/dashboard/js/webcam.js?v={$opensimrs.version}'), 'footer');
+        $this->core->addJS(url(MODULES.'/dashboard/js/app.js?v={$opensimrs.version}'), 'footer');
+
+        $settings = htmlspecialchars_array($this->options('dashboard'));
+
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[date('D',strtotime(date('Y-m-d')))];
+
+        $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+        $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+
+        return $this->draw('dashboard.html', [
+          'settings' => $settings,
+          'cek_presensi' => $cek_presensi,
+          'jam_jaga' => $this->db('jam_jaga')->group('shift')->toArray(),
+        ]);
+
+    }
+
+    public function __getMain()
+    {
 
         $this->core->addCSS(url(MODULES.'/dashboard/css/admin/style.css?v={$opensimrs.version}'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));

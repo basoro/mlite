@@ -344,3 +344,156 @@ function hitungUmur($tanggal_lahir){
   	$d = $today->diff($birthDate)->d;
   	return $y." Th ".$m." Bl ".$d." Hr";
 }
+
+function month()
+{
+  $month = [
+    'jan' => 'Januari',
+    'feb' => 'Februari',
+    'mar' => 'Maret',
+    'apr' => 'April',
+    'may' => 'Mey',
+    'jun' => 'Juni',
+    'jul' => 'Juli',
+    'aug' => 'Agustus',
+    'sep' => 'September',
+    'oct' => 'Oktober',
+    'nov' => 'Nopember',
+    'dec' => 'Desember'
+  ];
+  return $month;
+}
+
+function getDayIndonesia($date)
+{
+    if($date != '0000-00-00'){
+        $data = hari(date('D', strtotime($date)));
+    }else{
+        $data = '-';
+    }
+
+    return $data;
+}
+
+
+function hari($day) {
+    $hari = $day;
+
+    switch ($hari) {
+        case "Sun":
+            $hari = "Minggu";
+            break;
+        case "Mon":
+            $hari = "Senin";
+            break;
+        case "Tue":
+            $hari = "Selasa";
+            break;
+        case "Wed":
+            $hari = "Rabu";
+            break;
+        case "Thu":
+            $hari = "Kamis";
+            break;
+        case "Fri":
+            $hari = "Jum'at";
+            break;
+        case "Sat":
+            $hari = "Sabtu";
+            break;
+    }
+    return $hari;
+}
+
+function dateIndonesia($date){
+    if($date != '0000-00-00'){
+        $date = explode('-', $date);
+
+        $data = $date[2] . ' ' . bulan($date[1]) . ' '. $date[0];
+    }else{
+        $data = 'Format tanggal salah';
+    }
+
+    return $data;
+}
+
+function bulan($bln) {
+    $bulan = $bln;
+
+    switch ($bulan) {
+        case 1:
+            $bulan = "Januari";
+            break;
+        case 2:
+            $bulan = "Februari";
+            break;
+        case 3:
+            $bulan = "Maret";
+            break;
+        case 4:
+            $bulan = "April";
+            break;
+        case 5:
+            $bulan = "Mei";
+            break;
+        case 6:
+            $bulan = "Juni";
+            break;
+        case 7:
+            $bulan = "Juli";
+            break;
+        case 8:
+            $bulan = "Agustus";
+            break;
+        case 9:
+            $bulan = "September";
+            break;
+        case 10:
+            $bulan = "Oktober";
+            break;
+        case 11:
+            $bulan = "November";
+            break;
+        case 12:
+            $bulan = "Desember";
+            break;
+    }
+    return $bulan;
+}
+
+function penyebut($nilai) {
+	$nilai = abs($nilai);
+	$huruf = array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas');
+	$temp = "";
+	if ($nilai < 12) {
+		$temp = " ". $huruf[$nilai];
+	} else if ($nilai <20) {
+		$temp = penyebut($nilai - 10). " Belas";
+	} else if ($nilai < 100) {
+		$temp = penyebut($nilai/10)." Puluh". penyebut($nilai % 10);
+	} else if ($nilai < 200) {
+		$temp = " Seratus" . penyebut($nilai - 100);
+	} else if ($nilai < 1000) {
+		$temp = penyebut($nilai/100) . " Ratus" . penyebut($nilai % 100);
+	} else if ($nilai < 2000) {
+		$temp = " Seribu" . penyebut($nilai - 1000);
+	} else if ($nilai < 1000000) {
+		$temp = penyebut($nilai/1000) . " Ribu" . penyebut($nilai % 1000);
+	} else if ($nilai < 1000000000) {
+		$temp = penyebut($nilai/1000000) . " Juta" . penyebut($nilai % 1000000);
+	} else if ($nilai < 1000000000000) {
+		$temp = penyebut($nilai/1000000000) . " Milyar" . penyebut(fmod($nilai,1000000000));
+	} else if ($nilai < 1000000000000000) {
+		$temp = penyebut($nilai/1000000000000) . " Trilyun" . penyebut(fmod($nilai,1000000000000));
+	}
+	return $temp;
+}
+
+function terbilang($nilai) {
+	if($nilai<0) {
+		$hasil = "Minus ". trim(penyebut($nilai));
+	} else {
+		$hasil = trim(penyebut($nilai));
+	}
+	return $hasil;
+}
