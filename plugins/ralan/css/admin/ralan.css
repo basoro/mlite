@@ -14,11 +14,6 @@ th, td {
   float: none;
 }
 
-.tindakan ul.nav-tabs > li {
-  width: 33.33%;
-  text-align: center;
-}
-
 .card {
   background: #fff;
   min-height: 50px;

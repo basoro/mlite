@@ -135,6 +135,64 @@
     </div>
 </div>
 
+{if: !empty($ralan.permintaan_resep)}
+<h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Permintaan e-Resep</h4>
+<div class="table-responsive no-margin">
+  <table class="table table-striped no-margin">
+    <thead>
+      <tr>
+        <th>Nomor Resep</th>
+        <th>Nama Obat</th>
+        <th>Jumlah</th>
+        <th>Aturan Pakai</th>
+      </tr>
+    </thead>
+    <tbody>
+        {loop: $ralan.permintaan_resep}
+        <tr>
+          <td>{$value.no_resep}</td>
+          <td>{$value.nama_brng}</td>
+          <td>{$value.jml}</td>
+          <td>{$value.aturan_pakai}</td>
+        </tr>
+        {/loop}
+    </tbody>
+  </table>
+</div>
+{/if}
+
+{if: !empty($ralan.permintaan_resep_racikan)}
+  <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Permintaan e-Resep Racikan</h4>
+  <div class="table-responsive no-margin racikan">
+    <table class="table table-striped no-margin">
+      <thead>
+        <tr>
+          <th>Nomor Resep</th>
+          <th>Obat & Kandungan</th>
+          <th>Nama Racik</th>
+          <th>Metode</th>
+          <th>Jumlah</th>
+          <th>Aturan Pakai</th>
+          <th>Keterangan</th>
+        </tr>
+      </thead>
+      <tbody>
+          {loop: $ralan.permintaan_resep_racikan}
+          <tr>
+            <td>{$value.no_resep}</td>
+            <td>{$value.detail_racikan}</td>
+            <td>{$value.nama_racik}</td>
+            <td>{$value.nm_racik}</td>
+            <td>{$value.jml_dr}</td>
+            <td>{$value.aturan_pakai}</td>
+            <td>{$value.keterangan}</td>
+          </tr>
+          {/loop}
+      </tbody>
+    </table>
+  </div>
+{/if}
+
 <script>
   $(document).ready(function() {
       $('select').selectator();
@@ -186,7 +244,7 @@
             load: function (search, callback) {
               if (search.length < this.minSearchLength) return callback();
               $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+                url: '{?=url()?}/admin/ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -210,7 +268,7 @@
             load: function (search, callback) {
               if (search.length < this.minSearchLength) return callback();
               $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+                url: '{?=url()?}/admin/ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -290,7 +348,7 @@
             load: function (search, callback) {
               if (search.length < this.minSearchLength) return callback();
               $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+                url: '{?=url()?}/admin/ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {
@@ -314,7 +372,7 @@
             load: function (search, callback) {
               if (search.length < this.minSearchLength) return callback();
               $.ajax({
-                url: '{?=url()?}/admin/kasir/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+                url: '{?=url()?}/admin/ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
                 type: 'GET',
                 dataType: 'json',
                 success: function(data) {

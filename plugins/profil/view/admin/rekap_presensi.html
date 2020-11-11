@@ -12,13 +12,6 @@
                 <div class="col col-md-7">
                   <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
                     <div class="input-group">
-                      <select name="b" id="bulan" class="form-control" placeholder="Bulan">
-                        {loop: $rekap.bulan}
-                          <option value="{$value}">{$value}</option>
-                        {/loop}
-                      </select>
-                    </div>
-                    <div class="input-group">
                       <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
                       <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                       <span class="input-group-btn">

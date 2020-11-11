@@ -3,6 +3,7 @@
 namespace Plugins\Presensi;
 
 use Systems\AdminModule;
+use Systems\Lib\Fpdf\FPDF;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
@@ -146,11 +147,6 @@ class Admin extends AdminModule
         if(isset($_GET['status']))
           $status = $_GET['status'];
 
-        $bulan = date('m');
-        if (isset($_GET['b'])) {
-            $bulan = $_GET['b'];
-        }
-
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
@@ -158,20 +154,20 @@ class Admin extends AdminModule
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->where('jadwal_pegawai.bulan',date('m'))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }else{
             $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->where('jadwal_pegawai.bulan',date('m'))
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal', '%d?b='.$bulan.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -181,7 +177,7 @@ class Admin extends AdminModule
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->where('jadwal_pegawai.bulan',date('m'))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -190,7 +186,7 @@ class Admin extends AdminModule
         $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->where('jadwal_pegawai.bulan',date('m'))
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
@@ -212,23 +208,8 @@ class Admin extends AdminModule
 
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
-        $month = array(
-            '01' => 'JAN',
-            '02' => 'FEB',
-            '03' => 'MAR',
-            '04' => 'APR',
-            '05' => 'MEI',
-            '06' => 'JUN',
-            '07' => 'JUL',
-            '08' => 'AGU',
-            '09' => 'SEP',
-            '10' => 'OKT',
-            '11' => 'NOV',
-            '12' => 'DES',
-        );
-        $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
-        $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+
         return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
     }
 
@@ -277,7 +258,7 @@ class Admin extends AdminModule
         }
 
         $this->assign['id'] = $this->db('pegawai')->toArray();
-        $this->assign['h1'] = $this->db('jam_masuk')->toArray();
+        $this->assign['h1'] = array('','PAGI', 'SIANG', 'MALAM');
         $this->assign['tahun'] = date('Y');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
@@ -291,7 +272,7 @@ class Admin extends AdminModule
         if (!empty($row)){
             $this->assign['form'] = $row;
             $this->assign['id'] = $this->db('pegawai')->toArray();
-            $this->assign['h1'] = $this->db('jam_masuk')->toArray();
+            $this->assign['h1'] = array('','Pagi', 'Siang', 'Malam');
             $this->assign['tahun'] = date('Y');
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
@@ -346,33 +327,33 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
-        $bulan = date('m');
-        if (isset($_GET['b'])) {
-            $bulan = $_GET['b'];
-        }
+        $status = '1';
+        if(isset($_GET['status']))
+          $status = $_GET['status'];
 
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date('Y-m').'-01')
+                ->where('jam_datang', '<', date('Y-m').'-31')
                 ->like('nama', '%'.$phrase.'%')
+                ->orLike('shift', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }else{
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date('Y-m').'-01')
+                ->where('jam_datang', '<', date('Y-m').'-31')
                 ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -380,50 +361,51 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
 
         if($this->core->getUserInfo('id') == 1){
-        $rows = $this->db('rekap_presensi')
-            ->select([
-              'nama' => 'pegawai.nama',
-              'departemen' => 'pegawai.departemen',
-              'id' => 'rekap_presensi.id',
-              'shift' => 'rekap_presensi.shift',
-              'jam_datang' => 'rekap_presensi.jam_datang',
-              'jam_pulang' => 'rekap_presensi.jam_pulang',
-              'status' => 'rekap_presensi.status',
-              'durasi' => 'rekap_presensi.durasi',
-              'photo' => 'rekap_presensi.photo'
-            ])
-            ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-            ->like('nama', '%'.$phrase.'%')
-            ->asc('jam_datang')
-            ->offset($offset)
-            ->limit($perpage)
-            ->toArray();
+            $rows = $this->db('rekap_presensi')
+                ->select([
+                  'nama' => 'pegawai.nama',
+                  'departemen' => 'pegawai.departemen',
+                  'id' => 'rekap_presensi.id',
+                  'shift' => 'rekap_presensi.shift',
+                  'jam_datang' => 'rekap_presensi.jam_datang',
+                  'jam_pulang' => 'rekap_presensi.jam_pulang',
+                  'status' => 'rekap_presensi.status',
+                  'durasi' => 'rekap_presensi.durasi',
+                  'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai','pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-m').'-01')
+                ->where('jam_datang', '<', date('Y-m').'-31')
+                ->like('nama', '%'.$phrase.'%')
+                ->orLike('shift', '%'.$phrase.'%')
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
         }else{
             $rows = $this->db('rekap_presensi')
-            ->select([
-              'nama' => 'pegawai.nama',
-              'departemen' => 'pegawai.departemen',
-              'id' => 'rekap_presensi.id',
-              'shift' => 'rekap_presensi.shift',
-              'jam_datang' => 'rekap_presensi.jam_datang',
-              'jam_pulang' => 'rekap_presensi.jam_pulang',
-              'status' => 'rekap_presensi.status',
-              'durasi' => 'rekap_presensi.durasi',
-              'photo' => 'rekap_presensi.photo'
-            ])
-            ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
-            ->like('nama', '%'.$phrase.'%')
-            // ->orLike('shift', '%'.$phrase.'%')
-            ->asc('jam_datang')
-            ->offset($offset)
-            ->limit($perpage)
-            ->toArray();
+                ->select([
+                  'nama' => 'pegawai.nama',
+                  'departemen' => 'pegawai.departemen',
+                  'id' => 'rekap_presensi.id',
+                  'shift' => 'rekap_presensi.shift',
+                  'jam_datang' => 'rekap_presensi.jam_datang',
+                  'jam_pulang' => 'rekap_presensi.jam_pulang',
+                  'status' => 'rekap_presensi.status',
+                  'durasi' => 'rekap_presensi.durasi',
+                  'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai','pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-m').'-01')
+                ->where('jam_datang', '<', date('Y-m').'-31')
+                ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+                ->like('nama', '%'.$phrase.'%')
+                // ->orLike('shift', '%'.$phrase.'%')
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
         }
 
         $this->assign['list'] = [];
@@ -431,603 +413,13 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-                
-                $day = array(
-                    'Sun' => 'AKHAD',
-                    'Mon' => 'SENIN',
-                    'Tue' => 'SELASA',
-                    'Wed' => 'RABU',
-                    'Thu' => 'KAMIS',
-                    'Fri' => 'JUMAT',
-                    'Sat' => 'SABTU'
-                );
-
-                $jam_datang = $this->db('rekap_presensi')
-                    ->select(['EXTRACT(MONTH FROM rekap_presensi.jam_datang) as month',
-                    'EXTRACT(YEAR FROM rekap_presensi.jam_datang) as year',
-                    'EXTRACT(DAY FROM rekap_presensi.jam_datang) as day',
-                    'shift' => 'rekap_presensi.shift'])
-                    ->join('pegawai','pegawai.id = rekap_presensi.id')
-                    ->where('rekap_presensi.id',$row['id'])
-                    ->where('rekap_presensi.jam_datang',$row['jam_datang'])
-                    ->asc('jam_datang')
-                    ->oneArray();
-
-                $row['date']=$day[date('D',strtotime(date($jam_datang['year'].'-'.$jam_datang['month'].'-'.$jam_datang['day'])))];
-                switch (true) {
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 3 HOUR';
-                        $efektif = 'INTERVAL 30 MINUTE';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Pagi'):
-                        $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang'):
-                        $interval = 'INTERVAL 5 HOUR';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang - Gizi'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam'):
-                        $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 2 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Saji)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Cuci)'):
-                        $interval = 'INTERVAL 0 HOUR';
-                        $efektif = 'INTERVAL 0 HOUR';
-                        break;
-                    default:
-                        $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                        $efektif = 'INTERVAL 1 HOUR';
-                        break;
-                }
-                
-                $row['efektif'] = $this->db('rekap_presensi')
-                        ->select([
-                        'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
-                        'kurang' => 'CAST(rekap_presensi.durasi as TIME) - '.$interval])
-                        ->where('rekap_presensi.id',$row['id'])
-                        ->where('rekap_presensi.jam_datang',$row['jam_datang'])
-                        ->oneArray();
-
                 $this->assign['list'][] = $row;
             }
-
         }
-
-        $secondplus = 0;
-        $secondminus = 0;
-        foreach ($this->assign['list'] as $time) {
-            list($hour,$minute,$second) = explode(':',$time['efektif']['kurang']);
-            if (strpos($hour, '-') !== false) {
-                $secondplus += $hour*3600;
-                $secondplus += $minute*60;
-                $secondplus += $second;
-            }else{
-                $secondminus += $hour*3600;
-                $secondminus += $minute*60;
-                $secondminus += $second;
-            }
-        }
-        $hours = floor($secondplus/3600);
-        $secondplus -= $hours*3600;
-        $minutes = floor($secondplus/60);
-        $secondplus -= $minutes*60;
-        $timesplus = $hours.':'.$minutes.':'.$secondplus;
-
-        $hours = floor($secondminus/3600);
-        $secondminus -= $hours*3600;
-        $minutes = floor($secondminus/60);
-        $secondminus -= $minutes*60;
-        $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
-        $this->assign['totalminus'] = $timesplus;
-    
-        $this->assign['totalplus'] = $timesminus;
-        
 
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = date('Y');
-        $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&s='.$phrase]);
+
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
-    }
-    
-    public function getCetakRekap()
-    {
-        $phrase = '';
-        if(isset($_GET['s']))
-          $phrase = $_GET['s'];
-
-        $bulan = date('m');
-        if (isset($_GET['b'])) {
-            $bulan = $_GET['b'];
-        }
-
-        $total = [];
-        $count = 0;
-
-        $day = array(
-            'Sun' => 'AKHAD',
-            'Mon' => 'SENIN',
-            'Tue' => 'SELASA',
-            'Wed' => 'RABU',
-            'Thu' => 'KAMIS',
-            'Fri' => 'JUMAT',
-            'Sat' => 'SABTU'
-        );
-
-        $pasien = $this->db('rekap_presensi')
-        ->select([
-            'nama' => 'pegawai.nama',
-            'departemen' => 'pegawai.departemen',
-            'id' => 'rekap_presensi.id',
-            'shift' => 'rekap_presensi.shift',
-            'jam_datang' => 'rekap_presensi.jam_datang',
-            'jam_pulang' => 'rekap_presensi.jam_pulang',
-            'status' => 'rekap_presensi.status',
-            'durasi' => 'rekap_presensi.durasi',
-            'photo' => 'rekap_presensi.photo',
-            'EXTRACT(MONTH FROM rekap_presensi.jam_datang) as month',
-            'EXTRACT(YEAR FROM rekap_presensi.jam_datang) as year',
-            'EXTRACT(DAY FROM rekap_presensi.jam_datang) as day',
-          ])
-          ->join('pegawai','pegawai.id = rekap_presensi.id')
-          ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-          ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-          ->like('nama', '%'.$phrase.'%')
-          ->asc('jam_datang')
-          ->toArray();
-
-        $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
-  
-        $pdf = new PDF_MC_Table();
-        $pdf->AddPage();
-        $pdf->SetAutoPageBreak(true, 10);
-        $pdf->SetTopMargin(10);
-        $pdf->SetLeftMargin(10);
-        $pdf->SetRightMargin(10);
-  
-        $pdf->Image($logo, 10, 8, '18', '18', 'png');
-        $pdf->SetFont('Arial', '', 24);
-        $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-        $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
-        $pdf->Line(10, 30, 200, 30);
-        $pdf->Line(10, 31, 200, 31);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Text(10, 40, 'REKAP PRESENSI ');
-        $pdf->Ln(34);
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->SetWidths(array(50,15,35,35,18,18,18));
-        $pdf->Row(array('Nama Pegawai','Shift','Jam Datang', 'Jam Pulang', 'Durasi' , 'Efektif', 'Selisih'));
-        $pdf->SetFont('Arial', '', 10);
-        foreach ($pasien as $hasil) {
-            $row['date']=$day[date('D',strtotime(date($hasil['year'].'-'.$hasil['month'].'-'.$hasil['day'])))];
-            switch (true) {
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SENIN' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SELASA' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'RABU' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'KAMIS' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 3 HOUR';
-                    $efektif = 'INTERVAL 30 MINUTE';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'JUMAT' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'SABTU' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Pagi'):
-                    $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Siang'):
-                    $interval = 'INTERVAL 5 HOUR';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Siang - Gizi'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Malam'):
-                    $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 2 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Malam - Gizi (Masak)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Malam - Gizi (Saji)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                case ($row['date'] == 'AKHAD' and $hasil['shift'] == 'Malam - Gizi (Cuci)'):
-                    $interval = 'INTERVAL 0 HOUR';
-                    $efektif = 'INTERVAL 0 HOUR';
-                    break;
-                default:
-                    $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
-                    $efektif = 'INTERVAL 1 HOUR';
-                    break;
-            }
-            $hasil['efektif'] = $this->db('rekap_presensi')
-                        ->select([
-                        'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
-                        'kurang' => 'CAST(rekap_presensi.durasi as TIME) - '.$interval])
-                        ->where('rekap_presensi.id',$hasil['id'])
-                        ->where('rekap_presensi.jam_datang',$hasil['jam_datang'])
-                        ->oneArray();
-            $total[] = $hasil; 
-            $count++;
-          $pdf->Row(array($hasil['nama'],$hasil['shift'],$hasil['jam_datang'],$hasil['jam_pulang'],$hasil['durasi'],$hasil['efektif']['efektif'],$hasil['efektif']['kurang']));
-        }
-        
-        $secondplus = 0;
-        $secondminus = 0;
-        foreach ($total as $time) {
-            list($hour,$minute,$second) = explode(':',$time['efektif']['kurang']);
-            if (strpos($hour, '-') !== false) {
-                $secondplus += $hour*3600;
-                $secondplus += $minute*60;
-                $secondplus += $second;
-            }else{
-                $secondminus += $hour*3600;
-                $secondminus += $minute*60;
-                $secondminus += $second;
-            }
-        }
-        $hours = floor($secondplus/3600);
-        $secondplus -= $hours*3600;
-        $minutes = floor($secondplus/60);
-        $secondplus -= $minutes*60;
-        $timesplus = $hours.':'.$minutes.':'.$secondplus;
-
-        $hours = floor($secondminus/3600);
-        $secondminus -= $hours*3600;
-        $minutes = floor($secondminus/60);
-        $secondminus -= $minutes*60;
-        $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
-        $pdf->Ln(34);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->SetAligns(array("C", "C" , "C"));
-        $pdf->SetWidths(array(63, 63, 63));
-        $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: ".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
-        
-        $pdf->Output('laporan_presensi_'.date('Y-m-d').'.pdf','I');
-  
     }
 
     public function getPrint($phrase = null, $tanggal = null)
@@ -1171,7 +563,6 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-                $row['time'] = strtotime(date('Y-m-d H:i:s')) - strtotime($row['jam_datang']);
                 $this->assign['list'][] = $row;
             }
         }

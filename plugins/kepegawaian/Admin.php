@@ -19,37 +19,36 @@ class Admin extends AdminModule
     public function getManage($page = 1)
     {
         $perpage = '10';
-        
+
         $phrase = '';
-        if(isset($_GET['s'])){
-            $phrase = $_GET['s'];
-            // pagination
-            $totalRecords = $this->db('pegawai')->select('nik')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->toArray();
+        if(isset($_GET['s']))
+          $phrase = $_GET['s'];
 
-            $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d?s='.$phrase]));
-            $this->assign['pagination'] = $pagination->nav('pagination','5');
-            $this->assign['totalRecords'] = $totalRecords;
-
-            // list
-            $offset = $pagination->offset();
-
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->limit($perpage)->offset($offset)->toArray();
-
-        }else{
-            // pagination
-            $totalRecords = $this->db('pegawai')->select('nik')->where('stts_aktif','AKTIF')->toArray();
-
-            $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d']));
-            $this->assign['pagination'] = $pagination->nav('pagination','5');
-            $this->assign['totalRecords'] = $totalRecords;
-
-            // list
-            $offset = $pagination->offset();
-
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->limit($perpage)->offset($offset)->toArray();
-        }
-        
+        $status = 'AKTIF';
+        if(isset($_GET['status']))
+            $status = $_GET['status'];
     
+        // pagination
+        $totalRecords = $this->db('pegawai')->select('nik')->like('nik', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')
+        ->orLike('departemen', '%'.$phrase.'%')
+        ->orLike('bidang', '%'.$phrase.'%')
+        ->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d?s='.$phrase]));
+        $this->assign['pagination'] = $pagination->nav('pagination','5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        $rows = $this->db('pegawai')
+                    ->where('stts_aktif', $status)
+                    ->like('nik', '%'.$phrase.'%')
+                    ->orLike('nama', '%'.$phrase.'%')
+                    ->orLike('departemen', '%'.$phrase.'%')
+                    ->orLike('bidang', '%'.$phrase.'%')
+                    ->offset($offset)
+                    ->limit($perpage)
+                    ->toArray();
+
         $this->assign['list'] = [];
         if (count($rows)) {
             foreach ($rows as $row) {

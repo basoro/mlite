@@ -56,12 +56,17 @@ $(document).ready(function(){
     });
 });
 
-$(document).on('click', '#caripropinsi', function (e) {
+$(document).ready(function(){
     $.ajax({
       type: 'GET',
       url: '{?=url()?}/admin/pasien/ajax?show=propinsi&t={?=$_SESSION['token']?}',
       success: function(response) {
         $('#propinsi').html(response);
+        $('.propinsi').DataTable({
+          "lengthChange": false,
+          "scrollX": true
+        });
+        console.log(response);
       }
     })
 });
@@ -70,7 +75,6 @@ $(document).on('click', '.pilihpropinsi', function (e) {
   $("#kd_prop")[0].value = $(this).attr('data-kdprop');
   $("#namaprop")[0].value = $(this).attr('data-namaprop');
   $('#propinsiModal').modal('hide');
-  $('.propinsi').dataTable().Destroy();
   var kd_prop = $(this).attr('data-kdprop');
   $.ajax({
     type: 'GET',
@@ -90,7 +94,6 @@ $(document).on('click', '.pilihkabupaten', function (e) {
   $("#kd_kab")[0].value = $(this).attr('data-kdkab');
   $("#namakab")[0].value = $(this).attr('data-namakab');
   $('#kabupatenModal').modal('hide');
-  $('.kabupaten').dataTable().Destroy();
   var kd_kab = $(this).attr('data-kdkab');
   $.ajax({
     type: 'GET',
@@ -110,7 +113,6 @@ $(document).on('click', '.pilihkecamatan', function (e) {
   $("#kd_kec")[0].value = $(this).attr('data-kdkec');
   $("#namakec")[0].value = $(this).attr('data-namakec');
   $('#kecamatanModal').modal('hide');
-  $('.kecamatan').dataTable().Destroy();
   var kd_kec = $(this).attr('data-kdkec');
   $.ajax({
     type: 'GET',
