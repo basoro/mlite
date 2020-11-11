@@ -46,7 +46,10 @@ class Admin extends Main
 
         $this->assign['header']         = isset_or($this->appends['header'], ['']);
         $this->assign['footer']         = isset_or($this->appends['footer'], ['']);
-        $this->assign['modules'] = $this->_modulesList();
+        $this->assign['modules']        = [];
+        if (isset($_SESSION['opensimrs_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
+            $this->assign['modules']    = $this->_modulesList();
+        }
 
         $this->assign['get_version'] = '';
 
