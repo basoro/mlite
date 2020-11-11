@@ -7,7 +7,7 @@
     <title>{$opensimrs.title} - {$module.name}</title>
     <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
     <link href="{$opensimrs.path}/assets/css/bootstrap.min.css?v={$opensimrs.version}" rel="stylesheet">
-    <link href="{$opensimrs.path}/assets/css/cerulean.min.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{$opensimrs.path}/assets/css/bootstrap-theme.min.css?v={$opensimrs.version}" rel="stylesheet">
     <link href="{$opensimrs.path}/assets/css/animate.min.css?v={$opensimrs.version}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$opensimrs.version)?}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$opensimrs.version)?}" rel="stylesheet">
@@ -43,183 +43,48 @@
         var opensimrs = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
     </script>
     {loop: $opensimrs.header}{$value}{/loop}
-    <style media="screen">
-    .modal-fullscreen {
-      background: transparent;
-    }
-    .modal-fullscreen .modal-content {
-      background: transparent;
-      border: 0;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-    }
-    .modal-fullscreen .modal-dialog {
-      margin: 0;
-      margin-right: auto;
-      margin-left: auto;
-      width: 100%;
-    }
-    .module {
-        display: inline-block;
-        width: 20%;
-        padding-left: 15px;
-        padding-right: 15px;
-        margin-right: -4px;
-    }
-    .module .panel-body {
-        display: block;
-        padding: 0px 0px 10.5px 0px;
-    }
-    .module .panel-body h4 {
-        margin-bottom: 0;
-    }
-    .module .panel-body:hover {
-        text-decoration: none;
-        background-color: #ddd;
-    }
-    .module .panel-body .panel-thumb {
-        background: #ddd;
-        height: 124px;
-        position: relative;
-        color: #222;
-        overflow: hidden;
-    }
-    .module .panel-body .panel-thumb .fa {
-        font-size: 48px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        transition: all 0.3s;
-        -webkit-transition: all 0.3s;
-    }
-    .module .panel-body .panel-thumb img {
-        width: 60px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        transition: all 0.3s;
-        -webkit-transition: all 0.3s;
-    }
-    .module .panel-body .panel-thumb .desc {
-        opacity: 0;
-        font-size: 16px;
-        color: #000;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        padding: 0px 10px;
-        text-align: center;
-        transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        font-weight: 400;
-        transition: all 0.5s;
-        -webkit-transition: all 0.5s;
-    }
-    .module .panel-body .panel-thumb:hover .fa {
-        opacity: 0.2;
-        font-size: 200px;
-    }
-    .module .panel-body .panel-thumb:hover img {
-        opacity: 0.4;
-        position: absolute;
-        transform: scale(6);
-    }
-    .module .panel-body .panel-thumb:hover .desc {
-        opacity: 1;
-    }
-
-
-    @media (min-width: 992px) and (max-width: 1200px) {
-        .module {
-            width: 33.33%;
-        }
-    }
-    @media (min-width: 480px) and (max-width: 992px) {
-        .module {
-            width: 50%;
-        }
-    }
-    @media (max-width: 480px) {
-        .module {
-            width: 100%;
-        }
-    }
-    </style>
 </head>
 
 <body>
 
     <div id="wrapper">
 
-      <div id="navbar-wrapper">
-          <nav class="navbar navbar-inverse mobile-fixed-top hidden-lg">
-              <div class="container-fluid">
-                  <div class="navbar-header">
-                      <a href="#" data-toggle="modal" data-target="#menuModal">
-                      <img class="img-responsive" src="{?= url(THEMES.'/admin/img/logo.png') ?}" style="display: inline-block; height: 30px; margin-top: -5px" alt="">
-                      <span class="navbar-brand truncated"> {$opensimrs.title} </span>
-                      </a>
-                  </div>
-                  <ul class="nav navbar-nav navbar-right">
-                      <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
-                  </ul>
-              </div>
-          </nav>
-      </div>
-      <nav class="navbar navbar-inverse navbar-fixed-top visible-lg" style="margin-bottom:0;font-size:16px;">
-        <div class="container-fluid">
-          <ul class="nav navbar-nav">
-            <li><a href="#" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
-            <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"><img class="img-responsive" src="{?= url('/assets/img/icon-pasien.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Pasien</a></li>
-            <li><a href="#"><img class="img-responsive" src="{?= url('/assets/img/icon-igd.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> IGD</a></li>
-            <li><a href="{?=url([ADMIN, 'ralan', 'manage'])?}"><img class="img-responsive" src="{?= url('/assets/img/icon-ralan.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Rawat Jalan</a></li>
-            <li><a href="{?=url([ADMIN, 'ranap', 'manage'])?}"><img class="img-responsive" src="{?= url('/assets/img/icon-ranap.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Rawat Inap</a></li>
-            <li><a href="{?=url([ADMIN, 'apotek_ralan', 'manage'])?}"><img class="img-responsive" src="{?= url('/assets/img/icon-apotek.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Apotek</a></li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="img-responsive" src="{?= url('/assets/img/icon-informasi.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Informasi
-              <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#">Rawat Jalan</a></li>
-                <li><a href="#">Rawat Inap</a></li>
-                <li><a href="#">Laboratorium</a></li>
-                <li><a href="#">Radiologi</a></li>
-                <li role="separator" class="divider"></li>
-                <li><a href="#">Antrian Loket</a></li>
-                <li><a href="#">Antrian Poliklinik</a></li>
-                <li><a href="#">Ketersediaan Kamar</a></li>
-              </ul>
-            </li>
-            <li class="dropdown">
-              <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="img-responsive" src="{?= url('/assets/img/icon-about.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Tentang LITE
-              <span class="caret"></span></a>
-              <ul class="dropdown-menu">
-                <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
-                <li><a href="#" data-toggle="modal" data-target="#bantuanModal"> Bantuan</a></li>
-                {loop: $opensimrs.nav}
-                <li{if: $value.subnav} class="dropdown-submenu"{/if}>
-                  <a href="{$value.url}">{$value.name}</a>
-                  {if: !empty($value.subnav)}
-                  <ul class="dropdown-menu">
-                      {loop: $value.subnav}
-                      <li><a href="{$value.url}">{$value.name}</a></li>
-                      {/loop}
-                  </ul>
-                  {/if}
+        <aside id="sidebar-wrapper">
+            <div class="sidebar-brand">
+                <img src="{?= url(THEMES.'/admin/img/logo.png') ?}" alt="logo">
+                <h2 class="text-danger">Khanza<span>LITE</span></h2>
+            </div>
+            <ul class="sidebar-nav">
+            {loop: $opensimrs.nav}
+                <li class="{$value.active}" data-module="{$value.dir}">
+                    <a href="{$value.url}"><i class="fa fa-{$value.icon}"></i>{$value.name}</a>
+                    {if: !empty($value.subnav)}
+                    <ul class="collapse">
+                        {loop: $value.subnav}
+                        <li class="{$value.active}"><a href="{$value.url}">{$value.name}</a></li>
+                        {/loop}
+                    </ul>
+                    {/if}
                 </li>
-                {/loop}
-              </ul>
-            </li>
-          </ul>
-          <ul class="nav navbar-nav navbar-right">
-              <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
-          </ul>
+            {/loop}
+            </ul>
+        </aside>
+
+        <div id="navbar-wrapper">
+            <nav class="navbar navbar-inverse mobile-fixed-top">
+                <div class="container-fluid">
+                    <div class="navbar-header">
+                        <a href="#" id="sidebar-toggle"><i class="fa fa-bars"></i></a> <div class="navbar-brand truncate"><a href="{$opensimrs.path}/admin/"><span class="first">{$opensimrs.title}</span></a></div>
+                    </div>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="hidden-sm hidden-xs"><a href="{?= url([ADMIN, 'settings', 'updates']) ?}" class="small"><span class="label label-danger">{$opensimrs.get_version}</span></a></li>
+                        <li class="hello hidden-sm hidden-xs"><a href="#"><i class="fa fa-fw fa-user-md"></i> <span>{?= sprintf('Apa kabar <strong>%s</strong>?', $opensimrs.nama) ?}</span></a></li>
+                        <li class="hidden-sm hidden-xs"><a href="{?=url('')?}" target="_blank" class="fa fa-globe" data-toggle="tooltip" data-placement="bottom" title="Tampilkan"></a></li>
+                        <li><a href="{?=url(ADMIN.'/logout')?}" class="fa fa-power-off" data-toggle="tooltip" data-placement="bottom" title="Keluar"></a></li>
+                    </ul>
+                </div>
+            </nav>
         </div>
-      </nav>
 
 		{if: $opensimrs.notify}
         <div id="notify" class="alert alert-{$opensimrs.notify.type} alert-dismissible fade in" role="alert">
@@ -230,118 +95,22 @@
         </div>
 		{/if}
 
-    {if: $module.name == 'Dashboard'}
-        {$module.content}
-    {else}
         <section id="content-wrapper">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12">
-                        <h2 class="content-title">{if: $module.name !== 'Dashboard'}{$module.name}{/if}</h2>
+                        <h2 class="content-title">{$module.name}</h2>
                         {$module.content}
                     </div>
                 </div>
             </div>
         </section>
-    {/if}
 
     </div>
 
-    <footer class="visible-lg bg-primary" style="padding-bottom:30px;z-index:1000;">
-      <p class="pull-right">
-        Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
-        {$opensimrs.powered}.
-      </p>
-      <p><i class="fa fa-fw fa-calendar"></i> <span>{$opensimrs.tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $opensimrs.username) ?}</span></p>
+    <footer class="hidden-xs hidden-sm hidden-md">
+        Dikembangkan dengan <i class="fa fa-heart text-danger"></i> oleh <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a>
     </footer>
-
-    <!-- Modal -->
-    <div class="modal fade modal-fullscreen" id="menuModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header" style="border-bottom: 0px #fff solid;">
-                    <div class="row">
-                      <div class="col col-md-12">
-                          <div class="input-group">
-                            <input type="text" id="cari_modul" minlength="3" class="form-control" placeholder="Pencarian..." required>
-                            <span class="input-group-btn">
-                              <button class="btn btn-default" type="button"  data-dismiss="modal"><i class="fa fa-close"></i></button>
-                            </span>
-                          </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="modal-body" style="height: 90vh;overflow-y: auto;">
-                    <div class="row">
-                        <ul id="list_modul" class="modules" style="padding:0;margin:0;">
-                            {loop: $opensimrs.modules}
-                            <li class="module" data-module="{$value.dir}">
-                                <div class="panel panel-default">
-                                    <a href="{$value.url}" class="panel-body text-center">
-                                        <div class="panel-thumb">
-                                            <i class="fa fa-{$value.icon}"></i>
-                                            <div class="desc">
-                                                {$value.description}
-                                            </div>
-                                        </div>
-                                        <h4><b>{$value.name}</b></h4>
-                                    </a>
-                                </div>
-                            </li>
-                            {/loop}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="bantuanModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Bantuan Khanza LITE</h4>
-                </div>
-                <div class="modal-body">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="tentangModal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-xs" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">Tentang Khanza LITE</h4>
-                </div>
-                <div class="modal-body">
-                  <div class="text-center">
-                    <img src="{?=url()?}/themes/admin/img/logo.png" width="50px" alt="">
-                    <h4>
-                      Khanza LITE
-                      <div class="">
-                        <small>
-                          {$opensimrs.version}
-                        </small>
-                      </div>
-                    </h4>
-                    <p>Based on SIMKES Khanza by Windiarto</p>
-                    <p>Made with <i class="fa fa-heart text-danger"></i> and <i class="fa fa-coffee text-primary"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a> & Friends.</p>
-                    <p>Email: dentix.id@gmail.com - Telegram: @basoro</p>
-                    <p>Copyright © 2020</p>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- PWA Support -->
     <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -355,16 +124,6 @@
         });
       });
     }
-    </script>
-    <script>
-    $(document).ready(function(){
-      $("#cari_modul").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#list_modul li").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
     </script>
     <script src="{?= url(THEMES.'/admin/js/scripts.js?v='.$opensimrs.version) ?}"></script>
     {loop: $opensimrs.footer}{$value}{/loop}

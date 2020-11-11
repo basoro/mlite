@@ -1,25 +1,413 @@
-<article class="row" style="margin: 100px 20px;">
-    <div class="col-md-12">
-        <div class="row">
-            <ul class="modules" style="padding:0;margin:0;">
-                {loop: $modules}
-                {if: $value.name !== 'Dashboard'}
-                <li class="module" data-module="{$value.dir}">
-                    <div class="panel panel-default">
-                        <a href="{$value.url}" class="panel-body text-center">
-                            <div class="panel-thumb">
-                                <i class="fa fa-{$value.icon}"></i>
-                                <div class="desc">
-                                    {$value.description}
-                                </div>
-                            </div>
-                            <h4><b>{$value.name}</b></h4>
-                        </a>
+<article class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-danger">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-circle fa-stack-2x text-danger"></i>
+                        <i class="fa fa-calendar-plus-o fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-danger">Total Kunjungan</div>
+                    <div class="stat-bold">
+                        {?= $stats.getVisities ?}
+                        <span class="text-{if: $stats.percentTotal >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentTotal ?}%)
+                        </span>
                     </div>
-                </li>
-                {/if}
-                {/loop}
-            </ul>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-info">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-circle fa-stack-2x text-info"></i>
+                        <i class="fa fa-calendar fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-info">Kunjungan Tahun Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getYearVisities ?}
+                        <span class="text-{if: $stats.percentYear >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentYear >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentYear ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-circle fa-stack-2x text-warning"></i>
+                        <i class="fa fa-users fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-warning">Kunjungan Bulan Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getMonthVisities ?}
+                        <span class="text-{if: $stats.percentMonth >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentMonth >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentMonth ?}%)
+                        </span>
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-success">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-circle fa-stack-2x text-success"></i>
+                        <i class="fa fa-wheelchair fa-stack-1x text-white"></i>
+                    </span>
+                    <div class="stat-title text-success">Kunjungan Hari Ini</div>
+                    <div class="stat-bold">
+                        {?= $stats.getCurrentVisities ?}
+                        <span class="text-{if: $stats.percentDays >= 0}success{else}danger{/if} stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentDays >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentDays ?}%)
+                        </span>
+                    </div>
+              </div>
         </div>
     </div>
 </article>
+
+<article class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Poliklinik Hari Ini</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="line-chartcanvas" height="350"></canvas>
+            </div>
+        </div>
+    </div>
+</article>
+
+<article class="row">
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Status Perawatan {?=date('Y')?}</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="medical-treatment-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kunjungan Tahun {?=date('Y')?}</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="heart-surgery-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Cara Bayar Tahun {?=date('Y')?}</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="total-revenue-chart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</article>
+
+<article class="row">
+    <!-- New Patients -->
+    <div class="col-md-8 col-lg-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a class="pull-right badge" href="{?=url(ADMIN.'/pasien/manage')?}" style="background-color:#ffcc00;">Semua</a>
+                <h3 class="panel-title">Pasien Terbaru Hari Ini</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>No. RM</th>
+                                <th>Name</th>
+                                <th>Pekerjaan</th>
+                                <th>Cara Bayar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $pasien}
+                            <tr>
+                                <td>{$value.no_rkm_medis}</td>
+                                <td>
+                                    <img src="{?=url(MODULES.'/pasien/img/'.$value.jk.'.png')?}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                                    <div style="display:inline;padding-left:10px;padding-top:10px;">{$value.nm_pasien}</div>
+                                </td>
+                                <td>{$value.pekerjaan}</td>
+                                <td><span class="badge {if: $value.kd_pj == 'BPJ'}badge-success{/if}">{$value.png_jawab}</span></td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End New Patients -->
+
+    <!-- Doctors List -->
+    <div class="col-md-4 col-lg-4">
+        <div class="panel panel-default doctor-list">
+            <div class="panel-heading">
+                <a class="pull-right badge" href="{?=url(ADMIN.'/pendaftaran/jadwal')?}">Semua</a>
+                <h3 class="panel-title">Jadwal Dokter Hari Ini</h3>
+            </div>
+            <div class="list-group">
+                {loop: $dokter}
+                <div class="list-group-item">
+                    <img src="{?=url(MODULES.'/pasien/img/default.png')?}" style="border-radius:50%;float:left;" width="40">
+                    <div style="display:inline-block;padding-left:10px;">
+                        <b>{$value.nm_dokter}</b><br>
+                        {$value.nm_sps}
+                    </div>
+                </div>
+                {/loop}
+            </div>
+        </div>
+    </div>
+    <!-- End Doctors List -->
+
+</article>
+
+<div class="btn-group">
+    <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
+        <i class="fa fa-plus"></i> Presensi Online
+    </button>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url(ADMIN)?}">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <select class="form-control" id="shift" style="width:140px;">
+            <option value="">Pilih Shift</option>
+            {loop: $jam_jaga}
+            <option value="{$value.shift}">{$value.shift}</option>
+            {/loop}
+          </select><br><br>
+          <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        //line chart
+        var ctx = document.getElementById("line-chartcanvas");
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ["{?= implode('","', $stats.poliChart.labels) ?}"],
+                datasets: [{
+                        label: "Pasien",
+                        borderColor: "#34316E",
+                        borderWidth: "2",
+                        backgroundColor: "rgba(30, 30, 45, 0.2)",
+                        pointHighlightStroke: "#1e1e2d",
+                        pointRadius: 0,
+                        data: [{?= implode(',', $stats.poliChart.visits) ?}],
+                    }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        //Medical treatment chart
+        var ctx2 = document.getElementById("medical-treatment-chart");
+        var myChart2 = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: ["{?= implode('","', $stats.RanapTahunChart.labels) ?}"],
+                datasets: [
+                {
+                    label: "Dirawat",
+                    borderColor: "#F58634",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [{?= implode(',', $stats.RanapTahunChart.visits) ?}],
+                },
+                {
+                    label: "Dirujuk",
+                    borderColor: "#34316E",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [{?= implode(',', $stats.RujukTahunChart.visits) ?}],
+                }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+
+        //Heart surgery chart
+        var ctx1 = document.getElementById("heart-surgery-chart");
+        var myChart1 = new Chart(ctx1, {
+            type: 'line',
+            data: {
+                labels: ["{?= implode('","', $stats.KunjunganTahunChart.labels) ?}"],
+                datasets: [
+                {
+                    label: "{?=date('Y')?}",
+                    borderColor: "#F58634",
+                    borderWidth: "2",
+                    backgroundColor: "transparent",
+                    pointHighlightStroke: "#1e1e2d",
+                    pointRadius: 0,
+                    data: [{?= implode(',', $stats.KunjunganTahunChart.visits) ?}],
+                }
+                ]
+            },
+            options: {
+                legend: {
+                    display: false
+                },
+                responsive: true,
+                tooltips: {
+                    mode: 'index',
+                    intersect: false
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                maintainAspectRatio: false
+            }
+        });
+
+        //Toal Revenue Doughnut chart
+        var ctx2 = document.getElementById("total-revenue-chart");
+        var myChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: [
+                    "Tunai",
+                    "BPJS",
+                    "Lain-Lain"
+                ],
+                datasets: [{
+                    backgroundColor: ["#4caf50", "#34316E", "#F58634"],
+                    pointRadius: 0,
+                    data: [{$stats.tunai.count}, {$stats.bpjs.count}, {$stats.lainnya.count}],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    });
+
+    $(document).ready(function() {
+
+        $('#shift').on('change', function() {
+          var shift = this.text;
+        });
+
+        $('#myModal').on('show.bs.modal', function() {
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function success(pos) {}, function error(err) {}, {enableHighAccuracy: true, timeout: 5000});
+            } else {
+                //Geolocation is not supported by this browser
+                alert('Geolocation is not supported by this browser');
+            }
+
+            Webcam.set({
+                width:240,
+                height:240,
+                image_format:'jpeg',
+                jpeg_quality:90,
+                facingMode: {
+                  exact: 'environment'
+                }
+            });
+            Webcam.attach('#camera');
+        });
+        $("#myModal").on("hidden.bs.modal", function () {
+
+            var getshift = shift.value;
+            var shutter = new Audio();
+            shutter.autoplay = false;
+            shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
+            shutter.play();
+
+            Webcam.snap(function(data_uri){
+                document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+            });
+
+            var base64image = document.getElementById("imageprev").src;
+
+            Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}&shift=' + getshift, function(code, text) {
+            });
+
+            Webcam.reset();
+
+            navigator.geolocation.getCurrentPosition(
+                function(position) {
+                  $.post('{?=url(ADMIN.'/dashboard/geolocation/')?}', {lat: position.coords.latitude, lng: position.coords.longitude});
+                },
+                function error(err) {},
+                {enableHighAccuracy: true, timeout: 5000}
+            );
+
+            window.location.href = '{?=url(ADMIN)?}';
+
+        });
+    });
+
+</script>

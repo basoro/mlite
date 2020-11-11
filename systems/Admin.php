@@ -32,10 +32,9 @@ class Admin extends Main
         }
         $access = $this->getUserInfo('access');
 
-        $this->assign['tanggal']        = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $this->assign['nama']           = !empty($nama) ? $nama : $this->getUserInfo('nama');
         $this->assign['username']       = !empty($username) ? $username : $this->getUserInfo('username');
-        $this->assign['powered']       = 'Khanza LITE Powered by <a href="https://khanza.basoro.id/">SIMKES Khanza</a>';
+
         $this->assign['notify']         = $this->getNotify();
         $this->assign['path']           = url();
         $this->assign['title']          = $this->getSettings('nama_instansi');
@@ -46,10 +45,6 @@ class Admin extends Main
 
         $this->assign['header']         = isset_or($this->appends['header'], ['']);
         $this->assign['footer']         = isset_or($this->appends['footer'], ['']);
-        $this->assign['modules']        = [];
-        if (isset($_SESSION['opensimrs_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
-            $this->assign['modules']    = $this->_modulesList();
-        }
 
         $this->assign['get_version'] = '';
 
@@ -102,38 +97,6 @@ class Admin extends Main
         } else {
             exit;
         }
-    }
-
-    private function _modulesList()
-    {
-        $modules = array_column($this->db('lite_modules')->asc('sequence')->toArray(), 'dir');
-        $result = [];
-
-        if ($this->getUserInfo('access') != 'all') {
-            $modules = array_intersect($modules, explode(',', $this->getUserInfo('access')));
-        }
-
-        foreach ($modules as $name) {
-            $files = [
-                'info'  => MODULES.'/'.$name.'/Info.php',
-                'admin' => MODULES.'/'.$name.'/Admin.php',
-            ];
-
-            if (file_exists($files['info']) && file_exists($files['admin'])) {
-                $details        = $this->getModuleInfo($name);
-                $features       = $this->getModuleNav($name);
-
-                if (empty($features)) {
-                    continue;
-                }
-
-                $details['url'] = url([ADMIN, $name, array_shift($features)]);
-                $details['dir'] = $name;
-
-                $result[] = $details;
-            }
-        }
-        return $result;
     }
 
     public function createNav($activeModule, $activeMethod)

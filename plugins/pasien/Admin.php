@@ -14,23 +14,11 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Menu' => 'menu',
             'Kelola'    => 'manage',
             'Tambah Baru'                => 'add',
             'Master Pasien'                => 'master',
             'Pengaturan'          => 'settings'
         ];
-    }
-
-    public function getMenu()
-    {
-      $sub_modules = [
-        ['name' => 'Manage', 'url' => url([ADMIN, 'pasien', 'manage']), 'icon' => 'users', 'desc' => 'Manage pasien'],
-        ['name' => 'Tambah', 'url' => url([ADMIN, 'pasien', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah pasien baru'],
-        ['name' => 'Master', 'url' => url([ADMIN, 'pasien', 'master']), 'icon' => 'file-text', 'desc' => 'Master pasien'],
-        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'master', 'settings']), 'icon' => 'wrench', 'desc' => 'Pengaturan pasien'],
-      ];
-      return $this->draw('menu.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getManage($page = 1)
