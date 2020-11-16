@@ -3,3 +3,4 @@ config.php
 webapps
 admin/tmp
 tmp
+uploads
