@@ -125,11 +125,21 @@ class Admin extends AdminModule
             $this->assign['rawat_inap_pr'] = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['catatan'] = $this->db('catatan_perawatan')->where('no_rawat', $id)->oneArray();
-            $this->assign['permintaan_resep'] = $this->db('resep_obat')
+            $rows_permintaan_resep = $this->db('resep_obat')
                 ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
                 ->join('databarang', 'databarang.kode_brng = resep_dokter.kode_brng')
                 ->where('no_rawat', $id)
                 ->toArray();
+
+            $this->assign['permintaan_resep'] = [];
+            if (count($rows_permintaan_resep)) {
+                foreach ($rows_permintaan_resep as $row) {
+                    $row = htmlspecialchars_array($row);
+                    $row['delURL'] = url([ADMIN, 'dokter_ralan', 'delpermintaanresep', convertNorawat($id), $row['no_resep'], $row['kode_brng']]);
+                    $this->assign['permintaan_resep'][] = $row;
+                }
+            }
+
             $this->assign['permintaan_resep_racikan'] = $this->db('resep_obat')
                 ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep = resep_obat.no_resep')
                 ->join('metode_racik', 'metode_racik.kd_racik = resep_dokter_racikan.kd_racik')
@@ -513,19 +523,22 @@ class Admin extends AdminModule
 
         if (!$errors) {
             unset($_POST['save']);
-            $no_resep = $this->core->setNoResep();
-            $query = $this->db('resep_obat')
-              ->save([
-                'no_resep' => $no_resep,
-                'tgl_perawatan' => date('Y-m-d'),
-                'jam' => date('H:i:s'),
-                'no_rawat' => revertNorawat($id),
-                'kd_dokter' => $_SESSION['opensimrs_username'],
-                'tgl_peresepan' => date('Y-m-d'),
-                'jam_peresepan' => date('H:i:s'),
-                'status' => 'ralan'
-              ]);
-
+            $query = $this->db('resep_obat')->where('no_rawat', revertNorawat($id))->where('status', 'ralan')->oneArray();
+            $no_resep = $query['no_resep'];
+            if(empty($query)) {
+              $no_resep = $this->core->setNoResep();
+              $query = $this->db('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => date('Y-m-d'),
+                  'jam' => date('H:i:s'),
+                  'no_rawat' => revertNorawat($id),
+                  'kd_dokter' => $_SESSION['opensimrs_username'],
+                  'tgl_peresepan' => date('Y-m-d'),
+                  'jam_peresepan' => date('H:i:s'),
+                  'status' => 'ralan'
+                ]);
+            }
             if ($query) {
                 for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
                   $this->db('resep_dokter')
@@ -605,6 +618,18 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    public function getDelPermintaanResep($no_rawat, $no_resep, $kode_brng)
+    {
+        if ($pendaftaran = $this->db('resep_dokter')->where('no_resep', $no_resep)->where('kode_brng', $kode_brng)->oneArray()) {
+            if ($this->db('resep_dokter')->where('no_resep', $no_resep)->where('kode_brng', $kode_brng)->delete()) {
+                $this->notify('success', 'Hapus sukses');
+            } else {
+                $this->notify('failure', 'Hapus gagal');
+            }
+        }
+        redirect(url([ADMIN, 'dokter_ralan', 'view', $no_rawat]).'#resep');
     }
 
     public function postKontrolSave($id = null)
