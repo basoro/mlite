@@ -489,6 +489,7 @@ class Admin extends AdminModule
       $this->assign['rujukan'] = $json['response']['rujukan'];
       $no_kartu = $json['response']['rujukan']['peserta']['noKartu'];
       $sex = $json['response']['rujukan']['peserta']['sex'];
+      $status_aktif = $json['response']['rujukan']['peserta']['statusPeserta']['keterangan'];
 
       $pasien = $this->db('pasien')->where('no_peserta', $json['response']['rujukan']['peserta']['noKartu'])->oneArray();
       $this->assign['pasien'] = $pasien;
