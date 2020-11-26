@@ -489,6 +489,7 @@ class Admin extends AdminModule
       $this->assign['rujukan'] = $json['response']['rujukan'];
       $no_kartu = $json['response']['rujukan']['peserta']['noKartu'];
       $sex = $json['response']['rujukan']['peserta']['sex'];
+      $status_aktif = $json['response']['rujukan']['peserta']['statusPeserta']['keterangan'];
 
       $pasien = $this->db('pasien')->where('no_peserta', $json['response']['rujukan']['peserta']['noKartu'])->oneArray();
       $this->assign['pasien'] = $pasien;
@@ -506,13 +507,15 @@ class Admin extends AdminModule
           $this->assign['dpjp'][] = $value;
       }
 
-      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/List/Peserta/'.$no_kartu;
+      //$url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/List/Peserta/'.$no_kartu;
+      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'monitoring/HistoriPelayanan/NoKartu/'.$no_kartu.'/tglAwal/2020-01-01/tglAkhir/'.date('Y-m-d');
       $url_rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
       $json_rujukan = json_decode($url_rujukan, true);
       $this->assign['sepdetail'] = [];
-      foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
+      //foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
+      foreach ($json_rujukan['response']['histori'] as $key=>$value) {
           //$get_sepdetail = $this->db('bridging_sep')->where('no_rujukan', $value['noKunjungan'])->oneArray();
-          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noKunjungan']]);
+          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noRujukan']]);
           $this->assign['sepdetail'][] = $value;
       }
 
@@ -527,6 +530,25 @@ class Admin extends AdminModule
       $this->assign['nama_instansi'] = $this->core->getSettings('nama_instansi');
 
       return $this->draw('bridgingbpjs.form.html', ['bridging' => $this->assign]);
+    }
+
+    public function getTestNoRujukan($id)
+    {
+      $consid = $this->options->get('settings.BpjsConsID');
+      $secretkey = $this->options->get('settings.BpjsSecretKey');
+
+      $url = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$id;
+      $rujukan = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+      $json = json_decode($rujukan, true);
+      print_r($json);
+      $this->assign['rujukan'] = $json['response']['rujukan'];
+      $no_kartu = $json['response']['rujukan']['peserta']['noKartu'];
+	  echo '<br><br><br>';
+      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'monitoring/HistoriPelayanan/NoKartu/'.$no_kartu.'/tglAwal/2020-01-01/tglAkhir/'.date('Y-m-d');
+      $url_rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
+      $json_rujukan = json_decode($url_rujukan, true);
+      print_r($json_rujukan);
+      exit();
     }
 
     public function getNoRujukan2($id)
@@ -595,7 +617,7 @@ class Admin extends AdminModule
       $consid = $this->options->get('settings.BpjsConsID');
       $secretkey = $this->options->get('settings.BpjsSecretKey');
 
-      $url = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$bridging_sep['no_rujukan'];
+      $url = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$id;
       $rujukan = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
       $json = json_decode($rujukan, true);
       $this->assign['rujukan'] = $json['response']['rujukan'];
@@ -618,17 +640,21 @@ class Admin extends AdminModule
           $this->assign['dpjp'][] = $value;
       }
 
-      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/List/Peserta/'.$no_kartu;
+      //$url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/List/Peserta/'.$no_kartu;
+      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'monitoring/HistoriPelayanan/NoKartu/'.$no_kartu.'/tglAwal/2020-01-01/tglAkhir/'.date('Y-m-d');
       $url_rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
       $json_rujukan = json_decode($url_rujukan, true);
       $this->assign['sepdetail'] = [];
-      foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
-          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noKunjungan']]);
+      //foreach ($json_rujukan['response']['rujukan'] as $key=>$value) {
+      foreach ($json_rujukan['response']['histori'] as $key=>$value) {
+          $value['NoRujukanURL'] = url([ADMIN, 'pendaftaran', 'sepdetail', $value['noRujukan']]);
           $this->assign['sepdetail'][] = $value;
       }
 
       $this->assign['fotoURL'] = url('/plugins/pasien/img/'.$sex.'.png');
       $this->assign['printSEP'] = url([ADMIN, 'pendaftaran', 'printsep', $id]);
+      $this->assign['get_noskdp'] = $this->db('skdp_bpjs')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_datang', date('Y-m-d'))->oneArray();
+      $this->assign['get_noskdp_alt'] = $this->core->setNoSKDP();
       if(!empty($personal_pasien['gambar'])) {
         $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
       }

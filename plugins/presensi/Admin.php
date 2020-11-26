@@ -10,7 +10,7 @@ class Admin extends AdminModule
 
     public function navigation()
     {
-        if ($this->core->getUserInfo('id') == 1) {
+        if ($this->core->getUserInfo('role') == 'admin') {
             return [
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',

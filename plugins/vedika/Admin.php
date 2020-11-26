@@ -104,6 +104,7 @@ class Admin extends AdminModule
       $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
       $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      $print_sep['qrCode'] = url(ADMIN.'/vedika/qrcode?no_sep='.$id);
       $this->tpl->set('print_sep', $print_sep);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/sep.html', true);
       exit();
@@ -456,6 +457,76 @@ class Admin extends AdminModule
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'vedika', 'settings']));
+    }
+
+    public function getQrCode()
+    {
+      $data = $_GET['no_sep'];
+      $sep = $this->db('bridging_sep')->where('no_sep', $_GET['no_sep'])->oneArray();
+      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $sep['no_rawat'])->oneArray();
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+      $data = isset($_GET['data']) ? $_GET['data'] : 'Nama: '.$pasien['nm_pasien'].', Nomor RM: '.$pasien['no_rkm_medis'].', Nomor Rawat: '.$sep['no_rawat'].', Nomor SEP: '.$sep['no_sep'];
+      $size = isset($_GET['size']) ? $_GET['size'] : '120x120';
+      $logo = isset($_GET['logo']) ? $_GET['logo'] : 'https://www.rsaurasyifa.com/plugins/website_ausy/images/favicon.png';
+
+      header('Content-type: image/png');
+      // Get QR Code image from Google Chart API
+      // http://code.google.com/apis/chart/infographics/docs/qr_codes.html
+      $QR = imagecreatefrompng('https://chart.googleapis.com/chart?cht=qr&chld=H|1&chs='.$size.'&chl='.urlencode($data));
+      if($logo !== FALSE){
+      	$logo = imagecreatefromstring(file_get_contents($logo));
+
+      	$QR_width = imagesx($QR);
+      	$QR_height = imagesy($QR);
+
+      	$logo_width = imagesx($logo);
+      	$logo_height = imagesy($logo);
+
+      	// Scale logo to fit in the QR Code
+      	$logo_qr_width = $QR_width/3;
+      	$scale = $logo_width/$logo_qr_width;
+      	$logo_qr_height = $logo_height/$scale;
+
+      	imagecopyresampled($QR, $logo, $QR_width/3, $QR_height/3, 0, 0, $logo_qr_width, $logo_qr_height, $logo_width, $logo_height);
+      }
+      imagepng($QR);
+      imagedestroy($QR);
+      exit();
+
+    }
+
+    public function getQrCodeDokter()
+    {
+      $data = $_GET['kd_dokter'];
+      $dokter = $this->db('dokter')->where('kd_dokter', $_GET['kd_dokter'])->oneArray();
+      $data = isset($_GET['data']) ? $_GET['data'] : 'Nama: '.$dokter['nm_dokter'].', Kode: '.$dokter['kd_dokter'];
+      $size = isset($_GET['size']) ? $_GET['size'] : '100x100';
+      $logo = isset($_GET['logo']) ? $_GET['logo'] : 'https://www.rsaurasyifa.com/plugins/website_ausy/images/favicon.png';
+
+      header('Content-type: image/png');
+      // Get QR Code image from Google Chart API
+      // http://code.google.com/apis/chart/infographics/docs/qr_codes.html
+      $QR = imagecreatefrompng('https://chart.googleapis.com/chart?cht=qr&chld=H|1&chs='.$size.'&chl='.urlencode($data));
+      if($logo !== FALSE){
+      	$logo = imagecreatefromstring(file_get_contents($logo));
+
+      	$QR_width = imagesx($QR);
+      	$QR_height = imagesy($QR);
+
+      	$logo_width = imagesx($logo);
+      	$logo_height = imagesy($logo);
+
+      	// Scale logo to fit in the QR Code
+      	$logo_qr_width = $QR_width/3;
+      	$scale = $logo_width/$logo_qr_width;
+      	$logo_qr_height = $logo_height/$scale;
+
+      	imagecopyresampled($QR, $logo, $QR_width/3, $QR_height/3, 0, 0, $logo_qr_width, $logo_qr_height, $logo_width, $logo_height);
+      }
+      imagepng($QR);
+      imagedestroy($QR);
+      exit();
+
     }
 
     public function getJavascript()

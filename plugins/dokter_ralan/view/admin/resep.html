@@ -110,6 +110,7 @@
         <th>Nama Obat</th>
         <th>Jumlah</th>
         <th>Aturan Pakai</th>
+        <th>Aksi</th>
       </tr>
     </thead>
     <tbody>
@@ -119,6 +120,7 @@
           <td>{$value.nama_brng}</td>
           <td>{$value.jml}</td>
           <td>{$value.aturan_pakai}</td>
+          <td><a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus obat ini?">X</a></td>
         </tr>
         {/loop}
     </tbody>
