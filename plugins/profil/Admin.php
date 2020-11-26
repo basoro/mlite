@@ -142,7 +142,7 @@ class Admin extends AdminModule
             // ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal', '%d']));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'profil', 'jadwal', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -317,7 +317,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
+                $row['mapURL']  = url([ADMIN, 'profil', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
                 $this->assign['list'][] = $row;
             }
         }
@@ -334,7 +334,7 @@ class Admin extends AdminModule
 
       $this->tpl->set('geo', $geo);
       $this->tpl->set('pegawai', $pegawai);
-      echo $this->tpl->draw(MODULES.'/presensi/view/admin/google_map.html', true);
+      echo $this->tpl->draw(MODULES.'/profil/view/admin/google_map.html', true);
       exit();
     }
     public function getPresensi($page = 1)
@@ -408,7 +408,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
+                $row['mapURL']  = url([ADMIN, 'profil', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
                 $this->assign['list'][] = $row;
             }
         }
