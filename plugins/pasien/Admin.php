@@ -257,6 +257,10 @@ class Admin extends AdminModule
           }
         }
       } else {
+        unset($_POST['nm_prop']);
+        unset($_POST['nm_kab']);
+        unset($_POST['nm_kec']);
+        unset($_POST['nm_kel']);
         $query = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->save($_POST);
       }
       exit();
