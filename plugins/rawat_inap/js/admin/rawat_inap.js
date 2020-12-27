@@ -427,7 +427,6 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   penilaian : penilaian,
   rtl : rtl
   }, function(data) {
-    alert(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/rawat_inap/soap?t=' + mlite.token;
