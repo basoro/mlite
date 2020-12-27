@@ -19,18 +19,10 @@
       </thead>
       <tbody>
         {loop: $rawat_jalan.list}
-        <tr>
-          <td style="white-space: nowrap;">
-            <a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">
-              {$value.no_rkm_medis}
-            </a>
-          </td>
-          <td style="white-space: nowrap;" class="layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">
-            <b>{$value.nm_pasien}</b>
-          </td>
-          <td style="white-space: nowrap;" class="soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">
-            <b>{$value.no_rawat}</b>
-          </td>
+        <tr class="layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">
+          <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
+          <td style="white-space: nowrap;"><b>{$value.nm_pasien}</b></td>
+          <td style="white-space: nowrap;"><b>{$value.no_rawat}</b></td>
           <td style="white-space: nowrap;">{$value.no_reg}</td>
           <td style="white-space: nowrap;">{$value.nm_poli}</td>
           <td style="white-space: nowrap;">{$value.nm_dokter}</td>
