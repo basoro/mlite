@@ -217,7 +217,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="exampleModalCenterTitle">Pendaftaran Pasien Mandiri (Cara Bayar UMUM)</h5>
-          <button type="button" class="close" data-dismiss="modal" onclick="javascript:window.location='{?=url('anjungan/antrian')?}'" aria-label="Close">
+          <button type="button" class="close" data-dismiss="modal" onclick="javascript:window.location='{?=url('anjungan/pasien')?}'" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
@@ -353,7 +353,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="javascript:window.location='{?=url('anjungan/antrian')?}'">Tutup</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="javascript:window.location='{?=url('anjungan/pasien')?}'">Tutup</button>
         </div>
       </div>
     </div>
@@ -486,7 +486,7 @@
       PW.focus();
       PW.print();
       PW.close();
-      window.location.href = "{?=url('anjungan/antrian')?}";
+      window.location.href = "{?=url('anjungan/pasien')?}";
   }
   function printSEP(eleId){
       var PW = window.open('', '_blank', 'Print content');
@@ -496,7 +496,7 @@
       PW.focus();
       PW.print();
       PW.close();
-      window.location.href = "{?=url('anjungan/antrian')?}";
+      window.location.href = "{?=url('anjungan/pasien')?}";
   }
   $(function () {
 
@@ -523,7 +523,7 @@
         }
       });
 
-      setTimeout(function() { window.location.href = "{?=url('anjungan/antrian')?}"; }, 500000);
+      setTimeout(function() { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
 
     });
 
@@ -667,7 +667,7 @@
       $('.progress-bar').css('width', '100%');
       $('.progress-bar').html('Step 3 of 3');
       $('#myTab a[href="#reviewPrint"]').tab('show');
-      setTimeout(function() { window.location.href = "{?=url('anjungan/antrian')?}"; }, 500000);
+      setTimeout(function() { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
     });
 
   });
@@ -718,7 +718,7 @@
         }
       });
 
-      setTimeout(function() { window.location.href = "{?=url('anjungan/antrian')?}"; }, 500000);
+      setTimeout(function() { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
 
     });
 
@@ -784,7 +784,7 @@
           }
         }
       });
-      setTimeout(function() { window.location.href = "{?=url('anjungan/antrian')?}"; }, 500000);
+      setTimeout(function() { window.location.href = "{?=url('anjungan/pasien')?}"; }, 500000);
     });
 
   });
