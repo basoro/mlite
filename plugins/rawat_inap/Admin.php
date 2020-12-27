@@ -247,7 +247,7 @@ class Admin extends AdminModule
         'stts_pulang' => '-'
       ]);
       if($kamar_inap) {
-        $this->db('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']])
+        $this->db('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']]);
       }
       exit();
     }
