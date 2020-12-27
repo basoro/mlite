@@ -28,8 +28,8 @@ class Admin extends AdminModule
     {
         return [
             'Umum'          => 'general',
-            'Tema' => 'theme',
-            'Pembaruan'          => 'updates',
+            //'Tema' => 'theme',
+            //'Pembaruan'          => 'updates',
         ];
     }
 
