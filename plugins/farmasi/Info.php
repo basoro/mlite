@@ -4,7 +4,7 @@ return [
     'description'   =>  'Pengelolaan data gudang farmasi.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
-    'compatibility' =>  '1.0.*',
+    'compatibility' =>  '2021',
     'icon'          =>  'medkit',
 
     'install'       =>  function () use ($core) {

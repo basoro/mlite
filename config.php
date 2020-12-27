@@ -1,6 +1,6 @@
 <?php
 if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
-    exit("System requires at least <b>PHP 5.5</b>");
+    exit("Khanza LITE requires at least <b>PHP 5.5</b>");
 }
 
 define('DBHOST', 'localhost');

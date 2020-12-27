@@ -4,6 +4,6 @@ return [
     'description'   =>  'Modul presensi',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.2',
-    'compatibility' =>  '1.0.*',
+    'compatibility' =>  '2021',
     'icon'          =>  'user-o'
 ];

@@ -5,6 +5,6 @@ return [
     'description'   =>  'Modul ICD 9 - 10 untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '1.0.*',
+    'compatibility' =>  '2021',
     'icon'          =>  'database'
 ];

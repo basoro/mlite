@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul vclaim api untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '1.0.*',
+    'compatibility' =>  '2021',
     'icon'          =>  'database',
     'install'       =>  function () use ($core) {
 
