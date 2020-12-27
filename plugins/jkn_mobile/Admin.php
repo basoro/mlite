@@ -24,17 +24,17 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
-        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->options->get('jkn_mobile.kdprop'))->oneArray();
-        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->options->get('jkn_mobile.kdkab'))->oneArray();
-        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->options->get('jkn_mobile.kdkec'))->oneArray();
-        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->options->get('jkn_mobile.kdkel'))->oneArray();
+        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile.kdprop'))->oneArray();
+        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile.kdkab'))->oneArray();
+        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile.kdkec'))->oneArray();
+        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile.kdkel'))->oneArray();
         $this->assign['suku_bangsa'] = $this->db('suku_bangsa')->toArray();
         $this->assign['bahasa_pasien'] = $this->db('bahasa_pasien')->toArray();
         $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
         $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->options->get('jkn_mobile.display'));
+        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile.display'));
 
-        $this->assign['jkn_mobile'] = htmlspecialchars_array($this->options('jkn_mobile'));
+        $this->assign['jkn_mobile'] = htmlspecialchars_array($this->settings('jkn_mobile'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
@@ -42,7 +42,7 @@ class Admin extends AdminModule
     {
         $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
         foreach ($_POST['jkn_mobile'] as $key => $val) {
-            $this->options('jkn_mobile', $key, $val);
+            $this->settings('jkn_mobile', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'jkn_mobile', 'settings']));

@@ -7,31 +7,15 @@
                     <li class="{if: empty($pegawai.getStatus)}active{/if}">
                         <a href="{?=url(ADMIN.'/kepegawaian/manage/')?}" role="tab">Aktif</a>
                     </li>
-                    <!-- <li class="{if: !empty($pegawai.getStatus)}active{/if}">
+                    <li class="{if: !empty($pegawai.getStatus)}active{/if}">
                       <a href="{?=url(ADMIN.'/kepegawaian/manage?status=KELUAR')?}" role="tab">Non Aktif</a>
-                  </li> -->
+                    </li>
                     <li>
                         <a href="{$pegawai.printURL}" target="_blank" role="tab">Cetak</a>
                     </li>
 				        </ul>
             </div>
             <div class="panel-body">
-              <div class="row clearfix">
-                <div class="col col-md-6">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($pegawai.totalRecords)?} {$pegawai.time}</h3>
-                </div>
-                <div class="col col-md-6">
-                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                      <div class="input-group">
-                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
-                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                          <span class="input-group-btn">
-                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                      </div>
-                  </form>
-                </div>
-              </div>
     					<div class="table-responsive no-margin">
     						<table class="table table-striped no-margin">
     							<thead>
@@ -73,7 +57,6 @@
     							</tbody>
     						</table>
     					</div>
-					{$pegawai.pagination}
             </div>
         </div>
     </div>

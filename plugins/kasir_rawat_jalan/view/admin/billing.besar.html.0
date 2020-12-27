@@ -1,0 +1,280 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Bukti Pembayaran </title>
+		<meta charset="UTF-8">
+		<link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body {
+		margin-top:20px;
+	}
+	th,td {padding:0px 0px 0px 10px;}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+		<center><table  rules='rows' width="700px">
+			<tr>
+			<td colspan=4>
+				<strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong>
+			</td>
+			<td align="right" colspan=2>
+			</td>
+			</tr>
+			<tr>
+			<td>
+				<p style="font-size: 8pt;"><img width=80 src='{?=url()?}/{$settings.logo}' />
+			</td>
+			<td colspan=3>
+				<p style="font-size: 8pt;">
+				{$settings.alamat}<br>
+				 Telp : {$settings.nomor_telepon}<br>
+         E-Mail : {$settings.email}<br>
+				Website : {$settings.website}</p></td>
+			<td align="right" colspan=2><strong   style="font-size: 12pt" >BUKTI PEMBAYARAN</strong>
+				<p align="right" style="font-size: 10pt;">
+				Kode Faktur : {$billing.kd_billing}<br>
+				Nama Pasien : {$pasien.nm_pasien}<br>
+				No RM : {$pasien.no_rkm_medis}<br>
+				Alamat : {$pasien.alamat}<br></p>
+			</td>
+			</tr>
+
+		  <tr align="left" height='30px'>
+			<th width="50px">No</th>
+			<th>Nama</th>
+			<th>Tarif</th>
+			<th>Jumlah</th>
+			<th>Potongan</th>
+			<th>Total</th>
+		  </tr>
+			<tr border='1', height='20px'>
+				<td>I</td>
+				<td colspan="1">Biaya Kamar</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'kamar'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>II</td>
+				<td colspan="1">Biaya Obat-Obatan</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'obat'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>III</td>
+				<td colspan="1">Biaya HBP</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'bhp'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>IV</td>
+				<td colspan="1">Jasa Konsultasi Dokter</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'layanan'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>V</td>
+				<td colspan="1">Jasa Tidakan Dokter</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.rawat_jl_dr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
+				<td>{$data.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VI</td>
+				<td colspan="1">Jasa Tindakan Perawat</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'tindakan_perawat'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VI</td>
+				<td colspan="1">Jasa Laboratorium</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'laboratorium'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VII</td>
+				<td colspan="1">Jasa Radiologi</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'radiologi'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VIII</td>
+				<td colspan="1">Biaya Tambahan</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail}
+			{if: $value.kat == 'tambahan'}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+				<td>{$value.jumlah}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.potongan,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.total,2,',','.')?}</span></td>
+			</tr>
+			{/if}
+			{/loop}
+			<tr >
+				<td colspan="4"></td>
+				<td>Jumlah  </td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_total,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="4"></td>
+				<td>Potongan </td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.potongan,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="4"></td>
+				<td>Jumlah Bayar </td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+			</tr>
+			<tr>
+				<td colspan="3" ></td>
+				<td colspan=3>
+				<p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				 Kasir<br><br><br>
+				{$fullname}<br>
+				</p>
+				</td>
+			</tr>
+		</table></center>
+		</div>
+		<br><br><br>
+		<center>
+			<button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+			<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Kirim SMS</button>
+			<button type="button" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+		</center>
+
+</body>
+</html>

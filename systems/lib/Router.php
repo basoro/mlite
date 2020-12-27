@@ -4,6 +4,7 @@ namespace Systems\Lib;
 
 class Router
 {
+
     private $routes = array();
 
     private $patterns = array(

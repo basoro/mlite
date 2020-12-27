@@ -1,4 +1,3 @@
-
 const cacheName = 'cache-v2';
 const precacheResources = [
   '/',

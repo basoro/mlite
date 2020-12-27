@@ -7,7 +7,7 @@ class BaseModule
     protected $core;
     protected $tpl;
     protected $route;
-    protected $options;
+    protected $settings;
     protected $name;
 
     public function __construct(Main $core)
@@ -15,7 +15,7 @@ class BaseModule
         $this->core = $core;
         $this->tpl = $core->tpl;
         $this->router = $core->router;
-        $this->options = $core->options;
+        $this->settings = $core->settings;
         $this->name = strtolower(str_replace(['Plugins\\', '\\Admin', '\\Site'], null, static::class));
     }
 
@@ -46,7 +46,7 @@ class BaseModule
         return $this->tpl->draw($file);
     }
 
-    protected function options($module, $field = false, $value = false)
+    protected function settings($module, $field = false, $value = false)
     {
         if (substr_count($module, '.') == 1) {
             $value = $field;
@@ -54,9 +54,9 @@ class BaseModule
         }
 
         if ($value === false) {
-            return $this->options->get($module, $field);
+            return $this->settings->get($module, $field);
         } else {
-            return $this->options->set($module, $field, $value);
+            return $this->settings->set($module, $field, $value);
         }
     }
 

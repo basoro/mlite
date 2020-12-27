@@ -1,0 +1,30 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="table-responsive no-margin">
+      <table class="table table-stripped">
+        <thead>
+          <tr>
+            <th>ID Tindakan</th>
+            <th>Nama Tindakan</th>
+            <th>Tarif</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $layanan}
+          {loop: $layanan}
+          <tr class="pilih_layanan" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-nm_perawatan="{$value.nm_perawatan}" data-biaya="{$value.total_byrdr}" data-kat="tindakan">
+            <td>{$value.kd_jenis_prw}</td>
+            <td>{$value.nm_perawatan}</td>
+            <td>Rp. <span class="pull-right">{?= number_format($value.total_byrdr,2,',','.')?}</span></td>
+          </tr>
+          {/loop}
+          {else}
+          <tr>
+            <td colspan="3"class="text-center">Data layanan tidak ditemukan.</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

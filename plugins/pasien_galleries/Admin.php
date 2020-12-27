@@ -27,7 +27,7 @@ class Admin extends AdminModule
         $assign = [];
 
         // list
-        $rows = $this->db('lite_pasien_galleries')->toArray();
+        $rows = $this->db('mlite_pasien_galleries')->toArray();
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row['tag']    = $this->tpl->noParse('{$gallery.'.$row['slug'].'}');
@@ -78,8 +78,8 @@ class Admin extends AdminModule
         if (!empty($_POST['name'])) {
             $name = trim($_POST['name']);
             $pasien = $this->db('pasien')->where('no_rkm_medis', $name)->oneArray();
-            if (!$this->db('lite_pasien_galleries')->where('slug', $name)->count()) {
-                $query = $this->db('lite_pasien_galleries')->save(['name' => $pasien['nm_pasien'], 'slug' => $name]);
+            if (!$this->db('mlite_pasien_galleries')->where('slug', $name)->count()) {
+                $query = $this->db('mlite_pasien_galleries')->save(['name' => $pasien['nm_pasien'], 'slug' => $name]);
 
                 if ($query) {
                     $id     = $this->db()->lastInsertId();
@@ -94,7 +94,7 @@ class Admin extends AdminModule
                 }
             } else {
                 $this->notify('failure', 'Sudah ada');
-                $location = [ADMIN, 'pasien_galleries', 'edit', $this->db('lite_pasien_galleries')->where('slug', $name)->oneArray()['id']];
+                $location = [ADMIN, 'pasien_galleries', 'edit', $this->db('mlite_pasien_galleries')->where('slug', $name)->oneArray()['id']];
             }
         } else {
             $this->notify('failure', 'Masih ada yg kosong');
@@ -108,7 +108,7 @@ class Admin extends AdminModule
     */
     public function getDelete($id)
     {
-        $query = $this->db('lite_pasien_galleries')->delete($id);
+        $query = $this->db('mlite_pasien_galleries')->delete($id);
 
         deleteDir($this->_uploads.'/'.$id);
 
@@ -127,21 +127,21 @@ class Admin extends AdminModule
     public function getEdit($id, $page = 1)
     {
         $assign = [];
-        $assign['settings'] = $this->db('lite_pasien_galleries')->oneArray($id);
+        $assign['settings'] = $this->db('mlite_pasien_galleries')->oneArray($id);
 
         // pagination
-        $totalRecords = $this->db('lite_pasien_galleries_items')->select('id')->where('gallery', $id)->toArray();
+        $totalRecords = $this->db('mlite_pasien_galleries_items')->select('id')->where('gallery', $id)->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'pasien_galleries', 'edit', $id, '%d']));
         $assign['pagination'] = $pagination->nav();
         $assign['page'] = $page;
 
         // items
         if ($assign['settings']['sort'] == 'ASC') {
-            $rows = $this->db('lite_pasien_galleries_items')->where('gallery', $id)
+            $rows = $this->db('mlite_pasien_galleries_items')->where('gallery', $id)
                     ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
                     ->asc('id')->toArray();
         } else {
-            $rows = $this->db('lite_pasien_galleries_items')->where('gallery', $id)
+            $rows = $this->db('mlite_pasien_galleries_items')->where('gallery', $id)
                     ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
                     ->desc('id')->toArray();
         }
@@ -177,7 +177,7 @@ class Admin extends AdminModule
             redirect(url([ADMIN, 'pasien_galleries', 'edit', $id]));
         }
 
-        if ($this->db('lite_pasien_galleries')->where($id)->save(['sort' => $_POST['sort']])) {
+        if ($this->db('mlite_pasien_galleries')->where($id)->save(['sort' => $_POST['sort']])) {
             $this->notify('success', 'Pengaturan sukses');
         }
 
@@ -187,7 +187,7 @@ class Admin extends AdminModule
     public function postSaveImages($id, $page)
     {
         foreach ($_POST['img'] as $key => $val) {
-            $query = $this->db('lite_pasien_galleries_items')->where($key)->save(['title' => $val['title']]);
+            $query = $this->db('mlite_pasien_galleries_items')->where($key)->save(['title' => $val['title']]);
         }
 
         if ($query) {
@@ -229,7 +229,7 @@ class Admin extends AdminModule
                         }
                     }
 
-                    $query = $this->db('lite_pasien_galleries_items')->save(['src' => serialize($src), 'gallery' => $id]);
+                    $query = $this->db('mlite_pasien_galleries_items')->save(['src' => serialize($src), 'gallery' => $id]);
                 } else {
                     $this->notify('failure', 'Exstensi berkas salah', 'jpg, png, gif');
                 }
@@ -248,9 +248,9 @@ class Admin extends AdminModule
     */
     public function getDeleteImage($id)
     {
-        $image = $this->db('lite_pasien_galleries_items')->where($id)->oneArray();
+        $image = $this->db('mlite_pasien_galleries_items')->where($id)->oneArray();
         if (!empty($image)) {
-            if ($this->db('lite_pasien_galleries_items')->delete($id)) {
+            if ($this->db('mlite_pasien_galleries_items')->delete($id)) {
                 $images = unserialize($image['src']);
                 foreach ($images as $src) {
                     if (file_exists(BASE_DIR.'/'.$src)) {

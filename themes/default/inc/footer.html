@@ -32,18 +32,20 @@
                         </li>
                     </ul>
                     <p class="copyright text-muted">
-                        {$opensimrs.powered}.
+                        {$settings.footer}
+                        {$mlite.powered}.
                     </p>
                 </div>
             </div>
         </div>
     </footer>
 
+    <!-- PWA Support -->
     <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
         navigator.serviceWorker
-        .register("{$opensimrs.path}/service-worker.js")
+        .register("{$mlite.path}/service-worker.js")
         .then((swReg) => {
           console.log("Service Worker is registered", swReg);
         })
@@ -53,8 +55,9 @@
       });
     }
     </script>
+    <!-- End PWA Support -->
 
-    {loop: $opensimrs.footer}{$value}{/loop}
+    {loop: $mlite.footer}{$value}{/loop}
 
 </body>
 

@@ -3,63 +3,139 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">Aplikasi</h3>
+                    <h3 class="panel-title">Umum</h3>
                 </div>
             	<div class="panel-body">
                     <div class="form-group">
-                        <label>Nama Institusi</label>
-                        <input type="text" name="nama_instansi" class="form-control" value="{$settings.0.nama_instansi}" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Alamat Institusi</label>
-                        <textarea class="form-control" name="alamat_instansi" placeholder="Alamat (optional)" rows="4">{$settings.0.alamat_instansi}</textarea>
-                    </div>
-                    <div class="row clearfix">
-												<div class="col-md-6">
-                            <div class="form-group">
-                                <label>No. Telepon</label>
-                                <input type="text" name="kontak" class="form-control" value="{$settings.0.kontak}" required />
-                            </div>
-												</div>
-												<div class="col-md-6">
-                            <div class="form-group">
-                                <label>E-Mail</label>
-                                <input type="email" name="email" class="form-control" value="{$settings.0.email}" required />
-                            </div>
-												</div>
-										</div>
-                    <div class="row clearfix">
-												<div class="col-md-6">
-                            <div class="form-group">
-                                <label>Kabupaten</label>
-                                <input type="text" name="kabupaten" class="form-control" value="{$settings.0.kabupaten}" required />
-                            </div>
-                        </div>
-												<div class="col-md-6">
-                            <div class="form-group">
-                                <label>Propinsi</label>
-                                <input type="text" name="propinsi" class="form-control" value="{$settings.0.propinsi}" required />
-                            </div>
-                        </div>
-										</div>
-                    <div class="form-group">
-                        <label>Kode PPK BPJS</label>
-                        <input type="text" name="kode_ppk" class="form-control" value="{$settings.0.kode_ppk}" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Kode PPK Kemkes</label>
-                        <input type="text" name="kode_ppkkemenkes" class="form-control" value="{$settings.0.kode_ppkkemenkes}" required />
-                    </div>
-                    <div class="form-group">
-                        <label>Kode PPK Inhealth</label>
-                        <input type="text" name="kode_ppkinhealth" class="form-control" value="{$settings.0.kode_ppkinhealth}" required />
-                    </div>
-                    <div class="form-group">
                         <label>Logo</label>
                         <div>
-  	                      <img src="{$settings.logoURL}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
-  	                      <input type="file" name="logo" class="form-control hidden" />
-  	                    </div>
+                          <img src="{?=url()?}/{$settings.logo}" width="96" height="96" class="img-thumbnail" id="logoPreview" style="cursor:pointer;" onclick="$('input[name=logo]').click()" />
+                          <input type="file" name="logo" class="form-control hidden" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Instansi</label>
+                        <input type="text" name="nama_instansi" class="form-control" value="{$settings.nama_instansi}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <input type="text" name="alamat" class="form-control" value="{$settings.alamat}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Kota/Kabupaten</label>
+                        <input type="text" name="kota" class="form-control" value="{$settings.kota}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Propinsi</label>
+                        <input type="text" name="propinsi" class="form-control" value="{$settings.propinsi}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Telepon</label>
+                        <input type="text" name="nomor_telepon" class="form-control" value="{$settings.nomor_telepon}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>E-Mail</label>
+                        <input type="text" name="email" class="form-control" value="{$settings.email}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="text" name="website" class="form-control" value="{$settings.website}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Halaman depan</label>
+                        <select name="homepage" class="form-control" data-use-search="true">
+                            {loop: $settings.pages}
+                            <option value="{$value.slug}" {if: $settings.homepage == $value.slug}selected{/if}>{$value.title} ({$value.slug})</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Zona waktu</label>
+                        <select name="timezone" class="form-control" data-use-search="true">
+                            {loop: $settings.timezones}
+                            <option value="{$key}" {if: $settings.timezone == $key}selected{/if}>{$value}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Lain-lain</h3>
+                </div>
+                <div class="panel-body">
+                    {if: $settings.poliklinik}
+                    <div class="form-group">
+                        <label>IGD</label>
+                        <select name="igd" class="form-control" data-use-search="true">
+                            {loop: $settings.poliklinik}
+                            <option value="{$value.kd_poli}" {if: $settings.igd == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Laboratorium</label>
+                        <select name="laboratorium" class="form-control" data-use-search="true">
+                            {loop: $settings.poliklinik}
+                            <option value="{$value.kd_poli}" {if: $settings.laboratorium == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Penanggung Jawab Laboratorium</label>
+                        <select name="pj_laboratorium" class="form-control" data-use-search="true">
+                            {loop: $settings.dokter}
+                            <option value="{$value.kd_dokter}" {if: $settings.pj_laboratorium == $value.kd_dokter}selected{/if}>{$value.nm_dokter}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Radiologi</label>
+                        <select name="radiologi" class="form-control" data-use-search="true">
+                            {loop: $settings.poliklinik}
+                            <option value="{$value.kd_poli}" {if: $settings.radiologi == $value.kd_poli}selected{/if}>{$value.nm_poli}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Penanggung Jawab Radiologi</label>
+                        <select name="pj_radiologi" class="form-control" data-use-search="true">
+                            {loop: $settings.dokter}
+                            <option value="{$value.kd_dokter}" {if: $settings.pj_radiologi == $value.kd_dokter}selected{/if}>{$value.nm_dokter}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    {/if}
+                    <div class="form-group">
+                        <label>Kode PPK BPJS</label>
+                        <input type="text" name="ppk_bpjs" class="form-control" value="{$settings.ppk_bpjs}" />
+                    </div>
+                    <div class="form-group">
+                        <label>URL API BPJS</label>
+                        <input type="text" name="BpjsApiUrl" class="form-control" value="{$settings.BpjsApiUrl}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Cons ID BPJS</label>
+                        <input type="text" name="BpjsConsID" class="form-control" value="{$settings.BpjsConsID}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secret Key BPJS</label>
+                        <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
+                    </div>
+                    <div class="form-group">
+                         <label>Footer</label>
+                         <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
+                    </div>
+                    <div class="form-group">
+                         <label>Editor</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="editor" value="wysiwyg" {if: $settings.editor == 'wysiwyg'}checked{/if} /> WYSIWYG
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="editor" value="html" {if: $settings.editor == 'html'}checked{/if} /> HTML
+                             </label>
+                         </div>
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
@@ -71,32 +147,59 @@
         <div class="col-md-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
+                    <h3 class="panel-title">Lisensi</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="text-center">
+                        {if: $settings.license.type == \Systems\Lib\License::ERROR}
+                        <span class="fa-stack text-danger fa-5x">
+                            <i class="fa fa-circle-o fa-stack-2x"></i>
+                            <i class="fa fa-times fa-stack-1x"></i>
+                        </span>
+                        {else}
+                        <span class="fa-stack text-success fa-5x">
+                            <i class="fa fa-circle-o fa-stack-2x"></i>
+                            <i class="fa fa-check fa-stack-1x"></i>
+                        </span>
+                        {/if}
+                        <h1>
+                            {$settings.license.name}
+                        </h1>
+                        <small class="clearfix">{?=domain()?}</small>
+                        {if: $settings.license.type == \Systems\Lib\License::FREE}
+                        <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Upgrade</a>
+                        {else}
+                        <a href="{?=url([ADMIN, 'settings', 'license?downgrade'])?}" data-confirm="Apakah anda ingin menurunkan ke lisensi Gratis?" class="btn btn-default">Downgrade</a>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+            <div class="panel panel-default">
+                <div class="panel-heading">
                     <h3 class="panel-title">Informasi Sistem</h3>
                 </div>
                 <div class="panel-body">
                     <dl class="dl-horizontal no-margin">
-                        <dt></dt>
-                        <dd><img src="../../themes/admin/img/logo.png"></dd>
-                    </dl>
-                    <hr />
-                    <dl class="dl-horizontal no-margin">
-                        <dt>Aplikasi</dt>
-                        <dd>Khanza LITE</dd>
                         <dt>Versi</dt>
-                        <dd>{$settings.system.version}</dd>
+                        <dd>{$settings.version} <a href="{$updateurl}" class="small">(Cek Update)</a></dd>
+                        <dt>Lisensi</dt>
+                        <dd>
+                            {$settings.license.name}
+                            <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
+                        </dd>
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi PHP</dt>
                         <dd>{$settings.system.php}</dd>
-                        <dt>Versi MySQL</dt>
+                        <dt>Versi SQLite</dt>
                         <dd>{$settings.system.mysql}</dd>
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
-                        <dt>Ukuran aplikasi</dt>
+                        <dt>Ukuran Sistem</dt>
                         <dd>{$settings.system.system_size}</dd>
-                        <dt>Ukuran database</dt>
+                        <dt>Ukuran Database</dt>
                         <dd>{$settings.system.mysql_size}</dd>
                     </dl>
                 </div>
@@ -104,6 +207,27 @@
         </div>
     </form>
 </article>
+<div class="modal fade" id="license-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Lisensi</h4>
+            </div>
+            <form method="post" action="{?=url([ADMIN,'settings','license'])?}">
+                <div class="modal-body">
+                    <p>Apabila anda ingin membuat website untuk klien anda, pilihlah <a href=\"https://basoro.org/buy\" target=\"_blank\"><b>Lisensi Komersil</b></a>.</p>
+                    <p>Untuk mengaktifkan versi komersil, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi pembelian lisensi.</p>
+                    <input type="text" name="license-key" class="form-control" placeholder="Kode lisensi..." />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary">Upgrade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   // Avatar
   var reader  = new FileReader();

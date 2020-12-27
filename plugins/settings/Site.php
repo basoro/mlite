@@ -11,29 +11,67 @@ class Site extends SiteModule
         $slug = parseURL();
 
         if (empty($slug[0])) {
-            $this->core->router->changeRoute($this->options->get('settings.homepage'));
+            $this->core->router->changeRoute($this->settings('settings', 'homepage'));
         }
 
         \Systems\Lib\Event::add('router.notfound', function () {
-            $this->get404();
+          echo '<!DOCTYPE html>
+          <html>
+          <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+          <title>mLITE</title>
+          <link rel="icon" href="'.url().'/favicon.png" type="image/ico">
+          <link href="'.url().'/assets/css/bootstrap.min.css" rel="stylesheet">
+          <link href="'.url().'/themes/admin/css/style.css" rel="stylesheet">
+          <style>
+          body{
+              background-color: #fff;
+          }
+          .error-page {
+              height: 100%;
+              position: fixed;
+              width: 100%;
+          }
+          .error-body {
+              padding-top: 5%;
+          }
+          .error-body h1 {
+              font-size: 210px;
+              font-weight: 700;
+              text-shadow: 4px 4px 0 #f5f6fa, 6px 6px 0 #33cabb;
+              line-height: 210px;
+              color: #33cabb;
+          }
+          .error-body h4 {
+              margin: 30px 0px;
+          }
+          </style>
+          </head>
+
+          <body>
+          <section class="error-page">
+            <div class="error-box">
+              <div class="error-body text-center">
+                <h1>404</h1>
+                <h4>Maaf, halaman tidak ditemukan.</h4>
+                <a href="'.url().'" class="btn btn-danger ">Halaman Depan</a>
+              </div>
+            </div>
+          </section>
+          </body>
+          </html>';
+          exit;
         });
 
-        $this->tpl->set('settings', function () {
-            $settings = $this->db('setting')->toArray();
-            return $settings[0];
-        });
+        $this->_importSettings();
     }
 
-    public function get404()
+    private function _importSettings()
     {
-        $page = [
-            'title' => 'Khanza LITE',
-            'desc' => 'Sistem Informasi Rumah Sakit',
-            'content' => '<div class="container text-center" style="margin-top: 30px;margin-bottom: 30px;"><h1>404 Not Found</h1></div>'
-        ];
-
-        $this->setTemplate('index.html');
-        $this->tpl->set('page', $page);
+        $tmp = $this->core->settings->all();
+        $tmp = array_merge($tmp, $tmp['settings']);
+        unset($tmp['settings']);
+        $this->tpl->set('settings', $tmp);
     }
-
 }

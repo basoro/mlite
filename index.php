@@ -5,6 +5,7 @@ if(isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO
 }
 define('BASE_DIR', __DIR__);
 require_once('config.php');
+//require_once('systems/defines.php');
 
 if (DEV_MODE) {
     error_reporting(E_ALL);
@@ -14,8 +15,8 @@ if (DEV_MODE) {
 }
 
 require_once('systems/lib/Autoloader.php');
+ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 
-// Site core init
 $core = new Systems\Site;
 
 ob_end_flush();

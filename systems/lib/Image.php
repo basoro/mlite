@@ -110,7 +110,7 @@ class Image
         if (empty($path)) {
             return false;
         }
-            
+
         $file = @fopen($path, 'r');
 
         if (!$file) {
@@ -175,7 +175,7 @@ class Image
             }
             return true;
         }
-        
+
         return false;
     }
 

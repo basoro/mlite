@@ -2,18 +2,20 @@
 
 return [
     'name'          =>  'Modul-Modul',
-    'description'   =>  'Pengelolaan modul-modul Khanza LITE.',
-    'author'        =>  'Basoro',
-    'version'       =>  '1.0',
-    'compatibility' =>  '2020',
+    'description'   =>  'Pengelolaan modul',
+    'author'        =>  'Basoro.ID',
+    'version'       =>  '1.1',
+    'compatibility'    =>    '1.0.*',
     'icon'          =>  'plug',
 
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_modules` (
-                `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `dir` text,
-                `sequence` text
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
-
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_modules` (
+            `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `dir` text,
+            `sequence` text
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+    },
+    'uninstall'     =>  function () use ($core) {
+        $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_modules`");
     }
 ];

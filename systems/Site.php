@@ -1,5 +1,4 @@
 <?php
-
 namespace Systems;
 
 class Site extends Main
@@ -30,23 +29,23 @@ class Site extends Main
     {
         $assign = [];
         $assign['notify']   = $this->getNotify();
-        $assign['powered']  = 'Powered by <a href="https://khanza.basoro.id/">Khanza LITE</a>';
+        $assign['powered']  = 'Powered by <a href="https://basoro.org/">mLITE</a>';
         $assign['path']     = url();
-        //$assign['theme']    = url(THEMES.'/site');
-        $assign['theme']    = url(THEMES.'/'.$this->options->get('settings.theme'));
-        $assign['version']  = $this->options->get('settings.version');
+        $assign['nama_instansi']    = $this->settings->get('settings.nama_instansi');
+        $assign['theme']    = url(THEMES.'/'.$this->settings->get('settings.theme'));
+        $assign['nama_instansi']         = $this->settings->get('settings.nama_instansi');
+        $assign['version']       = $this->settings->get('settings.version');
 
         $assign['header']   = isset_or($this->appends['header'], ['']);
         $assign['footer']   = isset_or($this->appends['footer'], ['']);
 
-        $this->tpl->set('opensimrs', $assign);
-        //echo $this->tpl->draw(THEMES.'/site/'.$file, true);
-        echo $this->tpl->draw(THEMES.'/'.$this->options->get('settings.theme').'/'.$file, true);
+        $this->tpl->set('mlite', $assign);
+        echo $this->tpl->draw(THEMES.'/'.$this->settings->get('settings.theme').'/'.$file, true);
     }
 
     public function loginCheck()
     {
-        if (isset($_SESSION['opensimrs_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
+        if (isset($_SESSION['mlite_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
             if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
                 return false;
             }

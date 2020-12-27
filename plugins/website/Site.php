@@ -14,15 +14,14 @@ class Site extends SiteModule
 
     public function getIndex()
     {
-        $setting['nama_instansi'] = $this->core->getSettings('nama_instansi');
-        $setting['alamat_instansi'] = $this->core->getSettings('alamat_instansi');
-        $setting['kabupaten'] = $this->core->getSettings('kabupaten');
-        $setting['propinsi'] = $this->core->getSettings('propinsi');
-        $setting['kontak'] = $this->core->getSettings('kontak');
-        $setting['email'] = $this->core->getSettings('email');
-        $setting['email'] = $this->core->getSettings('email');
+        $setting['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+        $setting['alamat_instansi'] = $this->settings->get('settings.alamat');
+        $setting['kabupaten'] = $this->settings->get('settings.kota');
+        $setting['propinsi'] = $this->settings->get('settings.propinsi');
+        $setting['kontak'] = $this->settings->get('settings.nomor_telepon');
+        $setting['email'] = $this->settings->get('settings.email');
         $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
-        $website = $this->options('website');
+        $website = $this->settings('website');
         echo $this->draw('index.html', ['setting' => $setting, 'poliklinik' => $poliklinik, 'website' => $website, 'notify' => $this->core->getNotify()]);
         exit();
     }

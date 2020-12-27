@@ -6,11 +6,11 @@
     <meta http-equiv="refresh" content="180">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}">
+    <meta name="description" content="">
     <title>{$title} - {$settings.nama_instansi}</title>
-    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
-    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
     <style media="screen">
@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3">Antrian Poliklinik {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Poliklinik {$settings.nama_instansi}</h1>
   <table class="table table-bordered table-striped lead text-primary">
     <thead class="bg-primary">
       <tr>

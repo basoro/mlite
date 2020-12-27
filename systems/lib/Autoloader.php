@@ -4,6 +4,7 @@ require_once('functions.php');
 
 class Autoloader
 {
+
     public static function init($className)
     {
         // Convert directories to lowercase and process uppercase for class files

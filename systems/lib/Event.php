@@ -2,14 +2,18 @@
 
 namespace Systems\Lib;
 
+
 class Event
 {
+
     protected static $events = [];
+
 
     public static function add($name, callable $callback)
     {
         static::$events[$name][] = $callback;
     }
+
 
     public static function call($name, array $params = [])
     {

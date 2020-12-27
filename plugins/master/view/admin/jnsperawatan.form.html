@@ -22,7 +22,11 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Kode Kategori</label>
-                            <input type="text" name="kd_kategori" class="form-control" value="{$jnsperawatan.form.kd_kategori}" />
+                            <select name="kd_kategori" id="kd_kategori" class="form-control">
+                              {loop: $jnsperawatan.kd_kategori}
+                                <option value="{$value.kd_kategori}"{if: $value.kd_kategori == $jnsperawatan.form.kd_kategori} selected{/if}>{$value.nm_kategori}</option>
+                              {/loop}
+                            </select>
                         </div>
                     </div>
                 </div>

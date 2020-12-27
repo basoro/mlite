@@ -3,20 +3,6 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{$databarang.title}</h3>
-                <ul class="nav nav-tabs">
-                    <li class="{if: empty($databarang.getStatus)}active{/if}">
-                        <a href="{?=url(ADMIN.'/farmasi/manage')?}" role="tab">Aktif</a>
-                    </li>
-                    <li class="{if: !empty($databarang.getStatus)}active{/if}">
-                        <a href="{?=url(ADMIN.'/farmasi/manage?status=0')?}" role="tab">Tidak Aktif</a>
-                    </li>
-                    <li>
-                        <a href="{$databarang.printURL}" target="_blank" role="tab">Cetak</a>
-                    </li>
-                    <li>
-                        <a href="{$databarang.addURL}" role="tab">Tambah</a>
-                    </li>
-				        </ul>
             </div>
             <div class="panel-body">
               <div class="row clearfix">
@@ -44,6 +30,7 @@
                       <th class="text-right">Harga Dasar</th>
                       <th class="text-right">Harga Beli</th>
                       <th>Expired</th>
+                      <th>Lokasi & Stok</th>
     									<th class="text-right">Aksi</th>
     								</tr>
     							</thead>
@@ -56,7 +43,19 @@
                       <td class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
                       <td class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
                       <td>{$value.expire}</td>
+                      <td>
+                        {loop: $value.gudangbarang as $data}
+                        <ul>
+                          <li>
+                            Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok}
+                          </li>
+                        </ul>
+                        {/loop}
+                      </td>
     									<td class="text-right">
+                        <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Stok</span>
+    										</a>
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
@@ -83,3 +82,60 @@
         </div>
     </div>
 </article>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  //$("#display").on("click",".set_dpjp", function(event){
+  $('a[href="#set_stok"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/farmasi/setstok?t=' + mlite.token;
+    var kode_brng = $(this).attr("data-kode_brng");
+
+    var set_stok = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih bangsal</label>'
+        + '<select name="kd_bangsal" id="kd_bangsal" class="form-control" data-use-dimmer="false">'
+        + '{loop: $databarang.bangsal}'
+        + '<option value="{$value.kd_bangsal}">{$value.nm_bangsal}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Stok</label>'
+        + '<input name="stok" id="stok" class="form-control">'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: set_stok,
+      title: 'Set Stok Data Barang',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_bangsal = $('#kd_bangsal').val();
+            var stok = $('#stok').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              kode_brng: kode_brng,
+              kd_bangsal: kd_bangsal,
+              stok: stok,
+            } ,function(data) {
+              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+              //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+              "Set Stok telah disimpan!"+
+              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+              "</div>").show();
+            });
+          }
+        }
+      }
+    });
+    $('select').selectator();
+    event.stopPropagation();
+    return false;
+  });
+</script>

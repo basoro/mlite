@@ -9,8 +9,8 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-          'Kelola'    => 'manage',
-            'Upload'           => 'upload'
+            'Kelola'    => 'manage',
+            'Unggah'            => 'upload'
         ];
     }
 
@@ -50,7 +50,7 @@ class Admin extends AdminModule
                 }
 
                 if (strpos($entry, '/') === false) {
-                    $this->notify('failure', 'File yang diaunggah rusak');
+                    $this->notify('failure', 'Modul tidak benar atau rusak.');
                     redirect($backURL);
                 }
             }
@@ -67,16 +67,16 @@ class Admin extends AdminModule
                         unlink('tmp/'.$tmpName);
 
                         if (cmpver($info_new['version'], $info_old['version']) <= 0) {
-                            $this->notify('failure', 'Versi lawas');
+                            $this->notify('failure', 'Modul yang diunggah memiliki versi lebih lama atau sama dengan yang sudah terpasang.');
                             continue;
                         }
                     }
                     $this->unzip($file, MODULES.'/'.$module['name'], $module['name']);
                 }
 
-                $this->notify('success', 'Unggahan sukses');
+                $this->notify('success', 'Modul berhasil ditambahkan. Buka halaman <b>Nonaktif</b> dan aktifkan modul itu.');
             } else {
-                $this->notify('failure', 'File unggahan rusak');
+                $this->notify('failure', 'Modul tidak benar atau rusak.');
             }
         }
 
@@ -95,18 +95,18 @@ class Admin extends AdminModule
             $core = $this->core;
             $info = include($files['info']);
             if (!$this->checkCompatibility(isset_or($info['compatibility']))) {
-                $this->notify('failure', 'Modulnya lawas', $dir);
-            } elseif ($this->db('lite_modules')->save(['dir' => $dir, 'sequence' => $this->db('lite_modules')->count()])) {
+                $this->notify('failure', 'Tidak dapat memasang modul %s karena sudah lawas. Silahkan update modul dan coba lagi.', $dir);
+            } elseif ($this->db('mlite_modules')->save(['dir' => $dir, 'sequence' => $this->db('mlite_modules')->count()])) {
                 if (isset($info['install'])) {
                     $info['install']();
                 }
 
-                $this->notify('success', 'Aktifasi sukses', $dir);
+                $this->notify('success', 'Modul %s berhasil diaktifkan.', $dir);
             } else {
-                $this->notify('failure', 'Aktifasi gagal', $dir);
+                $this->notify('failure', 'Tidak dapat mengaktifkan modul %s.', $dir);
             }
         } else {
-            $this->notify('failure', 'File aktifasi gagal', $dir);
+            $this->notify('failure', 'Tidak dapat mengaktifkan modul %s, sebab berkas kurang lengkap.', $dir);
         }
 
         redirect(url([ADMIN, 'modules', 'manage', 'inactive']));
@@ -115,11 +115,11 @@ class Admin extends AdminModule
     public function getUninstall($dir)
     {
         if (in_array($dir, unserialize(BASIC_MODULES))) {
-            $this->notify('failure', 'Menonaktifkan gagal', $dir);
+            $this->notify('failure', 'Tidak dapat menonaktifkan modul %s.', $dir);
             redirect(url([ADMIN, 'modules', 'manage', 'active']));
         }
 
-        if ($this->db('lite_modules')->delete('dir', $dir)) {
+        if ($this->db('mlite_modules')->delete('dir', $dir)) {
             $core = $this->core;
             $info = include(MODULES.'/'.$dir.'/Info.php');
 
@@ -127,9 +127,9 @@ class Admin extends AdminModule
                 $info['uninstall']();
             }
 
-            $this->notify('success', 'Non aktifkan sukses', $dir);
+            $this->notify('success', 'Modul %s berhasil dinonaktifkan.', $dir);
         } else {
-            $this->notify('failure', 'Non aktifkan gagal', $dir);
+            $this->notify('failure', 'Tidak dapat menonaktifkan modul %s.', $dir);
         }
 
         redirect(url([ADMIN, 'modules', 'manage', 'active']));
@@ -138,16 +138,16 @@ class Admin extends AdminModule
     public function getRemove($dir)
     {
         if (in_array($dir, unserialize(BASIC_MODULES))) {
-            $this->notify('failure', 'Menghapus gagal', $dir);
+            $this->notify('failure', 'Tidak dapat menghapus berkas-berkas modul %s.', $dir);
             redirect(url([ADMIN, 'modules', 'manage', 'inactive']));
         }
 
         $path = MODULES.'/'.$dir;
         if (is_dir($path)) {
             if (deleteDir($path)) {
-                $this->notify('success', 'Menghapus sukses', $dir);
+                $this->notify('success', 'Berkas-berkar modul %s sudah berhasil dihapus.', $dir);
             } else {
-                $this->notify('failure', 'Menghapus gagal', $dir);
+                $this->notify('failure', 'Tidak dapat menghapus berkas-berkas modul %s.', $dir);
             }
         }
         redirect(url([ADMIN, 'modules', 'manage', 'inactive']));
@@ -164,6 +164,12 @@ class Admin extends AdminModule
         $module['description'] = $this->tpl->noParse($module['description']);
         $module['last_modified'] = date("Y-m-d", filemtime($files['info']));
 
+        // ReadMe.md
+        if (file_exists($files['readme'])) {
+            $parsedown = new \Systems\Lib\Parsedown();
+            $module['readme'] = $parsedown->text($this->tpl->noParse(file_get_contents($files['readme'])));
+        }
+
         $this->tpl->set('module', $module);
         echo $this->tpl->draw(MODULES.'/modules/view/admin/details.html', true);
         exit();
@@ -171,7 +177,7 @@ class Admin extends AdminModule
 
     private function _modulesList($type)
     {
-        $dbModules = array_column($this->db('lite_modules')->toArray(), 'dir');
+        $dbModules = array_column($this->db('mlite_modules')->toArray(), 'dir');
         $result = [];
 
         foreach (glob(MODULES.'/*', GLOB_ONLYDIR) as $dir) {
@@ -242,8 +248,8 @@ class Admin extends AdminModule
 
     private function checkCompatibility($version)
     {
-        $systemVersion = $this->options->get('settings.version');
+        $systemVersion = $this->settings('settings', 'version');
         $version = str_replace(['.', '*'], ['\\.', '[0-9]+'], $version);
-        return preg_match('/^'.$version.'[a-z]*$/', substr($systemVersion, 0, 4));
+        return preg_match('/^'.$version.'[a-z]*$/', $systemVersion);
     }
 }

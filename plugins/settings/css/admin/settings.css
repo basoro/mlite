@@ -2,7 +2,7 @@
     position: relative;
     display: block;
     overflow: hidden;
-    padding-bottom: 75%;
+    padding-bottom: 75%; 
 }
     .theme-preview img {
         position: absolute;

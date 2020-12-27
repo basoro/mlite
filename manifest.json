@@ -1,11 +1,11 @@
 {
-  "name": "SIMRS Khanza Lite",
-  "short_name": "KhanzaLITE",
+  "name": "mLITE",
+  "short_name": "mLITE",
   "lang": "en-US",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#4C9A2A",
-  "background_color": "#4C9A2A",
+  "background_color": "#ffffff",
   "icons": [
     {
       "src": "assets/images/icon-128x128.png",

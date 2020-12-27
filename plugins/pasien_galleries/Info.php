@@ -5,11 +5,11 @@ return [
     'description'   =>  'Kumpulan data digital pasien',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2020',
+    'compatibility' =>  '1.0.*',
     'icon'          =>  'camera',
 
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_pasien_galleries` (
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_pasien_galleries` (
             `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `name` text NOT NULL,
             `slug` text NOT NULL,
@@ -17,7 +17,7 @@ return [
             `sort` varchar(50) NOT NULL DEFAULT 'DESC'
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `lite_pasien_galleries_items` (
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_pasien_galleries_items` (
             `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `gallery` varchar(50) NOT NULL,
             `src` text NOT NULL,
@@ -29,8 +29,8 @@ return [
         }
     },
     'uninstall'     => function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABLE `lite_pasien_galleries`");
-        $core->db()->pdo()->exec("DROP TABLE `lite_pasien_galleries_items`");
+        $core->db()->pdo()->exec("DROP TABLE `mlite_pasien_galleries`");
+        $core->db()->pdo()->exec("DROP TABLE `mlite_pasien_galleries_items`");
         deleteDir(UPLOADS.'/pasien_galleries');
     }
 ];

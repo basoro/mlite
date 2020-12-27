@@ -12,6 +12,7 @@ class Admin extends AdminModule
     {
         return [
             'Manage' => 'manage',
+            'Add Databarang' => 'add',
             'Pengadaan' => 'pengadaan',
             'Pembelian' => 'pembelian',
             'Stok Opname' => 'opname',
@@ -62,6 +63,7 @@ class Admin extends AdminModule
                 $row['editURL'] = url([ADMIN, 'farmasi', 'edit', $row['kode_brng']]);
                 $row['delURL']  = url([ADMIN, 'farmasi', 'delete', $row['kode_brng']]);
                 $row['restoreURL']  = url([ADMIN, 'farmasi', 'restore', $row['kode_brng']]);
+                $row['gudangbarang'] = $this->db('gudangbarang')->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')->where('kode_brng', $row['kode_brng'])->toArray();
                 $this->assign['list'][] = $row;
             }
         }
@@ -70,6 +72,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['addURL'] = url([ADMIN, 'farmasi', 'add']);
         $this->assign['printURL'] = url([ADMIN, 'farmasi', 'print']);
+        $this->assign['bangsal']  = $this->db('bangsal')->toArray();
 
         return $this->draw('manage.html', ['databarang' => $this->assign]);
 
@@ -112,7 +115,7 @@ class Admin extends AdminModule
         }
 
         $this->assign['title'] = 'Tambah Databarang ';
-        $this->assign['status'] = $this->core->getEnum('databarang', 'status');
+        $this->assign['status'] = ['0','1'];
         $this->assign['kdjns'] = $this->db('jenis')->toArray();
         $this->assign['kode_sat'] = $this->db('kodesatuan')->toArray();
         $this->assign['kode_industri'] = $this->db('industrifarmasi')->toArray();
@@ -129,7 +132,7 @@ class Admin extends AdminModule
         if (!empty($row)) {
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit Databarang';
-            $this->assign['status'] = $this->core->getEnum('databarang', 'status');
+            $this->assign['status'] = ['0','1'];
             $this->assign['kdjns'] = $this->db('jenis')->toArray();
             $this->assign['kode_sat'] = $this->db('kodesatuan')->toArray();
             $this->assign['kode_industri'] = $this->db('industrifarmasi')->toArray();
@@ -197,6 +200,27 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
+    }
+
+    public function postSetStok()
+    {
+      if($this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
+        $this->db('gudangbarang')
+          ->where('kode_brng', $_POST['kode_brng'])
+          ->where('kd_bangsal', $_POST['kd_bangsal'])
+          ->save([
+            'stok' => $_POST['stok']
+          ]);
+      } else {
+        $this->db('gudangbarang')->save([
+          'kode_brng' => $_POST['kode_brng'],
+          'kd_bangsal' => $_POST['kd_bangsal'],
+          'stok' => $_POST['stok'],
+          'no_batch' => '0',
+          'no_faktur' => '0'
+        ]);
+      }
+      exit();
     }
 
     public function getPrint()
@@ -279,14 +303,14 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul Farmasi';
         $this->assign['bangsal'] = $this->db('bangsal')->toArray();
-        $this->assign['farmasi'] = htmlspecialchars_array($this->options('farmasi'));
+        $this->assign['farmasi'] = htmlspecialchars_array($this->settings('farmasi'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettings()
     {
         foreach ($_POST['farmasi'] as $key => $val) {
-            $this->options('farmasi', $key, $val);
+            $this->settings('farmasi', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'farmasi', 'settings']));

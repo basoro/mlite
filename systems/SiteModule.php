@@ -4,6 +4,7 @@ namespace Systems;
 
 abstract class SiteModule extends BaseModule
 {
+
     public function routes()
     {
     }

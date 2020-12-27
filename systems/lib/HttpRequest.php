@@ -1,19 +1,25 @@
 <?php
+
 namespace Systems\Lib;
+
 
 class HttpRequest
 {
+
     protected static $lastStatus = null;
+
 
     public static function get($url, $datafields = [], $headers = [])
     {
         return self::request('GET', $url, $datafields, $headers);
     }
 
+
     public static function post($url, $datafields = [], $headers = [])
     {
         return self::request('POST', $url, $datafields, $headers);
     }
+
 
     public static function getStatus()
     {

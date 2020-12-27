@@ -1,141 +1,259 @@
-function cekNokaBPJS(){
-    var no_peserta = $("#no_peserta").val();
-    $.ajax({
-        url: '{?=url()?}/admin/pasien/noka_bpjs?noka='+no_peserta+'&t={?=$_SESSION['token']?}',
-    }).success(function (data) {
-        var json = data,
-        obj = JSON.parse(json);
-        console.log(obj);
-        $('#nm_pasien').val(obj.response.peserta.nama);
-        $('#no_ktp').val(obj.response.peserta.nik);
-        $('#tgl_lahir').val(obj.response.peserta.tglLahir);
-        $('#no_tlp').val(obj.response.peserta.mr.noTelepon);
-    });
-}
+// sembunyikan notif
+$("#notif").hide();
 
-function cekNikBPJS(){
-    var no_ktp = $("#no_ktp").val();
-    $.ajax({
-        url: '{?=url()?}/admin/pasien/nik_bpjs?nik='+no_ktp+'&t={?=$_SESSION['token']?}',
-    }).success(function (data) {
-        var json = data,
-        obj = JSON.parse(json);
-        console.log(obj);
-        $('#nm_pasien').val(obj.response.peserta.nama);
-        $('#no_peserta').val(obj.response.peserta.noKartu);
-        $('#tgl_lahir').val(obj.response.peserta.tglLahir);
-        $('#no_tlp').val(obj.response.peserta.mr.noTelepon);
-    });
-}
-
-// Avatar
-var reader  = new FileReader();
-reader.addEventListener("load", function() {
-  $("#photoPreview").attr('src', reader.result);
-}, false);
-$("input[name=photo]").change(function() {
-  reader.readAsDataURL(this.files[0]);
+// tombol buka form diklik
+$("#index").on('click', '#bukaform', function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  $("#form").show().load(baseURL + '/pasien/form?t=' + mlite.token);
+  $("#bukaform").val("Tutup Form");
+  $("#bukaform").attr("id", "tutupform");
 });
 
-// Datepicker
-$( function() {
-  $( ".datepicker" ).datepicker({
-    dateFormat: "yy-mm-dd",
-    changeMonth: true,
-    changeYear: true,
-    yearRange: "-100:+0",
+// tombol tutup form diklik
+$("#index").on('click', '#tutupform', function(){
+  event.preventDefault();
+  $("#form").hide();
+  $("#tutupform").val("Buka Form");
+  $("#tutupform").attr("id", "bukaform");
+});
+
+// ketika inputbox no_rm_medis diklik
+$("#form").on("click","#no_rkm_medis", function(event){
+  var no_rkm_medis_baru = $("#no_rkm_medis_baru").val();
+  $("#no_rkm_medis").val(no_rkm_medis_baru);
+});
+
+// tombol batal diklik
+$("#form").on("click", "#batal", function(event){
+  bersih();
+});
+
+// tombol simpan diklik
+$("#form").on("click", "#simpan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+  var nm_pasien = $('input:text[name=nm_pasien]').val();
+  var nm_ibu = $('input:text[name=nm_ibu]').val();
+  var tgl_lahir = $('#tgl_lahir').val();
+  var jk = $('input:radio[name=jk]:checked').val();
+  var gol_darah = $('select[name=gol_darah]').val();
+  var stts_nikah = $('select[name=stts_nikah]').val();
+  var agama = $('select[name=agama]').val();
+  var pekerjaan = $('input:text[name=pekerjaan]').val();
+  var no_ktp = $('input[name=no_ktp]').val();
+  var alamat = $('textarea[name=alamat]').val();
+  var no_tlp = $('input:text[name=no_tlp]').val();
+  var tgl_daftar = $('input:text[name=tgl_daftar]').val();
+  var email = $('input:text[name=email]').val();
+  var pnd = $('select[name=pnd]').val();
+  var keluarga = $('select[name=keluarga]').val();
+  var namakeluarga = $('input:text[name=namakeluarga]').val();
+  var kd_prop = $('#kd_prop').val();
+  var kd_kab = $('#kd_kab').val();
+  var kd_kec = $('#kd_kec').val();
+  var kd_kel = $('#kd_kel').val();
+  var nm_prop = $('#nm_prop').val();
+  var nm_kab = $('#nm_kab').val();
+  var nm_kec = $('#nm_kec').val();
+  var nm_kel = $('#nm_kel').val();
+  var kd_pj = $('select[name=kd_pj]').val();
+  var no_peserta = $('input:text[name=no_peserta]').val();
+
+  var url = baseURL + '/pasien/save?t=' + mlite.token;
+
+  $.post(url,{
+    no_rkm_medis: no_rkm_medis,
+    nm_pasien: nm_pasien,
+    nm_ibu: nm_ibu,
+    tgl_lahir: tgl_lahir,
+    jk: jk,
+    gol_darah: gol_darah,
+    stts_nikah: stts_nikah,
+    agama: agama,
+    pekerjaan: pekerjaan,
+    no_ktp: no_ktp,
+    alamat: alamat,
+    no_tlp: no_tlp,
+    tgl_daftar: tgl_daftar,
+    email:email,
+    pnd: pnd,
+    keluarga: keluarga,
+    namakeluarga: namakeluarga,
+    kd_prop:kd_prop,
+    kd_kab:kd_kab,
+    kd_kec:kd_kec,
+    kd_kel:kd_kel,
+    nm_prop:nm_prop,
+    nm_kab:nm_kab,
+    nm_kec:nm_kec,
+    nm_kel:nm_kel,
+    kd_pj: kd_pj,
+    no_peserta: no_peserta
+  } ,function(data) {
+    $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
+    $("#form").hide();
+    $("#tutupform").val("Buka Form");
+    $("#tutupform").attr("id", "bukaform");
+    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "Data pasien telah disimpan!"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    "</div>").show();
   });
-} );
-
-$(document).ready(function(){
-    $('.display').DataTable({
-      "language": { "search": "", "searchPlaceholder": "Search..." },
-      "lengthChange": false,
-      "scrollX": true,
-      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
-    });
 });
 
-$(document).on('click', '#caripropinsi', function (e) {
-    $.ajax({
-      type: 'GET',
-      url: '{?=url()?}/admin/pasien/ajax?show=propinsi&t={?=$_SESSION['token']?}',
-      success: function(response) {
-        $('#propinsi').html(response);
-      }
-    })
+// ketika baris data diklik
+$("#display").on("click", ".edit", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/pasien/form?t=' + mlite.token;
+  var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+
+  $.post(url, {no_rkm_medis: no_rkm_medis} ,function(data) {
+    // tampilkan data
+    $("#form").html(data).show();
+    $("#bukaform").val("Tutup Form");
+    $("#bukaform").attr("id", "tutupform");
+  });
 });
 
-$(document).on('click', '.pilihpropinsi', function (e) {
-  $("#kd_prop")[0].value = $(this).attr('data-kdprop');
-  $("#namaprop")[0].value = $(this).attr('data-namaprop');
-  $('#propinsiModal').modal('hide');
-  $('.propinsi').dataTable().Destroy();
-  var kd_prop = $(this).attr('data-kdprop');
-  $.ajax({
-    type: 'GET',
-    url: '{?=url()?}/admin/pasien/ajax?show=kabupaten&kd_prop='+kd_prop+'&t={?=$_SESSION['token']?}',
-    success: function(response) {
-      $('#kabupaten').html(response);
-      $('.kabupaten').DataTable({
-        "lengthChange": false,
-        "scrollX": true
+// ketika tombol hapus diklik
+$("#form").on("click","#hapus", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/pasien/hapus?t=' + mlite.token;
+  var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rkm_medis: no_rkm_medis
+      } ,function(data) {
+        // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+        $("#form").hide();
+        $("#tutupform").val("Buka Form");
+        $("#tutupform").attr("id", "bukaform");
+        $("#display").load(baseURL + '/pasien/display?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
       });
-      console.log(kd_prop);
     }
-  })
+  });
 });
 
-$(document).on('click', '.pilihkabupaten', function (e) {
-  $("#kd_kab")[0].value = $(this).attr('data-kdkab');
-  $("#namakab")[0].value = $(this).attr('data-namakab');
-  $('#kabupatenModal').modal('hide');
-  $('.kabupaten').dataTable().Destroy();
-  var kd_kab = $(this).attr('data-kdkab');
-  $.ajax({
-    type: 'GET',
-    url: '{?=url()?}/admin/pasien/ajax?show=kecamatan&kd_kab='+kd_kab+'&t={?=$_SESSION['token']?}',
-    success: function(response) {
-      $('#kecamatan').html(response);
-      $('.kecamatan').DataTable({
-        "lengthChange": false,
-        "scrollX": true
+// ketika inputbox pencarian diisi
+$('input:text[name=cari]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/pasien/display?t=' + mlite.token;
+  var cari = $('input:text[name=cari]').val();
+
+  if(cari!="") {
+      $.post(url, {cari: cari} ,function(data) {
+        // tampilkan data yang sudah di perbaharui dan sembunyikan notif
+        $("#notif").hide();
+        $("#display").html(data).show();
       });
-      console.log(response);
+  } else {
+      $("#notif").hide();
+      $("#display").load(baseURL + '/pasien/display?t=' + batflat.token);
+  }
+
+});
+
+// ketika tombol halaman ditekan
+$("#display").on("click", ".halaman",function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/pasien/display?t=' + mlite.token;
+  kd_hal  = $(this).attr("data-hal");
+
+  $.post(url, {halaman: kd_hal} ,function(data) {
+    // tampilkan data
+    $("#notif").hide();
+    $("#display").html(data).show();
+  });
+
+});
+
+$("#display").on("click",".riwayat_perawatan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+  window.open(baseURL + '/pasien/riwayatperawatan/' + no_rkm_medis + '?t=' + mlite.token);
+});
+
+// ketika tombol cetak kartu ditekan
+$("#form").on("click","#kartu", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+  window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+});
+
+// reset form
+function bersih(){
+  $('input:text[name=no_rkm_medis]').val("").removeAttr('disabled');
+  $('input:text[name=nm_pasien]').val("");
+  $('#tgl_lahir').val("");
+  $('input:radio[name=jk]').val("").removeAttr('checked');
+  $('input:text[name=no_rkm_medis]').val("");
+  $('input:text[name=pekerjaan]').val("");
+  $('textarea[name=alamat]').val("");
+  $('input:text[name=telepon]').val("");
+  $('#tgl_daftar').val("");
+  $('#email').val("");
+  $('select').selectator('destroy');
+  $('select[name=gol_darah]').val("");
+  $('select').selectator();
+}
+
+// dropdown select pada baris data
+$(document).click(function (event) {
+    $('.dropdown-menu[data-parent]').hide();
+});
+
+$(document).on('click', '.table-responsive [data-toggle="dropdown"]', function () {
+    if ($('body').hasClass('modal-open')) {
+        throw new Error("This solution is not working inside a responsive table inside a modal, you need to find out a way to calculate the modal Z-index and add it to the element")
+        return true;
     }
-  })
-});
 
-$(document).on('click', '.pilihkecamatan', function (e) {
-  $("#kd_kec")[0].value = $(this).attr('data-kdkec');
-  $("#namakec")[0].value = $(this).attr('data-namakec');
-  $('#kecamatanModal').modal('hide');
-  $('.kecamatan').dataTable().Destroy();
-  var kd_kec = $(this).attr('data-kdkec');
-  $.ajax({
-    type: 'GET',
-    url: '{?=url()?}/admin/pasien/ajax?show=kelurahan&kd_kec='+kd_kec+'&t={?=$_SESSION['token']?}',
-    success: function(response) {
-      $('#kelurahan').html(response);
-      $('.kelurahan').DataTable({
-        "lengthChange": false,
-        "scrollX": true
-      });
-      console.log(response);
+    $buttonGroup = $(this).parent();
+    if (!$buttonGroup.attr('data-attachedUl')) {
+        var ts = +new Date;
+        $ul = $(this).siblings('ul');
+        $ul.attr('data-parent', ts);
+        $buttonGroup.attr('data-attachedUl', ts);
+        $(window).resize(function () {
+            $ul.css('display', 'none').data('top');
+        });
+    } else {
+        $ul = $('[data-parent=' + $buttonGroup.attr('data-attachedUl') + ']');
     }
-  })
+    if (!$buttonGroup.hasClass('open')) {
+        $ul.css('display', 'none');
+        return;
+    }
+    dropDownFixPosition($(this).parent(), $ul);
+    function dropDownFixPosition(button, dropdown) {
+        var dropDownTop = button.offset().top + button.outerHeight();
+        dropdown.css('top', dropDownTop-60 + "px");
+        dropdown.css('left', button.offset().left+7 + "px");
+        dropdown.css('position', "absolute");
+
+        dropdown.css('width', dropdown.width());
+        dropdown.css('heigt', dropdown.height());
+        dropdown.css('display', 'block');
+        dropdown.appendTo('body');
+    }
 });
 
-$(document).on('click', '.pilihkelurahan', function (e) {
-    $("#kd_kel")[0].value = $(this).attr('data-kdkel');
-    $("#namakel")[0].value = $(this).attr('data-namakel');
-    $('#kelurahanModal').modal('hide');
-});
-
-$("#copy_alamat").click(function(){
-    $("#alamatpj")[0].value = $("#alamat").val();
-    $("#propinsipj")[0].value = $("#namaprop").val();
-    $("#kabupatenpj")[0].value = $("#namakab").val();
-    $("#kecamatanpj")[0].value = $("#namakec").val();
-    $("#kelurahanpj")[0].value = $("#namakel").val();
+$('body').on('hidden.bs.modal', '.modal', function () {
+    $(this).removeData('bs.modal');
 });

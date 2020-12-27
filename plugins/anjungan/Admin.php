@@ -22,10 +22,10 @@ class Admin extends AdminModule
     public function getSettings()
     {
         $this->assign['title'] = 'Pengaturan Modul Anjungan';
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->options->get('anjungan.display_poli'));
+        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         $this->assign['penjab'] = $this->db('penjab')->toArray();
 
-        $this->assign['anjungan'] = htmlspecialchars_array($this->options('anjungan'));
+        $this->assign['anjungan'] = htmlspecialchars_array($this->settings('anjungan'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
@@ -33,7 +33,7 @@ class Admin extends AdminModule
     {
         $_POST['anjungan']['display_poli'] = implode(',', $_POST['anjungan']['display_poli']);
         foreach ($_POST['anjungan'] as $key => $val) {
-            $this->options('anjungan', $key, $val);
+            $this->settings('anjungan', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'anjungan', 'settings']));

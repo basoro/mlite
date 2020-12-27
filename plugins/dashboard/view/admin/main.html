@@ -1,0 +1,146 @@
+<style>
+  html {
+    height: 0;
+    background: url('{?=url()?}/assets/img/wallpaper.png') no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+  }
+  body {
+    height: 0;
+  }
+  #content-wrapper {
+    top: 0;
+    background: transparent;
+  }
+  .dashboard_wall {
+    position: fixed; bottom: 120px; left: 80px;min-width:600px;color: #fff !important;
+  }
+  p.title {
+    position: absolute; bottom: 30px;left: 120px;color: #fff !important;font-size:32px;
+  }
+  p.alamat {
+    position: absolute; bottom: 0px;left: 120px;font-size:16px;
+  }
+  @media (max-width: 768px) {
+    .dashboard_wall {
+      position: fixed; bottom: 100px; left: 0px;min-width:600px;color: #fff !important;
+    }
+    img.logo {
+      width: 80px;
+    }
+    p.title {
+      position: absolute; bottom: 20px;left: 80px;color: #fff !important;font-size:18px;
+    }
+    p.alamat {
+      position: absolute; bottom: 10px;left: 80px;font-size:10px;
+    }
+  }
+  .badge-success {
+    background-color: #4C9A2A;
+  }
+
+  .btn-group .btn-fab{
+      position: fixed !important;
+      right: 20px;
+      bottom: 60px;
+  }
+</style>
+
+<div class="dashboard_wall">
+  <img src="{?=url()?}/{$settings.logo}" class="logo" width="120px" alt="">
+  <p class="title">{$settings.nama_instansi}</p>
+  <p class="alamat">{$settings.alamat} - {$settings.kota} - {$settings.propinsi}</p>
+</div>
+{if: $cek_presensi}
+<div class="btn-group">
+    <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
+        <i class="fa fa-plus"></i> Presensi Online
+    </button>
+</div>
+{/if}
+<!-- The Modal -->
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url(ADMIN)?}">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <select class="form-control" id="shift" style="width:140px;">
+            <option value="">Pilih Shift</option>
+            {loop: $jam_jaga}
+            <option value="{$value.shift}">{$value.shift}</option>
+            {/loop}
+          </select><br><br>
+          <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+
+      $('#shift').on('change', function() {
+        var shift = this.text;
+      });
+
+      $('#myModal').on('show.bs.modal', function() {
+
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function success(pos) {}, function error(err) {}, {enableHighAccuracy: true, timeout: 5000});
+          } else {
+              //Geolocation is not supported by this browser
+              alert('Geolocation is not supported by this browser');
+          }
+
+          Webcam.set({
+              width:240,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+      });
+      $("#myModal").on("hidden.bs.modal", function () {
+
+          var getshift = shift.value;
+          var shutter = new Audio();
+          shutter.autoplay = false;
+          shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
+          shutter.play();
+
+          Webcam.snap(function(data_uri){
+              document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+          });
+
+          var base64image = document.getElementById("imageprev").src;
+
+          Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}&shift=' + getshift, function(code, text) {
+          });
+
+          Webcam.reset();
+
+          navigator.geolocation.getCurrentPosition(
+              function(position) {
+                $.post('{?=url(ADMIN.'/dashboard/geolocation/')?}', {lat: position.coords.latitude, lng: position.coords.longitude});
+              },
+              function error(err) {},
+              {enableHighAccuracy: true, timeout: 5000}
+          );
+
+          window.location.href = '{?=url(ADMIN)?}';
+
+      });
+  });
+</script>
