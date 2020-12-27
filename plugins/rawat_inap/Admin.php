@@ -232,7 +232,7 @@ class Admin extends AdminModule
     public function postSave()
     {
       $kamar = $this->db('kamar')->where('kd_kamar', $_POST['kd_kamar'])->oneArray();
-      $this->db('kamar_inap')->save([
+      $kamar_inap = $this->db('kamar_inap')->save([
         'no_rawat' => $_POST['no_rawat'],
         'kd_kamar' => $_POST['kd_kamar'],
         'trf_kamar' => $kamar['trf_kamar'],
@@ -246,6 +246,9 @@ class Admin extends AdminModule
         'diagnosa_awal' => $_POST['diagnosa_awal'],
         'stts_pulang' => '-'
       ]);
+      if($kamar_inap) {
+        $this->db('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']])
+      }
       exit();
     }
 

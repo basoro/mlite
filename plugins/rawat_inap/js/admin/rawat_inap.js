@@ -44,6 +44,7 @@ $("#form").on("click", "#simpan", function(event){
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
   var kd_kamar = $('select[name=kd_kamar]').val();
+  var kd_dokter = $('select[name=kd_dokter]').val();
   var tgl_masuk = $('#tgl_masuk').val();
   var jam_masuk = $('#jam_masuk').val();
   var lama = $('input:text[name=lama]').val();
@@ -57,6 +58,7 @@ $("#form").on("click", "#simpan", function(event){
     $.post(url,{
       no_rawat: no_rawat,
       kd_kamar: kd_kamar,
+      kd_dokter: kd_dokter, 
       tgl_masuk: tgl_masuk,
       jam_masuk: jam_masuk,
       lama: lama,
