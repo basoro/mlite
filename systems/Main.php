@@ -136,7 +136,7 @@ abstract class Main
         }
         $checkBuffer = preg_replace('/<!--(.|\s)*?-->/', '', $buffer);
         $isHTML = strpos(get_headers_list('Content-Type'), 'text/html') !== false;
-        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL2Jhc29yby5vcmcvIj5tU0lNUlM8L2E+')) !== false;
+        $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL2Jhc29yby5vcmcvIj5tTElURTwvYT4=')) !== false;
         $hasHeader = get_headers_list('X-Created-By') === 'Basoro.ID <basoro.org>';
         $license = License::verify($core->settings->get('settings.license'));
         if (($license == License::FREE) && $isHTML && (!$hasBacklink || !$hasHeader)) {
