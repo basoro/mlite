@@ -13,6 +13,7 @@ if (DEV_MODE) {
     error_reporting(0);
 }
 
+require_once('systems/functions.php');
 require_once('systems/lib/Autoloader.php');
 ob_start(base64_decode('XFN5c3RlbXNcTWFpbjo6dmVyaWZ5TGljZW5zZQ=='));
 

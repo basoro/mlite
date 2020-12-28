@@ -2,7 +2,7 @@
 
 namespace Systems\Lib;
 
-class QueryBuilder
+class QueryWrapper
 {
     protected static $db = null;
 

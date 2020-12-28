@@ -2,9 +2,9 @@
 
 namespace Plugins\Icd;
 
-use Systems\Lib\QueryBuilder;
+use Systems\Lib\QueryWrapper;
 
-class DB_ICD extends QueryBuilder
+class DB_ICD extends QueryWrapper
 {
     /**
      * @var \PDO

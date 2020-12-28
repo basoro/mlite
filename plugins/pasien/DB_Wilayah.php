@@ -2,9 +2,9 @@
 
 namespace Plugins\Pasien;
 
-use Systems\Lib\QueryBuilder;
+use Systems\Lib\QueryWrapper;
 
-class DB_Wilayah extends QueryBuilder
+class DB_Wilayah extends QueryWrapper
 {
     protected static $db_wilayah;
 }

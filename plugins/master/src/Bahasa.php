@@ -2,14 +2,14 @@
 
 namespace Plugins\Master\Src;
 
-use Systems\Lib\QueryBuilder;
+use Systems\Lib\QueryWrapper;
 
 class Bahasa
 {
 
     protected function db($table)
     {
-        return new QueryBuilder($table);
+        return new QueryWrapper($table);
     }
 
     public function getIndex()

@@ -2,7 +2,7 @@
 
 namespace Systems;
 
-use Systems\Lib\QueryBuilder;
+use Systems\Lib\QueryWrapper;
 use Systems\Lib\Templates;
 use Systems\Lib\Router;
 use Systems\Lib\Settings;
@@ -27,7 +27,7 @@ abstract class Main
 
         //$dbFile = BASE_DIR.'/systems/data/database.sdb';
 
-        QueryBuilder::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
 
         $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
         $check_db->execute();
@@ -42,7 +42,7 @@ abstract class Main
         }
 
         //if (file_exists($dbFile)) {
-        //    QueryBuilder::connect("sqlite:{$dbFile}");
+        //    QueryWrapper::connect("sqlite:{$dbFile}");
         //} else {
         //    $this->freshInstall($dbFile);
         //}
@@ -58,7 +58,7 @@ abstract class Main
 
     public function db($table = null)
     {
-        return new QueryBuilder($table);
+        return new QueryWrapper($table);
     }
 
     public function getSettings($module = 'settings', $field = null, $refresh = false)
@@ -219,9 +219,9 @@ abstract class Main
 
     private function freshInstall()
     {
-        //QueryBuilder::connect("sqlite:{$dbFile}");
-        QueryBuilder::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
-        $pdo = QueryBuilder::pdo();
+        //QueryWrapper::connect("sqlite:{$dbFile}");
+        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
+        $pdo = QueryWrapper::pdo();
 
         $core = $this;
 
