@@ -20,7 +20,7 @@ return [
             `email` text,
             `role` VARCHAR(100) NOT NULL DEFAULT 'user',
             `cap` VARCHAR(100) NULL DEFAULT '',
-            `access` VARCHAR(200) NOT NULL DEFAULT 'dashboard'
+            `access` VARCHAR(500) NOT NULL DEFAULT 'dashboard'
         ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_login_attempts` (
