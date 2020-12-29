@@ -69,22 +69,3 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `spv` Kata sandi: `server`
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
-
-## TANGKAPAN LAYAR
-
-### Pemasangan
-
-| | |
-|:-------------------------:|:-------------------------:|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/install_1.png">  Install 1 |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/install_2.png"> Install 2|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/install_3.png">  Install 3 |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/install_4.png"> Install 4|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/install_5.png">  Install 5 |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x2_login.png"> Login Form|
-
-
-### Panel Administrasi
-
-| | |
-|:-------------------------:|:-------------------------:|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x1_homepage.png">  Homepage |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x3_dashboard.png"> Dashboard 2|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x4_settings.png">  Settings |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x5_modules.png"> Modules|
-|<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x6_pasien.png">  Pasien Baru |  <img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/ataaka/screenshoot/x7_create_sep.png"> Bridging SEP|
