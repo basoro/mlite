@@ -50,6 +50,29 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Tema Admin</label>
+                        <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
+                            <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
+                            <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
+                            <option value="cyborg"{if: $settings.theme_admin == 'cyborg'} selected{/if}>Cyborg</option>
+                            <option value="darkly"{if: $settings.theme_admin == 'darkly'} selected{/if}>Darkly</option>
+                            <option value="flatly"{if: $settings.theme_admin == 'flatly'} selected{/if}>Flatly</option>
+                            <option value="journal"{if: $settings.theme_admin == 'journal'} selected{/if}>Journal</option>
+                            <option value="lumen"{if: $settings.theme_admin == 'lumen'} selected{/if}>Lumen</option>
+                            <option value="paper"{if: $settings.theme_admin == 'paper'} selected{/if}>Paper</option>
+                            <option value="readable"{if: $settings.theme_admin == 'readable'} selected{/if}>Readable</option>
+                            <option value="sandstone"{if: $settings.theme_admin == 'sandstone'} selected{/if}>Sandstone</option>
+                            <option value="simplex"{if: $settings.theme_admin == 'simplex'} selected{/if}>Simplex</option>
+                            <option value="slate"{if: $settings.theme_admin == 'slate'} selected{/if}>Slate</option>
+                            <option value="spacelab"{if: $settings.theme_admin == 'spacelab'} selected{/if}>Spacelab</option>
+                            <option value="superhero"{if: $settings.theme_admin == 'superhero'} selected{/if}>Superhero</option>
+                            <option value="united"{if: $settings.theme_admin == 'united'} selected{/if}>United</option>
+                            <option value="yeti"{if: $settings.theme_admin == 'yeti'} selected{/if}>Yeti</option>
+                        </select>
+                        <br><br>
+                        <img id="theme_admin" src="{?=url()?}/assets/img/{$settings.theme_admin}.png" width="400">
+                    </div>
+                    <div class="form-group">
                         <label>Zona waktu</label>
                         <select name="timezone" class="form-control" data-use-search="true">
                             {loop: $settings.timezones}
@@ -237,4 +260,13 @@
   $("input[name=logo]").change(function() {
     reader.readAsDataURL(this.files[0]);
   });
+
+  var path='{?=url()?}/assets/img/';
+  var img_array=new Array('cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+
+  function change_theme(obj,id){
+   var i=obj.selectedIndex;
+   if (i<1){ return; }
+   document.getElementById(id).src=path+img_array[i];
+  }
 </script>

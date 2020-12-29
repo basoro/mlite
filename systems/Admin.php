@@ -28,6 +28,7 @@ class Admin extends Main
         $this->assign['path']          = url();
         $this->assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
         $this->assign['logo'] = $this->settings->get('settings.logo');
+        $this->assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $this->assign['version']       = $this->settings->get('settings.version');
         $this->assign['has_update']    = $this->module ? $this->module->settings->_checkUpdate() : false;
         $this->assign['update_access'] = ($access == 'all') || in_array('settings', explode(',', $access)) ? true : false;

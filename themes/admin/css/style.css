@@ -9,11 +9,7 @@ body {
     min-height: 100%;
     margin-bottom: 100px;
 }
-a {
-  color: #4C9A2A;
-}
 td a {
-  color: #4C9A2A;
   font-weight: bold;
 }
 a, .btn {
@@ -24,7 +20,7 @@ a, .btn {
         text-decoration: none;
     }
 input:focus {
-  border: 1px solid #4C9A2A;
+  border: 1px solid #222;
 }
 
 .input-group .form-control, .input-group .input-group-btn {
@@ -66,7 +62,6 @@ input:focus {
 
             #navbar-wrapper .navbar .navbar-header .navbar-brand .first {
                 font-weight: bold;
-                color: #4C9A2A;
             }
 
         #navbar-wrapper .navbar ul.navbar-nav {
@@ -76,7 +71,6 @@ input:focus {
                 float: left;
             }
                 #navbar-wrapper .navbar ul.navbar-nav li:not(.hello) a {
-                    color: #4C9A2A;
                 }
                     #navbar-wrapper .navbar ul.navbar-nav li:not(.hello) a:hover {
                         color: #656565;
@@ -177,7 +171,6 @@ h3.panel-title {
     width: 100%;
     position: absolute;
     padding: 12px 30px;
-    color: #222;
     box-sizing: border-box;
     margin: 0;
     top: 75px;
@@ -231,7 +224,6 @@ footer a, footer a:hover {
 
     #login .panel-heading {
         background-color: #222;
-        color: #4C9A2A;
         text-align: center;
         border: 0;
         margin-top: -1px;
@@ -296,7 +288,6 @@ footer a, footer a:hover {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: #4C9A2A;
         font-weight: bold;
     }
 .toggleR {
@@ -310,7 +301,7 @@ footer a, footer a:hover {
         width: 10px;
         height: 10px;
         margin: -5px 0 0 -5px;
-        background-color: #4C9A2A;
+        background-color: #222;
         border-radius: 50%;
     }
 .toggle.disabled,
@@ -369,7 +360,7 @@ footer a, footer a:hover {
     padding: 9px 12px !important;
 }
 .selectator_element.focused {
-    border: 1px solid #4C9A2A;
+    border: 1px solid #222;
     box-shadow: inset 0 1px 1px rgba(0,102,0,.075), 0 0 8px rgba(0, 51, 0, 0.6);
 }
 .selectator_element:after {
