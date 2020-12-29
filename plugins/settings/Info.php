@@ -45,6 +45,10 @@ return [
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'update_version', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'license', '')");
 
+        if (!is_dir(UPLOADS)) {
+            mkdir(UPLOADS, 0777);
+        }
+
         if (!is_dir(UPLOADS."/settings")) {
             mkdir(UPLOADS."/settings", 0777);
         }
