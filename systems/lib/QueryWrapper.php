@@ -63,7 +63,7 @@ class QueryWrapper
         }
         static::$options = array_merge([
             'primary_key'   => 'id',
-            'error_mode'    => \PDO::ERRMODE_EXCEPTION,
+            'error_mode'    => \PDO::ERRMODE_WARNING,
             'json_options'  => JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT,
             ], $options);
         static::$db = new \PDO($dsn, $user, $pass);
