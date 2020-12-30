@@ -3,6 +3,7 @@
 
     use Systems\AdminModule;
     use Plugins\Master\Src\Dokter;
+    use Plugins\Master\Src\Petugas;
     use Plugins\Master\Src\Bahasa;
     use Plugins\Master\Src\Cacat;
     use Plugins\Master\Src\Suku;
@@ -16,6 +17,7 @@
         public function init()
         {
             $this->dokter = new Dokter();
+            $this->petugas = new Petugas();
             $this->bahasa = new Bahasa();
             $this->cacat = new Cacat();
             $this->suku = new Suku();
@@ -57,12 +59,12 @@
                 'Departemen' => 'departemen',
                 'Emergency Index' => 'emergencyindex',
                 'Jabatan' => 'jabatan',
-                'Jenjang Jabatan' => 'jnjjabatan',
+                'Jenjang Jabatan' => 'jenjangjabatan',
                 'Kelompok Jabatan' => 'kelompokjabatan',
                 'Pendidikan' => 'pendidikan',
                 'Resiko Kerja' => 'resikokerja',
-                'Status Kerja' => 'sttskerja',
-                'Status WP' => 'sttswp',
+                'Status Kerja' => 'statuskerja',
+                'Status WP' => 'statuswajibpajak',
             ];
         }
 
@@ -87,6 +89,24 @@
             ['name' => 'Golongan Barang', 'url' => url([ADMIN, 'master', 'golonganbarang']), 'icon' => 'cubes', 'desc' => 'Master golongan barang'],
             ['name' => 'Industri Farmasi', 'url' => url([ADMIN, 'master', 'industrifarmasi']), 'icon' => 'cubes', 'desc' => 'Master industri farmasi'],
             ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'dokter']), 'icon' => 'cubes', 'desc' => 'Master dokter'],
+            ['name' => 'Kategori Barang', 'url' => url([ADMIN, 'master', 'kategoribarang']), 'icon' => 'cubes', 'desc' => 'Master kategori barang'],
+            ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
+            ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
+            ['name' => 'Kode Satuan', 'url' => url([ADMIN, 'master', 'kodesatuan']), 'icon' => 'cubes', 'desc' => 'Master kode satuan'],
+            ['name' => 'Master Aturan Pakai', 'url' => url([ADMIN, 'master', 'masteraturanpakai']), 'icon' => 'cubes', 'desc' => 'Master master aturan pakai'],
+            ['name' => 'Master Berkas Digital', 'url' => url([ADMIN, 'master', 'masterberkasdigital']), 'icon' => 'cubes', 'desc' => 'Master berkas digital'],
+            ['name' => 'Spesialis', 'url' => url([ADMIN, 'master', 'spesialis']), 'icon' => 'cubes', 'desc' => 'Master spesialis'],
+            ['name' => 'Bank', 'url' => url([ADMIN, 'master', 'bank']), 'icon' => 'cubes', 'desc' => 'Master bank'],
+            ['name' => 'Bidang', 'url' => url([ADMIN, 'master', 'bidang']), 'icon' => 'cubes', 'desc' => 'Master bidang'],
+            ['name' => 'Departemen', 'url' => url([ADMIN, 'master', 'departemen']), 'icon' => 'cubes', 'desc' => 'Master departemen'],
+            ['name' => 'Emergency Index', 'url' => url([ADMIN, 'master', 'emergencyindex']), 'icon' => 'cubes', 'desc' => 'Master emergency index'],
+            ['name' => 'Jabatan', 'url' => url([ADMIN, 'master', 'jabatan']), 'icon' => 'cubes', 'desc' => 'Master jabatan'],
+            ['name' => 'Jenjang Jabatan', 'url' => url([ADMIN, 'master', 'jenjangjabatan']), 'icon' => 'cubes', 'desc' => 'Master jenjang jabatan'],
+            ['name' => 'Kelompok Jabatan', 'url' => url([ADMIN, 'master', 'kelompokjabatan']), 'icon' => 'cubes', 'desc' => 'Master kelompok jabatan'],
+            ['name' => 'Pendidikan', 'url' => url([ADMIN, 'master', 'pendidikan']), 'icon' => 'cubes', 'desc' => 'Master pendidikan'],
+            ['name' => 'Resiko Kerja', 'url' => url([ADMIN, 'master', 'resikokerja']), 'icon' => 'cubes', 'desc' => 'Master resiko kerja'],
+            ['name' => 'Status Kerja', 'url' => url([ADMIN, 'master', 'statuskerja']), 'icon' => 'cubes', 'desc' => 'Master status kerja'],
+            ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswajibpajak']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
           ];
           return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
         }
@@ -136,6 +156,52 @@
             exit();
         }
         /* End Dokter Section */
+
+        /* Start Petugas Section */
+        public function getPetugas()
+        {
+          $this->_addHeaderFiles();
+          $this->core->addJS(url([ADMIN, 'master', 'petugasjs']), 'footer');
+          $return = $this->petugas->getIndex();
+          return $this->draw('petugas.html', [
+            'petugas' => $return
+          ]);
+
+        }
+
+        public function anyPetugasForm()
+        {
+            $return = $this->petugas->anyForm();
+            echo $this->draw('petugas.form.html', ['petugas' => $return]);
+            exit();
+        }
+
+        public function anyPetugasDisplay()
+        {
+            $return = $this->petugas->anyDisplay();
+            echo $this->draw('petugas.display.html', ['petugas' => $return]);
+            exit();
+        }
+
+        public function postPetugasSave()
+        {
+          $this->petugas->postSave();
+          exit();
+        }
+
+        public function postPetugasHapus()
+        {
+          $this->petugas->postHapus();
+          exit();
+        }
+
+        public function getPetugasJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/petugas.js');
+            exit();
+        }
+        /* End Petugas Section */
 
         /* Start Bahasa Section */
         public function getBahasa()

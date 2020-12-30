@@ -4,48 +4,48 @@
       <div class="panel-body">
         <div class="form-horizontal">
           <div class="form-group">
-            <label for="" class="col-sm-3 control-label">Kode Dokter</label>
+            <label for="" class="col-sm-3 control-label">Kode Petugas</label>
             <div class="col-sm-9">
-              <select class="form-control" name="kd_dokter">
-                {loop: $dokter.pegawai}
-                  <option value="kd_dokter"{if: $dokter.form.kd_dokter == $value.nik} selected{/if}>{$value.nama}</option>
+              <select class="form-control" name="nip">
+                {loop: $petugas.pegawai}
+                  <option value="nip"{if: $petugas.form.nip == $value.nik} selected{/if}>{$value.nama}</option>
                 {/loop}
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label for="" class="col-sm-3 control-label">Nama Dokter</label>
+            <label for="" class="col-sm-3 control-label">Nama Petugas</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_dokter" class="form-control" value="{$dokter.form.nm_dokter}">
+              <input type="text" name="nama" class="form-control" value="{$petugas.form.nama}">
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Jenis Kelamin</label>
             <div class="col-sm-9">
               <select class="form-control" name="jk">
-                <option value="L"{if: $dokter.form.jk == 'L'} selected{/if}>Laki-Laki</option>
-                <option value="P"{if: $dokter.form.jk == 'P'} selected{/if}>Perempuan</option>
+                <option value="L"{if: $petugas.form.jk == 'L'} selected{/if}>Laki-Laki</option>
+                <option value="P"{if: $petugas.form.jk == 'P'} selected{/if}>Perempuan</option>
               </select>
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tempat Lahir</label>
             <div class="col-sm-9">
-              <input type="text" name="tmp_lahir" class="form-control" value="{$dokter.form.tmp_lahir}">
+              <input type="text" name="tmp_lahir" class="form-control" value="{$petugas.form.tmp_lahir}">
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tanggal Lahir</label>
             <div class="col-sm-9">
-              <input type="text" name="tgl_lahir" class="form-control tanggal" value="{$dokter.form.tgl_lahir}">
+              <input type="text" name="tgl_lahir" class="form-control tanggal" value="{$petugas.form.tgl_lahir}">
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Gol. Darah</label>
             <div class="col-sm-9">
-              <select class="form-control" name="gol_drh">
-                {loop: $dokter.gol_drh}
-                <option value="{$value}"{if: $dokter.form.gol_drh == $value} selected{/if}>{$value}</option>
+              <select class="form-control" name="gol_darah">
+                {loop: $petugas.gol_darah}
+                <option value="{$value}"{if: $petugas.form.gol_darah == $value} selected{/if}>{$value}</option>
                 {/loop}
               </select>
             </div>
@@ -54,8 +54,8 @@
             <label for="" class="col-sm-3 control-label">Agama</label>
             <div class="col-sm-9">
               <select class="form-control" name="agama">
-                {loop: $dokter.agama}
-                <option value="{$value}"{if: $dokter.form.agama == $value} selected{/if}>{$value}</option>
+                {loop: $petugas.agama}
+                <option value="{$value}"{if: $petugas.form.agama == $value} selected{/if}>{$value}</option>
                 {/loop}
               </select>
             </div>
@@ -63,53 +63,41 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Almt. Tinggal</label>
             <div class="col-sm-9">
-              <textarea name="almt_tgl" class="form-control" col="4">{$dokter.form.almt_tgl}</textarea>
+              <textarea name="alamat" class="form-control" col="4">{$petugas.form.alamat}</textarea>
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">No. Telp</label>
             <div class="col-sm-9">
-              <input type="text" name="no_telp" class="form-control" value="{$dokter.form.no_telp}">
+              <input type="text" name="no_telp" class="form-control" value="{$petugas.form.no_telp}">
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Stts. Nikah</label>
             <div class="col-sm-9">
               <select class="form-control" name="stts_nikah">
-                {loop: $dokter.stts_nikah}
-                <option value="{$value}"{if: $dokter.form.stts_nikah == $value} selected{/if}>{$value}</option>
+                {loop: $petugas.stts_nikah}
+                <option value="{$value}"{if: $petugas.form.stts_nikah == $value} selected{/if}>{$value}</option>
                 {/loop}
               </select>
             </div>
           </div>
           <div class="form-group">
-            <label for="" class="col-sm-3 control-label">Spesialis</label>
+            <label for="" class="col-sm-3 control-label">Jabatan</label>
             <div class="col-sm-9">
-              <select class="form-control" name="kd_sps">
-                {loop: $dokter.spesialis}
-                  <option value="{$value.kd_sps}"{if: $dokter.form.kd_sps == $value.kd_sps} selected{/if}>{$value.nm_sps}</option>
+              <select class="form-control" name="kd_jbtn">
+                {loop: $petugas.jabatan}
+                  <option value="{$value.kd_jbtn}"{if: $petugas.form.kd_jbtn == $value.kd_jbtn} selected{/if}>{$value.nm_jbtn}</option>
                 {/loop}
               </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="" class="col-sm-3 control-label">Alumni</label>
-            <div class="col-sm-9">
-              <input type="text" name="alumni" class="form-control" value="{$dokter.form.alumni}">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="" class="col-sm-3 control-label">No. SIP</label>
-            <div class="col-sm-9">
-              <input type="text" name="no_ijn_praktek" class="form-control" value="{$dokter.form.no_ijn_praktek}">
             </div>
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Status</label>
             <div class="col-sm-9">
               <select class="form-control" name="status">
-                <option value="1"{if: $dokter.form.status == '1'} selected{/if}>Aktif</option>
-                <option value="0"{if: $dokter.form.status == '0'} selected{/if}>Tidak Aktif</option>
+                <option value="1"{if: $petugas.form.status == '1'} selected{/if}>Aktif</option>
+                <option value="0"{if: $petugas.form.status == '0'} selected{/if}>Tidak Aktif</option>
               </select>
             </div>
           </div>
