@@ -31,16 +31,11 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
-        $status = '1';
-        if(isset($_GET['status']))
-          $status = $_GET['status'];
-
         // pagination
         $totalRecords = $this->db('databarang')
             ->select('kode_brng')
-            ->where('status', $status)
             ->like('nama_brng', '%'.$phrase.'%')
-            //->orLike('kode_brng', '%'.$phrase.'%')
+            ->orLike('kode_brng', '%'.$phrase.'%')
             ->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'farmasi', 'manage', '%d']));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
@@ -49,9 +44,8 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
         $rows = $this->db('databarang')
-            ->where('status', $status)
             ->like('nama_brng', '%'.$phrase.'%')
-            //->orLike('kode_brng', '%'.$phrase.'%')
+            ->orLike('kode_brng', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();

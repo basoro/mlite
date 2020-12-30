@@ -61,11 +61,11 @@
     										</a>
                         {if: $value.status == '1'}
                           <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Deleted</span>
       										</a>
                         {else}
                           <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Restrore</span>
+      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Restore</span>
       										</a>
                         {/if}
     									</td>
