@@ -5,8 +5,7 @@
         <tr>
           <th>Kode Barang</th>
           <th>Nama Barang</th>
-          <th>Satuan Besar</th>
-          <th>Satuan Kecil</th>
+          <th>Satuan</th>
           <th>Letak Barang</th>
           <th>Harga Dasar</th>
           <th>Harga Beli</th>
@@ -37,8 +36,7 @@
         <tr class="edit" data-kode_brng="{$value.kode_brng}">
           <td>{$value.kode_brng}</td>
           <td>{$value.nama_brng}</td>
-          <td>{$value.nama_satuan_besar}</td>
-          <td>{$value.nama_satuan}</td>
+          <td>{$value.kode_sat}</td>
           <td>{$value.letak_barang}</td>
           <td>{$value.dasar}</td>
           <td>{$value.h_beli}</td>
@@ -53,14 +51,14 @@
           <td>{$value.jualbebas}</td>
           <td>{$value.karyawan}</td>
           <td>{$value.stokminimal}</td>
-          <td>{$value.nama_jenis}</td>
+          <td>{$value.kdjns}</td>
           <td>{$value.isi}</td>
           <td>{$value.kapasitas}</td>
           <td>{$value.expire}</td>
           <td>{if: $value.status == '1'}Aktif{else}Tidak Aktif{/if}</td>
-          <td>{$value.nama_industri}</td>
-          <td>{$value.nama_kategori}</td>
-          <td>{$value.nama_golongan}</td>
+          <td>{$value.kode_industri}</td>
+          <td>{$value.kode_kategori}</td>
+          <td>{$value.kode_golongan}</td>
         </tr>
         {/loop}
         {else}

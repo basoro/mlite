@@ -38,12 +38,12 @@
             						{if: !empty($databarang.list)}
     								{loop: $databarang.list}
     								<tr>
-    									<td><a href="{$value.editURL}">{$value.kode_brng}</a></td>
-                      <td>{$value.nama_brng}</td>
-                      <td class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
-                      <td class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
-                      <td>{$value.expire}</td>
-                      <td>
+    									<td style="vertical-align:top"><a href="{$value.editURL}">{$value.kode_brng}</a></td>
+                      <td style="vertical-align:top">{$value.nama_brng}</td>
+                      <td style="vertical-align:top" class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
+                      <td style="vertical-align:top" class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
+                      <td style="vertical-align:top">{$value.expire}</td>
+                      <td style="vertical-align:top">
                         {loop: $value.gudangbarang as $data}
                         <ul>
                           <li>
@@ -52,7 +52,7 @@
                         </ul>
                         {/loop}
                       </td>
-    									<td class="text-right">
+    									<td style="vertical-align:top" class="text-right">
                         <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Stok</span>
     										</a>
