@@ -18,21 +18,30 @@ class DataBarang
       $totalRecords = $this->db('databarang')
         ->select('kode_brng')
         ->toArray();
-      $offset         = 10;
+      $offset         = 20;
       $return['halaman']    = 1;
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('databarang')
-        ->join('jenis', 'jenis.kdjns=databarang.kdjns')
-        ->join('kodesatuan', 'kodesatuan.kode_sat=databarang.kode_sat')
-        ->join('industrifarmasi', 'industrifarmasi.kode_industri=databarang.kode_industri')
-        ->join('kategori_barang', 'kategori_barang.kode=databarang.kode_kategori')
-        ->join('golongan_barang', 'golongan_barang.kode=databarang.kode_golongan')
+      $rows = $this->db('databarang')
         ->desc('kode_brng')
-        ->limit(10)
+        ->limit(20)
         ->toArray();
-
+      foreach ($rows as $row) {
+        $jenis = $this->db('jenis')->where('kdjns', $row['kdjns'])->oneArray();
+        $kodesatuan = $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray();
+        $kodesatuan_besar = $this->db('kodesatuan')->where('kode_sat', $row['kode_satbesar'])->oneArray();
+        $industrifarmasi = $this->db('industrifarmasi')->where('kode_industri', $row['kode_industri'])->oneArray();
+        $kategori_barang = $this->db('kategori_barang')->where('kode', $row['kode_kategori'])->oneArray();
+        $golongan_barang = $this->db('golongan_barang')->where('kode', $row['kode_golongan'])->oneArray();
+        $row['nama_jenis'] = $jenis['nama'];
+        $row['nama_satuan'] = $kodesatuan['satuan'];
+        $row['nama_satuan_besar'] = $kodesatuan_besar['satuan'];
+        $row['nama_industri'] = $industrifarmasi['nama_industri'];
+        $row['nama_kategori'] = $kategori_barang['nama'];
+        $row['nama_golongan'] = $golongan_barang['nama'];
+        $return['list'][] = $row;
+      }
       return $return;
 
     }
@@ -84,55 +93,89 @@ class DataBarang
     public function anyDisplay()
     {
 
-        $perpage = '10';
+        $perpage = '20';
         $totalRecords = $this->db('databarang')
           ->select('kode_brng')
           ->toArray();
-        $offset         = 10;
+        $offset         = 20;
         $return['halaman']    = 1;
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('databarang')
-          ->join('jenis', 'jenis.kdjns=databarang.kdjns')
-          ->join('kodesatuan', 'kodesatuan.kode_sat=databarang.kode_sat')
-          ->join('industrifarmasi', 'industrifarmasi.kode_industri=databarang.kode_industri')
-          ->join('kategori_barang', 'kategori_barang.kode=databarang.kode_kategori')
-          ->join('golongan_barang', 'golongan_barang.kode=databarang.kode_golongan')
-          ->desc('kode_brng')
-          ->offset(0)
-          ->limit($perpage)
-          ->toArray();
-
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('databarang')
-            ->join('jenis', 'jenis.kdjns=databarang.kdjns')
-            ->join('kodesatuan', 'kodesatuan.kode_sat=databarang.kode_sat')
-            ->join('industrifarmasi', 'industrifarmasi.kode_industri=databarang.kode_industri')
-            ->join('kategori_barang', 'kategori_barang.kode=databarang.kode_kategori')
-            ->join('golongan_barang', 'golongan_barang.kode=databarang.kode_golongan')
+          $rows = $this->db('databarang')
             ->like('kode_brng', '%'.$_POST['cari'].'%')
-            ->orLike('nama_bahasa', '%'.$_POST['cari'].'%')
+            ->orLike('nama_brng', '%'.$_POST['cari'].'%')
             ->desc('kode_brng')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
+          foreach ($rows as $row) {
+            $jenis = $this->db('jenis')->where('kdjns', $row['kdjns'])->oneArray();
+            $kodesatuan = $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray();
+            $kodesatuan_besar = $this->db('kodesatuan')->where('kode_sat', $row['kode_satbesar'])->oneArray();
+            $industrifarmasi = $this->db('industrifarmasi')->where('kode_industri', $row['kode_industri'])->oneArray();
+            $kategori_barang = $this->db('kategori_barang')->where('kode', $row['kode_kategori'])->oneArray();
+            $golongan_barang = $this->db('golongan_barang')->where('kode', $row['kode_golongan'])->oneArray();
+            $row['nama_jenis'] = $jenis['nama'];
+            $row['nama_satuan'] = $kodesatuan['satuan'];
+            $row['nama_satuan_besar'] = $kodesatuan_besar['satuan'];
+            $row['nama_industri'] = $industrifarmasi['nama_industri'];
+            $row['nama_kategori'] = $kategori_barang['nama'];
+            $row['nama_golongan'] = $golongan_barang['nama'];
+            $return['list'][] = $row;
+          }
+
           $jumlah_data = count($return['list']);
           $jml_halaman = ceil($jumlah_data / $offset);
-        }
-        if(isset($_POST['halaman'])){
+        } else if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('databarang')
-            ->join('jenis', 'jenis.kdjns=databarang.kdjns')
-            ->join('kodesatuan', 'kodesatuan.kode_sat=databarang.kode_sat')
-            ->join('industrifarmasi', 'industrifarmasi.kode_industri=databarang.kode_industri')
-            ->join('kategori_barang', 'kategoribarang.kode=databarang.kode_kategori')
-            ->join('golongan_barang', 'golonganbarang.kode=databarang.kode_golongan')
+          $rows = $this->db('databarang')
             ->desc('kode_brng')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
+          foreach ($rows as $row) {
+            $jenis = $this->db('jenis')->where('kdjns', $row['kdjns'])->oneArray();
+            $kodesatuan = $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray();
+            $kodesatuan_besar = $this->db('kodesatuan')->where('kode_sat', $row['kode_satbesar'])->oneArray();
+            $industrifarmasi = $this->db('industrifarmasi')->where('kode_industri', $row['kode_industri'])->oneArray();
+            $kategori_barang = $this->db('kategori_barang')->where('kode', $row['kode_kategori'])->oneArray();
+            $golongan_barang = $this->db('golongan_barang')->where('kode', $row['kode_golongan'])->oneArray();
+            $row['nama_jenis'] = $jenis['nama'];
+            $row['nama_satuan'] = $kodesatuan['satuan'];
+            $row['nama_satuan_besar'] = $kodesatuan_besar['satuan'];
+            $row['nama_industri'] = $industrifarmasi['nama_industri'];
+            $row['nama_kategori'] = $kategori_barang['nama'];
+            $row['nama_golongan'] = $golongan_barang['nama'];
+            $return['list'][] = $row;
+          }
+
           $return['halaman'] = $_POST['halaman'];
+        } else {
+
+          $rows = $this->db('databarang')
+            ->desc('kode_brng')
+            ->offset(0)
+            ->limit($perpage)
+            ->toArray();
+
+          foreach ($rows as $row) {
+            $jenis = $this->db('jenis')->where('kdjns', $row['kdjns'])->oneArray();
+            $kodesatuan = $this->db('kodesatuan')->where('kode_sat', $row['kode_sat'])->oneArray();
+            $kodesatuan_besar = $this->db('kodesatuan')->where('kode_sat', $row['kode_satbesar'])->oneArray();
+            $industrifarmasi = $this->db('industrifarmasi')->where('kode_industri', $row['kode_industri'])->oneArray();
+            $kategori_barang = $this->db('kategori_barang')->where('kode', $row['kode_kategori'])->oneArray();
+            $golongan_barang = $this->db('golongan_barang')->where('kode', $row['kode_golongan'])->oneArray();
+            $row['nama_jenis'] = $jenis['nama'];
+            $row['nama_satuan'] = $kodesatuan['satuan'];
+            $row['nama_satuan_besar'] = $kodesatuan_besar['satuan'];
+            $row['nama_industri'] = $industrifarmasi['nama_industri'];
+            $row['nama_kategori'] = $kategori_barang['nama'];
+            $row['nama_golongan'] = $golongan_barang['nama'];
+            $return['list'][] = $row;
+          }
+
         }
 
         return $return;
