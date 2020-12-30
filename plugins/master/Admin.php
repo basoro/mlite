@@ -4,6 +4,10 @@
     use Systems\AdminModule;
     use Plugins\Master\Src\Dokter;
     use Plugins\Master\Src\Petugas;
+    use Plugins\Master\Src\Poliklinik;
+    use Plugins\Master\Src\Bangsal;
+    use Plugins\Master\Src\Kamar;
+    use Plugins\Master\Src\DataBarang;
     use Plugins\Master\Src\Bahasa;
     use Plugins\Master\Src\Cacat;
     use Plugins\Master\Src\Suku;
@@ -18,6 +22,10 @@
         {
             $this->dokter = new Dokter();
             $this->petugas = new Petugas();
+            $this->poliklinik = new Poliklinik();
+            $this->bangsal = new Bangsal();
+            $this->kamar = new Kamar();
+            $this->databarang = new DataBarang();
             $this->bahasa = new Bahasa();
             $this->cacat = new Cacat();
             $this->suku = new Suku();
@@ -202,6 +210,189 @@
             exit();
         }
         /* End Petugas Section */
+
+        /* Start Poliklinik Section */
+        public function getPoliklinik()
+        {
+          $this->_addHeaderFiles();
+          $this->core->addJS(url([ADMIN, 'master', 'poliklinikjs']), 'footer');
+          $return = $this->poliklinik->getIndex();
+          return $this->draw('poliklinik.html', [
+            'poliklinik' => $return
+          ]);
+
+        }
+
+        public function anyPoliklinikForm()
+        {
+            $return = $this->poliklinik->anyForm();
+            echo $this->draw('poliklinik.form.html', ['poliklinik' => $return]);
+            exit();
+        }
+
+        public function anyPoliklinikDisplay()
+        {
+            $return = $this->poliklinik->anyDisplay();
+            echo $this->draw('poliklinik.display.html', ['poliklinik' => $return]);
+            exit();
+        }
+
+        public function postPoliklinikSave()
+        {
+          $this->poliklinik->postSave();
+          exit();
+        }
+
+        public function postPoliklinikHapus()
+        {
+          $this->poliklinik->postHapus();
+          exit();
+        }
+
+        public function getPoliklinikJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/poliklinik.js');
+            exit();
+        }
+        /* End Poliklinik Section */
+
+        /* Start Bangsal Section */
+        public function getBangsal()
+        {
+          $this->_addHeaderFiles();
+          $this->core->addJS(url([ADMIN, 'master', 'bangsaljs']), 'footer');
+          $return = $this->bangsal->getIndex();
+          return $this->draw('bangsal.html', [
+            'bangsal' => $return
+          ]);
+
+        }
+
+        public function anyBangsalForm()
+        {
+            $return = $this->bangsal->anyForm();
+            echo $this->draw('bangsal.form.html', ['bangsal' => $return]);
+            exit();
+        }
+
+        public function anyBangsalDisplay()
+        {
+            $return = $this->bangsal->anyDisplay();
+            echo $this->draw('bangsal.display.html', ['bangsal' => $return]);
+            exit();
+        }
+
+        public function postBangsalSave()
+        {
+          $this->bangsal->postSave();
+          exit();
+        }
+
+        public function postBangsalHapus()
+        {
+          $this->bangsal->postHapus();
+          exit();
+        }
+
+        public function getBangsalJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/bangsal.js');
+            exit();
+        }
+        /* End Bangsal Section */
+
+        /* Start Kamar Section */
+        public function getKamar()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kamarjs']), 'footer');
+          $return = $this->kamar->getIndex();
+          return $this->draw('kamar.html', [
+            'kamar' => $return
+          ]);
+
+        }
+
+        public function anyKamarForm()
+        {
+            $return = $this->kamar->anyForm();
+            echo $this->draw('kamar.form.html', ['kamar' => $return]);
+            exit();
+        }
+
+        public function anyKamarDisplay()
+        {
+            $return = $this->kamar->anyDisplay();
+            echo $this->draw('kamar.display.html', ['kamar' => $return]);
+            exit();
+        }
+
+        public function postKamarSave()
+        {
+          $this->kamar->postSave();
+          exit();
+        }
+
+        public function postKamarHapus()
+        {
+          $this->kamar->postHapus();
+          exit();
+        }
+
+        public function getKamarJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kamar.js');
+            exit();
+        }
+        /* End Kamar Section */
+
+        /* Start DataBarang Section */
+        public function getDataBarang()
+        {
+          $this->_addHeaderFiles();
+          $this->core->addJS(url([ADMIN, 'master', 'databarangjs']), 'footer');
+          $return = $this->databarang->getIndex();
+          return $this->draw('databarang.html', [
+            'databarang' => $return
+          ]);
+
+        }
+
+        public function anyDataBarangForm()
+        {
+            $return = $this->databarang->anyForm();
+            echo $this->draw('databarang.form.html', ['databarang' => $return]);
+            exit();
+        }
+
+        public function anyDataBarangDisplay()
+        {
+            $return = $this->databarang->anyDisplay();
+            echo $this->draw('databarang.display.html', ['databarang' => $return]);
+            exit();
+        }
+
+        public function postDataBarangSave()
+        {
+          $this->databarang->postSave();
+          exit();
+        }
+
+        public function postDataBarangHapus()
+        {
+          $this->databarang->postHapus();
+          exit();
+        }
+
+        public function getDataBarangJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/databarang.js');
+            exit();
+        }
+        /* End DataBarang Section */
 
         /* Start Bahasa Section */
         public function getBahasa()

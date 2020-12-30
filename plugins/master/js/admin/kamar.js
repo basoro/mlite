@@ -3,7 +3,7 @@ $("#notif").hide();
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  $("#form").show().load(baseURL + '/master/bahasaform?t=' + mlite.token);
+  $("#form").show().load(baseURL + '/master/kamarform?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
 });
@@ -24,21 +24,29 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var id = $('input:text[name=id]').val();
-  var nama_bahasa = $('input:text[name=nama_bahasa]').val();
+  var kd_kamar = $('input:text[name=kd_kamar]').val();
+  var kd_bangsal = $('select[name=kd_bangsal]').val();
+  var trf_kamar = $('input:text[name=trf_kamar]').val();
+  var status = $('select[name=status]').val();
+  var kelas = $('select[name=kelas]').val();
+  var statusdata = $('select[name=statusdata]').val();
 
-  var url = baseURL + '/master/bahasasave?t=' + mlite.token;
+  var url = baseURL + '/master/kamarsave?t=' + mlite.token;
 
   $.post(url,{
-    id: id,
-    nama_bahasa: nama_bahasa
+    kd_kamar: kd_kamar,
+    kd_bangsal: kd_bangsal,
+    trf_kamar: trf_kamar,
+    status: status,
+    kelas: kelas,
+    statusdata: statusdata
   } ,function(data) {
-      $("#display").show().load(baseURL + '/master/bahasadisplay?t=' + mlite.token);
+      $("#display").show().load(baseURL + '/master/kamardisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data bahasa telah disimpan!"+
+      "Data kamar telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -48,10 +56,10 @@ $("#form").on("click", "#simpan", function(event){
 $("#display").on("click", ".edit", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/bahasaform?t=' + mlite.token;
-  var id  = $(this).attr("data-id");
+  var url    = baseURL + '/master/kamarform?t=' + mlite.token;
+  var kd_kamar  = $(this).attr("data-kd_kamar");
 
-  $.post(url, {id: id} ,function(data) {
+  $.post(url, {kd_kamar: kd_kamar} ,function(data) {
     // tampilkan data
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
@@ -63,8 +71,8 @@ $("#display").on("click", ".edit", function(event){
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/master/bahasahapus?t=' + mlite.token;
-  var id = $('input:text[name=id]').val();
+  var url = baseURL + '/master/kamarhapus?t=' + mlite.token;
+  var kd_kamar = $('input:text[name=kd_kamar]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -72,15 +80,15 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        id: id
+        kd_kamar: kd_kamar
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
         $("#tutupform").val("Buka Form");
         $("#tutupform").attr("id", "bukaform");
-        $("#display").load(baseURL + '/master/bahasadisplay?t=' + mlite.token);
+        $("#display").load(baseURL + '/master/kamardisplay?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data bahasa telah dihapus!"+
+        "Data kamar telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -91,7 +99,7 @@ $("#form").on("click","#hapus", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=cari]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/master/bahasadisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/kamardisplay?t=' + mlite.token;
   var cari = $('input:text[name=cari]').val();
 
   if(cari!="") {
@@ -100,7 +108,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/bahasadisplay?t=' + batflat.token);
+      $("#display").load(baseURL + '/master/kamardisplay?t=' + batflat.token);
   }
 
 });
@@ -110,7 +118,7 @@ $('input:text[name=cari]').on('input',function(e){
 $("#display").on("click", ".halaman",function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/bahasadisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/kamardisplay?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
 
   $.post(url, {halaman: kd_hal} ,function(data) {
@@ -122,6 +130,10 @@ $("#display").on("click", ".halaman",function(event){
 // end halaman
 
 function bersih(){
-  $('input:text[name=id]').val("").removeAttr('disabled');
-  $('input:text[name=nama_bahasa]').val("");
+  $('input:text[name=kd_kamar]').val("").removeAttr('disabled');
+  $('select[name=kd_bangsal]').val("");
+  $('input:text[name=trf_kamar]').val("");
+  $('select[name=status]').val("");
+  $('select[name=kelas]').val("");
+  $('select[name=statusdata]').val("");
 }
