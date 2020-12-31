@@ -1,0 +1,123 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Stok Opname</h3>
+            </div>
+            <div class="panel-body">
+                <form method="post" id="update_form">
+                    <div align="left">
+                        <button type="submit" name="multiple_update" id="multiple_update" class="btn btn-primary mb-4">
+                            <i class="fa fa-save"></i>  Update
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped dataTables" width="100%">
+                            <thead>
+                                <th width="5%"></th>
+                                <th width="10%">Stok</th>
+                                <th width="10%">Kode Barang</th>
+                                <th width="35%">Nama Barang</th>
+                                <th width="5%">Kode Bangsal</th>
+                                <th width="20%">Nama Bangsal</th>
+                                <th width="10%">No. Batch</th>
+                                <th width="10%">No. Faktur</th>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+$(document).ready(function(){
+    fetch_data();
+    function fetch_data(){
+        $.ajax({
+            url:"{?=url([ADMIN,'farmasi','opnameall'])?}",
+            method:"POST",
+            dataType:"json",
+            success:function(data)
+            {
+                var html = '';
+                for(var count = 0; count < data.length; count++)
+                {
+                    html += '<tr>';
+                    html += '<td><input type="checkbox" id="'+data[count].kode_brng+'" data-kode_brng="'+data[count].kode_brng+'" data-nama_brng="'+data[count].nama_brng+'" data-kd_bangsal="'+data[count].kd_bangsal+'" data-nm_bangsal="'+data[count].nm_bangsal+'" data-stok="'+data[count].stok+'" data-no_batch="'+data[count].no_batch+'" data-no_faktur="'+data[count].no_faktur+'" class="check_box"  /></td>';
+                    html += '<td>'+data[count].stok+'</td>';
+                    html += '<td>'+data[count].kode_brng+'</td>';
+                    html += '<td>'+data[count].nama_brng+'</td>';
+                    html += '<td>'+data[count].kd_bangsal+'</td>';
+                    html += '<td>'+data[count].nm_bangsal+'</td>';
+                    html += '<td>'+data[count].no_batch+'</td>';
+                    html += '<td>'+data[count].no_faktur+'</td></tr>';
+                }
+                $('tbody').html(html);
+                $('.dataTables').DataTable({
+                  "order": [[ 2, "desc" ]],
+                  "pageLength": 20,
+                  "pagingType": "full",
+                  "language": {
+                    "paginate": {
+                      "first": "&laquo;",
+                      "last": "&raquo;",
+                      "previous": "‹",
+                      "next":     "›"
+                    },
+                    "search": "",
+                    "searchPlaceholder": "Search..."
+                  },
+                  "lengthChange": false,
+                  "scrollX": true,
+                  dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+                });
+                var t = $(".dataTables").DataTable().rows().count();
+                $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+            }
+        });
+    }
+
+    $('#update_form').on('click', '.check_box', function(){
+        var html = '';
+        if(this.checked)
+        {
+            html = '<td><input type="checkbox" id="'+$(this).attr('kode_brng')+'" data-kode_brng="'+$(this).data('kode_brng')+'" data-nama_brng="'+$(this).data('nama_brng')+'" data-kd_bangsal="'+$(this).data('kd_bangsal')+'" data-nm_bangsal="'+$(this).data('nm_bangsal')+'" data-stok="'+$(this).data('stok')+'" data-no_batch="'+$(this).data('no_batch')+'" data-no_faktur="'+$(this).data('no_faktur')+'" class="check_box" checked /></td>';
+            html += '<td><input type="text" name="stok[]" class="form-control" value="'+$(this).data("stok")+'" /></td>';
+            html += '<td><input type="text" name="kode_brng[]" class="form-control" value="'+$(this).data("kode_brng")+'" readonly /></td>';
+            html += '<td><input type="text" name="nama_brng[]" class="form-control" value="'+$(this).data("nama_brng")+'" readonly /></td>';
+            html += '<td><input type="text" name="kd_bangsal[]" class="form-control" value="'+$(this).data("kd_bangsal")+'" readonly /></td>';
+            html += '<td><input type="text" name="nm_bangsal[]" class="form-control" value="'+$(this).data("nm_bangsal")+'" readonly /></td>';
+            html += '<td><input type="text" name="no_batch[]" class="form-control" value="'+$(this).data("no_batch")+'" disabled /></td>';
+            html += '<td><input type="text" name="no_faktur[]" class="form-control" value="'+$(this).data("no_faktur")+'" disabled /></td>';
+        } else {
+            html = '<td><input type="checkbox" id="'+$(this).attr('kode_brng')+'" data-kode_brng="'+$(this).data('kode_brng')+'" data-nama_brng="'+$(this).data('nama_brng')+'" data-kd_bangsal="'+$(this).data('kd_bangsal')+'" data-nm_bangsal="'+$(this).data('nm_bangsal')+'" data-stok="'+$(this).data('stok')+'" data-no_batch="'+$(this).data('no_batch')+'" data-no_faktur="'+$(this).data('no_faktur')+'" class="check_box" /></td>';
+            html += '<td>'+$(this).data('stok')+'</td>';
+            html += '<td>'+$(this).data('kode_brng')+'</td>';
+            html += '<td>'+$(this).data('nama_brng')+'</td>';
+            html += '<td>'+$(this).data('kd_bangsal')+'</td>';
+            html += '<td>'+$(this).data('nm_bangsal')+'</td>';
+            html += '<td>'+$(this).data('no_batch')+'</td>';
+            html += '<td>'+$(this).data('no_faktur')+'</td>';
+        }
+        $(this).closest('tr').html(html);
+    });
+
+    $('#update_form').on('submit', function(event){
+        event.preventDefault();
+        if($('.check_box:checked').length > 0){
+            $.ajax({
+                url:"{?=url([ADMIN,'farmasi','opnameupdate'])?}",
+                method:"POST",
+                data:$(this).serialize(),
+                success:function(data){
+                    alert('Data stok opname berhasil diperbarui');
+                    $('.dataTables').DataTable().clear().destroy();
+                    fetch_data();
+                }
+            })
+        }
+    });
+});
+</script>

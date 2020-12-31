@@ -225,7 +225,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                   <div class="row">
                     <div class="form-group">
-                      <input type="text" placeholder="Tanggal Berobat" name="tanggal" class="datepicker">
+                      <input type="text" placeholder="Tanggal Berobat" name="tanggal" class="tanggal">
                     </div>
                   </div>
                 </div>
@@ -318,13 +318,16 @@
 <script src="{?=url(MODULES.'/website/js/custom.js')?}"></script>
 <script type="text/javascript">
 $( function() {
-  $( ".datepicker" ).datepicker({
-    dateFormat: "yy-mm-dd",
-    changeMonth: true,
-    changeYear: true,
-    yearRange: "-100:+0",
-    maxDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+10),
-    minDate: new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()+1),
+  $('.tanggal').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'id',
+    enabledDates: [
+      moment(),
+      moment().add(1,'days'),
+      moment().add(2,'days'),
+      moment().add(3,'days'),
+      moment().add(4,'days'),
+    ]
   });
 } );
 </script>

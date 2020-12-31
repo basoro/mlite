@@ -6,13 +6,10 @@ reader.addEventListener("load", function() {
 $("input[name=photo]").change(function() {
   reader.readAsDataURL(this.files[0]);
 });
-// Datepicker
 $( function() {
-  $( ".datepicker" ).datepicker({
-    dateFormat: "yy-mm-dd",
-    changeMonth: true,
-    changeYear: true,
-    yearRange: "-100:+0",
+  $('.tanggal').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'id'
   });
 } );
 $(document).ready(function(){

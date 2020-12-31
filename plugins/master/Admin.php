@@ -636,11 +636,6 @@
         private function _addHeaderFiles()
         {
             // CSS
-            $this->core->addCSS(url('assets/css/jquery-ui.css'));
-
-            // JS
-            $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
-
             $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
             $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
             $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));

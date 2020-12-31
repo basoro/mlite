@@ -3,26 +3,18 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h3 class="panel-title">{$databarang.title}</h3>
+                <ul class="nav nav-tabs">
+                    <li class="{if: $tab == '1'}active{/if}">
+                        <a href="{?=url(ADMIN.'/farmasi/manage')?}" role="tab">Aktif</a>
+                    </li>
+                    <li class="{if: $tab == '0'}active{/if}">
+                        <a href="{?=url(ADMIN.'/farmasi/manage/0')?}" role="tab">Tidak Aktif</a>
+                    </li>
+				        </ul>
             </div>
             <div class="panel-body">
-              <div class="row clearfix">
-                <div class="col col-md-6">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($databarang.totalRecords)?}</h3>
-                </div>
-                <div class="col col-md-6">
-                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                      <div class="input-group">
-                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
-                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                          <span class="input-group-btn">
-                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                      </div>
-                  </form>
-                </div>
-              </div>
     					<div class="table-responsive no-margin">
-    						<table class="table table-striped no-margin">
+    						<table class="table table-striped no-margin dataTables" width="100%">
     							<thead>
     								<tr>
                       <th>Kode Barang</th>
@@ -61,23 +53,22 @@
     										</a>
                         {if: $value.status == '1'}
                           <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Deleted</span>
+      											<i class="fa fa-close"></i> <span class="hidden-xs">Delete</span>
       										</a>
                         {else}
                           <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Restore</span>
+      											<i class="fa fa-reply"></i> <span class="hidden-xs">Restore</span>
       										</a>
                         {/if}
     									</td>
     								</tr>
     								{/loop}
     								{else}
-    								<tr><td colspan="6" class="text-center">Databarang tidak tersedia</td></tr>
+    								<tr><td colspan="7" class="text-center">Databarang tidak tersedia</td></tr>
     								{/if}
     							</tbody>
     						</table>
     					</div>
-					{$databarang.pagination}
             </div>
         </div>
     </div>
@@ -134,8 +125,30 @@
         }
       }
     });
-    $('select').selectator();
+    //$('select').selectator();
     event.stopPropagation();
     return false;
+  });
+  $(document).ready(function(){
+    $('.dataTables').DataTable({
+      "order": [[ 1, "asc" ]],
+      "pageLength": 20,
+      "pagingType": "full",
+      "language": {
+        "paginate": {
+          "first": "&laquo;",
+          "last": "&raquo;",
+          "previous": "‹",
+          "next":     "›"
+        },
+        "search": "",
+        "searchPlaceholder": "Search..."
+      },
+      "lengthChange": false,
+      "scrollX": true,
+      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+    var t = $(".dataTables").DataTable().rows().count();
+    $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
   });
 </script>
