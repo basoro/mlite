@@ -4,39 +4,17 @@
             <div class="panel-heading">
                 <h3 class="panel-title">{$databarang.title}</h3>
                 <ul class="nav nav-tabs">
-                    <li class="{if: empty($databarang.getStatus)}active{/if}">
+                    <li class="{if: $tab == '1'}active{/if}">
                         <a href="{?=url(ADMIN.'/farmasi/manage')?}" role="tab">Aktif</a>
                     </li>
-                    <li class="{if: !empty($databarang.getStatus)}active{/if}">
-                        <a href="{?=url(ADMIN.'/farmasi/manage?status=0')?}" role="tab">Tidak Aktif</a>
-                    </li>
-                    <li>
-                        <a href="{$databarang.printURL}" target="_blank" role="tab">Cetak</a>
-                    </li>
-                    <li>
-                        <a href="{$databarang.addURL}" role="tab">Tambah</a>
+                    <li class="{if: $tab == '0'}active{/if}">
+                        <a href="{?=url(ADMIN.'/farmasi/manage/0')?}" role="tab">Tidak Aktif</a>
                     </li>
 				        </ul>
             </div>
             <div class="panel-body">
-              <div class="row clearfix">
-                <div class="col col-md-6">
-                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($databarang.totalRecords)?}</h3>
-                </div>
-                <div class="col col-md-6">
-                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                      <div class="input-group">
-                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
-                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                          <span class="input-group-btn">
-                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                          </span>
-                      </div>
-                  </form>
-                </div>
-              </div>
     					<div class="table-responsive no-margin">
-    						<table class="table table-striped no-margin">
+    						<table class="table table-striped no-margin dataTables" width="100%">
     							<thead>
     								<tr>
                       <th>Kode Barang</th>
@@ -44,6 +22,7 @@
                       <th class="text-right">Harga Dasar</th>
                       <th class="text-right">Harga Beli</th>
                       <th>Expired</th>
+                      <th>Lokasi & Stok</th>
     									<th class="text-right">Aksi</th>
     								</tr>
     							</thead>
@@ -51,35 +30,125 @@
             						{if: !empty($databarang.list)}
     								{loop: $databarang.list}
     								<tr>
-    									<td><a href="{$value.editURL}">{$value.kode_brng}</a></td>
-                      <td>{$value.nama_brng}</td>
-                      <td class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
-                      <td class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
-                      <td>{$value.expire}</td>
-    									<td class="text-right">
+    									<td style="vertical-align:top"><a href="{$value.editURL}">{$value.kode_brng}</a></td>
+                      <td style="vertical-align:top">{$value.nama_brng}</td>
+                      <td style="vertical-align:top" class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
+                      <td style="vertical-align:top" class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
+                      <td style="vertical-align:top">{$value.expire}</td>
+                      <td style="vertical-align:top">
+                        {loop: $value.gudangbarang as $data}
+                        <ul>
+                          <li>
+                            Lokasi: {$data.nm_bangsal} ({$data.kd_bangsal}) - Stok: {$data.stok}
+                          </li>
+                        </ul>
+                        {/loop}
+                      </td>
+    									<td style="vertical-align:top" class="text-right">
+                        <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Stok</span>
+    										</a>
     										<a href="{$value.editURL}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
                         {if: $value.status == '1'}
                           <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+      											<i class="fa fa-close"></i> <span class="hidden-xs">Delete</span>
       										</a>
                         {else}
                           <a href="{$value.restoreURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin merestore?">
-      											<i class="fa fa-trash-o"></i> <span class="hidden-xs">Restrore</span>
+      											<i class="fa fa-reply"></i> <span class="hidden-xs">Restore</span>
       										</a>
                         {/if}
     									</td>
     								</tr>
     								{/loop}
     								{else}
-    								<tr><td colspan="6" class="text-center">Databarang tidak tersedia</td></tr>
+    								<tr><td colspan="7" class="text-center">Databarang tidak tersedia</td></tr>
     								{/if}
     							</tbody>
     						</table>
     					</div>
-					{$databarang.pagination}
             </div>
         </div>
     </div>
 </article>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  //$("#display").on("click",".set_dpjp", function(event){
+  $('a[href="#set_stok"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/farmasi/setstok?t=' + mlite.token;
+    var kode_brng = $(this).attr("data-kode_brng");
+
+    var set_stok = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih bangsal</label>'
+        + '<select name="kd_bangsal" id="kd_bangsal" class="form-control" data-use-dimmer="false">'
+        + '{loop: $databarang.bangsal}'
+        + '<option value="{$value.kd_bangsal}">{$value.nm_bangsal}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Stok</label>'
+        + '<input name="stok" id="stok" class="form-control">'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: set_stok,
+      title: 'Set Stok Data Barang',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_bangsal = $('#kd_bangsal').val();
+            var stok = $('#stok').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              kode_brng: kode_brng,
+              kd_bangsal: kd_bangsal,
+              stok: stok,
+            } ,function(data) {
+              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+              //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+              "Set Stok telah disimpan!"+
+              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+              "</div>").show();
+            });
+          }
+        }
+      }
+    });
+    //$('select').selectator();
+    event.stopPropagation();
+    return false;
+  });
+  $(document).ready(function(){
+    $('.dataTables').DataTable({
+      "order": [[ 1, "asc" ]],
+      "pageLength": 20,
+      "pagingType": "full",
+      "language": {
+        "paginate": {
+          "first": "&laquo;",
+          "last": "&raquo;",
+          "previous": "‹",
+          "next":     "›"
+        },
+        "search": "",
+        "searchPlaceholder": "Search..."
+      },
+      "lengthChange": false,
+      "scrollX": true,
+      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+    var t = $(".dataTables").DataTable().rows().count();
+    $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  });
+</script>

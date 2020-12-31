@@ -162,8 +162,8 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',$bulan)
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
@@ -187,8 +187,8 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',date('Y'))
             ->where('jadwal_pegawai.bulan',$bulan)
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -362,8 +362,8 @@ class Admin extends AdminModule
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
                 ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-                ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-                ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+                ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+                ->where('bidang', $this->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
@@ -412,8 +412,8 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
             ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             // ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -427,7 +427,7 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-                
+
                 $day = array(
                     'Sun' => 'AKHAD',
                     'Mon' => 'SENIN',
@@ -652,7 +652,7 @@ class Admin extends AdminModule
                         $efektif = 'INTERVAL 1 HOUR';
                         break;
                 }
-                
+
                 $row['efektif'] = $this->db('rekap_presensi')
                         ->select([
                         'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
@@ -693,11 +693,11 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
+
         $this->assign['totalminus'] = '-'.$timesplus;
-    
+
         $this->assign['totalplus'] = $timesminus;
-        
+
 
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['tahun'] = date('Y');
@@ -705,7 +705,7 @@ class Admin extends AdminModule
         $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
-    
+
     public function getCetakRekap()
     {
         $phrase = '';
@@ -753,14 +753,14 @@ class Admin extends AdminModule
           ->toArray();
 
         $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
-  
+
         $pdf = new PDF_MC_Table();
         $pdf->AddPage();
         $pdf->SetAutoPageBreak(true, 10);
         $pdf->SetTopMargin(10);
         $pdf->SetLeftMargin(10);
         $pdf->SetRightMargin(10);
-  
+
         $pdf->Image($logo, 10, 8, '18', '18', 'png');
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
@@ -987,11 +987,11 @@ class Admin extends AdminModule
                         ->where('rekap_presensi.id',$hasil['id'])
                         ->where('rekap_presensi.jam_datang',$hasil['jam_datang'])
                         ->oneArray();
-            $total[] = $hasil; 
+            $total[] = $hasil;
             $count++;
           $pdf->Row(array($hasil['nama'],$hasil['shift'],$hasil['jam_datang'],$hasil['jam_pulang'],$hasil['durasi'],$hasil['efektif']['efektif'],$hasil['efektif']['kurang']));
         }
-        
+
         $secondplus = 0;
         $secondminus = 0;
         foreach ($total as $time) {
@@ -1018,15 +1018,15 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
+
         $pdf->Ln(34);
         $pdf->SetFont('Arial', '', 10);
         $pdf->SetAligns(array("C", "C" , "C"));
         $pdf->SetWidths(array(63, 63, 63));
         $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: -".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
-        
+
         $pdf->Output('laporan_presensi_'.date('Y-m-d').'.pdf','I');
-  
+
     }
 
     public function getPrint($phrase = null, $tanggal = null)
@@ -1087,7 +1087,7 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id,$tanggal)
     {
-      $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+      $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
       $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
 
       $this->tpl->set('geo', $geo);
@@ -1118,8 +1118,8 @@ class Admin extends AdminModule
         }else{
             $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->toArray();
@@ -1157,8 +1157,8 @@ class Admin extends AdminModule
               'photo' => 'temporary_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = temporary_presensi.id')
-            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -1314,6 +1314,12 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+    public function getPegawaiInfo($field, $nik)
+    {
+        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
+        return $row[$field];
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -1324,12 +1330,16 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         // CSS
-        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
-        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
+
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'presensi', 'javascript']), 'footer');

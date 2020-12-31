@@ -9,8 +9,8 @@
                         <div class="dropdown-menu" role="menu">
                             <form action="{?=url(ADMIN.'/vedika/manage')?}" style="padding:10px;">
                                 <div class="input-group">
-                                    <span>Tanggal Awal：<input class="datepicker" style="padding:3px;" type="text" name="start_date" value="{?=date('Y-m-d')?}"></span>
-                                    <span>Tanggal Akhir：<input class="datepicker" style="padding:3px;" type="text" name="end_date" value="{?=date('Y-m-d')?}"></span>
+                                    <span>Tanggal Awal：<input class="tanggal" style="padding:3px;" type="text" name="start_date" value="{?=date('Y-m-d')?}"></span>
+                                    <span>Tanggal Akhir：<input class="tanggal" style="padding:3px;" type="text" name="end_date" value="{?=date('Y-m-d')?}"></span>
                                     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                                     <button class="btn btn-xs pull-right" style="margin-top:10px;">Submit</button>
                                 </div>

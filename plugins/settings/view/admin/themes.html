@@ -1,0 +1,24 @@
+<article class="row">
+    {loop: $themes}
+    <div class="col-md-4 col-sm-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><a href="{?= url([ADMIN, 'settings', 'theme', $value.dir]) ?}">{$value.name}</a></h3>
+            </div>
+            <div class="panel-body">
+                <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir]) ?}" class="theme-preview">
+                    <img src="{?= url(['themes', $value.dir, $value.thumb]) ?}" class="img-responsive">
+                </a>
+            </div>
+            <div class="panel-footer">
+                {if: $settings.theme == $value.dir}
+                <a href="#" class="btn btn-primary btn-block btn-xs disabled">Aktif</a>
+                {else}
+                <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Tidak Aktif</a>
+                {/if}
+                <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir]) ?}" class="btn btn-warning btn-block btn-xs">Sunting</a>
+            </div>
+        </div>
+    </div>
+    {/loop}
+</article>

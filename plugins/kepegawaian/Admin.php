@@ -19,37 +19,17 @@ class Admin extends AdminModule
     public function getManage($page = 1)
     {
         $perpage = '10';
-        
+
         $phrase = '';
         if(isset($_GET['s'])){
             $phrase = $_GET['s'];
-            // pagination
-            $totalRecords = $this->db('pegawai')->select('nik')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->toArray();
-
-            $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d?s='.$phrase]));
-            $this->assign['pagination'] = $pagination->nav('pagination','5');
-            $this->assign['totalRecords'] = $totalRecords;
-
-            // list
-            $offset = $pagination->offset();
-
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->limit($perpage)->offset($offset)->toArray();
+            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->toArray();
 
         }else{
-            // pagination
-            $totalRecords = $this->db('pegawai')->select('nik')->where('stts_aktif','AKTIF')->toArray();
-
-            $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'kepegawaian', 'manage', '%d']));
-            $this->assign['pagination'] = $pagination->nav('pagination','5');
-            $this->assign['totalRecords'] = $totalRecords;
-
-            // list
-            $offset = $pagination->offset();
-
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->limit($perpage)->offset($offset)->toArray();
+            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->toArray();
         }
-        
-    
+
+
         $this->assign['list'] = [];
         if (count($rows)) {
             foreach ($rows as $row) {
@@ -111,9 +91,9 @@ class Admin extends AdminModule
         }
 
         $this->assign['title'] = 'Tambah Pegawai';
-        $this->assign['jk'] = $this->core->getEnum('pegawai', 'jk');
-        $this->assign['ms_kerja'] = $this->core->getEnum('pegawai', 'ms_kerja');
-        $this->assign['stts_aktif'] = $this->core->getEnum('pegawai', 'stts_aktif');
+        $this->assign['jk'] = ['Pria','Wanita'];
+        $this->assign['ms_kerja'] = ['<1','PT','FT>1'];
+        $this->assign['stts_aktif'] = ['AKTIF','CUTI','KELUAR','TENAGA LUAR'];
         $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
         $this->assign['kelompok_jabatan'] = $this->db('kelompok_jabatan')->toArray();
         $this->assign['resiko_kerja'] = $this->db('resiko_kerja')->toArray();
@@ -138,9 +118,9 @@ class Admin extends AdminModule
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit Pegawai';
 
-            $this->assign['jk'] = $this->core->getEnum('pegawai', 'jk');
-            $this->assign['ms_kerja'] = $this->core->getEnum('pegawai', 'ms_kerja');
-            $this->assign['stts_aktif'] = $this->core->getEnum('pegawai', 'stts_aktif');
+            $this->assign['jk'] = ['Pria','Wanita'];
+            $this->assign['ms_kerja'] = ['<1','PT','FT>1'];
+            $this->assign['stts_aktif'] = ['AKTIF','CUTI','KELUAR','TENAGA LUAR'];
             $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
             $this->assign['kelompok_jabatan'] = $this->db('kelompok_jabatan')->toArray();
             $this->assign['resiko_kerja'] = $this->db('resiko_kerja')->toArray();
@@ -246,7 +226,7 @@ class Admin extends AdminModule
     public function getPrint()
     {
       $pasien = $this->db('pegawai')->toArray();
-      $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
+      $logo = url().'/'.$this->settings->get('settings.logo');
 
       $pdf = new PDF_MC_Table();
       $pdf->AddPage();
@@ -257,10 +237,10 @@ class Admin extends AdminModule
 
       $pdf->Image($logo, 10, 8, '18', '18', 'png');
       $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-      $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
       $pdf->Line(10, 30, 200, 30);
       $pdf->Line(10, 31, 200, 31);
       $pdf->Text(10, 40, 'DATA PEGAWAI');
@@ -1109,13 +1089,15 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         // CSS
-        $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
-        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'kepegawaian', 'css']));

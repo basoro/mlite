@@ -1,0 +1,86 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Faktur Penjualan </title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	th,td {padding:0px 0px 0px 10px;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:40px;
+		background-color:#4C9A2A;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+
+		<center>
+			<table  style="font-size: 8pt;" rules='rows'>
+			<tr>
+				<td align = "center" > <strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong></td>
+			</tr>
+
+			<tr>
+			<td  align = "center" >
+				<p style="font-size: 8pt;">{$settings.alamat}</p>
+			</td>
+			</tr>
+
+			<tr>
+			<td  align = "center"  >
+			BUKTI PEMBAYARAN<br>
+				Kode Faktur : {$billing.kd_billing}<br>
+				Nama Pasien : {$pasien.nm_pasien}<br>
+				No RM : {$pasien.no_rkm_medis}<br>
+				Alamat : {$pasien.alamat}<br>
+			</td>
+			</tr>
+				<tr >
+			<td align = "right" >Jumlah
+			Rp. {?= number_format($billing.jumlah_total,2,',','.')?}</td>
+		</tr>
+		<tr >
+			<td align = "right">Potongan
+				Rp. {?= number_format($billing.potongan,2,',','.')?}</td>
+		</tr>
+		<tr >
+			<td align = "right">Jumlah Bayar
+				Rp. {?= number_format($billing.jumlah_bayar,2,',','.')?}</td>
+		</tr>
+		<tr >
+
+			<td style="font-size: 9pt;" ><i>Terbilang : # {?=terbilang($billing.jumlah_bayar,3,"")?} Rupiah # </i></td>
+		</tr>
+			<td >
+			<p align="center" >{$settings.kota},  {?=date('d-m-Y')?}<br>
+			 Kasir<br><br><br>
+			{$fullname}<br>
+			</p>
+		</td>
+		</table></center>
+		</div>
+
+		<button onclick="printContent('faktur')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+
+</body>
+</html>

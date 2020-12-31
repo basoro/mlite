@@ -50,7 +50,7 @@ class Site extends SiteModule
         );
         $hari=$day[$tentukan_hari];
 
-        $poliklinik = str_replace(",","','", $this->options->get('jkn_mobile_fktp.display'));
+        $poliklinik = str_replace(",","','", $this->settings->get('jkn_mobile_fktp.display'));
         $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
@@ -132,7 +132,7 @@ class Site extends SiteModule
         header("Content-Type: application/json");
         $header = apache_request_headers();
         $response = array();
-        if ($header[$this->options->get('jkn_mobile_fktp.header_username')] == $this->options->get('jkn_mobile_fktp.username') && $header[$this->options->get('jkn_mobile_fktp.header_password')] == $this->options->get('jkn_mobile_fktp.password')) {
+        if ($header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username') && $header[$this->settings->get('jkn_mobile_fktp.header_password')] == $this->settings->get('jkn_mobile_fktp.password')) {
             $response = array(
                 'response' => array(
                     'token' => $this->_getToken()
@@ -179,7 +179,7 @@ class Site extends SiteModule
         );
         $hari=$day[$tentukan_hari];
 
-        if ($header[$this->options->get('jkn_mobile_fktp.header_username')] == $this->options->get('jkn_mobile_fktp.username') && $header[$this->options->get('jkn_mobile_fktp.header')] == $this->_getToken()) {
+        if ($header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username') && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken()) {
 
             if (empty($decode['nomorkartu'])or strlen($decode['nik']) < 13) {
                 $response = array(
@@ -208,10 +208,10 @@ class Site extends SiteModule
                 );
             }
 
-            if (strtotime($decode['tanggalperiksa']) < strtotime(date('Y-m-d')) or strtotime($decode['tanggalperiksa']) >= strtotime(date('Y-m-d', strtotime('+' . $this->options->get('jkn_mobile_fktp.hari') . ' day', strtotime(date('Y-m-d')))))) {
+            if (strtotime($decode['tanggalperiksa']) < strtotime(date('Y-m-d')) or strtotime($decode['tanggalperiksa']) >= strtotime(date('Y-m-d', strtotime('+' . $this->settings->get('jkn_mobile_fktp.hari') . ' day', strtotime(date('Y-m-d')))))) {
                 $response = array(
                     'metadata' => array(
-                        'message' => 'Maaf pemilihan tanggal hanya boleh ' . $this->options->get('jkn_mobile_fktp.hari') . ' Hari Kedepan dari Hari Sekarang',
+                        'message' => 'Maaf pemilihan tanggal hanya boleh ' . $this->settings->get('jkn_mobile_fktp.hari') . ' Hari Kedepan dari Hari Sekarang',
                         'code' => 201
                     )
                 );
@@ -245,7 +245,7 @@ class Site extends SiteModule
                             'kd_dokter' => $cek_kouta['kd_dokter'],
                             'kd_poli' => $cek_kouta['kd_poli'],
                             'no_reg' => $no_reg,
-                            'kd_pj' => $this->options->get('pendaftaran.bpjs'),
+                            'kd_pj' => $this->settings->get('pendaftaran.bpjs'),
                             'limit_reg' => 1,
                             'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
                             'status' => 'Belum'
@@ -319,7 +319,7 @@ class Site extends SiteModule
         if(count($slug) == 7) {$n = 3;}
         $header = apache_request_headers();
         $response = array();
-        if ($slug[(1+$n)] == 'status' && $header[$this->options->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->options->get('jkn_mobile_fktp.header_username')] == $this->options->get('jkn_mobile_fktp.username')) {
+        if ($slug[(1+$n)] == 'status' && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username')) {
             $data = $this->db('reg_periksa')
               ->select('poliklinik.nm_poli')
               ->select(['total_antrean' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
@@ -411,7 +411,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if ($header[$this->options->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->options->get('jkn_mobile_fktp.header_username')] == $this->options->get('jkn_mobile_fktp.username')) {
+        if ($header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username')) {
             if (!empty($decode['nomorkartu']) && !empty($decode['kodepoli']) && !empty($decode['tanggalperiksa'])) {
                 $data_pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
                 $poli = $this->db('maping_poliklinik_pcare')->where('kd_poli_pcare', $decode['kodepoli'])->oneArray();
@@ -490,7 +490,7 @@ class Site extends SiteModule
     private function _getToken()
     {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
-        $payload = json_encode(['username' => $this->options->get('jkn_mobile_fktp.username'), 'password' => $this->options->get('jkn_mobile_fktp.password'), 'date' => strtotime(date('Y-m-d')) * 1000]);
+        $payload = json_encode(['username' => $this->settings->get('jkn_mobile_fktp.username'), 'password' => $this->settings->get('jkn_mobile_fktp.password'), 'date' => strtotime(date('Y-m-d')) * 1000]);
         $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
         $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, 'abC123!', true);

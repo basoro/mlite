@@ -1,5 +1,4 @@
 <?php
-
 namespace Systems;
 
 class Admin extends Main
@@ -19,55 +18,34 @@ class Admin extends Main
 
     public function drawTheme($file)
     {
-        if(isset($_SESSION['opensimrs_user']) && $_SESSION['opensimrs_user'] == 1) {
-            $nama     = 'Administrator';
-            $username = $this->db('lite_roles')->where('id', 1)->oneArray();
-            $username = $username['username'];
-            $this->assign['avatarURL']     = url('/plugins/users/img/default.png');
-        } else {
-            $username = $this->getUserInfo('username', null, true);
-            $pegawai  = $this->db('pegawai')->where('nik', $username)->oneArray();
-            $nama     = $pegawai['nama'];
-            $this->assign['avatarURL']     = url('/plugins/users/img/default.png');
-        }
+        $username = $this->getUserInfo('fullname', null, true);
         $access = $this->getUserInfo('access');
 
-        $this->assign['nama']           = !empty($nama) ? $nama : $this->getUserInfo('nama');
-        $this->assign['username']       = !empty($username) ? $username : $this->getUserInfo('username');
+        $this->assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
+        $this->assign['notify']        = $this->getNotify();
+        $this->assign['powered']       = 'Powered by <a href="https://basoro.org/">mLITE</a>';
+        $this->assign['path']          = url();
+        $this->assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+        $this->assign['logo'] = $this->settings->get('settings.logo');
+        $this->assign['theme_admin'] = $this->settings->get('settings.theme_admin');
+        $this->assign['version']       = $this->settings->get('settings.version');
+        $this->assign['has_update']    = $this->module ? $this->module->settings->_checkUpdate() : false;
+        $this->assign['update_access'] = ($access == 'all') || in_array('settings', explode(',', $access)) ? true : false;
 
-        $this->assign['notify']         = $this->getNotify();
-        $this->assign['path']           = url();
-        $this->assign['title']          = $this->getSettings('nama_instansi');
-        $this->assign['logo']           = $this->getSettings('logo');
-        $this->assign['version']        = $this->options->get('settings.version');
+        $this->assign['header'] = isset_or($this->appends['header'], ['']);
+        $this->assign['footer'] = isset_or($this->appends['footer'], ['']);
 
-        $this->assign['update_access']  = ($access == 'all') || in_array('settings', explode(',', $access)) ? true : false;
+        $this->assign['pasien_access'] = ($access == 'all') || in_array('pasien', explode(',', $access)) ? true : false;
+        $this->assign['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
+        $this->assign['igd_access'] = ($access == 'all') || in_array('igd', explode(',', $access)) ? true : false;
+        $this->assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
+        $this->assign['rawat_jalan_access'] = ($access == 'all') || in_array('rawat_jalan', explode(',', $access)) ? true : false;
+        $this->assign['module_rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
+        $this->assign['rawat_inap_access'] = ($access == 'all') || in_array('rawat_inap', explode(',', $access)) ? true : false;
+        $this->assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
 
-        $this->assign['header']         = isset_or($this->appends['header'], ['']);
-        $this->assign['footer']         = isset_or($this->appends['footer'], ['']);
-
-        $this->assign['get_version'] = '';
-
-        if ($this->options->get('settings.cekupdate') == 2) {
-          $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
-          $opts = [
-              'http' => [
-                  'method' => 'GET',
-                  'header' => [
-                          'User-Agent: PHP'
-                  ]
-              ]
-          ];
-
-          $json = file_get_contents($url, false, stream_context_create($opts));
-          $obj = json_decode($json, true);
-          $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-          if (new \DateTime($this->options->get('settings.version')) < new \DateTime($new_date_format)) {
-            $this->assign['get_version'] = 'Ada Update';
-          }
-        }
-
-        $this->tpl->set('opensimrs', $this->assign);
+        $this->tpl->set('mlite', $this->assign);
         echo $this->tpl->draw(THEMES.'/admin/'.$file, true);
     }
 
@@ -86,9 +64,11 @@ class Admin extends Main
                     $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
                 } else {
                     http_response_code(404);
-                    $this->setNotify('failure', "[@{$method}] Url yang anda minta tidak tersedia");
+                    $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
                     $details['content'] = null;
                 }
+
+                $details['dir'] = parseUrl()[0];
 
                 $this->tpl->set('module', $details);
             } else {
@@ -143,13 +123,14 @@ class Admin extends Main
                     $moduleURL = $subnavURLs[0]['url'];
                     $subnavURLs = [];
                 } else {
-                    $moduleURL = '#';
+                    $moduleURL = $subnavURLs[0]['url'];
                 }
 
                 $nav[] = [
                     'dir'       => $dir,
                     'name'      => $details['name'],
                     'icon'      => $details['icon'],
+                    'desc'      => $details['description'],
                     'url'       => $moduleURL,
                     'active'    => $activeElement,
                     'subnav'    => $subnavURLs,
@@ -186,18 +167,18 @@ class Admin extends Main
             return call_user_func_array([$this->module->{$name}, $method], array_values($params));
         }
 
-        $this->setNotify('failure', 'Rute yang anda minta tidak ada');
+        $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
         return false;
     }
 
     public function login($username, $password, $remember_me = false)
     {
         // Check attempt
-        $attempt = $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->db('lite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
@@ -205,63 +186,38 @@ class Admin extends Main
         }
 
         // Is IP blocked?
-        if ((time() - $attempt['expires']) < 0) {
+        /*if ((time() - $attempt['expires']) < 0) {
             $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
             return false;
-        }
+        }*/
 
-        $row_admin = $this->db()->pdo()->prepare("SELECT lite_roles.id as id, AES_DECRYPT(admin.usere,'nur') as username, AES_DECRYPT(admin.passworde,'windi') as password FROM lite_roles, admin WHERE lite_roles.username = AES_DECRYPT(admin.usere,'nur') AND admin.usere = AES_ENCRYPT(?,'nur')");
-        $row_admin->execute([$username]);
-        $row_admin = $row_admin->fetch();
+        $row = $this->db('mlite_users')->where('username', $username)->oneArray();
 
-        $row_user = $this->db()->pdo()->prepare("SELECT lite_roles.id as id, AES_DECRYPT(user.id_user,'nur') as username, AES_DECRYPT(user.password,'windi') as password FROM lite_roles, user WHERE lite_roles.username = AES_DECRYPT(user.id_user,'nur') AND user.id_user = AES_ENCRYPT(?,'nur')");
-        $row_user->execute([$username]);
-        $row_user = $row_user->fetch();
-
-        if ($row_admin && trim($password) == $row_admin['password']) {
+        if ($row && password_verify(trim($password), $row['password'])) {
             // Reset fail attempts for this IP
-            $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
-            $_SESSION['opensimrs_user']       = $row_admin['id'];
-            $_SESSION['opensimrs_username']   = $row_admin['username'];
-            $_SESSION['token']                = bin2hex(openssl_random_pseudo_bytes(6));
-            $_SESSION['userAgent']            = $_SERVER['HTTP_USER_AGENT'];
-            $_SESSION['IPaddress']            = $_SERVER['REMOTE_ADDR'];
+            $_SESSION['mlite_user']= $row['id'];
+            $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
+            $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
+            $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
             if ($remember_me) {
                 $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
 
-                $this->db('lite_remember_me')->save(['user_id' => $row_admin['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
+                $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
 
-                setcookie('opensimrs_remember', $row_admin['id'].':'.$token, time()+60*60*24*365, '/');
-            }
-            return true;
-        } else if ($row_user && trim($password) == $row_user['password']) {
-            // Reset fail attempts for this IP
-            $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
-
-            $_SESSION['opensimrs_user']       = $row_user['id'];
-            $_SESSION['opensimrs_username']   = $row_user['username'];
-            $_SESSION['token']                = bin2hex(openssl_random_pseudo_bytes(6));
-            $_SESSION['userAgent']            = $_SERVER['HTTP_USER_AGENT'];
-            $_SESSION['IPaddress']            = $_SERVER['REMOTE_ADDR'];
-
-            if ($remember_me) {
-                $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
-
-                $this->db('lite_remember_me')->save(['user_id' => $row_user['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
-
-                setcookie('opensimrs_remember', $row_user['id'].':'.$token, time()+60*60*24*365, '/');
+                setcookie('mlite_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
             }
             return true;
         } else {
             // Increase attempt
-            $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->db('lite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                 $attempt['expires'] = strtotime("+10 minutes");
 
                 $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
@@ -278,15 +234,15 @@ class Admin extends Main
         $_SESSION = [];
 
         // Delete remember_me token from database and cookie
-        if (isset($_COOKIE['opensimrs_remember'])) {
-            $token = explode(':', $_COOKIE['opensimrs_remember']);
-            $this->db('lite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
-            setcookie('opensimrs_remember', null, -1, '/');
+        if (isset($_COOKIE['mlite_remember'])) {
+            $token = explode(':', $_COOKIE['mlite_remember']);
+            $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
+            setcookie('mlite_remember', null, -1, '/');
         }
 
         session_unset();
         session_destroy();
-        redirect(url(ADMIN.'/'));
+        redirect(url());
     }
 
     private function registerPage($name, $path)

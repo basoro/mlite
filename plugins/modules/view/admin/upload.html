@@ -1,14 +1,14 @@
 <article class="row">
-    <div class="col-md-12">
+    <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">Unggah</div>
             <div class="panel-body">
                 {if: FILE_LOCK}
-                <div class="alert alert-danger">Pengunggahan berkas dimatikan. Anda harus mengunggah paket modul melalui FTP.<span class="label pull-right">FILE_LOCK</span></div>
+                <div class="alert alert-danger">Pengunggahan berkas dimatikan, unggah modul melalui FTP.<span class="label pull-right">FILE_LOCK</span></div>
                 {/if}
                 <form method="post" action="{?=url(ADMIN.'/modules/extract', true)?}" enctype="multipart/form-data">
                     <div class="well well-sm clearfix">
-                        Pastikan modul anda versi terbaru dan unggah berkas terkompresi modul dengan akhiran .zip.
+                        Pastikan unggah modul terkompresi .zip dan versi terbaru.
                         <span class="label label-default pull-right">info</span>
                     </div>
 

@@ -1,0 +1,80 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode Bangsal</th>
+          <th>Nama Bangsal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $bangsal.list}
+        {loop: $bangsal.list}
+        <tr class="edit" data-kd_bangsal="{$value.kd_bangsal}">
+          <td>{$value.kd_bangsal}</td>
+          <td>{$value.nm_bangsal}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="2" class="text-center">Tidak ada data bangsal.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($bangsal.halaman)}
+        {if: $bangsal.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $bangsal.halaman > 1}
+        <li class="halaman" data-hal="{?=$bangsal.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$bangsal.halaman} dari {$bangsal.jml_halaman} Hal</a></li>
+        {if: $bangsal.halaman < $bangsal.jml_halaman}
+        <li class="halaman" data-hal="{?=$bangsal.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $bangsal.halaman == $bangsal.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$bangsal.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $bangsal.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $bangsal.halaman > 1}
+        <li class="halaman" data-hal="{?=$bangsal.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$bangsal.halaman} dari {$bangsal.jml_halaman} Hal</a></li>
+        {if: $bangsal.halaman < $bangsal.jml_halaman}
+        <li class="halaman" data-hal="{?=$bangsal.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $bangsal.halaman == $bangsal.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$bangsal.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>

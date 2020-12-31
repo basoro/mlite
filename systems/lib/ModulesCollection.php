@@ -4,11 +4,12 @@ namespace Systems\Lib;
 
 class ModulesCollection
 {
+
     protected $modules = [];
 
     public function __construct($core)
     {
-        $modules = array_column($core->db('lite_modules')->asc('sequence')->toArray(), 'dir');
+        $modules = array_column($core->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
         if ($core instanceof \Systems\Admin) {
             $clsName = 'Admin';
         } else {
@@ -18,7 +19,7 @@ class ModulesCollection
         foreach ($modules as $dir) {
             $file = MODULES.'/'.$dir.'/'.$clsName.'.php';
             if (file_exists($file)) {
-                $namespace = 'plugins\\'.$dir.'\\'.$clsName;
+                $namespace = 'Plugins\\'.$dir.'\\'.$clsName;
                 $this->modules[$dir] = new $namespace($core);
             }
         }

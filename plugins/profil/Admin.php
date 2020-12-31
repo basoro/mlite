@@ -26,7 +26,7 @@ class Admin extends AdminModule
         $row = $this->db('pegawai')->where('nik',$username)->oneArray();
         $this->assign['form'] = $row;
         $this->assign['title'] = 'Edit Biodata';
-        $this->assign['jk'] = $this->core->getEnum('pegawai', 'jk');
+        $this->assign['jk'] = ['Pria','Wanita'];
         $this->assign['departemen'] = $this->db('departemen')->toArray();
         $this->assign['bidang'] = $this->db('bidang')->toArray();
         $this->assign['stts_wp'] = $this->db('stts_wp')->toArray();
@@ -329,7 +329,7 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id,$tanggal)
     {
-      $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+      $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
       $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
 
       $this->tpl->set('geo', $geo);
@@ -454,18 +454,26 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            $row_user = $this->db()->pdo()->prepare("SELECT id_user FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-            $row_user->execute();
-            $row_user = $row_user->fetch();
+            //$row_user = $this->db()->pdo()->prepare("SELECT id_user FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
+            //$row_user->execute();
+            //$row_user = $row_user->fetch();
+            $row_user = $this->db('mlite_users')->where('username', $_POST['username'])->oneArray();
 
-            $password = $this->db()->pdo()->prepare("SELECT AES_DECRYPT(user.password,'windi') as password FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-            $password->execute();
-            $password = $password->fetch();
+            //$password = $this->db()->pdo()->prepare("SELECT AES_DECRYPT(user.password,'windi') as password FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
+            //$password->execute();
+            //$password = $password->fetch();
 
-            if($row_user) {
-                if($password['password'] == $_POST['pass_lama']){
-                    $query = $this->core->db()->pdo()->exec("UPDATE user SET password=AES_ENCRYPT('$_POST[pass_baru]','windi') WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-                }
+            //if($row_user) {
+            if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
+
+                //if($password['password'] == $_POST['pass_lama']){
+                    //$query = $this->core->db()->pdo()->exec("UPDATE mlite_users SET password=AES_ENCRYPT('$_POST[pass_baru]','windi') WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
+                //}
+                $username = $_POST['username'];
+                $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
+                //$query = $this->core->db()->pdo()->exec("UPDATE mlite_users SET password='$password' WHERE username='$username'");
+                $query = $this->db('mlite_users')->where('username', $username)->save(['password' => $password]);
+
             }
 
             if ($query) {
@@ -491,14 +499,18 @@ class Admin extends AdminModule
     {
 
         // CSS
-        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
-        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'),'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
+
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'profil', 'javascript']), 'footer');

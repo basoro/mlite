@@ -1,12 +1,4 @@
 <?php
-/**
- * Pagination: The simplest PHP pagination class
- *
- * @author Leonard Shtika <leonard@shtika.info>
- * @link http://leonard.shtika.info
- * @copyright (C) Leonard Shtika
- * @license MIT.
- */
 
 namespace Systems\Lib;
 
@@ -25,77 +17,41 @@ class Pagination
         $this->_url = $url;
     }
 
-    /**
-     * Calculate offset
-     * @return int
-     * Example: for 10 recores per page
-     * page 1 has offset 0
-     * page 2 has offset 10
-     */
     public function offset()
     {
         return ($this->_currentPage - 1) * $this->_recordsPerPage;
     }
 
-    /**
-     * Get the records per page
-     * @return int
-     */
     public function getRecordsPerPage()
     {
         return $this->_recordsPerPage;
     }
 
-    /**
-     * Calculate total pages
-     */
     private function _totalPages()
     {
         return ceil($this->_totalRecords / $this->_recordsPerPage);
     }
 
-    /**
-     * Calculate previous page
-     * @return int
-     */
     private function _previousPage()
     {
         return $this->_currentPage - 1;
     }
 
-    /**
-     * Calculate next page
-     * @return int
-     */
     private function _nextPage()
     {
         return $this->_currentPage + 1;
     }
 
-    /**
-     * Check if there is a previous page
-     * @return boolean
-     */
     private function _hasPreviousPage()
     {
         return ($this->_previousPage() >= 1) ? true : false;
     }
 
-    /**
-     * Check if there is a next page
-     * @return boolean
-     */
     private function _hasNextPage()
     {
         return ($this->_nextPage() <= $this->_totalPages()) ? true : false;
     }
 
-    /**
-    * Generate navigation
-    * @param string $type ('pagination' or 'pager')
-    * @param int $maxLinks
-    * @return mixed (string or false)
-    */
     public function nav($type = 'pagination', $maxLinks = 10)
     {
         if ($this->_totalPages() > 1) {
@@ -119,7 +75,6 @@ class Pagination
                     $links.= '<li class="previous disabled"><a href="#">&larr;</a></li>';
                 }
             }
-
 
             // Create links in the middle
             if ($type == 'pagination') {

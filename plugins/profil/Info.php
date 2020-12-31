@@ -4,6 +4,6 @@ return [
     'description'   =>  'Modul profil',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.1',
-    'compatibility' =>  '2020',
+    'compatibility' =>  '2021',
     'icon'          =>  'address-book'
 ];

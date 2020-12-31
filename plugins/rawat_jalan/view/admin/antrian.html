@@ -1,0 +1,109 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Antrian</title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	th,td {padding:0px 0px 0px 10px;}
+	td {border: none;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:40px;
+		background-color:#4C9A2A;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+		<center>
+			<table style="font-size: 8pt;" rules='rows'>
+				<tr>
+					<td align="center"><strong style="font-size: 12pt;" > {$settings.nama_instansi} </strong></td>
+				</tr>
+				<tr style="border-bottom: 1px solid #ddd;">
+					<td  align = "center" >
+						<span style="font-size: 7pt;">
+							<div>{$settings.alamat}</div>
+							{$settings.nomor_telepon} - {$settings.email}
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="padding-top:20px;">
+						<small>BUKTI PENDAFTARAN RAWAT JALAN<br>
+						Tanggal : {?=date('Y-m-d')?}<br></small>
+					</td>
+				</tr>
+				<tr>
+					<td align="center" style="font-size:54px;padding-top:15px;">
+						<div class="panel panel-default" style="width:130px;">
+							<div class="pane-body">
+								{$rawat_jalan.no_reg}
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="pull-left">ID Daftar</span><span class="pull-right">{$rawat_jalan.no_rawat}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="pull-left">Nama</span><span class="pull-right">{$rawat_jalan.nm_pasien}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="pull-left">Nomor RM</span><span class="pull-right">{$rawat_jalan.no_rkm_medis}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="pull-left">Poliklinik</span><span class="pull-right">{$rawat_jalan.nm_poli}</span>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<span class="pull-left">Dokter</span><span class="pull-right">{$rawat_jalan.nm_dokter}</span>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding-bottom:20px;">
+						<span class="pull-left">Penjamin</span><span class="pull-right">{$rawat_jalan.png_jawab}</span>
+					</td>
+				</tr>
+				<tr style="border-top: 1px solid #ddd;">
+					<td align="center" style="padding-top:10px;padding-bottom:20px;">
+						Terima Kasih Atas kepercayaan Anda.<br>
+						Bawalah kartu Berobat anda<br>
+						dan datang 30 menit sebelumnya.<br>
+					</td>
+				</tr>
+			</table>
+		</center>
+		</div>
+
+		<button onclick="printContent('faktur')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+
+</body>
+</html>

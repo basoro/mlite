@@ -24,8 +24,8 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->options->get('jkn_mobile_fktp.display'));
-        $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->options('jkn_mobile_fktp'));
+        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_fktp.display'));
+        $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->settings('jkn_mobile_fktp'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
@@ -59,7 +59,7 @@ class Admin extends AdminModule
     {
         $_POST['jkn_mobile_fktp']['display'] = implode(',', $_POST['jkn_mobile_fktp']['display']);
         foreach ($_POST['jkn_mobile_fktp'] as $key => $val) {
-            $this->options('jkn_mobile_fktp', $key, $val);
+            $this->settings('jkn_mobile_fktp', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'jkn_mobile_fktp', 'settings']));

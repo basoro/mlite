@@ -82,7 +82,7 @@
 <body>
   <div class="container-fluid">
     {if: !$show}
-    <h1 class="text-center text-white antrian_judul">Antrian Loket {$settings.nama_instansi}</h1>
+    <h1 class="text-center text-white antrian_judul"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Antrian Loket {$settings.nama_instansi}</h1>
     <div class="row loket">
       <div class="kiri">
         <div class="card bg-dark text-white">
@@ -110,16 +110,6 @@
               <div class="panel-footer bg-transparent border-success">
                 <div class="no_loket">Loket <span class="get_cs"><span></div>
                 </div>
-            </div>
-          </a>
-          <a href="{?=url()?}/anjungan/loket?show=panggil_prioritas" target="_blank">
-            <div class="panel border-success">
-              <div class="panel-body text-success">
-                <div class="no_antrian">C<span class="antrian_prioritas"><span></div>
-              </div>
-              <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Loket <span class="get_prioritas"><span></div>
-              </div>
             </div>
           </a>
           <div class="panel border-success">
@@ -153,7 +143,7 @@
       </div>
     </div>
     {/if}
-    {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
+    {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
       <audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
       <audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
       <audio id="{$namaloket}" src="{?=url()?}/plugins/anjungan/suara/{$namaloket}.wav"></audio>
@@ -171,7 +161,7 @@
       {loop: $xcounter}
         {$value}
       {/loop}
-      <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;">Pemanggil Antrian Loket</div>
+      <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Pemanggil Antrian Loket</div>
       <div class="container text-center">
         <div class="row">
       		<div class="card-deck">
@@ -222,7 +212,7 @@
   </div>
 </body>
 </html>
-{if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_prioritas'}
+{if: $show == 'panggil_loket' || $show == 'panggil_cs'}
   {loop: $loket}
     <script>
     function mulai{$value}(){
@@ -1377,18 +1367,6 @@ function getAntrianCS() {
   });
 };
 
-setInterval(function(){ getAntrianPrioritas(); }, 2000);
-
-function getAntrianPrioritas() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=antriprioritas',
-    type: 'post',
-    success: function(data) {
-      $('.antrian_prioritas').html(data);
-    }
-  });
-};
-
 setInterval(function(){ getLoket(); }, 2000);
 
 function getLoket() {
@@ -1409,18 +1387,6 @@ function getCS() {
     type: 'post',
     success: function(data) {
       $('.get_cs').html(data);
-    }
-  });
-};
-
-setInterval(function(){ getPrioritas(); }, 2000);
-
-function getPrioritas() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=antriprioritas',
-    type: 'post',
-    success: function(data) {
-      $('.get_prioritas').html(data);
     }
   });
 };

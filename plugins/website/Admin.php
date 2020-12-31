@@ -57,7 +57,7 @@ class Admin extends AdminModule
     public function getSettings()
     {
         $this->assign['title'] = 'Pengaturan Modul Website';
-        $this->assign['website'] = htmlspecialchars_array($this->options('website'));
+        $this->assign['website'] = htmlspecialchars_array($this->settings('website'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
@@ -130,7 +130,7 @@ class Admin extends AdminModule
             }
         }
         foreach ($_POST['website'] as $key => $val) {
-            $this->options('website', $key, $val);
+            $this->settings('website', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'website', 'settings']));

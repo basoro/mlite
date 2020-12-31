@@ -24,7 +24,7 @@
       <div class="col-md-6">
         <div class="form-group">
             <label>Tanggal Rujukan</label>
-            <input type="text" name="tgl_kunjungan" class="form-control datepicker" placeholder="Tanggal Rujukan" required value="" />
+            <input type="text" name="tgl_kunjungan" class="form-control tanggal" placeholder="Tanggal Rujukan" required value="" />
         </div>
       </div>
       <div class="col-md-6">
@@ -66,9 +66,8 @@
 </div>
 <script type="text/javascript">
   $('select').selectator();
-    $( ".datepicker" ).datepicker({
-    dateFormat: "yy-mm-dd",
-    changeMonth: true,
-    changeYear: true,
+  $('.tanggal').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'id'
   });
 </script>

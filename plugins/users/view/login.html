@@ -1,0 +1,101 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$mlite.nama_instansi}</title>
+    <link rel="icon" href="{$mlite.path}/favicon.png" type="image/x-icon">
+    <link href="{$mlite.path}/assets/css/bootstrap.min.css?v={$mlite.version}" rel="stylesheet">
+    <link href="{$mlite.path}/assets/css/bootstrap-theme.min.css?v={$mlite.version}" rel="stylesheet">
+    <link href="{?= url(THEMES.'/admin/css/style.css?v='.$mlite.version) ?}" rel="stylesheet">
+    <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
+    <!-- PWA Support -->
+    <link rel="manifest" href="{$mlite.path}/manifest.json" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="mLITE" />
+    <meta name="apple-mobile-web-app-title" content="mLITE" />
+    <meta name="theme-color" content="#4C9A2A" />
+    <meta name="msapplication-navbutton-color" content="#4C9A2A" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="green-translucent" />
+    <meta name="msapplication-starturl" content="{$mlite.path}" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <link rel="icon" sizes="128x128" href="{$mlite.path}/assets/images/icon-128x128.png" />
+    <link rel="apple-touch-icon" sizes="128x128" href="{$mlite.path}/assets/images/icon-128x128.png" />
+    <link rel="icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
+    <link rel="icon" sizes="256x256" href="{$mlite.path}/assets/images/icon-256x256.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="{$mlite.path}/assets/images/ticon-256x256.png" />
+    <link rel="icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
+    <link rel="apple-touch-icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
+    <link rel="icon" sizes="512x512" href="{$mlite.path}/assets/images/icon-512x512.png" />
+    <link rel="apple-touch-icon" sizes="512x512" href="{$mlite.path}/assets/images/icon-512x512.png" />
+    <!-- End PWA Support -->
+    <script src="{$mlite.path}/assets/jscripts/jquery.min.js?v={$mlite.version}"></script>
+    <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$mlite.version) ?}"></script>
+</head>
+
+<body style="background: #222;margin:0;">
+
+	<section id="login">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <img src="{?= url(THEMES.'/admin/img/logo.png') ?}" alt="logo"> <h2>m<span>SMIRS</span></h2>
+            </div>
+            <div class="panel-body">
+        		<form action="{?=url([ADMIN])?}" method="POST">
+                  	<div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-user"></i></div>
+                            <input type="text" name="username" class="form-control" placeholder="Nama Pengguna" required />
+                        </div>
+                  	</div>
+                  	<div class="form-group">
+                        <div class="input-group">
+                            <div class="input-group-addon"><i class="fa fa-lock"></i></div>
+                            <input type="password" name="password" class="form-control" placeholder="Password" required />
+                        </div>
+                  	</div>
+                    <div class="form-group">
+                        <label class="remember-me pull-left">
+                            <input type="checkbox" name="remember_me" />
+                            Ingat saya
+                        </label>
+                        <button type="submit" name="login" class="btn btn-primary pull-right">Sign In</button>
+                    </div>
+        		</form>
+            </div>
+        </div>
+		{if: $mlite.notify}
+		<div id="notify" class="alert-{$mlite.notify.type} animated shake">{$mlite.notify.text}</div>
+		{/if}
+	</section>
+
+  <footer class="hidden-xs" style="text-align:right;margin: 10px;">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$mlite.powered}.
+  </footer>
+
+  <!-- PWA Support -->
+  <script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker
+      .register("{$mlite.path}/service-worker.js")
+      .then((swReg) => {
+        console.log("Service Worker is registered", swReg);
+      })
+      .catch((err) => {
+        console.error("Service Worker Error", err);
+      });
+    });
+  }
+  </script>
+  <!-- End PWA Support -->
+
+  <script>
+  $(':checkbox').kalypto();
+  </script>
+</body>
+</html>

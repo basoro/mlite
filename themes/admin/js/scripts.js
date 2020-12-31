@@ -1,28 +1,3 @@
-/* 1. TOGGLE SIDEBAR
---------------------------------------------------------- */
-$("#sidebar-toggle").click(function(e) {
-    e.preventDefault();
-    $("#wrapper").toggleClass("toggled");
-});
-
-/* 2. COLLAPSE LINKS IN SIDEBAR
---------------------------------------------------------- */
-$('.sidebar-nav li a').click(function(e)
-{
-    if($('li:hidden', $(this).next()).length)
-    {
-        e.preventDefault();
-        $('.sidebar-nav li ul.in').collapse('hide');
-        $(this).next('ul').collapse('show');
-    }
-    else if($('li:visible', $(this).next()).length)
-    {
-        e.preventDefault();
-    	$(this).next('ul').collapse('hide');
-    }
-});
-$('.sidebar-nav li.active ul').addClass('in');
-
 /* 3. CONFIRM BOX
 --------------------------------------------------------- */
 $(document).on('click touchstart', '[data-confirm]:not(.disabled):not([disabled])', function(evt)
@@ -74,29 +49,6 @@ $(function () {
 	}
 });
 
-/* 6. SORTABLE SIDEBAR
---------------------------------------------------------- */
-$(function () {
-    sortable('.sidebar-nav', {handle:'i'})[0].addEventListener('sortupdate', function(e) {
-        var baseURL = opensimrs.url + '/' + opensimrs.admin;
-        var items   = {};
-
-        $(e.detail.endparent).children('li').each(function(index, element) {
-            var module = $(element).data('module');
-            items[module] = index;
-        });
-
-        $.ajax({
-            url: baseURL + '/settings/changeOrderOfNavItem?t=' + opensimrs.token,
-            type: 'POST',
-            cache: false,
-            data: items,
-            success: function(respond) {
-                console.log(respond);
-            }
-        });
-    });
-});
 
 /* 7. TINYNAV
 --------------------------------------------------------- */
@@ -135,7 +87,7 @@ $('a[data-toggle="modal"]').on('click', function(e) {
 $('select').each(function () {
     var options = {
         useDimmer: true,
-        useSearch: true,
+        useSearch: false,
         labels: {
             search: '...'
         }
@@ -145,3 +97,23 @@ $('select').each(function () {
     });
     $(this).selectator(options);
 });
+
+function showTime() {
+    var today = new Date();
+    var curr_hour = today.getHours();
+    var curr_minute = today.getMinutes();
+    var curr_second = today.getSeconds();
+    curr_hour = checkTime(curr_hour);
+    curr_minute = checkTime(curr_minute);
+    curr_second = checkTime(curr_second);
+    document.getElementById('clock').innerHTML=curr_hour + ":" + curr_minute + ":" + curr_second;
+}
+
+function checkTime(i) {
+    if (i < 10) {
+        i = "0" + i;
+    }
+    return i;
+}
+
+setInterval(showTime, 500);

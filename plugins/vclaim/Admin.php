@@ -1,0 +1,902 @@
+<?php
+namespace Plugins\Vclaim;
+
+use Systems\AdminModule;
+use Systems\Lib\BpjsService;
+use Systems\Lib\QR_BarCode;
+
+class Admin extends AdminModule
+{
+
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+    }
+
+    public function navigation()
+    {
+        return [
+            'Kelola'   => 'manage',
+            'Referensi' => 'referensi',
+            'Peserta' => 'peserta',
+            'SEP' => 'sep',
+            'Rujukan' => 'rujukan',
+            'Lembar Pengajuan Klaim' => 'lpk',
+            'Monitoring' => 'monitoring'
+        ];
+    }
+
+    public function getManage()
+    {
+        $parsedown = new \Systems\Lib\Parsedown();
+        $readme_file = MODULES.'/vclaim/ReadMe.md';
+        $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
+        return $this->draw('manage.html', ['readme' => $readme]);
+    }
+
+    public function getReferensi()
+    {
+        return $this->draw('referensi.html');
+    }
+
+    public function getPeserta()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('peserta.html');
+    }
+
+    public function getSEP()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('sep.html');
+    }
+
+    public function getRujukan()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('rujukan.html');
+    }
+
+    public function getLPK()
+    {
+        return $this->draw('lpk.html');
+    }
+
+    public function getMonitoring()
+    {
+        return $this->draw('monitoring.html');
+    }
+
+    public function postSaveSEP()
+    {
+        $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
+        $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
+        $_POST['sep_user']	= $this->core->getUserInfo('fullname', null, true);
+
+        $data = [
+            'request' => [
+               't_sep' => [
+                  'noKartu' => $_POST['no_kartu'],
+                  'tglSep' => $_POST['tglsep'],
+                  'ppkPelayanan' => $_POST['kdppkpelayanan'],
+                  'jnsPelayanan' => $_POST['jnspelayanan'],
+                  'klsRawat' => $_POST['klsrawat'],
+                  'noMR' => $_POST['nomr'],
+                  'rujukan' => [
+                     'asalRujukan' => $_POST['asal_rujukan'],
+                     'tglRujukan' => $_POST['tglrujukan'],
+                     'noRujukan' => $_POST['norujukan'],
+                     'ppkRujukan' => $_POST['kdppkrujukan']
+                  ],
+                  'catatan' => $_POST['catatan'],
+                  'diagAwal' => $_POST['diagawal'],
+                  'poli' => [
+                     'tujuan' => $_POST['kdpolitujuan'],
+                     'eksekutif' => $_POST['eksekutif']
+                  ],
+                  'cob' => [
+                     'cob' => $_POST['cob']
+                  ],
+                  'katarak' => [
+                     'katarak' => $_POST['katarak']
+                  ],
+                  'jaminan' => [
+                     'lakaLantas' => $_POST['lakalantas'],
+                     'penjamin' => [
+                         'penjamin' => $_POST['penjamin'],
+                         'tglKejadian' => $_POST['tglkkl'],
+                         'keterangan' => $_POST['keterangankkl'],
+                         'suplesi' => [
+                             'suplesi' => $_POST['suplesi'],
+                             'noSepSuplesi' => $_POST['no_sep_suplesi'],
+                             'lokasiLaka' => [
+                                 'kdPropinsi' => $_POST['kdprop'],
+                                 'kdKabupaten' => $_POST['kdkab'],
+                                 'kdKecamatan' => $_POST['kdkec']
+                             ]
+                         ]
+                     ]
+                  ],
+                  'skdp' => [
+                     'noSurat' => $_POST['noskdp'],
+                     'kodeDPJP' => $_POST['kddpjp']
+                  ],
+                  'noTelp' => $_POST['notelep'],
+                  'user' => $_POST['sep_user']
+               ]
+            ]
+        ];
+
+        $data = json_encode($data);
+
+        $url = $this->api_url.'SEP/1.1/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $data = json_decode($output, true);
+
+        /*$json = '{
+             "metaData": {
+                "code": "200",
+                "message": "Sukses"
+             },
+             "response": {
+                "sep": {
+                   "catatan": "test",
+                   "diagnosa": "A00.1 - Cholera due to Vibrio cholerae 01, biovar eltor",
+                   "jnsPelayanan": "R.Inap",
+                   "kelasRawat": "1",
+                   "noSep": "0301R0011117V000008",
+                   "penjamin": "-",
+                   "peserta": {
+                      "asuransi": "-",
+                      "hakKelas": "Kelas 1",
+                      "jnsPeserta": "PNS PUSAT",
+                      "kelamin": "Laki-Laki",
+                      "nama": "ZIYADUL",
+                      "noKartu": "0001112230666",
+                      "noMr": "123456",
+                      "tglLahir": "2008-02-05"
+                   },
+                   "informasi:": {
+                      "Dinsos":null,
+                      "prolanisPRB":null,
+                      "noSKTM":null
+                   },
+                   "poli": "-",
+                   "poliEksekutif": "-",
+                   "tglSep": "2017-10-12"
+                }
+             }
+          }';
+
+        $data = json_decode($json, true);*/
+
+        if($data == NULL) {
+
+          echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+
+        } else if($data['metaData']['code'] == 200){
+
+          $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+          //$_POST['nama_pasien'] = 'Test pasien';
+
+          $simpan_sep = $this->db('bridging_sep')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'no_rawat' => $_POST['no_rawat'],
+            'tglsep' => $_POST['tglsep'],
+            'tglrujukan' => $_POST['tglrujukan'],
+            'no_rujukan' => $_POST['norujukan'],
+            'kdppkrujukan' => $_POST['kdppkrujukan'],
+            'nmppkrujukan' => $_POST['nmppkrujukan'],
+            'kdppkpelayanan' => $_POST['kdppkpelayanan'],
+            'nmppkpelayanan' => $_POST['nmppkpelayanan'],
+            'jnspelayanan' => $_POST['jnspelayanan'],
+            'catatan' => $_POST['catatan'],
+            'diagawal' => $_POST['diagawal'],
+            'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
+            'kdpolitujuan' => $_POST['kdpolitujuan'],
+            'nmpolitujuan' => $_POST['nmpolitujuan'],
+            'klsrawat' => $_POST['klsrawat'],
+            'lakalantas' => $_POST['lakalantas'],
+            'user' => $_POST['sep_user'],
+            'nomr' => $_POST['nomr'],
+            'nama_pasien' => $_POST['nama_pasien'],
+            'tanggal_lahir' => $_POST['tanggal_lahir'],
+            'peserta' => $_POST['peserta'],
+            'jkel' => $_POST['jenis_kelamin'],
+            'no_kartu' => $_POST['no_kartu'],
+            'tglpulang' => $_POST['tglpulang'],
+            'asal_rujukan' => $_POST['asal_rujukan'],
+            'eksekutif' => $_POST['eksekutif'],
+            'cob' => $_POST['cob'],
+            'penjamin' => $_POST['penjamin'],
+            'notelep' => $_POST['notelep'],
+            'katarak' => $_POST['katarak'],
+            'tglkkl' => $_POST['tglkkl'],
+            'keterangankkl' => $_POST['keterangankkl'],
+            'suplesi' => $_POST['suplesi'],
+            'no_sep_suplesi' => $_POST['no_sep_suplesi'],
+            'kdprop' => $_POST['kdprop'],
+            'nmprop' => $_POST['nmprop'],
+            'kdkab' => $_POST['kdkab'],
+            'nmkab' => $_POST['nmkab'],
+            'kdkec' => $_POST['kdkec'],
+            'nmkec' => $_POST['nmkec'],
+            'noskdp' => $_POST['noskdp'],
+            'kddpjp' => $_POST['kddpjp'],
+            'nmdpdjp' => $_POST['nmdpdjp']
+          ]);
+          $simpan_prb = $this->db('bpjs_prb')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'prb' => $_POST['prolanis_prb']
+          ]);
+
+          if($simpan_sep) {
+            echo $_POST['sep_no_sep'];
+          }
+
+        } else {
+
+          echo $data['metaData']['message'];
+
+        }
+
+        exit();
+    }
+
+    public function postHapusSEP()
+    {
+        $_POST['sep_user']	= $this->core->getUserInfo('fullname', null, true);
+
+        $data = [
+            'request' => [
+               't_sep' => [
+                  'noSep' => $_POST['no_sep'],
+                  'user' => $_POST['sep_user']
+               ]
+            ]
+        ];
+
+        $data = json_encode($data);
+
+        $url = $this->api_url.'SEP/Delete';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $data = json_decode($output, true);
+
+        if($data == NULL) {
+
+          echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+
+        } else if($data['metaData']['code'] == 200){
+          $hapus_sep = $this->db('bridging_sep')->where('no_sep', $_POST['no_sep'])->delete();
+          $hapus_prb = $this->db('bpjs_prb')->where('no_sep', $_POST['no_sep'])->delete();
+          echo $data['metaData']['message'].'!! Menghapus data SEP dengan nomor '.$_POST['no_sep'].'....';
+        } else {
+          echo $data['metaData']['message'];
+        }
+        exit();
+    }
+
+    public function getCetakSEP($no_sep)
+    {
+        $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+        $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
+
+        $qr = new QR_BarCode();
+        $qr->sep($data_sep['nama_pasien'], $data_sep['nomr'], $data_sep['no_rawat'], $data_sep['no_sep']);
+        $qr->qrCode(180, UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
+
+        $logo_url = url().'/'.$this->settings->get('settings.logo');
+        $file_url = url().'/uploads/qrcode/sep/'.$no_sep.'.png';
+        $QR = imagecreatefrompng(UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
+
+        $logo = imagecreatefromstring(file_get_contents($logo_url));
+        $QR_width = imagesx($QR);
+        $QR_height = imagesy($QR);
+
+        $logo_width = imagesx($logo);
+        $logo_height = imagesy($logo);
+
+        $logo_qr_width = $QR_width/3;
+        $scale = $logo_width/$logo_qr_width;
+        $logo_qr_height = $logo_height/$scale;
+
+        imagecopyresampled($QR, $logo, $QR_width/3, $QR_height/3, 0, 0, $logo_qr_width, $logo_qr_height, $logo_width, $logo_height);
+        imagepng($QR,UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
+
+        $data_sep['qrCode'] = $file_url;
+        $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
+
+        echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
+        exit();
+    }
+
+    public function postSyncSEP()
+    {
+        $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
+        $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
+        $_POST['sep_user']	= $this->core->getUserInfo('fullname', null, true);
+
+        //$data = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['noMr'])->where('tgl_registrasi', $_POST['tglSep'])->oneArray();
+        $data = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->where('no_peserta', $_POST['noKartu'])
+          ->where('tgl_registrasi', $_POST['tglSep'])
+          ->oneArray();
+
+        if(!$data) {
+
+          echo 'Data pasien tidak ditemukan!';
+
+        } else {
+
+          /*$simpan_sep = $this->db('bridging_sep')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'no_rawat' => $data['no_rawat'],
+            'tglsep' => $_POST['tglsep'],
+            'tglrujukan' => $_POST['tglRujukan'],
+            'no_rujukan' => $_POST['norujukan'],
+            'kdppkrujukan' => $_POST['kdppkrujukan'],
+            'nmppkrujukan' => $_POST['nmppkrujukan'],
+            'kdppkpelayanan' => $_POST['kdppkpelayanan'],
+            'nmppkpelayanan' => $_POST['nmppkpelayanan'],
+            'jnspelayanan' => $_POST['jnspelayanan'],
+            'catatan' => $_POST['catatan'],
+            'diagawal' => $_POST['diagawal'],
+            'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
+            'kdpolitujuan' => $_POST['kdpolitujuan'],
+            'nmpolitujuan' => $_POST['nmpolitujuan'],
+            'klsrawat' => $_POST['klsrawat'],
+            'lakalantas' => $_POST['lakalantas'],
+            'user' => $_POST['sep_user'],
+            'nomr' => $_POST['nomr'],
+            'nama_pasien' => $_POST['nama_pasien'],
+            'tanggal_lahir' => $_POST['tanggal_lahir'],
+            'peserta' => $_POST['peserta'],
+            'jkel' => $_POST['jenis_kelamin'],
+            'no_kartu' => $_POST['no_kartu'],
+            'tglpulang' => $_POST['tglpulang'],
+            'asal_rujukan' => $_POST['asal_rujukan'],
+            'eksekutif' => $_POST['eksekutif'],
+            'cob' => $_POST['cob'],
+            'penjamin' => $_POST['penjamin'],
+            'notelep' => $_POST['notelep'],
+            'katarak' => $_POST['katarak'],
+            'tglkkl' => $_POST['tglkkl'],
+            'keterangankkl' => $_POST['keterangankkl'],
+            'suplesi' => $_POST['suplesi'],
+            'no_sep_suplesi' => $_POST['no_sep_suplesi'],
+            'kdprop' => $_POST['kdprop'],
+            'nmprop' => $_POST['nmprop'],
+            'kdkab' => $_POST['kdkab'],
+            'nmkab' => $_POST['nmkab'],
+            'kdkec' => $_POST['kdkec'],
+            'nmkec' => $_POST['nmkec'],
+            'noskdp' => $_POST['noskdp'],
+            'kddpjp' => $_POST['kddpjp'],
+            'nmdpdjp' => $_POST['nmdpdjp']
+          ]);
+          $simpan_prb = $this->db('bpjs_prb')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'prb' => $_POST['prolanis_prb']
+          ]);
+
+          if($simpan_sep) {
+            echo $_POST['sep_no_sep'];
+          }*/
+
+          echo '0186R0020920V003231';
+
+        }
+
+        exit();
+
+    }
+
+    public function getCariByNoRujukanModal($searchBy, $keyword)
+    {
+        if ($searchBy == 'RS') {
+            $url = 'Rujukan/RS/'.$keyword;
+        } else {
+            $url = 'Rujukan/'.$keyword;
+        }
+        $url = $this->api_url.''.$url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+        $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
+        echo $this->tpl->draw(MODULES.'/vclaim/view/admin/rujukan.modal.html', true);
+        exit();
+    }
+
+    public function getDiagnosa($keyword)
+    {
+        $url = $this->api_url.'referensi/diagnosa/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function getPoli($keyword)
+    {
+        $url = $this->api_url.'referensi/poli/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function getFaskes($kd_faskes = null, $jns_faskes = null)
+    {
+        $url = $this->api_url.'referensi/faskes/'.$kd_faskes.'/'.$jns_faskes;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDokterDpjp($jnsPelayanan, $tglPelayanan, $spesialis)
+    {
+        $url = $this->api_url.'referensi/dokter/pelayanan/'.$jnsPelayanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getPropinsi()
+    {
+        $url = $this->api_url.'referensi/propinsi';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getKabupaten($kdPropinsi)
+    {
+        $url = $this->api_url.'referensi/kabupaten/propinsi/'.$kdPropinsi;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getKecamatan($kdKabupaten)
+    {
+        $url = $this->api_url.'referensi/kecamatan/kabupaten/'.$kdKabupaten;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getProcedure($keyword)
+    {
+        $url = $this->api_url.'referensi/procedure/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getKelasRawat()
+    {
+        $url = $this->api_url.'referensi/kelasrawat';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDokter($keyword)
+    {
+        $url = $this->api_url.'referensi/dokter/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getSpesialistik()
+    {
+        $url = $this->api_url.'referensi/spesialistik';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getRuangRawat()
+    {
+        $url = $this->api_url.'referensi/ruangrawat';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCaraKeluar()
+    {
+        $url = $this->api_url.'referensi/carakeluar';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getPascaPulang()
+    {
+        $url = $this->api_url.'referensi/pascapulang';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getByNoKartu($noKartu, $tglPelayananSEP)
+    {
+      $url = $this->api_url.'Peserta/nokartu/'.$noKartu.'/tglSEP/'.$tglPelayananSEP;
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+      $json = json_decode($output, true);
+      echo json_encode($json);
+      exit();
+    }
+
+    public function getByNIK($nik, $tglPelayananSEP)
+    {
+      $url = $this->api_url.'Peserta/nik/'.$nik.'/tglSEP/'.$tglPelayananSEP;
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+      $json = json_decode($output, true);
+      echo json_encode($json);
+      exit();
+    }
+
+    public function postInsertSEP($data = [])
+    {
+        $data = [
+            'request' => [
+               't_sep' => [
+                  'noKartu' => '0001112230666',
+                  'tglSep' => '2017-10-18',
+                  'ppkPelayanan' => '0301R001',
+                  'jnsPelayanan' => '2',
+                  'klsRawat' => '3',
+                  'noMR' => '123456',
+                  'rujukan' => [
+                     'asalRujukan' => '1',
+                     'tglRujukan' => '2017-10-17',
+                     'noRujukan' => '1234567',
+                     'ppkRujukan' => '00010001'
+                  ],
+                  'catatan' => 'test',
+                  'diagAwal' => 'A00.1',
+                  'poli' => [
+                     'tujuan' => 'INT',
+                     'eksekutif' => '0'
+                  ],
+                  'cob' => [
+                     'cob' => '0'
+                  ],
+                  'katarak' => [
+                     'katarak' => '0'
+                  ],
+                  'jaminan' => [
+                     'lakaLantas' => '0',
+                     'penjamin' => [
+                         'penjamin' => '1',
+                         'tglKejadian' => '2018-08-06',
+                         'keterangan' => 'kll',
+                         'suplesi' => [
+                             'suplesi' => '0',
+                             'noSepSuplesi' => '0301R0010718V000001',
+                             'lokasiLaka' => [
+                                 'kdPropinsi' => '03',
+                                 'kdKabupaten' => '0050',
+                                 'kdKecamatan' => '0574'
+                             ]
+                         ]
+                     ]
+                  ],
+                  'skdp' => [
+                     'noSurat' => '000002',
+                     'kodeDPJP' => '31661'
+                  ],
+                  'noTelp' => '081919999',
+                  'user' => 'Coba Ws'
+               ]
+            ]
+        ];
+
+        $data = json_encode($data);
+
+        $url = $this->api_url.'SEP/1.1/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function postUpdateSEP($data = [])
+    {
+        $url = $this->api_url.'SEP/1.1/Update';
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDeleteSEP($sep)
+    {
+        $data = [
+            'request' => [
+                't_sep' => [
+                    'noSep' => $sep,
+                    'user' => 'admin'
+                ]
+            ]
+        ];
+
+        $data = json_encode($data);
+
+        $url = $this->api_url.'SEP/Delete';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCariSEP($keyword)
+    {
+        $url = $this->api_url.'SEP/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getSuplesiJasaRaharja($noKartu, $tglPelayanan)
+    {
+        $url = $this->api_url.'sep/JasaRaharja/Suplesi/'.$noKartu.'/tglPelayanan/'.$tglPelayanan;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function postPengajuanPenjaminanSep($data = [])
+    {
+        $url = $this->api_url.'Sep/pengajuanSEP';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function postApprovalPenjaminanSep($data = [])
+    {
+        $url = $this->api_url.'Sep/aprovalSEP';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+    public function postUpdateTglPlg($data = [])
+    {
+        $url = $this->api_url.'Sep/updtglplg';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getInacbgSEP($keyword)
+    {
+        $url = $this->api_url.'sep/cbg/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function postInsertRujukan($data = [])
+    {
+        $url = $this->api_url.'Rujukan/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function postUpdateRujukan($data = [])
+    {
+        $url = $this->api_url.'Rujukan/update';
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function postDeleteRujukan($data = [])
+    {
+        $url = $this->api_url.'Rujukan/delete';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCariByNoRujukan($searchBy, $keyword)
+    {
+        if ($searchBy == 'RS') {
+            $url = 'Rujukan/RS/'.$keyword;
+        } else {
+            $url = 'Rujukan/'.$keyword;
+        }
+        $url = $this->api_url.''.$url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCariByNoKartu($searchBy, $keyword, $multi = false)
+    {
+        $record = $multi ? 'List/' : '';
+        if ($searchBy == 'RS') {
+            $url = 'Rujukan/RS/'.$record.'Peserta/'.$keyword;
+        } else {
+            $url = 'Rujukan/'.$record.'Peserta/'.$keyword;
+        }
+        $url = $this->api_url.''.$url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCariByTglRujukan($searchBy, $keyword)
+    {
+        if ($searchBy == 'RS') {
+            $url = 'Rujukan/RS/List/TglRujukan/'.$keyword;
+        } else {
+            $url = 'Rujukan/List/TglRujukan/'.$keyword;
+        }
+        $url = $this->api_url.''.$url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+
+        $noKunjungan = [];
+        $i = 1;
+        foreach ($json['response']['rujukan'] as $key=>$value) {
+          //$keyword = $value['noKunjungan'];
+          /*if ($searchBy == 'RS') {
+              $url = 'Rujukan/RS/'.$keyword;
+          } else {
+              $url = 'Rujukan/'.$keyword;
+          }
+          $url = $this->api_url.''.$url;
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+          $json = json_decode($output, true);
+          echo json_encode($json);*/
+          $row['Nomor'] = $i++;
+          $row['noKunjungan'] = '<a href="'.url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]).'" data-toggle="modal" data-target="#rujukanModal">'.$value['noKunjungan'].'</a>';
+          $row['Poliklinik'] = '['.$value['poliRujukan']['kode'].'] '.$value['poliRujukan']['nama'];
+          $row['Diagnosa'] = '['.$value['diagnosa']['kode'].'] '.$value['diagnosa']['nama'];
+          $row['Perujuk'] = '['.$value['provPerujuk']['kode'].'] '.$value['provPerujuk']['nama'];
+          $row['Tanggal'] = $value['tglKunjungan'];
+          $noKunjungan[] = $row;
+        }
+        echo json_encode($noKunjungan);
+        exit();
+    }
+
+    public function getCariByTglRujukan_BackUp($searchBy, $keyword)
+    {
+        if ($searchBy == 'RS') {
+            $url = 'Rujukan/RS/List/TglRujukan/'.$keyword;
+        } else {
+            $url = 'Rujukan/List/TglRujukan/'.$keyword;
+        }
+        $url = $this->api_url.''.$url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo '<pre>'.json_encode($json, JSON_PRETTY_PRINT).'</pre>';
+        /*$listRujukan = [];
+        $i = 1;
+        foreach ($json['response']['rujukan'] as $key=>$value) {
+          $row['nomor'] = $i++;
+          if ($searchBy == 'RS') {
+              $url = 'Rujukan/RS/'.$keyword;
+          } else {
+              $url = 'Rujukan/'.$keyword;
+          }
+          $url = $this->api_url.''.$url;
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+          $json = json_decode($output, true);
+          //echo json_encode($json);
+          $row['noRujukan'] = $value['noKunjungan'];
+          $listRujukan[] = $row;
+        }
+        echo json_encode($listRujukan);*/
+        exit();
+    }
+
+    public function postInsertLPK($data = [])
+    {
+        $url = $this->api_url.'LPK/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function postUpdateLPK($data = [])
+    {
+        $url = $this->api_url.'LPK/update';
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function postDeleteLPK($data = [])
+    {
+        $url = $this->api_url.'LPK/delete';
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getCariLPK($tglMasuk, $jnsPelayanan)
+    {
+        $url = $this->api_url.'LPK/TglMasuk/'.$tglMasuk.'/JnsPelayanan/'.$jnsPelayanan;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDataKunjungan($tglSep, $jnsPelayanan)
+    {
+        $url = $this->api_url.'Monitoring/Kunjungan/Tanggal/'.$tglSep.'/JnsPelayanan/'.$jnsPelayanan;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDataKlaim($tglPulang, $jnsPelayanan, $statusKlaim)
+    {
+        $url = $this->api_url.'Monitoring/Klaim/Tanggal/'.$tglPulang.'/JnsPelayanan/'.$jnsPelayanan.'/Status/'.$statusKlaim;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getHistoriPelayanan($noKartu, $tglAwal, $tglAkhir)
+    {
+        $url = $this->api_url.'monitoring/HistoriPelayanan/NoKartu/'.$noKartu.'/tglAwal/'.$tglAwal.'/tglAkhir/'.$tglAkhir;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function getDataKlaimJasaRaharja($tglMulai, $tglAkhir)
+    {
+        $url = $this->api_url.'monitoring/JasaRaharja/tglMulai/'.$tglMulai.'/tglAkhir/'.$tglAkhir;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    private function _addHeaderFiles()
+    {
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+    }
+
+}

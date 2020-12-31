@@ -1,0 +1,33 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title"><i class="fa fa-{$module.icon}"></i> {$module.name} {$module.version}</h4>
+</div>
+<div class="modal-body">
+    <div class="table-responsive">
+        <table class="table no-bottom-margin">
+            <thead>
+                <tr>
+                    <th>Tutorial {$module.name} </th>
+                </tr>
+            </thead>
+            <tbody>
+              {if: isset($module.help)}
+                <tr>
+                    <td>
+                        {$module.help}
+                    </td>
+                </tr>
+              {else}
+                <tr>
+                    <td>
+                        Halaman turorial atau bantuan belum tersedia.
+                    </td>
+                </tr>
+              {/if}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

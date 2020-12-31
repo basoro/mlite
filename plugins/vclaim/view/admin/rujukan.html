@@ -1,0 +1,869 @@
+<style>
+    th, td, p, input {
+        font:14px Verdana;
+    }
+    table, th, td
+    {
+        border: solid 1px #ddd;
+        border-collapse: collapse;
+        padding: 5px 10px;
+        text-align: left;
+        white-space: nowrap;
+    }
+    th {
+        font-weight:bold;
+    }
+</style>
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="nav row">
+            <li>
+                <a href="{?=url([ADMIN,'vclaim','manage'])?}"><i class="fa fa-home fa-fw"></i>Home</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'referensi'])?}"><i class="fa fa-book fa-fw"></i>Referensi</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'peserta'])?}"><i class="fa fa-user fa-fw"></i>Peserta</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'sep'])?}"><i class="fa fa-archive fa-fw"></i>SEP</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'rujukan'])?}"><i class="fa fa-bullseye fa-fw"></i>Rujukan</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'lpk'])?}"><i class="fa fa-clipboard fa-fw"></i>Lembar Pengajuan Klaim</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'monitoring'])?}"><i class="fa fa-book fa-fw"></i>Monitoring</a>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Cari Rujukan</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Rujukan Berdasarkan Nomor Rujukan</a>
+                            </h4>
+                        </div>
+                        <div id="collapseOne" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-pills">
+                                    <li class="active">
+                                        <a href="#pcare-pills" data-toggle="tab">PCare</a>
+                                    </li>
+                                    <li>
+                                        <a href="#rs-pills" data-toggle="tab">Rumah Sakit</a>
+                                    </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content m-t-xl">
+                                    <div class="tab-pane fade in active" id="pcare-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Rujukan PCare</label>
+                                          <input type="text" id="no_rujukan" name="no_rujukan" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                    <div class="tab-pane fade" id="rs-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="RS">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Rujukan RS</label>
+                                          <input type="text" id="no_rujukan" name="no_rujukan" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Rujukan Berdasarkan Nomor Kartu (1 Record)</a>
+                            </h4>
+                        </div>
+                        <div id="collapseTwo" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-pills">
+                                    <li class="active">
+                                        <a href="#pcare2-pills" data-toggle="tab">Pcare</a>
+                                    </li>
+                                    <li>
+                                        <a href="#rs2-pills" data-toggle="tab">Rumah Sakit</a>
+                                    </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content m-t-xl">
+                                    <div class="tab-pane fade in active" id="pcare2-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Kartu</label>
+                                          <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                    <div class="tab-pane fade" id="rs2-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Kartu</label>
+                                          <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#RJKNOKA">Rujukan Berdasarkan Nomor Kartu (Multi Record)</a>
+                            </h4>
+                        </div>
+                        <div id="RJKNOKA" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-pills">
+                                    <li class="active">
+                                        <a href="#pcare3-pills" data-toggle="tab">Pcare</a>
+                                    </li>
+                                    <li>
+                                        <a href="#rs3-pills" data-toggle="tab">Rumah Sakit</a>
+                                    </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="pcare3-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <input type="hidden" name="multi" value="yes">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Kartu</label>
+                                          <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                    <div class="tab-pane fade" id="rs3-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="RS">
+                                        <input type="hidden" name="multi" value="yes">
+                                        <div class="form-group">
+                                          <label for="poli">Nomor Kartu</label>
+                                          <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#TGLRJK">Rujukan Berdasarkan Tanggal Rujukan</a>
+                            </h4>
+                        </div>
+                        <div id="TGLRJK" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-pills">
+                                    <li class="active">
+                                        <a href="#pcare4-pills" data-toggle="tab">Pcare</a>
+                                    </li>
+                                    <li>
+                                        <a href="#rs4-pills" data-toggle="tab">Rumah Sakit</a>
+                                    </li>
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="pcare4-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <div class="form-group">
+                                          <label for="poli">Tanggal Rujukan</label>
+                                          <input type="text" id="tgl_rujukan" name="tgl_rujukan" class="form-control tanggal" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <div class="table-responsive no-margin m-b-xl" id="showData">
+                                      </div>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                    <div class="tab-pane fade" id="rs4-pills">
+                                      <form class="" action="" method="">
+                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                        <input type="hidden" name="searchBy" value="RS">
+                                        <div class="form-group">
+                                          <label for="poli">Tanggal Rujukan</label>
+                                          <input type="text" id="tgl_rujukan" name="tgl_rujukan" class="form-control tanggal" value="">
+                                        </div>
+                                        <button type="submit" class="btn btn-danger">
+                                            Kirim Parameter
+                                        </button>
+                                      </form>
+                                      {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+                                      <h4 class="m-t-xl">Respons result</h4>
+                                      <div class="table-responsive no-margin m-b-xl" id="showData">
+                                      </div>
+                                      <pre>
+                                      </pre>
+                                      {/if}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pembuatan Rujukan</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#rujukan1">Insert Rujukan</a>
+                            </h4>
+                        </div>
+                        <div id="rujukan1" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#json" data-toggle="tab">JSON</a>
+                                    </li>
+
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="json">
+                                        <h3><i>{BASE URL}</i>/<i>{Service Name}</i>/Rujukan/insert</h3>
+                                        <p>Fungsi : Insert Rujukan</p>
+                                        <p>Method : <b>POST</b></p>
+                                        <p>Format : <b>Json</b></p>
+                                        <p>Content-Type: <b>Application/x-www-form-urlencoded</b></p>
+
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-pills">
+                                            <li class="active">
+                                                <a href="#request-json" data-toggle="tab">Request</a>
+                                            </li>
+                                            <li>
+                                                <a href="#response-json" data-toggle="tab">Response</a>
+                                            </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade in active" id="request-json">
+                                                <h4>Request</h4>
+                                                <div class="col-sm-5">
+                                                    <!---code -->
+                                                    <div id="json-req">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+           "request": {
+              "t_rujukan": {
+                 "noSep": "0301R0011017V000014",
+                 "tglRujukan": "2017-11-08",
+                 "ppkDirujuk": "0301R002",
+                 "jnsPelayanan": "1",
+                 "catatan": "test",
+                 "diagRujukan": "A00.1",
+                 "tipeRujukan": "1",
+                 "poliRujukan": "INT",
+                 "user": "Coba Ws"
+              }
+           }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+                                                    <button class="btn btn-danger" data-clipboard-target="#json-req" data-clipboard-action="copy">
+                                                        Copy to clipboard
+                                                    </button>
+
+                                                    <!---end code-->
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <!-- keterangan code-->
+                                                    <!---code -->
+                                                    <div id="json-req">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+           "request": {
+              "t_rujukan": {
+                 "noSep": "{nomor sep}",
+                 "tglRujukan": "{tanggal rujukan format : yyyy-mm-dd}",
+                 "ppkDirujuk": "{faskes dirujuk -> data di referensi faskes}",
+                 "jnsPelayanan": "{jenis pelayanan -> 1.R.Inap 2.R.Jalan}",
+                 "catatan": "{catatan rujukan}",
+                 "diagRujukan": "{kode diagnosa rujukan -> data di referensi diagnosa}",
+                 "tipeRujukan": "{tipe rujukan -> 0.penuh, 1.Partial 2.rujuk balik}",
+                 "poliRujukan": "{kode poli rujukan -> data di referensi poli}",
+                 "user": "{user pemakai}"
+              }
+           }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+
+                                                    <!---end code-->
+                                                    <!--- end keterangan code-->
+                                                </div>
+
+                                            </div>
+                                            <div class="tab-pane fade" id="response-json">
+                                                <h4>Response</h4>
+                                                <div id="json-res">
+                                                    <pre>
+                                                    <span class="cp">
+        {
+           "metaData": {
+              "code": "200",
+              "message": "OK"
+           },
+           "response": {
+              "rujukan": {
+                 "AsalRujukan": {
+                    "kode": "0301R001",
+                    "nama": "RSUP DR M JAMIL PADANG"
+                 },
+                 "diagnosa": {
+                    "kode": "A00.1",
+                    "nama": "A00.1 - Cholera due to Vibrio cholerae 01, biovar eltor"
+                 },
+                 "noRujukan": "0301R0011117B001126",
+                 "peserta": {
+                    "asuransi": "-",
+                    "hakKelas": null,
+                    "jnsPeserta": "PNS PUSAT",
+                    "kelamin": "Laki-Laki",
+                    "nama": "ZIYADUL",
+                    "noKartu": "0000000110156",
+                    "noMr": "123456",
+                    "tglLahir": "2008-02-05"
+                 },
+                 "poliTujuan": {
+                    "kode": "INT",
+                    "nama": "Poli Penyakit Dalam"
+                 },
+                 "tglRujukan": "2017-11-08",
+                 "tujuanRujukan": {
+                    "kode": "0301R002",
+                    "nama": "RS JIWA ULU GADUT"
+                 }
+              }
+           }
+        }
+
+    <b>catatan : untuk tipe rujukan 1 maka response adalah null</b>
+                                     </span>
+                                     </pre>
+                                                </div>
+
+                                                <button class="btn btn-danger" data-clipboard-target="#json-res" data-clipboard-action="copy">
+                                                    Copy to clipboard
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end insert-->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#rujukan2">Update Rujukan</a>
+                            </h4>
+                        </div>
+                        <div id="rujukan2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#json" data-toggle="tab">JSON</a>
+                                    </li>
+
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="json">
+                                        <h3><i>{BASE URL}</i>/<i>{Service Name}</i>/Rujukan/update</h3>
+                                        <p>Fungsi : Update Rujukan</p>
+                                        <p>Method : <b>PUT</b></p>
+                                        <p>Format : <b>Json</b></p>
+                                        <p>Content-Type: <b>Application/x-www-form-urlencoded</b></p>
+
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-pills">
+                                            <li class="active">
+                                                <a href="#request-json1" data-toggle="tab">Request</a>
+                                            </li>
+                                            <li>
+                                                <a href="#response-json1" data-toggle="tab">Response</a>
+                                            </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade in active" id="request-json1">
+                                                <h4>Request</h4>
+                                                <div class="col-sm-5">
+                                                    <!---code -->
+                                                    <div id="json-req1">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+           "request": {
+              "t_rujukan": {
+                 "noRujukan": "0301R0011117B000014",
+                 "ppkDirujuk": "0301R002",
+                 "tipe": "0",
+                 "jnsPelayanan": "1",
+                 "catatan": "test 3",
+                 "diagRujukan": "A00.1",
+                 "tipeRujukan": "1",
+                 "poliRujukan": "INT",
+                 "user": "Coba Ws"
+              }
+           }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+                                                    <button class="btn btn-danger" data-clipboard-target="#json-req1" data-clipboard-action="copy">
+                                                        Copy to clipboard
+                                                    </button>
+
+                                                    <!---end code-->
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <!-- keterangan code-->
+                                                    <!---code -->
+                                                    <div id="json-req1">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+           "request": {
+              "t_rujukan": {
+                 "noRujukan": "{nomor rujukan}",
+                 "ppkDirujuk": "{faskes dirujuk -> data di referensi faskes}",
+                 "tipe": "{tipe rujukan -> 0.penuh, 1.Partial 2.rujuk balik}",
+                 "jnsPelayanan": "{jenis pelayanan -> 1.R.Inap 2.R.Jalan}",
+                 "catatan": "{catatan rujukan}",
+                 "diagRujukan": "{kode diagnosa rujukan -> data di referensi diagnosa}",
+                 "tipeRujukan": "{tipe rujukan -> 0.penuh, 1.Partial 2.rujuk balik}",
+                 "poliRujukan": "{kode poli rujukan -> data di referensi poli}",
+                 "user": "{user pemakai}"
+              }
+           }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+
+                                                    <!---end code-->
+                                                    <!--- end keterangan code-->
+                                                </div>
+
+                                            </div>
+                                            <div class="tab-pane fade" id="response-json1">
+                                                <h4>Response</h4>
+                                                <div id="json-res1">
+                                                    <pre>
+                                                    <span class="cp">
+        {
+           "metaData": {
+              "code": "200",
+              "message": "OK"
+           },
+           "response": 0301R0011117B000014
+        }
+
+                                     </span>
+                                     </pre>
+                                                </div>
+
+                                                <button class="btn btn-danger" data-clipboard-target="#json-res1" data-clipboard-action="copy">
+                                                    Copy to clipboard
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <!-- endupdate -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#rujukan3">Delete Rujukan</a>
+                            </h4>
+                        </div>
+                        <div id="rujukan3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <ul class="nav nav-tabs">
+                                    <li class="active">
+                                        <a href="#json" data-toggle="tab">JSON</a>
+                                    </li>
+
+                                </ul>
+                                <!-- Tab panes -->
+                                <div class="tab-content">
+                                    <div class="tab-pane fade in active" id="json">
+                                        <h3><i>{BASE URL}</i>/<i>{Service Name}</i>/Rujukan/delete</h3>
+                                        <p>Fungsi : Update Rujukan</p>
+                                        <p>Method : <b>DELETE</b></p>
+                                        <p>Format : <b>Json</b></p>
+                                        <p>Content-Type: <b>Application/x-www-form-urlencoded</b></p>
+
+                                        <!-- Nav tabs -->
+                                        <ul class="nav nav-pills">
+                                            <li class="active">
+                                                <a href="#request-json2" data-toggle="tab">Request</a>
+                                            </li>
+                                            <li>
+                                                <a href="#response-json2" data-toggle="tab">Response</a>
+                                            </li>
+                                        </ul>
+                                        <!-- Tab panes -->
+                                        <div class="tab-content">
+                                            <div class="tab-pane fade in active" id="request-json2">
+                                                <h4>Request</h4>
+                                                <div class="col-sm-5">
+                                                    <!---code -->
+                                                    <div id="json-req2">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+            "request": {
+                "t_rujukan": {
+                    "noRujukan": "0301R0011117B000015",
+                    "user": "Coba Ws"
+                }
+            }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+                                                    <button class="btn btn-danger" data-clipboard-target="#json-req" data-clipboard-action="copy">
+                                                        Copy to clipboard
+                                                    </button>
+
+                                                    <!---end code-->
+                                                </div>
+                                                <div class="col-sm-7">
+                                                    <!-- keterangan code-->
+                                                    <!---code -->
+                                                    <div id="json-req2">
+                                                        <pre>
+                                                        <span class="cp">
+        {
+           "request": {
+              "t_rujukan": {
+                 "noRujukan": "{nomor rujukan}",
+                 "user": "{user pemakai}"
+              }
+           }
+        }
+                                     </span>
+                                     </pre>
+                                                    </div>
+
+
+                                                    <!---end code-->
+                                                    <!--- end keterangan code-->
+                                                </div>
+
+                                            </div>
+                                            <div class="tab-pane fade" id="response-json2">
+                                                <h4>Response</h4>
+                                                <div id="json-res1">
+                                                    <pre>
+                                                    <span class="cp">
+        {
+           "metaData": {
+              "code": "200",
+              "message": "OK"
+           },
+           "response": 0301R0011117B000014
+        }
+                                     </span>
+                                     </pre>
+                                                </div>
+
+                                                <button class="btn btn-danger" data-clipboard-target="#json-res2" data-clipboard-action="copy">
+                                                    Copy to clipboard
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="rujukanModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+</script>
+<script>
+  {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', $_GET['searchBy'], $_GET['no_rujukan']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynorujukan', $_GET['searchBy'], $_GET['no_rujukan']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu'], $_GET['multi']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS' && isset($_GET['multi']) && $_GET['multi'] == 'yes'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribynokartu', $_GET['searchBy'], $_GET['no_kartu'], $_GET['multi']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        $("pre").text(data);
+      });
+  {/if}
+  {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', $_GET['searchBy'], $_GET['tgl_rujukan']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        //$("pre").text(data);
+        var getDataKunjungan = JSON.parse(data);
+         var col = [];
+         for (var i = 0; i < getDataKunjungan.length; i++) {
+             for (var key in getDataKunjungan[i]) {
+                 if (col.indexOf(key) === -1) {
+                     col.push(key);
+                 }
+             }
+         }
+
+         // CREATE DYNAMIC TABLE.
+         var table = document.createElement("table");
+
+         // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+         var tr = table.insertRow(-1);                   // TABLE ROW.
+
+         for (var i = 0; i < col.length; i++) {
+             var th = document.createElement("th");      // TABLE HEADER.
+             th.innerHTML = col[i];
+             tr.appendChild(th);
+         }
+
+         // ADD JSON DATA TO THE TABLE AS ROWS.
+         for (var i = 0; i < getDataKunjungan.length; i++) {
+
+             tr = table.insertRow(-1);
+
+             for (var j = 0; j < col.length; j++) {
+                 var tabCell = tr.insertCell(-1);
+                 tabCell.innerHTML = getDataKunjungan[i][col[j]];
+             }
+         }
+
+         // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+         var divContainer = document.getElementById("showData");
+         divContainer.innerHTML = "";
+         divContainer.appendChild(table);
+      });
+  {/if}
+  {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+      $.get("{?=url([ADMIN, 'vclaim', 'caribytglrujukan', $_GET['searchBy'], $_GET['tgl_rujukan']])?}", function(data){
+        var data = JSON.parse(data);
+        var data = JSON.stringify(data, null, '\t');
+        //$("pre").text(data);
+        var getDataKunjungan = JSON.parse(data);
+         var col = [];
+         for (var i = 0; i < getDataKunjungan.length; i++) {
+             for (var key in getDataKunjungan[i]) {
+                 if (col.indexOf(key) === -1) {
+                     col.push(key);
+                 }
+             }
+         }
+
+         // CREATE DYNAMIC TABLE.
+         var table = document.createElement("table");
+
+         // CREATE HTML TABLE HEADER ROW USING THE EXTRACTED HEADERS ABOVE.
+
+         var tr = table.insertRow(-1);                   // TABLE ROW.
+
+         for (var i = 0; i < col.length; i++) {
+             var th = document.createElement("th");      // TABLE HEADER.
+             th.innerHTML = col[i];
+             tr.appendChild(th);
+         }
+
+         // ADD JSON DATA TO THE TABLE AS ROWS.
+         for (var i = 0; i < getDataKunjungan.length; i++) {
+
+             tr = table.insertRow(-1);
+
+             for (var j = 0; j < col.length; j++) {
+                 var tabCell = tr.insertCell(-1);
+                 tabCell.innerHTML = getDataKunjungan[i][col[j]];
+             }
+         }
+
+         // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+         var divContainer = document.getElementById("showData");
+         divContainer.innerHTML = "";
+         divContainer.appendChild(table);
+       });
+  {/if}
+</script>

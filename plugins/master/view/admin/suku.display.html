@@ -1,0 +1,80 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>ID Suku</th>
+          <th>Nama Suku</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $suku.list}
+        {loop: $suku.list}
+        <tr class="edit" data-id="{$value.id}">
+          <td>{$value.id}</td>
+          <td>{$value.nama_suku_bangsa}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="2" class="text-center">Tidak ada data suku bangsa.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($suku.halaman)}
+        {if: $suku.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $suku.halaman > 1}
+        <li class="halaman" data-hal="{?=$suku.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$suku.halaman} dari {$suku.jml_halaman} Hal</a></li>
+        {if: $suku.halaman < $suku.jml_halaman}
+        <li class="halaman" data-hal="{?=$suku.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $suku.halaman == $suku.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$suku.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $suku.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $suku.halaman > 1}
+        <li class="halaman" data-hal="{?=$suku.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$suku.halaman} dari {$suku.jml_halaman} Hal</a></li>
+        {if: $suku.halaman < $suku.jml_halaman}
+        <li class="halaman" data-hal="{?=$suku.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $suku.halaman == $suku.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$suku.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>

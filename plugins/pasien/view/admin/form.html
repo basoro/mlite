@@ -1,439 +1,297 @@
-<article class="row">
-	<form name="pasien" action="{?=url(ADMIN.'/pasien/save/'.@$pasien.form.no_rkm_medis)?}" method="POST" enctype="multipart/form-data">
-		<div class="col-md-8">
-		    <div class="panel panel-default">
-                <div class="panel-heading">
-		            <h3 class="panel-title">Informasi Pribadi</h3>
-                </div>
-                <div class="panel-body">
-										<div class="row clearfix">
-												<div class="col-md-6">
-														<div class="form-group">
-																<label>Nomor RM</label>
-				                        <input type="text" name="no_rkm_medis" class="form-control" required value="{$pasien.form.no_rkm_medis}" readonly />
-					    	            </div>
-												</div>
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Nomor KTP</label>
-																<div class="input-group">
-					    	                		<input type="text" name="no_ktp" class="form-control" id="no_ktp" required value="{$pasien.form.no_ktp}" />
-																		<span class="input-group-addon">
-																				<div class="dropdown">
-																						<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-																								<i class="fa fa-paperclip"></i>
-																						</a>
-																						<ul class="dropdown-menu pull-right">
-																								<li><a href="javascript:void(0);" onclick="cekNikBPJS()">Bridging NIK BPJS</a></li>
-																						</ul>
-																				</div>
-																		</span>
-																</div>
-					    	            </div>
-												</div>
-										</div>
-										<div class="row clearfix">
-												<div class="col-md-6">
-				                    <div class="form-group">
-				      	                <label>Nama lengkap</label>
-				      	                <input type="text" name="nm_pasien" id="nm_pasien" class="form-control" placeholder="Nama lengkap (optional)" value="{$pasien.form.nm_pasien}" />
-				      	            </div>
-												</div>
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Nama Ibu</label>
-					    	                <input type="text" name="nm_ibu" class="form-control" placeholder="Nama lengkap ibu (optional)" value="{$pasien.form.nm_ibu}" />
-					    	            </div>
-												</div>
-										</div>
-										<div class="row clearfix">
-												<div class="col-md-3">
-														<div class="form-group">
-					    	                <label>Tempat Lahir</label>
-					    	                <input type="text" name="tmp_lahir" class="form-control" placeholder="Tempat Lahir" value="{$pasien.form.tmp_lahir}" />
-					    	            </div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-				      	                <label>Tanggal Lahir</label>
-				      	                <input type="text" name="tgl_lahir" id="tgl_lahir" class="form-control datepicker" placeholder="Tanggl lahir" value="{$pasien.form.tgl_lahir}" />
-				      	            </div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Jenis Kelamin</label>
-																<select name="jk" id="jk" class="form-control">
-																	{loop: $pasien.jk}
-																		<option value="{$value}"{if: $value == $pasien.form.jk} selected{/if}>{$value}</option>
-																	{/loop}
-																</select>
-														</div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Golongan Darah</label>
-																<select name="gol_darah" class="form-control">
-																	{loop: $pasien.gol_darah}
-																		<option value="{$value}"{if: $value == $pasien.form.gol_darah} selected{/if}>{$value}</option>
-																	{/loop}
-																</select>
-														</div>
-												</div>
-										</div>
-										<div class="row clearfix">
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Agama</label>
-																<select name="agama" class="form-control">
-																	{loop: $pasien.agama}
-																		<option value="{$value}"{if: $value == $pasien.form.agama} selected{/if}>{$value}</option>
-																	{/loop}
-																</select>
-														</div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Pendidikan</label>
-																<select name="pnd" class="form-control">
-																	{loop: $pasien.pnd}
-																		<option value="{$value}"{if: $value == $pasien.form.pnd} selected{/if}>{$value}</option>
-																	{/loop}
-																</select>
-														</div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Pekerjaan</label>
-																<input type="text" name="pekerjaan" class="form-control" placeholder="Pekerjaan" value="{$pasien.form.pekerjaan}" />
-														</div>
-												</div>
-												<div class="col-md-3">
-														<div class="form-group">
-																<label>Status Nikah</label>
-																<select name="stts_nikah" class="form-control">
-																	{loop: $pasien.stts_nikah}
-																		<option value="{$value}"{if: $value == $pasien.form.stts_nikah} selected{/if}>{$value}</option>
-																	{/loop}
-																</select>
-														</div>
-												</div>
-										</div>
-										<div class="form-group">
-      	                <label>Alamat</label>
-      	                <textarea class="form-control" name="alamat" id="alamat" placeholder="Alamat (optional)" rows="4">{$pasien.form.alamat}</textarea>
-      	            </div>
-										<div class="row clearfix">
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Provinsi</label>
-																<div class="input-group">
-																		<input type="hidden" name="kd_prop" value="{$pasien.form.kd_prop}" id="kd_prop">
-																		<input type="text" value="{$pasien.propinsi.nm_prop}" id="namaprop" class="form-control" placeholder="Propinsi" disabled>
-																		<span class="input-group-addon" id="caripropinsi" data-toggle="modal" data-target="#propinsiModal">
-																				<i class="fa fa-paperclip"></i>
-																		</span>
-																</div>
-					    	            </div>
-												</div>
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Kabupaten / Kota</label>
-																<div class="input-group">
-																		<input type="hidden" name="kd_kab" value="{$pasien.form.kd_kab}" id="kd_kab">
-																		<input type="text" value="{$pasien.kabupaten.nm_kab}" id="namakab" class="form-control" placeholder="Kabupaten" disabled>
-																		<span class="input-group-addon" data-toggle="modal" data-target="#kabupatenModal">
-																				<i class="fa fa-paperclip"></i>
-																		</span>
-																</div>
-					    	            </div>
-												</div>
-										</div>
-										<div class="row clearfix">
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Kecamatan</label>
-																<div class="input-group">
-																		<input type="hidden" name="kd_kec" value="{$pasien.form.kd_kec}" id="kd_kec">
-																		<input type="text" value="{$pasien.kecamatan.nm_kec}" id="namakec" class="form-control" placeholder="Kecamatan" disabled>
-																		<span class="input-group-addon" data-toggle="modal" data-target="#kecamatanModal">
-																				<i class="fa fa-paperclip"></i>
-																		</span>
-																</div>
-					    	            </div>
-												</div>
-												<div class="col-md-6">
-														<div class="form-group">
-					    	                <label>Kelurahan</label>
-																<div class="input-group">
-																		<input type="hidden" name="kd_kel" value="{$pasien.form.kd_kel}" id="kd_kel">
-																		<input type="text" value="{$pasien.kelurahan.nm_kel}" id="namakel" class="form-control" placeholder="Kelurahan" disabled>
-																		<span class="input-group-addon" data-toggle="modal" data-target="#kelurahanModal">
-																				<i class="fa fa-paperclip"></i>
-																		</span>
-																</div>
-					    	            </div>
-												</div>
-										</div>
-                </div>
+<div id="form">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
+            <div class="col-sm-4">
+              <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$pasien.no_rkm_medis}" {if: !empty($pasien.no_rkm_medis)}disabled{/if}>
+              <input name="no_rkm_medis_baru" class="form-control" type="hidden" value="{$no_rkm_medis_baru}" id="no_rkm_medis_baru" >
             </div>
-
-					<div class="panel panel-default">
-              <div class="panel-heading">
-	            <h3 class="panel-title">Informasi Keluarga</h3>
-              </div>
-              <div class="panel-body">
-									<div class="row clearfix">
-											<div class="col-md-4">
-													<div class="form-group">
-				    	                <label>Keluarga</label>
-															<select name="keluarga" class="form-control">
-																{loop: $pasien.keluarga}
-																	<option value="{$value}"{if: $value == $pasien.form.keluarga} selected{/if}>{$value}</option>
-																{/loop}
-															</select>
-				    	            </div>
-											</div>
-											<div class="col-md-4">
-													<div class="form-group">
-				    	                <label>Nama Keluarga</label>
-				    	                <input type="text" name="namakeluarga" class="form-control" value="{$pasien.form.namakeluarga}" />
-				    	            </div>
-											</div>
-											<div class="col-md-4">
-													<div class="form-group">
-				    	                <label>Pekerjaan Keluarga</label>
-				    	                <input type="text" name="pekerjaanpj" class="form-control" value="{$pasien.form.pekerjaanpj}" />
-				    	            </div>
-											</div>
-									</div>
-									<div class="form-group">
-											<button type='button' id='copy_alamat' class='btn btn-xs btn-white pull-right'><i class='fa fa-refresh'></i> Sama Dengan Pasien</button>
-    	                <label>Alamat</label>
-    	                <textarea class="form-control" name="alamatpj" id="alamatpj" placeholder="Alamat (optional)" rows="4">{$pasien.form.alamatpj}</textarea>
-    	            </div>
-									<div class="row clearfix">
-											<div class="col-md-6">
-													<div class="form-group">
-				    	                <label>Provinsi</label>
-				    	                <input type="text" name="propinsipj" id="propinsipj" class="form-control" value="{$pasien.form.propinsipj}" />
-				    	            </div>
-											</div>
-											<div class="col-md-6">
-													<div class="form-group">
-				    	                <label>Kabupaten / Kota</label>
-				    	                <input type="text" name="kabupatenpj" id="kabupatenpj" class="form-control" value="{$pasien.form.kabupatenpj}" />
-				    	            </div>
-											</div>
-									</div>
-									<div class="row clearfix">
-											<div class="col-md-6">
-													<div class="form-group">
-				    	                <label>Kecamatan</label>
-				    	                <input type="text" name="kecamatanpj" id="kecamatanpj" class="form-control" value="{$pasien.form.kecamatanpj}" />
-				    	            </div>
-											</div>
-											<div class="col-md-6">
-													<div class="form-group">
-				    	                <label>Kelurahan</label>
-				    	                <input type="text" name="kelurahanpj" id="kelurahanpj" class="form-control" value="{$pasien.form.kelurahanpj}" />
-				    	            </div>
-											</div>
-									</div>
-              </div>
+            <label for="tgl_daftar" class="col-sm-2 control-label">Tgl. Daftar</label>
+            <div class="col-sm-3">
+              <input type="text" id="tgl_daftar" name="tgl_daftar" class="form-control tgl_daftar" value="{$pasien.tgl_daftar}">
+            </div>
           </div>
-	    </div>
-
-	    <div class="col-md-4">
-		    	<div class="panel panel-default">
-                <div class="panel-heading">
-		    	    	<h3 class="panel-title">Informasi Tambahan</h3>
-                </div>
-                <div class="panel-body">
-									<div class="form-group">
-	                    <label>Foto</label>
-	                    <div>
-	                      <img src="{$pasien.fotoURL}" width="96" height="96" class="img-thumbnail" id="photoPreview" style="cursor:pointer;" onclick="$('input[name=photo]').click()" />
-	                      <input type="file" name="photo" class="form-control hidden" />
-	                    </div>
-	                </div>
-									<div class="form-group">
-											<label>Nomor HP</label>
-											<input type="number" name="no_tlp" id="no_tlp" class="form-control" value="{$pasien.form.no_tlp}" />
-									</div>
-									<div class="form-group">
-											<label>Cara Bayar</label>
-											<select name="kd_pj" class="form-control">
-												{loop: $pasien.penjab}
-													<option value="{$value.kd_pj}"{if: $value.kd_pj == $pasien.form.kd_pj} selected{/if}>{$value.png_jawab}</option>
-												{/loop}
-											</select>
-									</div>
-									<div class="form-group">
-											<label>Nomor Peserta</label>
-											<div class="input-group">
-													<input type="text" name="no_peserta" id="no_peserta" class="form-control" placeholder="Nomor peserta asuransi (optional)" value="{$pasien.form.no_peserta}" />
-													<span class="input-group-addon">
-															<div class="dropdown">
-																	<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-																			<i class="fa fa-paperclip"></i>
-																	</a>
-																	<ul class="dropdown-menu pull-right">
-																			<li><a href="javascript:void(0);" onclick="cekNokaBPJS()">Bridging NOKA BPJS</a></li>
-																	</ul>
-															</div>
-													</span>
-											</div>
-									</div>
-									<div class="form-group">
-											<label>Perusahaan Pasien</label>
-											<select name="perusahaan_pasien" class="form-control">
-												{loop: $pasien.perusahaan_pasien}
-													<option value="{$value.kode_perusahaan}"{if: $value.kode_perusahaan == $pasien.form.perusahaan_pasien} selected{/if}>{$value.nama_perusahaan}</option>
-												{/loop}
-											</select>
-									</div>
-									<div class="form-group">
-											<label>Suku Bangsa</label>
-											<select name="suku_bangsa" class="form-control">
-												{loop: $pasien.suku_bangsa}
-													<option value="{$value.id}"{if: $value.id == $pasien.form.suku_bangsa} selected{/if}>{$value.nama_suku_bangsa}</option>
-												{/loop}
-											</select>
-									</div>
-									<div class="form-group">
-											<label>Bahasa</label>
-											<select name="bahasa_pasien" class="form-control">
-												{loop: $pasien.bahasa_pasien}
-													<option value="{$value.id}"{if: $value.id == $pasien.form.bahasa_pasien} selected{/if}>{$value.nama_bahasa}</option>
-												{/loop}
-											</select>
-									</div>
-									<div class="form-group">
-											<label>Cacat Fisik</label>
-											<select name="cacat_fisik" class="form-control">
-												{loop: $pasien.cacat_fisik}
-													<option value="{$value.id}"{if: $value.id == $pasien.form.cacat_fisik} selected{/if}>{$value.nama_cacat}</option>
-												{/loop}
-											</select>
-									</div>
-
-                </div>
-		    	</div>
-
-					<div class="panel panel-default">
-                <div class="panel-heading">
-		    	    <h3 class="panel-title">Pengaturan Lainnya</h3>
-                </div>
-                <div class="panel-body">
-									<div class="form-group">
-											<label>NIP</label>
-											<input type="number" name="nip" class="form-control" value="{$pasien.form.nip}" />
-									</div>
-									<div class="form-group">
-											<label>Email</label>
-											<input type="text" name="email" class="form-control" value="{$pasien.form.email}" />
-									</div>
-                  <div class="form-group">
-                      <label>Tanggal Daftar</label>
-                      <input type="text" name="tgl_daftar" class="form-control datepicker" placeholder="Tanggl daftar" value="{$pasien.form.tgl_daftar}" />
-                  </div>
-
-		            <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
-								<a href="{$pasien.manageURL}" class="btn btn-default">Batal</a>
-		        	</div>
+          <div class="form-group">
+            <label for="nm_pasien" class="col-sm-3 control-label">Nama</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_pasien" class="form-control" value="{$pasien.nm_pasien}">
             </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama Ibu</label>
+            <div class="col-sm-4">
+              <input type="text" name="nm_ibu" class="form-control" value="{$pasien.nm_ibu}">
+            </div>
+            <label for="tgl_lahir" class="col-sm-2 control-label">Tgl. Lahir</label>
+            <div class="col-sm-3">
+              <input type="text" id="tgl_lahir" name="tgl_lahir" class="form-control tgl_lahir" value="{$pasien.tgl_lahir}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="jk" class="col-sm-3 control-label">Sex</label>
+            <div class="col-sm-4">
+              <label class="radio-inline"><input type="radio" name="jk" value="L" {if: $pasien.jk == 'L'}checked{/if}><span class="fa fa-male"></span></label>
+              <label class="radio-inline"><input type="radio" name="jk" value="P" {if: $pasien.jk == 'P'}checked{/if}><span class="fa fa-female"></span></label>
+            </div>
+            <label for="gol_darah" class="col-sm-2 control-label">Darah</label>
+            <div class="col-sm-3">
+              <select class="form-control" name="gol_darah" id="gol_darah">
+                <option value="O" {if: $pasien.gol_darah == 'O'}selected{/if}>O</option>
+                <option value="A" {if: $pasien.gol_darah == 'A'}selected{/if}>A</option>
+                <option value="B" {if: $pasien.gol_darah == 'B'}selected{/if}>B</option>
+                <option value="AB" {if: $pasien.gol_darah == 'AB'}selected{/if}>AB</option>
+                <option value="-" {if: $pasien.gol_darah == '-'}selected{/if}>-</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="stts_nikah" class="col-sm-3 control-label">Status Nikah</label>
+            <div class="col-sm-4">
+              <select name="stts_nikah" class="form-control">
+                {loop: $stts_nikah}
+                  <option value="{$value}"{if: $value == $pasien.stts_nikah} selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+            <label for="no_peserta" class="col-sm-2 control-label">Agama</label>
+            <div class="col-sm-3">
+              <select name="agama" class="form-control">
+                {loop: $agama}
+                  <option value="{$value}"{if: $value == $pasien.agama} selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="pekerjaan" class="col-sm-3 control-label">Pekerjaan</label>
+            <div class="col-sm-4">
+              <input type="text" name="pekerjaan" class="form-control" value="{$pasien.pekerjaan}">
+            </div>
+            <label for="pnd" class="col-sm-2 control-label">PND</label>
+            <div class="col-sm-3">
+              <select class="form-control" name="pnd" id="pnd">
+                {loop: $pnd}
+                <option value="{$value}" {if: $value == $pasien.pnd}selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="asuransi" class="col-sm-3 control-label">Penjamin</label>
+            <div class="col-sm-4">
+              <select class="form-control" name="kd_pj">
+                {loop: $penjab}
+                <option value="{$value.kd_pj}" {if: $pasien.kd_pj == $value.kd_pj}selected{/if}>{$value.png_jawab}</option>
+                {/loop}
+              </select>
+            </div>
+            <label for="no_peserta" class="col-sm-2 control-label">No. Peserta</label>
+            <div class="col-sm-3">
+              <input type="text" name="no_peserta" class="form-control" value="{$pasien.no_peserta}">
+            </div>
+          </div>
         </div>
-	</form>
-</article>
-
-<div class="modal fade" id="propinsiModal" tabindex="-1" role="dialog" aria-labelledby="propinsiModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-						<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="propinsiModalLabel">Database Propinsi</h4>
-						</div>
-						<div class="modal-body">
-								<table class="table table-striped table-hover propinsi" width="100%">
-										<thead>
-												<tr>
-														<th>Kode</th>
-														<th>Nama Propinsi</th>
-												</tr>
-										</thead>
-										<tbody id="propinsi">
-										</tbody>
-								</table>
-						</div>
-				</div>
-		</div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="asuransi" class="col-sm-3 control-label">Keluarga</label>
+            <div class="col-sm-4">
+              <select class="form-control" name="keluarga">
+                {loop: $keluarga}
+                <option value="{$value}" {if: $value == $pasien.keluarga}selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+            <label for="namakeluarga" class="col-sm-1 control-label">Nama</label>
+            <div class="col-sm-4">
+              <input type="text" name="namakeluarga" class="form-control" value="{$pasien.namakeluarga}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="no_ktp" class="col-sm-3 control-label">Nomor KTP</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_ktp" class="form-control" value="{$pasien.no_ktp}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="alamat" class="col-sm-3 control-label">Alamat</label>
+            <div class="col-sm-9">
+              <textarea name="alamat" rows="3" class="form-control">{$pasien.alamat}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="propinsi" class="col-sm-3 control-label">Propinsi</label>
+            <div class="col-sm-4">
+              <input type="text" name="nm_prop" id="nm_prop" class="form-control" value="{$pasien.propinsi.nm_prop}" />
+              <input type="hidden" name="kd_prop" id="kd_prop" class="form-control" value="{$pasien.kd_prop}" />
+              <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <label for="kota" class="col-sm-1 control-label">Kota</label>
+            <div class="col-sm-4">
+              <input type="text" name="nm_kab" id="nm_kab" class="form-control" value="{$pasien.kabupaten.nm_kab}" />
+              <input type="hidden" name="kd_kab" id="kd_kab" class="form-control" value="{$pasien.kd_kab}" />
+              <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="kecamatan" class="col-sm-3 control-label">Kecamatan</label>
+            <div class="col-sm-4">
+              <input type="text" name="nm_kec" id="nm_kec" class="form-control" value="{$pasien.kecamatan.nm_kec}" />
+              <input type="hidden" name="kd_kec" id="kd_kec" class="form-control" value="{$pasien.kd_kec}" />
+              <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <label for="desa" class="col-sm-1 control-label">Desa</label>
+            <div class="col-sm-4">
+              <input type="text" name="nm_kel" id="nm_kel" class="form-control" value="{$pasien.kelurahan.nm_kel}" />
+              <input type="hidden" name="kd_kel" id="kd_kel" class="form-control" value="{$pasien.kd_kel}" />
+              <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="telepon" class="col-sm-3 control-label">Telepon</label>
+            <div class="col-sm-4">
+              <input type="text" name="no_tlp" class="form-control" value="{$pasien.no_tlp}">
+            </div>
+            <label for="email" class="col-sm-1 control-label">Email</label>
+            <div class="col-sm-4">
+              <input type="text" id="email" name="email" class="form-control" value="{$pasien.email}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'rekammedis'}
+  <div class="col-md-12 m-b-xl">
+    <div class="text-center">
+      <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-info" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+  {/if}
 </div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tgl_lahir').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+       $('.tgl_daftar').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+</script>
+<script>
+  $('#nm_prop').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'pasien', 'wilayah?show=caripropinsi'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#propinsiList').fadeIn();
+              $('#propinsiList').html(data);
+           }
+        });
+     }
+  });
+  $('#propinsiList').on('click', 'li', function(){
+     $('#nm_prop').val($(this).text().split(': ')[1]);
+     $('#kd_prop').val($(this).text().split(': ')[0]);
+     var kd_prop = $('#kd_prop').val();
+     $('#propinsiList').fadeOut();
 
-<div class="modal fade" id="kabupatenModal" tabindex="-1" role="dialog" aria-labelledby="kabupatenModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-						<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="kabupatenModalLabel">Database Kabupaten</h4>
-						</div>
-						<div class="modal-body">
-								<table class="table table-striped table-hover kabupaten" width="100%">
-										<thead>
-												<tr>
-														<th>Kode</th>
-														<th>Nama Kabupaten</th>
-												</tr>
-										</thead>
-										<tbody id="kabupaten">
-										</tbody>
-								</table>
-						</div>
-				</div>
-		</div>
-</div>
+     $('#nm_kab').keyup(function(){
+        var query = $(this).val();
+        if(query != '')
+        {
+           $.ajax({
+              url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikabupaten'])?}",
+              method:"POST",
+              data:{query:query,kd_prop:kd_prop},
+              success:function(data)
+              {
+                 $('#kabupatenList').fadeIn();
+                 $('#kabupatenList').html(data);
+              }
+           });
+        }
+     });
 
-<div class="modal fade" id="kecamatanModal" tabindex="-1" role="dialog" aria-labelledby="kecamatanModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-						<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="kecamatanModalLabel">Database Kecamatan</h4>
-						</div>
-						<div class="modal-body">
-								<table class="table table-striped table-hover kecamatan" width="100%">
-										<thead>
-												<tr>
-														<th>Kode</th>
-														<th>Nama Kecamatan</th>
-												</tr>
-										</thead>
-										<tbody id="kecamatan">
-										</tbody>
-								</table>
-						</div>
-				</div>
-		</div>
-</div>
+  });
+  $('#kabupatenList').on('click', 'li', function(){
+       $('#nm_kab').val($(this).text().split(': ')[1]);
+       $('#kd_kab').val($(this).text().split(': ')[0]);
+       var kd_kab = $('#kd_kab').val();
+       $('#kabupatenList').fadeOut();
 
-<div class="modal fade" id="kelurahanModal" tabindex="-1" role="dialog" aria-labelledby="kelurahanModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-						<div class="modal-header">
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-								<h4 class="modal-title" id="kelurahanModalLabel">Database Kelurahan</h4>
-						</div>
-						<div class="modal-body">
-								<table class="table table-striped table-hover kelurahan" width="100%">
-										<thead>
-												<tr>
-														<th>Kode</th>
-														<th>Nama Kelurahan</th>
-												</tr>
-										</thead>
-										<tbody id="kelurahan">
-										</tbody>
-								</table>
-						</div>
-				</div>
-		</div>
-</div>
+       $('#nm_kec').keyup(function(){
+            var query = $(this).val();
+            if(query != '')
+            {
+                 $.ajax({
+                      url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikecamatan'])?}",
+                      method:"POST",
+                      data:{query:query,kd_kab:kd_kab},
+                      success:function(data)
+                      {
+                           $('#kecamatanList').fadeIn();
+                           $('#kecamatanList').html(data);
+                      }
+                 });
+            }
+       });
+
+  });
+
+  $('#kecamatanList').on('click', 'li', function(){
+       $('#nm_kec').val($(this).text().split(': ')[1]);
+       $('#kd_kec').val($(this).text().split(': ')[0]);
+       var kd_kec = $('#kd_kec').val();
+       $('#kecamatanList').fadeOut();
+
+       $('#nm_kel').keyup(function(){
+            var query = $(this).val();
+            if(query != '')
+            {
+                 $.ajax({
+                      url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikelurahan'])?}",
+                      method:"POST",
+                      data:{query:query,kd_kce:kd_kec},
+                      success:function(data)
+                      {
+                           $('#kelurahanList').fadeIn();
+                           $('#kelurahanList').html(data);
+                      }
+                 });
+            }
+       });
+
+  });
+
+  $('#kelurahanList').on('click', 'li', function(){
+       $('#nm_kel').val($(this).text().split(': ')[1]);
+       $('#kd_kel').val($(this).text().split(': ')[0]);
+       $('#kelurahanList').fadeOut();
+
+  });
+
+ </script>
