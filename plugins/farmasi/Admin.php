@@ -100,14 +100,33 @@ class Admin extends AdminModule
     public function postOpnameUpdate()
     {
       $kode_brng =$_POST['kode_brng'];
+      $real = $_POST['real'];
       $stok = $_POST['stok'];
       $kd_bangsal = $_POST['kd_bangsal'];
-
+      $tanggal = $_POST['tanggal'];
+      $h_beli = $_POST['h_beli'];
+      $keterangan = $_POST['keterangan'];
+      $no_batch = $_POST['no_batch'];
+      $no_faktur = $_POST['no_faktur'];
       for($count = 0; $count < count($kode_brng); $count++){
        $query = "UPDATE gudangbarang SET stok=? WHERE kode_brng=? AND kd_bangsal=?";
        $opname = $this->db()->pdo()->prepare($query);
        $opname->execute([$stok[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+       $selisih = $real[$count] - $stok[$count];
+       $nomihilang = $selisih * $h_beli[$count];
+       $lebih = 0;
+       $nomilebih = 0;
+       if($selisih < 0) {
+         $selisih = 0;
+         $nomihilang = 0;
+         $lebih = $stok[$count] - $real[$count];
+         $nomilebih = $lebih * $h_beli[$count];
+       }
+       $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
+       $opname2 = $this->db()->pdo()->prepare($query2);
+       $opname2->execute();
       }
+      exit();
     }
 
     /* Settings Farmasi Section */
