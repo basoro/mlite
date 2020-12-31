@@ -25,19 +25,12 @@
               <input type="text" name="layanan" class="form-control" placeholder="Input tindakan/layanan" value="">
             </div>
           </div>
-          <div class="form-group">
-            <label for="obat" class="col-sm-3 control-label">Obat (e-Resep)</label>
-            <div class="col-sm-9">
-              <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div id="layanan"></div>
-    <div id="obat"></div>
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
@@ -57,7 +50,7 @@
             <label for="tgl_perawatan" class="col-sm-3 control-label">Jenis</label>
             <div class="col-sm-4">
               <input type="hidden" name="kd_jenis_prw" class="form-control" value="">
-              <input type="text" name="nm_perawatan" class="form-control" placeholder="Nama tindakan/layanan/obat/BHP" value="" readonly>
+              <input type="text" name="nm_perawatan" class="form-control" placeholder="Nama tindakan/layanan" value="" readonly>
               <input type="hidden" name="kat" class="form-control" value="">
             </div>
             <label for="pnd" class="col-sm-1 control-label">Biaya</label>
@@ -98,17 +91,6 @@
               <input type="text" name="kode_provider2" id="kode_provider2" class="form-control" value="">
             </div>
           </div>
-          <div class="form-group" id="aturan_pakai">
-            <label class="col-md-3 control-label">Aturan Pakai</label>
-            <div class="col-sm-6">
-              <input type="text" class="form-control" name="aturan_pakai" id="aturan_pakai" value="">
-              <ul class="list-group" id="aturan_pakaiList" style="z-index:1000;position:absolute;width:100%;"></ul>
-            </div>
-            <label for="" class="col-sm-1 control-label">Jml</label>
-            <div class="col-sm-2">
-              <input type="text" name="jml" id="jml" class="form-control" value="10">
-            </div>
-          </div>
           <div class="m-t-xl">
             <button type="button" name="button" class="btn btn-primary" id="simpan_rincian"><i class="fa fa-save"></i><span class="hidden-xs"> Masukkan Rincian</span></button>
             <button type="button" name="button" class="btn btn-success" id="selesai"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
@@ -118,31 +100,6 @@
     </div>
   </div>
 </div>
-<script>
-  $('input:text[name=aturan_pakai]').on('input',function(e){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/rawat_jalan/aturanpakai?t=' + mlite.token;
-    var query = $('input:text[name=aturan_pakai]').val();
-    if(query!="") {
-        $.ajax({
-             url: url,
-             method:"POST",
-             data:{query:query},
-             success:function(data)
-             {
-                  $('#aturan_pakaiList').fadeIn();
-                  $('#aturan_pakaiList').html(data);
-             }
-        });
-    }
-    $('#aturan_pakaiList').fadeIn();
-  });
-
-  $('#aturan_pakaiList').on('click', 'li', function(){
-       $('input:text[name=aturan_pakai]').val($(this).text());
-       $('#aturan_pakaiList').fadeOut();
-  });
-</script>
 <script>
   $('input:text[name=nama_provider]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;

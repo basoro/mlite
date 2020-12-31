@@ -606,6 +606,7 @@ class Admin extends AdminModule
     public function anyLayanan()
     {
       $layanan = $this->db('jns_perawatan')
+        ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
         ->toArray();
@@ -617,6 +618,8 @@ class Admin extends AdminModule
     {
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+        ->where('status', '1')
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();

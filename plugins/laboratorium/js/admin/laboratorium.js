@@ -555,7 +555,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=layanan]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/laboratorium/layanan?t=' + mlite.token;
+  var url    = baseURL + '/laboratorium/layananlab?t=' + mlite.token;
   var layanan = $('input:text[name=layanan]').val();
 
   if(layanan!="") {

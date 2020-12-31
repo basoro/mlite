@@ -605,45 +605,15 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function anyLayanan()
+    public function anyLayananRad()
     {
       $layanan = $this->db('jns_perawatan')
+        ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
         ->toArray();
       echo $this->draw('layanan.html', ['layanan' => $layanan]);
       exit();
-    }
-
-    public function anyObat()
-    {
-      $obat = $this->db('databarang')
-        ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
-        ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
-        ->limit(10)
-        ->toArray();
-      echo $this->draw('obat.html', ['obat' => $obat]);
-      exit();
-    }
-
-    public function postAturanPakai()
-    {
-
-      if(isset($_POST["query"])){
-        $output = '';
-        $key = "%".$_POST["query"]."%";
-        $rows = $this->db('master_aturan_pakai')->like('aturan', $key)->limit(10)->toArray();
-        $output = '';
-        if(count($rows)){
-          foreach ($rows as $row) {
-            $output .= '<li class="list-group-item link-class">'.$row["aturan"].'</li>';
-          }
-        }
-        echo $output;
-      }
-
-      exit();
-
     }
 
     public function postProviderList()

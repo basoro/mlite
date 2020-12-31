@@ -263,8 +263,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var jml             = $('input:text[name=jml]').val();
 
-  alert(jam_rawat);
-  
   var url = baseURL + '/apotek_ralan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
   kd_jenis_prw   : kd_jenis_prw,
@@ -297,44 +295,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
     "</div>").show();
-  });
-});
-
-// ketika tombol hapus ditekan
-$("#rincian").on("click",".hapus_detail", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var url = baseURL + '/apotek_ralan/hapusdetail?t=' + mlite.token;
-  var no_rawat = $(this).attr("data-no_rawat");
-  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
-  var tgl_perawatan = $(this).attr("data-tgl_perawatan");
-  var jam_rawat = $(this).attr("data-jam_rawat");
-  var provider = $(this).attr("data-provider");
-
-  // tampilkan dialog konfirmasi
-  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-    // ketika ditekan tombol ok
-    if (result){
-      // mengirimkan perintah penghapusan
-      $.post(url, {
-        no_rawat: no_rawat,
-        kd_jenis_prw: kd_jenis_prw,
-        tgl_perawatan: tgl_perawatan,
-        jam_rawat: jam_rawat,
-        provider: provider
-      } ,function(data) {
-        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
-        }, function(data) {
-          // tampilkan data
-          $("#rincian").html(data).show();
-        });
-        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
-        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-        "</div>").show();
-      });
-    }
   });
 });
 

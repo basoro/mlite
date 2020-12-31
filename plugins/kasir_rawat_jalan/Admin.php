@@ -321,6 +321,7 @@ class Admin extends AdminModule
     public function anyLayanan()
     {
       $layanan = $this->db('jns_perawatan')
+        ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
         ->toArray();
@@ -332,6 +333,7 @@ class Admin extends AdminModule
     {
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+        ->where('status', '1')
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
@@ -408,7 +410,7 @@ class Admin extends AdminModule
         //$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
         $query = $this->db('mlite_billing')->save($_POST);
         if($query) {
-          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);          
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
         }
       //}
       exit();

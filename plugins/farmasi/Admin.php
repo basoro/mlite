@@ -92,6 +92,7 @@ class Admin extends AdminModule
       $gudangbarang = $this->db('gudangbarang')
         ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
         ->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')
+        ->where('databarang.status', '1')
         ->toJson();
       echo $gudangbarang;
       exit();

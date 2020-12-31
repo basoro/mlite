@@ -116,17 +116,57 @@ class Admin extends AdminModule
             'tgl_perawatan' => $_POST['tgl_perawatan'],
             'jam' => $_POST['jam_rawat'],
             'no_rawat' => $_POST['no_rawat'],
-            'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            'kd_dokter' => $_POST['kode_provider'],
             'tgl_peresepan' => $_POST['tgl_perawatan'],
             'jam_peresepan' => $_POST['jam_rawat'],
             'status' => 'ralan'
           ]);
-        $this->db('resep_dokter')
+        if($resep_obat) {
+          $resep_dokter = $this->db('resep_dokter')
+            ->save([
+              'no_resep' => $no_resep,
+              'kode_brng' => $_POST['kd_jenis_prw'],
+              'jml' => $_POST['jml'],
+              'aturan_pakai' => $_POST['aturan_pakai']
+          ]);
+        }
+
+      } else {
+        $no_resep = $cek_resep['no_resep'];
+        $resep_dokter = $this->db('resep_dokter')
           ->save([
             'no_resep' => $no_resep,
             'kode_brng' => $_POST['kd_jenis_prw'],
             'jml' => $_POST['jml'],
             'aturan_pakai' => $_POST['aturan_pakai']
+          ]);
+      }
+
+      if($resep_dokter) {
+        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+
+        $this->db('gudangbarang')
+          ->where('kode_brng', $_POST['kd_jenis_prw'])
+          ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+          ->update([
+            'stok' => $get_gudangbarang['stok'] - $_POST['jml']
+          ]);
+
+        $this->db('riwayat_barang_medis')
+          ->save([
+            'kode_brng' => $_POST['kd_jenis_prw'],
+            'stok_awal' => $get_gudangbarang['stok'],
+            'masuk' => '0',
+            'keluar' => $_POST['jml'],
+            'stok_akhir' => $get_gudangbarang['stok'] - $_POST['jml'],
+            'posisi' => 'Pemberian Obat',
+            'tanggal' => $_POST['tgl_perawatan'],
+            'jam' => $_POST['jam_rawat'],
+            'petugas' => $this->core->getUserInfo('fullname', null, true),
+            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'status' => 'Simpan',
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur']
           ]);
 
         $this->db('detail_pemberian_obat')
@@ -143,20 +183,12 @@ class Admin extends AdminModule
             'total' => $_POST['biaya'] * $_POST['jml'],
             'status' => 'Ralan',
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
-            'no_batch' => '0',
-            'no_faktur' => '0'
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur']
           ]);
 
-      } else {
-        $no_resep = $cek_resep['no_resep'];
-        $this->db('resep_dokter')
-          ->save([
-            'no_resep' => $no_resep,
-            'kode_brng' => $_POST['kd_jenis_prw'],
-            'jml' => $_POST['jml'],
-            'aturan_pakai' => $_POST['aturan_pakai']
-          ]);
       }
+
       exit();
     }
 
@@ -164,17 +196,60 @@ class Admin extends AdminModule
     public function postHapusResep()
     {
       if(isset($_POST['kd_jenis_prw'])) {
+
+        $resep_obat = $this->db('resep_obat')
+        ->where('no_resep', $_POST['no_resep'])
+        ->oneArray();
+
+        $this->db('riwayat_barang_medis')
+        ->where('kode_brng', $_POST['kd_jenis_prw'])
+        ->where('tanggal', $resep_obat['tgl_peresepan'])
+        ->where('jam', $resep_obat['jam_peresepan'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'status' => 'Hapus'
+        ]);
+
+        $this->db('detail_pemberian_obat')
+        ->where('kode_brng', $_POST['kd_jenis_prw'])
+        ->where('tgl_perawatan', $resep_obat['tgl_peresepan'])
+        ->where('jam', $resep_obat['jam_peresepan'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->delete();
+
         $this->db('resep_dokter')
         ->where('no_resep', $_POST['no_resep'])
         ->where('kode_brng', $_POST['kd_jenis_prw'])
         ->delete();
-      } else {
+
+        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+
+        $this->db('gudangbarang')
+        ->where('kode_brng', $_POST['kd_jenis_prw'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'stok' => $get_gudangbarang['stok'] + $_POST['jml']
+        ]);
+      /*} else {
+        $this->db('riwayat_barang_medis')
+        ->where('kode_brng', $_POST['kd_jenis_prw'])
+        ->where('tanggal', $_POST['tgl_peresepan'])
+        ->where('jam', $_POST['jam_peresepan'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'status' => 'Hapus'
+        ]);
+        $this->db('detail_pemberian_obat')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('status', 'Ralan')
+        ->delete();
         $this->db('resep_obat')
         ->where('no_resep', $_POST['no_resep'])
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('tgl_peresepan', $_POST['tgl_peresepan'])
         ->where('jam_peresepan', $_POST['jam_peresepan'])
-        ->delete();
+        ->delete();*/
       }
 
       exit();
@@ -189,7 +264,11 @@ class Admin extends AdminModule
       $resep = [];
       $jumlah_total_resep = 0;
       foreach ($rows as $row) {
-        $row['resep_dokter'] = $this->db('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $row['resep_dokter'] = $this->db('resep_dokter')
+          ->join('resep_obat', 'resep_obat.no_resep=resep_dokter.no_resep')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+          ->where('resep_dokter.no_resep', $row['no_resep'])
+          ->toArray();
         foreach ($row['resep_dokter'] as $value) {
           $value['ralan'] = $value['jml'] * $value['ralan'];
           $jumlah_total_resep += floatval($value['ralan']);
@@ -204,6 +283,8 @@ class Admin extends AdminModule
     {
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+        ->where('status', '1')
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
