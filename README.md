@@ -4,7 +4,8 @@
 </p>
 
 <pre>
-#### Disclaimer
+Disclaimer
+==========
 Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE),
 saya kembangkan untuk kebutuh pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai dokter ASN.
