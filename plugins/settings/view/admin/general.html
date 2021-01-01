@@ -52,6 +52,7 @@
                     <div class="form-group">
                         <label>Tema Admin</label>
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
+                            <option value="">Pilih tema</option>
                             <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
                             <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
                             <option value="cyborg"{if: $settings.theme_admin == 'cyborg'} selected{/if}>Cyborg</option>
@@ -262,7 +263,7 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;
