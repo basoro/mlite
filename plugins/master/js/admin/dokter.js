@@ -57,7 +57,6 @@ $("#form").on("click", "#simpan", function(event){
     no_ijn_praktek: no_ijn_praktek,
     status: status
   } ,function(data) {
-    alert(data);
       $("#display").show().load(baseURL + '/master/dokterdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
