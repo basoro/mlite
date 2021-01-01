@@ -31,6 +31,7 @@ class Admin extends AdminModule
         $hari=$day[date('D',strtotime(date('Y-m-d')))];
 
         $kepegawaian = $this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray();
+        $cek_presensi = [];
         $jam_jaga = [];
         if($kepegawaian) {
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
@@ -39,8 +40,9 @@ class Admin extends AdminModule
         }
         return $this->draw('main.html', [
           'settings' => $settings,
-          'cek_presensi' => $kepegawaian,
-          'jam_jaga' => $jam_jaga
+          'cek_presensi' => $cek_presensi,
+          'jam_jaga' => $jam_jaga,
+          'kepegawaian' => $kepegawaian
         ]);
     }
 
