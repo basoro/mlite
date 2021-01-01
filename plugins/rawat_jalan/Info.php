@@ -846,6 +846,31 @@
             ADD CONSTRAINT `detail_pemberian_obat_ibfk_4` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `detail_pemberian_obat_ibfk_5` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON UPDATE CASCADE;");
 
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `riwayat_barang_medis` (
+            `kode_brng` varchar(15) DEFAULT NULL,
+            `stok_awal` double DEFAULT NULL,
+            `masuk` double DEFAULT NULL,
+            `keluar` double DEFAULT NULL,
+            `stok_akhir` double NOT NULL,
+            `posisi` enum('Pemberian Obat','Pengadaan','Penerimaan','Piutang','Retur Beli','Retur Jual','Retur Piutang','Mutasi','Opname','Resep Pulang','Retur Pasien','Stok Pasien Ranap','Pengambilan Medis','Penjualan','Stok Keluar','Hibah') DEFAULT NULL,
+            `tanggal` date DEFAULT NULL,
+            `jam` time DEFAULT NULL,
+            `petugas` varchar(20) DEFAULT NULL,
+            `kd_bangsal` char(5) DEFAULT NULL,
+            `status` enum('Simpan','Hapus') DEFAULT NULL,
+            `no_batch` varchar(20) NOT NULL,
+            `no_faktur` varchar(20) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `riwayat_barang_medis`
+            ADD KEY `riwayat_barang_medis_ibfk_1` (`kode_brng`) USING BTREE,
+            ADD KEY `kd_bangsal` (`kd_bangsal`) USING BTREE;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `riwayat_barang_medis`
+            ADD CONSTRAINT `riwayat_barang_medis_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `riwayat_barang_medis_ibfk_2` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `gambar_radiologi` (
             `no_rawat` varchar(17) NOT NULL,
             `tgl_periksa` date NOT NULL,
