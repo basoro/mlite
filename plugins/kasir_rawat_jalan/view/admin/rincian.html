@@ -48,14 +48,48 @@
     </tfoot>
   </table>
 </div>
+<h4>Pemberian Obat</h4>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Obat</th>
+        <th>Jumlah</th>
+        <th>Aturan Pakai</th>
+        <th>Harga</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $detail_pemberian_obat}
+      <tr>
+        <td>{$value.nama_brng}</td>
+        <td>{$value.jml}</td>
+        <td>{$value.aturan_pakai}</td>
+        <td>Rp. <span class="pull-right">{?= number_format(($value.ralan * $value.jml),2,',','.')?}</span></td>
+        <td colspan="2">
+          <!--<button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>-->
+        </td>
+      </tr>
+      {/loop}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3">Total Biaya Obat</th>
+        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
 <div class="col-md-6 col-md-offset-6">
   <div class="form-horizontal">
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$jumlah_total}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total + $jumlah_total_obat)?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang($jumlah_total,3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total + $jumlah_total_obat),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
@@ -66,9 +100,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$jumlah_total}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total + $jumlah_total_obat)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang($jumlah_total,3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total + $jumlah_total_obat),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>
