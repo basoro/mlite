@@ -29,7 +29,7 @@ class Site extends Main
     {
         $assign = [];
         $assign['notify']   = $this->getNotify();
-        $assign['powered']  = 'Powered by <a href="https://basoro.org/">mLITE</a>';
+        $assign['powered']  = 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>';
         $assign['path']     = url();
         $assign['nama_instansi']    = $this->settings->get('settings.nama_instansi');
         $assign['theme']    = url(THEMES.'/'.$this->settings->get('settings.theme'));

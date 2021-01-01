@@ -24,7 +24,7 @@ class Admin extends Main
         $this->assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
         $this->assign['notify']        = $this->getNotify();
-        $this->assign['powered']       = 'Powered by <a href="https://basoro.org/">mLITE</a>';
+        $this->assign['powered']       = 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>';
         $this->assign['path']          = url();
         $this->assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
         $this->assign['logo'] = $this->settings->get('settings.logo');

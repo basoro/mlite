@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Laboratorium',
-        'description'   =>  'Modul Laboratorium untuk mLITE',
+        'description'   =>  'Modul Laboratorium untuk KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2021',

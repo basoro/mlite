@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Master Data',
-        'description'   =>  'Data master awal mLITE',
+        'description'   =>  'Data master awal KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2021',

@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Rawat Inap',
-        'description'   =>  'Modul rawat inap untuk mLITE',
+        'description'   =>  'Modul rawat inap untuk KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2021',

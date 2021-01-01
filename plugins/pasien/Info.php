@@ -2,7 +2,7 @@
 
 return [
     'name'          =>  'Pendaftaran Pasien',
-    'description'   =>  'Modul data pasien untuk mLITE',
+    'description'   =>  'Modul data pasien untuk KhanzaLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '2021',
