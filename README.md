@@ -41,13 +41,34 @@ Pemasangan
 
 3. Buat folder `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-4. **Jika anda ingin memulai pemasangan dengan data kosong, buat database baru, misal `sik` (jika sudah ada silahkan lompat ke langkah ke 6).**
+4. Sesuaikan pengaturan di config.php
 
-5. Navigasikan ke alamat pemasangan. Misalkan `http://localhost/Khanza-Lite/install.php`, anda akan melihat tampilan pemasangan.
+5. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
 
-6. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
+6. Silahkan login dengan Username: admin dan Password: admin
+
 
 ### Peringatan!
+
++ Urutan aktifasi modul-modul
+  - Master Data
+  - Pendaftaran Pasien
+  - Rawat Jalan
+  - VClaim Request
+  - ICD 9 - 10 Request
+  - Kepegawaian
+  - Presensi
+  - Profil
+  - IGD
+  - Rawat Inap
+  - Dokter Ralan
+  - Kasir Rawat Jalan
+  - Apotek Ralan
+  - Laboratorium
+  - Radiologi
+  - Farmasi
+  - Dan seterusnya....
+
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Khanza LITE 2021 tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
