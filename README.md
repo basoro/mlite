@@ -3,6 +3,11 @@
     Modular Khanza LITE
 </p>
 
+<pre>
+#### Disclaimer
+Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE) saya kembangkan untuk kebutuh pribadi di tempat saya praktek sebagai Dokter Keluarga dan diterapkan di Rumah Sakit tempat saya bekerja sebagai dokter ASN. Silahkan gunakan sewajarnya. Tidak ada biaya dalam penggunaan aplikasi ini sebagaimana diterapkan juga pada SIMRS Khanza.
+</pre>
+
 # Khanza LITE V.2021
 
 Khanza LITE 2021  dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini Khanza LITE 2021  dibangun lagi dari awal dengan berfokus pada kesederhanaan - bahkan programer pemula dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
