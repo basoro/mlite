@@ -6,9 +6,9 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Kode Dokter</label>
             <div class="col-sm-9">
-              <select class="form-control" name="kd_dokter">
+              <select class="form-control" name="kd_dokter" data-use-search="true" onchange="document.getElementById('nm_dokter').value=this.options[this.selectedIndex].text">
                 {loop: $dokter.pegawai}
-                  <option value="kd_dokter"{if: $dokter.form.kd_dokter == $value.nik} selected{/if}>{$value.nama}</option>
+                  <option value="kd_dokter"{if: $dokter.form.kd_dokter == $value.nik} selected{/if}>{$value.nama} - {$value.nik}</option>
                 {/loop}
               </select>
             </div>
@@ -16,7 +16,7 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Nama Dokter</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_dokter" class="form-control" value="{$dokter.form.nm_dokter}">
+              <input type="text" name="nm_dokter" id="nm_dokter" class="form-control" value="{$dokter.form.nm_dokter}">
             </div>
           </div>
           <div class="form-group">

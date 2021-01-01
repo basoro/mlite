@@ -24,7 +24,7 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var kd_dokter = $('input:text[name=kd_dokter]').val();
+  var kd_dokter = $('select[name=kd_dokter]').val();
   var nm_dokter = $('input:text[name=nm_dokter]').val();
   var jk = $('select[name=jk]').val();
   var tmp_lahir = $('input:text[name=tmp_lahir]').val();
@@ -57,6 +57,7 @@ $("#form").on("click", "#simpan", function(event){
     no_ijn_praktek: no_ijn_praktek,
     status: status
   } ,function(data) {
+    alert(data);
       $("#display").show().load(baseURL + '/master/dokterdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
