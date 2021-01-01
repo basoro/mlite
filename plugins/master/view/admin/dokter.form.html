@@ -8,7 +8,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kd_dokter" data-use-search="true" onchange="document.getElementById('nm_dokter').value=this.options[this.selectedIndex].text">
                 {loop: $dokter.pegawai}
-                  <option value="kd_dokter"{if: $dokter.form.kd_dokter == $value.nik} selected{/if}>{$value.nama} - {$value.nik}</option>
+                  <option value="{$value.nik}"{if: $dokter.form.kd_dokter == $value.nik} selected{/if}>{$value.nama} - {$value.nik}</option>
                 {/loop}
               </select>
             </div>
