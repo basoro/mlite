@@ -5,7 +5,12 @@
 
 <pre>
 #### Disclaimer
-Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE) saya kembangkan untuk kebutuh pribadi di tempat saya praktek sebagai Dokter Keluarga dan diterapkan di Rumah Sakit tempat saya bekerja sebagai dokter ASN. Silahkan gunakan sewajarnya. Tidak ada biaya dalam penggunaan aplikasi ini sebagaimana diterapkan juga pada SIMRS Khanza.
+Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE),
+saya kembangkan untuk kebutuh pribadi sebagai Dokter Keluarga
+dan diterapkan di Rumah Sakit tempat saya bekerja sebagai dokter ASN.
+Silahkan gunakan sewajarnya.
+Tidak ada biaya dalam penggunaan aplikasi ini.
+Sebagaimana diterapkan juga pada SIMRS Khanza.
 </pre>
 
 # Khanza LITE V.2021
