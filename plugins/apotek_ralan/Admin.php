@@ -162,60 +162,17 @@ class Admin extends AdminModule
     public function postHapusResep()
     {
       if(isset($_POST['kd_jenis_prw'])) {
-
-        $resep_obat = $this->db('resep_obat')
-        ->where('no_resep', $_POST['no_resep'])
-        ->oneArray();
-
-        $this->db('riwayat_barang_medis')
-        ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->where('tanggal', $resep_obat['tgl_peresepan'])
-        ->where('jam', $resep_obat['jam_peresepan'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->update([
-          'status' => 'Hapus'
-        ]);
-
-        $this->db('detail_pemberian_obat')
-        ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->where('tgl_perawatan', $resep_obat['tgl_peresepan'])
-        ->where('jam', $resep_obat['jam_peresepan'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->delete();
-
         $this->db('resep_dokter')
         ->where('no_resep', $_POST['no_resep'])
         ->where('kode_brng', $_POST['kd_jenis_prw'])
         ->delete();
-
-        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
-
-        $this->db('gudangbarang')
-        ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->update([
-          'stok' => $get_gudangbarang['stok'] + $_POST['jml']
-        ]);
-      /*} else {
-        $this->db('riwayat_barang_medis')
-        ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->where('tanggal', $_POST['tgl_peresepan'])
-        ->where('jam', $_POST['jam_peresepan'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->update([
-          'status' => 'Hapus'
-        ]);
-        $this->db('detail_pemberian_obat')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-        ->where('status', 'Ralan')
-        ->delete();
+      } else {
         $this->db('resep_obat')
         ->where('no_resep', $_POST['no_resep'])
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('tgl_peresepan', $_POST['tgl_peresepan'])
         ->where('jam_peresepan', $_POST['jam_peresepan'])
-        ->delete();*/
+        ->delete();
       }
 
       exit();
