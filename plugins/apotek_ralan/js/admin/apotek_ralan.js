@@ -274,7 +274,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   aturan_pakai   : aturan_pakai,
   jml            : jml
   }, function(data) {
-    alert(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
