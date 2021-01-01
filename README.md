@@ -7,8 +7,8 @@
 Disclaimer
 ==========
 Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE),
-saya kembangkan untuk kebutuh pribadi sebagai Dokter Keluarga
-dan diterapkan di Rumah Sakit tempat saya bekerja sebagai dokter ASN.
+saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
+dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
 Silahkan gunakan sewajarnya.
 Tidak ada biaya dalam penggunaan aplikasi ini.
 Sebagaimana diterapkan juga pada SIMRS Khanza.
