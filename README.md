@@ -3,6 +3,9 @@
     Modular Khanza LITE
 </p>
 
+<p>
+<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/mlite.png">
+</p>
 <pre>
 Disclaimer
 ==========
