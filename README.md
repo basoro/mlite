@@ -4,7 +4,7 @@
 </p>
 
 <p>
-<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/mlite.png">
+![KhanzaLITE](mlite.png){:class="img-responsive"}
 </p>
 <pre>
 Disclaimer
