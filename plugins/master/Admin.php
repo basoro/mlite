@@ -8,6 +8,7 @@
     use Plugins\Master\Src\Bangsal;
     use Plugins\Master\Src\Kamar;
     use Plugins\Master\Src\DataBarang;
+    use Plugins\Master\Src\JnsPerawatan;
     use Plugins\Master\Src\Bahasa;
     use Plugins\Master\Src\Cacat;
     use Plugins\Master\Src\Suku;
@@ -26,6 +27,7 @@
             $this->bangsal = new Bangsal();
             $this->kamar = new Kamar();
             $this->databarang = new DataBarang();
+            $this->jnsperawatan = new JnsPerawatan();
             $this->bahasa = new Bahasa();
             $this->cacat = new Cacat();
             $this->suku = new Suku();
@@ -393,6 +395,51 @@
             exit();
         }
         /* End DataBarang Section */
+
+        /* Start JnsPerawatan Section */
+        public function getJnsPerawatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'jnsperawatanjs']), 'footer');
+          $return = $this->jnsperawatan->getIndex();
+          return $this->draw('jnsperawatan.html', [
+            'jnsperawatan' => $return
+          ]);
+
+        }
+
+        public function anyJnsPerawatanForm()
+        {
+            $return = $this->jnsperawatan->anyForm();
+            echo $this->draw('jnsperawatan.form.html', ['jnsperawatan' => $return]);
+            exit();
+        }
+
+        public function anyJnsPerawatanDisplay()
+        {
+            $return = $this->jnsperawatan->anyDisplay();
+            echo $this->draw('jnsperawatan.display.html', ['jnsperawatan' => $return]);
+            exit();
+        }
+
+        public function postJnsPerawatanSave()
+        {
+          $this->jnsperawatan->postSave();
+          exit();
+        }
+
+        public function postJnsPerawatanHapus()
+        {
+          $this->jnsperawatan->postHapus();
+          exit();
+        }
+
+        public function getJnsPerawatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/jnsperawatan.js');
+            exit();
+        }
+        /* End JnsPerawatan Section */
 
         /* Start Bahasa Section */
         public function getBahasa()

@@ -1,0 +1,86 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode Perawatan</th>
+          <th>Nama Perawatan</th>
+          <th>Kategori</th>
+          <th>Poliklinik</th>
+          <th>Cara Bayar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $jnsperawatan.list}
+        {loop: $jnsperawatan.list}
+        <tr class="edit" data-kd_jenis_prw="{$value.kd_jenis_prw}">
+          <td>{$value.kd_jenis_prw}</td>
+          <td>{$value.nm_perawatan}</td>
+          <td>{$value.nm_kategori}</td>
+          <td>{$value.nm_poli}</td>
+          <td>{$value.png_jawab}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="2" class="text-center">Tidak ada data perawatan.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($jnsperawatan.halaman)}
+        {if: $jnsperawatan.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $jnsperawatan.halaman > 1}
+        <li class="halaman" data-hal="{?=$jnsperawatan.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$jnsperawatan.halaman} dari {$jnsperawatan.jml_halaman} Hal</a></li>
+        {if: $jnsperawatan.halaman < $jnsperawatan.jml_halaman}
+        <li class="halaman" data-hal="{?=$jnsperawatan.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $jnsperawatan.halaman == $jnsperawatan.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$jnsperawatan.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $jnsperawatan.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $jnsperawatan.halaman > 1}
+        <li class="halaman" data-hal="{?=$jnsperawatan.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$jnsperawatan.halaman} dari {$jnsperawatan.jml_halaman} Hal</a></li>
+        {if: $jnsperawatan.halaman < $jnsperawatan.jml_halaman}
+        <li class="halaman" data-hal="{?=$jnsperawatan.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $jnsperawatan.halaman == $jnsperawatan.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$jnsperawatan.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>
