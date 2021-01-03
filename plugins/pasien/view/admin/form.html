@@ -216,82 +216,73 @@
   $('#propinsiList').on('click', 'li', function(){
      $('#nm_prop').val($(this).text().split(': ')[1]);
      $('#kd_prop').val($(this).text().split(': ')[0]);
-     var kd_prop = $('#kd_prop').val();
      $('#propinsiList').fadeOut();
-
-     $('#nm_kab').keyup(function(){
-        var query = $(this).val();
-        if(query != '')
-        {
-           $.ajax({
-              url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikabupaten'])?}",
-              method:"POST",
-              data:{query:query,kd_prop:kd_prop},
-              success:function(data)
-              {
-                 $('#kabupatenList').fadeIn();
-                 $('#kabupatenList').html(data);
-              }
-           });
-        }
-     });
-
+  });
+  $('#nm_kab').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikabupaten'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#kabupatenList').fadeIn();
+              $('#kabupatenList').html(data);
+           }
+        });
+     }
   });
   $('#kabupatenList').on('click', 'li', function(){
        $('#nm_kab').val($(this).text().split(': ')[1]);
        $('#kd_kab').val($(this).text().split(': ')[0]);
-       var kd_kab = $('#kd_kab').val();
        $('#kabupatenList').fadeOut();
-
-       $('#nm_kec').keyup(function(){
-            var query = $(this).val();
-            if(query != '')
-            {
-                 $.ajax({
-                      url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikecamatan'])?}",
-                      method:"POST",
-                      data:{query:query,kd_kab:kd_kab},
-                      success:function(data)
-                      {
-                           $('#kecamatanList').fadeIn();
-                           $('#kecamatanList').html(data);
-                      }
-                 });
-            }
-       });
-
   });
-
+  $('#nm_kec').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikecamatan'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#kecamatanList').fadeIn();
+                      $('#kecamatanList').html(data);
+                 }
+            });
+       }
+  });
   $('#kecamatanList').on('click', 'li', function(){
        $('#nm_kec').val($(this).text().split(': ')[1]);
        $('#kd_kec').val($(this).text().split(': ')[0]);
-       var kd_kec = $('#kd_kec').val();
        $('#kecamatanList').fadeOut();
-
-       $('#nm_kel').keyup(function(){
-            var query = $(this).val();
-            if(query != '')
-            {
-                 $.ajax({
-                      url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikelurahan'])?}",
-                      method:"POST",
-                      data:{query:query,kd_kce:kd_kec},
-                      success:function(data)
-                      {
-                           $('#kelurahanList').fadeIn();
-                           $('#kelurahanList').html(data);
-                      }
-                 });
-            }
-       });
-
   });
-
+  $('#nm_kel').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikelurahan'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#kelurahanList').fadeIn();
+                      $('#kelurahanList').html(data);
+                 }
+            });
+       }
+  });
   $('#kelurahanList').on('click', 'li', function(){
        $('#nm_kel').val($(this).text().split(': ')[1]);
        $('#kd_kel').val($(this).text().split(': ')[0]);
        $('#kelurahanList').fadeOut();
-
   });
 
  </script>

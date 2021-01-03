@@ -394,11 +394,11 @@ class Admin extends AdminModule
 
         $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
         if(!$cek_resep) {
-          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
           if(empty($max_id['no_resep'])) {
-            $max_id['no_resep'] = '000000';
+            $max_id['no_resep'] = '0000';
           }
-          $_next_no_resep = sprintf('%06s', ($max_id['no_resep'] + 1));
+          $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
           $no_resep = date('Ymd').''.$_next_no_resep;
 
           $resep_obat = $this->db('resep_obat')

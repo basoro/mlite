@@ -129,11 +129,11 @@ class Admin extends AdminModule
 
         $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
         if(!$cek_resep) {
-          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
           if(empty($max_id['no_resep'])) {
-            $max_id['no_resep'] = '000000';
+            $max_id['no_resep'] = '0000';
           }
-          $_next_no_resep = sprintf('%06s', ($max_id['no_resep'] + 1));
+          $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
           $no_resep = date('Ymd').''.$_next_no_resep;
 
           $resep_obat = $this->db('resep_obat')
@@ -167,6 +167,146 @@ class Admin extends AdminModule
         }
 
       }
+
+      if($_POST['kat'] == 'racikan') {
+        $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+        if(empty($max_id['no_resep'])) {
+          $max_id['no_resep'] = '0000';
+        }
+        $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
+        $no_resep = date('Ymd').''.$_next_no_resep;
+
+        $resep_obat = $this->db('resep_obat')
+          ->save([
+            'no_resep' => $no_resep,
+            'tgl_perawatan' => $_POST['tgl_perawatan'],
+            'jam' => $_POST['jam_rawat'],
+            'no_rawat' => $_POST['no_rawat'],
+            'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            'tgl_peresepan' => $_POST['tgl_perawatan'],
+            'jam_peresepan' => $_POST['jam_rawat'],
+            'status' => 'ralan'
+          ]);
+
+        if ($resep_obat) {
+          $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
+          $no_racik = $no_racik+1;
+          $this->db('resep_dokter_racikan')
+            ->save([
+              'no_resep' => $no_resep,
+              'no_racik' => $no_racik,
+              'nama_racik' => $_POST['nama_racik'],
+              'kd_racik' => $_POST['kd_jenis_prw'],
+              'jml_dr' => $_POST['jml'],
+              'aturan_pakai' => $_POST['aturan_pakai'],
+              'keterangan' => $_POST['keterangan']
+            ]);
+            $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
+            $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
+            for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
+              $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
+              $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
+              $jml = round(($jml/$kapasitas['kapasitas']),1);
+              $this->db('resep_dokter_racikan_detail')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'no_racik' => $no_racik,
+                  'kode_brng' => $_POST['kode_brng'][$i]['value'],
+                  'p1' => '1',
+                  'p2' => '1',
+                  'kandungan' => $_POST['kandungan'][$i]['value'],
+                  'jml' => $jml
+                ]);
+            }
+        }
+      }
+
+      if($_POST['kat'] == 'laboratorium') {
+        $cek_lab = $this->db('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+        if(!$cek_lab) {
+          $max_id = $this->db('permintaan_lab')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+          if(empty($max_id['noorder'])) {
+            $max_id['noorder'] = '0000';
+          }
+          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
+          $noorder = 'PL'.date('Ymd').''.$_next_noorder;
+
+          $permintaan_lab = $this->db('permintaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'no_rawat' => $_POST['no_rawat'],
+              'tgl_permintaan' => $_POST['tgl_perawatan'],
+              'jam_permintaan' => $_POST['jam_rawat'],
+              'tgl_sampel' => '0000-00-00',
+              'jam_sampel' => '00:00:00',
+              'tgl_hasil' => '0000-00-00',
+              'jam_hasil' => '00:00:00',
+              'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
+              'status' => 'ralan',
+              'informasi_tambahan' => $_POST['informasi_tambahan'],
+              'diagnosa_klinis' => $_POST['diagnosa_klinis']
+            ]);
+          $this->db('permintaan_pemeriksaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+
+        } else {
+          $noorder = $cek_lab['noorder'];
+          $this->db('permintaan_pemeriksaan_lab')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+        }
+      }
+
+      if($_POST['kat'] == 'radiologi') {
+        $cek_rad = $this->db('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+        if(!$cek_rad) {
+          $max_id = $this->db('permintaan_radiologi')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
+          if(empty($max_id['noorder'])) {
+            $max_id['noorder'] = '0000';
+          }
+          $_next_noorder = sprintf('%04s', ($max_id['noorder'] + 1));
+          $noorder = 'PR'.date('Ymd').''.$_next_noorder;
+
+          $permintaan_rad = $this->db('permintaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'no_rawat' => $_POST['no_rawat'],
+              'tgl_permintaan' => $_POST['tgl_perawatan'],
+              'jam_permintaan' => $_POST['jam_rawat'],
+              'tgl_sampel' => '0000-00-00',
+              'jam_sampel' => '00:00:00',
+              'tgl_hasil' => '0000-00-00',
+              'jam_hasil' => '00:00:00',
+              'dokter_perujuk' => $this->core->getUserInfo('username', null, true),
+              'status' => 'ralan',
+              'informasi_tambahan' => $_POST['informasi_tambahan'],
+              'diagnosa_klinis' => $_POST['diagnosa_klinis']
+            ]);
+          $this->db('permintaan_pemeriksaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+
+        } else {
+          $noorder = $cek_rad['noorder'];
+          $this->db('permintaan_pemeriksaan_radiologi')
+            ->save([
+              'noorder' => $noorder,
+              'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+              'stts_bayar' => 'Belum'
+            ]);
+        }
+      }
+
       exit();
     }
 
@@ -262,6 +402,7 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $resep = [];
@@ -275,7 +416,69 @@ class Admin extends AdminModule
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => $_POST['no_rawat']]);
+
+      $rows_racikan = $this->db('resep_obat')
+        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->toArray();
+      $resep_racikan = [];
+      $jumlah_total_resep_racikan = 0;
+      foreach ($rows_racikan as $row) {
+        $row['nomor'] = $i++;
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        foreach ($row['resep_dokter_racikan_detail'] as $value) {
+          $value['ralan'] = $value['jml'] * $value['ralan'];
+          $jumlah_total_resep_racikan += floatval($value['ralan']);
+        }
+        $resep_racikan[] = $row;
+      }
+
+      $rows_laboratorium = $this->db('permintaan_lab')->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $jumlah_total_lab = 0;
+      $laboratorium = [];
+
+      if($rows_laboratorium) {
+        foreach ($rows_laboratorium as $row) {
+          $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
+          $row['kelas'] = $jns_perawatan['kelas'];
+          $row['total_byr'] = $jns_perawatan['total_byr'];
+          $jumlah_total_lab += $jumlah_total_lab + $jns_perawatan['total_byr'];
+          $laboratorium[] = $row;
+        }
+      }
+
+      $rows_radiologi = $this->db('permintaan_radiologi')->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $jumlah_total_rad = 0;
+      $radiologi = [];
+
+      if($rows_radiologi) {
+        foreach ($rows_radiologi as $row) {
+          $jns_perawatan = $this->db('jns_perawatan_radiologi')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
+          $row['kelas'] = $jns_perawatan['kelas'];
+          $row['total_byr'] = $jns_perawatan['total_byr'];
+          $jumlah_total_rad += $jumlah_total_rad + $jns_perawatan['total_byr'];
+          $radiologi[] = $row;
+        }
+      }
+
+      echo $this->draw('rincian.html', [
+        'rawat_jl_dr' => $rawat_jl_dr,
+        'rawat_jl_pr' => $rawat_jl_pr,
+        'rawat_jl_drpr' => $rawat_jl_drpr,
+        'resep' => $resep,
+        'resep_racikan' => $resep_racikan,
+        'laboratorium' => $laboratorium,
+        'radiologi' => $radiologi,
+        'jumlah_total' => $jumlah_total,
+        'jumlah_total_resep' => $jumlah_total_resep,
+        'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan,
+        'jumlah_total_lab' => $jumlah_total_lab,
+        'jumlah_total_rad' => $jumlah_total_rad,
+        'no_rawat' => $_POST['no_rawat']
+      ]);
       exit();
     }
 
@@ -353,6 +556,50 @@ class Admin extends AdminModule
         ->limit(10)
         ->toArray();
       echo $this->draw('obat.html', ['obat' => $obat]);
+      exit();
+    }
+
+    public function anyObatRacikan()
+    {
+      $obat = $this->db('databarang')
+        ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+        ->where('status', '1')
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
+        ->limit(10)
+        ->toArray();
+      echo $this->draw('obat.racikan.html', ['obat' => $obat]);
+      exit();
+    }
+
+    public function anyRacikan()
+    {
+      $racikan = $this->db('metode_racik')
+        ->like('nm_racik', '%'.$_POST['racikan'].'%')
+        ->toArray();
+      echo $this->draw('racikan.html', ['racikan' => $racikan]);
+      exit();
+    }
+
+    public function anyLaboratorium()
+    {
+      $laboratorium = $this->db('jns_perawatan_lab')
+        ->where('status', '1')
+        ->like('nm_perawatan', '%'.$_POST['laboratorium'].'%')
+        ->limit(10)
+        ->toArray();
+      echo $this->draw('laboratorium.html', ['laboratorium' => $laboratorium]);
+      exit();
+    }
+
+    public function anyRadiologi()
+    {
+      $radiologi = $this->db('jns_perawatan_radiologi')
+        ->where('status', '1')
+        ->like('nm_perawatan', '%'.$_POST['radiologi'].'%')
+        ->limit(10)
+        ->toArray();
+      echo $this->draw('radiologi.html', ['radiologi' => $radiologi]);
       exit();
     }
 
@@ -437,6 +684,35 @@ class Admin extends AdminModule
       $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
       echo $_next_no_reg;
       exit();
+    }
+
+    public function getAjax()
+    {
+        header('Content-type: text/html');
+        $show = isset($_GET['show']) ? $_GET['show'] : "";
+        switch($show){
+        	default:
+          break;
+          case "databarang":
+          $rows = $this->db('databarang')
+            ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+            ->where('status', '1')
+            ->where('stok', '>', '10')
+            ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+            ->like('databarang.nama_brng', '%'.$_GET['nama_brng'].'%')
+            ->limit(10)
+            ->toArray();
+
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kode_brng' => $row['kode_brng'],
+                'nama_brng'  => $row['nama_brng']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+        }
+        exit();
     }
 
     public function getJavascript()

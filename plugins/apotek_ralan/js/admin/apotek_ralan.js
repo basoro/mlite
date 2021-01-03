@@ -226,22 +226,18 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-ralan");
-  var kat = $(this).attr("data-kat");
+  var stok = $(this).attr("data-stok");
 
-  $('input:hidden[name=kd_jenis_prw]').val(kode_brng);
-  $('input:text[name=nm_perawatan]').val(nama_brng);
-  $('input:text[name=biaya]').val(biaya);
-  $('input:hidden[name=kat]').val(kat);
-
-  /*$('#jumlah_jual').val(1);
-  var jumlah_jual  = $('input:text[name=jumlah_jual]').val();
-
-  $('#jumlah_jual').removeAttr("disabled");
-  $('#potongan').removeAttr("disabled");
-  $('#jumlah_jual').focus();
-
-  var total = (Number(harga)) * (Number(jumlah_jual));
-  $('input:text[name=total]').val(total);*/
+  if(stok < 10) {
+    alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
+    $('input:hidden[name=kd_jenis_prw]').val();
+    $('input:text[name=nm_perawatan]').val();
+    $('input:text[name=biaya]').val();
+  } else {
+    $('input:hidden[name=kd_jenis_prw]').val(kode_brng);
+    $('input:text[name=nm_perawatan]').val(nama_brng);
+    $('input:text[name=biaya]').val(biaya);
+  }
 
   $('#obat').hide();
   $('#aturan_pakai').show();

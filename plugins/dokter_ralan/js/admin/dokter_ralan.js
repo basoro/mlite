@@ -6,6 +6,8 @@ $("#histori_pelayanan").hide();
 $("#notif").hide();
 $('#provider').hide();
 $('#aturan_pakai').hide();
+$('#daftar_racikan').hide();
+$("#info_tambahan").hide();
 
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -138,7 +140,8 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 });
 
-$("#display").on("click", ".soap", function(event){
+//$("#display").on("click", ".soap", function(event){
+$('a[href="#soap"]').click(function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
@@ -341,6 +344,9 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#display").show();
   $("#rincian").hide();
   $("#soap").hide();
+  $('#aturan_pakai').hide();
+  $('#daftar_racikan').hide();
+  $("#info_tambahan").hide();
 });
 
 // tombol batal diklik
@@ -352,10 +358,14 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#display").show();
   $("#rincian").hide();
   $("#soap").hide();
+  $('#aturan_pakai').hide();
+  $('#daftar_racikan').hide();
+  $("#info_tambahan").hide();
 });
 
 // ketika baris data diklik
-$("#display").on("click", ".layanan_obat", function(event){
+//$("#display").on("click", ".layanan_obat", function(event){
+$('a[href="#layanan_obat"]').click(function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
@@ -390,6 +400,7 @@ $('input:text[name=layanan]').on('input',function(e){
       // tampilkan data yang sudah di perbaharui
         $("#layanan").html(data).show();
         $("#obat").hide();
+        $("#racikan").hide();
       });
   }
 
@@ -407,6 +418,89 @@ $('input:text[name=obat]').on('input',function(e){
       // tampilkan data yang sudah di perbaharui
         $("#obat").html(data).show();
         $("#layanan").hide();
+        $("#racikan").hide();
+        $("#radiologi").hide();
+        $("#laboratorium").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('input:text[name=racikan]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/dokter_ralan/racikan?t=' + mlite.token;
+  var racikan = $('input:text[name=racikan]').val();
+
+  if(racikan!="") {
+      $.post(url, {racikan: racikan} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#racikan").html(data).show();
+        $("#layanan").hide();
+        $("#obat").hide();
+        $("#radiologi").hide();
+        $("#laboratorium").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('.nama_brng').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/dokter_ralan/obatracikan?t=' + mlite.token;
+  var obat = $('.nama_brng').val();
+
+  if(obat!="") {
+      $.post(url, {obat: obat} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#obat_racikan").html(data).show();
+        $("#layanan").hide();
+        $("#racikan").hide();
+        $("#radiologi").hide();
+        $("#laboratorium").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('input:text[name=laboratorium]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/dokter_ralan/laboratorium?t=' + mlite.token;
+  var laboratorium = $('input:text[name=laboratorium]').val();
+
+  if(laboratorium!="") {
+      $.post(url, {laboratorium: laboratorium} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#laboratorium").html(data).show();
+        $("#layanan").hide();
+        $("#obat").hide();
+        $("#racikan").hide();
+        $("#radiologi").hide();
+      });
+  }
+
+});
+// end pencarian
+
+// ketika inputbox pencarian diisi
+$('input:text[name=radiologi]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/dokter_ralan/radiologi?t=' + mlite.token;
+  var radiologi = $('input:text[name=radiologi]').val();
+
+  if(radiologi!="") {
+      $.post(url, {radiologi: radiologi} ,function(data) {
+      // tampilkan data yang sudah di perbaharui
+        $("#radiologi").html(data).show();
+        $("#layanan").hide();
+        $("#obat").hide();
+        $("#laboratorium").hide();
+        $("#racikan").hide();
       });
   }
 
@@ -431,6 +525,11 @@ $("#layanan").on("click", ".pilih_layanan", function(event){
   $("#layanan").hide();
   $('#provider').show();
   $('#aturan_pakai').hide();
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $('#daftar_racikan').hide();
+  $("#info_tambahan").hide();
 });
 
 // ketika baris data diklik
@@ -441,26 +540,131 @@ $("#obat").on("click", ".pilih_obat", function(event){
   var kode_brng = $(this).attr("data-kode_brng");
   var nama_brng = $(this).attr("data-nama_brng");
   var biaya = $(this).attr("data-ralan");
+  var stok = $(this).attr("data-stok");
   var kat = $(this).attr("data-kat");
 
-  $('input:hidden[name=kd_jenis_prw]').val(kode_brng);
-  $('input:text[name=nm_perawatan]').val(nama_brng);
+  if(stok < 10) {
+    alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
+    $('input:hidden[name=kd_jenis_prw]').val();
+    $('input:text[name=nm_perawatan]').val();
+    $('input:text[name=biaya]').val();
+    $('input:hidden[name=kat]').val();
+  } else {
+    $('input:hidden[name=kd_jenis_prw]').val(kode_brng);
+    $('input:text[name=nm_perawatan]').val(nama_brng);
+    $('input:text[name=biaya]').val(biaya);
+    $('input:hidden[name=kat]').val(kat);
+  }
+
+  $('#obat').hide();
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $('#daftar_racikan').hide();
+  $('#aturan_pakai').show();
+  $("#info_tambahan").hide();
+});
+
+// ketika baris data diklik
+$("#racikan").on("click", ".pilih_racikan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kd_racik = $(this).attr("data-kd_racik");
+  var nm_racik = $(this).attr("data-nm_racik");
+  var kat = $(this).attr("data-kat");
+
+  $('input:hidden[name=kd_jenis_prw]').val(kd_racik);
+  $('input:text[name=nm_perawatan]').val(nm_racik);
+  $('input:text[name=biaya]').val('');
+  $('input:hidden[name=kat]').val(kat);
+
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $('#aturan_pakai').show();
+  $('#daftar_racikan').show();
+  $("#info_tambahan").hide();
+});
+
+// ketika baris data diklik
+$("#obat_racikan").on("click", ".pilih_obat_racikan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kode_brng = $(this).attr("data-kode_brng");
+  var nama_brng = $(this).attr("data-nama_brng");
+  var biaya = $(this).attr("data-ralan");
+  var stok = $(this).attr("data-stok");
+
+  if(stok < 10) {
+    alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
+    $('input:hidden[name=kode_brng]').val();
+    $('input:text[name=nama_brng]').val();
+    $('input:text[name=biaya]').val();
+  } else {
+    $('input:hidden[name=kode_brng]').val(kode_brng);
+    $('input:text[name=nama_brng]').val(nama_brng);
+    $('input:text[name=biaya]').val(biaya);
+  }
+
+  $('#obat').hide();
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  //$('#daftar_racikan').hide();
+  $('#aturan_pakai').show();
+  $("#info_tambahan").hide();
+});
+
+// ketika baris data diklik
+$("#laboratorium").on("click", ".pilih_laboratorium", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var nm_perawatan = $(this).attr("data-nm_perawatan");
+  var biaya = $(this).attr("data-biaya");
+  var kat = $(this).attr("data-kat");
+
+  $('input:hidden[name=kd_jenis_prw]').val(kd_jenis_prw);
+  $('input:text[name=nm_perawatan]').val(nm_perawatan);
   $('input:text[name=biaya]').val(biaya);
   $('input:hidden[name=kat]').val(kat);
 
-  /*$('#jumlah_jual').val(1);
-  var jumlah_jual  = $('input:text[name=jumlah_jual]').val();
+  $("#layanan").hide();
+  $('#provider').show();
+  $('#aturan_pakai').hide();
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $('#daftar_racikan').hide();
+  $("#info_tambahan").show();
+});
 
-  $('#jumlah_jual').removeAttr("disabled");
-  $('#potongan').removeAttr("disabled");
-  $('#jumlah_jual').focus();
+// ketika baris data diklik
+$("#radiologi").on("click", ".pilih_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
 
-  var total = (Number(harga)) * (Number(jumlah_jual));
-  $('input:text[name=total]').val(total);*/
+  var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+  var nm_perawatan = $(this).attr("data-nm_perawatan");
+  var biaya = $(this).attr("data-biaya");
+  var kat = $(this).attr("data-kat");
 
-  $('#obat').hide();
-  $('#aturan_pakai').show();
-  $('#rawat_jl_dr').show();
+  $('input:hidden[name=kd_jenis_prw]').val(kd_jenis_prw);
+  $('input:text[name=nm_perawatan]').val(nm_perawatan);
+  $('input:text[name=biaya]').val(biaya);
+  $('input:hidden[name=kat]').val(kat);
+
+  $("#layanan").hide();
+  $('#provider').show();
+  $('#aturan_pakai').hide();
+  $('#racikan').hide();
+  $("#laboratorium").hide();
+  $("#radiologi").hide();
+  $('#daftar_racikan').hide();
+  $("#info_tambahan").show();
 });
 
 // ketika tombol simpan diklik
@@ -479,6 +683,12 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var nama_racik      = $('input:text[name=nama_racik]').val();
+  var keterangan      = $('textarea[name=keterangan]').val();
+  var kode_brng       = JSON.stringify($('select[name=kode_brng]').serializeArray());
+  var kandungan       = JSON.stringify($('input:text[name=kandungan]').serializeArray());
+  var diagnosa_klinis = $('input:text[name=diagnosa_klinis]').val();
+  var informasi_tambahan = $('textarea[name=informasi_tambahan]').val();
 
   var url = baseURL + '/dokter_ralan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -491,9 +701,14 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  nama_racik     : nama_racik,
+  keterangan     : keterangan,
+  kode_brng      : kode_brng,
+  kandungan      : kandungan,
+  informasi_tambahan : informasi_tambahan,
+  diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
-
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
@@ -506,10 +721,18 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nm_perawatan]').val("");
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
+    $('input:text[name=diagnosa_klinis]').val("");
+    $('#informasi_tambahan').val("");
     $('input:text[name=nama_provider]').val("");
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=racikan]').val("");
+    $('input:text[name=nama_racik]').val("");
+    $('#kode_brng').val("");
+    $('#keterangan').val("");
+    $('input:text[name=kandungan]').val("");
+    $('.row_racikan').remove();
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -644,6 +867,12 @@ function bersih(){
   $('input:text[name=harga_jual]').val("");
   $('input:text[name=total]').val("");
   $('input:text[name=no_reg]').val("");
+  $('input:text[name=racikan]').val("");
+  $('input:text[name=nama_racik]').val("");
+  $('#kode_brng').val("");
+  $('#keterangan').val("");
+  $('input:text[name=kandungan]').val("");
+  $('input:text[name=nm_perawatan]').val("");
 }
 
 $(document).click(function (event) {
@@ -683,4 +912,42 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
         dropdown.css('display', 'block');
         dropdown.appendTo('body');
     }
+});
+
+$(document).ready(function () {
+  var strip_tags = function(str) {
+    return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+  };
+  var truncate_string = function(str, chars) {
+    if ($.trim(str).length <= chars) {
+      return str;
+    } else {
+      return $.trim(str.substr(0, chars)) + '...';
+    }
+  };
+  $('select').selectator('destroy');
+  $('.databarang_ajax').selectator({
+    labels: {
+      search: 'Cari obat...'
+    },
+    load: function (search, callback) {
+      if (search.length < this.minSearchLength) return callback();
+      $.ajax({
+        url: '{?=url()?}/admin/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          callback(data.slice(0, 100));
+          console.log(data);
+        },
+        error: function() {
+          callback();
+        }
+      });
+    },
+    delay: 300,
+    minSearchLength: 1,
+    valueField: 'kode_brng',
+    textField: 'nama_brng'
+  });  $('select').selectator();
 });
