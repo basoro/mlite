@@ -24,7 +24,7 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var nip = $('input:text[name=nip]').val();
+  var nip = $('select[name=nip]').val();
   var nama = $('input:text[name=nama]').val();
   var jk = $('select[name=jk]').val();
   var tmp_lahir = $('input:text[name=tmp_lahir]').val();

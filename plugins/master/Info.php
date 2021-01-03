@@ -216,7 +216,7 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `spesialis` (`kd_sps`, `nm_sps`) VALUES
-          ('SPPD', 'Spesialis Penyakit Dalam');");
+          ('UMUM', 'Dokter Umum');");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `stts_kerja` (
             `stts` char(3) NOT NULL,

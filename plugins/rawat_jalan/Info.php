@@ -27,7 +27,7 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `dokter` (`kd_dokter`, `nm_dokter`, `jk`, `tmp_lahir`, `tgl_lahir`, `gol_drh`, `agama`, `almt_tgl`, `no_telp`, `stts_nikah`, `kd_sps`, `alumni`, `no_ijn_praktek`, `status`) VALUES
-          ('DR001', 'dr. Ataaka Salim, Sp.OG', 'L', 'Barabai', '2000-09-18', 'O', 'Islam', 'Barabai', '-', 'MENIKAH', 'SPPD', 'UI', '-', '1');");
+          ('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2000-09-18', 'O', 'Islam', 'Barabai', '-', 'MENIKAH', 'UMUM', 'UI', '-', '1');");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `pegawai` (
             `id` int(11) NOT NULL,
@@ -67,7 +67,7 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `pegawai` (`id`, `nik`, `nama`, `jk`, `jbtn`, `jnj_jabatan`, `kode_kelompok`, `kode_resiko`, `kode_emergency`, `departemen`, `bidang`, `stts_wp`, `stts_kerja`, `npwp`, `pendidikan`, `gapok`, `tmp_lahir`, `tgl_lahir`, `alamat`, `kota`, `mulai_kerja`, `ms_kerja`, `indexins`, `bpd`, `rekening`, `stts_aktif`, `wajibmasuk`, `pengurang`, `indek`, `mulai_kontrak`, `cuti_diambil`, `dankes`, `photo`, `no_ktp`) VALUES
-          (1, 'DR001', 'dr. Ataaka Salim, Sp.OG', 'Pria', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', 0, 'Barabai', '2016-06-10', '-', 'Barabai', '2019-09-18', '<1', '-', '-', '-', 'AKTIF', 0, 0, 0, '2019-09-18', 1, 0, '-', '0');");
+          (1, 'DR001', 'dr. Ataaka Muhammad', 'Pria', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', 0, 'Barabai', '2016-06-10', '-', 'Barabai', '2019-09-18', '<1', '-', '-', '-', 'AKTIF', 0, 0, 0, '2019-09-18', 1, 0, '-', '0');");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `poliklinik` (
             `kd_poli` char(5) NOT NULL DEFAULT '',
@@ -79,9 +79,7 @@
 
           $core->db()->pdo()->exec("INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, `status`) VALUES
           ('-', '-', 0, 0, '0'),
-          ('IGDK', 'IGD', 0, 0, '0'),
-          ('OBG', 'Obgyn', 0, 0, '0'),
-          ('INT', 'Klinik Penyakit Dalam', 0, 0, '0');");
+          ('IGDK', 'IGD', 0, 0, '0');");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `reg_periksa` (
             `no_reg` varchar(8) DEFAULT NULL,
@@ -216,7 +214,7 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `petugas` (`nip`, `nama`, `jk`, `tmp_lahir`, `tgl_lahir`, `gol_darah`, `agama`, `stts_nikah`, `alamat`, `kd_jbtn`, `no_telp`, `status`) VALUES
-          ('DR001', 'dr. Ataaka Salim', 'L', 'Barabai', '2020-12-01', 'A', 'Islam', 'MENIKAH', '-', '-', '0', '0');");
+          ('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2020-12-01', 'A', 'Islam', 'MENIKAH', '-', '-', '0', '0');");
 
           $core->db()->pdo()->exec("ALTER TABLE `petugas`
             ADD PRIMARY KEY (`nip`),

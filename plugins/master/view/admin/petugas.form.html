@@ -8,7 +8,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="nip">
                 {loop: $petugas.pegawai}
-                  <option value="nip"{if: $petugas.form.nip == $value.nik} selected{/if}>{$value.nama}</option>
+                  <option value="{$value.nik}"{if: $petugas.form.nip == $value.nik} selected{/if}>{$value.nama}</option>
                 {/loop}
               </select>
             </div>
