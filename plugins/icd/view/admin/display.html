@@ -1,9 +1,11 @@
-<style>
+
+{if: $diagnosa || $prosedur}<style>
   table th,
   table td {
     padding: 5px;
   }
 </style>
+<h4>ICD 9 dan ICD 10</h4>
 <div class="table-responsive no-margin">
   <table class="table table-bordered no-padding icd" width="100%">
     <tr class="isi">
@@ -102,3 +104,4 @@
     });
   });
 </script>
+{/if}

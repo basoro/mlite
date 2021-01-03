@@ -1,3 +1,4 @@
+{if: $rawat_jl_dr || $rawat_jl_pr || $rawat_jl_drpr}
 <h4>Rincian Tindakan</h4>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -48,6 +49,8 @@
     </tfoot>
   </table>
 </div>
+{/if}
+{if: $resep}
 <h4>Permintaan e-Resep</h4>
 <h5>Non Racikan</h5>
 <div class="table-responsive no-margin">
@@ -97,6 +100,8 @@
     </tfoot>
   </table>
 </div>
+{/if}
+{if: $resep_racikan}
 <h5>Racikan </h5>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -154,6 +159,8 @@
     </tfoot>
   </table>
 </div>
+{/if}
+{if: $laboratorium}
 <h4>Permintaan Laboratorium</h4>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -186,6 +193,8 @@
     </tfoot>
   </table>
 </div>
+{/if}
+{if: $radiologi}
 <h4>Permintaan Radiologi</h4>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -218,6 +227,7 @@
     </tfoot>
   </table>
 </div>
+{/if}
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 </script>
