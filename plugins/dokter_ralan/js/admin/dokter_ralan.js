@@ -140,34 +140,6 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 });
 
-//$("#display").on("click", ".soap", function(event){
-$('a[href="#soap"]').click(function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-
-  var no_rawat = $(this).attr("data-no_rawat");
-  var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-  var nm_pasien = $(this).attr("data-nm_pasien");
-  var tgl_registrasi = $(this).attr("data-tgl_registrasi");
-
-  $('input:text[name=no_rawat]').val(no_rawat);
-  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
-  $('input:text[name=nm_pasien]').val(nm_pasien);
-  $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
-  $("#display").hide();
-
-  var url = baseURL + '/dokter_ralan/soap?t=' + mlite.token;
-  $.post(url, {no_rawat : no_rawat,
-  }, function(data) {
-    // tampilkan data
-    $("#form_rincian").hide();
-    $("#form").hide();
-    $("#notif").hide();
-    $("#form_soap").show();
-    $("#soap").html(data).show();
-  });
-});
-
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -361,32 +333,6 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $('#aturan_pakai').hide();
   $('#daftar_racikan').hide();
   $("#info_tambahan").hide();
-});
-
-// ketika baris data diklik
-//$("#display").on("click", ".layanan_obat", function(event){
-$('a[href="#layanan_obat"]').click(function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-
-  var no_rawat = $(this).attr("data-no_rawat");
-  var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-  var nm_pasien = $(this).attr("data-nm_pasien");
-
-  $('input:text[name=no_rawat]').val(no_rawat);
-  $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
-  $('input:text[name=nm_pasien]').val(nm_pasien);
-  $("#display").hide();
-
-  var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
-  $.post(url, {no_rawat : no_rawat,
-  }, function(data) {
-    // tampilkan data
-    $("#form_rincian").show();
-    $("#form").hide();
-    $("#notif").hide();
-    $("#rincian").html(data).show();
-  });
 });
 
 // ketika inputbox pencarian diisi
@@ -912,6 +858,10 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
         dropdown.css('display', 'block');
         dropdown.appendTo('body');
     }
+});
+
+$('body').on('hidden.bs.modal', '.modal', function () {
+    $(this).removeData('bs.modal');
 });
 
 $(document).ready(function () {
