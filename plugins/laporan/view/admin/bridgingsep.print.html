@@ -43,7 +43,11 @@
 					<hr style="margin-top:0;">
 					<p>
             <b>Laporan Data Bridging SEP</b><br>
+            {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
             Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
+            {else}
+            Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}            
+            {/if}
           </p>
 				</header>
 				<div class="">
