@@ -1,4 +1,4 @@
-<article class="row">
+<div class="row">
     <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
         <div class="panel panel-default">
               <div class="panel-heading">
@@ -37,11 +37,18 @@
         </div>
 
     </div>
-</article>
+</div>
 <script type="text/javascript">
   $(document).ready(function(){
     $('.display').DataTable({
-      "language": { "search": "", "searchPlaceholder": "Search..." },
+      "language": {
+        "paginate": {
+          "previous": "‹",
+          "next":     "›"
+        },
+        "search": "",
+        "searchPlaceholder": "Search..."
+      },
       "lengthChange": false,
       "scrollX": true,
       dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"

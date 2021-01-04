@@ -535,6 +535,106 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyKontrol()
+    {
+      $rows = $this->db('booking_registrasi')
+        ->join('poliklinik', 'poliklinik.kd_poli=booking_registrasi.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=booking_registrasi.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=booking_registrasi.kd_pj')
+        ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+        ->toArray();
+      $i = 1;
+      $result = [];
+      foreach ($rows as $row) {
+        $row['nomor'] = $i++;
+        $result[] = $row;
+      }
+      echo $this->draw('kontrol.html', ['booking_registrasi' => $result]);
+      exit();
+    }
+
+    public function postSaveKontrol()
+    {
+
+      $query = $this->db('skdp_bpjs')->save([
+        'tahun' => date('Y'),
+        'no_rkm_medis' => $_POST['no_rkm_medis'],
+        'diagnosa' => $_POST['diagnosa'],
+        'terapi' => $_POST['terapi'],
+        'alasan1' => $_POST['alasan1'],
+        'alasan2' => '',
+        'rtl1' => $_POST['rtl1'],
+        'rtl2' => '',
+        'tanggal_datang' => $_POST['tanggal_datang'],
+        'tanggal_rujukan' => $_POST['tanggal_rujukan'],
+        'no_antrian' => $this->setNoSKDP(),
+        'kd_dokter' => $this->core->getUserInfo('username', null, true),
+        'status' => 'Menunggu'
+      ]);
+
+      if ($query) {
+        $this->db('booking_registrasi')
+          ->save([
+            'tanggal_booking' => date('Y-m-d'),
+            'jam_booking' => date('H:i:s'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'tanggal_periksa' => $_POST['tanggal_datang'],
+            'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            'kd_poli' => $this->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
+            'no_reg' => $this->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_rujukan']),
+            'kd_pj' => $this->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
+            'limit_reg' => 0,
+            'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
+            'status' => 'Belum'
+          ]);
+      }
+
+      /*if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
+        $this->db('pemeriksaan_ralan')->save($_POST);
+      } else {
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      }*/
+      exit();
+    }
+
+    public function postHapusKontrol()
+    {
+      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->delete();
+      exit();
+    }
+
+    public function setNoSKDP()
+    {
+        $year = date('Y');
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
+        $last_no->execute();
+        $last_no = $last_no->fetch();
+        if(empty($last_no[0])) {
+          $last_no[0] = '000000';
+        }
+        $next_no = sprintf('%06s', ($last_no[0] + 1));
+        return $next_no;
+    }
+
+    public function getRegPeriksaInfo($field, $no_rawat)
+    {
+        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
+    }
+
+    public function setNoBooking($kd_dokter, $date)
+    {
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg->execute();
+        $last_no_reg = $last_no_reg->fetch();
+        if(empty($last_no_reg[0])) {
+          $last_no_reg[0] = '000';
+        }
+        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        return $next_no_reg;
+    }
+
     public function anyLayanan()
     {
       $layanan = $this->db('jns_perawatan')

@@ -1,6 +1,6 @@
 <?php
 
-//require_once('functions.php');
+require_once(BASE_DIR.'/systems/functions.php');
 
 class Autoloader
 {

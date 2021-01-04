@@ -3,8 +3,6 @@ KhanzaLITE Library package to access BPJS Kesehatan API.
 This package is a wrapper of BPJS VClaim Web Service
 https://dvlp.bpjs-kesehatan.go.id/VClaim-Katalog
 
-Created because i don't really wanna get my hands dirty coz of using the old repeated scripts.
-
 #### Example Usage
 ```php
 // use Referensi service

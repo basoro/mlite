@@ -32,7 +32,7 @@
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
-              <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}">Surat Kontrol</a></li>
+              <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
               {/if}
             </ul>
           </td>
@@ -90,6 +90,8 @@
       $("#form_rincian").show();
       $("#form").hide();
       $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_kontrol").hide();
       $("#rincian").html(data).show();
     });
   });
@@ -119,9 +121,39 @@
       $("#form").hide();
       $("#notif").hide();
       $("#form_soap").show();
+      $("#form_kontrol").hide();
       $("#soap").html(data).show();
     });
-  });  
+  });
+</script>
+<script>
+  $('a[href="#surat_kontrol"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
+    $("#display").hide();
+
+    var url = baseURL + '/dokter_ralan/kontrol?t=' + mlite.token;
+    $.post(url, {no_rkm_medis : no_rkm_medis,
+    }, function(data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_kontrol").show();
+      $("#kontrol").html(data).show();
+    });
+  });
 </script>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
