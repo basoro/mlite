@@ -59,9 +59,9 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
 
-        $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->toArray();
+        $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
+        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
@@ -157,8 +157,8 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
-      $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->toArray();
-      $this->assign['dokter'] = $this->db('dokter')->toArray();
+      $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
+      $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
       $this->assign['penjab'] = $this->db('penjab')->toArray();
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){

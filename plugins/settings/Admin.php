@@ -53,8 +53,8 @@ class Admin extends AdminModule
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($check_table) {
-          $settings['poliklinik'] = $this->db('poliklinik')->toArray();
-          $settings['dokter'] = $this->db('dokter')->toArray();
+          $settings['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+          $settings['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
         }
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();

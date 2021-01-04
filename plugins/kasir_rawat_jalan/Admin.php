@@ -63,8 +63,8 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $this->assign['kd_billing'] = 'RJ.'.date('d.m.Y.H.i.s');
-        $this->assign['poliklinik']     = $this->db('poliklinik')->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->toArray();
+        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
+        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';

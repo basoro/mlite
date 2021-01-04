@@ -58,8 +58,8 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->db('poliklinik')->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->toArray();
+        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
+        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
@@ -183,6 +183,7 @@ class Admin extends AdminModule
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('status', 'ralan')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -201,6 +202,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('tgl_perawatan','!=', $row['tgl_peresepan'])
         ->where('jam', '!=', $row['jam_peresepan'])
+        ->where('status', 'ralan')
         ->oneArray();
 
         $resep[] = $row;
