@@ -6,7 +6,8 @@
           <tr>
             <th>ID Obat</th>
             <th>Nama Obat</th>
-            <th>Stok</th>
+            <th>Stok Depo</th>
+            <th>Stok Minimal</th>
             <th>Harga</th>
           </tr>
         </thead>
@@ -17,6 +18,7 @@
             <td>{$value.kode_brng}</td>
             <td>{$value.nama_brng}</td>
             <td>{$value.stok}</td>
+            <td>{$value.stokminimal}</td>
             <td>Rp. <span class="pull-right">{?= number_format($value.ralan,2,',','.')?}</span></td>
           </tr>
           {/loop}
