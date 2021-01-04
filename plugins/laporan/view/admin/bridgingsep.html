@@ -28,28 +28,25 @@
         <table class="table table-striped no-padding dataTables">
           <thead>
             <tr>
+              <th>No.</th>
               <th>Nomor SEP</th>
               <th>Nomor Rawat</th>
-              <th>Tanggal SEP</th>
-              <th>Tanggal Rujukan</th>
-              <th>Nomor Rujukan</th>
-              <th>Kode PPK Rujukan</th>
+              <th>Tgl. SEP</th>
+              <th>Tgl. Rujukan</th>
+              <th>No. Rujukan</th>
               <th>PPK Rujukan</th>
-              <th>Kode PPK Pelayanan</th>
               <th>PPK Pelayanan</th>
-              <th>Jenis Pelayanan</th>
+              <th>Jns. Pelayanan</th>
               <th>Catatan</th>
-              <th>Kode Diagnosa Awal</th>
-              <th>Nama Diagnosa Awal</th>
-              <th>Kode Poli Tujuan</th>
-              <th>Nama Poli Tujuan</th>
-              <th>Kelas Rawat</th>
-              <th>Laka Lantas</th>
+              <th>Diagnosa Awal</th>
+              <th>Poli Tujuan</th>
+              <th>Kelas</th>
+              <th>KLL</th>
               <th>User</th>
-              <th>Nomor RM</th>
+              <th>No. RM</th>
               <th>Nama Pasien</th>
               <th>Tanggal Lahir</th>
-              <th>Peserta</th>
+              <th>Jns. Peserta</th>
               <th>Jenis Kelamin</th>
               <th>Nomor Kartu</th>
               <th>Tanggal Pulang</th>
@@ -57,20 +54,16 @@
               <th>Eksekutif</th>
               <th>COB</th>
               <th>Penjamin</th>
-              <th>Nomor Telepon</th>
+              <th>No. Telepon</th>
               <th>Katarak</th>
               <th>Tanggal KLL</th>
-              <th>Keterangan KLL</th>
+              <th>Ket. KLL</th>
               <th>Suplesi</th>
-              <th>No. SEP Suplesi</th>
-              <th>Kode Propinsi</th>
-              <th>Nama Propinsi</th>
-              <th>Kode Kabupaten</th>
-              <th>Nama Kabupaten</th>
-              <th>Kode Kecamatan</th>
-              <th>Nama Kecamatan</th>
-              <th>Nomor SKDP</th>
-              <th>Kode DPJP</th>
+              <th>SEP Suplesi</th>
+              <th>Propinsi</th>
+              <th>Kabupaten</th>
+              <th>Kecamatan</th>
+              <th>SKDP</th>
               <th>Nama DPJP</th>
             </tr>
           </thead>
@@ -78,29 +71,26 @@
             {if: $bridgingsep.list}
             {loop: $bridgingsep.list}
             <tr>
+              <td>{$value.nomor}</td>
               <td>{$value.no_sep}</td>
               <td>{$value.no_rawat}</td>
               <td>{$value.tglsep}</td>
               <td>{$value.tglrujukan}</td>
               <td>{$value.no_rujukan}</td>
-              <td>{$value.kdppkrujukan}</td>
-              <td>{$value.nmppkrujukan}</td>
-              <td>{$value.kdppkpelayanan}</td>
-              <td>{$value.nmppkpelayanan}</td>
-              <td>{$value.jnspelayanan}</td>
+              <td>{$value.kdppkrujukan} - {$value.nmppkrujukan}</td>
+              <td>{$value.kdppkpelayanan} - {$value.nmppkpelayanan}</td>
+              <td>{if: $value.jnspelayanan == '1'}Rawat Inap{else}Rawat Jalan{/if}</td>
               <td>{$value.catatan}</td>
-              <td>{$value.diagawal}</td>
-              <td>{$value.nmdiagnosaawal}</td>
-              <td>{$value.kdpolitujuan}</td>
-              <td>{$value.nmpolitujuan}</td>
-              <td>{$value.klsrawat}</td>
+              <td>{$value.diagawal} - {$value.nmdiagnosaawal}</td>
+              <td>{$value.kdpolitujuan} - {$value.nmpolitujuan}</td>
+              <td>Kelas {$value.klsrawat}</td>
               <td>{$value.lakalantas}</td>
               <td>{$value.user}</td>
               <td>{$value.nomr}</td>
               <td>{$value.nama_pasien}</td>
               <td>{$value.tanggal_lahir}</td>
               <td>{$value.peserta}</td>
-              <td>{$value.jkel}</td>
+              <td>{if: $value.jkel == 'L'}Laki-Laki{else}Perempuan{/if}</td>
               <td>{$value.no_kartu}</td>
               <td>{$value.tglpulang}</td>
               <td>{$value.asal_rujukan}</td>
@@ -113,20 +103,16 @@
               <td>{$value.keterangankkl}</td>
               <td>{$value.suplesi}</td>
               <td>{$value.no_sep_suplesi}</td>
-              <td>{$value.kdprop}</td>
-              <td>{$value.nmprop}</td>
-              <td>{$value.kdkab}</td>
-              <td>{$value.nmkab}</td>
-              <td>{$value.kdkec}</td>
-              <td>{$value.nmkec}</td>
+              <td>{$value.kdprop} - {$value.nmprop}</td>
+              <td>{$value.kdkab} - {$value.nmkab}</td>
+              <td>{$value.kdkec} - {$value.nmkec}</td>
               <td>{$value.noskdp}</td>
-              <td>{$value.kddpjp}</td>
-              <td>{$value.nmdpdjp}</td>
+              <td>{$value.kddpjp} - {$value.nmdpdjp}</td>
             </tr>
             {/loop}
             {else}
             <tr>
-              <td colspan="44" class="text-center">Tidak ada data bridging SEP.</td>
+              <td colspan="37" class="text-center">Tidak ada data bridging SEP.</td>
             </tr>
             {/if}
           </tbody>
