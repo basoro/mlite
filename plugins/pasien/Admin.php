@@ -37,7 +37,7 @@ class Admin extends AdminModule
 
         $pasien = [];
         foreach ($rows as $row) {
-          $row['tgl_daftar'] = date('Y-m-d');
+          //$row['tgl_daftar'] = date('Y-m-d');
           $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
           $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
           $pasien[] = $row;
@@ -96,7 +96,7 @@ class Admin extends AdminModule
 
         $pasien = [];
         foreach ($rows as $row) {
-          $row['tgl_daftar'] = date('Y-m-d');
+          //$row['tgl_daftar'] = date('Y-m-d');
           $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
           $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
           $pasien[] = $row;
