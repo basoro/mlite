@@ -45,6 +45,8 @@ abstract class Main
             mkdir(UPLOADS."/settings", 0777);
         }
 
+        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+
         //if (file_exists($dbFile)) {
         //    QueryWrapper::connect("sqlite:{$dbFile}");
         //} else {

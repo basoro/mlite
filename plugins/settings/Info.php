@@ -45,15 +45,7 @@ return [
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'update_version', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'license', '')");
 
-        if (!is_dir(UPLOADS."/settings")) {
-            mkdir(UPLOADS."/settings", 0777);
-        }
-
-        copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TATABLE IF EXISTSBLE `mlite_settings`");
-        deleteDir(UPLOADS."/settings");
     }
 ];
