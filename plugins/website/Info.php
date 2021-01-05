@@ -56,10 +56,6 @@ return [
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'sosmed_youtube', 'basoro')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'sosmed_instagram', 'basoro')");
 
-        if (!is_dir(UPLOADS)) {
-            mkdir(UPLOADS, 0777);
-        }
-
         if (!is_dir(UPLOADS."/website")) {
             mkdir(UPLOADS."/website", 0777);
         }

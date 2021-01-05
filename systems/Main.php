@@ -41,6 +41,10 @@ abstract class Main
             mkdir(UPLOADS, 0777);
         }
 
+        if (!is_dir(UPLOADS."/settings")) {
+            mkdir(UPLOADS."/settings", 0777);
+        }
+
         //if (file_exists($dbFile)) {
         //    QueryWrapper::connect("sqlite:{$dbFile}");
         //} else {
