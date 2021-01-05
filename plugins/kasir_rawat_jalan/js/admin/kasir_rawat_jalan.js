@@ -128,7 +128,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 });
 
 // tombol batal diklik
-$("#form_rincian").on("click", "#selesai", function(event){
+$("#rincian").on("click", "#selesai", function(event){
   bersih();
   $("#form_rincian").hide();
   $("#form_soap").hide();
@@ -506,7 +506,7 @@ $("#rincian").on("click","#cetak_billing_kecil", function(event){
   });
 });
 
-$("#rincian").on("click", "#selesai_faktur", function(event){
+$("#rincian").on("click", "#selesai_billing", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   $("#layanan").hide();
@@ -514,6 +514,7 @@ $("#rincian").on("click", "#selesai_faktur", function(event){
   bersih();
   //$("#display").show();
   $("#rincian").hide();
+  $("#form_rincian").hide();
   var url    = baseURL + '/kasir_rawat_jalan/display?t=' + mlite.token;
   $.post(url, {} ,function(data) {
   // tampilkan data

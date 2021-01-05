@@ -78,8 +78,8 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, `status`) VALUES
-          ('-', '-', 0, 0, '0'),
-          ('IGDK', 'IGD', 0, 0, '0');");
+          ('-', '-', 0, 0, '1'),
+          ('IGDK', 'IGD', 0, 0, '1');");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `reg_periksa` (
             `no_reg` varchar(8) DEFAULT NULL,
@@ -214,7 +214,7 @@
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("INSERT INTO `petugas` (`nip`, `nama`, `jk`, `tmp_lahir`, `tgl_lahir`, `gol_darah`, `agama`, `stts_nikah`, `alamat`, `kd_jbtn`, `no_telp`, `status`) VALUES
-          ('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2020-12-01', 'A', 'Islam', 'MENIKAH', '-', '-', '0', '0');");
+          ('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2020-12-01', 'A', 'Islam', 'MENIKAH', '-', '-', '0', '1');");
 
           $core->db()->pdo()->exec("ALTER TABLE `petugas`
             ADD PRIMARY KEY (`nip`),
