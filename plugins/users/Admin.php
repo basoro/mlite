@@ -207,7 +207,7 @@ class Admin extends AdminModule
 
     private function _addInfoUser() {
         // get users
-        $rows = $this->db('pegawai')->toArray();
+        $rows = $this->db('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
 
         if (count($rows)) {
           $this->assign['user'] = [];

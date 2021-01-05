@@ -61,7 +61,7 @@ class Admin extends AdminModule
 
         $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
+        $this->assign['penjab']       = $this->db('penjab')->toArray();
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
