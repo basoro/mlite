@@ -87,19 +87,34 @@ Pemasangan
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
 ```
-location / {
-  try_files $uri $uri/ @handler;
+location  / {
+    index  index.php;
+    if (!-e $request_filename) {
+        rewrite / /index.php last;
     }
+}
 
 location  /admin {
-   try_files $uri $uri/ /admin/index.php?$args;
-   }
-
-location @handler {
-   if (!-e $request_filename) { rewrite / /index.php last; }
-   rewrite ^(.*.php)/ $1 last;
-   }
+    index index.php;
+    try_files $uri $uri/ /admin/index.php?$args;
+}
 ```
+
+Jika ada didalam folder, misalnya `Khanza-Lite`
+
+````
+location  /Khanza-Lite {
+    index  index.php;
+    if (!-e $request_filename) {
+        rewrite / /Khanza-Lite/index.php last;
+    }
+}
+
+location  /Khanza-Lite/admin {
+    index index.php;
+    try_files $uri $uri/ /Khanza-Lite/admin/index.php?$args;
+}
+````
 
 Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `admin` Kata sandi: `admin`
