@@ -338,6 +338,47 @@ $("#rincian").on("click",".hapus_detail", function(event){
   });
 });
 
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/kasir_rawat_jalan/hapusobat?t=' + mlite.token;
+  var kode_brng = $(this).attr("data-kode_brng");
+  var no_resep = $(this).attr("data-no_resep");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+  var jam_peresepan = $(this).attr("data-jam_peresepan");
+  var jml = $(this).attr("data-jml");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        kode_brng: kode_brng,
+        no_resep: no_resep,
+        no_rawat: no_rawat,
+        tgl_peresepan: tgl_peresepan,
+        jam_peresepan: jam_peresepan,
+        jml: jml
+      } ,function(data) {
+        alert(data);
+        var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian obat rawat jalan telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
 // ketika inputbox potongan faktur diisi
 $("#rincian").on("input","#potongan_faktur2", function(event){
   event.preventDefault();

@@ -126,7 +126,7 @@
 <script>
   $('input:text[name=aturan_pakai]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/rawat_jalan/aturanpakai?t=' + mlite.token;
+    var url    = baseURL + '/kasir_rawat_jalan/aturanpakai?t=' + mlite.token;
     var query = $('input:text[name=aturan_pakai]').val();
     if(query!="") {
         $.ajax({
@@ -151,7 +151,7 @@
 <script>
   $('input:text[name=nama_provider]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/rawat_jalan/providerlist?t=' + mlite.token;
+    var url    = baseURL + '/kasir_rawat_jalan/providerlist?t=' + mlite.token;
     var query = $('input:text[name=nama_provider]').val();
     if(query!="") {
         $.ajax({
@@ -178,7 +178,7 @@
 <script>
   $('input:text[name=nama_provider2]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/rawat_jalan/providerlist2?t=' + mlite.token;
+    var url    = baseURL + '/kasir_rawat_jalan/providerlist2?t=' + mlite.token;
     var query = $('input:text[name=nama_provider2]').val();
     if(query!="") {
         $.ajax({

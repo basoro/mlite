@@ -252,21 +252,43 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postHapusResep()
+    public function postHapusObat()
     {
-      if(isset($_POST['kd_jenis_prw'])) {
-        $this->db('resep_dokter')
-        ->where('no_resep', $_POST['no_resep'])
-        ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->delete();
-      } else {
-        $this->db('resep_obat')
-        ->where('no_resep', $_POST['no_resep'])
+      $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+
+      $this->db('gudangbarang')
+        ->where('kode_brng', $_POST['kode_brng'])
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->update([
+          'stok' => $get_gudangbarang['stok'] + $_POST['jml']
+        ]);
+
+      $this->db('riwayat_barang_medis')
+        ->save([
+          'kode_brng' => $_POST['kode_brng'],
+          'stok_awal' => $get_gudangbarang['stok'],
+          'masuk' => $_POST['jml'],
+          'keluar' => '0',
+          'stok_akhir' => $get_gudangbarang['stok'] + $_POST['jml'],
+          'posisi' => 'Pemberian Obat',
+          'tanggal' => $_POST['tgl_peresepan'],
+          'jam' => $_POST['jam_peresepan'],
+          'petugas' => $this->core->getUserInfo('fullname', null, true),
+          'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+          'status' => 'Hapus',
+          'no_batch' => $get_gudangbarang['no_batch'],
+          'no_faktur' => $get_gudangbarang['no_faktur']
+        ]);
+
+      $this->db('detail_pemberian_obat')
+        ->where('tgl_perawatan', $_POST['tgl_peresepan'])
+        ->where('jam', $_POST['jam_peresepan'])
         ->where('no_rawat', $_POST['no_rawat'])
-        ->where('tgl_peresepan', $_POST['tgl_peresepan'])
-        ->where('jam_peresepan', $_POST['jam_peresepan'])
+        ->where('kode_brng', $_POST['kode_brng'])
+        ->where('jml', $_POST['jml'])
+        ->where('status', 'Ralan')
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->delete();
-      }
 
       exit();
     }
