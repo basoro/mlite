@@ -166,13 +166,13 @@
             </div>
         </div>
 
-
-
         <div class="col-md-6">
             <div class="panel panel-default">
+                <!--
                 <div class="panel-heading">
                     <h3 class="panel-title">Lisensi</h3>
                 </div>
+                -->
                 <div class="panel-body">
                     <div class="text-center">
                         {if: $settings.license.type == \Systems\Lib\License::ERROR}
@@ -190,11 +190,13 @@
                             {$settings.license.name}
                         </h1>
                         <small class="clearfix">{?=domain()?}</small>
+                        <!--
                         {if: $settings.license.type == \Systems\Lib\License::FREE}
                         <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Upgrade</a>
                         {else}
                         <a href="{?=url([ADMIN, 'settings', 'license?downgrade'])?}" data-confirm="Apakah anda ingin menurunkan ke lisensi Gratis?" class="btn btn-default">Downgrade</a>
                         {/if}
+                        -->
                     </div>
                 </div>
             </div>
@@ -206,11 +208,13 @@
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi</dt>
                         <dd>{$settings.version} <a href="{$updateurl}" class="small">(Cek Update)</a></dd>
+                        <!--
                         <dt>Lisensi</dt>
                         <dd>
                             {$settings.license.name}
                             <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
                         </dd>
+                        -->
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
