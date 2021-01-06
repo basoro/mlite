@@ -58,7 +58,7 @@ $("#form").on("click", "#simpan", function(event){
     $.post(url,{
       no_rawat: no_rawat,
       kd_kamar: kd_kamar,
-      kd_dokter: kd_dokter, 
+      kd_dokter: kd_dokter,
       tgl_masuk: tgl_masuk,
       jam_masuk: jam_masuk,
       lama: lama,
@@ -150,7 +150,6 @@ $("#display").on("click", ".set_dpjp___", function(event){
   var kd_dokter = 'D0000063';
 
   $.post(url, {no_rawat: no_rawat, kd_dokter: kd_dokter} ,function(data) {
-    //alert(data);
     // tampilkan data
     $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+

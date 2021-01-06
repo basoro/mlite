@@ -7,7 +7,6 @@ $(document).ready(function(){
             dataType: 'json',
             success: function(data){
                 $('#jam_masuk').val(data);
-                // alert(data);
             }
         })
     });

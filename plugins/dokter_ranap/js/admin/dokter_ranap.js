@@ -156,10 +156,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   var tinggi          = $('input:text[name=tinggi]').val();
   var berat           = $('input:text[name=berat]').val();
   var gcs             = $('input:text[name=gcs]').val();
-  var kesadaran       = $('input:text[name=kesadaran]').val();
   var alergi          = $('input:text[name=alergi]').val();
   var alergi          = $('input:text[name=alergi]').val();
-  var imun_ke         = $('input:text[name=imun_ke]').val();
   var keluhan         = $('textarea[name=keluhan]').val();
   var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
   var penilaian       = $('textarea[name=penilaian]').val();
@@ -176,9 +174,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   tinggi : tinggi,
   berat : berat,
   gcs : gcs,
-  kesadaran : kesadaran,
   alergi : alergi,
-  imun_ke: imun_ke,
   keluhan : keluhan,
   pemeriksaan : pemeriksaan,
   penilaian : penilaian,
@@ -332,7 +328,6 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   alasan1      : alasan1,
   rtl1          : rtl1
   }, function(data) {
-    alert(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ranap/kontrol?t=' + mlite.token;

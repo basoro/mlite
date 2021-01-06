@@ -59,22 +59,13 @@
         </div>
         <div class="form-group">
           <div class="row">
-            <div class="col-sm-3">
+            <div class="col-sm-6">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-3">
-              <label for="nama_pasien">Kesadaran</label>
-              <input type="text" name="kesadaran" class="form-control" placeholder="" value="">
-              <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
-            </div>
-            <div class="col-sm-3">
+            <div class="col-sm-6">
               <label for="nama_pasien">Alergi</label>
               <input type="text" name="alergi" class="form-control" placeholder="" value="">
-            </div>
-            <div class="col-sm-3">
-              <label for="imun_ke">Imunisasi</label>
-              <input type="text" name="imun_ke" class="form-control" placeholder="" value="">
             </div>
           </div>
         </div>
@@ -183,24 +174,6 @@
     </div>
   </div>
 </div>
-
-<script type="text/javascript">
-  $('input:text[name=kesadaran]').focus(function(){
-  //$('input:text[name=kesadaran]').on('input',function(e){
-       var output='';
-       output+='<li class=\"list-group-item link-class\">Compos Mentis</li>';
-       output+='<li class=\"list-group-item link-class\">Somnolence</li>';
-       output+='<li class=\"list-group-item link-class\">Sopor</li>';
-       output+='<li class=\"list-group-item link-class\">Coma</li>';
-       output+='';
-       $('#kesadaranList').fadeIn();
-       $('#kesadaranList').html(output).show();
-  });
-  $('#kesadaranList').on('click', 'li', function(){
-    $('input:text[name=kesadaran]').val($(this).text());
-    $('#kesadaranList').fadeOut();
-  });
-</script>
 <script type="text/javascript">
   $(document).ready(function () {
     $("#icd10dan9").hide();

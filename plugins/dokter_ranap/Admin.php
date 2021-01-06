@@ -509,38 +509,47 @@ class Admin extends AdminModule
 
     public function anySoap()
     {
-
       $prosedurs = $this->db('prosedur_pasien')
-         ->where('no_rawat', $_POST['no_rawat'])
-         ->asc('prioritas')
-         ->toArray();
-       $prosedur = [];
-       foreach ($prosedurs as $row) {
-         $icd9 = $this->db('icd9')->where('kode', $row['kode'])->oneArray();
-         $row['nama'] = $icd9['deskripsi_panjang'];
-         $prosedur[] = $row;
-       }
-       $diagnosas = $this->db('diagnosa_pasien')
-         ->where('no_rawat', $_POST['no_rawat'])
-         ->asc('prioritas')
-         ->toArray();
-       $diagnosa = [];
-       foreach ($diagnosas as $row) {
-         $icd10 = $this->db('penyakit')->where('kd_penyakit', $row['kd_penyakit'])->oneArray();
-         $row['nama'] = $icd10['nm_penyakit'];
-         $diagnosa[] = $row;
-       }
+       ->where('no_rawat', $_POST['no_rawat'])
+       ->asc('prioritas')
+       ->toArray();
+      $prosedur = [];
+      foreach ($prosedurs as $row) {
+       $icd9 = $this->db('icd9')->where('kode', $row['kode'])->oneArray();
+       $row['nama'] = $icd9['deskripsi_panjang'];
+       $prosedur[] = $row;
+      }
+      $diagnosas = $this->db('diagnosa_pasien')
+       ->where('no_rawat', $_POST['no_rawat'])
+       ->asc('prioritas')
+       ->toArray();
+      $diagnosa = [];
+      foreach ($diagnosas as $row) {
+       $icd10 = $this->db('penyakit')->where('kd_penyakit', $row['kd_penyakit'])->oneArray();
+       $row['nama'] = $icd10['nm_penyakit'];
+       $diagnosa[] = $row;
+      }
 
-      $rows = $this->db('pemeriksaan_ranap')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->toArray();
       $i = 1;
+      $rows = $this->db('pemeriksaan_ralan')
+       ->where('no_rawat', $_POST['no_rawat'])
+       ->toArray();
       $result = [];
       foreach ($rows as $row) {
-        $row['nomor'] = $i++;
-        $result[] = $row;
+       $row['nomor'] = $i++;
+       $result[] = $row;
       }
-      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+
+      $rows_ranap = $this->db('pemeriksaan_ranap')
+       ->where('no_rawat', $_POST['no_rawat'])
+       ->toArray();
+      $result_ranap = [];
+      foreach ($rows_ranap as $row) {
+       $row['nomor'] = $i++;
+       $result_ranap[] = $row;
+      }
+
+      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
       exit();
     }
 

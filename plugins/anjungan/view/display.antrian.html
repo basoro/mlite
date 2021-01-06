@@ -536,15 +536,12 @@
       change: function (e) {
         var no_rkm_medis_daftar = $('#no_rkm_medis_daftar').val();
         var tgl_registrasi_daftar = $('#tgl_registrasi_daftar').val();
-        //alert(no_rkm_medis_daftar);
-        //alert(tgl_registrasi_daftar);
         $.ajax({
           type:'POST',
           url:'{?=url()?}/anjungan/ajax?show=get-poli',
           dataType: "json",
           data: {no_rkm_medis:no_rkm_medis_daftar, tgl_registrasi:tgl_registrasi_daftar},
           success:function(data){
-            //alert(data.status);
             if(data.status == 'ok'){
               $("#pilih_poli_daftar").empty();
               var div_data = '<option value="">Pilih Poli</option>';
@@ -649,7 +646,6 @@
           },
          success:function(data){
            if(data.status == 'ok'){
-             //alert(data);
              $('#tgl_registrasi_final').text(data.result.tgl_registrasi);
              $('#jam_reg_final').text(data.result.jam_reg);
              $('#no_reg_final').text(data.result.no_reg);
@@ -683,7 +679,6 @@
         data: {no_rawat:no_rawat},
         success:function(data){
           if(data.status == 'ok'){
-            //alert(data);
             e.preventDefault();
             var tgl_lahir = new Date(data.result.tanggal_lahir);
             var dd = String(tgl_lahir.getDate()).padStart(2, '0');
@@ -731,7 +726,6 @@
         data: {no_rawat:no_rawat},
         success:function(data){
           if(data.status == 'ok'){
-            //alert(data);
             e.preventDefault();
             var tgl_lahir = new Date(data.result.tanggal_lahir);
             var dd = String(tgl_lahir.getDate()).padStart(2, '0');

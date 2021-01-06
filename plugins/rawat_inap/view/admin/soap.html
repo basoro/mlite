@@ -7,7 +7,6 @@
 <div id="display_icd">
   {include: ../plugins/icd/view/admin/display.html}
 </div>
-{if: $pemeriksaan}
 <h4>Rincian Riwayat</h4>
 <div class="table-responsive no-margin">
   <table class="table table-bordered no-padding" width="100%">
@@ -26,7 +25,6 @@
       </tr>
     </thead>
     <tbody>
-      {if: $pemeriksaan}
       {loop: $pemeriksaan}
       <tr>
         <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
@@ -98,12 +96,10 @@
         <td colspan="6">{$value.rtl}</td>
       </tr>
       {/loop}
-      {/if}
-      {if: $pemeriksaan_ranap}
       {loop: $pemeriksaan_ranap as $data}
       <tr>
-        <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>
-        <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="5" style="vertical-align:top;">{$data.nomor}</td>
+        <td rowspan="4" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Inap</b><br>
           {$data.tgl_perawatan} {$data.jam_rawat}
         </td>
@@ -115,10 +111,6 @@
         <td>{$data.berat}</td>
         <td>{$data.gcs}</td>
         <td>{$data.alergi}</td>
-      </tr>
-      <tr>
-        <th colspan="2">Kesadaran</th>
-        <td colspan="6">{$value.kesadaran}</td>
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
@@ -146,9 +138,7 @@
               data-tinggi="{$data.tinggi}"
               data-berat="{$data.berat}"
               data-gcs="{$data.gcs}"
-              data-kesadaran="{$data.kesadaran}"
               data-alergi="{$data.alergi}"
-              data-imun_ke="{$data.imun_ke}"
               data-keluhan="{$data.keluhan}"
               data-pemeriksaan="{$data.pemeriksaan}"
               data-penilaian="{$data.penilaian}"
@@ -165,11 +155,9 @@
         <td colspan="6">{$data.rtl}</td>
       </tr>
       {/loop}
-      {/if}
     </tbody>
   </table>
 </div>
-{/if}
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 </script>
