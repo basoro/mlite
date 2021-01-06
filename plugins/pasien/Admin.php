@@ -37,7 +37,6 @@ class Admin extends AdminModule
 
         $pasien = [];
         foreach ($rows as $row) {
-          //$row['tgl_daftar'] = date('Y-m-d');
           $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
           $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
           $pasien[] = $row;
@@ -72,6 +71,9 @@ class Admin extends AdminModule
             ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
             ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
             ->orLike('alamat', '%'.$_POST['cari'].'%')
+            ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+            ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+            ->orLike('no_tlp', '%'.$_POST['cari'].'%')
             ->desc('no_rkm_medis')
             ->offset(0)
             ->limit($perpage)
@@ -96,7 +98,6 @@ class Admin extends AdminModule
 
         $pasien = [];
         foreach ($rows as $row) {
-          //$row['tgl_daftar'] = date('Y-m-d');
           $row['cekbynokartu'] = url([ADMIN, 'pasien', 'vclaim_bynokartu', $row['no_peserta'], date('Y-m-d')]);
           $row['cekbynik'] = url([ADMIN, 'pasien', 'vclaim_bynik', $row['no_ktp'], date('Y-m-d')]);
           $pasien[] = $row;
