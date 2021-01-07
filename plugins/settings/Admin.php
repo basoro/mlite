@@ -155,9 +155,9 @@ class Admin extends AdminModule
 
             $verify = License::verify($licenseKey);
             if ($verify != License::REGISTERED) {
-                $this->notify('failure', 'Kode lisensi tidak sesuai.');
+                $this->notify('failure', 'Kode validasi penggunaan tidak sesuai.');
             } else {
-                $this->notify('success', 'Kode lisensi berhasil diterima.');
+                $this->notify('success', 'Kode validasi penggunaan berhasil diterima.');
             }
         } elseif (isset($_GET['downgrade'])) {
             $this->db('mlite_settings')->where('module', 'settings')->where('field', 'license')->save(['value' => '']);
