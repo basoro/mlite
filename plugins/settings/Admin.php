@@ -155,7 +155,7 @@ class Admin extends AdminModule
 
             $verify = License::verify($licenseKey);
             if ($verify != License::REGISTERED) {
-                $this->notify('failure', 'Kode lisensi salah 3.');
+                $this->notify('failure', 'Kode lisensi tidak sesuai.');
             } else {
                 $this->notify('success', 'Kode lisensi berhasil diterima.');
             }
