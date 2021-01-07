@@ -168,11 +168,9 @@
 
         <div class="col-md-6">
             <div class="panel panel-default">
-                <!--
                 <div class="panel-heading">
-                    <h3 class="panel-title">Lisensi</h3>
+                    <h3 class="panel-title">Status Aplikasi</h3>
                 </div>
-                -->
                 <div class="panel-body">
                     <div class="text-center">
                         {if: $settings.license.type == \Systems\Lib\License::ERROR}
@@ -190,13 +188,13 @@
                             {$settings.license.name}
                         </h1>
                         <small class="clearfix">{?=domain()?}</small>
-                        <!--
-                        {if: $settings.license.type == \Systems\Lib\License::FREE}
+                        {if: $settings.license.type == \Systems\Lib\License::UNREGISTERED}
                         <a href="#license-modal" data-toggle="modal" class="btn btn-primary">Upgrade</a>
                         {else}
-                        <a href="{?=url([ADMIN, 'settings', 'license?downgrade'])?}" data-confirm="Apakah anda ingin menurunkan ke lisensi Gratis?" class="btn btn-default">Downgrade</a>
+                        <a href="{?=url([ADMIN, 'settings', 'license?downgrade'])?}" data-confirm="Apakah anda ingin menurunkan status menjadi Tidak Terdaftar?" class="btn btn-default">Downgrade</a>
                         {/if}
-                        -->
+                        <br><br>
+                        <p>Informasi tentang status aplikasi digunakan untuk kebutuhan pendataan pengguna Khanza Lite. Licensi yang dianut di perangkat lunak tetap mengacu ke <a href="https://en.wikipedia.org/wiki/Aladdin_Free_Public_License">Aladdin Free Public License</a>. Tidak ada biaya yang dikenakan atas penggunaan aplikasi ini.</p>
                     </div>
                 </div>
             </div>
@@ -208,13 +206,11 @@
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi</dt>
                         <dd>{$settings.version} <a href="{$updateurl}" class="small">(Cek Update)</a></dd>
-                        <!--
-                        <dt>Lisensi</dt>
+                        <dt>Status</dt>
                         <dd>
                             {$settings.license.name}
                             <a href="#license-modal" data-toggle="modal" class="small">(Sunting)</a>
                         </dd>
-                        -->
                     </dl>
                     <hr />
                     <dl class="dl-horizontal no-margin">
@@ -240,12 +236,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Lisensi</h4>
+                <h4 class="modal-title">Status</h4>
             </div>
             <form method="post" action="{?=url([ADMIN,'settings','license'])?}">
                 <div class="modal-body">
-                    <p>Saya ingin mengetahui jumlah pengguna Khanza LITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode lisensi penggunaan.</p>
-                    <p>Untuk mengaktifkan versi lisensi, silahkan ketik kode lisensi. Anda bisa melihat kode lisensi pada email konfirmasi aktifasi lisensi.</p>
+                    <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna Khanza LITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode lisensi penggunaan.</p>
+                    <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi Khanza Lite. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
+                    <p>Untuk mengaktifkan kode validasi pendaftaran, silahkan ketik kode validasi pendaftaran dalam isian dibawah. Anda bisa melihat kode validasi pendaftaran pada email konfirmasi <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>permintaan kode validasi</b></a>.</p>
                     <input type="text" name="license-key" class="form-control" placeholder="Kode lisensi..." />
                 </div>
                 <div class="modal-footer">

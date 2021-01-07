@@ -1,0 +1,19 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Validasi Status Aplikasi</h3>
+            </div>
+            <div class="panel-body">
+              <p>Validasi status aplikasi digunakan untuk kebutuhan pendataan pengguna Khanza Lite. Licensi yang dianut di perangkat lunak tetap mengacu ke <a href="https://en.wikipedia.org/wiki/Aladdin_Free_Public_License" class="text-secondary">Aladdin Free Public License</a>. Tidak ada biaya yang dikenakan atas penggunaan aplikasi ini. Jika anda tidak menginginkan untuk didata, abaikan saja permintaan ini.</p>
+              <form method="POST" action="{?=url([ADMIN,'settings','cekdaftar'])?}">
+                <div class="form-group">
+                  <label for="email">Alamat Email:</label>
+                  <input type="email" class="form-control" name="email">
+                </div>
+                <button type="submit" class="btn btn-primary" name="request_code">REQUEST</button>
+              </form>
+            </div>
+        </div>
+    </div>
+</div>

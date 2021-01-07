@@ -30,7 +30,6 @@ class Admin extends Main
         $this->assign['logo'] = $this->settings->get('settings.logo');
         $this->assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $this->assign['version']       = $this->settings->get('settings.version');
-        $this->assign['has_update']    = $this->module ? $this->module->settings->_checkUpdate() : false;
         $this->assign['update_access'] = ($access == 'all') || in_array('settings', explode(',', $access)) ? true : false;
 
         $this->assign['header'] = isset_or($this->appends['header'], ['']);

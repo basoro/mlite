@@ -145,7 +145,7 @@ abstract class Main
         $hasBacklink = strpos($checkBuffer, base64_decode('UG93ZXJlZCBieSA8YSBocmVmPSJodHRwczovL2Jhc29yby5vcmcvIj5LaGFuemFMSVRFPC9hPg==')) !== false;
         $hasHeader = get_headers_list('X-Created-By') === 'Basoro.ID <basoro.org>';
         $license = License::verify($core->settings->get('settings.license'));
-        if (($license == License::FREE) && $isHTML && (!$hasBacklink || !$hasHeader)) {
+        if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink || !$hasHeader)) {
             return '<strong>License system</strong><br />The return link has been deleted or modified.';
         } elseif ($license == License::TIME_OUT) {
             return $buffer.'<script>alert("License system\nCan\'t connect to license server and verify it.");</script>';

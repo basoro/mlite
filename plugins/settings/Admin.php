@@ -68,14 +68,14 @@ class Admin extends AdminModule
         $settings['license'] = [];
         $settings['license']['type'] = $this->_verifyLicense();
         switch ($settings['license']['type']) {
-            case License::FREE:
-                $settings['license']['name'] = 'Gratis';
+            case License::UNREGISTERED:
+                $settings['license']['name'] = 'Tidak Terdaftar';
                 break;
-            case License::COMMERCIAL:
-                $settings['license']['name'] = 'Berbayar';
+            case License::REGISTERED:
+                $settings['license']['name'] = 'Terdaftar';
                 break;
             default:
-                $settings['license']['name'] = 'Invalid';
+                $settings['license']['name'] = 'Tidak Valid';
         }
 
         foreach ($this->core->getRegisteredPages() as $page) {
@@ -116,41 +116,46 @@ class Admin extends AdminModule
         } else {
           $logo = $this->settings->get('settings.logo');
         }
-        //if (checkEmptyFields(array_keys($_POST), $_POST)) {
-        //    $this->notify('failure', 'Isian kosong');
-        //    redirect(url([ADMIN, 'settings', 'general']), $_POST);
-        //} else {
-            $errors = 0;
+        $errors = 0;
 
-            $_POST['logo'] = $logo;
-            foreach ($_POST as $field => $value) {
-                if (!$this->db('mlite_settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
-                    $errors++;
-                }
+        $_POST['logo'] = $logo;
+
+        foreach ($_POST as $field => $value) {
+            if (!$this->db('mlite_settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
+                $errors++;
             }
+        }
 
-            if (!$errors) {
-                $this->notify('success', 'Pengaturan berhasil disimpan.');
-            } else {
-                $this->notify('failure', 'Gagal menyimpan pengaturan.');
-            }
+        if (!$errors) {
 
-            redirect(url([ADMIN, 'settings', 'general']));
-        //}
+            $url = "https://basoro.org/datars/save";
+            $curlHandle = curl_init();
+            curl_setopt($curlHandle, CURLOPT_URL, $url);
+            curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
+            curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+            curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+            curl_setopt($curlHandle, CURLOPT_POST, 1);
+            curl_exec($curlHandle);
+            curl_close($curlHandle);
+
+            $this->notify('success', 'Pengaturan berhasil disimpan.');
+
+        } else {
+            $this->notify('failure', 'Gagal menyimpan pengaturan.');
+        }
+
+        redirect(url([ADMIN, 'settings', 'general']));
     }
 
     public function anyLicense()
     {
         if (isset($_POST['license-key'])) {
-            $licenseKey = str_replace('-', null, $_POST['license-key']);
-
-            if (!($licenseKey = License::getLicenseData($licenseKey))) {
-                $this->notify('failure', 'Kode lisensi salah.');
-            }
+            $licenseKey = $_POST['license-key'];
 
             $verify = License::verify($licenseKey);
-            if ($verify != License::COMMERCIAL) {
-                $this->notify('failure', 'Kode lisensi salah.');
+            if ($verify != License::REGISTERED) {
+                $this->notify('failure', 'Kode lisensi salah 3.');
             } else {
                 $this->notify('success', 'Kode lisensi berhasil diterima.');
             }
@@ -236,7 +241,7 @@ class Admin extends AdminModule
                 $this->tpl->set('error', $obj);
             } else {
                 if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2020-01-01 00:00:00');
+                  $this->settings('settings', 'version', '2021-01-01 00:00:00');
                 }
                 $this->settings('settings', 'update_version', $new_date_format);
                 $this->settings('settings', 'update_changelog', $obj['commit']['message']);
@@ -322,49 +327,12 @@ class Admin extends AdminModule
         return $this->draw('update.html');
     }
 
-    private function updateRequest()
-    {
-        $output = HttpRequest::get($this->feed_url);
-        if ($output === false) {
-            $output = HttpRequest::getStatus();
-        } else {
-            $output = json_decode($output, true);
-        }
-        return $output;
-    }
-
     public function postChangeOrderOfNavItem()
     {
         foreach ($_POST as $module => $order) {
             $this->db('mlite_modules')->where('dir', $module)->save(['sequence' => $order]);
         }
         exit();
-    }
-
-    public function _checkUpdate()
-    {
-        $settings = $this->settings('settings');
-        if (time() - $settings['update_check'] > 3600*6) {
-            $request = $this->updateRequest('/mlite/update', [
-                'ip' => isset_or($_SERVER['SERVER_ADDR'], $_SERVER['SERVER_NAME']),
-                'version' => $settings['version'],
-                'domain' => url(),
-            ]);
-
-            if (is_array($request) && $request['status'] != 'error') {
-                $settings['update_version'] = $request['data']['version'];
-                $this->_updateSettings('update_version', $request['data']['version']);
-                $this->_updateSettings('update_changelog', $request['data']['changelog']);
-            }
-
-            $this->_updateSettings('update_check', time());
-        }
-
-        if (cmpver($settings['update_version'], $settings['version']) === 1) {
-            return true;
-        }
-
-        return false;
     }
 
     private function download($source, $dest)
@@ -470,16 +438,18 @@ class Admin extends AdminModule
 
     private function _verifyLicense()
     {
-        $licenseArray = (array) json_decode(base64_decode($this->settings('settings', 'license')), true);
-        $license = array_replace(array_fill(0, 5, null), $licenseArray);
-        list($md5hash, $pid, $lcode, $dcode, $tstamp) = $license;
+
+        //$licenseArray = (array) json_decode(base64_decode($this->settings('settings', 'license')), true);
+        //$license = array_replace(array_fill(0, 5, null), $licenseArray);
+        //list($md5hash, $pid, $lcode, $dcode, $tstamp) = $license;
+        $md5hash = $this->settings('settings', 'license');
 
         if (empty($md5hash)) {
-            return License::FREE;
+            return License::UNREGISTERED;
         }
 
-        if ($md5hash == md5($pid.$lcode.$dcode.domain(false))) {
-            return License::COMMERCIAL;
+        if ($md5hash == md5($this->settings('settings', 'email'))) {
+            return License::REGISTERED;
         }
 
         return License::ERROR;
@@ -567,4 +537,26 @@ class Admin extends AdminModule
         }
     }
 
+    public function anyCekDaftar()
+    {
+      if(isset($_POST['request_code'])) {
+        $url = "https://basoro.org/datars/aktif";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
+        $response = json_decode($response, true);
+        if($response['status'] == 'Ok') {
+          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
+        } else {
+          $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
+        }
+      }
+      return $this->draw('cek.daftar.html');
+    }
 }
