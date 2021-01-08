@@ -330,6 +330,12 @@ class QueryWrapper
         return $this;
     }
 
+    public function rand()
+    {
+        array_push($this->orders, "RAND()");
+        return $this;
+    }
+
     public function group($columns)
     {
         if (is_array($columns)) {
