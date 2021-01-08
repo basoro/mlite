@@ -30,7 +30,7 @@
             						{if: !empty($databarang.list)}
     								{loop: $databarang.list}
     								<tr>
-    									<td style="vertical-align:top"><a href="{$value.editURL}">{$value.kode_brng}</a></td>
+    									<td style="vertical-align:top">{$value.kode_brng}</td>
                       <td style="vertical-align:top">{$value.nama_brng}</td>
                       <td style="vertical-align:top" class="text-right">{?=number_format($value.dasar,0,",",".")?}</td>
                       <td style="vertical-align:top" class="text-right">{?=number_format($value.h_beli,0,",",".")?}</td>
@@ -47,9 +47,6 @@
     									<td style="vertical-align:top" class="text-right">
                         <a href="#set_stok" data-kode_brng="{$value.kode_brng}" class="btn btn-success btn-xs">
     											<i class="fa fa-pencil"></i> <span class="hidden-xs">Stok</span>
-    										</a>
-    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
-    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
     										</a>
                         {if: $value.status == '1'}
                           <a href="{$value.delURL}" class="btn btn-danger btn-xs" data-confirm="Yakin ingin menghapus?">
