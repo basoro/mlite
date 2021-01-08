@@ -16,13 +16,12 @@
         <div class="panel panel-default">
               <div class="panel-body bg-danger">
                     <span class="fa-2x fa-stack fa-lg pull-left">
-                        <i class="fa fa-circle fa-stack-2x text-danger"></i>
-                        <i class="fa fa-calendar-plus-o fa-stack-1x text-white"></i>
+                        <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-danger">Total Kunjungan</div>
+                    <div class="stat-title text-grey">Total Kunjungan</div>
                     <div class="stat-bold">
                         {?= $stats.getVisities ?}
-                        <span class="text-{if: $stats.percentTotal >= 0}success{else}danger{/if} stat-up-down">
+                        <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentTotal ?}%)
                         </span>
@@ -34,13 +33,12 @@
         <div class="panel panel-default">
               <div class="panel-body bg-info">
                     <span class="fa-2x fa-stack fa-lg pull-left">
-                        <i class="fa fa-circle fa-stack-2x text-info"></i>
-                        <i class="fa fa-calendar fa-stack-1x text-white"></i>
+                        <i class="fa fa-calendar fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-info">Kunjungan Tahun Ini</div>
+                    <div class="stat-title text-grey">Kunjungan Tahun Ini</div>
                     <div class="stat-bold">
                         {?= $stats.getYearVisities ?}
-                        <span class="text-{if: $stats.percentYear >= 0}success{else}danger{/if} stat-up-down">
+                        <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentYear >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentYear ?}%)
                         </span>
@@ -52,13 +50,12 @@
         <div class="panel panel-default">
               <div class="panel-body bg-warning">
                     <span class="fa-2x fa-stack fa-lg pull-left">
-                        <i class="fa fa-circle fa-stack-2x text-warning"></i>
-                        <i class="fa fa-users fa-stack-1x text-white"></i>
+                        <i class="fa fa-users fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-warning">Kunjungan Bulan Ini</div>
+                    <div class="stat-title text-grey">Kunjungan Bulan Ini</div>
                     <div class="stat-bold">
                         {?= $stats.getMonthVisities ?}
-                        <span class="text-{if: $stats.percentMonth >= 0}success{else}danger{/if} stat-up-down">
+                        <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentMonth >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentMonth ?}%)
                         </span>
@@ -70,13 +67,12 @@
         <div class="panel panel-default">
               <div class="panel-body bg-success">
                     <span class="fa-2x fa-stack fa-lg pull-left">
-                        <i class="fa fa-circle fa-stack-2x text-success"></i>
-                        <i class="fa fa-wheelchair fa-stack-1x text-white"></i>
+                        <i class="fa fa-wheelchair fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-success">Kunjungan Hari Ini</div>
+                    <div class="stat-title text-grey">Kunjungan Hari Ini</div>
                     <div class="stat-bold">
                         {?= $stats.getCurrentVisities ?}
-                        <span class="text-{if: $stats.percentDays >= 0}success{else}danger{/if} stat-up-down">
+                        <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentDays >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentDays ?}%)
                         </span>
