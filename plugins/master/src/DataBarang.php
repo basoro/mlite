@@ -262,7 +262,7 @@ class DataBarang
 
     public function postHapus()
     {
-      return $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->delete();
+      return $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->update(['status', '0']);
     }
 
 }

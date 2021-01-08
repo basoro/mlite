@@ -9,6 +9,7 @@
     use Plugins\Master\Src\Kamar;
     use Plugins\Master\Src\DataBarang;
     use Plugins\Master\Src\JnsPerawatan;
+    use Plugins\Master\Src\JnsPerawatanInap;
     use Plugins\Master\Src\Bahasa;
     use Plugins\Master\Src\Cacat;
     use Plugins\Master\Src\Suku;
@@ -28,6 +29,7 @@
             $this->kamar = new Kamar();
             $this->databarang = new DataBarang();
             $this->jnsperawatan = new JnsPerawatan();
+            $this->jnsperawataninap = new JnsPerawatanInap();
             $this->bahasa = new Bahasa();
             $this->cacat = new Cacat();
             $this->suku = new Suku();
@@ -46,7 +48,7 @@
                 'Kamar' => 'kamar',
                 'Data Barang' => 'databarang',
                 'Perawatan Ralan' => 'jnsperawatan',
-                'Perawatan Ranap' => 'jnsperawatanranap',
+                'Perawatan Ranap' => 'jnsperawataninap',
                 'Perawatan Laboratorium' => 'jnsperawatanlab',
                 'Perawatan Radiologi' => 'jnsperawatanrad',
                 'Bahasa' => 'bahasa',
@@ -88,7 +90,7 @@
             ['name' => 'Kamar', 'url' => url([ADMIN, 'master', 'kamar']), 'icon' => 'cubes', 'desc' => 'Master kamar'],
             ['name' => 'Data Barang', 'url' => url([ADMIN, 'master', 'databarang']), 'icon' => 'cubes', 'desc' => 'Master data barang'],
             ['name' => 'Perawatan Rawat Jalan', 'url' => url([ADMIN, 'master', 'jnsperawatan']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan rawat jalan'],
-            ['name' => 'Perawatan Rawat Inap', 'url' => url([ADMIN, 'master', 'jnsperawatanranap']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan rawat inap'],
+            ['name' => 'Perawatan Rawat Inap', 'url' => url([ADMIN, 'master', 'jnsperawataninap']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan rawat inap'],
             ['name' => 'Perawatan Laboratorium', 'url' => url([ADMIN, 'master', 'jnsperawatanlab']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan laboratorium'],
             ['name' => 'Perawatan Radiologi', 'url' => url([ADMIN, 'master', 'jnsperawatanrad']), 'icon' => 'cubes', 'desc' => 'Master jenis perawatan radiologi'],
             ['name' => 'Bahasa', 'url' => url([ADMIN, 'master', 'bahasa']), 'icon' => 'cubes', 'desc' => 'Master bahasa'],
@@ -440,6 +442,51 @@
             exit();
         }
         /* End JnsPerawatan Section */
+
+        /* Start JnsPerawatanInap Section */
+        public function getJnsPerawatanInap()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'jnsperawataninapjs']), 'footer');
+          $return = $this->jnsperawataninap->getIndex();
+          return $this->draw('jnsperawataninap.html', [
+            'jnsperawatan' => $return
+          ]);
+
+        }
+
+        public function anyJnsPerawatanInapForm()
+        {
+            $return = $this->jnsperawataninap->anyForm();
+            echo $this->draw('jnsperawataninap.form.html', ['jnsperawatan' => $return]);
+            exit();
+        }
+
+        public function anyJnsPerawatanInapDisplay()
+        {
+            $return = $this->jnsperawataninap->anyDisplay();
+            echo $this->draw('jnsperawataninap.display.html', ['jnsperawatan' => $return]);
+            exit();
+        }
+
+        public function postJnsPerawatanInapSave()
+        {
+          $this->jnsperawataninap->postSave();
+          exit();
+        }
+
+        public function postJnsPerawatanInapHapus()
+        {
+          $this->jnsperawataninap->postHapus();
+          exit();
+        }
+
+        public function getJnsPerawatanInapJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/jnsperawataninap.js');
+            exit();
+        }
+        /* End JnsPerawatanInap Section */
 
         /* Start Bahasa Section */
         public function getBahasa()

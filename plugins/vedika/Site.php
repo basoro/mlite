@@ -48,9 +48,9 @@ class Site extends SiteModule
                 ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
                 ->asc('master_berkas_digital.nama')
                 ->toArray();
-              $galleri_pasien = $this->db('lite_pasien_galleries_items')
-                ->join('lite_pasien_galleries', 'lite_pasien_galleries.id = lite_pasien_galleries_items.gallery')
-                ->where('lite_pasien_galleries.slug', $row['no_rkm_medis'])
+              $galleri_pasien = $this->db('mlite_pasien_galleries_items')
+                ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+                ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
                 ->toArray();
 
               $berkas_digital_pasien = array();
@@ -75,9 +75,9 @@ class Site extends SiteModule
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['sepURL'] = url(['vedika', 'sep', $row['no_sep']]);
-              $row['pdfURL'] = url(['vedika', 'pdf', convertNorawat($row['no_rawat'])]);
-              $row['resumeURL']  = url(['vedika', 'resume', convertNorawat($row['no_rawat'])]);
-              $row['billingURL'] = url(['vedika', 'billing', convertNorawat($row['no_rawat'])]);
+              $row['pdfURL'] = url(['vedika', 'pdf', $this->$this->revertNorawat($row['no_rawat'])]);
+              $row['resumeURL']  = url(['vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
+              $row['billingURL'] = url(['vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
@@ -94,13 +94,13 @@ class Site extends SiteModule
     {
       $berkas_digital = $this->db('berkas_digital_perawatan')
         ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
-        ->where('berkas_digital_perawatan.no_rawat', revertNorawat($id))
+        ->where('berkas_digital_perawatan.no_rawat', $this->revertNorawat($id))
         ->asc('master_berkas_digital.nama')
         ->toArray();
 
-      $galleri_pasien = $this->db('lite_pasien_galleries_items')
-        ->join('lite_pasien_galleries', 'lite_pasien_galleries.id = lite_pasien_galleries_items.gallery')
-        ->where('lite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($id)))
+      $galleri_pasien = $this->db('mlite_pasien_galleries_items')
+        ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+        ->where('mlite_pasien_galleries.slug', $this->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
         ->toArray();
 
       $berkas_digital_pasien = array();
@@ -116,7 +116,7 @@ class Site extends SiteModule
           }
       }
 
-      $no_rawat = revertNorawat($id);
+      $no_rawat = $this->revertNorawat($id);
       $query = $this->db()->pdo()->prepare("select no,nm_perawatan,pemisah,if(biaya=0,'',biaya),if(jumlah=0,'',jumlah),if(tambahan=0,'',tambahan),if(totalbiaya=0,'',totalbiaya),totalbiaya from billing where no_rawat='$no_rawat'");
       $query->execute();
       $rows = $query->fetchAll();
@@ -150,37 +150,37 @@ class Site extends SiteModule
 
       $resume_pasien = $this->db('resume_pasien')
         ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->oneArray();
       $this->tpl->set('resume_pasien', $resume_pasien);
 
       $pasien = $this->db('pasien')
         ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
         ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
-        ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNorawat($id)))
+        ->where('no_rkm_medis', $this->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
         ->oneArray();
       $reg_periksa = $this->db('reg_periksa')
         ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
         ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
         ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
         ->where('stts', '<>', 'Batal')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->oneArray();
       $rujukan_internal = $this->db('rujukan_internal_poli')
         ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
         ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->oneArray();
       $diagnosa_pasien = $this->db('diagnosa_pasien')
         ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->toArray();
       $prosedur_pasien = $this->db('prosedur_pasien')
         ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->toArray();
       $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->asc('tgl_perawatan')
         ->asc('jam_rawat')
         ->toArray();
@@ -214,6 +214,30 @@ class Site extends SiteModule
     {
         $row = $this->db('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', $no_rawat)->where('diagnosa_pasien.prioritas', 1)->where('diagnosa_pasien.status', $status_lanjut)->oneArray();
         return $row[$field];
+    }
+
+    public function getRegPeriksaInfo($field, $no_rawat)
+    {
+        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
+    }
+
+    public function convertNorawat($text)
+    {
+        setlocale(LC_ALL, 'en_EN');
+        $text = str_replace('/', '', trim($text));
+        return $text;
+    }
+
+    public function revertNorawat($text)
+    {
+        setlocale(LC_ALL, 'en_EN');
+        $tahun = substr($text, 0, 4);
+        $bulan = substr($text, 4, 2);
+        $tanggal = substr($text, 6, 2);
+        $nomor = substr($text, 8, 6);
+        $result = $tahun.'/'.$bulan.'/'.$tanggal.'/'.$nomor;
+        return $result;
     }
 
     public function getJavascript()

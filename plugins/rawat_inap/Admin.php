@@ -92,7 +92,7 @@ class Admin extends AdminModule
             reg_periksa.kd_pj=penjab.kd_pj";
 
         if ($this->core->getUserInfo('role') != 'admin') {
-          $sql .= " AND kamar_inap.kd_bangsal IN ('$bangsal')";
+          $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
         }
         if($status_pulang == '') {
           $sql .= " AND kamar_inap.stts_pulang = '-'";
