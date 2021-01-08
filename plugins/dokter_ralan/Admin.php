@@ -402,7 +402,7 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
+        //->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $resep = [];
