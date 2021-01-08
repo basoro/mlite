@@ -290,4 +290,49 @@ class Admin extends AdminModule
         return $return;
     }
 
+    public function getPendaftaran()
+    {
+      return $this->draw('pendaftaran.html');
+    }
+
+    public function getRawatJalan()
+    {
+      return $this->draw('rawatjalan.html');
+    }
+
+    public function getRawatInap()
+    {
+      return $this->draw('rawatinap.html');
+    }
+
+    public function getDokter()
+    {
+      return $this->draw('dokter.html');
+    }
+
+    public function getLaboratorium()
+    {
+      return $this->draw('laboratorium.html');
+    }
+
+    public function getRadiologi()
+    {
+      return $this->draw('radiologi.html');
+    }
+
+    public function getApotek()
+    {
+      return $this->draw('apotek.html');
+    }
+
+    public function getFarmasi()
+    {
+      return $this->draw('farmasi.html');
+    }
+
+    public function getKasir()
+    {
+      return $this->draw('kasir.html');
+    }
+
 }
