@@ -529,14 +529,20 @@
              <td valign="top" width="20%" bgcolor="#eee">Nilai Rujukan</td>
              <td valign="top" width="20%" bgcolor="#eee">Keterangan</td>
            </tr>
-           {loop: $value.periksa_lab as $data}
+           {loop: $value.periksa_lab as $data1}
            <tr>
-             <td valign="top" width="20%">{$data.tgl_periksa}</td>
-             <td valign="top" width="20%">{$data.nm_perawatan}</td>
-             <td valign="top" width="20%">{$data.nilai}</td>
-             <td valign="top" width="20%">{$data.nilai_rujukan}</td>
-             <td valign="top" width="100px">{?=nl2br($data.keterangan)?}</td>
+             <th valign="top" width="20%">{$data1.tgl_periksa}</th>
+             <th colspan="4" valign="top" width="80%">{$data1.nm_perawatan}</th>
            </tr>
+             {loop: $data1.detail_periksa_lab as $data2}
+             <tr>
+               <td></td>
+               <td>{$data2.Pemeriksaan}</td>
+               <td>{$data2.nilai} {$data2.satuan}</td>
+               <td>{$data2.nilai_rujukan}</td>
+               <td>{$data2.keterangan}</td>
+             </tr>
+             {/loop}
            {/loop}
           </table>
         </td>

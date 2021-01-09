@@ -411,8 +411,9 @@
                       </table>
                     </div>
                     {/if}
+
                     {if: !empty($value.periksa_lab)}
-                    <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Pemeriksaan Laboratorium</h4>
+                    <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Pemeriksaan Laboratorium Test</h4>
                     <div class="table-responsive no-margin">
                       <table class="table table-striped no-margin">
                         <thead>
@@ -425,14 +426,19 @@
                           </tr>
                         </thead>
                         <tbody>
-                            {loop: $value.periksa_lab as $data}
+                            {loop: $value.periksa_lab as $data1}
                             <tr>
-                              <td>{$data.Pemeriksaan}</td>
-                              <td>{$data.nilai}</td>
-                              <td>{$data.satuan}</td>
-                              <td>{$data.nilai_rujukan}</td>
-                              <td>{$data.keterangan}</td>
+                              <th colspan="5">{$data1.nm_perawatan}</th>
                             </tr>
+                              {loop: $data1.detail_periksa_lab as $data2}
+                              <tr>
+                                <td>{$data2.Pemeriksaan}</td>
+                                <td>{$data2.nilai}</td>
+                                <td>{$data2.satuan}</td>
+                                <td>{$data2.nilai_rujukan}</td>
+                                <td>{$data2.keterangan}</td>
+                              </tr>
+                              {/loop}
                             {/loop}
                         </tbody>
                       </table>

@@ -428,12 +428,22 @@ class Admin extends AdminModule
             $row['rawat_inap_drpr'][] = $row;
           }
         }
-        $row['periksa_lab'] = $this->db('periksa_lab')
-          ->join('detail_periksa_lab', 'detail_periksa_lab.no_rawat=periksa_lab.no_rawat')
-          ->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=detail_periksa_lab.kd_jenis_prw')
-          ->where('periksa_lab.no_rawat', $row['no_rawat'])
+
+        $rows_periksa_lab = $this->db('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $row['no_rawat'])
           ->toArray();
+
+        $row['periksa_lab'] = [];
+        foreach ($rows_periksa_lab as $value) {
+          $value['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+            ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+            ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+            ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->toArray();
+          $row['periksa_lab'][] = $value;
+        }
+
         $row['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
@@ -554,12 +564,22 @@ class Admin extends AdminModule
             $row['rawat_inap_drpr'][] = $row;
           }
         }
-        $row['periksa_lab'] = $this->db('periksa_lab')
-          ->join('detail_periksa_lab', 'detail_periksa_lab.no_rawat=periksa_lab.no_rawat')
-          ->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=detail_periksa_lab.kd_jenis_prw')
-          ->where('periksa_lab.no_rawat', $row['no_rawat'])
+
+        $rows_periksa_lab = $this->db('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $row['no_rawat'])
           ->toArray();
+
+        $row['periksa_lab'] = [];
+        foreach ($rows_periksa_lab as $value) {
+          $value['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+            ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+            ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+            ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->toArray();
+          $row['periksa_lab'][] = $value;
+        }
+
         $row['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
@@ -578,9 +598,7 @@ class Admin extends AdminModule
           //->select('detail_pemberian_obat.jml')
           //->select('resep_dokter.aturan_pakai')
           ->toArray();
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
-          ->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')
-          ->where('no_rawat', $row['no_rawat'])->toArray();
+
         $row['hasil_radiologi'] = $this->db('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['gambar_radiologi'] = $this->db('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->db('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();

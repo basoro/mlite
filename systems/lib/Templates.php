@@ -152,10 +152,10 @@ class Templates
             $result = str_replace(['*bracket*','*/bracket*'], ['{', '}'], $result);
             $result = str_replace('*dollar*', '$', $result);
 
-            if (HTML_BEAUTY) {
-                $tidyHTML = new Indenter;
-                return $tidyHTML->indent($result);
-            }
+            //if (HTML_BEAUTY) {
+            //    $tidyHTML = new Indenter;
+            //    return $tidyHTML->indent($result);
+            //}
             return $result;
         }
     }
