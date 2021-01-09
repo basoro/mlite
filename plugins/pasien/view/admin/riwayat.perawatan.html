@@ -540,7 +540,7 @@
                <td>{$data2.Pemeriksaan}</td>
                <td>{$data2.nilai} {$data2.satuan}</td>
                <td>{$data2.nilai_rujukan}</td>
-               <td>{$data2.keterangan}</td>
+               <td>{?=nl2br($data2.keterangan)?}</td>
              </tr>
              {/loop}
            {/loop}
