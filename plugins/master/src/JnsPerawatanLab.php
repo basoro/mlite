@@ -65,6 +65,7 @@ class JnsPerawatanLab
     public function anyTemplateLaboratorium()
     {
 
+      $return['kd_jenis_prw'] = $_POST['kd_jenis_prw'];
       $return['list'] = $this->db('template_laboratorium')
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->toArray();

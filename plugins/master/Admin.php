@@ -536,6 +536,18 @@
           exit();
         }
 
+        public function anyTemplateLaboratoriumForm($kd_jenis_prw)
+        {
+          echo $this->draw('jnsperawatanlab.template.form.html', ['kd_jenis_prw' => $kd_jenis_prw]);
+          exit();
+        }
+
+        public function postJnsPerawatanLabTemplateSave()
+        {
+          $this->db('template_laboratorium')->save($_POST);
+          exit();
+        }
+
         public function postJnsPerawatanLabTemplateHapus()
         {
           $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
