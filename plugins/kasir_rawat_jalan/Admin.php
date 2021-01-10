@@ -372,6 +372,7 @@ class Admin extends AdminModule
     {
       $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
         ->where('status', '1')
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
