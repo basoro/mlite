@@ -3,7 +3,7 @@
     <table class="table table-striped no-padding">
       <thead>
         <tr>
-          <th>Nama Pemeriksaan <a href="{?=url([ADMIN,'master','templatelaboratoriumform','{$jnsperawatan.kd_jenis_prw}'])?}" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#templateModal"><span class="fa fa-plus"></span> Add</a></th>
+          <th>Nama Pemeriksaan <a href="{?=url([ADMIN,'master','templatelaboratoriumform','{$jnsperawatan.kd_jenis_prw}'])?}" class="btn btn-xs btn-primary" data-toggle="modal" data-target="#templateModal"><span class="fa fa-plus"></span> Add</a> <button type="button" class="btn btn-xs btn-warning" id="tutup_template"><span class="fa fa-forward"></span></button></th>
           <th>Satuan</th>
           <th>Aksi</th>
         </tr>
@@ -34,5 +34,5 @@
     </div>
 </div>
 <script type="text/javascript">
-  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);  
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 </script>

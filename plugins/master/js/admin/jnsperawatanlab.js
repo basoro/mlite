@@ -116,6 +116,10 @@ $("#display_template").on("click",".delete_template", function(event){
       });
 });
 
+$("#display_template").on("click","#tutup_template", function(event){
+        $("#display_template").hide();
+});
+
 // ketika tombol hapus ditekan
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
