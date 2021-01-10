@@ -160,6 +160,7 @@ class Admin extends AdminModule
       $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
       $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
       $this->assign['penjab'] = $this->db('penjab')->toArray();
+      $this->assign['stts_pulang'] = ['Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain']; 
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
         $this->assign['kamar_inap'] = $this->db('kamar_inap')

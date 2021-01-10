@@ -108,8 +108,9 @@
               <label for="id_dokter" class="col-sm-3 control-label">Status Keluar</label>
               <div class="col-sm-9">
                 <select class="form-control" name="stts_pulang">
-                  <option value="Sembuh"{if: $rawat_inap.kamar_inap.stts_pulang == 'Sembuh'} selected{/if}>Sembuh</option>
-                  <option value="APS"{if: $rawat_inap.kamar_inap.stts_pulang == 'APS'} selected{/if}>APS</option>
+                  {loop: $rawat_inap.stts_pulang}
+                  <option value="{$value}"{if: $rawat_inap.kamar_inap.stts_pulang == $value} selected{/if}>{$value}</option>
+                  {/loop}
                 </select>
               </div>
             </div>
