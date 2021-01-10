@@ -1,0 +1,54 @@
+<div id="display_template">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Nama Pemeriksaan <button type="button" class="btn btn-xs btn-primary add_template"><span class="fa fa-plus"></span> Add</button></th>
+          <th>Satuan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $jnsperawatan.list}
+        {loop: $jnsperawatan.list}
+        <tr>
+          <td>{$value.Pemeriksaan}</td>
+          <td>{$value.satuan}</td>
+          <td><button type="button" class="btn btn-xs btn-danger delete_template" data-id_template="{$value.id_template}"><span class="fa fa-trash"></span> Del</button></td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="3" class="text-center">Tidak ada data perawatan.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  // ketika tombol hapus ditekan
+  $("#display_template").on("click",".delete_template", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/master/jnsperawatanlabtemplatehapus?t=' + mlite.token;
+    var id_template = $(this).attr("data-id_template");
+
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          id_template: id_template
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#form").hide();
+          $("#display_template").hide();
+          $("#tutupform").val("Buka Form");
+          $("#tutupform").attr("id", "bukaform");
+          $("#display").load(baseURL + '/master/jnsperawatanlabdisplay?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data template telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+  });
+</script>

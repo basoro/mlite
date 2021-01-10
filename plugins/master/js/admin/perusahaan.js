@@ -107,7 +107,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/perusahaandisplay?t=' + batflat.token);
+      $("#display").load(baseURL + '/master/perusahaandisplay?t=' + mlite.token);
   }
 
 });

@@ -161,7 +161,7 @@ $('input:text[name=cari]').on('input',function(e){
       });
   } else {
       $("#notif").hide();
-      $("#display").load(baseURL + '/pasien/display?t=' + batflat.token);
+      $("#display").load(baseURL + '/pasien/display?t=' + mlite.token);
   }
 
 });

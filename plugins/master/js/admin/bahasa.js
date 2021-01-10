@@ -100,7 +100,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/bahasadisplay?t=' + batflat.token);
+      $("#display").load(baseURL + '/master/bahasadisplay?t=' + mlite.token);
   }
 
 });
