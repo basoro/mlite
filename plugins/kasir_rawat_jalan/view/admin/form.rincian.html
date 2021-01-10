@@ -21,20 +21,32 @@
           </div>
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Id Rawat</label>
-            <div class="col-sm-9">
+            <div class="col-sm-4">
               <input type="text" name="no_rawat" placeholder="ID Rawat Jalan" class="form-control" value="" readonly>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="name" class="col-sm-3 control-label">Tindakan</label>
-            <div class="col-sm-9">
-              <input type="text" name="layanan" class="form-control" placeholder="Input tindakan/layanan" value="">
+            <label for="" class="col-sm-1 control-label">Tmb.</label>
+            <div class="col-sm-4">
+              <input type="text" name="tambahan_biaya" class="form-control" placeholder="Tambah Biaya" value="">
             </div>
           </div>
           <div class="form-group">
-            <label for="obat" class="col-sm-3 control-label">Obat</label>
-            <div class="col-sm-9">
+            <label for="" class="col-sm-3 control-label">Tindakan</label>
+            <div class="col-sm-4">
+              <input type="text" name="layanan" class="form-control" placeholder="Input tindakan/layanan" value="">
+            </div>
+            <label for="" class="col-sm-1 control-label">Obat</label>
+            <div class="col-sm-4">
               <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Laboratorium</label>
+            <div class="col-sm-4">
+              <input type="text" name="laboratorium" class="form-control" placeholder="Nama Layanan" value="">
+            </div>
+            <label for="" class="col-sm-1 control-label">Rad.</label>
+            <div class="col-sm-4">
+              <input type="text" name="radiologi" class="form-control" placeholder="Nama Layanan" value="">
             </div>
           </div>
         </div>
@@ -44,6 +56,9 @@
   <div class="col-md-6">
     <div id="layanan"></div>
     <div id="obat"></div>
+    <div id="laboratorium"></div>
+    <div id="radiologi"></div>
+    <div id="tambahan_biaya"></div>
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
@@ -63,7 +78,7 @@
             <label for="tgl_perawatan" class="col-sm-3 control-label">Jenis</label>
             <div class="col-sm-4">
               <input type="hidden" name="kd_jenis_prw" class="form-control" value="">
-              <input type="text" name="nm_perawatan" class="form-control" placeholder="Nama tindakan/layanan/obat/BHP" value="" readonly>
+              <input type="text" name="nm_perawatan" id="nm_perawatan" class="form-control" placeholder="Nama tindakan/layanan/obat/BHP" value="" readonly>
               <input type="hidden" name="kat" class="form-control" value="">
             </div>
             <label for="pnd" class="col-sm-1 control-label">Biaya</label>

@@ -1,95 +1,275 @@
-<h4>Rincian Tindakan</h4>
-<div class="table-responsive no-margin">
-  <table class="table table-striped table-bordered no-padding" width="100%">
-    <thead>
-      <tr>
-        <th>Tanggal</th>
-        <th>Nama Item</th>
-        <th>Provider</th>
-        <th>Tarif</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      {loop: $rawat_jl_dr}
-      <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
-        <td>Dokter</td>
-        <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-      </tr>
-      {/loop}
-      {loop: $rawat_jl_pr}
-      <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
-        <td>Perawat</td>
-        <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-      </tr>
-      {/loop}
-      {loop: $rawat_jl_drpr}
-      <tr>
-        <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-        <td>{$value.nm_perawatan}</td>
-        <td>Dokter & Perawat</td>
-        <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-        <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-      </tr>
-      {/loop}
-    </tbody>
-    <tfoot>
-      <tr>
-        <th colspan="3">Total Biaya Tindakan</th>
-        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></th>
-        <th></th>
-      </tr>
-    </tfoot>
-  </table>
+<div class="dokter_ralan_view">
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Rekap Billing</a></li>
+        <li role="presentation"><a href="#pendaftaran" aria-controls="home" role="tab" data-toggle="tab">Pendaftaran</a></li>
+        <li role="presentation"><a href="#tindakan" aria-controls="resep" role="tab" data-toggle="tab">Tindakan</a></li>
+        <li role="presentation"><a href="#obatbhp" aria-controls="soap" role="tab" data-toggle="tab">Obat & BHP</a></li>
+        <li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
+        <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
+        <li role="presentation"><a href="#tambahan" aria-controls="kontrol" role="tab" data-toggle="tab">Tambahan</a></li>
+    </ul>
+
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane fade in active" id="home">
+          <h4>Rekap Billing</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Sub Rincian</th>
+                  <th width="300px;">Sub Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.</td>
+                  <td>Pendaftaran</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($poliklinik.registrasi,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>2.</td>
+                  <td>Tindakan</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>3.</td>
+                  <td>Obat dan BHP</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>4.</td>
+                  <td>Laboratorium</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_lab,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>5.</td>
+                  <td>Radiologi</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_radiologi,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td>6.</td>
+                  <td>Tambahan Biaya</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="pendaftaran">
+          <h4>Pendaftaran</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Poliklinik</th>
+                  <th>Jumlah</th>
+                  <th>Harga</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1.</td>
+                  <td>{$poliklinik.nm_poli}</td>
+                  <td>1</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($poliklinik.registrasi,2,',','.')?}</span></td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">Total Biaya Pendaftaran</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($biaya_registrasi,2,',','.')?}</span></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="tindakan">
+          <h4>Rincian Tindakan</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Item</th>
+                  <th>Provider</th>
+                  <th>Tarif</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loop: $tindakan}
+                <tr>
+                  <td>{$value.nomor}</td>
+                  <td>{$value.nm_perawatan}</td>
+                  <td>{$value.provider}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
+                  <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+                </tr>
+                {/loop}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">Total Biaya Tindakan</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in resep" id="obatbhp">
+          <h4>Pemberian Obat & BHP</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Obat/BHP</th>
+                  <th>Jumlah</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loop: $detail_pemberian_obat}
+                <tr>
+                  <td>{$value.nomor}</td>
+                  <td>{$value.nama_brng}</td>
+                  <td>{$value.jml}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format(($value.ralan * $value.jml),2,',','.')?}</span></td>
+                  <td colspan="2">
+                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-no_resep="{$value.no_resep}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                  </td>
+                </tr>
+                {/loop}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="3">Total Biaya Obat</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="lab">
+          <h4>Pemeriksaan Laboratorium</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Pemeriksaan</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loop: $periksa_lab}
+                <tr>
+                  <td>{$value.nomor}</td>
+                  <td>{$value.nm_perawatan}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
+                  <td colspan="2">
+                    <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                  </td>
+                </tr>
+                {/loop}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="2">Total Biaya Laboratorium</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_lab,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="rad">
+          <h4>Pemeriksaan Radiologi</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <td width="20px;">No.</td>
+                  <th>Nama Pemeriksaan</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loop: $periksa_radiologi}
+                <tr>
+                  <td>{$value.nomor}</td>
+                  <td>{$value.nm_perawatan}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
+                  <td colspan="2">
+                    <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                  </td>
+                </tr>
+                {/loop}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="2">Total Biaya Radiologi</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_radiologi,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+        <div role="tabpanel" class="tab-pane fade in" id="tambahan">
+          <h4>Tambahan Biaya</h4>
+          <div class="table-responsive no-margin">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Tambahan</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {if: $tambahan_biaya}
+                {loop: $tambahan_biaya}
+                <tr>
+                  <td>{$value.nomor}</td>
+                  <td>{$value.nama_biaya}</td>
+                  <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+                  <td>
+                    <button type="button" class="btn btn-danger btn-xs hapus_tambahan_biaya" data-no_rawat="{$value.no_rawat}" data-nama_biaya="{$value.nama_biaya}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                  </td>
+                </tr>
+                {/loop}
+                {/if}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="2">Total Biaya Tambahan</th>
+                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></th>
+                  <th></th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+    </div>
 </div>
-<h4>Pemberian Obat</h4>
-<div class="table-responsive no-margin">
-  <table class="table table-striped table-bordered no-padding" width="100%">
-    <thead>
-      <tr>
-        <th>Nama Obat</th>
-        <th>Jumlah</th>
-        <th>Aturan Pakai</th>
-        <th>Harga</th>
-        <th>Aksi</th>
-      </tr>
-    </thead>
-    <tbody>
-      {loop: $detail_pemberian_obat}
-      <tr>
-        <td>{$value.nama_brng}</td>
-        <td>{$value.jml}</td>
-        <td>{$value.aturan_pakai}</td>
-        <td>Rp. <span class="pull-right">{?= number_format(($value.ralan * $value.jml),2,',','.')?}</span></td>
-        <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-no_resep="{$value.no_resep}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
-        </td>
-      </tr>
-      {/loop}
-    </tbody>
-    <tfoot>
-      <tr>
-        <th colspan="3">Total Biaya Obat</th>
-        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></th>
-        <th></th>
-      </tr>
-    </tfoot>
-  </table>
-</div>
+
 <div class="col-md-6 col-md-offset-6">
   <div class="form-horizontal">
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total + $jumlah_total_obat)?}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan)?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total + $jumlah_total_obat),3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
@@ -100,9 +280,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total + $jumlah_total_obat)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total + $jumlah_total_obat),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>
