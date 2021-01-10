@@ -17,6 +17,7 @@
     use Plugins\Master\Src\Suku;
     use Plugins\Master\Src\Perusahaan;
     use Plugins\Master\Src\Penjab;
+    use Plugins\Master\Src\GolonganBarang;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -39,6 +40,7 @@
             $this->suku = new Suku();
             $this->perusahaan = new Perusahaan();
             $this->penjab = new Penjab();
+            $this->golonganbarang = new GolonganBarang();
         }
 
         public function navigation()
@@ -831,6 +833,51 @@
             exit();
         }
         /* End Penjab Section */
+
+        /* Start GolonganBarang Section */
+        public function getGolonganBarang()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'golonganbarangjs']), 'footer');
+          $return = $this->golonganbarang->getIndex();
+          return $this->draw('golonganbarang.html', [
+            'golonganbarang' => $return
+          ]);
+
+        }
+
+        public function anyGolonganBarangForm()
+        {
+            $return = $this->golonganbarang->anyForm();
+            echo $this->draw('golonganbarang.form.html', ['golonganbarang' => $return]);
+            exit();
+        }
+
+        public function anyGolonganBarangDisplay()
+        {
+            $return = $this->golonganbarang->anyDisplay();
+            echo $this->draw('golonganbarang.display.html', ['golonganbarang' => $return]);
+            exit();
+        }
+
+        public function postGolonganBarangSave()
+        {
+          $this->golonganbarang->postSave();
+          exit();
+        }
+
+        public function postGolonganBarangHapus()
+        {
+          $this->golonganbarang->postHapus();
+          exit();
+        }
+
+        public function getGolonganBarangJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/golonganbarang.js');
+            exit();
+        }
+        /* End GolonganBarang Section */
 
         public function getCSS()
         {
