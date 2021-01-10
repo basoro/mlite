@@ -1,0 +1,30 @@
+<div class="panel panel-default">
+  <div class="panel-body">
+    <div class="table-responsive no-margin">
+      <table class="table table-stripped">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama Pemeriksaan</th>
+            <th>Harga</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $laboratorium}
+          {loop: $laboratorium}
+          <tr class="pilih_laboratorium" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-nm_perawatan="{$value.nm_perawatan}" data-biaya="{$value.total_byr}" data-kat="laboratorium">
+            <td>{$value.kd_jenis_prw}</td>
+            <td>{$value.nm_perawatan}</td>
+            <td>Rp. <span class="pull-right">{?= number_format($value.total_byr,2,',','.')?}</span></td>
+          </tr>
+          {/loop}
+          {else}
+          <tr>
+            <td colspan="2">Tidak ada data.</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

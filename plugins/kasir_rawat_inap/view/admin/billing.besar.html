@@ -1,0 +1,227 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Bukti Pembayaran </title>
+		<meta charset="UTF-8">
+		<link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body {
+		margin-top:20px;
+	}
+	th,td {padding:0px 0px 0px 10px;}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+		<center>
+		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
+			<tr>
+			<td colspan="3">
+				<strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong>
+			</td>
+			</tr>
+			<tr>
+			<td width="80px">
+				<img width="70px" src='{?=url()?}/{$settings.logo}' />
+			</td>
+			<td>
+				<p style="font-size: 10px;">
+				{$settings.alamat}<br>
+				 Telp : {$settings.nomor_telepon}<br>
+         E-Mail : {$settings.email}<br>
+				Website : {$settings.website}</p></td>
+			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+				<p align="right" style="font-size: 10px;">
+				Kode Faktur : {$billing.kd_billing}<br>
+				Nama Pasien : {$pasien.nm_pasien}<br>
+				No RM : {$pasien.no_rkm_medis}<br>
+				Alamat : {$pasien.alamat}<br></p>
+			</td>
+			</tr>
+		</table>
+		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
+		  <tr align="left" height='30px'>
+			<th width="20px">No</th>
+			<th with="400px">Item</th>
+			<th width="100px">Tarif</th>
+			<th width="30px">Jumlah</th>
+			<th width="150px">Total</th>
+		  </tr>
+			<tr border='1', height='20px'>
+				<td>I</td>
+				<td colspan="1">Biaya Pendaftaran Poliklinik</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$billing_besar_detail.poliklinik.nm_poli}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.poliklinik.registrasi,2,',','.')?}</span></td>
+				<td>1</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.poliklinik.registrasi,2,',','.')?}</span></td>
+			</tr>
+			<tr border='1', height='20px'>
+				<td>II</td>
+				<td colspan="1">Biaya Obat & BHP</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nama_brng}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>III</td>
+				<td colspan="1">Jasa Dokter</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.rawat_inap_dr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>IV</td>
+				<td colspan="1">Jasa Perawat</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.rawat_inap_pr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>V</td>
+				<td colspan="1">Jasa Dokter & Perawat</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.rawat_inap_drpr as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+				<td>{$data.jml}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VI</td>
+				<td colspan="1">Jasa Laboratorium</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.periksa_lab as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+				<td></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VII</td>
+				<td colspan="1">Jasa Radiologi</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.periksa_radiologi as $data}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$data.nm_perawatan}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+				<td></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr border='1', height='20px'>
+				<td>VIII</td>
+				<td colspan="1">Biaya Tambahan</td>
+				<td></td>
+				<td></td>
+				<td></td>
+			</tr>
+			{loop: $billing_besar_detail.tambahan_biaya}
+			<tr border='0', height='20px'>
+				<td></td>
+				<td>- {$value.nama_biaya}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+				<td>1</td>
+				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_total,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Potongan</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.potongan,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah Bayar</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+			</tr>
+			<tr>
+				<td colspan="3"></td>
+				<td colspan=3>
+					<br><br>
+				<p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				 Kasir<br><br><br>
+				{$fullname}<br>
+				</p>
+				</td>
+			</tr>
+		</table></center>
+		</div>
+		<br><br><br>
+		<center>
+			<button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+			<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Kirim SMS</button>
+			<button type="button" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+		</center>
+
+</body>
+</html>

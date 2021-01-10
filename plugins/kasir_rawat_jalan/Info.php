@@ -9,6 +9,18 @@
         'icon'          =>  'user-plus',
         'install'       =>  function () use ($core) {
 
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `tambahan_biaya` (
+            `no_rawat` varchar(17) NOT NULL,
+            `nama_biaya` varchar(60) NOT NULL,
+            `besar_biaya` double NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `tambahan_biaya`
+            ADD PRIMARY KEY (`no_rawat`,`nama_biaya`);");
+
+          $core->db()->pdo()->exec("ALTER TABLE `tambahan_biaya`
+            ADD CONSTRAINT `tambahan_biaya_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;");
+
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_billing` (
             `id_billing` int(11) NOT NULL,
             `kd_billing` varchar(100) NOT NULL,
