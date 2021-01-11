@@ -448,7 +448,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   kat            : kat,
   jml            : jml
   }, function(data) {
-    alert(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
