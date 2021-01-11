@@ -516,7 +516,7 @@ class Admin extends AdminModule
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $row['kelas'] = $jns_perawatan['kelas'];
           $row['total_byr'] = $jns_perawatan['total_byr'];
-          $jumlah_total_lab += $jumlah_total_lab + $jns_perawatan['total_byr'];
+          $jumlah_total_lab += $jns_perawatan['total_byr'];
           $laboratorium[] = $row;
         }
       }
@@ -531,7 +531,7 @@ class Admin extends AdminModule
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $row['kelas'] = $jns_perawatan['kelas'];
           $row['total_byr'] = $jns_perawatan['total_byr'];
-          $jumlah_total_rad += $jumlah_total_rad + $jns_perawatan['total_byr'];
+          $jumlah_total_rad += $jns_perawatan['total_byr'];
           $radiologi[] = $row;
         }
       }
