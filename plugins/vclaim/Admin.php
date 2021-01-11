@@ -309,6 +309,8 @@ class Admin extends AdminModule
 
         $data_sep['qrCode'] = $file_url;
         $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
+        $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+        $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
         echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
         exit();
