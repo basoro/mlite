@@ -864,6 +864,61 @@ $("#rincian").on("click",".hapus_resep_dokter", function(event){
   });
 });
 
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".copy_resep", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ralan/copyresep?t=' + mlite.token;
+  var no_resep  = $(this).attr("data-no_resep");
+
+  $.post(url, {no_resep: no_resep} ,function(data) {
+    // tampilkan data
+    $("#display_copy_resep").html(data).show();
+  });
+
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click","#simpan_copy_resep", function(event){
+//$('form').on('submit', function(event){
+  //alert('submit copy');
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url_save = baseURL + '/dokter_ralan/savecopyresep?t=' + mlite.token;
+  var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
+  var jam_rawat       = $('input:text[name=jam_reg]').val();
+  var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
+  var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+
+  $.post(url_save, {no_rawat : no_rawat,
+    tgl_perawatan : tgl_perawatan,
+    jam_rawat : jam_rawat,
+    kode_brng : kode_brng,
+    jml : jml,
+    aturan_pakai : aturan_pakai
+  }, function(data) {
+    //alert(data);
+    if(data == 'ErrorError') {
+      alert('Stok tidak mencukupi pada satu atau lebih obat.');
+    } else {
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#rincian").html(data).show();
+      });
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data pasien telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+
+    }
+  });
+
+});
+
 function bersih(){
   $('input:text[name=no_rawat]').val("");
   $('input:text[name=no_rkm_medis]').val("");

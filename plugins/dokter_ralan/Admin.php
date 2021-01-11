@@ -358,6 +358,65 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyCopyResep()
+    {
+      $return = $this->db('resep_dokter')
+        ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+        ->where('no_resep', $_POST['no_resep'])
+        ->toArray();
+      echo $this->draw('copyresep.display.html', ['copy_resep' => $return]);
+      exit();
+    }
+
+    public function postSaveCopyResep()
+    {
+      $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
+      $_POST['jml'] = json_decode($_POST['jml'], true);
+      $_POST['aturan_pakai'] = json_decode($_POST['aturan_pakai'], true);
+
+      $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+      if(empty($max_id['no_resep'])) {
+        $max_id['no_resep'] = '0000';
+      }
+      $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
+      $no_resep = date('Ymd').''.$_next_no_resep;
+
+      $resep_obat = $this->db('resep_obat')
+        ->save([
+          'no_resep' => $no_resep,
+          'tgl_perawatan' => $_POST['tgl_perawatan'],
+          'jam' => $_POST['jam_rawat'],
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_dokter' => $this->core->getUserInfo('username', null, true),
+          'tgl_peresepan' => $_POST['tgl_perawatan'],
+          'jam_peresepan' => $_POST['jam_rawat'],
+          'status' => 'ralan'
+        ]);
+
+      for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
+        $cek_stok = $this->db('gudangbarang')
+          ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
+          ->where('gudangbarang.kode_brng', $_POST['kode_brng'][$i]['value'])
+          ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+          ->oneArray();
+
+        if($cek_stok['stok'] < $cek_stok['stokminimal']) {
+          echo "Error";
+        } else {
+          $this->db('resep_dokter')
+            ->save([
+              'no_resep' => $no_resep,
+              'kode_brng' => $_POST['kode_brng'][$i]['value'],
+              'jml' => $_POST['jml'][$i]['value'],
+              'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
+            ]);
+        }
+
+      }
+
+      exit();
+    }
+
     public function anyRincian()
     {
       $rows_rawat_jl_dr = $this->db('rawat_jl_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
@@ -463,12 +522,29 @@ class Admin extends AdminModule
         }
       }
 
+      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      $rows_data_resep = $this->db('resep_obat')
+      ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+      ->where('resep_obat.kd_dokter', $this->core->getUserInfo('username', null, true))
+      ->where('reg_periksa.no_rkm_medis', $reg_periksa['no_rkm_medis'])
+      ->toArray();
+
+      $data_resep = [];
+      foreach ($rows_data_resep as $row) {
+        $row['resep_dokter'] = $this->db('resep_dokter')
+          ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+          ->where('no_resep', $row['no_resep'])
+          ->toArray();
+        $data_resep[] = $row;
+      }
+
       echo $this->draw('rincian.html', [
         'rawat_jl_dr' => $rawat_jl_dr,
         'rawat_jl_pr' => $rawat_jl_pr,
         'rawat_jl_drpr' => $rawat_jl_drpr,
         'resep' => $resep,
         'resep_racikan' => $resep_racikan,
+        'data_resep' => $data_resep,
         'laboratorium' => $laboratorium,
         'radiologi' => $radiologi,
         'jumlah_total' => $jumlah_total,
