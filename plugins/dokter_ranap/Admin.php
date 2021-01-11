@@ -386,6 +386,8 @@ class Admin extends AdminModule
     {
       $return = $this->db('resep_dokter')
         ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+        ->join('gudangbarang', 'gudangbarang.kode_brng=resep_dokter.kode_brng')
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->where('no_resep', $_POST['no_resep'])
         ->toArray();
       echo $this->draw('copyresep.display.html', ['copy_resep' => $return]);
@@ -418,15 +420,15 @@ class Admin extends AdminModule
         ]);
 
       for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
-        $cek_stok = $this->db('gudangbarang')
+        /*$cek_stok = $this->db('gudangbarang')
           ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
           ->where('gudangbarang.kode_brng', $_POST['kode_brng'][$i]['value'])
           ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
-          ->oneArray();
+          ->oneArray();*/
 
-        if($cek_stok['stok'] < $cek_stok['stokminimal']) {
-          echo "Error";
-        } else {
+        //if($cek_stok['stok'] < $cek_stok['stokminimal']) {
+        //  echo "Error";
+        //} else {
           $this->db('resep_dokter')
             ->save([
               'no_resep' => $no_resep,
@@ -434,7 +436,7 @@ class Admin extends AdminModule
               'jml' => $_POST['jml'][$i]['value'],
               'aturan_pakai' => $_POST['aturan_pakai'][$i]['value']
             ]);
-        }
+        //}
 
       }
 

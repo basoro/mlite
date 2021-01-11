@@ -901,9 +901,9 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
     aturan_pakai : aturan_pakai
   }, function(data) {
     //alert(data);
-    if(data == 'ErrorError') {
-      alert('Stok tidak mencukupi pada satu atau lebih obat.');
-    } else {
+    //if(data == 'ErrorError') {
+    //  alert('Stok tidak mencukupi pada satu atau lebih obat.');
+    //} else {
       $.post(url, {no_rawat : no_rawat,
       }, function(data) {
         // tampilkan data
@@ -914,7 +914,7 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
 
-    }
+    //}
   });
 
 });
