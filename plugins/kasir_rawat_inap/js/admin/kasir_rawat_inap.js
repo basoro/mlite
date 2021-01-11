@@ -727,7 +727,6 @@ $("#rincian").on("click","#simpan_billing", function(event){
         jumlah_bayar       : jumlah_bayar,
         keterangan         : keterangan,
         } ,function(data) {
-          alert(data);
           var url = baseURL + '/kasir_rawat_inap/rincian?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
           }, function(data) {
