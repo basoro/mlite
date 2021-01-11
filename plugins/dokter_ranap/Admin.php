@@ -382,6 +382,16 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyCopyResep()
+    {
+      $return = $this->db('resep_dokter')
+        ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+        ->where('no_resep', $_POST['no_resep'])
+        ->toArray();
+      echo $this->draw('copyresep.display.html', ['copy_resep' => $return]);
+      exit();
+    }
+
     public function postSaveCopyResep()
     {
       $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
