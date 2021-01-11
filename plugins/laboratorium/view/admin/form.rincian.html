@@ -25,19 +25,12 @@
               <input type="text" name="layanan" class="form-control" placeholder="Input tindakan/layanan" value="">
             </div>
           </div>
-          <div class="form-group">
-            <label for="obat" class="col-sm-3 control-label">Obat (e-Resep)</label>
-            <div class="col-sm-9">
-              <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </div>
   <div class="col-md-6">
     <div id="layanan"></div>
-    <div id="obat"></div>
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
@@ -119,34 +112,9 @@
   </div>
 </div>
 <script>
-  $('input:text[name=aturan_pakai]').on('input',function(e){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/igd/aturanpakai?t=' + mlite.token;
-    var query = $('input:text[name=aturan_pakai]').val();
-    if(query!="") {
-        $.ajax({
-             url: url,
-             method:"POST",
-             data:{query:query},
-             success:function(data)
-             {
-                  $('#aturan_pakaiList').fadeIn();
-                  $('#aturan_pakaiList').html(data);
-             }
-        });
-    }
-    $('#aturan_pakaiList').fadeIn();
-  });
-
-  $('#aturan_pakaiList').on('click', 'li', function(){
-       $('input:text[name=aturan_pakai]').val($(this).text());
-       $('#aturan_pakaiList').fadeOut();
-  });
-</script>
-<script>
   $('input:text[name=nama_provider]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/igd/providerlist?t=' + mlite.token;
+    var url    = baseURL + '/laboratorium/providerlist?t=' + mlite.token;
     var query = $('input:text[name=nama_provider]').val();
     if(query!="") {
         $.ajax({
@@ -173,7 +141,7 @@
 <script>
   $('input:text[name=nama_provider2]').on('input',function(e){
     var baseURL = mlite.url + '/' + mlite.admin;
-    var url    = baseURL + '/igd/providerlist2?t=' + mlite.token;
+    var url    = baseURL + '/laboratorium/providerlist2?t=' + mlite.token;
     var query = $('input:text[name=nama_provider2]').val();
     if(query!="") {
         $.ajax({

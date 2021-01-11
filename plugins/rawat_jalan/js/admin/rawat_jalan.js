@@ -263,6 +263,8 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
+  event.stopPropagation();
+
 });
 
 $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
@@ -293,6 +295,8 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     $("#soap").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
+
+  event.stopPropagation();
 
 });
 
@@ -325,6 +329,8 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
+  event.stopPropagation();
+
 });
 
 $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
@@ -355,6 +361,8 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     $("#soap").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
+
+  event.stopPropagation();
 
 });
 

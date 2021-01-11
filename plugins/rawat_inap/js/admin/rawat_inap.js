@@ -292,6 +292,8 @@ $('#manage').on('click', '#submit_periode_rawat_inap', function(event){
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
+  event.stopPropagation();
+
 });
 
 $('#manage').on('click', '#masuk_periode_rawat_inap', function(event){
@@ -322,6 +324,8 @@ $('#manage').on('click', '#masuk_periode_rawat_inap', function(event){
     $("#soap").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
+
+  event.stopPropagation();
 
 });
 
@@ -354,6 +358,8 @@ $('#manage').on('click', '#pulang_periode_rawat_inap', function(event){
     $('.periode_rawat_inap').datetimepicker('remove');
   });
 
+  event.stopPropagation();
+
 });
 
 $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
@@ -384,6 +390,8 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
     $("#soap").hide();
     $('.periode_rawat_inap').datetimepicker('remove');
   });
+
+  event.stopPropagation();
 
 });
 

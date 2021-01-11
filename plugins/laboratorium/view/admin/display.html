@@ -30,10 +30,7 @@
               <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Resume Perawatan</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Riwayat Perawatan</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
-              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
-              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}">Status Rawat</a></li>
-              <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
+              <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Input Pemeriksaan</a></li>
               {/if}
             </ul>
           </td>
@@ -91,33 +88,6 @@
     </div>
 </div>
 <script type="text/javascript">
-  $('a[href="#soap"]').click(function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-
-    var no_rawat = $(this).attr("data-no_rawat");
-    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-    var nm_pasien = $(this).attr("data-nm_pasien");
-    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
-
-    $('input:text[name=no_rawat]').val(no_rawat);
-    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
-    $('input:text[name=nm_pasien]').val(nm_pasien);
-    $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
-    $("#display").hide();
-
-    var url = baseURL + '/igd/soap?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
-    }, function(data) {
-      // tampilkan data
-      $("#form_rincian").hide();
-      $("#form").hide();
-      $("#notif").hide();
-      $("#form_soap").show();
-      $("#soap").html(data).show();
-    });
-  });
-
   $('a[href="#layanan_obat"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -131,7 +101,7 @@
     $('input:text[name=nm_pasien]').val(nm_pasien);
     $("#display").hide();
 
-    var url = baseURL + '/igd/rincian?t=' + mlite.token;
+    var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
     }, function(data) {
       // tampilkan data
@@ -142,91 +112,6 @@
     });
   });
 
-  $('a[href="#status_rawat"]').click(function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/igd/statusrawat?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-
-    // tampilkan dialog konfirmasi
-
-    bootbox.prompt({
-        title: "Status lanjut pasien.",
-        message: '',
-        inputType: 'radio',
-        inputOptions: [
-        {
-            text: 'Sudah Periksa',
-            value: 'Sudah',
-        },
-        {
-            text: 'Batal Periksa',
-            value: 'Batal',
-        },
-        {
-            text: 'Berkas Diterima',
-            value: 'Berkas Diterima',
-        },
-        {
-            text: 'Pasien Dirujuk',
-            value: 'Dirujuk',
-        },
-        {
-            text: 'Meninggal',
-            value: 'Meninggal',
-        },
-        {
-            text: 'Dirawat',
-            value: 'Dirawat',
-        },
-        {
-            text: 'Pulang Paksa',
-            value: 'Pulang Paksa',
-        }
-        ],
-        callback: function (result) {
-            console.log(result);
-            // ketika ditekan tombol ok
-            if (result){
-              // mengirimkan perintah penghapusan
-              $.post(url, {
-                no_rawat: no_rawat,
-                stts: result
-              } ,function(data) {
-                // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-                $("#display").load(baseURL + '/igd/display?t=' + mlite.token);
-                $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-                "Status lanjut pasien telah disimpan!"+
-                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-                "</div>").show();
-              });
-            }
-        }
-    });
-  });
-  $('a[href="#status_lanjut"]').click(function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/igd/statuslanjut?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    // tampilkan dialog konfirmasi
-    bootbox.confirm("Apakah pasien dimasukkan dalam kamar inap?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-        // mengirimkan perintah penghapusan
-        $.post(url, {
-          no_rawat: no_rawat
-        } ,function(data) {
-          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-          $("#display").load(baseURL + '/igd/display?t=' + mlite.token);
-          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-          "Status periksa pasien telah disimpan!"+
-          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-          "</div>").show();
-        });
-      }
-    });
-  });
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $('.dataTables').DataTable({
     "order": [[ 3, "desc" ]],
@@ -265,5 +150,5 @@
 <script>
   $('body').on('hidden.bs.modal', '.modal', function () {
       $(this).removeData('bs.modal');
-  });  
+  });
 </script>
