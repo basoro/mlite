@@ -429,7 +429,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kd_jenis_prw 	  = $('input:hidden[name=kd_jenis_prw]').val();
   var provider        = $('select[name=provider]').val();
   var kode_provider   = $('input:text[name=kode_provider]').val();
-  var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var biaya           = $('input:text[name=biaya]').val();
@@ -442,7 +441,6 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   kd_jenis_prw   : kd_jenis_prw,
   provider       : provider,
   kode_provider  : kode_provider,
-  kode_provider2 : kode_provider2,
   tgl_perawatan  : tgl_perawatan,
   jam_rawat      : jam_rawat,
   biaya          : biaya,
@@ -464,9 +462,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
     $('input:text[name=nama_provider]').val("");
-    $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
-    $('input:text[name=kode_provider2]').val("");
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+

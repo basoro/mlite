@@ -327,7 +327,7 @@ class Admin extends AdminModule
         $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
-            'nip' => $_POST['kode_provider2'],
+            'nip' => $this->core->getUserInfo('username', null, true),
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'tgl_periksa' => $_POST['tgl_perawatan'],
             'jam' => $_POST['jam_rawat'],

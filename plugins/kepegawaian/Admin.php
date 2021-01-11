@@ -18,17 +18,10 @@ class Admin extends AdminModule
 
     public function getManage($page = 1)
     {
-        $perpage = '10';
 
-        $phrase = '';
-        if(isset($_GET['s'])){
-            $phrase = $_GET['s'];
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->like('bidang','%'.$phrase.'%')->orLike('nama','%'.$phrase.'%')->toArray();
+        $this->_addHeaderFiles();
 
-        }else{
-            $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->toArray();
-        }
-
+        $rows = $this->db('pegawai')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {

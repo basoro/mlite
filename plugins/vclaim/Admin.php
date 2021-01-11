@@ -280,6 +280,8 @@ class Admin extends AdminModule
 
     public function getCetakSEP($no_sep)
     {
+        $settings = $this->settings('settings');
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
         $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
         $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
 
