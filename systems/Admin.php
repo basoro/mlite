@@ -44,6 +44,10 @@ class Admin extends Main
         $this->assign['rawat_inap_access'] = ($access == 'all') || in_array('rawat_inap', explode(',', $access)) ? true : false;
         $this->assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
 
+        $this->assign['dokter_igd_access'] = ($access == 'all') || in_array('dokter_igd', explode(',', $access)) ? true : false;
+        $this->assign['dokter_ralan_access'] = ($access == 'all') || in_array('dokter_ralan', explode(',', $access)) ? true : false;
+        $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
+
         $this->tpl->set('mlite', $this->assign);
         echo $this->tpl->draw(THEMES.'/admin/'.$file, true);
     }

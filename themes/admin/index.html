@@ -299,10 +299,10 @@
     {if: $this->core->getUserInfo('role') == 'medis'}
     <div class="icon-bar hidden-lg hidden-md">
       <a href="#" data-toggle="modal" data-target="#menuModal"><i class="fa fa-home"></i></a>
-      <a href="{?=url([ADMIN, 'pasien', 'manage'])?}"><i class="fa fa-users"></i></a>
-      <a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"><i class="fa fa-ambulance"></i></a>
-      <a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"><i class="fa fa-wheelchair"></i></a>
-      <a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"><i class="fa fa-hotel"></i></a>
+      <a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access} class="btn disabled"{/if}><i class="fa fa-users"></i></a>
+      <a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if}><i class="fa fa-ambulance"></i></a>
+      <a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_jalan_access} class="btn disabled"{/if}><i class="fa fa-wheelchair"></i></a>
+      <a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if}><i class="fa fa-hotel"></i></a>
     </div>
     {else}
     <div class="icon-bar hidden-lg hidden-md">
