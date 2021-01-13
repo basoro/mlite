@@ -116,11 +116,8 @@ class Admin extends AdminModule
           $dpjp_ranap = $this->db('dpjp_ranap')
             ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
             ->where('no_rawat', $row['no_rawat'])
-            ->oneArray();
-          $row['nm_dokter'] = $dpjp_ranap['nm_dokter'];
-          if(!$dpjp_ranap) {
-            $row['nm_dokter'] = '---';
-          }
+            ->toArray();
+          $row['dokter'] = $dpjp_ranap;
           $this->assign['list'][] = $row;
         }
 
@@ -160,7 +157,7 @@ class Admin extends AdminModule
       $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
       $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
       $this->assign['penjab'] = $this->db('penjab')->toArray();
-      $this->assign['stts_pulang'] = ['Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain']; 
+      $this->assign['stts_pulang'] = ['Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain'];
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
         $this->assign['kamar_inap'] = $this->db('kamar_inap')
@@ -267,11 +264,13 @@ class Admin extends AdminModule
 
     public function postSetDPJP()
     {
-      if($this->db('dpjp_ranap')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
-        $this->db('dpjp_ranap')->where('no_rawat', $_POST['no_rawat'])->save(['kd_dokter' => $_POST['kd_dokter']]);
-      } else {
-        $this->db('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']]);
-      }
+      $this->db('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']]);
+      exit();
+    }
+
+    public function postHapusDPJP()
+    {
+      $this->db('dpjp_ranap')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->delete();
       exit();
     }
 

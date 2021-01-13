@@ -124,9 +124,6 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
           $row['dokter'] = $dpjp_ranap;
-          if(!$dpjp_ranap) {
-            $row['nm_dokter'] = '---';
-          }
           $this->assign['list'][] = $row;
         }
 
