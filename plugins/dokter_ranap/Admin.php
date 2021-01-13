@@ -111,6 +111,7 @@ class Admin extends AdminModule
         if($status_pulang == 'pulang' && $tgl_masuk !== '' && $tgl_masuk_akhir !== '') {
           $sql .= " AND kamar_inap.tgl_keluar BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
         }
+        $sql .= " GROUP BY reg_periksa.no_rawat";
 
         $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
@@ -121,8 +122,8 @@ class Admin extends AdminModule
           $dpjp_ranap = $this->db('dpjp_ranap')
             ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
             ->where('no_rawat', $row['no_rawat'])
-            ->oneArray();
-          $row['nm_dokter'] = $dpjp_ranap['nm_dokter'];
+            ->toArray();
+          $row['dokter'] = $dpjp_ranap;
           if(!$dpjp_ranap) {
             $row['nm_dokter'] = '---';
           }

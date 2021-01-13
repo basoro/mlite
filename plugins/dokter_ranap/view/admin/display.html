@@ -36,7 +36,15 @@
           <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
           <td class="edit" data-no_rawat="{$value.no_rawat}">{$value.no_rawat}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_bangsal} - {$value.kd_kamar}</td>
-          <td style="white-space: nowrap;">{$value.nm_dokter}</td>
+          <td style="white-space: nowrap;">
+            <ul class="list-unstyled">
+              {loop: $value.dokter as $data_dokter}
+              <li>
+                {$data_dokter.nm_dokter}
+              </li>
+              {/loop}
+            </ul>
+          </td>
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}

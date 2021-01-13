@@ -7,7 +7,7 @@ define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
 define('DBPASS', 'basoro');
-define('DBNAME', 'cobasaja');
+define('DBNAME', 'sik_rsas');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/webapps');
@@ -43,9 +43,6 @@ define('BASIC_MODULES', serialize([
     //9 => 'icd',
     //10 => 'vclaim'
 ]));
-
-// HTML beautifier
-define('HTML_BEAUTY', false);
 
 // Developer mode
 define('DEV_MODE', true);
