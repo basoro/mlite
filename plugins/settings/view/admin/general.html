@@ -131,6 +131,17 @@
                     </div>
                     {/if}
                     <div class="form-group">
+                         <label>Dokter Rawat Jalan</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false'}checked{/if} /> Per Klinik
+                             </label>
+                         </div>
+                    </div>
+                    <div class="form-group">
                         <label>Kode PPK BPJS</label>
                         <input type="text" name="ppk_bpjs" class="form-control" value="{$settings.ppk_bpjs}" />
                     </div>

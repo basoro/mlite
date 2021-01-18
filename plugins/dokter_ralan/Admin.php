@@ -58,7 +58,7 @@ class Admin extends AdminModule
     public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='')
     {
         $this->_addHeaderFiles();
-
+        $username = $this->core->getUserInfo('username', null, true);
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
@@ -83,7 +83,11 @@ class Admin extends AdminModule
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
         if ($this->core->getUserInfo('role') != 'admin') {
-          $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+          if($this->settings->get('settings.dokter_ralan_per_dokter') == 'false') {
+            $sql .= " AND reg_periksa.kd_dokter = $username";
+          } else {
+            $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";
+          }
         }
         if($status_periksa == 'belum') {
           $sql .= " AND reg_periksa.stts = 'Belum'";
