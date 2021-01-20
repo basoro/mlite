@@ -587,16 +587,27 @@ class Admin extends AdminModule
          $diagnosa[] = $row;
        }
 
+      $i = 1;
+
       $rows = $this->db('pemeriksaan_ralan')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
-      $i = 1;
       $result = [];
       foreach ($rows as $row) {
         $row['nomor'] = $i++;
         $result[] = $row;
       }
-      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+
+      $rows_ranap = $this->db('pemeriksaan_ranap')
+       ->where('no_rawat', $_POST['no_rawat'])
+       ->toArray();
+      $result_ranap = [];
+      foreach ($rows_ranap as $row) {
+       $row['nomor'] = $i++;
+       $result_ranap[] = $row;
+      }
+
+      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
       exit();
     }
 
