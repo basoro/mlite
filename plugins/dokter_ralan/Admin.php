@@ -83,7 +83,7 @@ class Admin extends AdminModule
           AND reg_periksa.kd_pj = penjab.kd_pj";
 
         if ($this->core->getUserInfo('role') != 'admin') {
-          if($this->settings->get('settings.dokter_ralan_per_dokter') == 'false') {
+          if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
             $sql .= " AND reg_periksa.kd_dokter = $username";
           } else {
             $sql .= " AND reg_periksa.kd_poli IN ('$poliklinik')";

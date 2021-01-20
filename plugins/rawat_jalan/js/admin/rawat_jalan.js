@@ -51,9 +51,11 @@ $("#form").on("click","#no_reg", function(event){
   event.preventDefault();
   var url = baseURL + '/rawat_jalan/maxantrian?t=' + mlite.token;
   var kd_poli = $('select[name=kd_poli]').val();
+  var kd_dokter = $('select[name=kd_dokter]').val();
 
   $.post(url, {
-    kd_poli: kd_poli
+    kd_poli: kd_poli,
+    kd_dokter: kd_dokter
   } ,function(data) {
     $("#no_reg").val(data);
   });
@@ -163,13 +165,16 @@ $("#display").on("click", ".sep", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
 
+  var d = new Date();
+  var curr_date = d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+
   var no_rawat = $(this).attr("data-no_rawat");
   var no_rkm_medis = $(this).attr("data-no_rkm_medis");
   var nm_pasien = $(this).attr("data-nm_pasien");
   var tgl_registrasi = $(this).attr("data-tgl_registrasi");
   var no_peserta = $(this).attr("data-no_peserta");
 
-  var url = baseURL + '/vclaim/bynokartu/' + no_peserta + '/{?=date('Y-m-d')?}?t=' + mlite.token;
+  var url = baseURL + '/vclaim/bynokartu/' + no_peserta + '/' + curr_date + '?t=' + mlite.token;
 
   $.get(url,function(data) {
     var data = JSON.parse(data);
