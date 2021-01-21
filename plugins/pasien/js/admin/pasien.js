@@ -112,11 +112,11 @@ $("#form").on("click", "#simpan", function(event){
     kd_pj: kd_pj,
     no_peserta: no_peserta
   } ,function(data) {
-    $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
-    $("#form").hide();
-    $("#tutupform").val("Buka Form");
-    $("#tutupform").attr("id", "bukaform");
     if(data.status == 'success'){
+      $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
+      $("#form").hide();
+      $("#tutupform").val("Buka Form");
+      $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data pasien telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+

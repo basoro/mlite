@@ -104,10 +104,10 @@ $("#form").on("click", "#simpan", function(event){
     kd_pj: kd_pj,
     stts_daftar: stts_daftar
   } ,function(data) {
-    $("#display").show().load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
-    bersih();
-    $("#status_pendaftaran").hide();
     if(data.status == 'success'){
+      $("#display").show().load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+      bersih();
+      $("#status_pendaftaran").hide();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data pendaftaran rawat jalan telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
