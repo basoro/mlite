@@ -75,29 +75,48 @@ $("#form").on("click", "#simpan", function(event){
 
   var url = baseURL + '/igd/save?t=' + mlite.token;
 
+  if(no_rawat == '') {
+    alert('Nomor rawat masih kosong!')
+  }
+
+  if(no_reg == '') {
+    alert('Nomor antrian masih kosong!')
+  }
+
+  if(no_rkm_medis == '') {
+    alert('Data pasien rawat masih kosong! Silahkan pilih pasien.')
+  }
+
   if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
-    bootbox.alert("Isian ada yang kosong. Atau ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
-  } else {
-    $.post(url,{
-      no_rawat: no_rawat,
-      no_reg: no_reg,
-      tgl_registrasi: tgl_registrasi,
-      jam_reg: jam_reg,
-      no_rkm_medis: no_rkm_medis,
-      kd_poli: kd_poli,
-      kd_dokter: kd_dokter,
-      kd_pj: kd_pj,
-      stts_daftar: stts_daftar
-    } ,function(data) {
-      $("#display").show().load(baseURL + '/igd/display?t=' + mlite.token);
-      bersih();
-      $("#status_pendaftaran").hide();
+    alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
+  }
+
+  $.post(url,{
+    no_rawat: no_rawat,
+    no_reg: no_reg,
+    tgl_registrasi: tgl_registrasi,
+    jam_reg: jam_reg,
+    no_rkm_medis: no_rkm_medis,
+    kd_poli: kd_poli,
+    kd_dokter: kd_dokter,
+    kd_pj: kd_pj,
+    stts_daftar: stts_daftar
+  } ,function(data) {
+    $("#display").show().load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+    bersih();
+    $("#status_pendaftaran").hide();
+    if(data.status == 'success'){
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pasien telah disimpan!"+
+      "Data pendaftaran IGD telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
-    });
-  }
+    } else {
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Gagal menyimpan data pendaftaran IGD!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }
+  });
 });
 
 $("#display").on("click",".antrian", function(event){

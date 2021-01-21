@@ -63,6 +63,26 @@ $("#form").on("click", "#simpan", function(event){
 
   var url = baseURL + '/pasien/save?t=' + mlite.token;
 
+  if(no_rkm_medis == '') {
+    alert('Nomor rekam medis masih kosong!')
+  }
+
+  if(nm_pasien == '') {
+    alert('Nama pasien masih kosong!')
+  }
+
+  if(nm_ibu == '') {
+    alert('Nama ibu masih kosong!')
+  }
+
+  if(tgl_lahir == '') {
+    alert('Tanggal lahir masih kosong!')
+  }
+
+  if(jk == '') {
+    alert('Jenis kelamin belum dipilih!')
+  }
+
   $.post(url,{
     no_rkm_medis: no_rkm_medis,
     nm_pasien: nm_pasien,
@@ -96,10 +116,17 @@ $("#form").on("click", "#simpan", function(event){
     $("#form").hide();
     $("#tutupform").val("Buka Form");
     $("#tutupform").attr("id", "bukaform");
-    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-    "Data pasien telah disimpan!"+
-    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-    "</div>").show();
+    if(data.status == 'success'){
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data pasien telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    } else {
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Gagal menyimpan data pasien!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }
   });
 });
 
