@@ -88,35 +88,35 @@ $("#form").on("click", "#simpan", function(event){
   }
 
   if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
-    alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
+    bootbox.alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
+  } else {
+    $.post(url,{
+      no_rawat: no_rawat,
+      no_reg: no_reg,
+      tgl_registrasi: tgl_registrasi,
+      jam_reg: jam_reg,
+      no_rkm_medis: no_rkm_medis,
+      kd_poli: kd_poli,
+      kd_dokter: kd_dokter,
+      kd_pj: kd_pj,
+      stts_daftar: stts_daftar
+    } ,function(data) {
+      if(data.status == 'success'){
+        $("#display").show().load(baseURL + '/igd/display?t=' + mlite.token);
+        bersih();
+        $("#status_pendaftaran").hide();
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pendaftaran IGD telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      } else {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan data pendaftaran IGD!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
+    });
   }
-
-  $.post(url,{
-    no_rawat: no_rawat,
-    no_reg: no_reg,
-    tgl_registrasi: tgl_registrasi,
-    jam_reg: jam_reg,
-    no_rkm_medis: no_rkm_medis,
-    kd_poli: kd_poli,
-    kd_dokter: kd_dokter,
-    kd_pj: kd_pj,
-    stts_daftar: stts_daftar
-  } ,function(data) {
-    if(data.status == 'success'){
-      $("#display").show().load(baseURL + '/igd/display?t=' + mlite.token);
-      bersih();
-      $("#status_pendaftaran").hide();
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pendaftaran IGD telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    } else {
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Gagal menyimpan data pendaftaran IGD!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    }
-  });
 });
 
 $("#display").on("click",".antrian", function(event){
