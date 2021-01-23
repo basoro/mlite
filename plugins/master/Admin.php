@@ -18,6 +18,7 @@
     use Plugins\Master\Src\Perusahaan;
     use Plugins\Master\Src\Penjab;
     use Plugins\Master\Src\GolonganBarang;
+    use Plugins\Master\Src\IndustriFarmasi;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -41,6 +42,7 @@
             $this->perusahaan = new Perusahaan();
             $this->penjab = new Penjab();
             $this->golonganbarang = new GolonganBarang();
+            $this->industrifarmasi = new IndustriFarmasi();
         }
 
         public function navigation()
@@ -106,7 +108,7 @@
             ['name' => 'Penanggung Jawab', 'url' => url([ADMIN, 'master', 'penjab']), 'icon' => 'cubes', 'desc' => 'Master penanggung jawab'],
             ['name' => 'Golongan Barang', 'url' => url([ADMIN, 'master', 'golonganbarang']), 'icon' => 'cubes', 'desc' => 'Master golongan barang'],
             ['name' => 'Industri Farmasi', 'url' => url([ADMIN, 'master', 'industrifarmasi']), 'icon' => 'cubes', 'desc' => 'Master industri farmasi'],
-            ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'dokter']), 'icon' => 'cubes', 'desc' => 'Master dokter'],
+            ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'jenisbarang']), 'icon' => 'cubes', 'desc' => 'Master jenis barang'],
             ['name' => 'Kategori Barang', 'url' => url([ADMIN, 'master', 'kategoribarang']), 'icon' => 'cubes', 'desc' => 'Master kategori barang'],
             ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
             ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
@@ -878,6 +880,51 @@
             exit();
         }
         /* End GolonganBarang Section */
+
+        /* Start IndustriFarmasi Section */
+        public function getIndustriFarmasi()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'industrifarmasijs']), 'footer');
+          $return = $this->industrifarmasi->getIndex();
+          return $this->draw('industrifarmasi.html', [
+            'industrifarmasi' => $return
+          ]);
+
+        }
+
+        public function anyIndustriFarmasiForm()
+        {
+            $return = $this->industrifarmasi->anyForm();
+            echo $this->draw('industrifarmasi.form.html', ['industrifarmasi' => $return]);
+            exit();
+        }
+
+        public function anyIndustriFarmasiDisplay()
+        {
+            $return = $this->industrifarmasi->anyDisplay();
+            echo $this->draw('industrifarmasi.display.html', ['industrifarmasi' => $return]);
+            exit();
+        }
+
+        public function postIndustriFarmasiSave()
+        {
+          $this->industrifarmasi->postSave();
+          exit();
+        }
+
+        public function postIndustriFarmasiHapus()
+        {
+          $this->industrifarmasi->postHapus();
+          exit();
+        }
+
+        public function getIndustriFarmasiJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/industrifarmasi.js');
+            exit();
+        }
+        /* End IndustriFarmasi Section */
 
         public function getCSS()
         {

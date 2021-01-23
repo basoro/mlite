@@ -1,0 +1,37 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelola Industri Farmasi</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div id="notif"></div>
+        </div>
+        <div class="row">
+          <div class="col col-md-6">
+            <div class="searchbox-input form-inline padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+              <div class="input-group" id="index">
+                <input class="btn btn-default" type="button" id="bukaform" value="Buka Form" />
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-6">
+            <div class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+              <div class="input-group">
+                <input type="text" name="cari" minlength="3" class="form-control" placeholder="Pencarian..." required>
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="form"></div>
+        <div class="display">
+          {include: ../plugins/master/view/admin/industrifarmasi.display.html}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

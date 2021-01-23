@@ -1,0 +1,45 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">ID</label>
+            <div class="col-sm-9">
+              <input type="text" id="kode_industri" name="kode_industri" class="form-control" value="{$industrifarmasi.form.kode_industri}" {if: !empty($industrifarmasi.form.kode_industri)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama</label>
+            <div class="col-sm-9">
+              <input type="text" name="nama_industri" class="form-control" value="{$industrifarmasi.form.nama_industri}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Alamat</label>
+            <div class="col-sm-9">
+              <textarea name="alamat" rows="4" class="form-control" >{$industrifarmasi.form.alamat}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kota</label>
+            <div class="col-sm-9">
+              <input type="text" name="kota" class="form-control" value="{$industrifarmasi.form.kota}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">No. Telepon</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_telp" class="form-control" value="{$industrifarmasi.form.no_telp}">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
