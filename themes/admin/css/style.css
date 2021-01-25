@@ -845,7 +845,7 @@ select[multiple].form-control {
   display: none;
 }
 
-ul.nav {
+ul.nav.nav-tabs {
     white-space: nowrap;
     overflow-x: auto;
 }
@@ -854,6 +854,6 @@ ul.nav.nav-tabs li {
     display: inline-block;
     float: none;
 }
-.nav-tabs>li.active>a {
+ul.nav.nav-tabs>li.active>a {
     background-color: #ddd;
 }
