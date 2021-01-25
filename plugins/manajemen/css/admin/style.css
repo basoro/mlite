@@ -21,19 +21,3 @@ a.text-white:focus,a.text-white:hover{color:#ffffff}
 .badge-success {
   background-color: #4C9A2A;
 }
-
-ul.nav {
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-ul.nav.nav-tabs li {
-    display: inline-block;
-    float: none;
-}
-.nav-tabs>li.active>a {
-    display: inline-block;
-    float: none;
-    border-bottom: 1px solid #ddd;
-    background-color: #ddd;
-}
