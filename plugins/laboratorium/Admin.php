@@ -3,6 +3,7 @@ namespace Plugins\Laboratorium;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
+use Systems\Lib\QR_BarCode;
 
 class Admin extends AdminModule
 {
@@ -313,6 +314,62 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getCetakHasil()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $pj_lab = $this->db('pegawai')->where('nik', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+      $qr = new QR_BarCode();
+      $qr->text($pj_lab['nama']);
+      $qr->qrCode(180, UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
+
+      $logo_url = url().'/'.$this->settings->get('settings.logo');
+      $file_url = url().'/uploads/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png';
+      $QR = imagecreatefrompng(UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
+
+      imagepng($QR,UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
+
+      $qrCode = $file_url;
+
+      $pasien = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+      $dokter_perujuk = $this->db('periksa_lab')
+        ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->group('no_rawat')
+        ->oneArray();
+      $rows_periksa_lab = $this->db('periksa_lab')
+      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->toArray();
+
+      $periksa_lab = [];
+      $jumlah_total_lab = 0;
+      $no_lab = 1;
+      foreach ($rows_periksa_lab as $row) {
+        $jumlah_total_lab += $row['biaya'];
+        $row['nomor'] = $no_lab++;
+        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+          ->toArray();
+        $periksa_lab[] = $row;
+      }
+      echo $this->draw('cetakhasil.html', [
+        'periksa_lab' => $periksa_lab,
+        'jumlah_total_lab' => $jumlah_total_lab,
+        'qrCode' => $qrCode,
+        'pj_lab' => $pj_lab['nama'],
+        'dokter_perujuk' => $dokter_perujuk['nama'],
+        'pasien' => $pasien,
+        'no_rawat' => $_GET['no_rawat']
+      ]);
+      exit();
+    }
     public function postHapus()
     {
       $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
@@ -324,7 +381,7 @@ class Admin extends AdminModule
 
       if($_POST['kat'] == 'laboratorium') {
         $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $this->db('periksa_lab')
+        $periksa_lab = $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $this->core->getUserInfo('username', null, true),
@@ -343,8 +400,59 @@ class Admin extends AdminModule
             'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
             'status' => 'Ralan'
           ]);
+        if($periksa_lab) {
+          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+          foreach ($template_laboratorium as $row) {
+            $this->db('detail_periksa_lab')
+              ->save([
+                'no_rawat' => $_POST['no_rawat'],
+                'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                'tgl_periksa' => $_POST['tgl_perawatan'],
+                'jam' => $_POST['jam_rawat'],
+                'id_template' => $row['id_template'],
+                'nilai' => '',
+                'nilai_rujukan' => $row['nilai_rujukan_ld'],
+                'keterangan' => '',
+                'bagian_rs' => $row['bagian_rs'],
+                'bhp' => $row['bhp'],
+                'bagian_perujuk' => $row['bagian_perujuk'],
+                'bagian_dokter' => $row['bagian_dokter'],
+                'bagian_laborat' => $row['bagian_laborat'],
+                'kso' => $row['kso'],
+                'menejemen' => $row['menejemen'],
+                'biaya_item' => $row['biaya_item']
+              ]);
+          }
+        }
       }
 
+      exit();
+    }
+
+    public function anySaveNilai()
+    {
+      $this->db('detail_periksa_lab')
+        ->where('no_rawat', $_REQUEST['no_rawat'])
+        ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
+        ->where('jam', $_REQUEST['jam'])
+        ->where('id_template', $_REQUEST['id_template'])
+        ->save([
+          'nilai' => $_REQUEST['value']
+        ]);
+
+      exit();
+    }
+
+    public function anySaveKeterangan()
+    {
+      $this->db('detail_periksa_lab')
+        ->where('no_rawat', $_REQUEST['no_rawat'])
+        ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
+        ->where('jam', $_REQUEST['jam'])
+        ->where('id_template', $_REQUEST['id_template'])
+        ->save([
+          'keterangan' => $_REQUEST['value']
+        ]);
       exit();
     }
 
@@ -374,6 +482,11 @@ class Admin extends AdminModule
       foreach ($rows_periksa_lab as $row) {
         $jumlah_total_lab += $row['biaya'];
         $row['nomor'] = $no_lab++;
+        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+          ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
+          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+          ->toArray();
         $periksa_lab[] = $row;
       }
 
@@ -453,6 +566,13 @@ class Admin extends AdminModule
       $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
       echo $_next_no_reg;
       exit();
+    }
+
+    public function convertNorawat($text)
+    {
+        setlocale(LC_ALL, 'en_EN');
+        $text = str_replace('/', '', trim($text));
+        return $text;
     }
 
     public function getJavascript()

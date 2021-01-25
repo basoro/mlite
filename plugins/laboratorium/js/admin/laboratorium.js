@@ -107,6 +107,13 @@ $("#display").on("click",".antrian", function(event){
   window.open(baseURL + '/laboratorium/antrian?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
+$("#rincian").on("click","#cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&t=' + mlite.token);
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
