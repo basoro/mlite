@@ -292,46 +292,55 @@ class Admin extends AdminModule
 
     public function getPendaftaran()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('pendaftaran.html');
     }
 
     public function getRawatJalan()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('rawatjalan.html');
     }
 
     public function getRawatInap()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('rawatinap.html');
     }
 
     public function getDokter()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('dokter.html');
     }
 
     public function getLaboratorium()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('laboratorium.html');
     }
 
     public function getRadiologi()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('radiologi.html');
     }
 
     public function getApotek()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('apotek.html');
     }
 
     public function getFarmasi()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('farmasi.html');
     }
 
     public function getKasir()
     {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('kasir.html');
     }
 
