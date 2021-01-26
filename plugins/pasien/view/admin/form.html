@@ -297,18 +297,18 @@
 
       $.get(url, function(data){
         var data = JSON.parse(data);
-        if(data.metaData.message=='OK') {
-          $("#error").hide();
-          $("#success").show();
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.peserta.nama);
+          $('.noKartu').val(data.response.peserta.noKartu);
+          $('.sex').val(data.response.peserta.sex);
+          $('.tgl_lahir').val(data.response.peserta.tglLahir);
+          $('.noTelepon').val(data.response.peserta.mr.noTelepon);
         } else {
-          $("#error").show();
-          $("#success").hide();
+          alert(json_obj[0].metaData.message);
         }
-        $('.nama').val(data.response.peserta.nama);
-        $('.noKartu').val(data.response.peserta.noKartu);
-        $('.sex').val(data.response.peserta.sex);
-        $('.tgl_lahir').val(data.response.peserta.tglLahir);
-        $('.noTelepon').val(data.response.peserta.mr.noTelepon);
       });
     }
     event.preventDefault();
@@ -323,18 +323,18 @@
 
       $.get(url, function(data){
         var data = JSON.parse(data);
-        if(data.metaData.message=='OK') {
-          $("#error").hide();
-          $("#success").show();
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.peserta.nama);
+          $('.no_ktp').val(data.response.peserta.nik);
+          $('.sex').val(data.response.peserta.sex);
+          $('.tgl_lahir').val(data.response.peserta.tglLahir);
+          $('.noTelepon').val(data.response.peserta.mr.noTelepon);
         } else {
-          $("#error").show();
-          $("#success").hide();
+          alert(json_obj[0].metaData.message);
         }
-        $('.nama').val(data.response.peserta.nama);
-        $('.no_ktp').val(data.response.peserta.nik);
-        $('.sex').val(data.response.peserta.sex);
-        $('.tgl_lahir').val(data.response.peserta.tglLahir);
-        $('.noTelepon').val(data.response.peserta.mr.noTelepon);
       });
     }
     event.preventDefault();
