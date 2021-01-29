@@ -8,6 +8,7 @@
           <th>Spesialis</th>
           <th>Alamat</th>
           <th>Nomor SIP</th>
+          <th>QR Code</th>
         </tr>
       </thead>
       <tbody>
@@ -19,6 +20,7 @@
           <td>{$value.nm_sps}</td>
           <td>{$value.almt_tgl}</td>
           <td>{$value.no_ijn_praktek}</td>
+          <td><img src="{$value.qrCode}" width="100"></td>
         </tr>
         {/loop}
         {else}

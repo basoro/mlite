@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\Lib\QR_BarCode;
 
 class Dokter
 {
@@ -15,6 +16,8 @@ class Dokter
     public function getIndex()
     {
 
+      $qr = new QR_BarCode();
+
       $totalRecords = $this->db('dokter')
         ->select('kd_dokter')
         ->toArray();
@@ -23,12 +26,21 @@ class Dokter
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('dokter')
+      $rows = $this->db('dokter')
         ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
         ->desc('kd_dokter')
         ->limit(10)
         ->toArray();
-
+      $return['list'] = [];
+      foreach ($rows as $row) {
+        $qr->dokter($row['nm_dokter'], $row['kd_dokter'], $row['no_ijn_praktek']);
+        $qr->qrCode(180, UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+        $file_url = url().'/uploads/qrcode/dokter/'.$row['kd_dokter'].'.png';
+        $QR = imagecreatefrompng(UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+        imagepng($QR,UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+        $row['qrCode'] = $file_url;
+        $return['list'][] = $row;
+      }
       return $return;
 
     }
