@@ -67,67 +67,70 @@ $("#form").on("click", "#simpan", function(event){
     alert('Nomor rekam medis masih kosong!')
   }
 
-  if(nm_pasien == '') {
+  else if(nm_pasien == '') {
     alert('Nama pasien masih kosong!')
   }
 
-  if(nm_ibu == '') {
+  else if(nm_ibu == '') {
     alert('Nama ibu masih kosong!')
   }
 
-  if(tgl_lahir == '') {
+  else if(tgl_lahir == '') {
     alert('Tanggal lahir masih kosong!')
   }
 
-  if(jk == '') {
+  else if(jk == '') {
     alert('Jenis kelamin belum dipilih!')
   }
 
-  $.post(url,{
-    no_rkm_medis: no_rkm_medis,
-    nm_pasien: nm_pasien,
-    nm_ibu: nm_ibu,
-    tgl_lahir: tgl_lahir,
-    jk: jk,
-    gol_darah: gol_darah,
-    stts_nikah: stts_nikah,
-    agama: agama,
-    pekerjaan: pekerjaan,
-    no_ktp: no_ktp,
-    alamat: alamat,
-    no_tlp: no_tlp,
-    tgl_daftar: tgl_daftar,
-    email:email,
-    pnd: pnd,
-    keluarga: keluarga,
-    namakeluarga: namakeluarga,
-    kd_prop:kd_prop,
-    kd_kab:kd_kab,
-    kd_kec:kd_kec,
-    kd_kel:kd_kel,
-    nm_prop:nm_prop,
-    nm_kab:nm_kab,
-    nm_kec:nm_kec,
-    nm_kel:nm_kel,
-    kd_pj: kd_pj,
-    no_peserta: no_peserta
-  } ,function(data) {
-    if(data.status == 'success'){
-      $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
-      $("#form").hide();
-      $("#tutupform").val("Buka Form");
-      $("#tutupform").attr("id", "bukaform");
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    } else {
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Gagal menyimpan data pasien!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    }
-  });
+  else {
+    $.post(url,{
+      no_rkm_medis: no_rkm_medis,
+      nm_pasien: nm_pasien,
+      nm_ibu: nm_ibu,
+      tgl_lahir: tgl_lahir,
+      jk: jk,
+      gol_darah: gol_darah,
+      stts_nikah: stts_nikah,
+      agama: agama,
+      pekerjaan: pekerjaan,
+      no_ktp: no_ktp,
+      alamat: alamat,
+      no_tlp: no_tlp,
+      tgl_daftar: tgl_daftar,
+      email:email,
+      pnd: pnd,
+      keluarga: keluarga,
+      namakeluarga: namakeluarga,
+      kd_prop:kd_prop,
+      kd_kab:kd_kab,
+      kd_kec:kd_kec,
+      kd_kel:kd_kel,
+      nm_prop:nm_prop,
+      nm_kab:nm_kab,
+      nm_kec:nm_kec,
+      nm_kel:nm_kel,
+      kd_pj: kd_pj,
+      no_peserta: no_peserta
+    } ,function(data) {
+      if(data.status == 'success'){
+        $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
+        $("#form").hide();
+        $("#tutupform").val("Buka Form");
+        $("#tutupform").attr("id", "bukaform");
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      } else {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan data pasien!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
+    });
+  }
+
 });
 
 // ketika baris data diklik
