@@ -318,9 +318,9 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_lab = $this->db('pegawai')->where('nik', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
       $qr = new QR_BarCode();
-      $qr->text($pj_lab['nama']);
+      $qr->dokter($return['form']['nm_dokter'], $return['form']['kd_dokter'], $return['form']['no_ijn_praktek']);
       $qr->qrCode(180, UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
 
       $logo_url = url().'/'.$this->settings->get('settings.logo');
