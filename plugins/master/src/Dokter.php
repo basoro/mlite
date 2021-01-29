@@ -78,6 +78,7 @@ class Dokter
 
     public function anyDisplay()
     {
+        $qr = new QR_BarCode();
 
         $perpage = '10';
         $totalRecords = $this->db('dokter')
@@ -88,15 +89,26 @@ class Dokter
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('dokter')
+        $rows = $this->db('dokter')
           ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
           ->desc('kd_dokter')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
+        $return['list'] = [];
+        foreach ($rows as $row) {
+          $qr->dokter($row['nm_dokter'], $row['kd_dokter'], $row['no_ijn_praktek']);
+          $qr->qrCode(180, UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+          $file_url = url().'/uploads/qrcode/dokter/'.$row['kd_dokter'].'.png';
+          $QR = imagecreatefrompng(UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+          imagepng($QR,UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+          $row['qrCode'] = $file_url;
+          $return['list'][] = $row;
+        }
+
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('dokter')
+          $rows = $this->db('dokter')
             ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
             ->like('kd_dokter', '%'.$_POST['cari'].'%')
             ->orLike('nm_dokter', '%'.$_POST['cari'].'%')
@@ -104,17 +116,40 @@ class Dokter
             ->offset(0)
             ->limit($perpage)
             ->toArray();
+
+          $return['list'] = [];
+          foreach ($rows as $row) {
+            $qr->dokter($row['nm_dokter'], $row['kd_dokter'], $row['no_ijn_praktek']);
+            $qr->qrCode(180, UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            $file_url = url().'/uploads/qrcode/dokter/'.$row['kd_dokter'].'.png';
+            $QR = imagecreatefrompng(UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            imagepng($QR,UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            $row['qrCode'] = $file_url;
+            $return['list'][] = $row;
+          }
+
           $jumlah_data = count($return['list']);
           $jml_halaman = ceil($jumlah_data / $offset);
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('dokter')
+          $rows = $this->db('dokter')
             ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
             ->desc('kd_dokter')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
+          $return['list'] = [];
+          foreach ($rows as $row) {
+            $qr->dokter($row['nm_dokter'], $row['kd_dokter'], $row['no_ijn_praktek']);
+            $qr->qrCode(180, UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            $file_url = url().'/uploads/qrcode/dokter/'.$row['kd_dokter'].'.png';
+            $QR = imagecreatefrompng(UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            imagepng($QR,UPLOADS.'/qrcode/dokter/'.$row['kd_dokter'].'.png');
+            $row['qrCode'] = $file_url;
+            $return['list'][] = $row;
+          }
+
           $return['halaman'] = $_POST['halaman'];
         }
 
