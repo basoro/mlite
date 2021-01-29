@@ -78,15 +78,13 @@ $("#form").on("click", "#simpan", function(event){
   if(no_rawat == '') {
     alert('Nomor rawat masih kosong!')
   }
-
-  if(no_reg == '') {
+  else if(no_reg == '') {
     alert('Nomor antrian masih kosong!')
   }
-
-  if(no_rkm_medis == '') {
+  else if(no_rkm_medis == '') {
     alert('Data pasien rawat masih kosong! Silahkan pilih pasien.')
   }
-  if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
+  else if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
     bootbox.alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
   } else {
     $.post(url,{

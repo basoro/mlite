@@ -88,7 +88,7 @@
                     <h3 class="panel-title">Lain-lain</h3>
                 </div>
                 <div class="panel-body">
-                    {if: $settings.poliklinik}
+                    {if: $settings.master}
                     <div class="form-group">
                         <label>IGD</label>
                         <select name="igd" class="form-control" data-use-search="true">
@@ -130,6 +130,7 @@
                         </select>
                     </div>
                     {/if}
+                    {if: $settings.dokter_ralan_per_dokter}
                     <div class="form-group">
                          <label>Dokter Rawat Jalan</label>
                          <div class="radio">
@@ -141,6 +142,8 @@
                              </label>
                          </div>
                     </div>
+                    {/if}
+                    {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>
                         <input type="text" name="ppk_bpjs" class="form-control" value="{$settings.ppk_bpjs}" />
@@ -157,6 +160,7 @@
                         <label>Secret Key BPJS</label>
                         <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
                     </div>
+                    {/if}
                     <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />

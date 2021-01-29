@@ -19,6 +19,8 @@
     use Plugins\Master\Src\Penjab;
     use Plugins\Master\Src\GolonganBarang;
     use Plugins\Master\Src\IndustriFarmasi;
+    use Plugins\Master\Src\Jenis;
+    use Plugins\Master\Src\KategoriBarang;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -43,6 +45,8 @@
             $this->penjab = new Penjab();
             $this->golonganbarang = new GolonganBarang();
             $this->industrifarmasi = new IndustriFarmasi();
+            $this->jenis = new Jenis();
+            $this->kategoribarang = new KategoriBarang();
         }
 
         public function navigation()
@@ -66,7 +70,7 @@
                 'Penanggung Jawab' => 'penjab',
                 'Golongan Barang' => 'golonganbarang',
                 'Industri Farmasi' => 'industrifarmasi',
-                'Jenis Barang' => 'jenisbarang',
+                'Jenis Barang' => 'jenis',
                 'Kategori Barang' => 'kategoribarang',
                 'Kategori Penyakit' => 'kategoripenyakit',
                 'Kategori Perawatan' => 'kategoriperawatan',
@@ -108,7 +112,7 @@
             ['name' => 'Penanggung Jawab', 'url' => url([ADMIN, 'master', 'penjab']), 'icon' => 'cubes', 'desc' => 'Master penanggung jawab'],
             ['name' => 'Golongan Barang', 'url' => url([ADMIN, 'master', 'golonganbarang']), 'icon' => 'cubes', 'desc' => 'Master golongan barang'],
             ['name' => 'Industri Farmasi', 'url' => url([ADMIN, 'master', 'industrifarmasi']), 'icon' => 'cubes', 'desc' => 'Master industri farmasi'],
-            ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'jenisbarang']), 'icon' => 'cubes', 'desc' => 'Master jenis barang'],
+            ['name' => 'Jenis Barang', 'url' => url([ADMIN, 'master', 'jenis']), 'icon' => 'cubes', 'desc' => 'Master jenis barang'],
             ['name' => 'Kategori Barang', 'url' => url([ADMIN, 'master', 'kategoribarang']), 'icon' => 'cubes', 'desc' => 'Master kategori barang'],
             ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
             ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
@@ -925,6 +929,96 @@
             exit();
         }
         /* End IndustriFarmasi Section */
+
+        /* Start Jenis Section */
+        public function getJenis()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'jenisjs']), 'footer');
+          $return = $this->jenis->getIndex();
+          return $this->draw('jenis.html', [
+            'jenis' => $return
+          ]);
+
+        }
+
+        public function anyJenisForm()
+        {
+            $return = $this->jenis->anyForm();
+            echo $this->draw('jenis.form.html', ['jenis' => $return]);
+            exit();
+        }
+
+        public function anyJenisDisplay()
+        {
+            $return = $this->jenis->anyDisplay();
+            echo $this->draw('jenis.display.html', ['jenis' => $return]);
+            exit();
+        }
+
+        public function postJenisSave()
+        {
+          $this->jenis->postSave();
+          exit();
+        }
+
+        public function postJenisHapus()
+        {
+          $this->jenis->postHapus();
+          exit();
+        }
+
+        public function getJenisJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/jenis.js');
+            exit();
+        }
+        /* End Jenis Section */
+
+        /* Start KategoriBarang Section */
+        public function getKategoriBarang()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kategoribarangjs']), 'footer');
+          $return = $this->kategoribarang->getIndex();
+          return $this->draw('kategoribarang.html', [
+            'kategoribarang' => $return
+          ]);
+
+        }
+
+        public function anyKategoriBarangForm()
+        {
+            $return = $this->kategoribarang->anyForm();
+            echo $this->draw('kategoribarang.form.html', ['kategoribarang' => $return]);
+            exit();
+        }
+
+        public function anyKategoriBarangDisplay()
+        {
+            $return = $this->kategoribarang->anyDisplay();
+            echo $this->draw('kategoribarang.display.html', ['kategoribarang' => $return]);
+            exit();
+        }
+
+        public function postKategoriBarangSave()
+        {
+          $this->kategoribarang->postSave();
+          exit();
+        }
+
+        public function postKategoriBarangHapus()
+        {
+          $this->kategoribarang->postHapus();
+          exit();
+        }
+
+        public function getKategoriBarangJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kategoribarang.js');
+            exit();
+        }
+        /* End KategoriBarang Section */
 
         public function getCSS()
         {
