@@ -532,11 +532,11 @@ class Admin extends AdminModule
     public function getUserInfo($field, $id = null, $refresh = false)
     {
         if (!$id) {
-            $id = isset_or($_SESSION['opensimrs_user'], 0);
+            $id = isset_or($_SESSION['mlite_user'], 0);
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('lite_roles')->where('id', $id)->oneArray();
+            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
         }
 
         return self::$userCache[$field];
