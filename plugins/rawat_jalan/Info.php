@@ -6,7 +6,7 @@
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2021',
-        'icon'          =>  'user-plus',
+        'icon'          =>  'wheelchair',
         'install'       =>  function () use ($core) {
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `dokter` (
