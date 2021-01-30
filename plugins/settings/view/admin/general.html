@@ -135,10 +135,10 @@
                          <label>Dokter Rawat Jalan</label>
                          <div class="radio">
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="ya" {if: $settings.dokter_ralan_per_dokter == 'ya'}checked{/if} /> Per Dokter
+                                <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == true}checked{/if} /> Per Dokter
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="tidak" {if: $settings.dokter_ralan_per_dokter == 'tidak'}checked{/if} /> Per Klinik
+                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == false}checked{/if} /> Per Klinik
                              </label>
                          </div>
                     </div>
