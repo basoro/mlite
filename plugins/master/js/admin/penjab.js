@@ -25,7 +25,7 @@ $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var kd_pj = $('input:text[name=kd_pj]').val();
-  var png_jawab = $('input:text[name=nama_perusahaan]').val();
+  var png_jawab = $('input:text[name=png_jawab]').val();
   var nama_perusahaan = $('input:text[name=nama_perusahaan]').val();
   var alamat_asuransi = $('textarea[name=alamat_asuransi]').val();
   var no_telp = $('input:text[name=no_telp]').val();
