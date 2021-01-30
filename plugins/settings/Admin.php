@@ -55,7 +55,7 @@ class Admin extends AdminModule
           $settings['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $settings['dokter_ralan_per_dokter'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
+        $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [

@@ -130,15 +130,15 @@
                         </select>
                     </div>
                     {/if}
-                    {if: $settings.dokter_ralan_per_dokter}
+                    {if: $settings.rawat_jalan}
                     <div class="form-group">
                          <label>Dokter Rawat Jalan</label>
                          <div class="radio">
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == true}checked{/if} /> Per Dokter
+                                <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
                              </label>
                              <label class="radio-inline">
-                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == false}checked{/if} /> Per Klinik
+                                <input type="radio" name="dokter_ralan_per_dokter" value="false" {if: $settings.dokter_ralan_per_dokter == 'false'}checked{/if} /> Per Klinik
                              </label>
                          </div>
                     </div>
