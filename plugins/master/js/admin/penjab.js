@@ -39,8 +39,9 @@ $("#form").on("click", "#simpan", function(event){
     nama_perusahaan: nama_perusahaan,
     alamat_asuransi: alamat_asuransi,
     no_telp: no_telp,
-    attn: attn,
+    attn: attn
   } ,function(data) {
+    alert(data);
       $("#display").show().load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
@@ -81,7 +82,7 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kode_perusahaan: kode_perusahaan
+        kd_pj: kd_pj
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
