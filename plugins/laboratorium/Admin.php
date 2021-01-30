@@ -320,7 +320,7 @@ class Admin extends AdminModule
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
       $qr = new QR_BarCode();
-      $qr->dokter($return['form']['nm_dokter'], $return['form']['kd_dokter'], $return['form']['no_ijn_praktek']);
+      $qr->dokter($pj_lab['nm_dokter'], $pj_lab['kd_dokter'], $pj_lab['no_ijn_praktek']);
       $qr->qrCode(180, UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
 
       $logo_url = url().'/'.$this->settings->get('settings.logo');
@@ -363,7 +363,7 @@ class Admin extends AdminModule
         'periksa_lab' => $periksa_lab,
         'jumlah_total_lab' => $jumlah_total_lab,
         'qrCode' => $qrCode,
-        'pj_lab' => $pj_lab['nama'],
+        'pj_lab' => $pj_lab['nm_dokter'],
         'dokter_perujuk' => $dokter_perujuk['nama'],
         'pasien' => $pasien,
         'no_rawat' => $_GET['no_rawat']
