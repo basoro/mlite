@@ -3,7 +3,6 @@ namespace Plugins\Laboratorium;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
-use Systems\Lib\QR_BarCode;
 
 class Admin extends AdminModule
 {
@@ -319,15 +318,7 @@ class Admin extends AdminModule
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-      //$qr = new QR_BarCode();
-      //$qr->dokter($pj_lab['nm_dokter'], $pj_lab['kd_dokter'], $pj_lab['no_ijn_praktek']);
-      //$qr->qrCode(180, UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
-
       $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
-      //$QR = imagecreatefrompng(UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
-
-      //imagepng($QR,UPLOADS.'/qrcode/lab/'.$this->convertNorawat($_GET['no_rawat']).'.png');
-
       $qrCode = $file_url;
 
       $pasien = $this->db('reg_periksa')

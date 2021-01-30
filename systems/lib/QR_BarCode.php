@@ -92,6 +92,10 @@ class QR_BarCode
         $this->codeData = "SEP DETAIL:Nama:{$nm_pasien};NO RM:{$no_rkm_medis};NO RAWAT:{$no_rawat};NO SEP:{$no_sep};;";
     }
 
+    public function pegawai($nama = null, $nik = null) {
+        $this->codeData = "DETAIL PEGAWAI; NAMA: {$nama}; KODE:{$nik};;";
+    }
+
     public function dokter($nm_dokter = null, $kd_dokter = null, $no_sip = null) {
         $this->codeData = "DETAIL DOKTER; NAMA: {$nm_dokter}; KODE:{$kd_dokter}; NO SIP:{$no_sip};;";
     }
