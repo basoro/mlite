@@ -68,19 +68,17 @@ Pemasangan
   - Master Data
   - Pendaftaran Pasien
   - Rawat Jalan
-  - VClaim Request
-  - ICD 9 - 10 Request
   - Kepegawaian
   - Presensi
   - Profil
   - IGD
-  - Rawat Inap
-  - Dokter Ralan
   - Kasir Rawat Jalan
   - Apotek Ralan
+  - Dokter Ralan
   - Laboratorium
   - Radiologi
   - Farmasi
+  - ICD 9 - 10 Request
   - Dan seterusnya....
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Khanza LITE 2021 tidak akan berfungsi.
