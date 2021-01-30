@@ -218,7 +218,6 @@
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
-                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
              </tr>
              {loop: $value.pemeriksaan_ranap as $data}
                <tr>
@@ -235,23 +234,22 @@
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
                   <td valign="top">{$data.alergi}</td>
-                  <td valign="top">{$data.kesadaran}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
-                  <td valign="top" colspan="9"> : {$data.keluhan}</td>
+                  <td valign="top" colspan="8"> : {$data.keluhan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Objek</td>
-                  <td valign="top" colspan="9"> : {$data.pemeriksaan}</td>
+                  <td valign="top" colspan="8"> : {$data.pemeriksaan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Asesment</td>
-                  <td valign="top" colspan="9"> : {$data.penilaian}</td>
+                  <td valign="top" colspan="8"> : {$data.penilaian}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Plan</td>
-                  <td valign="top" colspan="9"> : {$data.rtl}</td>
+                  <td valign="top" colspan="8"> : {$data.rtl}</td>
                </tr>
              {/loop}
           </table>
