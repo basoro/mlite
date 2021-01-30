@@ -41,7 +41,6 @@ $("#form").on("click", "#simpan", function(event){
     no_telp: no_telp,
     attn: attn
   } ,function(data) {
-    alert(data);
       $("#display").show().load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
