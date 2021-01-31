@@ -67,7 +67,6 @@
           className: 'btn-primary',
           callback() {
             var hasil = $('#hasil').val();
-            alert(jam_periksa);
             //console.log(tgl_keluar);
             $.post(url, {
               no_rawat: no_rawat,
@@ -103,7 +102,6 @@
         fd.append('no_rawat',no_rawat);
         fd.append('tgl_periksa',tgl_periksa);
         fd.append('jam_periksa',jam_periksa);
-        console.log(jam_periksa);
         // AJAX request
         $.ajax({
           url: url,
@@ -114,7 +112,6 @@
           dataType: 'json',
           success: function(data)
           {
-            console.log(data);
               if(data.status == 'success')
               {
                   $('#preview').append("<img src='"+data.result+"' width='100' height='100' style='display: inline-block;'>");
