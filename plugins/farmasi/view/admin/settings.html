@@ -15,10 +15,26 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Depo IGD</label>
+                        <select name="farmasi[igd]" class="form-control">
+                          {loop: $settings.bangsal}
+                            <option value="{$value.kd_bangsal}" {if: $value.kd_bangsal == $settings.farmasi.igd}selected{/if}>{$value.nm_bangsal}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label>Depo Rawat Inap</label>
                         <select name="farmasi[deporanap]" class="form-control">
                           {loop: $settings.bangsal}
                             <option value="{$value.kd_bangsal}" {if: $value.kd_bangsal == $settings.farmasi.deporanap}selected{/if}>{$value.nm_bangsal}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Gudang Farmasi</label>
+                        <select name="farmasi[gudang]" class="form-control">
+                          {loop: $settings.bangsal}
+                            <option value="{$value.kd_bangsal}" {if: $value.kd_bangsal == $settings.farmasi.gudang}selected{/if}>{$value.nm_bangsal}</option>
                           {/loop}
                         </select>
                     </div>
