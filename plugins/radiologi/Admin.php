@@ -455,6 +455,78 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postSaveHasil()
+    {
+      $result = $this->db('hasil_radiologi')
+        ->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'tgl_periksa' => $_POST['tgl_periksa'],
+          'jam' => $_POST['jam_periksa'],
+          'hasil' => $_POST['hasil']
+        ]);
+      exit();
+    }
+    public function postUploadHasil()
+    {
+        header('Content-type: application/json');
+        $dir    = UPLOADS.'/pages';
+        $error    = null;
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        if (isset($_FILES['file']['tmp_name'])) {
+            $img = new \Systems\Lib\Image;
+
+            if ($img->load($_FILES['file']['tmp_name'])) {
+                $imgPath = $dir.'/'.time().'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $result = $this->db('gambar_radiologi')
+                  ->save([
+                    'no_rawat' => $_POST['no_rawat'],
+                    'tgl_periksa' => $_POST['tgl_periksa'],
+                    'jam' => $_POST['jam_periksa'],
+                    'lokasi_gambar' => $imgPath
+                  ]);
+                echo json_encode(['status' => 'success', 'result' => url($imgPath)]);
+            } else {
+                $error = "Upload gagal";
+            }
+
+            if ($error) {
+                echo json_encode(['status' => 'failure', 'result' => $error]);
+            }
+        }
+        exit();
+    }
+
+    public function postUploadHasil_()
+    {
+        // file name
+        $filename = $_FILES['file']['name'];
+
+        // Location
+        $location = UPLOADS.'/pages/'.$filename;
+
+        // file extension
+        $file_extension = pathinfo($location, PATHINFO_EXTENSION);
+        $file_extension = strtolower($file_extension);
+
+        // Valid image extensions
+        $image_ext = array("jpg","png","jpeg","gif");
+
+        $response = 0;
+        if(in_array($file_extension,$image_ext)){
+          // Upload file
+          if(move_uploaded_file($_FILES['file']['tmp_name'],$location)){
+            $response = $location;
+          }
+        }
+        echo $response;
+        exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
