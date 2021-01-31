@@ -122,7 +122,7 @@ class Admin extends AdminModule
         if($query) {
           $this->db('gudangbarang')
             ->where('kode_brng', $_POST['kode_brng'])
-            ->where('kd_bangsal', $_POST['kd_bangsal'])
+            ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
             ->save([
               'stok' => $get_gudangbarang['stok'] - $_POST['stok']
           ]);
@@ -178,7 +178,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
 
-          $this->db('riwayat_barang_medis')
+          $query2 = $this->db('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => '0',
@@ -196,6 +196,15 @@ class Admin extends AdminModule
             ]);
         }
         if($query) {
+          $this->db('gudangbarang')->save([
+            'kode_brng' => $_POST['kode_brng'],
+            'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+            'stok' => $stok - $_POST['stok'],
+            'no_batch' => '0',
+            'no_faktur' => '0'
+          ]);
+        }
+        if($query2) {
           $this->db('gudangbarang')->save([
             'kode_brng' => $_POST['kode_brng'],
             'kd_bangsal' => $_POST['kd_bangsal'],
