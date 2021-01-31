@@ -149,7 +149,7 @@ class Admin extends AdminModule
             $this->db('riwayat_barang_medis')
               ->save([
                 'kode_brng' => $_POST['kode_brng'],
-                'stok_awal' => $stok,
+                'stok_awal' => '',
                 'masuk' => $_POST['stok'],
                 'keluar' => '0',
                 'stok_akhir' => $_POST['stok'],
