@@ -32,7 +32,6 @@
   </table>
 </div>
 <script type="text/javascript">
-  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
   $("#rincian").on("click",".hasil_radiologi", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -77,7 +76,7 @@
               // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
               //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
               $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Set Stok telah disimpan!"+
+              "Hasil radiologi telah disimpan!"+
               "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
               "</div>").show();
             });
@@ -130,4 +129,5 @@
     event.stopPropagation();
     return false;
   });
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 </script>
