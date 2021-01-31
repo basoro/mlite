@@ -7,8 +7,8 @@
             <div class="panel-body">
                 <form method="post" id="update_form">
                     <div align="left" style="margin-bottom: 20px;">
-                        <input type="text" name="tanggal" id="keterangan" placeholder="Keterangan opname" value="" style="padding: 6px;border:2px #222 solid;">
-                        <input type="text" name="tanggal" id="tanggal" class="tanggal" placeholder="Tanggal opname" value="" style="padding: 6px;border:2px #222 solid;">
+                        <input type="text" id="keterangan" placeholder="Keterangan opname" value="" style="padding: 6px;border:2px #222 solid;">
+                        <input type="text" id="tanggal" class="tanggal" placeholder="Tanggal opname" value="" style="padding: 6px;border:2px #222 solid;">
                         <button type="submit" name="multiple_update" id="multiple_update" class="btn btn-primary mb-4">
                             <i class="fa fa-save"></i>  Simpan
                         </button>
@@ -117,11 +117,13 @@ $(document).ready(function(){
     $('#update_form').on('submit', function(event){
         event.preventDefault();
         if($('.check_box:checked').length > 0){
+            alert($(this).serialize());
             $.ajax({
                 url:"{?=url([ADMIN,'farmasi','opnameupdate'])?}",
                 method:"POST",
                 data:$(this).serialize(),
                 success:function(data){
+                    alert(data);
                     alert('Data stok opname berhasil diperbarui');
                     $('.dataTables').DataTable().clear().destroy();
                     fetch_data();

@@ -251,7 +251,7 @@ class Admin extends AdminModule
       for($count = 0; $count < count($kode_brng); $count++){
        $query = "UPDATE gudangbarang SET stok=? WHERE kode_brng=? AND kd_bangsal=?";
        $opname = $this->db()->pdo()->prepare($query);
-       $opname->execute([$stok[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+       $opname->execute([$real[$count], $kode_brng[$count], $kd_bangsal[$count]]);
        $selisih = $real[$count] - $stok[$count];
        $nomihilang = $selisih * $h_beli[$count];
        $lebih = 0;
