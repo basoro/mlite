@@ -61,21 +61,146 @@ class Admin extends AdminModule
     public function postSetStok()
     {
       if($this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
-        $this->db('gudangbarang')
+        $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
+        $query = $this->db('gudangbarang')
           ->where('kode_brng', $_POST['kode_brng'])
           ->where('kd_bangsal', $_POST['kd_bangsal'])
           ->save([
-            'stok' => $_POST['stok']
-          ]);
+            'stok' => $gudangbarang['stok'] + $_POST['stok']
+        ]);
+
+        if($query) {
+          $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
+          $stok = '0';
+          if($get_gudangbarang) {
+            $stok = $get_gudangbarang['stok'];
+          }
+          if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $stok,
+                'masuk' => $_POST['stok'],
+                'keluar' => '0',
+                'stok_akhir' => $stok + $_POST['stok'],
+                'posisi' => 'Pengadaan',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+          } else {
+
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $stok,
+                'masuk' => '0',
+                'keluar' => $_POST['stok'],
+                'stok_akhir' => $stok - $_POST['stok'],
+                'posisi' => 'Mutasi',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $gudangbarang['stok'],
+                'masuk' => $_POST['stok'],
+                'keluar' => '0',
+                'stok_akhir' => $gudangbarang['stok'] + $_POST['stok'],
+                'posisi' => 'Opname',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $_POST['kd_bangsal'],
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+          }
+        }
+
       } else {
-        $this->db('gudangbarang')->save([
+        $query = $this->db('gudangbarang')->save([
           'kode_brng' => $_POST['kode_brng'],
           'kd_bangsal' => $_POST['kd_bangsal'],
           'stok' => $_POST['stok'],
           'no_batch' => '0',
           'no_faktur' => '0'
         ]);
+
+        if($query) {
+          $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
+          $stok = '0';
+          if($get_gudangbarang) {
+            $stok = $get_gudangbarang['stok'];
+          }
+          if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $stok,
+                'masuk' => $_POST['stok'],
+                'keluar' => '0',
+                'stok_akhir' => $_POST['stok'],
+                'posisi' => 'Pengadaan',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+          } else {
+
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $stok,
+                'masuk' => '0',
+                'keluar' => $_POST['stok'],
+                'stok_akhir' => $stok - $_POST['stok'],
+                'posisi' => 'Mutasi',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+
+            $this->db('riwayat_barang_medis')
+              ->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'stok_awal' => $stok,
+                'masuk' => $_POST['stok'],
+                'keluar' => '0',
+                'stok_akhir' => $_POST['stok'],
+                'posisi' => 'Opname',
+                'tanggal' => date('Y-m-d'),
+                'jam' => date('H:i:s'),
+                'petugas' => $this->core->getUserInfo('fullname', null, true),
+                'kd_bangsal' => $_POST['kd_bangsal'],
+                'status' => 'Simpan',
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+          }
+        }
       }
+
       exit();
     }
 
