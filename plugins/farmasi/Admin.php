@@ -108,7 +108,7 @@ class Admin extends AdminModule
               'masuk' => $_POST['stok'],
               'keluar' => '0',
               'stok_akhir' => $gudangbarang['stok'] + $_POST['stok'],
-              'posisi' => 'Opname',
+              'posisi' => 'Mutasi',
               'tanggal' => date('Y-m-d'),
               'jam' => date('H:i:s'),
               'petugas' => $this->core->getUserInfo('fullname', null, true),
@@ -185,7 +185,7 @@ class Admin extends AdminModule
               'masuk' => $_POST['stok'],
               'keluar' => '0',
               'stok_akhir' => $_POST['stok'],
-              'posisi' => 'Opname',
+              'posisi' => 'Mutasi',
               'tanggal' => date('Y-m-d'),
               'jam' => date('H:i:s'),
               'petugas' => $this->core->getUserInfo('fullname', null, true),
@@ -252,6 +252,7 @@ class Admin extends AdminModule
        $query = "UPDATE gudangbarang SET stok=? WHERE kode_brng=? AND kd_bangsal=?";
        $opname = $this->db()->pdo()->prepare($query);
        $opname->execute([$real[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+
        $selisih = $real[$count] - $stok[$count];
        $nomihilang = $selisih * $h_beli[$count];
        $lebih = 0;
@@ -262,9 +263,11 @@ class Admin extends AdminModule
          $lebih = $stok[$count] - $real[$count];
          $nomilebih = $lebih * $h_beli[$count];
        }
+
        $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
        $opname2 = $this->db()->pdo()->prepare($query2);
        $opname2->execute();
+
       }
       exit();
     }
