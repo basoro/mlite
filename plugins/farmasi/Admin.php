@@ -63,6 +63,8 @@ class Admin extends AdminModule
       if($this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
 
         $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
+        $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
+
         if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
           $this->db('riwayat_barang_medis')
             ->save([
@@ -98,8 +100,6 @@ class Admin extends AdminModule
               'no_batch' => '0',
               'no_faktur' => '0'
             ]);
-
-          $gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
 
           $this->db('riwayat_barang_medis')
             ->save([
