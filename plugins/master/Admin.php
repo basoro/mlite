@@ -21,6 +21,7 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
+    use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -47,6 +48,7 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
+            $this->spesialis = new Spesialis();
         }
 
         public function navigation()
@@ -1019,6 +1021,51 @@
             exit();
         }
         /* End KategoriBarang Section */
+
+        /* Start Spesialis Section */
+        public function getSpesialis()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'spesialisjs']), 'footer');
+          $return = $this->spesialis->getIndex();
+          return $this->draw('spesialis.html', [
+            'spesialis' => $return
+          ]);
+
+        }
+
+        public function anySpesialisForm()
+        {
+            $return = $this->spesialis->anyForm();
+            echo $this->draw('spesialis.form.html', ['spesialis' => $return]);
+            exit();
+        }
+
+        public function anySpesialisDisplay()
+        {
+            $return = $this->spesialis->anyDisplay();
+            echo $this->draw('spesialis.display.html', ['spesialis' => $return]);
+            exit();
+        }
+
+        public function postSpesialisSave()
+        {
+          $this->spesialis->postSave();
+          exit();
+        }
+
+        public function postSpesialisHapus()
+        {
+          $this->spesialis->postHapus();
+          exit();
+        }
+
+        public function getSpesialisJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/spesialis.js');
+            exit();
+        }
+        /* End Spesialis Section */
 
         public function getCSS()
         {
