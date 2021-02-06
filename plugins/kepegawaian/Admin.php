@@ -138,7 +138,8 @@ class Admin extends AdminModule
         $row = $this->db('pegawai')->oneArray($id);
 
         if (!empty($row)) {
-
+            $this->assign['pegawai'] = $row;
+            $this->assign['petugas'] = $this->db('petugas')->where('nip',$row['nik'])->oneArray();
             $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'manage']);
 
             return $this->draw('view.html', ['kepegawaian' => $this->assign]);

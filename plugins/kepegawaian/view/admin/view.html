@@ -11,16 +11,16 @@
 										<div class="col-md-12 col-lg-9">
 												<div class="content-area">
 														<dl class="dl-horizontal no-margin">
-																<dt>NIP</dt><dd>197012051992032002</dd>
-																<dt>Tipe Pegawai</dt><dd>Tenaga Kependidikan</dd>
-																<dt>Nomor Kartu</dt><dd>F 335958</dd>
-																<dt>Nama</dt><dd>Afdalisma, SH., M.Pd.</dd>
-																<dt>Tempat Lahir</dt><dd>Padang</dd>
-																<dt>Tanggal Lahir</dt><dd>05 Desember 1970</dd>
-																<dt>Jenis Kelamin</dt><dd>Perempuan</dd>
-																<dt>Agama</dt><dd>Islam</dd>
-																<dt>Status Nikah</dt><dd>Menikah</dd>
-				                    </dl>
+																<dt>NIP</dt><dd>{?= $kepegawaian.pegawai.nik ?}</dd>
+																<dt>Tipe Pegawai</dt><dd>{?= $kepegawaian.pegawai.jbtn ?}</dd>
+																<dt>Nomor Kartu</dt><dd>{?= $kepegawaian.pegawai.no_ktp ?}</dd>
+																<dt>Nama</dt><dd>{?= $kepegawaian.pegawai.nama ?}</dd>
+																<dt>Tempat Lahir</dt><dd>{?= $kepegawaian.pegawai.tmp_lahir ?}</dd>
+																<dt>Tanggal Lahir</dt><dd>{?= $kepegawaian.pegawai.tgl_lahir ?}</dd>
+																<dt>Jenis Kelamin</dt><dd>{?= $kepegawaian.pegawai.jk ?}</dd>
+																<dt>Agama</dt><dd>{?= $kepegawaian.petugas.agama ?}</dd>
+																<dt>Status Nikah</dt><dd>{?= $kepegawaian.petugas.stts_nikah ?}</dd>
+				                    					</dl>
 												</div>
 										</div>
 								</div>
