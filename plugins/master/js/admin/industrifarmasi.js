@@ -3,7 +3,7 @@ $("#notif").hide();
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  $("#form").show().load(baseURL + '/master/penjabform?t=' + mlite.token);
+  $("#form").show().load(baseURL + '/master/industrifarmasiform?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
 });
@@ -24,29 +24,27 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var kd_pj = $('input:text[name=kd_pj]').val();
-  var png_jawab = $('input:text[name=png_jawab]').val();
-  var nama_perusahaan = $('input:text[name=nama_perusahaan]').val();
-  var alamat_asuransi = $('textarea[name=alamat_asuransi]').val();
+  var kode_industri = $('input:text[name=kode_industri]').val();
+  var nama_industri = $('input:text[name=nama_industri]').val();
+  var alamat = $('textarea[name=alamat]').val();
+  var kota = $('input:text[name=kota]').val();
   var no_telp = $('input:text[name=no_telp]').val();
-  var attn = $('input:text[name=attn]').val();
 
-  var url = baseURL + '/master/penjabsave?t=' + mlite.token;
+  var url = baseURL + '/master/industrifarmasisave?t=' + mlite.token;
 
   $.post(url,{
-    kd_pj: kd_pj,
-    png_jawab: png_jawab,
-    nama_perusahaan: nama_perusahaan,
-    alamat_asuransi: alamat_asuransi,
-    no_telp: no_telp,
-    attn: attn
+    kode_industri: kode_industri,
+    nama_industri: nama_industri,
+    alamat: alamat,
+    kota: kota,
+    no_telp: no_telp
   } ,function(data) {
-      $("#display").show().load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+      $("#display").show().load(baseURL + '/master/industrifarmasidisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data penanggung jawab telah disimpan!"+
+      "Data bahasa telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -56,11 +54,10 @@ $("#form").on("click", "#simpan", function(event){
 $("#display").on("click", ".edit", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/penjabform?t=' + mlite.token;
-  var kd_pj  = $(this).attr("data-kd_pj");
+  var url    = baseURL + '/master/industrifarmasiform?t=' + mlite.token;
+  var kode_industri  = $(this).attr("data-kode_industri");
 
-  $.post(url, {kd_pj: kd_pj} ,function(data) {
-    console.log(data);
+  $.post(url, {kode_industri: kode_industri} ,function(data) {
     // tampilkan data
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
@@ -72,8 +69,8 @@ $("#display").on("click", ".edit", function(event){
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/master/penjabhapus?t=' + mlite.token;
-  var kd_pj = $('input:text[name=kd_pj]').val();
+  var url = baseURL + '/master/industrifarmasihapus?t=' + mlite.token;
+  var kode_industri = $('input:text[name=kode_industri]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -81,15 +78,15 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kd_pj: kd_pj
+        kode_industri: kode_industri
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
         $("#tutupform").val("Buka Form");
         $("#tutupform").attr("id", "bukaform");
-        $("#display").load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+        $("#display").load(baseURL + '/master/industrifarmasidisplay?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data penanggung jawab telah dihapus!"+
+        "Data bahasa telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -100,7 +97,7 @@ $("#form").on("click","#hapus", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=cari]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/master/penjabdisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/industrifarmasidisplay?t=' + mlite.token;
   var cari = $('input:text[name=cari]').val();
 
   if(cari!="") {
@@ -109,7 +106,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+      $("#display").load(baseURL + '/master/industrifarmasidisplay?t=' + mlite.token);
   }
 
 });
@@ -119,7 +116,7 @@ $('input:text[name=cari]').on('input',function(e){
 $("#display").on("click", ".halaman",function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/penjabdisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/industrifarmasidisplay?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
 
   $.post(url, {halaman: kd_hal} ,function(data) {
@@ -131,10 +128,9 @@ $("#display").on("click", ".halaman",function(event){
 // end halaman
 
 function bersih(){
-  $('input:text[name=kd_pj]').val("").removeAttr('disabled');
-  $('input:text[name=png_jawab]').val("");
-  $('textarea[name=alamat_asuransi]').val("");
-  $('input:text[name=nama_perusahaan]').val("");
+  $('input:text[name=kode_industri]').val("").removeAttr('disabled');
+  $('input:text[name=nama_industri]').val("");
+  $('textarea[name=alamat]').val("");
+  $('input:text[name=kota]').val("");
   $('input:text[name=no_telp]').val("");
-  $('input:text[name=attn]').val("");
 }

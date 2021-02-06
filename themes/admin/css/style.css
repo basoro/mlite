@@ -844,3 +844,16 @@ select[multiple].form-control {
 .hidden_navbar_brand {
   display: none;
 }
+
+ul.nav.nav-tabs {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
+ul.nav.nav-tabs li {
+    display: inline-block;
+    float: none;
+}
+ul.nav.nav-tabs>li.active>a {
+    background-color: #ddd;
+}

@@ -252,12 +252,14 @@ class Admin extends AdminModule
 
     public function postSaveKeluar()
     {
+      $kamar = $this->db('kamar')->where('kd_kamar', $_POST['kd_kamar'])->oneArray();
       $this->db('kamar_inap')->where('no_rawat', $_POST['no_rawat'])->save([
         'stts_pulang' => $_POST['stts_pulang'],
         'lama' => $_POST['lama'],
         'tgl_keluar' => $_POST['tgl_keluar'],
         'jam_keluar' => $_POST['jam_keluar'],
-        'diagnosa_akhir' => $_POST['diagnosa_akhir']
+        'diagnosa_akhir' => $_POST['diagnosa_akhir'],
+        'ttl_biaya' => $kamar['trf_kamar']*$_POST['lama']
       ]);
       exit();
     }

@@ -17,7 +17,7 @@
           <div class="form-group">
             <label for="nm_pasien" class="col-sm-3 control-label">Nama</label>
             <div class="col-sm-9">
-              <input type="text" name="nm_pasien" class="form-control" value="{$pasien.nm_pasien}">
+              <input type="text" name="nm_pasien" class="form-control nama" value="{$pasien.nm_pasien}">
             </div>
           </div>
           <div class="form-group">
@@ -90,7 +90,7 @@
             </div>
             <label for="no_peserta" class="col-sm-2 control-label">No. Peserta</label>
             <div class="col-sm-3">
-              <input type="text" name="no_peserta" class="form-control" value="{$pasien.no_peserta}">
+              <input type="text" name="no_peserta" id="no_peserta" class="form-control noKartu" value="{$pasien.no_peserta}">
             </div>
           </div>
         </div>
@@ -118,7 +118,7 @@
           <div class="form-group">
             <label for="no_ktp" class="col-sm-3 control-label">Nomor KTP</label>
             <div class="col-sm-9">
-              <input type="text" name="no_ktp" class="form-control" value="{$pasien.no_ktp}">
+              <input type="text" name="no_ktp" id="no_ktp" class="form-control no_ktp" value="{$pasien.no_ktp}">
             </div>
           </div>
           <div class="form-group">
@@ -158,7 +158,7 @@
           <div class="form-group">
             <label for="telepon" class="col-sm-3 control-label">Telepon</label>
             <div class="col-sm-4">
-              <input type="text" name="no_tlp" class="form-control" value="{$pasien.no_tlp}">
+              <input type="text" name="no_tlp" class="form-control noTelepon" value="{$pasien.no_tlp}">
             </div>
             <label for="email" class="col-sm-1 control-label">Email</label>
             <div class="col-sm-4">
@@ -286,3 +286,57 @@
   });
 
  </script>
+<script>
+  $("#no_ktp").on('keyup', function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl = $('input:text[name=tgl_daftar]').val();
+    var no_ktp = $('input:text[name=no_ktp]').val();
+    var url = baseURL + '/vclaim/bynik/' + no_ktp + '/' + tgl + '?t=' + mlite.token;
+
+    if (event.key === 'Enter' || event.keyCode === 13) {
+
+      $.get(url, function(data){
+        var data = JSON.parse(data);
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.peserta.nama);
+          $('.noKartu').val(data.response.peserta.noKartu);
+          $('.sex').val(data.response.peserta.sex);
+          $('.tgl_lahir').val(data.response.peserta.tglLahir);
+          $('.noTelepon').val(data.response.peserta.mr.noTelepon);
+        } else {
+          alert(json_obj[0].metaData.message);
+        }
+      });
+    }
+    event.preventDefault();
+  });
+  $("#no_peserta").on('keyup', function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl = $('input:text[name=tgl_daftar]').val();
+    var no_peserta = $('input:text[name=no_peserta]').val();
+    var url = baseURL + '/vclaim/bynokartu/' + no_peserta + '/' + tgl + '?t=' + mlite.token;
+
+    if (event.key === 'Enter' || event.keyCode === 13) {
+
+      $.get(url, function(data){
+        var data = JSON.parse(data);
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.peserta.nama);
+          $('.no_ktp').val(data.response.peserta.nik);
+          $('.sex').val(data.response.peserta.sex);
+          $('.tgl_lahir').val(data.response.peserta.tglLahir);
+          $('.noTelepon').val(data.response.peserta.mr.noTelepon);
+        } else {
+          alert(json_obj[0].metaData.message);
+        }
+      });
+    }
+    event.preventDefault();
+  });
+</script>

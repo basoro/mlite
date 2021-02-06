@@ -264,6 +264,15 @@ class Admin extends AdminModule
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->save($_POST);
       }
+
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        echo json_encode($data);
+      }
+
       exit();
     }
 

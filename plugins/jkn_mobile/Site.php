@@ -202,8 +202,8 @@ class Site extends SiteModule
             $cek_kouta->execute();
             $cek_kouta = $cek_kouta->fetch();
 
-            $cek_referensi = $this->db('lite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
-            $cek_referensi_noka = $this->db('lite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
+            $cek_referensi = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
+            $cek_referensi_noka = $this->db('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if($cek_referensi > 0) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
@@ -292,7 +292,7 @@ class Site extends SiteModule
                         $jenisantrean = 1;
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
-                        $query = $this->db('lite_antrian_loket')->save([
+                        $query = $this->db('mlite_antrian_loket')->save([
                           'kd' => NULL,
                           'type' => 'Loket',
                           'noantrian' => $no_reg,
@@ -416,7 +416,7 @@ class Site extends SiteModule
                             )
                         );
                         if(!empty($decode['nomorreferensi'])) {
-                          $this->db('lite_antrian_referensi')->save([
+                          $this->db('mlite_antrian_referensi')->save([
                               'tanggal_periksa' => $decode['tanggalperiksa'],
                               'nomor_kartu' => $decode['nomorkartu'],
                               'nomor_referensi' => $decode['nomorreferensi']

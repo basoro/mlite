@@ -61,10 +61,8 @@ $("#form").on("click","#no_reg", function(event){
   });
 });
 
-// tombol  diklik
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
   var no_reg = $('input:text[name=no_reg]').val();
   var tgl_registrasi = $('#tgl_registrasi').val();
@@ -77,8 +75,17 @@ $("#form").on("click", "#simpan", function(event){
 
   var url = baseURL + '/rawat_jalan/save?t=' + mlite.token;
 
-  if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
-    bootbox.alert("Isian ada yang kosong. Atau ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
+  if(no_rawat == '') {
+    alert('Nomor rawat masih kosong!')
+  }
+  else if(no_reg == '') {
+    alert('Nomor antrian masih kosong!')
+  }
+  else if(no_rkm_medis == '') {
+    alert('Data pasien rawat masih kosong! Silahkan pilih pasien.')
+  }
+  else if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
+    bootbox.alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
   } else {
     $.post(url,{
       no_rawat: no_rawat,
@@ -90,16 +97,22 @@ $("#form").on("click", "#simpan", function(event){
       kd_dokter: kd_dokter,
       kd_pj: kd_pj,
       stts_daftar: stts_daftar
-    } ,function(data) {
+    },function(data) {
       $("#display").show().load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
       bersih();
       $("#status_pendaftaran").hide();
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pasien telah disimpan!"+
+      "Data pendaftaran rawat jalan telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    }).error(function () {
+      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Gagal menyimpan data pendaftaran rawat jalan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
     });
   }
+  event.preventDefault();
 });
 
 $("#display").on("click",".antrian", function(event){

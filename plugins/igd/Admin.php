@@ -283,6 +283,14 @@ class Admin extends AdminModule
           'kd_pj' => $_POST['kd_pj']
         ]);
       }
+
+      if($query) {
+        $data['status'] = 'success';
+        echo json_encode($data);
+      } else {
+        $data['status'] = 'error';
+        echo json_encode($data);
+      }
       exit();
     }
 

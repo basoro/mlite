@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\Lib\QR_BarCode;
 
 class Dokter
 {
@@ -35,6 +36,7 @@ class Dokter
 
     public function anyForm()
     {
+        $qr = new QR_BarCode();
         $return['pegawai'] = $this->db('pegawai')->toArray();
         $return['gol_drh'] = ['-','A','B','O','AB'];
         $return['agama'] = ['ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN'];
@@ -42,6 +44,12 @@ class Dokter
         $return['spesialis'] = $this->db('spesialis')->toArray();
         if (isset($_POST['kd_dokter'])){
           $return['form'] = $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
+          $qr->dokter($return['form']['nm_dokter'], $return['form']['kd_dokter'], $return['form']['no_ijn_praktek']);
+          $qr->qrCode(180, UPLOADS.'/qrcode/dokter/'.$return['form']['kd_dokter'].'.png');
+          $file_url = url().'/uploads/qrcode/dokter/'.$return['form']['kd_dokter'].'.png';
+          $QR = imagecreatefrompng(UPLOADS.'/qrcode/dokter/'.$return['form']['kd_dokter'].'.png');
+          imagepng($QR,UPLOADS.'/qrcode/dokter/'.$return['form']['kd_dokter'].'.png');
+          $return['form']['qrCode'] = $file_url;
         } else {
           $return['form'] = [
             'kd_dokter' => '',
@@ -57,7 +65,8 @@ class Dokter
             'kd_sps' => '',
             'alumni' => '',
             'no_ijn_praktek' => '',
-            'status' => ''
+            'status' => '',
+            'qrCode' => ''
           ];
         }
 

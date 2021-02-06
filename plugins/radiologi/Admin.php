@@ -455,6 +455,52 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postSaveHasil()
+    {
+      $result = $this->db('hasil_radiologi')
+        ->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'tgl_periksa' => $_POST['tgl_periksa'],
+          'jam' => $_POST['jam_periksa'],
+          'hasil' => $_POST['hasil']
+        ]);
+      exit();
+    }
+    public function postUploadHasil()
+    {
+        header('Content-type: application/json');
+        $dir    = UPLOADS.'/pages';
+        $error    = null;
+
+        if (!file_exists($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        if (isset($_FILES['file']['tmp_name'])) {
+            $img = new \Systems\Lib\Image;
+
+            if ($img->load($_FILES['file']['tmp_name'])) {
+                $imgPath = $dir.'/'.time().'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $result = $this->db('gambar_radiologi')
+                  ->save([
+                    'no_rawat' => $_POST['no_rawat'],
+                    'tgl_periksa' => $_POST['tgl_periksa'],
+                    'jam' => $_POST['jam_periksa'],
+                    'lokasi_gambar' => url($imgPath)
+                  ]);
+                echo json_encode(['status' => 'success', 'result' => url($imgPath)]);
+            } else {
+                $error = "Upload gagal";
+            }
+
+            if ($error) {
+                echo json_encode(['status' => 'failure', 'result' => $error]);
+            }
+        }
+        exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

@@ -47,15 +47,15 @@ class Admin extends AdminModule
     public function getGeneral()
     {
         $settings = $this->settings('settings');
-        $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'poliklinik'");
-        $check_table->execute();
-        $check_table = $check_table->fetch();
+        $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
-        if($check_table) {
+        if($settings['master']) {
           $settings['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
           $settings['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
         }
+        $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [

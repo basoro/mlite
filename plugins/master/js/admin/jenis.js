@@ -3,7 +3,7 @@ $("#notif").hide();
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  $("#form").show().load(baseURL + '/master/penjabform?t=' + mlite.token);
+  $("#form").show().load(baseURL + '/master/jenisform?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
 });
@@ -24,29 +24,23 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var kd_pj = $('input:text[name=kd_pj]').val();
-  var png_jawab = $('input:text[name=png_jawab]').val();
-  var nama_perusahaan = $('input:text[name=nama_perusahaan]').val();
-  var alamat_asuransi = $('textarea[name=alamat_asuransi]').val();
-  var no_telp = $('input:text[name=no_telp]').val();
-  var attn = $('input:text[name=attn]').val();
+  var kdjns = $('input:text[name=kdjns]').val();
+  var nama = $('input:text[name=nama]').val();
+  var keterangan = $('input:text[name=keterangan]').val();
 
-  var url = baseURL + '/master/penjabsave?t=' + mlite.token;
+  var url = baseURL + '/master/jenissave?t=' + mlite.token;
 
   $.post(url,{
-    kd_pj: kd_pj,
-    png_jawab: png_jawab,
-    nama_perusahaan: nama_perusahaan,
-    alamat_asuransi: alamat_asuransi,
-    no_telp: no_telp,
-    attn: attn
+    kdjns: kdjns,
+    nama: nama,
+    keterangan: keterangan
   } ,function(data) {
-      $("#display").show().load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+      $("#display").show().load(baseURL + '/master/jenisdisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data penanggung jawab telah disimpan!"+
+      "Data telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -56,11 +50,10 @@ $("#form").on("click", "#simpan", function(event){
 $("#display").on("click", ".edit", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/penjabform?t=' + mlite.token;
-  var kd_pj  = $(this).attr("data-kd_pj");
+  var url    = baseURL + '/master/jenisform?t=' + mlite.token;
+  var kdjns  = $(this).attr("data-kdjns");
 
-  $.post(url, {kd_pj: kd_pj} ,function(data) {
-    console.log(data);
+  $.post(url, {kdjns: kdjns} ,function(data) {
     // tampilkan data
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
@@ -72,8 +65,8 @@ $("#display").on("click", ".edit", function(event){
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/master/penjabhapus?t=' + mlite.token;
-  var kd_pj = $('input:text[name=kd_pj]').val();
+  var url = baseURL + '/master/jenishapus?t=' + mlite.token;
+  var kdjns = $('input:text[name=kdjns]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -81,15 +74,15 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kd_pj: kd_pj
+        kdjns: kdjns
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
         $("#tutupform").val("Buka Form");
         $("#tutupform").attr("id", "bukaform");
-        $("#display").load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+        $("#display").load(baseURL + '/master/jenisdisplay?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data penanggung jawab telah dihapus!"+
+        "Data telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -100,7 +93,7 @@ $("#form").on("click","#hapus", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=cari]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/master/penjabdisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/jenisdisplay?t=' + mlite.token;
   var cari = $('input:text[name=cari]').val();
 
   if(cari!="") {
@@ -109,7 +102,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
+      $("#display").load(baseURL + '/master/jenisdisplay?t=' + mlite.token);
   }
 
 });
@@ -119,7 +112,7 @@ $('input:text[name=cari]').on('input',function(e){
 $("#display").on("click", ".halaman",function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/penjabdisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/jenisdisplay?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
 
   $.post(url, {halaman: kd_hal} ,function(data) {
@@ -131,10 +124,7 @@ $("#display").on("click", ".halaman",function(event){
 // end halaman
 
 function bersih(){
-  $('input:text[name=kd_pj]').val("").removeAttr('disabled');
-  $('input:text[name=png_jawab]').val("");
-  $('textarea[name=alamat_asuransi]').val("");
-  $('input:text[name=nama_perusahaan]').val("");
-  $('input:text[name=no_telp]').val("");
-  $('input:text[name=attn]').val("");
+  $('input:text[name=kdjns]').val("").removeAttr('disabled');
+  $('input:text[name=nama]').val("");
+  $('input:text[name=keterangan]').val("");
 }

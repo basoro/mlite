@@ -217,8 +217,7 @@
                 <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
-                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
+                <td valign="top" width="9%" bgcolor="#eee" colspan="2">Alergi</td>
              </tr>
              {loop: $value.pemeriksaan_ranap as $data}
                <tr>
@@ -234,8 +233,7 @@
                   <td valign="top">{$data.tinggi}</td>
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
-                  <td valign="top">{$data.alergi}</td>
-                  <td valign="top">{$data.kesadaran}</td>
+                  <td valign="top" colspan="2">{$data.alergi}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
