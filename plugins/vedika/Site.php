@@ -129,16 +129,11 @@ class Site extends SiteModule
       $total = $total;
       $this->tpl->set('total', $total);
 
-      $instansi['logo'] = $this->core->getSettings('logo');
-      $instansi['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $instansi['alamat_instansi'] = $this->core->getSettings('alamat_instansi');
-      $instansi['kabupaten'] = $this->core->getSettings('kabupaten');
-      $instansi['propinsi'] = $this->core->getSettings('propinsi');
-      $instansi['kontak'] = $this->core->getSettings('kontak');
-      $instansi['email'] = $this->core->getSettings('email');
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
       $this->tpl->set('billing', $rows);
-      $this->tpl->set('instansi', $instansi);
+      //$this->tpl->set('instansi', $instansi);
 
       $print_sep = array();
       if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
@@ -146,7 +141,7 @@ class Site extends SiteModule
         $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
         $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       }
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
+
       $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
       $this->tpl->set('print_sep', $print_sep);
 
@@ -187,7 +182,7 @@ class Site extends SiteModule
         ->asc('jam_rawat')
         ->toArray();
       $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->asc('tgl_perawatan')
         ->asc('jam_rawat')
         ->toArray();
