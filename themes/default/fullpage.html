@@ -1,0 +1,30 @@
+{template: inc/header.html}
+
+<!-- Page Header -->
+<header class="intro-header" style="background: #222;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="site-heading">
+                    <h1>{$page.title}</h1>
+                    <hr class="small">
+                    <span class="subheading">{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+            {if: $mlite.notify}
+            <div id="notify" class="alert alert-{$mlite.notify.type}">{$mlite.notify.text}</div>
+            {/if}
+            {$page.content}
+        </div>
+    </div>
+</div>
+
+{template: inc/footer.html}

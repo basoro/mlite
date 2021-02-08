@@ -13,6 +13,7 @@ class Site extends SiteModule
         $this->route('vedika/css', 'getCss');
         $this->route('vedika/javascript', 'getJavascript');
         $this->route('vedika/pdf/(:str)', 'getPDF');
+        $this->route('vedika/catatan/(:str)', 'getCatatan');
     }
 
     public function getIndex()
@@ -23,7 +24,7 @@ class Site extends SiteModule
             'content' => $this->_getManage($page = 1)
         ];
 
-        $this->setTemplate('index.html');
+        $this->setTemplate('fullpage.html');
         $this->tpl->set('page', $page);
     }
 
@@ -75,15 +76,16 @@ class Site extends SiteModule
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['sepURL'] = url(['vedika', 'sep', $row['no_sep']]);
-              $row['pdfURL'] = url(['vedika', 'pdf', $this->$this->revertNorawat($row['no_rawat'])]);
+              $row['pdfURL'] = url(['vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['catatanURL'] = url(['vedika', 'catatan', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url(['vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
 
-      $this->assign['vedika_username'] = $this->options->get('vedika.username');
-      $this->assign['vedika_password'] = $this->options->get('vedika.password');
+      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
+      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
 
       $this->assign['searchUrl'] =  url(['vedika', 'manage', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['vedika' => $this->assign]);
@@ -201,6 +203,12 @@ class Site extends SiteModule
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
       echo $this->tpl->draw(MODULES.'/vedika/view/pdf.html', true);
+      exit();
+    }
+
+    public function getCatatan($id)
+    {
+      echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
       exit();
     }
 
