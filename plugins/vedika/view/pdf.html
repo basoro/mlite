@@ -12,6 +12,10 @@
       .col-md-4 { font-size: 18px;}
       .col-md-8 { font-size: 18px;}
     </style>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 </head>
 <body>
   <fieldset style="page-break-before:always;">
@@ -218,6 +222,7 @@
                     <small><em><font size="1px">{$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}</font></em></small>
                   </div>
                   <div class="col-md-6" style="left: 90px;">
+                    <div id="qrcodeCanvas" style="margin-top:-40px;"></div>
                     ----------------
                   </div>
                 </div>
@@ -655,4 +660,9 @@
         </table>
   </fieldset>
 </body>
+<script>
+	jQuery('#qrcodeCanvas').qrcode({
+		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+	});
+</script>
 </html>
