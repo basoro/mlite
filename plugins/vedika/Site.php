@@ -214,6 +214,8 @@ class Site extends SiteModule
       $apikey = '82b115a1-22c8-4f9c-b2a9-b9e763243ed9';
       $value = url().'/vedika/pdf/'.$id; // can aso be a url, starting with http..
 
+      $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
+
       // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
       $result = file_get_contents("http://api.html2pdfrocket.com/pdf?apikey=" . urlencode($apikey) . "&value=" . urlencode($value));
 
@@ -231,7 +233,7 @@ class Site extends SiteModule
 
       // Make the file a downloadable attachment - comment this out to show it directly inside the
       // web browser.  Note that you can give the file any name you want, e.g. alias-name.pdf below:
-      header('Content-Disposition: attachment; filename=' . 'alias-name.pdf' );
+      header('Content-Disposition: attachment; filename=' . 'e-vedika-'.$bridging_sep['tglsep'].'-'.$bridging_sep['no_sep'].'.pdf' );
 
       // Stream PDF to user
       echo $result;
