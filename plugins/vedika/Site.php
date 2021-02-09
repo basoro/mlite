@@ -13,6 +13,7 @@ class Site extends SiteModule
         $this->route('vedika/css', 'getCss');
         $this->route('vedika/javascript', 'getJavascript');
         $this->route('vedika/pdf/(:str)', 'getPDF');
+        $this->route('vedika/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('vedika/catatan/(:str)', 'getCatatan');
     }
 
@@ -77,6 +78,7 @@ class Site extends SiteModule
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['sepURL'] = url(['vedika', 'sep', $row['no_sep']]);
               $row['pdfURL'] = url(['vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['downloadURL'] = url(['vedika', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
               $row['catatanURL'] = url(['vedika', 'catatan', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url(['vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
@@ -204,6 +206,35 @@ class Site extends SiteModule
     public function getCatatan($id)
     {
       echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
+      exit();
+    }
+
+    public function getDownloadPDF($id)
+    {
+      $apikey = '82b115a1-22c8-4f9c-b2a9-b9e763243ed9';
+      $value = url().'/vedika/pdf/'.$id; // can aso be a url, starting with http..
+
+      // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
+      $result = file_get_contents("http://api.html2pdfrocket.com/pdf?apikey=" . urlencode($apikey) . "&value=" . urlencode($value));
+
+      // Save to root folder in website
+      //file_put_contents('mypdf-1.pdf', $result);
+
+      // Output headers so that the file is downloaded rather than displayed
+      // Remember that header() must be called before any actual output is sent
+      header('Content-Description: File Transfer');
+      header('Content-Type: application/pdf');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+      header('Content-Length: ' . strlen($result));
+
+      // Make the file a downloadable attachment - comment this out to show it directly inside the
+      // web browser.  Note that you can give the file any name you want, e.g. alias-name.pdf below:
+      header('Content-Disposition: attachment; filename=' . 'alias-name.pdf' );
+
+      // Stream PDF to user
+      echo $result;
       exit();
     }
 

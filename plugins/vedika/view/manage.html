@@ -46,9 +46,9 @@
       								{loop: $vedika.list}
       								<tr>
                         <td>
-                          <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
-                            <i class="fa fa-folder-open"></i> {$value.no_sep}
-      										</a><br>
+                          <span class="btn btn-primary btn-xs">
+                            <a href="{$value.downloadURL}" target="_blank"><i class="fa fa-download"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.no_sep}</a>
+      										</span><br>
                           <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
                             <i class="fa fa-folder-open"></i> Catatan Verifikator
       										</a>
