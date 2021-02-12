@@ -216,6 +216,154 @@ abstract class Main
         return self::$userCache[$field];
     }
 
+    public function getEnum($table_name, $column_name) {
+      $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
+      $result->execute();
+      $result = $result->fetch();
+      $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
+      return $result;
+    }
+
+    public function getPegawaiInfo($field, $nik)
+    {
+        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
+        return $row[$field];
+    }
+
+    public function getPasienInfo($field, $no_rkm_medis)
+    {
+        $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+        return $row[$field];
+    }
+
+    public function getRegPeriksaInfo($field, $no_rawat)
+    {
+        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
+    }
+
+    public function setNoRM()
+    {
+        $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
+        $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
+        $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
+        return $next_no_rm;
+    }
+
+    public function setNoRawat()
+    {
+        $date = date('Y-m-d');
+        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
+        $last_no_rawat->execute();
+        $last_no_rawat = $last_no_rawat->fetch();
+        if(empty($last_no_rawat[0])) {
+          $last_no_rawat[0] = '000000';
+        }
+        $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
+        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+
+        return $next_no_rawat;
+    }
+
+    public function setNoReg($kd_dokter)
+    {
+        $date = date('Y-m-d');
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg->execute();
+        $last_no_reg = $last_no_reg->fetch();
+        if(empty($last_no_reg[0])) {
+          $last_no_reg[0] = '000';
+        }
+        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        return $next_no_reg;
+    }
+
+    public function setNoBooking($kd_dokter, $date)
+    {
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg->execute();
+        $last_no_reg = $last_no_reg->fetch();
+        if(empty($last_no_reg[0])) {
+          $last_no_reg[0] = '000';
+        }
+        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+
+        return $next_no_reg;
+    }
+
+    public function setNoResep()
+    {
+        $date = date('Y-m-d');
+        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,6),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
+        $last_no_resep->execute();
+        $last_no_resep = $last_no_resep->fetch();
+        if(empty($last_no_resep[0])) {
+          $last_no_resep[0] = '000000';
+        }
+        $next_no_resep = sprintf('%06s', ($last_no_resep[0] + 1));
+        $next_no_resep = date('Ymd').''.$next_no_resep;
+
+        return $next_no_resep;
+    }
+
+    public function setNoOrderLab()
+    {
+        $date = date('Y-m-d');
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order->execute();
+        $last_no_order = $last_no_order->fetch();
+        if(empty($last_no_order[0])) {
+          $last_no_order[0] = '0000';
+        }
+        $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
+        $next_no_order = 'PL'.date('Ymd').''.$next_no_order;
+
+        return $next_no_order;
+    }
+
+    public function setNoOrderRad()
+    {
+        $date = date('Y-m-d');
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order->execute();
+        $last_no_order = $last_no_order->fetch();
+        if(empty($last_no_order[0])) {
+          $last_no_order[0] = '0000';
+        }
+        $next_no_order = sprintf('%04s', ($last_no_order[0] + 1));
+        $next_no_order = 'PR'.date('Ymd').''.$next_no_order;
+
+        return $next_no_order;
+    }
+
+    public function setNoSKDP()
+    {
+        $year = date('Y');
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
+        $last_no->execute();
+        $last_no = $last_no->fetch();
+        if(empty($last_no[0])) {
+          $last_no[0] = '000000';
+        }
+        $next_no = sprintf('%06s', ($last_no[0] + 1));
+        return $next_no;
+    }
+
+    public function setNoNotaRalan()
+    {
+        $date = date('Y-m');
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
+        $last_no->execute();
+        $last_no = $last_no->fetch();
+        if(empty($last_no[0])) {
+          $last_no[0] = '000000';
+        }
+        $next_no = sprintf('%06s', ($last_no[0] + 1));
+        $next_no = date('Y').'/'.date('m').'/RJ/'.$next_no;
+        return $next_no;
+    }
+
     public function loadModules()
     {
         if ($this->module == null) {

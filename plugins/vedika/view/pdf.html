@@ -1,6 +1,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=0.1">
+    <title>e-Vedika</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <style>
       body{
@@ -11,6 +13,10 @@
       .col-md-4 { font-size: 18px;}
       .col-md-8 { font-size: 18px;}
     </style>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 </head>
 <body>
   <fieldset style="page-break-before:always;">
@@ -40,13 +46,13 @@
                 <div class="row clearfix">
                   <div class="col-md-2">
                     <div class="form-group">
-                      <img src="{$print_sep.logoURL}" height="60" width="350">
+                      <img src="{?=url()?}/plugins/vclaim/img/bpjslogo.png" height="60" width="350">
                     </div>
                   </div>
                   <div class="col-md-10">
                     <div class="form-group">
                       <h2><center>SURAT ELEGIBILITAS PESERTA</center></h2>
-                      <h5><center>{$print_sep.nama_instansi}</center></h5>
+                      <h5><center>{$settings.nama_instansi}</center></h5>
                     </div>
                   </div>
                 </div>
@@ -217,6 +223,7 @@
                     <small><em><font size="1px">{$print_sep.bridging_sep.tglrujukan} s/d {$print_sep.batas_rujukan}</font></em></small>
                   </div>
                   <div class="col-md-6" style="left: 90px;">
+                    <div id="qrcodeCanvas" style="margin-top:-40px;"></div>
                     ----------------
                   </div>
                 </div>
@@ -567,14 +574,14 @@
            <table width="100%" bgcolor="#ffffff" align="left" border="0" cellspacing="0" cellpadding="0">
                 <tr>
                     <td  width="20%">
-<img width="45" height="45" src="data:image/jpeg;base64,{?=base64_encode($instansi.logo)?}"/>
+<img width="45" height="45" src="{?=url()?}/{$settings.logo}"/>
   </td>
   <td>
 <center>
-    <font color="000000" size="3"  face="Tahoma">{$instansi.nama_instansi}</font><br>
+    <font color="000000" size="3"  face="Tahoma">{$settings.nama_instansi}</font><br>
     <font color="000000" size="1"  face="Tahoma">
-  {$instansi.alamat_instansi}, {$instansi.kabupaten}, {$instansi.propinsi}<br>
-              Telepon: {$instansi.kontak} - e-Mail : {$instansi.email}
+  {$settings.alamat}, {$settings.kota}, {$settings.propinsi}<br>
+              Telepon: {$settings.nomor_telepon} - e-Mail : {$settings.email}
                             </font>
 </center>
   </td>
@@ -654,4 +661,9 @@
         </table>
   </fieldset>
 </body>
+<script>
+	jQuery('#qrcodeCanvas').qrcode({
+		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"
+	});
+</script>
 </html>

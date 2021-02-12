@@ -10,6 +10,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola'   => 'dashboard',
+            'Pengaturan' => 'settings'
         ];
     }
 
@@ -487,6 +488,22 @@ class Admin extends AdminModule
     {
       $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
       return $this->draw('kasir.html');
+    }
+
+    public function getSettings()
+    {
+        $this->assign['penjab'] = $this->core->db('penjab')->toArray();
+        $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['manajemen'] as $key => $val) {
+            $this->settings('manajemen', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan manajemen telah disimpan');
+        redirect(url([ADMIN, 'manajemen', 'settings']));
     }
 
 }

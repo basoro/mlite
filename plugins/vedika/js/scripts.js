@@ -1,6 +1,5 @@
 $( function() {
-  $('.tanggal').datetimepicker({
-    format: 'YYYY-MM-DD',
-    locale: 'id'
+  $('.tanggal').datepicker({
+    dateFormat: 'yy-mm-dd'
   });
 } );

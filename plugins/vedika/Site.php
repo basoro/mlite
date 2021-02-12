@@ -13,6 +13,8 @@ class Site extends SiteModule
         $this->route('vedika/css', 'getCss');
         $this->route('vedika/javascript', 'getJavascript');
         $this->route('vedika/pdf/(:str)', 'getPDF');
+        $this->route('vedika/downloadpdf/(:str)', 'getDownloadPDF');
+        $this->route('vedika/catatan/(:str)', 'getCatatan');
     }
 
     public function getIndex()
@@ -23,7 +25,7 @@ class Site extends SiteModule
             'content' => $this->_getManage($page = 1)
         ];
 
-        $this->setTemplate('index.html');
+        $this->setTemplate('fullpage.html');
         $this->tpl->set('page', $page);
     }
 
@@ -75,15 +77,17 @@ class Site extends SiteModule
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['sepURL'] = url(['vedika', 'sep', $row['no_sep']]);
-              $row['pdfURL'] = url(['vedika', 'pdf', $this->$this->revertNorawat($row['no_rawat'])]);
+              $row['pdfURL'] = url(['vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['downloadURL'] = url(['vedika', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['catatanURL'] = url(['vedika', 'catatan', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url(['vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
 
-      $this->assign['vedika_username'] = $this->options->get('vedika.username');
-      $this->assign['vedika_password'] = $this->options->get('vedika.password');
+      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
+      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
 
       $this->assign['searchUrl'] =  url(['vedika', 'manage', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage.html', ['vedika' => $this->assign]);
@@ -127,16 +131,11 @@ class Site extends SiteModule
       $total = $total;
       $this->tpl->set('total', $total);
 
-      $instansi['logo'] = $this->core->getSettings('logo');
-      $instansi['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $instansi['alamat_instansi'] = $this->core->getSettings('alamat_instansi');
-      $instansi['kabupaten'] = $this->core->getSettings('kabupaten');
-      $instansi['propinsi'] = $this->core->getSettings('propinsi');
-      $instansi['kontak'] = $this->core->getSettings('kontak');
-      $instansi['email'] = $this->core->getSettings('email');
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
       $this->tpl->set('billing', $rows);
-      $this->tpl->set('instansi', $instansi);
+      //$this->tpl->set('instansi', $instansi);
 
       $print_sep = array();
       if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
@@ -144,7 +143,7 @@ class Site extends SiteModule
         $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
         $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       }
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
+
       $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
       $this->tpl->set('print_sep', $print_sep);
 
@@ -185,7 +184,7 @@ class Site extends SiteModule
         ->asc('jam_rawat')
         ->toArray();
       $pemeriksaan_ranap = $this->db('pemeriksaan_ranap')
-        ->where('no_rawat', revertNorawat($id))
+        ->where('no_rawat', $this->revertNorawat($id))
         ->asc('tgl_perawatan')
         ->asc('jam_rawat')
         ->toArray();
@@ -201,6 +200,43 @@ class Site extends SiteModule
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
       echo $this->tpl->draw(MODULES.'/vedika/view/pdf.html', true);
+      exit();
+    }
+
+    public function getCatatan($id)
+    {
+      echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
+      exit();
+    }
+
+    public function getDownloadPDF($id)
+    {
+      $apikey = '82b115a1-22c8-4f9c-b2a9-b9e763243ed9';
+      $value = url().'/vedika/pdf/'.$id; // can aso be a url, starting with http..
+
+      $bridging_sep = $this->db('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
+
+      // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
+      $result = file_get_contents("http://api.html2pdfrocket.com/pdf?apikey=" . urlencode($apikey) . "&value=" . urlencode($value));
+
+      // Save to root folder in website
+      //file_put_contents('mypdf-1.pdf', $result);
+
+      // Output headers so that the file is downloaded rather than displayed
+      // Remember that header() must be called before any actual output is sent
+      header('Content-Description: File Transfer');
+      header('Content-Type: application/pdf');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+      header('Content-Length: ' . strlen($result));
+
+      // Make the file a downloadable attachment - comment this out to show it directly inside the
+      // web browser.  Note that you can give the file any name you want, e.g. alias-name.pdf below:
+      header('Content-Disposition: attachment; filename=' . 'e-vedika-'.$bridging_sep['tglsep'].'-'.$bridging_sep['no_sep'].'.pdf' );
+
+      // Stream PDF to user
+      echo $result;
       exit();
     }
 
