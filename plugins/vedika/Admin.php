@@ -445,7 +445,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul Vedika';
-        $this->assign['vedika'] = htmlspecialchars_array($this->options('vedika'));
+        $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
         $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
@@ -453,7 +453,7 @@ class Admin extends AdminModule
     public function postSaveSettings()
     {
         foreach ($_POST['vedika'] as $key => $val) {
-            $this->options('vedika', $key, $val);
+            $this->settings('vedika', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
         redirect(url([ADMIN, 'vedika', 'settings']));

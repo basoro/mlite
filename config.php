@@ -5,7 +5,7 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 
 define('DBHOST', 'localhost');
 define('DBPORT', '3306');
-define('DBUSER', 'sik');
+define('DBUSER', 'root');
 define('DBPASS', '');
 define('DBNAME', 'sik');
 
