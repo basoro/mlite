@@ -110,11 +110,11 @@
 
 <script>
     $(function(){
-        var ctx = document.getElementById("line-chartcanvas");
+        var ctx = document.getElementById("line-chart");
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["{?= implode('","', $stats.poliChart.labels) ?}"],
+                labels: ["{?= implode('","', $stats.poliChartBaru.labels) ?}"],
                 datasets: [{
                         label: "Pasien",
                         borderColor: "#34316E",
@@ -122,7 +122,7 @@
                         backgroundColor: "rgba(30, 30, 45, 0.2)",
                         pointHighlightStroke: "#1e1e2d",
                         pointRadius: 0,
-                        data: [{?= implode(',', $stats.poliChart.visits) ?}],
+                        data: ["{?= implode('","', $stats.poliChartBaru.visits) ?}"],
                     }
                 ]
             },
@@ -142,11 +142,11 @@
                 maintainAspectRatio: false
             }
         });
-        var ctx = document.getElementById("line-chart");
+        var ctx = document.getElementById("line-chartcanvas");
         var myChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ["{?= implode('","', $stats.poliChartBaru.labels) ?}"],
+                labels: ["{?= implode('","', $stats.poliChart.labels) ?}"],
                 datasets: [{
                         label: "Pasien",
                         borderColor: "#34316E",
@@ -154,7 +154,7 @@
                         backgroundColor: "rgba(30, 30, 45, 0.2)",
                         pointHighlightStroke: "#1e1e2d",
                         pointRadius: 0,
-                        data: [{?= implode(',', $stats.poliChartBaru.visits) ?}],
+                        data: ["{?= implode('","', $stats.poliChart.visits) ?}"],
                     }
                 ]
             },

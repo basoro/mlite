@@ -206,7 +206,7 @@
                         backgroundColor: "rgba(30, 30, 45, 0.2)",
                         pointHighlightStroke: "#1e1e2d",
                         pointRadius: 0,
-                        data: [{?= implode(',', $stats.poliChart.visits) ?}],
+                        data: ["{?= implode(',', $stats.poliChart.visits) ?}"],
                     }
                 ]
             },
@@ -241,7 +241,7 @@
                     backgroundColor: "transparent",
                     pointHighlightStroke: "#1e1e2d",
                     pointRadius: 0,
-                    data: [{?= implode(',', $stats.RanapTahunChart.visits) ?}],
+                    data: ["{?= implode(',', $stats.RanapTahunChart.visits) ?}"],
                 },
                 {
                     label: "Dirujuk",
@@ -250,7 +250,7 @@
                     backgroundColor: "transparent",
                     pointHighlightStroke: "#1e1e2d",
                     pointRadius: 0,
-                    data: [{?= implode(',', $stats.RujukTahunChart.visits) ?}],
+                    data: ["{?= implode(',', $stats.RujukTahunChart.visits) ?}"],
                 }
                 ]
             },
@@ -285,7 +285,7 @@
                     backgroundColor: "transparent",
                     pointHighlightStroke: "#1e1e2d",
                     pointRadius: 0,
-                    data: [{?= implode(',', $stats.KunjunganTahunChart.visits) ?}],
+                    data: ["{?= implode(',', $stats.KunjunganTahunChart.visits) ?}"],
                 }
                 ]
             },
@@ -319,7 +319,7 @@
                 datasets: [{
                     backgroundColor: ["#4caf50", "#34316E", "#F58634"],
                     pointRadius: 0,
-                    data: [{$stats.tunai.count}, {$stats.bpjs.count}, {$stats.lainnya.count}],
+                    data: ["{$stats.tunai.count}", "{$stats.bpjs.count}", "{$stats.lainnya.count}"],
                 }]
             },
             options: {

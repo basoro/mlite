@@ -44,14 +44,71 @@
 
 										<div class="tab-content">
 												<div role="tabpanel" class="tab-pane fade in active" id="home">
+													<div class="row">
+														<div class="col-lg-12 col-md-12">
+															<div class="panel panel-default">
+																<div class="panel-body">
+																	<dl class="dl-horizontal no-margin">
+																		<dt>Status Wajib Pajak</dt><dd>{?= $kepegawaian.stts_wp.ktg ?}</dd>
+																		<dt>NPWP</dt><dd>{?= $kepegawaian.pegawai.npwp ?}</dd>
+																		<dt>Alamat</dt><dd>{?= $kepegawaian.pegawai.alamat ?}</dd>
+																	</dl>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 												<div role="tabpanel" class="tab-pane fade in" id="soap">
+													<div class="row">
+														<div class="col-lg-12 col-md-12">
+															<div class="panel panel-default">
+																<div class="panel-body">
+																	<dl class="dl-horizontal no-margin">
+																		<dt>Pendidikan Terakhir</dt><dd>{?= $kepegawaian.pegawai.pendidikan ?}</dd>
+																	</dl>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 												<div role="tabpanel" class="tab-pane fade in resep" id="resep">
+													<div class="row">
+														<div class="col-lg-12 col-md-12">
+															<div class="panel panel-default">
+																<div class="panel-body">
+																	<dl class="dl-horizontal no-margin">
+																		<dt>Pengalaman Kerja</dt><dd>-</dd>
+																	</dl>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 												<div role="tabpanel" class="tab-pane fade in" id="lab">
+													<div class="row">
+														<div class="col-lg-12 col-md-12">
+															<div class="panel panel-default">
+																<div class="panel-body">
+																	<dl class="dl-horizontal no-margin">
+																		<dt>Nomor Telpon</dt><dd>{if: empty($kepegawaian.petugas.no_telp)} - {else} {?= $kepegawaian.petugas.no_telp?} {/if}</dd>
+																	</dl>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 												<div role="tabpanel" class="tab-pane fade in" id="rad">
+													<div class="row">
+														<div class="col-lg-12 col-md-12">
+															<div class="panel panel-default">
+																<div class="panel-body">
+																	<dl class="dl-horizontal no-margin">
+																		<dt>Alamat</dt><dd>{?= $kepegawaian.pegawai.alamat ?}</dd>
+																	</dl>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 										</div>
 								</div>

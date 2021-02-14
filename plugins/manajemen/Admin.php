@@ -407,6 +407,150 @@ class Admin extends AdminModule
         return $record['count'];
     }
 
+    public function countCheck($table,$where)
+    {
+        $date = date('Y-m-d');
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->where('tgl_periksa', $date)
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastCheck($table,$where)
+    {
+        $date = date('Y-m-d', strtotime('-1 days'));
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->where('tgl_periksa', $date)
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countYear($table,$where)
+    {
+        $date = date('Y');
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_periksa', $date.'%')
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastYear($table,$where)
+    {
+        $date = date('Y', strtotime('-1 year'));
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_periksa', $date.'%')
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countMonth($table,$where)
+    {
+        $date = date('Y-m');
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_periksa', $date.'%')
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countLastMonth($table,$where)
+    {
+        $date = date('Y-m', strtotime('-1 month'));
+        $record = $this->db($table)
+            ->select([
+                'count' => 'COUNT(DISTINCT no_rawat)',
+            ])
+            ->like('tgl_periksa', $date.'%')
+            ->where('nip',$where)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countDrPerujukLab()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('periksa_lab')
+            ->select([
+              'count'       => 'COUNT(DISTINCT periksa_lab.no_rawat)',
+              'nm_dokter'     => 'dokter.nm_dokter',
+            ])
+            ->join('dokter', 'periksa_lab.dokter_perujuk = dokter.kd_dokter')
+            ->where('periksa_lab.tgl_periksa', $date)
+            ->where('periksa_lab.nip','Lab1')
+            ->group(['periksa_lab.dokter_perujuk'])
+            ->desc('dokter.nm_dokter');
+
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_dokter'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function countDrPerujukRad()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('periksa_radiologi')
+            ->select([
+              'count'       => 'COUNT(DISTINCT periksa_radiologi.no_rawat)',
+              'nm_dokter'     => 'dokter.nm_dokter',
+            ])
+            ->join('dokter', 'periksa_radiologi.dokter_perujuk = dokter.kd_dokter')
+            ->where('periksa_radiologi.tgl_periksa', $date)
+            ->where('periksa_radiologi.nip','rad1')
+            ->group(['periksa_radiologi.dokter_perujuk'])
+            ->desc('dokter.nm_dokter');
+
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_dokter'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
     public function getPendaftaran()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
@@ -462,14 +606,70 @@ class Admin extends AdminModule
 
     public function getLaboratorium()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('laboratorium.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
+        $stats['getLab'] = number_format($this->countCheck('periksa_lab','Lab1'),0,'','.');
+        $stats['getLabMonthly'] = number_format($this->countMonth('periksa_lab','Lab1'),0,'','.');
+        $stats['getLabYearly'] = number_format($this->countYear('periksa_lab','Lab1'),0,'','.');
+        $stats['getDrRujuk'] = $this->countDrPerujukLab();
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+            $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+        $stats['percentDays'] = 0;
+        if($this->countCheck('periksa_lab','Lab1') != 0) {
+            $stats['percentDays'] = number_format((($this->countCheck('periksa_lab','Lab1')-$this->countLastCheck('periksa_lab','Lab1'))/$this->countCheck('periksa_lab','Lab1'))*100,0,'','.');
+        }
+        $stats['percentMonths'] = 0;
+        if($this->countMonth('periksa_lab','Lab1') != 0) {
+            $stats['percentMonths'] = number_format((($this->countMonth('periksa_lab','Lab1')-$this->countLastMonth('periksa_lab','Lab1'))/$this->countMonth('periksa_lab','Lab1'))*100,0,'','.');
+        }
+        $stats['percentYears'] = 0;
+        if($this->countYear('periksa_lab','Lab1') != 0) {
+            $stats['percentYears'] = number_format((($this->countYear('periksa_lab','Lab1')-$this->countLastYear('periksa_lab','Lab1'))/$this->countYear('periksa_lab','Lab1'))*100,0,'','.');
+        }
+        
+      return $this->draw('laboratorium.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+      ]);
     }
 
     public function getRadiologi()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('radiologi.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
+        $stats['getLab'] = number_format($this->countCheck('periksa_radiologi','rad1'),0,'','.');
+        $stats['getLabMonthly'] = number_format($this->countMonth('periksa_radiologi','rad1'),0,'','.');
+        $stats['getLabYearly'] = number_format($this->countYear('periksa_radiologi','rad1'),0,'','.');
+        $stats['getDrRujuk'] = $this->countDrPerujukRad();
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+            $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+        $stats['percentDays'] = 0;
+        if($this->countCheck('periksa_radiologi','rad1') != 0) {
+            $stats['percentDays'] = number_format((($this->countCheck('periksa_radiologi','rad1')-$this->countLastCheck('periksa_radiologi','rad1'))/$this->countCheck('periksa_radiologi','rad1'))*100,0,'','.');
+        }
+        $stats['percentMonths'] = 0;
+        if($this->countMonth('periksa_radiologi','rad1') != 0) {
+            $stats['percentMonths'] = number_format((($this->countMonth('periksa_radiologi','rad1')-$this->countLastMonth('periksa_radiologi','rad1'))/$this->countMonth('periksa_radiologi','rad1'))*100,0,'','.');
+        }
+        $stats['percentYears'] = 0;
+        if($this->countYear('periksa_radiologi','rad1') != 0) {
+            $stats['percentYears'] = number_format((($this->countYear('periksa_radiologi','rad1')-$this->countLastYear('periksa_radiologi','rad1'))/$this->countYear('periksa_radiologi','rad1'))*100,0,'','.');
+        }
+        
+      return $this->draw('radiologi.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+      ]);
     }
 
     public function getApotek()
