@@ -21,6 +21,7 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
+	use Plugins\Master\Src\KategoriPenyakit;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -48,6 +49,7 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
+			$this->kategoripenyakit = new KategoriPenyakit();
             $this->spesialis = new Spesialis();
         }
 
@@ -1021,6 +1023,51 @@
             exit();
         }
         /* End KategoriBarang Section */
+		
+		/* Start KategoriPenyakit Section */
+        public function getKategoriPenyakit()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kategoripenyakitjs']), 'footer');
+          $return = $this->kategoripenyakit->getIndex();
+          return $this->draw('kategoripenyakit.html', [
+            'kategoripenyakit' => $return
+          ]);
+
+        }
+
+        public function anyKategoriPenyakitForm()
+        {
+            $return = $this->kategoripenyakit->anyForm();
+            echo $this->draw('kategoripenyakit.form.html', ['kategoripenyakit' => $return]);
+            exit();
+        }
+
+        public function anyKategoriPenyakitDisplay()
+        {
+            $return = $this->kategoripenyakit->anyDisplay();
+            echo $this->draw('kategoripenyakit.display.html', ['kategoripenyakit' => $return]);
+            exit();
+        }
+
+        public function postKategoriPenyakitSave()
+        {
+          $this->kategoripenyakit->postSave();
+          exit();
+        }
+
+        public function postKategoriPenyakitHapus()
+        {
+          $this->kategoripenyakit->postHapus();
+          exit();
+        }
+
+        public function getKategoriPenyakitJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kategoripenyakit.js');
+            exit();
+        }
+        /* End KategoriPenyakit Section */
 
         /* Start Spesialis Section */
         public function getSpesialis()
