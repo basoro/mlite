@@ -4,7 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
-class KategoriPenyakit
+class KodeSatuan
 {
 
     protected function db($table)
@@ -15,16 +15,16 @@ class KategoriPenyakit
     public function getIndex()
     {
 
-      $totalRecords = $this->db('kategori_penyakit')
-        ->select('kd_ktg')
+      $totalRecords = $this->db('kodesatuan')
+        ->select('kode_sat')
         ->toArray();
       $offset         = 10;
       $return['halaman']    = 1;
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('kategori_penyakit')
-        ->desc('kd_ktg')
+      $return['list'] = $this->db('kodesatuan')
+        ->desc('kode_sat')
         ->limit(10)
         ->toArray();
 
@@ -34,13 +34,12 @@ class KategoriPenyakit
 
     public function anyForm()
     {
-        if (isset($_POST['kd_ktg'])){
-          $return['form'] = $this->db('kategori_penyakit')->where('kd_ktg', $_POST['kd_ktg'])->oneArray();
+        if (isset($_POST['kode_sat'])){
+          $return['form'] = $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray();
         } else {
           $return['form'] = [
-            'kd_ktg' => '',
-            'nm_kategori' => '',
-	     'ciri_umum' => ''
+            'kode_sat' => '',
+            'satuan' => ''
           ];
         }
 
@@ -51,26 +50,25 @@ class KategoriPenyakit
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('kategori_penyakit')
-          ->select('kd_ktg')
+        $totalRecords = $this->db('kodesatuan')
+          ->select('kode_sat')
           ->toArray();
         $offset         = 10;
         $return['halaman']    = 1;
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('kategori_penyakit')
-          ->desc('kd_ktg')
+        $return['list'] = $this->db('kodesatuan')
+          ->desc('kode_sat')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('kategori_penyakit')
-            ->like('kd_ktg', '%'.$_POST['cari'].'%')
-            ->orLike('nm_kategori', '%'.$_POST['cari'].'%')
-	     ->orLike('ciri_umum', '%'.$_POST['cari'].'%')
-            ->desc('kd_ktg')
+          $return['list'] = $this->db('kodesatuan')
+            ->like('kode_sat', '%'.$_POST['cari'].'%')
+            ->orLike('satuan', '%'.$_POST['cari'].'%')
+            ->desc('kode_sat')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
@@ -79,8 +77,8 @@ class KategoriPenyakit
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('kategori_penyakit')
-            ->desc('kd_ktg')
+          $return['list'] = $this->db('kodesatuan')
+            ->desc('kode_sat')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -92,17 +90,17 @@ class KategoriPenyakit
 
     public function postSave()
     {
-      if (!$this->db('kategori_penyakit')->where('kd_ktg', $_POST['kd_ktg'])->oneArray()) {
-        $query = $this->db('kategori_penyakit')->save($_POST);
+      if (!$this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray()) {
+        $query = $this->db('kodesatuan')->save($_POST);
       } else {
-        $query = $this->db('kategori_penyakit')->where('kd_ktg', $_POST['kd_ktg'])->save($_POST);
+        $query = $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('kategori_penyakit')->where('kd_ktg', $_POST['kd_ktg'])->delete();
+      return $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->delete();
     }
 
 }

@@ -21,7 +21,9 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
-	use Plugins\Master\Src\KategoriPenyakit;
+    use Plugins\Master\Src\KategoriPenyakit;
+    use Plugins\Master\Src\KategoriPerawatan;
+    use Plugins\Master\Src\KodeSatuan;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -49,7 +51,9 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
-			$this->kategoripenyakit = new KategoriPenyakit();
+	    $this->kategoripenyakit = new KategoriPenyakit();
+	    $this->kategoriperawatan = new KategoriPerawatan();
+	    $this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
         }
 
@@ -1024,7 +1028,7 @@
         }
         /* End KategoriBarang Section */
 		
-		/* Start KategoriPenyakit Section */
+	/* Start KategoriPenyakit Section */
         public function getKategoriPenyakit()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoripenyakitjs']), 'footer');
@@ -1068,7 +1072,97 @@
             exit();
         }
         /* End KategoriPenyakit Section */
+	    
+	/* Start KategoriPerawatan Section */
+        public function getKategoriPerawatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kategoriperawatanjs']), 'footer');
+          $return = $this->kategoriperawatan->getIndex();
+          return $this->draw('kategoriperawatan.html', [
+            'kategoriperawatan' => $return
+          ]);
 
+        }
+
+        public function anyKategoriPerawatanForm()
+        {
+            $return = $this->kategoriperawatan->anyForm();
+            echo $this->draw('kategoriperawatan.form.html', ['kategoriperawatan' => $return]);
+            exit();
+        }
+
+        public function anyKategoriPerawatanDisplay()
+        {
+            $return = $this->kategoriperawatan->anyDisplay();
+            echo $this->draw('kategoriperawatan.display.html', ['kategoriperawatan' => $return]);
+            exit();
+        }
+
+        public function postKategoriPerawatanSave()
+        {
+          $this->kategoriperawatan->postSave();
+          exit();
+        }
+
+        public function postKategoriPerawatanHapus()
+        {
+          $this->kategoriperawatan->postHapus();
+          exit();
+        }
+
+        public function getKategoriPerawatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kategoriperawatan.js');
+            exit();
+        }
+        /* End KategoriPerawatan Section */
+
+	/* Start KodeSatuan Section */
+        public function getKodeSatuan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kodesatuanjs']), 'footer');
+          $return = $this->kodesatuan->getIndex();
+          return $this->draw('kodesatuan.html', [
+            'kodesatuan' => $return
+          ]);
+
+        }
+
+        public function anyKodeSatuanForm()
+        {
+            $return = $this->kodesatuan->anyForm();
+            echo $this->draw('kodesatuan.form.html', ['kodesatuan' => $return]);
+            exit();
+        }
+
+        public function anyKodeSatuanDisplay()
+        {
+            $return = $this->kodesatuan->anyDisplay();
+            echo $this->draw('kodesatuan.display.html', ['kodesatuan' => $return]);
+            exit();
+        }
+
+        public function postKodeSatuanSave()
+        {
+          $this->kodesatuan->postSave();
+          exit();
+        }
+
+        public function postKodeSatuanHapus()
+        {
+          $this->kodesatuan->postHapus();
+          exit();
+        }
+
+        public function getKodeSatuanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kodesatuan.js');
+            exit();
+        }
+        /* End KodeSatuan Section */
+	
         /* Start Spesialis Section */
         public function getSpesialis()
         {
