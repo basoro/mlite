@@ -40,7 +40,7 @@ class KategoriPenyakit
           $return['form'] = [
             'kd_ktg' => '',
             'nm_kategori' => '',
-			'ciri_umum' => ''
+	    'ciri_umum' => ''
           ];
         }
 
@@ -69,7 +69,7 @@ class KategoriPenyakit
           $return['list'] = $this->db('kategori_penyakit')
             ->like('kd_ktg', '%'.$_POST['cari'].'%')
             ->orLike('nm_kategori', '%'.$_POST['cari'].'%')
-			->orLike('ciri_umum', '%'.$_POST['cari'].'%')
+	    ->orLike('ciri_umum', '%'.$_POST['cari'].'%')
             ->desc('kd_ktg')
             ->offset(0)
             ->limit($perpage)
