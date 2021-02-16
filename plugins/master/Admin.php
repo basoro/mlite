@@ -23,6 +23,7 @@
     use Plugins\Master\Src\KategoriBarang;
     use Plugins\Master\Src\KategoriPenyakit;
     use Plugins\Master\Src\KategoriPerawatan;
+    use Plugins\Master\Src\KodeSatuan;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -52,6 +53,7 @@
             $this->kategoribarang = new KategoriBarang();
 	    $this->kategoripenyakit = new KategoriPenyakit();
 	    $this->kategoriperawatan = new KategoriPerawatan();
+	    $this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
         }
 
@@ -1116,6 +1118,51 @@
         }
         /* End KategoriPerawatan Section */
 
+	/* Start KodeSatuan Section */
+        public function getKodeSatuan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kodesatuanjs']), 'footer');
+          $return = $this->kodesatuan->getIndex();
+          return $this->draw('kodesatuan.html', [
+            'kodesatuan' => $return
+          ]);
+
+        }
+
+        public function anyKodeSatuanForm()
+        {
+            $return = $this->kodesatuan->anyForm();
+            echo $this->draw('kodesatuan.form.html', ['kodesatuan' => $return]);
+            exit();
+        }
+
+        public function anyKodeSatuanDisplay()
+        {
+            $return = $this->kodesatuan->anyDisplay();
+            echo $this->draw('kodesatuan.display.html', ['kodesatuan' => $return]);
+            exit();
+        }
+
+        public function postKodeSatuanSave()
+        {
+          $this->kodesatuan->postSave();
+          exit();
+        }
+
+        public function postKodeSatuanHapus()
+        {
+          $this->kodesatuan->postHapus();
+          exit();
+        }
+
+        public function getKodeSatuanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kodesatuan.js');
+            exit();
+        }
+        /* End KodeSatuan Section */
+	
         /* Start Spesialis Section */
         public function getSpesialis()
         {
