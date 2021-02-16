@@ -22,6 +22,7 @@
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
     use Plugins\Master\Src\KategoriPenyakit;
+    use Plugins\Master\Src\KategoriPerawatan;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -50,6 +51,7 @@
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
 	    $this->kategoripenyakit = new KategoriPenyakit();
+	    $this->kategoriperawatan = new KategoriPerawatan();
             $this->spesialis = new Spesialis();
         }
 
@@ -1068,6 +1070,51 @@
             exit();
         }
         /* End KategoriPenyakit Section */
+	    
+	/* Start KategoriPerawatan Section */
+        public function getKategoriPerawatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kategoriperawatanjs']), 'footer');
+          $return = $this->kategoriperawatan->getIndex();
+          return $this->draw('kategoriperawatan.html', [
+            'kategoriperawatan' => $return
+          ]);
+
+        }
+
+        public function anyKategoriPerawatanForm()
+        {
+            $return = $this->kategoriperawatan->anyForm();
+            echo $this->draw('kategoriperawatan.form.html', ['kategoriperawatan' => $return]);
+            exit();
+        }
+
+        public function anyKategoriPerawatanDisplay()
+        {
+            $return = $this->kategoriperawatan->anyDisplay();
+            echo $this->draw('kategoriperawatan.display.html', ['kategoriperawatan' => $return]);
+            exit();
+        }
+
+        public function postKategoriPerawatanSave()
+        {
+          $this->kategoriperawatan->postSave();
+          exit();
+        }
+
+        public function postKategoriPerawatanHapus()
+        {
+          $this->kategoriperawatan->postHapus();
+          exit();
+        }
+
+        public function getKategoriPerawatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kategoriperawatan.js');
+            exit();
+        }
+        /* End KategoriPerawatan Section */
 
         /* Start Spesialis Section */
         public function getSpesialis()
