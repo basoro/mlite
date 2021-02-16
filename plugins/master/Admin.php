@@ -21,7 +21,7 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
-	use Plugins\Master\Src\KategoriPenyakit;
+    use Plugins\Master\Src\KategoriPenyakit;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -49,7 +49,7 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
-			$this->kategoripenyakit = new KategoriPenyakit();
+	    $this->kategoripenyakit = new KategoriPenyakit();
             $this->spesialis = new Spesialis();
         }
 
@@ -1024,7 +1024,7 @@
         }
         /* End KategoriBarang Section */
 		
-		/* Start KategoriPenyakit Section */
+	/* Start KategoriPenyakit Section */
         public function getKategoriPenyakit()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoripenyakitjs']), 'footer');
