@@ -16,7 +16,7 @@ class MasterBerkasDigital
     {
 
       $totalRecords = $this->db('master_berkas_digital')
-        ->select('kode_berkas')
+        ->select('kode')
         ->toArray();
       $offset         = 10;
       $return['halaman']    = 1;
@@ -24,7 +24,7 @@ class MasterBerkasDigital
       $return['jumlah_data']    = count($totalRecords);
 
       $return['list'] = $this->db('master_berkas_digital')
-        ->desc('kode_berkas')
+        ->desc('kode')
         ->limit(10)
         ->toArray();
 
@@ -35,11 +35,11 @@ class MasterBerkasDigital
     public function anyForm()
     {
         if (isset($_POST['kode_berkas'])){
-          $return['form'] = $this->db('master_berkas_digital')->where('kode_berkas', $_POST['kode_berkas'])->oneArray();
+          $return['form'] = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray();
         } else {
           $return['form'] = [
-            'kode_berkas' => '',
-            'nama_berkas' => ''
+            'kode' => '',
+            'nama' => ''
           ];
         }
 
@@ -51,7 +51,7 @@ class MasterBerkasDigital
 
         $perpage = '10';
         $totalRecords = $this->db('master_berkas_digital')
-          ->select('kode_berkas')
+          ->select('kode')
           ->toArray();
         $offset         = 10;
         $return['halaman']    = 1;
@@ -59,16 +59,16 @@ class MasterBerkasDigital
         $return['jumlah_data']    = count($totalRecords);
 
         $return['list'] = $this->db('master_berkas_digital')
-          ->desc('kode_berkas')
+          ->desc('kode')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
           $return['list'] = $this->db('master_berkas_digital')
-            ->like('kode_berkas', '%'.$_POST['cari'].'%')
-            ->orLike('nama_berkas', '%'.$_POST['cari'].'%')
-            ->desc('kode_berkas')
+            ->like('kode', '%'.$_POST['cari'].'%')
+            ->orLike('nama', '%'.$_POST['cari'].'%')
+            ->desc('kode')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
@@ -78,7 +78,7 @@ class MasterBerkasDigital
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
           $return['list'] = $this->db('master_berkas_digital')
-            ->desc('kode_berkas')
+            ->desc('kode')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -90,17 +90,17 @@ class MasterBerkasDigital
 
     public function postSave()
     {
-      if (!$this->db('master_berkas_digital')->where('kode_berkas', $_POST['kode_berkas'])->oneArray()) {
+      if (!$this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray()) {
         $query = $this->db('master_berkas_digital')->save($_POST);
       } else {
-        $query = $this->db('master_berkas_digital')->where('kode_berkas', $_POST['kode_berkas'])->save($_POST);
+        $query = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('master_berkas_digital')->where('kode_berkas', $_POST['kode_berkas'])->delete();
+      return $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->delete();
     }
 
 }
