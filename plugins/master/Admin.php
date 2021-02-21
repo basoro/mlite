@@ -21,9 +21,11 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
-    use Plugins\Master\Src\KategoriPenyakit;
-    use Plugins\Master\Src\KategoriPerawatan;
-    use Plugins\Master\Src\KodeSatuan;
+  	use Plugins\Master\Src\KategoriPenyakit;
+  	use Plugins\Master\Src\KategoriPerawatan;
+  	use Plugins\Master\Src\KodeSatuan;
+  	use Plugins\Master\Src\MasterAturanPakai;
+  	use Plugins\Master\Src\MasterBerkasDigital;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -51,9 +53,11 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
-	    $this->kategoripenyakit = new KategoriPenyakit();
-	    $this->kategoriperawatan = new KategoriPerawatan();
-	    $this->kodesatuan = new KodeSatuan();
+      			$this->kategoripenyakit = new KategoriPenyakit();
+      			$this->kategoriperawatan = new KategoriPerawatan();
+      			$this->masteraturanpakai = new MasterAturanPakai();
+      			$this->masterberkasdigital = new MasterBerkasDigital();
+      			$this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
         }
 
@@ -125,7 +129,7 @@
             ['name' => 'Kategori Penyakit', 'url' => url([ADMIN, 'master', 'kategoripenyakit']), 'icon' => 'cubes', 'desc' => 'Master kategori penyakit'],
             ['name' => 'Kategori Perawatan', 'url' => url([ADMIN, 'master', 'kategoriperawatan']), 'icon' => 'cubes', 'desc' => 'Master kategori perawatan'],
             ['name' => 'Kode Satuan', 'url' => url([ADMIN, 'master', 'kodesatuan']), 'icon' => 'cubes', 'desc' => 'Master kode satuan'],
-            ['name' => 'Master Aturan Pakai', 'url' => url([ADMIN, 'master', 'masteraturanpakai']), 'icon' => 'cubes', 'desc' => 'Master master aturan pakai'],
+            ['name' => 'Master Aturan Pakai', 'url' => url([ADMIN, 'master', 'masteraturanpakai']), 'icon' => 'cubes', 'desc' => 'Master aturan pakai'],
             ['name' => 'Master Berkas Digital', 'url' => url([ADMIN, 'master', 'masterberkasdigital']), 'icon' => 'cubes', 'desc' => 'Master berkas digital'],
             ['name' => 'Spesialis', 'url' => url([ADMIN, 'master', 'spesialis']), 'icon' => 'cubes', 'desc' => 'Master spesialis'],
             ['name' => 'Bank', 'url' => url([ADMIN, 'master', 'bank']), 'icon' => 'cubes', 'desc' => 'Master bank'],
@@ -1027,8 +1031,8 @@
             exit();
         }
         /* End KategoriBarang Section */
-		
-	/* Start KategoriPenyakit Section */
+
+		/* Start KategoriPenyakit Section */
         public function getKategoriPenyakit()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoripenyakitjs']), 'footer');
@@ -1072,8 +1076,8 @@
             exit();
         }
         /* End KategoriPenyakit Section */
-	    
-	/* Start KategoriPerawatan Section */
+
+		/* Start KategoriPerawatan Section */
         public function getKategoriPerawatan()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoriperawatanjs']), 'footer');
@@ -1118,7 +1122,7 @@
         }
         /* End KategoriPerawatan Section */
 
-	/* Start KodeSatuan Section */
+		/* Start KodeSatuan Section */
         public function getKodeSatuan()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kodesatuanjs']), 'footer');
@@ -1162,7 +1166,97 @@
             exit();
         }
         /* End KodeSatuan Section */
-	
+
+		/* Start MasterAturanPakai Section */
+        public function getMasterAturanPakai()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'masteraturanpakaijs']), 'footer');
+          $return = $this->masteraturanpakai->getIndex();
+          return $this->draw('masteraturanpakai.html', [
+            'masteraturanpakai' => $return
+          ]);
+
+        }
+
+        public function anyMasterAturanPakaiForm()
+        {
+            $return = $this->masteraturanpakai->anyForm();
+            echo $this->draw('masteraturanpakai.form.html', ['masteraturanpakai' => $return]);
+            exit();
+        }
+
+        public function anyMasterAturanPakaiDisplay()
+        {
+            $return = $this->masteraturanpakai->anyDisplay();
+            echo $this->draw('masteraturanpakai.display.html', ['masteraturanpakai' => $return]);
+            exit();
+        }
+
+        public function postMasterAturanPakaiSave()
+        {
+          $this->masteraturanpakai->postSave();
+          exit();
+        }
+
+        public function postMasterAturanPakaiHapus()
+        {
+          $this->masteraturanpakai->postHapus();
+          exit();
+        }
+
+        public function getMasterAturanPakaiJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/masteraturanpakai.js');
+            exit();
+        }
+        /* End MasterAturanPakai Section */
+
+		/* Start MasterBerkasDigital Section */
+        public function getMasterBerkasDigital()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'masterberkasdigitaljs']), 'footer');
+          $return = $this->masterberkasdigital->getIndex();
+          return $this->draw('masterberkasdigital.html', [
+            'masterberkasdigital' => $return
+          ]);
+
+        }
+
+        public function anyMasterBerkasDigitalForm()
+        {
+            $return = $this->masterberkasdigital->anyForm();
+            echo $this->draw('masterberkasdigital.form.html', ['masterberkasdigital' => $return]);
+            exit();
+        }
+
+        public function anyMasterBerkasDigital()
+        {
+            $return = $this->masterberkasdigital->anyDisplay();
+            echo $this->draw('masterberkasdigital.display.html', ['masterberkasdigital' => $return]);
+            exit();
+        }
+
+        public function postMasterBerkasDigitalSave()
+        {
+          $this->masterberkasdigital->postSave();
+          exit();
+        }
+
+        public function postMasterBerkasDigitalHapus()
+        {
+          $this->masterberkasdigital->postHapus();
+          exit();
+        }
+
+        public function getMasterBerkasDigitalJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/masterberkasdigital.js');
+            exit();
+        }
+        /* End MasterBerkasDigital Section */
+
         /* Start Spesialis Section */
         public function getSpesialis()
         {

@@ -1,0 +1,78 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Aturan Pemakaian</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $masteraturanpakai.list}
+        {loop: $masteraturanpakai.list}
+        <tr class="edit" data-aturan="{$value.aturan}">
+          <td>{$value.aturan}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="2" class="text-center">Tidak ada data.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($masteraturanpakai.halaman)}
+        {if: $masteraturanpakai.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $masteraturanpakai.halaman > 1}
+        <li class="halaman" data-hal="{?=$masteraturanpakai.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$masteraturanpakai.halaman} dari {$masteraturanpakai.jml_halaman} Hal</a></li>
+        {if: $masteraturanpakai.halaman < $masteraturanpakai.jml_halaman}
+        <li class="halaman" data-hal="{?=$masteraturanpakai.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $masteraturanpakai.halaman == $masteraturanpakai.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$masteraturanpakai.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $masteraturanpakai.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $masteraturanpakai.halaman > 1}
+        <li class="halaman" data-hal="{?=$masteraturanpakai.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$masteraturanpakai.halaman} dari {$masteraturanpakai.jml_halaman} Hal</a></li>
+        {if: $masteraturanpakai.halaman < $masteraturanpakai.jml_halaman}
+        <li class="halaman" data-hal="{?=$masteraturanpakai.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $masteraturanpakai.halaman == $masteraturanpakai.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$masteraturanpakai.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>
