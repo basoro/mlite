@@ -39,7 +39,7 @@ class KategoriBarang
         } else {
           $return['form'] = [
             'kode' => '',
-            'nama_bahasa' => ''
+            'nama' => ''
           ];
         }
 
@@ -67,7 +67,7 @@ class KategoriBarang
         if(isset($_POST['cari'])) {
           $return['list'] = $this->db('kategori_barang')
             ->like('kode', '%'.$_POST['cari'].'%')
-            ->orLike('nama_bahasa', '%'.$_POST['cari'].'%')
+            ->orLike('nama', '%'.$_POST['cari'].'%')
             ->desc('kode')
             ->offset(0)
             ->limit($perpage)
