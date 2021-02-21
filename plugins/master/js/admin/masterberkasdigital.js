@@ -24,21 +24,21 @@ $("#form").on("click", "#batal", function(event){
 $("#form").on("click", "#simpan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var kode_berkas = $('input:text[name=kode_berkas]').val();
-  var nama_berkas = $('input:text[name=nama_berkas]').val();
+  var kode = $('input:text[name=kode]').val();
+  var nama = $('input:text[name=nama]').val();
 
   var url = baseURL + '/master/masterberkasdigitalsave?t=' + mlite.token;
 
   $.post(url,{
-    kode_berkas: kode_berkas,
-    nama_berkas: nama_berkas
+    kode: kode,
+    nama: nama
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data telah disimpan!"+
+      "Data berkas digital telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -49,7 +49,7 @@ $("#display").on("click", ".edit", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url    = baseURL + '/master/masterberkasdigitalform?t=' + mlite.token;
-  var kode_berkas  = $(this).attr("data-kode_berkas");
+  var kode  = $(this).attr("data-kode");
 
   $.post(url, {kode_berkas: kode_} ,function(data) {
     // tampilkan data
@@ -64,7 +64,7 @@ $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/master/masterberkasdigital?t=' + mlite.token;
-  var kode_berkas = $('input:text[name=kode_berkas]').val();
+  var kode = $('input:text[name=kode]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -72,7 +72,7 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        kode_berkas: kode_berkas
+        kode: kode
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#form").hide();
@@ -80,7 +80,7 @@ $("#form").on("click","#hapus", function(event){
         $("#tutupform").attr("id", "bukaform");
         $("#display").load(baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data telah dihapus!"+
+        "Data berkas digital telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -122,6 +122,6 @@ $("#display").on("click", ".halaman",function(event){
 // end halaman
 
 function bersih(){
-  $('input:text[name=kode_berkas]').val("").removeAttr('disabled');
-  $('input:text[name=nama_berkas]').val("");
+  $('input:text[name=kode]').val("").removeAttr('disabled');
+  $('input:text[name=nama]').val("");
 }
