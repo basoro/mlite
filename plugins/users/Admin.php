@@ -11,9 +11,19 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'    => 'manage',
+            'Kelola'    => 'index',
+            'Data Pengguna' => 'manage',
             'Tambah Baru'                => 'add'
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Data Pengguna', 'url' => url([ADMIN, 'users', 'manage']), 'icon' => 'users', 'desc' => 'Data pengguna'],
+        ['name' => 'Tambah Baru', 'url' => url([ADMIN, 'users', 'add']), 'icon' => 'user-plus', 'desc' => 'Tambah pengguna baru'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     /**

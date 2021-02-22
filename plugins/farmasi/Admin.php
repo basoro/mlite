@@ -10,10 +10,21 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Databarang' => 'manage',
+            'Kelola' => 'index',
+            'Obat & BHP' => 'manage',
             'Stok Opname' => 'opname',
             'Pengaturan' => 'settings',
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'manage']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
+        ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getManage($status = '1')

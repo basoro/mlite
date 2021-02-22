@@ -26,13 +26,32 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->toArray();
-        echo $this->draw('display.antrian.html', [
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.html', [
           'title' => $title,
           'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_anjungan'),
           'poliklinik' => $poliklinik
         ]);
-        exit();
+
+        $assign = [
+            'title' => $this->settings->get('blog.title'),
+            'desc' => $this->settings->get('blog.desc'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+        //exit();
     }
 
     public function getDisplayAntrianPoli()
@@ -40,13 +59,32 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoli();
-        echo $this->draw('display.antrian.poli.html', [
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.poli.html', [
           'title' => $title,
           'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_poli'),
           'display' => $display
         ]);
-        exit();
+
+        $assign = [
+            'title' => $this->settings->get('blog.title'),
+            'desc' => $this->settings->get('blog.desc'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+        //exit();
     }
 
     public function _resultDisplayAntrianPoli()
@@ -145,13 +183,21 @@ class Site extends SiteModule
         $title = 'Display Antrian Loket';
         $logo  = $this->settings->get('settings.logo');
         $display = '';
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
         $show = isset($_GET['show']) ? $_GET['show'] : "";
         switch($show){
           default:
             $display = 'Depan';
-            echo $this->draw('display.antrian.loket.html', [
+            $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'logo' => $logo,
+              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'username' => $username,
+              'tanggal' => $tanggal,
               'show' => $show,
               'vidio' => $this->settings->get('anjungan.vidio'),
               'running_text' => $this->settings->get('anjungan.text_loket'),
@@ -160,6 +206,11 @@ class Site extends SiteModule
           break;
           case "panggil_loket":
             $display = 'Panggil Loket';
+
+            $_username = $this->core->getUserInfo('fullname', null, true);
+            $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+            $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
             $setting_antrian_loket = str_replace(",","','", $this->settings->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->settings->get('anjungan.antrian_loket'));
             $get_antrian = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
@@ -209,9 +260,12 @@ class Site extends SiteModule
             	$xcounter[] = '<audio id="suarabel'.$i.'" src="{?=url()?}/plugins/anjungan/suara/'.substr($tcounter,$i,1).'.wav" ></audio>';
             };
 
-            echo $this->draw('display.antrian.loket.html', [
+            $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'logo' => $logo,
+              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'username' => $username,
+              'tanggal' => $tanggal,
               'show' => $show,
               'loket' => $loket,
               'namaloket' => 'a',
@@ -273,9 +327,12 @@ class Site extends SiteModule
               $xcounter[] = '<audio id="suarabel'.$i.'" src="{?=url()?}/plugins/anjungan/suara/'.substr($tcounter,$i,1).'.wav" ></audio>';
             };
 
-            echo $this->draw('display.antrian.loket.html', [
+            $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
-              'logo' => $logo, 
+              'logo' => $logo,
+              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'username' => $username,
+              'tanggal' => $tanggal,
               'show' => $show,
               'loket' => $loket,
               'namaloket' => 'b',
@@ -288,7 +345,18 @@ class Site extends SiteModule
             ]);
           break;
         }
-        exit();
+
+        $assign = [
+            'title' => $this->settings->get('blog.title'),
+            'desc' => $this->settings->get('blog.desc'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+        //exit();
     }
 
     public function getDisplayAntrianLaboratorium()
@@ -296,13 +364,32 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
         $title = 'Display Antrian Laboratorium';
         $display = $this->_resultDisplayAntrianLaboratorium();
-        echo $this->draw('display.antrian.laboratorium.html', [
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.laboratorium.html', [
           'logo' => $logo,
           'title' => $title,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_laboratorium'),
           'display' => $display
         ]);
-        exit();
+
+        $assign = [
+            'title' => $this->settings->get('blog.title'),
+            'desc' => $this->settings->get('blog.desc'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+        //exit();
     }
 
     public function _resultDisplayAntrianLaboratorium()

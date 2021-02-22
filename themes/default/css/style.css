@@ -106,7 +106,7 @@ hr.small {
         box-shadow: none;
     }
     .navbar-custom .nav > li > form > select > option {
-        color: initial;    
+        color: initial;
     }
     .navbar-custom .nav > li > a:hover,
     .navbar-custom .nav > li > a:focus {
