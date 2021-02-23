@@ -35,16 +35,28 @@ return [
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'about_42', 'website/clinic_01.jpg')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_11', 'FASILITAS PREMIUM')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_12', 'Untuk memastikan bahwa Anda diberi perawatan terbaik')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_13', 'website/service-icon1.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_14', 'Terbaik Dibidangnya')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_21', 'LABORATORIUM')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_22', 'Alat laboratorium terbaik untuk ketepatan diagnosa')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_23', 'website/service-icon2.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_24', 'Tekhnologi Terkini')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_31', 'DOKTER SPESIALIS')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_32', 'Dilayani 35 Dokter Spesialis dan Sub Spesialis')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_33', 'website/service-icon3.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_34', 'Akurat & Rendah Radiasi')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_41', 'PERAWATAN ANAK')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_42', 'Deteksi dini dan pelayanan tumbuh kembang anak')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_43', 'website/service-icon4.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_44', 'Untuk Buah Hati')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_51', 'LAYANAN FARMASI')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_52', 'Memastikan ketepatan indikasi, aturan dan dosis obat')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_53', 'website/service-icon5.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_54', 'Tepat & Cepat')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_61', 'BANK DARAH')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_62', 'Menjamin ketersediaan darah untuk transfusi yang aman')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_63', 'website/service-icon1.png')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'services_64', 'Aman dan Nyaman')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'footer_about', 'Rumah Sakit Pemerintah tipe C dengan layanan terdepan menggunakan tekhnologi terkini.')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'footer_informasi_11', 'Jadwal Dokter')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'footer_informasi_12', 'http://localhost/webapps/jadwal.php')");
@@ -67,6 +79,12 @@ return [
         copy(MODULES.'/website/img/clinic_01.jpg', UPLOADS.'/website/clinic_01.jpg');
         copy(MODULES.'/website/img/clinic_02.jpg', UPLOADS.'/website/clinic_02.jpg');
         copy(MODULES.'/website/img/clinic_03.jpg', UPLOADS.'/website/clinic_03.jpg');
+        copy(MODULES.'/website/img/service-icon1.png', UPLOADS.'/website/service-icon1.png');
+        copy(MODULES.'/website/img/service-icon2.png', UPLOADS.'/website/service-icon2.png');
+        copy(MODULES.'/website/img/service-icon3.png', UPLOADS.'/website/service-icon3.png');
+        copy(MODULES.'/website/img/service-icon4.png', UPLOADS.'/website/service-icon4.png');
+        copy(MODULES.'/website/img/service-icon5.png', UPLOADS.'/website/service-icon5.png');
+        copy(MODULES.'/website/img/service-icon6.png', UPLOADS.'/website/service-icon6.png');
 
     },
     'uninstall'     =>  function () use ($core) {

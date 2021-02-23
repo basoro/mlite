@@ -23,6 +23,18 @@
       }
       li:nth-child(even) {background: #0264d6; color: #ffffff;}
       li:nth-child(odd) {background: #ffffff; color: #0264d6;}
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
     </style>
 </head>
 <body>
@@ -47,9 +59,18 @@
       </tr>
     </tbody>
   </table>
-  <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:20px;">
+  <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
     <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
   </div>
 </div>
+<footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+  <div class="canvas">
+    <p class="pull-right">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$powered}.
+    </p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+  </div>
+</footer>
 </body>
 </html>

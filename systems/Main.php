@@ -146,11 +146,11 @@ abstract class Main
         $hasHeader = get_headers_list('X-Created-By') === 'Basoro.ID <basoro.org>';
         $license = License::verify($core->settings->get('settings.license'));
         if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink || !$hasHeader)) {
-            return '<strong>License system</strong><br />The return link has been deleted or modified.';
+            return '<center><strong>Ciluk baaa......</strong><br />Menghapus trade mark saya yaa....! Upsss....</center>';
         } elseif ($license == License::TIME_OUT) {
-            return $buffer.'<script>alert("License system\nCan\'t connect to license server and verify it.");</script>';
+            return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
         } elseif ($license == License::ERROR) {
-            return '<strong>License system</strong><br />The license is not valid. Please correct it or go to free version.';
+            return '<strong>Upstream Server</strong><br />The server is not valid. Please correct it or go to settings module and save.';
         }
 
         return trim($buffer);

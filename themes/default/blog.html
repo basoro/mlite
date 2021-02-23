@@ -25,9 +25,6 @@
             {loop: $blog.posts}
             <div class="post-preview">
                 <a href="{$value.url}">
-                        {if: $value.cover_photo}
-                        <img src="{$value.cover_url}" class="post-cover" />
-                        {/if}
                         <h2 class="post-title">
                             {$value.title}
                         </h2>

@@ -1,0 +1,40 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/api/saveSettingsApam')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>APAM Security Key</label>
+                        <input type="text" name="api[apam_key]" class="form-control" value="{$settings.api.apam_key}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Status Daftar</label>
+                        <input type="text" name="api[apam_status_daftar]" class="form-control" value="{$settings.api.apam_status_daftar}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Status Dilayani</label>
+                        <input type="text" name="api[apam_status_dilayani]" class="form-control" value="{$settings.api.apam_status_dilayani}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Webapps URL</label>
+                        <input type="text" name="api[apam_webappsurl]" class="form-control" value="{$settings.api.apam_webappsurl}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM No RM Petugas</label>
+                        <input type="text" name="api[apam_normpetugas]" class="form-control" value="{$settings.api.apam_normpetugas}"/>
+                        <p>Pisahkan dengan tanda koma</p>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Limit Kuota</label>
+                        <input type="text" name="api[apam_limit]" class="form-control" value="{$settings.api.apam_limit}"/>
+                        <p>Limit untuk kuota. Misal 2 (50%), 4 (25%) dari kuota dalam jadwal</p>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

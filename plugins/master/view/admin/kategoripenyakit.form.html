@@ -1,0 +1,33 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kode Kategori</label>
+            <div class="col-sm-9">
+              <input type="text" id="kd_ktg" name="kd_ktg" class="form-control" value="{$kategoripenyakit.form.kd_ktg}" {if: !empty($kategoripenyakit.form.kd_ktg)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama Kategori</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_kategori" class="form-control" value="{$kategoripenyakit.form.nm_kategori}">
+			</div>
+          </div>
+		  <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Ciri Umum</label>
+            <div class="col-sm-9">
+              <input type="text" name="ciri_umum" class="form-control" value="{$kategoripenyakit.form.ciri_umum}">  
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>

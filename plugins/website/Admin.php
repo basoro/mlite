@@ -129,6 +129,55 @@ class Admin extends AdminModule
                 $_POST['website']['about_bg'] = 'website/about_bg_'.$imgName.'.'.$img->getInfos('type');
             }
         }
+        if ($img->load(isset_or($_FILES['services_13']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_13_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_13'] = 'website/services_13_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_23']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_23_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_23'] = 'website/services_23_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_33']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_33_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_33'] = 'website/services_33_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_43']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_43_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_43'] = 'website/services_43_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_53']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_53_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_53'] = 'website/services_53_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_63']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_63_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_63'] = 'website/services_63_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+
         foreach ($_POST['website'] as $key => $val) {
             $this->settings('website', $key, $val);
         }
