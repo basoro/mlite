@@ -351,7 +351,7 @@ class Admin extends AdminModule
         return $return;
     }
 
-    public function countCurrentVisiteBatal()
+    public function countCurrentVisiteBatal($stts)
     {
         $date = date('Y-m-d');
         $record = $this->db('reg_periksa')
@@ -359,13 +359,13 @@ class Admin extends AdminModule
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
             ->where('tgl_registrasi', $date)
-            ->where('stts','Batal')
+            ->where('stts',$stts)
             ->oneArray();
 
         return $record['count'];
     }
 
-    public function countLastCurrentVisiteBatal()
+    public function countLastCurrentVisiteBatal($stts)
     {
         $date = date('Y-m-d', strtotime('-1 days'));
         $record = $this->db('reg_periksa')
@@ -373,7 +373,7 @@ class Admin extends AdminModule
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
             ->where('tgl_registrasi', $date)
-            ->where('stts','Batal')
+            ->where('stts',$stts)
             ->oneArray();
 
         return $record['count'];
@@ -551,6 +551,86 @@ class Admin extends AdminModule
         return $return;
     }
 
+    public function countRanap($tgl,$stts)
+    {
+        $date = date('Y-m-d');
+        $arr = is_array($stts) ? 'Yes' : 'No';
+        if ($arr == 'Yes') {
+            $poliklinik = implode("','",$stts);
+        } else {
+            $poliklinik = str_replace(",","','", $stts);
+        }
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
+        $query->execute();
+        $count = $query->fetchColumn();
+        return $count;
+    }
+
+    public function countLastRanap($tgl,$stts)
+    {
+        $date = date('Y-m-d', strtotime('-1 days'));
+        $arr = is_array($stts) ? 'Yes' : 'No';
+        if ($arr == 'Yes') {
+            $poliklinik = implode("','",$stts);
+        } else {
+            $poliklinik = str_replace(",","','", $stts);
+        }
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
+        $query->execute();
+        $count = $query->fetchColumn();
+        return $count;
+    }
+    
+    public function countKamarInap()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('kamar_inap')
+            ->select([
+              'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
+              'nm_bangsal'     => 'bangsal.nm_bangsal',
+            ])
+            ->join('kamar', 'kamar_inap.kd_kamar = kamar.kd_kamar')
+            ->join('bangsal', 'kamar.kd_bangsal = bangsal.kd_bangsal')
+            ->where('kamar_inap.stts_pulang', '-')
+            ->group(['bangsal.kd_bangsal'])
+            ->desc('bangsal.nm_bangsal');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_bangsal'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function countDx()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
+        $query->execute();
+
+            $data = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_penyakit'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
     public function getPendaftaran()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
@@ -561,7 +641,7 @@ class Admin extends AdminModule
         $stats['poliChartBaru'] = $this->poliChartBaru();
         $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
         $stats['getCurrentVisities'] = number_format($this->countCurrentVisite(),0,'','.');
-        $stats['getCurrentVisitiesBatal'] = number_format($this->countCurrentVisiteBatal(),0,'','.');
+        $stats['getCurrentVisitiesBatal'] = number_format($this->countCurrentVisiteBatal('Batal'),0,'','.');
         $stats['getCurrentVisitiesBaru'] = number_format($this->countCurrentVisiteBaru(),0,'','.');
         $stats['percentTotal'] = 0;
         if($this->countVisite() != 0) {
@@ -572,11 +652,11 @@ class Admin extends AdminModule
             $stats['percentDays'] = number_format((($this->countCurrentVisite()-$this->countLastCurrentVisite())/$this->countCurrentVisite())*100,0,'','.');
         }
         $stats['percentDaysBatal'] = 0;
-        if($this->countCurrentVisite() != 0) {
-            $stats['percentDaysBatal'] = number_format((($this->countCurrentVisiteBatal()-$this->countLastCurrentVisiteBatal())/$this->countCurrentVisiteBatal())*100,0,'','.');
+        if($this->countCurrentVisiteBatal('Batal') != 0) {
+            $stats['percentDaysBatal'] = number_format((($this->countCurrentVisiteBatal('Batal')-$this->countLastCurrentVisiteBatal('Batal'))/$this->countCurrentVisiteBatal('Batal'))*100,0,'','.');
         }
         $stats['percentDaysBaru'] = 0;
-        if($this->countCurrentVisite() != 0) {
+        if($this->countCurrentVisiteBaru() != 0) {
             $stats['percentDaysBaru'] = number_format((($this->countCurrentVisiteBaru()-$this->countLastCurrentVisiteBaru())/$this->countCurrentVisiteBaru())*100,0,'','.');
         }
         
@@ -588,14 +668,74 @@ class Admin extends AdminModule
 
     public function getRawatJalan()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('rawatjalan.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['poliChartBaru'] = $this->countDx();
+        $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
+        $stats['getRujuk'] = number_format($this->countCurrentVisiteBatal('Dirujuk'),0,'','.');
+        $stats['getRawat'] = number_format($this->countCurrentVisiteBatal('Dirawat'),0,'','.');
+        $stats['getSudah'] = number_format($this->countCurrentVisiteBatal('Sudah'),0,'','.');
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+            $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+        $stats['percentDays'] = 0;
+        if($this->countCurrentVisiteBatal('Dirujuk') != 0) {
+            $stats['percentDays'] = number_format((($this->countCurrentVisiteBatal('Dirujuk')-$this->countLastCurrentVisiteBatal('Dirujuk'))/$this->countCurrentVisiteBatal('Dirujuk'))*100,0,'','.');
+        }
+        $stats['percentDaysBatal'] = 0;
+        if($this->countCurrentVisiteBatal('Batal') != 0) {
+            $stats['percentDaysBatal'] = number_format((($this->countCurrentVisiteBatal('Batal')-$this->countLastCurrentVisiteBatal('Batal'))/$this->countCurrentVisiteBatal('Batal'))*100,0,'','.');
+        }
+        $stats['percentDaysBaru'] = 0;
+        if($this->countCurrentVisiteBatal('Sudah') != 0) {
+            $stats['percentDaysBaru'] = number_format((($this->countCurrentVisiteBatal('Sudah')-$this->countLastCurrentVisiteBatal('Sudah'))/$this->countCurrentVisiteBatal('Sudah'))*100,0,'','.');
+        }
+
+      return $this->draw('rawatjalan.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+      ]);
     }
 
     public function getRawatInap()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('rawatinap.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['poliChart'] = $this->countKamarInap();
+        $stats['getVisities'] = number_format($this->countVisite(),0,'','.');
+        $stats['getRanapIn'] = number_format($this->countRanap('tgl_masuk','-'),0,'','.');
+        $stats['getRanapOut'] = number_format($this->countRanap('tgl_keluar',array('APS','Membaik')),0,'','.');
+        $stats['getRanapDead'] = number_format($this->countRanap('tgl_keluar','Meninggal'),0,'','.');
+
+        $stats['percentTotal'] = 0;
+        if($this->countVisite() != 0) {
+            $stats['percentTotal'] = number_format((($this->countVisite()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+
+        $stats['percentIn'] = 0;
+        if($this->countRanap('tgl_masuk','-') != 0) {
+            $stats['percentIn'] = number_format((($this->countRanap('tgl_masuk','-')-$this->countLastRanap('tgl_masuk','-'))/$this->countRanap('tgl_masuk','-'))*100,0,'','.');
+        }
+
+        $stats['percentOut'] = 0;
+        if($this->countRanap('tgl_keluar',array('APS','Membaik')) != 0) {
+            $stats['percentOut'] = number_format((($this->countRanap('tgl_keluar',array('APS','Membaik'))-$this->countLastRanap('tgl_keluar',array('APS','Membaik')))/$this->countRanap('tgl_keluar',array('APS','Membaik')))*100,0,'','.');
+        }
+
+        $stats['percentDead'] = 0;
+        if($this->countRanap('tgl_keluar','Meninggal') != 0) {
+            $stats['percentDead'] = number_format((($this->countRanap('tgl_keluar','Meninggal')-$this->countLastRanap('tgl_keluar','Meninggal'))/$this->countRanap('tgl_keluar','Meninggal'))*100,0,'','.');
+        }
+        
+      return $this->draw('rawatinap.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+      ]);
     }
 
     public function getDokter()

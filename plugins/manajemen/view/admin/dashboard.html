@@ -206,7 +206,7 @@
                         backgroundColor: "rgba(30, 30, 45, 0.2)",
                         pointHighlightStroke: "#1e1e2d",
                         pointRadius: 0,
-                        data: ["{?= implode(',', $stats.poliChart.visits) ?}"],
+                        data: ["{?= implode('","', $stats.poliChart.visits) ?}"],
                     }
                 ]
             },
