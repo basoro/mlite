@@ -10,10 +10,21 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'manage',
+            'Kelola'   => 'index',
+            'Rawat Jalan'   => 'manage',
             'Booking'          => 'booking',
             'Jadwal Dokter'          => 'jadwal'
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Rawat Jalan', 'url' => url([ADMIN, 'rawat_jalan', 'manage']), 'icon' => 'wheelchair', 'desc' => 'Pendaftaran pasien rawat jalan'],
+        ['name' => 'Booking', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
+        ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'rawat_jalan', 'jadwal']), 'icon' => 'user-md', 'desc' => 'Jadwal dokter rawat jalan'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     public function anyManage()
