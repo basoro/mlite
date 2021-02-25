@@ -18,6 +18,7 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
+        ['name' => 'Notifikasi APAM', 'url' => url([ADMIN, 'api', 'notifikasi']), 'icon' => 'database', 'desc' => 'Notifikasi APAM API'],
         ['name' => 'Pengaturan APAM', 'url' => url([ADMIN, 'api', 'settingsapam']), 'icon' => 'database', 'desc' => 'Pengaturan APAM API'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
