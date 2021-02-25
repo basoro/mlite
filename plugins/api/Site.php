@@ -244,8 +244,8 @@ class Site extends SiteModule
                   GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit,
                   GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng,
                   GROUP_CONCAT(CONCAT_WS(':', m.pemeriksaan, l.nilai)SEPARATOR '<br>') AS pemeriksaan_lab,
-                  GROUP_CONCAT(CONCAT_WS(':', o.nm_perawatan, p.hasil)SEPARATOR '<br>') AS hasil_radiologi
-                  GROUP_CONCAT(DISTINCT q.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi,
+                  GROUP_CONCAT(CONCAT_WS(':', o.nm_perawatan, p.hasil)SEPARATOR '<br>') AS hasil_radiologi,
+                  GROUP_CONCAT(DISTINCT q.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi 
                 FROM reg_periksa a
                 LEFT JOIN kamar_inap j ON a.no_rawat = j.no_rawat
                 LEFT JOIN kamar k ON j.kd_kamar = k.kd_kamar
