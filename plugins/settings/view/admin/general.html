@@ -143,6 +143,28 @@
                          </div>
                     </div>
                     {/if}
+                    <div class="form-group">
+                        <label>Aktifkan Cek Status Bayar</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="cekstatusbayar" value="0" {if: $settings.cekstatusbayar == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="cekstatusbayar" value="1" {if: $settings.cekstatusbayar == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Aktifkan Cek Limit Kuota</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="ceklimit" value="0" {if: $settings.ceklimit == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="ceklimit" value="1" {if: $settings.ceklimit == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>

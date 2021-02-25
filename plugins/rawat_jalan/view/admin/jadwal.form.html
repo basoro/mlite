@@ -1,0 +1,68 @@
+<article class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">{$pendaftaran.title}</h3>
+            </div>
+            <div class="panel-body">
+    		<form name="pendaftaran" action="{$pendaftaran.postUrl}" method="POST">
+    			<fieldset>
+                  <div class="form-group">
+                      <label>Nama Dokter</label>
+                      <select name="kd_dokter" id="kd_dokter" class="form-control">
+                        {loop: $pendaftaran.dokter}
+                          <option value="{$value.kd_dokter}"{if: $value.kd_dokter == $pendaftaran.form.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                        {/loop}
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Hari Kerja</label>
+                      <select name="hari_kerja" id="hari_kerja" class="form-control">
+                        {loop: $pendaftaran.hari_kerja}
+                          <option value="{$value}"{if: $value == $pendaftaran.form.hari_kerja} selected{/if}>{$value}</option>
+                        {/loop}
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Jam Mulai</label>
+                      <input type="text" name="jam_mulai" class="form-control timepicker" value="{$pendaftaran.form.jam_mulai}" data-time-format="H:i:s" data-step="30" data-min-time="01:00" data-max-time="24:00" data-show-2400="true"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Jam Selesai</label>
+                      <input type="text" name="jam_selesai" class="form-control timepicker" value="{$pendaftaran.form.jam_selesai}" data-time-format="H:i:s" data-step="30" data-min-time="01:00" data-max-time="24:00" data-show-2400="true"/>
+                  </div>
+                  <div class="form-group">
+                      <label>Nama poliklinik</label>
+                      <select name="kd_poli" id="kd_poli" class="form-control">
+                        {loop: $pendaftaran.poliklinik}
+                          <option value="{$value.kd_poli}"{if: $value.kd_poli == $pendaftaran.form.kd_poli} selected{/if}>{$value.nm_poli}</option>
+                        {/loop}
+                      </select>
+                  </div>
+                  <div class="form-group">
+                      <label>Kuota</label>
+                      <input type="text" name="kuota" class="form-control" value="{$pendaftaran.form.kuota}"/>
+                  </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </fieldset>
+            </form>
+            </div>
+        </div>
+    </div>
+</article>
+<script type="text/javascript">
+  $( function() {
+    $( ".datepicker" ).datepicker({
+      dateFormat: "yy-mm-dd",
+      changeMonth: true,
+      changeYear: true,
+      yearRange: "-100:+0",
+    });
+  } );
+
+  $( function() {
+    $('.timepicker').timepicker();
+  } );  
+</script>
