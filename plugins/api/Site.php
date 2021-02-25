@@ -72,10 +72,6 @@ class Site extends SiteModule
               $id = trim($_REQUEST['id']);
               $this->db('mlite_notifications')->where('id', $id)->update('status', 'read');
             break;
-            case "tandaisudahdibacasemua":
-              $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $this->db('mlite_notifications')->where('no_rkm_medis', $no_rkm_medis)->update('status', 'read');
-            break;
             case "notifbooking":
               $data = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
