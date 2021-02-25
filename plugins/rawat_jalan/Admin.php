@@ -439,9 +439,6 @@ class Admin extends AdminModule
 
     public function getJadwal()
     {
-        $this->core->addCSS(url('assets/css/jquery-ui.css'));
-        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
-
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
