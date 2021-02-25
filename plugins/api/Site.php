@@ -59,10 +59,10 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = '$no_rkm_medis' ORDER BY 'tanggal' DESC";
-              $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
-              $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+              $result = $this->db('mlite_notifications')
+                ->where('no_rkm_medis', $no_rkm_medis)
+                ->desc('id')
+                ->toArray();
               foreach ($result as $row) {
                 $results[] = $row;
               }
