@@ -125,7 +125,7 @@
                     <button type="submit" class="btn btn-danger" id="parameter_histori_pelayanan">
                         Kirim Parameter
                     </button>
-                    <div id="histori_pelayanan"></div>
+                    <div id=""></div>
                   </div>
               </div>
           </div>
@@ -890,7 +890,8 @@
                 output+="Poli : " + histori[i].poli + "<br/>";
                 output+="Tgl. SEP : " + histori[i].tglSep + "<br/>";
                 output+="No. SEP : " + histori[i].noSep + "<br/>";
-                output+="No. Rjk : " + histori[i].noRujukan;
+                output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
+                output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
                 output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + histori[i].poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
             }
