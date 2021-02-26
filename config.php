@@ -3,11 +3,11 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("Khanza LITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', 'simrs.rshdbarabai.com');
+define('DBHOST', 'localhost');
 define('DBPORT', '3306');
-define('DBUSER', 'rshd_sik');
-define('DBPASS', 'Murakata04');
-define('DBNAME', 'rshd_sik');
+define('DBUSER', 'root');
+define('DBPASS', '');
+define('DBNAME', 'sik');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/webapps');
