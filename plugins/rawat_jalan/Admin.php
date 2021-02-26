@@ -78,6 +78,8 @@ class Admin extends AdminModule
 
     public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_bayar='')
     {
+
+        $this->core->addJS(url('assets/jscripts/responsivevoice.js'));      
         $this->_addHeaderFiles();
 
         $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
