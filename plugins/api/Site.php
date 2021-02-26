@@ -59,10 +59,10 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = '$no_rkm_medis'";
-              $query = $this->db()->pdo()->prepare($sql);
-              $query->execute();
-              $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+              $result = $this->db('mlite_notifications')
+                ->where('no_rkm_medis', $no_rkm_medis)
+                ->desc('id')
+                ->toArray();
               foreach ($result as $row) {
                 $results[] = $row;
               }
@@ -71,10 +71,6 @@ class Site extends SiteModule
             case "tandaisudahdibaca":
               $id = trim($_REQUEST['id']);
               $this->db('mlite_notifications')->where('id', $id)->update('status', 'read');
-            break;
-            case "tandaisudahdibacasemua":
-              $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $this->db('mlite_notifications')->where('no_rkm_medis', $no_rkm_medis)->update('status', 'read');
             break;
             case "notifbooking":
               $data = array();
@@ -212,7 +208,7 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $tgl_registrasi = trim($_REQUEST['tgl_registrasi']);
               $no_reg = trim($_REQUEST['no_reg']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tgl_registrasi = '$tgl_registrasi' AND a.no_reg = '$no_reg' GROUP BY a.no_rawat");
+              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng, GROUP_CONCAT(CONCAT_WS(':', k.pemeriksaan, j.nilai)SEPARATOR '<br>') AS pemeriksaan_lab, GROUP_CONCAT(CONCAT_WS(':', m.nm_perawatan, n.hasil)SEPARATOR '<br>') AS hasil_radiologi, GROUP_CONCAT(DISTINCT o.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng LEFT JOIN detail_periksa_lab j ON a.no_rawat = j.no_rawat LEFT JOIN template_laboratorium k ON j.id_template = k.id_template LEFT JOIN periksa_radiologi l ON a.no_rawat = l.no_rawat LEFT JOIN jns_perawatan_radiologi m ON l.kd_jenis_prw = m.kd_jenis_prw LEFT JOIN hasil_radiologi n ON a.no_rawat = n.no_rawat LEFT JOIN gambar_radiologi o ON a.no_rawat = o.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tgl_registrasi = '$tgl_registrasi' AND a.no_reg = '$no_reg' GROUP BY a.no_rawat");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -246,7 +242,10 @@ class Site extends SiteModule
                   GROUP_CONCAT(DISTINCT e.keluhan SEPARATOR '<br>') AS keluhan,
                   GROUP_CONCAT(DISTINCT e.pemeriksaan SEPARATOR '<br>') AS pemeriksaan,
                   GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit,
-                  GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng
+                  GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng,
+                  GROUP_CONCAT(CONCAT_WS(':', m.pemeriksaan, l.nilai)SEPARATOR '<br>') AS pemeriksaan_lab,
+                  GROUP_CONCAT(CONCAT_WS(':', o.nm_perawatan, p.hasil)SEPARATOR '<br>') AS hasil_radiologi,
+                  GROUP_CONCAT(DISTINCT q.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi 
                 FROM reg_periksa a
                 LEFT JOIN kamar_inap j ON a.no_rawat = j.no_rawat
                 LEFT JOIN kamar k ON j.kd_kamar = k.kd_kamar
@@ -258,6 +257,12 @@ class Site extends SiteModule
                 LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit
                 LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat
                 LEFT JOIN databarang i ON h.kode_brng = i.kode_brng
+                LEFT JOIN detail_periksa_lab l ON a.no_rawat = l.no_rawat
+                LEFT JOIN template_laboratorium m ON l.id_template = m.id_template
+                LEFT JOIN periksa_radiologi n ON a.no_rawat = n.no_rawat
+                LEFT JOIN jns_perawatan_radiologi o ON n.kd_jenis_prw = o.kd_jenis_prw
+                LEFT JOIN hasil_radiologi p ON a.no_rawat = p.no_rawat
+                LEFT JOIN gambar_radiologi q ON a.no_rawat = q.no_rawat
                 WHERE a.no_rkm_medis = '$no_rkm_medis'
                 AND a.tgl_registrasi = '$tgl_registrasi'
                 AND a.no_reg = '$no_reg'
