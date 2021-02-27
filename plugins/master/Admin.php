@@ -27,6 +27,13 @@
     use Plugins\Master\Src\MasterAturanPakai;
     use Plugins\Master\Src\MasterBerkasDigital;
     use Plugins\Master\Src\Spesialis;
+    use Plugins\Master\Src\Bank;
+    use Plugins\Master\Src\Bidang;
+    use Plugins\Master\Src\Departemen;
+    use Plugins\Master\Src\EmergencyIndex;
+    use Plugins\Master\Src\Jabatan;
+    use Plugins\Master\Src\JenjangJabatan;
+    use Plugins\Master\Src\KelompokJabatan;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -59,6 +66,13 @@
       	    $this->masterberkasdigital = new MasterBerkasDigital();
       	    $this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
+	    $this->bank = new Bank();
+            $this->bidang = new Bidang();
+            $this->departemen = new Departemen();
+            $this->emergencyindex = new EmergencyIndex();
+            $this->jabatan = new Jabatan();
+            $this->jenjangjabatan = new JenjangJabatan();
+            $this->kelompokjabatan = new KelompokJabatan();
         }
 
         public function navigation()
