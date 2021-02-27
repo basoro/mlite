@@ -34,7 +34,7 @@ class MasterBerkasDigital
 
     public function anyForm()
     {
-        if (isset($_POST['kode_berkas'])){
+        if (isset($_POST['kode'])){
           $return['form'] = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray();
         } else {
           $return['form'] = [
