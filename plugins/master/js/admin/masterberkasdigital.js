@@ -51,7 +51,7 @@ $("#display").on("click", ".edit", function(event){
   var url    = baseURL + '/master/masterberkasdigitalform?t=' + mlite.token;
   var kode  = $(this).attr("data-kode");
 
-  $.post(url, {kode_berkas: kode_} ,function(data) {
+  $.post(url, {kode: kode_} ,function(data) {
     // tampilkan data
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
