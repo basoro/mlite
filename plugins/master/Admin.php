@@ -1317,7 +1317,97 @@
             exit();
         }
         /* End Spesialis Section */
+	    
+	/* Start Bank Section */
+        public function getBank()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'bankjs']), 'footer');
+          $return = $this->bank->getIndex();
+          return $this->draw('bank.html', [
+            'bank' => $return
+          ]);
 
+        }
+
+        public function anyBankForm()
+        {
+            $return = $this->bank->anyForm();
+            echo $this->draw('bank.form.html', ['bank' => $return]);
+            exit();
+        }
+
+        public function anyBankDisplay()
+        {
+            $return = $this->bank->anyDisplay();
+            echo $this->draw('bank.display.html', ['bank' => $return]);
+            exit();
+        }
+
+        public function postBankSave()
+        {
+          $this->bank->postSave();
+          exit();
+        }
+
+        public function postBankHapus()
+        {
+          $this->bank->postHapus();
+          exit();
+        }
+
+        public function getBankJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/bank.js');
+            exit();
+        }
+        /* End Bank Section */
+	
+	/* Start Bidang Section */
+        public function getBidang()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'bidangjs']), 'footer');
+          $return = $this->bidang->getIndex();
+          return $this->draw('bidang.html', [
+            'bidang' => $return
+          ]);
+
+        }
+
+        public function anyBidangForm()
+        {
+            $return = $this->bidang->anyForm();
+            echo $this->draw('bidang.form.html', ['bidang' => $return]);
+            exit();
+        }
+
+        public function anyBidangDisplay()
+        {
+            $return = $this->bidang->anyDisplay();
+            echo $this->draw('bidang.display.html', ['bidang' => $return]);
+            exit();
+        }
+
+        public function postBidangSave()
+        {
+          $this->bidang->postSave();
+          exit();
+        }
+
+        public function postBidangHapus()
+        {
+          $this->bidang->postHapus();
+          exit();
+        }
+
+        public function getBidangJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/bidang.js');
+            exit();
+        }
+        /* End Bidang Section */
+	
         public function getCSS()
         {
             header('Content-type: text/css');
