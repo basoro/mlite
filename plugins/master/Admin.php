@@ -34,6 +34,7 @@
     use Plugins\Master\Src\Jabatan;
     use Plugins\Master\Src\JenjangJabatan;
     use Plugins\Master\Src\KelompokJabatan;
+    use Plugins\Master\Src\Pendidikan;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -73,6 +74,7 @@
             $this->jabatan = new Jabatan();
             $this->jenjangjabatan = new JenjangJabatan();
             $this->kelompokjabatan = new KelompokJabatan();
+	    $this->pendidikan = new Pendidikan();
         }
 
         public function navigation()
