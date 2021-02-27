@@ -10,9 +10,9 @@
       <tbody>
         {if: $masterberkasdigital.list}
         {loop: $masterberkasdigital.list}
-        <tr class="edit" data-kode_berkas="{$value.kode_berkas}">
-          <td>{$value.kode_berkas}</td>
-          <td>{$value.nama_berkas}</td>
+        <tr class="edit" data-kode="{$value.kode}">
+          <td>{$value.kode}</td>
+          <td>{$value.nama}</td>
         </tr>
         {/loop}
         {else}
