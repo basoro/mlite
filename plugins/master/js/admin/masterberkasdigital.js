@@ -63,7 +63,7 @@ $("#display").on("click", ".edit", function(event){
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/master/masterberkasdigital?t=' + mlite.token;
+  var url = baseURL + '/master/masterberkasdigitalhapus?t=' + mlite.token;
   var kode = $('input:text[name=kode]').val();
 
   // tampilkan dialog konfirmasi
