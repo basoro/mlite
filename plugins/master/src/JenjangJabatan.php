@@ -4,7 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
-class MasterBerkasDigital
+class JenjangJabatan
 {
 
     protected function db($table)
@@ -15,7 +15,7 @@ class MasterBerkasDigital
     public function getIndex()
     {
 
-      $totalRecords = $this->db('master_berkas_digital')
+      $totalRecords = $this->db('jnj_jabatan')
         ->select('kode')
         ->toArray();
       $offset         = 10;
@@ -23,7 +23,7 @@ class MasterBerkasDigital
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('master_berkas_digital')
+      $return['list'] = $this->db('jnj_jabatan')
         ->desc('kode')
         ->limit(10)
         ->toArray();
@@ -35,11 +35,12 @@ class MasterBerkasDigital
     public function anyForm()
     {
         if (isset($_POST['kode'])){
-          $return['form'] = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray();
+          $return['form'] = $this->db('jnj_jabatan')->where('kode', $_POST['kode'])->oneArray();
         } else {
           $return['form'] = [
             'kode' => '',
-            'nama' => ''
+            'nama' => '',
+	          'tnj' => ''
           ];
         }
 
@@ -50,7 +51,7 @@ class MasterBerkasDigital
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('master_berkas_digital')
+        $totalRecords = $this->db('jnj_jabatan')
           ->select('kode')
           ->toArray();
         $offset         = 10;
@@ -58,16 +59,17 @@ class MasterBerkasDigital
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('master_berkas_digital')
+        $return['list'] = $this->db('jnj_jabatan')
           ->desc('kode')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('master_berkas_digital')
+          $return['list'] = $this->db('jnj_jabatan')
             ->like('kode', '%'.$_POST['cari'].'%')
             ->orLike('nama', '%'.$_POST['cari'].'%')
+	          ->orLike('tnj', '%'.$_POST['cari'].'%')
             ->desc('kode')
             ->offset(0)
             ->limit($perpage)
@@ -77,7 +79,7 @@ class MasterBerkasDigital
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('master_berkas_digital')
+          $return['list'] = $this->db('jnj_jabatan')
             ->desc('kode')
             ->offset($offset)
             ->limit($perpage)
@@ -90,17 +92,17 @@ class MasterBerkasDigital
 
     public function postSave()
     {
-      if (!$this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray()) {
-        $query = $this->db('master_berkas_digital')->save($_POST);
+      if (!$this->db('jnj_jabatan')->where('kode', $_POST['kode'])->oneArray()) {
+        $query = $this->db('jnj_jabatan')->save($_POST);
       } else {
-        $query = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->save($_POST);
+        $query = $this->db('jnj_jabatan')->where('kode', $_POST['kode'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->delete();
+      return $this->db('jnj_jabatan')->where('kode', $_POST['kode'])->delete();
     }
 
 }

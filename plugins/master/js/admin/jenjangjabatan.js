@@ -3,7 +3,7 @@ $("#notif").hide();
 $("#index").on('click', '#bukaform', function(){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  $("#form").show().load(baseURL + '/master/masterberkasdigitalform?t=' + mlite.token);
+  $("#form").show().load(baseURL + '/master/jenjangjabatanform?t=' + mlite.token);
   $("#bukaform").val("Tutup Form");
   $("#bukaform").attr("id", "tutupform");
 });
@@ -26,19 +26,21 @@ $("#form").on("click", "#simpan", function(event){
   event.preventDefault();
   var kode = $('input:text[name=kode]').val();
   var nama = $('input:text[name=nama]').val();
+  var tnj = $('input:text[name=tnj]').val();
 
-  var url = baseURL + '/master/masterberkasdigitalsave?t=' + mlite.token;
+  var url = baseURL + '/master/jenjangjabatansave?t=' + mlite.token;
 
   $.post(url,{
     kode: kode,
-    nama: nama
+    nama: nama,
+    tnj: tnj
   } ,function(data) {
-      $("#display").show().load(baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token);
+      $("#display").show().load(baseURL + '/master/jenjangjabatandisplay?t=' + mlite.token);
       $("#form").hide();
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data berkas digital telah disimpan!"+
+      "Data telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });
@@ -48,7 +50,7 @@ $("#form").on("click", "#simpan", function(event){
 $("#display").on("click", ".edit", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/masterberkasdigitalform?t=' + mlite.token;
+  var url    = baseURL + '/master/jenjangjabatanform?t=' + mlite.token;
   var kode  = $(this).attr("data-kode");
 
   $.post(url, {kode: kode} ,function(data) {
@@ -63,7 +65,7 @@ $("#display").on("click", ".edit", function(event){
 $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url = baseURL + '/master/masterberkasdigitalhapus?t=' + mlite.token;
+  var url = baseURL + '/master/jenjangjabatanhapus?t=' + mlite.token;
   var kode = $('input:text[name=kode]').val();
 
   // tampilkan dialog konfirmasi
@@ -78,9 +80,9 @@ $("#form").on("click","#hapus", function(event){
         $("#form").hide();
         $("#tutupform").val("Buka Form");
         $("#tutupform").attr("id", "bukaform");
-        $("#display").load(baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token);
+        $("#display").load(baseURL + '/master/jenjangjabatandisplay?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data berkas digital telah dihapus!"+
+        "Data telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });
@@ -91,7 +93,7 @@ $("#form").on("click","#hapus", function(event){
 // ketika inputbox pencarian diisi
 $('input:text[name=cari]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;
-  var url    = baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/jenjangjabatandisplay?t=' + mlite.token;
   var cari = $('input:text[name=cari]').val();
 
   if(cari!="") {
@@ -100,7 +102,7 @@ $('input:text[name=cari]').on('input',function(e){
         $("#display").html(data).show();
       });
   } else {
-      $("#display").load(baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token);
+      $("#display").load(baseURL + '/master/jenjangjabatandisplay?t=' + mlite.token);
   }
 
 });
@@ -110,7 +112,7 @@ $('input:text[name=cari]').on('input',function(e){
 $("#display").on("click", ".halaman",function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
-  var url    = baseURL + '/master/masterberkasdigitaldisplay?t=' + mlite.token;
+  var url    = baseURL + '/master/jenjangjabatandisplay?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
 
   $.post(url, {halaman: kd_hal} ,function(data) {
@@ -124,4 +126,5 @@ $("#display").on("click", ".halaman",function(event){
 function bersih(){
   $('input:text[name=kode]').val("").removeAttr('disabled');
   $('input:text[name=nama]').val("");
+  $('input:text[name=tnj]').val("");
 }

@@ -1,0 +1,39 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kode Kelompok Jabatan</label>
+            <div class="col-sm-9">
+              <input type="text" id="kode_kelompok" name="kode_kelompok" class="form-control" value="{$kelompokjabatan.form.kode_kelompok}" {if: !empty($kelompokjabatan.form.kode_kelompok)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama Kelompok Jabatan</label>
+            <div class="col-sm-9">
+              <input type="text" name="nama_kelompok" class="form-control" value="{$kelompokjabatan.form.nama_kelompok}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Index</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="indek">
+                <option value="1"{if: $kelompokjabatan.form.indek == '1'} selected{/if}>Aktif</option>
+                <option value="0"{if: $kelompokjabatan.form.indek == '0'} selected{/if}>Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>

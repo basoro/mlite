@@ -4,7 +4,7 @@ namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
 
-class MasterBerkasDigital
+class KelompokJabatan
 {
 
     protected function db($table)
@@ -15,16 +15,16 @@ class MasterBerkasDigital
     public function getIndex()
     {
 
-      $totalRecords = $this->db('master_berkas_digital')
-        ->select('kode')
+      $totalRecords = $this->db('kelompok_jabatan')
+        ->select('kode_kelompok')
         ->toArray();
       $offset         = 10;
       $return['halaman']    = 1;
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('master_berkas_digital')
-        ->desc('kode')
+      $return['list'] = $this->db('kelompok_jabatan')
+        ->desc('kode_kelompok')
         ->limit(10)
         ->toArray();
 
@@ -34,12 +34,13 @@ class MasterBerkasDigital
 
     public function anyForm()
     {
-        if (isset($_POST['kode'])){
-          $return['form'] = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray();
+        if (isset($_POST['kode_kelompok'])){
+          $return['form'] = $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray();
         } else {
           $return['form'] = [
-            'kode' => '',
-            'nama' => ''
+            'kode_kelompok' => '',
+            'nama_kelompok' => '',
+            'indek' => ''
           ];
         }
 
@@ -50,25 +51,25 @@ class MasterBerkasDigital
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('master_berkas_digital')
-          ->select('kode')
+        $totalRecords = $this->db('kelompok_jabatan')
+          ->select('kode_kelompok')
           ->toArray();
         $offset         = 10;
         $return['halaman']    = 1;
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('master_berkas_digital')
-          ->desc('kode')
+        $return['list'] = $this->db('kelompok_jabatan')
+          ->desc('kode_kelompok')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('master_berkas_digital')
-            ->like('kode', '%'.$_POST['cari'].'%')
-            ->orLike('nama', '%'.$_POST['cari'].'%')
-            ->desc('kode')
+          $return['list'] = $this->db('kelompok_jabatan')
+            ->like('kode_kelompok', '%'.$_POST['cari'].'%')
+            ->orLike('nama_kelompok', '%'.$_POST['cari'].'%')
+            ->desc('kode_kelompok')
             ->offset(0)
             ->limit($perpage)
             ->toArray();
@@ -77,8 +78,8 @@ class MasterBerkasDigital
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('master_berkas_digital')
-            ->desc('kode')
+          $return['list'] = $this->db('kelompok_jabatan')
+            ->desc('kode_kelompok')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
@@ -90,17 +91,17 @@ class MasterBerkasDigital
 
     public function postSave()
     {
-      if (!$this->db('master_berkas_digital')->where('kode', $_POST['kode'])->oneArray()) {
-        $query = $this->db('master_berkas_digital')->save($_POST);
+      if (!$this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray()) {
+        $query = $this->db('kelompok_jabatan')->save($_POST);
       } else {
-        $query = $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->save($_POST);
+        $query = $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('master_berkas_digital')->where('kode', $_POST['kode'])->delete();
+      return $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->delete();
     }
 
 }
