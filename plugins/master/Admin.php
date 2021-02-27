@@ -1244,7 +1244,7 @@
             exit();
         }
 
-        public function anyMasterBerkasDigital()
+        public function anyMasterBerkasDigitalDisplay()
         {
             $return = $this->masterberkasdigital->anyDisplay();
             echo $this->draw('masterberkasdigital.display.html', ['masterberkasdigital' => $return]);
