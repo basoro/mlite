@@ -1408,6 +1408,276 @@
         }
         /* End Bidang Section */
 	
+	/* Start Departemen Section */
+        public function getDepartemen()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'departemenjs']), 'footer');
+          $return = $this->departemen->getIndex();
+          return $this->draw('departemen.html', [
+            'departemen' => $return
+          ]);
+
+        }
+
+        public function anyDepartemenForm()
+        {
+            $return = $this->departemen->anyForm();
+            echo $this->draw('departemen.form.html', ['departemen' => $return]);
+            exit();
+        }
+
+        public function anyDepartemenDisplay()
+        {
+            $return = $this->departemen->anyDisplay();
+            echo $this->draw('departemen.display.html', ['departemen' => $return]);
+            exit();
+        }
+
+        public function postDepartemenSave()
+        {
+          $this->departemen->postSave();
+          exit();
+        }
+
+        public function postDepartemenHapus()
+        {
+          $this->departemen->postHapus();
+          exit();
+        }
+
+        public function getDepartemenJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/departemen.js');
+            exit();
+        }
+        /* End Departemen Section */
+	
+	/* Start EmergencyIndex Section */
+        public function getEmergencyIndex()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'emergencyindexjs']), 'footer');
+          $return = $this->emergencyindex->getIndex();
+          return $this->draw('emergencyindex.html', [
+            'emergencyindex' => $return
+          ]);
+
+        }
+
+        public function anyEmergencyIndexForm()
+        {
+            $return = $this->emergencyindex->anyForm();
+            echo $this->draw('emergencyindex.form.html', ['emergencyindex' => $return]);
+            exit();
+        }
+
+        public function anyEmergencyIndexDisplay()
+        {
+            $return = $this->emergencyindex->anyDisplay();
+            echo $this->draw('emergencyindex.display.html', ['emergencyindex' => $return]);
+            exit();
+        }
+
+        public function postEmergencyIndexSave()
+        {
+          $this->emergencyindex->postSave();
+          exit();
+        }
+
+        public function postEmergencyIndexHapus()
+        {
+          $this->emergencyindex->postHapus();
+          exit();
+        }
+
+        public function getEmergencyIndexJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/emergencyindex.js');
+            exit();
+        }
+        /* End EmergencyIndex Section */
+	
+	/* Start Jabatan Section */
+        public function getJabatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'jabatanjs']), 'footer');
+          $return = $this->jabatan->getIndex();
+          return $this->draw('jabatan.html', [
+            'jabatan' => $return
+          ]);
+
+        }
+
+        public function anyJabatanForm()
+        {
+            $return = $this->jabatan->anyForm();
+            echo $this->draw('jabatan.form.html', ['jabatan' => $return]);
+            exit();
+        }
+
+        public function anyJabatanDisplay()
+        {
+            $return = $this->jabatan->anyDisplay();
+            echo $this->draw('jabatan.display.html', ['jabatan' => $return]);
+            exit();
+        }
+
+        public function postJabatanSave()
+        {
+          $this->jabatan->postSave();
+          exit();
+        }
+
+        public function postJabatanHapus()
+        {
+          $this->jabatan->postHapus();
+          exit();
+        }
+
+        public function getJabatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/jabatan.js');
+            exit();
+        }
+        /* End Jabatan Section */
+
+        /* Start JenjangJabatan Section */
+        public function getJenjangJabatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'jenjangjabatanjs']), 'footer');
+          $return = $this->jenjangjabatan->getIndex();
+          return $this->draw('jenjangjabatan.html', [
+            'jenjangjabatan' => $return
+          ]);
+
+        }
+
+        public function anyJenjangJabatanForm()
+        {
+            $return = $this->jenjangjabatan->anyForm();
+            echo $this->draw('jenjangjabatan.form.html', ['jenjangjabatan' => $return]);
+            exit();
+        }
+
+        public function anyJenjangJabatanDisplay()
+        {
+            $return = $this->jenjangjabatan->anyDisplay();
+            echo $this->draw('jenjangjabatan.display.html', ['jenjangjabatan' => $return]);
+            exit();
+        }
+
+        public function postJenjangJabatanSave()
+        {
+          $this->jenjangjabatan->postSave();
+          exit();
+        }
+
+        public function postJenjangJabatanHapus()
+        {
+          $this->jenjangjabatan->postHapus();
+          exit();
+        }
+
+        public function getJenjangJabatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/jenjangjabatan.js');
+            exit();
+        }
+        /* End JenjangJabatan Section */
+
+        /* Start KelompokJabatan Section */
+        public function getKelompokJabatan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'kelompokjabatanjs']), 'footer');
+          $return = $this->kelompokjabatan->getIndex();
+          return $this->draw('kelompokjabatan.html', [
+            'kelompokjabatan' => $return
+          ]);
+
+        }
+
+        public function anyKelompokJabatanForm()
+        {
+            $return = $this->kelompokjabatan->anyForm();
+            echo $this->draw('kelompokjabatan.form.html', ['kelompokjabatan' => $return]);
+            exit();
+        }
+
+        public function anyKelompokJabatanDisplay()
+        {
+            $return = $this->kelompokjabatan->anyDisplay();
+            echo $this->draw('kelompokjabatan.display.html', ['kelompokjabatan' => $return]);
+            exit();
+        }
+
+        public function postKelompokJabatanSave()
+        {
+          $this->kelompokjabatan->postSave();
+          exit();
+        }
+
+        public function postKelompokJabatanHapus()
+        {
+          $this->kelompokjabatan->postHapus();
+          exit();
+        }
+
+        public function getKelompokJabatanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/kelompokjabatan.js');
+            exit();
+        }
+        /* End KelompokJabatan Section */
+
+        /* Start Pendidikan Section */
+        public function getPendidikan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'pendidikanjs']), 'footer');
+          $return = $this->pendidikan->getIndex();
+          return $this->draw('pendidikan.html', [
+            'pendidikan' => $return
+          ]);
+
+        }
+
+        public function anyPendidikanForm()
+        {
+            $return = $this->pendidikan->anyForm();
+            echo $this->draw('pendidikan.form.html', ['pendidikan' => $return]);
+            exit();
+        }
+
+        public function anyPendidikanDisplay()
+        {
+            $return = $this->pendidikan->anyDisplay();
+            echo $this->draw('pendidikan.display.html', ['pendidikan' => $return]);
+            exit();
+        }
+
+        public function postPendidikanSave()
+        {
+          $this->pendidikan->postSave();
+          exit();
+        }
+
+        public function postPendidikanHapus()
+        {
+          $this->pendidikan->postHapus();
+          exit();
+        }
+
+        public function getPendidikanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/pendidikan.js');
+            exit();
+        }
+        /* End Pendidikan Section */
+	
         public function getCSS()
         {
             header('Content-type: text/css');
