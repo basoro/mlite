@@ -21,11 +21,11 @@
     use Plugins\Master\Src\IndustriFarmasi;
     use Plugins\Master\Src\Jenis;
     use Plugins\Master\Src\KategoriBarang;
-  	use Plugins\Master\Src\KategoriPenyakit;
-  	use Plugins\Master\Src\KategoriPerawatan;
-  	use Plugins\Master\Src\KodeSatuan;
-  	use Plugins\Master\Src\MasterAturanPakai;
-  	use Plugins\Master\Src\MasterBerkasDigital;
+    use Plugins\Master\Src\KategoriPenyakit;
+    use Plugins\Master\Src\KategoriPerawatan;
+    use Plugins\Master\Src\KodeSatuan;
+    use Plugins\Master\Src\MasterAturanPakai;
+    use Plugins\Master\Src\MasterBerkasDigital;
     use Plugins\Master\Src\Spesialis;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
@@ -53,11 +53,11 @@
             $this->industrifarmasi = new IndustriFarmasi();
             $this->jenis = new Jenis();
             $this->kategoribarang = new KategoriBarang();
-      			$this->kategoripenyakit = new KategoriPenyakit();
-      			$this->kategoriperawatan = new KategoriPerawatan();
-      			$this->masteraturanpakai = new MasterAturanPakai();
-      			$this->masterberkasdigital = new MasterBerkasDigital();
-      			$this->kodesatuan = new KodeSatuan();
+      	    $this->kategoripenyakit = new KategoriPenyakit();
+      	    $this->kategoriperawatan = new KategoriPerawatan();
+      	    $this->masteraturanpakai = new MasterAturanPakai();
+      	    $this->masterberkasdigital = new MasterBerkasDigital();
+      	    $this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
         }
 
@@ -1032,7 +1032,7 @@
         }
         /* End KategoriBarang Section */
 
-		/* Start KategoriPenyakit Section */
+	/* Start KategoriPenyakit Section */
         public function getKategoriPenyakit()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoripenyakitjs']), 'footer');
@@ -1077,7 +1077,7 @@
         }
         /* End KategoriPenyakit Section */
 
-		/* Start KategoriPerawatan Section */
+	/* Start KategoriPerawatan Section */
         public function getKategoriPerawatan()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kategoriperawatanjs']), 'footer');
@@ -1122,7 +1122,7 @@
         }
         /* End KategoriPerawatan Section */
 
-		/* Start KodeSatuan Section */
+	/* Start KodeSatuan Section */
         public function getKodeSatuan()
         {
           $this->core->addJS(url([ADMIN, 'master', 'kodesatuanjs']), 'footer');
@@ -1167,7 +1167,7 @@
         }
         /* End KodeSatuan Section */
 
-		/* Start MasterAturanPakai Section */
+	/* Start MasterAturanPakai Section */
         public function getMasterAturanPakai()
         {
           $this->core->addJS(url([ADMIN, 'master', 'masteraturanpakaijs']), 'footer');
@@ -1212,7 +1212,7 @@
         }
         /* End MasterAturanPakai Section */
 
-		/* Start MasterBerkasDigital Section */
+	/* Start MasterBerkasDigital Section */
         public function getMasterBerkasDigital()
         {
           $this->core->addJS(url([ADMIN, 'master', 'masterberkasdigitaljs']), 'footer');
