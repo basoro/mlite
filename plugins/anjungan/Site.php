@@ -735,7 +735,7 @@ class Site extends SiteModule
               $data = array();
               $date = date('Y-m-d');
 
-              $_POST['no_reg']     = $this->core->setNoReg($_POST['kd_dokter']);
+              $_POST['no_reg']     = $this->core->setNoReg($_POST['kd_dokter'], $_POST['kd_poli']);
               $_POST['hubunganpj'] = $this->core->getPasienInfo('keluarga', $_POST['no_rkm_medis']);
               $_POST['almt_pj']    = $this->core->getPasienInfo('alamat', $_POST['no_rkm_medis']);
               $_POST['p_jawab']    = $this->core->getPasienInfo('namakeluarga', $_POST['no_rkm_medis']);
@@ -785,6 +785,7 @@ class Site extends SiteModule
               $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
               $_POST['status_bayar']    = 'Belum Bayar';
               $_POST['no_rawat'] = $this->core->setNoRawat();
+              $_POST['jam_reg'] = date('H:i:s');
 
               $query = $this->db('reg_periksa')->save($_POST);
 

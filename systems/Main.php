@@ -265,18 +265,18 @@ abstract class Main
         return $next_no_rawat;
     }
 
-    public function setNoReg($kd_dokter)
+    public function setNoReg($kd_dokter, $kd_poli = null)
     {
-        $date = date('Y-m-d');
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date' AND kd_dokter = '$kd_dokter'");
-        $last_no_reg->execute();
-        $last_no_reg = $last_no_reg->fetch();
-        if(empty($last_no_reg[0])) {
-          $last_no_reg[0] = '000';
+        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+          $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
         }
-        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
+        if(empty($max_id['no_reg'])) {
+          $max_id['no_reg'] = '000';
+        }
+        $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
 
-        return $next_no_reg;
+        return $_next_no_reg;
     }
 
     public function setNoBooking($kd_dokter, $date)
