@@ -173,62 +173,28 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'racikan') {
-        $cek_resep = $this->db('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
-        if(!$cek_resep) {
-          $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
-          if(empty($max_id['no_resep'])) {
-            $max_id['no_resep'] = '0000';
-          }
-          $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
-          $no_resep = date('Ymd').''.$_next_no_resep;
+        $max_id = $this->db('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
+        if(empty($max_id['no_resep'])) {
+          $max_id['no_resep'] = '0000';
+        }
+        $_next_no_resep = sprintf('%04s', ($max_id['no_resep'] + 1));
+        $no_resep = date('Ymd').''.$_next_no_resep;
 
-          //$_POST['jam_rawat'] = date('H:i:s');
+        $_POST['jam_rawat'] = date('H:i:s');
 
-          $resep_obat = $this->db('resep_obat')
-            ->save([
-              'no_resep' => $no_resep,
-              'tgl_perawatan' => $_POST['tgl_perawatan'],
-              'jam' => $_POST['jam_rawat'],
-              'no_rawat' => $_POST['no_rawat'],
-              'kd_dokter' => $this->core->getUserInfo('username', null, true),
-              'tgl_peresepan' => $_POST['tgl_perawatan'],
-              'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan'
-            ]);
+        $resep_obat = $this->db('resep_obat')
+          ->save([
+            'no_resep' => $no_resep,
+            'tgl_perawatan' => $_POST['tgl_perawatan'],
+            'jam' => $_POST['jam_rawat'],
+            'no_rawat' => $_POST['no_rawat'],
+            'kd_dokter' => $this->core->getUserInfo('username', null, true),
+            'tgl_peresepan' => $_POST['tgl_perawatan'],
+            'jam_peresepan' => $_POST['jam_rawat'],
+            'status' => 'ralan'
+          ]);
 
-          if ($resep_obat) {
-            $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
-            $no_racik = $no_racik+1;
-            $this->db('resep_dokter_racikan')
-              ->save([
-                'no_resep' => $no_resep,
-                'no_racik' => $no_racik,
-                'nama_racik' => $_POST['nama_racik'],
-                'kd_racik' => $_POST['kd_jenis_prw'],
-                'jml_dr' => $_POST['jml'],
-                'aturan_pakai' => $_POST['aturan_pakai'],
-                'keterangan' => $_POST['keterangan']
-              ]);
-            $_POST['kode_brng'] = json_decode($_POST['kode_brng'], true);
-            $_POST['kandungan'] = json_decode($_POST['kandungan'], true);
-            for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
-              $kapasitas = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'][$i]['value'])->oneArray();
-              $jml = $_POST['jml']*$_POST['kandungan'][$i]['value'];
-              $jml = round(($jml/$kapasitas['kapasitas']),1);
-              $this->db('resep_dokter_racikan_detail')
-                ->save([
-                  'no_resep' => $no_resep,
-                  'no_racik' => $no_racik,
-                  'kode_brng' => $_POST['kode_brng'][$i]['value'],
-                  'p1' => '1',
-                  'p2' => '1',
-                  'kandungan' => $_POST['kandungan'][$i]['value'],
-                  'jml' => $jml
-                ]);
-            }
-          }
-        } else {
-          $no_resep = $cek_resep['no_resep'];
+        if ($resep_obat) {
           $no_racik = $this->db('resep_dokter_racikan')->where('no_resep', $no_resep)->count();
           $no_racik = $no_racik+1;
           $this->db('resep_dokter_racikan')
@@ -503,6 +469,7 @@ class Admin extends AdminModule
 
       $rows = $this->db('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
+        ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $resep = [];
