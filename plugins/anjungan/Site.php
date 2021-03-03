@@ -828,7 +828,7 @@ class Site extends SiteModule
     public function getPresensi()
     {
 
-      $title = 'Display Antrian Poliklinik';
+      $title = 'Presensi Pegawai';
       $logo  = $this->settings->get('settings.logo');
 
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
