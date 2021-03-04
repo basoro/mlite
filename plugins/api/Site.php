@@ -245,7 +245,7 @@ class Site extends SiteModule
                   GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng,
                   GROUP_CONCAT(CONCAT_WS(':', m.pemeriksaan, l.nilai)SEPARATOR '<br>') AS pemeriksaan_lab,
                   GROUP_CONCAT(CONCAT_WS(':', o.nm_perawatan, p.hasil)SEPARATOR '<br>') AS hasil_radiologi,
-                  GROUP_CONCAT(DISTINCT q.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi 
+                  GROUP_CONCAT(DISTINCT q.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi
                 FROM reg_periksa a
                 LEFT JOIN kamar_inap j ON a.no_rawat = j.no_rawat
                 LEFT JOIN kamar k ON j.kd_kamar = k.kd_kamar
@@ -393,7 +393,11 @@ class Site extends SiteModule
 
               $jadwal = $this->db('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
 
-              $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('tanggal_periksa', $tanggal)->oneArray();
+              $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
+
+              if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+                $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
+              }
 
               $curr_count = $check_kuota['count'];
               $curr_kuota = $jadwal['kuota'];
