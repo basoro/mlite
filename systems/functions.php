@@ -35,6 +35,23 @@ function createSlug($text)
     return strtolower(str_replace('\'', '', $text));
 }
 
+function convertNorawat($text)
+{
+    setlocale(LC_ALL, 'en_EN');
+    $text = str_replace('/', '', trim($text));
+    return $text;
+}
+
+function revertNorawat($text)
+{
+    setlocale(LC_ALL, 'en_EN');
+    $tahun = substr($text, 0, 4);
+    $bulan = substr($text, 4, 2);
+    $tanggal = substr($text, 6, 2);
+    $nomor = substr($text, 8, 6);
+    $result = $tahun.'/'.$bulan.'/'.$tanggal.'/'.$nomor;
+    return $result;
+}
 
 function htmlspecialchars_array(array $array)
 {
