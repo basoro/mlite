@@ -471,6 +471,7 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->group('resep_dokter.no_resep')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
