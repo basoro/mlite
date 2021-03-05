@@ -431,6 +431,8 @@ class Admin extends AdminModule
     {
         $errors = 0;
 
+        $row_user = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->oneArray();
+
         // location to redirect
         if (!$id) {
             $location = url([ADMIN, 'profil', 'ganti_pass']);
@@ -454,25 +456,9 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            //$row_user = $this->db()->pdo()->prepare("SELECT id_user FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-            //$row_user->execute();
-            //$row_user = $row_user->fetch();
-            $row_user = $this->db('mlite_users')->where('username', $_POST['username'])->oneArray();
-
-            //$password = $this->db()->pdo()->prepare("SELECT AES_DECRYPT(user.password,'windi') as password FROM user WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-            //$password->execute();
-            //$password = $password->fetch();
-
-            //if($row_user) {
             if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
-
-                //if($password['password'] == $_POST['pass_lama']){
-                    //$query = $this->core->db()->pdo()->exec("UPDATE mlite_users SET password=AES_ENCRYPT('$_POST[pass_baru]','windi') WHERE id_user=AES_ENCRYPT('$_POST[username]','nur')");
-                //}
-                $username = $_POST['username'];
                 $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
-                //$query = $this->core->db()->pdo()->exec("UPDATE mlite_users SET password='$password' WHERE username='$username'");
-                $query = $this->db('mlite_users')->where('username', $username)->save(['password' => $password]);
+                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
 
             }
 
