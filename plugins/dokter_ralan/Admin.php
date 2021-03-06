@@ -496,7 +496,7 @@ class Admin extends AdminModule
       $jumlah_total_resep_racikan = 0;
       foreach ($rows_racikan as $row) {
         $row['nomor'] = $i++;
-        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
+        $row['resep_dokter_racikan_detail'] = $this->db('resep_dokter_racikan_detail')->join('databarang', 'databarang.kode_brng=resep_dokter_racikan_detail.kode_brng')->where('no_resep', $row['no_resep'])->asc('no_racik')->toArray();
         foreach ($row['resep_dokter_racikan_detail'] as $value) {
           $value['ralan'] = $value['jml'] * $value['ralan'];
           $jumlah_total_resep_racikan += floatval($value['ralan']);
