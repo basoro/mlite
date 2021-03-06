@@ -141,7 +141,6 @@
             ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_registrasi` (
             `tanggal_booking` date DEFAULT NULL,
             `jam_booking` time DEFAULT NULL,
