@@ -840,7 +840,7 @@ class Site extends SiteModule
         'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
-        'jam_jaga' => $this->db('jam_jaga')->group('shift')->toArray()
+        'jam_jaga' => $this->db('jam_jaga')->group('jam_masuk')->toArray()
       ]);
 
       $assign = [
