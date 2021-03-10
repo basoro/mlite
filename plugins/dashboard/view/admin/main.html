@@ -74,7 +74,7 @@
           <select class="form-control" id="shift" style="width:140px;">
             <option value="">Pilih Shift</option>
             {loop: $jam_jaga}
-            <option value="{$value.shift}">{$value.shift}</option>
+            <option value="{$value.shift}">{$value.jam_masuk}</option>
             {/loop}
           </select><br><br>
           <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">

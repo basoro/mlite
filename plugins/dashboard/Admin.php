@@ -36,7 +36,7 @@ class Admin extends AdminModule
         if($kepegawaian) {
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
           $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-          $jam_jaga = $this->db('jam_jaga')->group('shift')->toArray();
+          $jam_jaga = $this->db('jam_jaga')->group('jam_masuk')->toArray();
         }
         return $this->draw('main.html', [
           'settings' => $settings,
