@@ -86,7 +86,7 @@
           <select class="form-control input-lg" id="shift" style="width:160px;">
             <option value="">Jam Masuk</option>
             {loop: $jam_jaga}
-            <option value="{$value.shift}">{$value.jam_masuk}</option>
+            <option value="{$value.shift}">{$value.jam_masuk} - {$value.jam_pulang}</option>
             {/loop}
           </select><br>
           <div class="row" style="margin-bottom:30px;">
