@@ -147,8 +147,8 @@ abstract class Main
         $license = License::verify($core->settings->get('settings.license'));
         if (($license == License::UNREGISTERED) && $isHTML && (!$hasBacklink || !$hasHeader)) {
             return '<center><strong>Ciluk baaa......</strong><br />Menghapus trade mark saya yaa....! Upsss....</center>';
-        } elseif ($license == License::TIME_OUT) {
-            return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
+        //} elseif ($license == License::TIME_OUT) {
+        //    return $buffer.'<script>alert("Upstream Server\nCan\'t connect to server and verify it.");</script>';
         } elseif ($license == License::ERROR) {
             return '<strong>Upstream Server</strong><br />The server is not valid. Please correct it or go to settings module and save.';
         }
