@@ -57,7 +57,7 @@ return [
       $core->db()->pdo()->exec("ALTER TABLE `mlite_notifications`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_tmpregister` (
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_apamregister` (
         `nama_lengkap` varchar(225) NOT NULL,
         `email` varchar(225) NOT NULL,
         `nomor_ktp` varchar(225) NOT NULL,
