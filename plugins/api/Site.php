@@ -3,6 +3,9 @@
 namespace Plugins\Api;
 
 use Systems\SiteModule;
+use Systems\Lib\PHPMailer\PHPMailer;
+use Systems\Lib\PHPMailer\SMTP;
+use Systems\Lib\PHPMailer\Exception;
 
 class Site extends SiteModule
 {
@@ -61,7 +64,7 @@ class Site extends SiteModule
                 $data['email'] = $email;
                 $data['kode_validasi'] = $rand;
                 $data['time_wait'] = time();
-                $this->sendRegisterEmail($email, $rand);
+                $this->sendRegisterEmail($email, $nama_lengkap, $rand);
               } else {
                 $data['state'] = 'invalid';
               }
@@ -788,26 +791,36 @@ class Site extends SiteModule
       	return $umur;
     }
 
-    private function sendRegisterEmail($email, $number)
-  	{
+    private function sendRegisterEmail($email, $receiver, $number)
+    {
+	  $mail = new PHPMailer(true);
+      $temp  = @file_get_contents(MODULES."/api/email/apam.welcome.html");
 
-  		$temp  = @file_get_contents(MODULES."/api/email/apam.welcome.html");
-
-  		$temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+      $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
       $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
       $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
-  		$temp  = str_replace("{NUMBER}", $number, $temp);
+      $temp  = str_replace("{NUMBER}", $number, $temp);
 
-  		$smtp  = new \Systems\Lib\Smtp(
-  			$this->settings->get('api.apam_smtp_host'),
-  			$this->settings->get('api.apam_smtp_port'),
-  			true,
-  			$this->settings->get('api.apam_smtp_username'),
-  			$this->settings->get('api.apam_smtp_password')
-  		);
+	    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
+      $mail->isSMTP();
+      $mail->Host = $this->settings->get('api.apam_smtp_host');
+      $mail->SMTPAuth = true;
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = $this->settings->get('api.apam_smtp_port');
 
-  		$smtp->debug = false;
-  		$smtp->sendMail($email, $this->core->settings->get('settings.email'), "Verifikasi pendaftaran anda di ".$this->core->settings->get('settings.nama_instansi'), $temp, "HTML");
-  	}
+      $mail->Username = $this->settings->get('api.apam_smtp_username');
+      $mail->Password = $this->settings->get('api.apam_smtp_password'); 
+
+      // Sender and recipient settings
+      $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
+      $mail->addAddress($email, $receiver);
+
+      // Setting the email content
+      $mail->IsHTML(true);
+      $mail->Subject = "Verifikasi pendaftaran anda di ".$this->core->settings->get('settings.nama_instansi');
+      $mail->Body = $temp;
+
+      $mail->send();
+    }
 
 }
