@@ -119,11 +119,11 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
+      $no_rkm_medis = '000001';
       $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
-      if(empty($max_id['no_rkm_medis'])) {
-        $max_id['no_rkm_medis'] = '000000';
+      if($max_id['no_rkm_medis']) {
+        $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
       }
-      $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
 
       $penjab = $this->db('penjab')->toArray();
       $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
@@ -225,7 +225,7 @@ class Admin extends AdminModule
       }
 
       if (!$pasien) {
-        $no_rkm_medis = '000000';
+        $no_rkm_medis = '000001';
         $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
         if($max_id['no_rkm_medis']) {
           $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
