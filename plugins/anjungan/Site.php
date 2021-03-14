@@ -143,7 +143,7 @@ class Site extends SiteModule
                 }
                 $row['selanjutnya'] = $this->db('reg_periksa')
                   ->select('reg_periksa.no_reg')
-                  ->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
                   ->where('reg_periksa.tgl_registrasi', $date)
@@ -169,8 +169,8 @@ class Site extends SiteModule
                   $interval = $row['interval'];
                 }
                 foreach ($row['selanjutnya'] as $value) {
-                  $minutes = $value['no_urut_reg'] * $interval;
-                  $row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                  //$minutes = $value['no_reg'] * $interval;
+                  //$row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
                 }
 
                 $result[] = $row;

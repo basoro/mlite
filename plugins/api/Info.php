@@ -57,12 +57,27 @@ return [
       $core->db()->pdo()->exec("ALTER TABLE `mlite_notifications`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_tmpregister` (
+        `nama_lengkap` varchar(225) NOT NULL,
+        `email` varchar(225) NOT NULL,
+        `nomor_ktp` varchar(225) NOT NULL,
+        `nomor_telepon` varchar(225) DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
+
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_status_daftar', 'Terdaftar')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_status_dilayani', 'Anda siap dilayani')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_webappsurl', 'http://localhost/webapps/')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_normpetugas', '000001,000002')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_limit', '2')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_smtp_host', 'ssl://smtp.gmail.com')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_smtp_port', '465')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_smtp_username', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_smtp_password', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_kdpj', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_kdprop', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_kdkab', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'apam_kdkec', '')");
     },
     'uninstall'     =>  function () use ($core) {
       $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'api'");

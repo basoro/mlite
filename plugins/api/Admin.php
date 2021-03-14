@@ -145,11 +145,25 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
+        $this->assign['penjab'] = $this->db('penjab')->toArray();
         return $this->draw('settings.apam.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettingsApam()
     {
+        $cek_prop = $this->db('propinsi')->where('kd_prop', $_POST['api[apam_kdprop]'])->oneArray();
+        if(!$cek_prop){
+          $this->db('propinsi')->save(['kd_prop' => $_POST['api[apam_kdprop]'], 'nm_prop' => $_POST['nm_prop']]);
+        }
+        $cek_kab = $this->db('kabupaten')->where('kd_kab', $_POST['api[apam_kdkab]'])->oneArray();
+        if(!$cek_kab){
+          $this->db('kabupaten')->save(['kd_kab' => $_POST['api[apam_kdkab]'], 'nm_kab' => $_POST['nm_kab']]);
+        }
+        $cek_kec = $this->db('kecamatan')->where('kd_kec', $_POST['api[apam_kdkec]'])->oneArray();
+        if(!$cek_kec){
+          $this->db('kecamatan')->save(['kd_kec' => $_POST['api[apam_kdkec]'], 'nm_kec' => $_POST['nm_kec']]);
+        }
+
         foreach ($_POST['api'] as $key => $val) {
             $this->settings('api', $key, $val);
         }

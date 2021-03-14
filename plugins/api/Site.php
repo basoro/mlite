@@ -41,6 +41,107 @@ class Site extends SiteModule
               }
               echo json_encode($data);
             break;
+            case "register":
+              $nama_lengkap = trim($_REQUEST['nama_lengkap']);
+              $email = trim($_REQUEST['email']);
+              $nomor_ktp = trim($_REQUEST['nomor_ktp']);
+              $nomor_telepon = trim($_REQUEST['nomor_telepon']);
+              $this->db('mlite_apamregister')->where('email', $email)->delete();
+              $pasien = $this->db('mlite_apamregister')->save([
+                'nama_lengkap' => $nama_lengkap,
+                'email' => $email,
+                'nomor_ktp' => $nomor_ktp,
+                'nomor_telepon' => $nomor_telepon
+              ]);
+              if($this->db('pasien')->where('no_ktp', $nomor_ktp)->orWhere('email', $email)->oneArray()) {
+                $data['state'] = 'duplicate';
+              } else if($pasien) {
+                $rand = mt_rand(100000, 999999);
+                $data['state'] = 'valid';
+                $data['email'] = $email;
+                $data['kode_validasi'] = $rand;
+                $data['time_wait'] = time();
+                $this->sendRegisterEmail($email, $rand);
+              } else {
+                $data['state'] = 'invalid';
+              }
+              echo json_encode($data);
+            break;
+            case "postregister":
+              $results = array();
+              //$_REQUEST['email'] = '000009';
+              $email = trim($_REQUEST['email']);
+              $sql = "SELECT * FROM mlite_apamregister WHERE email = '$email'";
+              $query = $this->db()->pdo()->prepare($sql);
+              $query->execute();
+              $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+              foreach ($rows as $row) {
+                $results[] = $row;
+              }
+              echo json_encode($results[0]);
+            break;
+            case "saveregister":
+
+              unset($_POST);
+
+              $_POST['nm_pasien'] = trim($_REQUEST['nm_pasien']);
+              $_POST['email'] = trim($_REQUEST['email']);
+              $_POST['no_ktp'] = trim($_REQUEST['no_ktp']);
+              $_POST['no_tlp'] = trim($_REQUEST['no_tlp']);
+
+              $_POST['no_rkm_medis'] = $this->core->setNoRM();
+              $_POST['jk'] = trim($_REQUEST['jk']);
+              $_POST['tmp_lahir'] = '-';
+              $_POST['tgl_lahir'] = trim($_REQUEST['tgl_lahir']);
+              $_POST['nm_ibu'] = '-';
+              $_POST['alamat'] = trim($_REQUEST['alamat']);
+              $_POST['gol_darah'] = '-';
+              $_POST['pekerjaan'] = '-';
+              $_POST['stts_nikah'] = 'JOMBLO';
+              $_POST['agama'] = '-';
+              $_POST['tgl_daftar'] = date('Y-m-d');
+              $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
+              $_POST['pnd'] = '-';
+              $_POST['keluarga'] = 'AYAH';
+              $_POST['namakeluarga'] = '-';
+              $_POST['kd_pj'] = $this->settings->get('api.apam_kdpj');
+              $_POST['no_peserta'] = '';
+              $_POST['kd_kel'] = '-';
+              $_POST['kd_kec'] = $this->settings->get('api.apam_kdkec');
+              $_POST['kd_kab'] = $this->settings->get('api.apam_kdkab');
+              $_POST['pekerjaanpj'] = '-';
+              $_POST['alamatpj'] = '-';
+              $_POST['kelurahanpj'] = '-';
+              $_POST['kecamatanpj'] = '-';
+              $_POST['kabupatenpj'] = '-';
+              $_POST['perusahaan_pasien'] = '-';
+              $_POST['suku_bangsa'] = '1';
+              $_POST['bahasa_pasien'] = '1';
+              $_POST['cacat_fisik'] = '1';
+              $_POST['nip'] = '';
+              $_POST['kd_prop'] = $this->settings->get('api.apam_kdprop');
+              $_POST['propinsipj'] = '-';
+
+              $query = $this->db('pasien')->save($_POST);
+              if($query) {
+                $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
+                $check_table->execute();
+                $check_table = $check_table->fetch();
+                if($check_table) {
+                  $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+                }
+
+                $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
+
+                $data['state'] = 'valid';
+                $data['no_rkm_medis'] = $_POST['no_rkm_medis'];
+
+              } else {
+                $data['state'] = 'invalid';
+              }
+
+              echo json_encode($data);
+            break;
             case "notifikasi":
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
@@ -666,5 +767,41 @@ class Site extends SiteModule
         }
         exit();
     }
+
+    public function hitungUmur($tanggal_lahir)
+    {
+      	$birthDate = new \DateTime($tanggal_lahir);
+      	$today = new \DateTime("today");
+      	$umur = "0 Th 0 Bl 0 Hr";
+        if ($birthDate < $today) {
+        	$y = $today->diff($birthDate)->y;
+        	$m = $today->diff($birthDate)->m;
+        	$d = $today->diff($birthDate)->d;
+          $umur =  $y." Th ".$m." Bl ".$d." Hr";
+        }
+      	return $umur;
+    }
+
+    private function sendRegisterEmail($email, $number)
+  	{
+
+  		$temp  = @file_get_contents(MODULES."/api/email/apam.welcome.html");
+
+  		$temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+      $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
+      $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
+  		$temp  = str_replace("{NUMBER}", $number, $temp);
+
+  		$smtp  = new \Systems\Lib\Smtp(
+  			$this->settings->get('api.apam_smtp_host'),
+  			$this->settings->get('api.apam_smtp_port'),
+  			true,
+  			$this->settings->get('api.apam_smtp_username'),
+  			$this->settings->get('api.apam_smtp_password')
+  		);
+
+  		$smtp->debug = false;
+  		$smtp->sendMail($email, $this->core->settings->get('settings.email'), "Verifikasi pendaftaran anda di ".$this->core->settings->get('settings.nama_instansi'), $temp, "HTML");
+  	}
 
 }
