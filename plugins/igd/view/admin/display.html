@@ -19,7 +19,7 @@
       </thead>
       <tbody>
         {loop: $rawat_jalan.list}
-        <tr>
+        <tr{if: $value.stts == 'Sudah'} style="background-color: #dff0d8 !important;"{/if}>
           <td style="white-space: nowrap;">
             <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
             <ul class="dropdown-menu" role="menu">
@@ -32,6 +32,7 @@
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
+              <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               {/if}
@@ -139,6 +140,31 @@
       $("#form").hide();
       $("#notif").hide();
       $("#rincian").html(data).show();
+    });
+  });
+
+  $('a[href="#berkas_digital"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $("#display").hide();
+
+    var url = baseURL + '/igd/berkasdigital?t=' + mlite.token;
+    $.post(url, {no_rawat : no_rawat,
+    }, function(data) {
+      // tampilkan data
+      $("#form_berkasdigital").show();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#berkasdigital").html(data).show();
+      $('.images').lightbox();
     });
   });
 
@@ -265,5 +291,5 @@
 <script>
   $('body').on('hidden.bs.modal', '.modal', function () {
       $(this).removeData('bs.modal');
-  });  
+  });
 </script>

@@ -142,6 +142,17 @@
                              </label>
                          </div>
                     </div>
+                    <div class="form-group">
+                         <label>Pemanggil Poli</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="responsivevoice" value="true" {if: $settings.responsivevoice == 'true'}checked{/if} /> Aktif
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="responsivevoice" value="false" {if: $settings.responsivevoice == 'false'}checked{/if} /> Tidak Aktif
+                             </label>
+                         </div>
+                    </div>
                     {/if}
                     <div class="form-group">
                         <label>Aktifkan Cek Status Bayar</label>

@@ -710,6 +710,8 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'pasien', 'javascript']), 'footer');

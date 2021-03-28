@@ -7,6 +7,7 @@ use Plugins\Icd\DB_ICD;
 class Admin extends AdminModule
 {
 
+    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
     public function navigation()
     {
         return [
@@ -34,8 +35,9 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
     }
 
     public function anyDisplay()
@@ -659,6 +661,37 @@ class Admin extends AdminModule
 
     }
 
+    public function anyBerkasDigital()
+    {
+      $berkas_digital = $this->db('berkas_digital_perawatan')->toArray();
+      echo $this->draw('berkasdigital.html', ['berkas_digital' => $berkas_digital]);
+      exit();
+    }
+
+    public function postSaveBerkasDigital()
+    {
+
+      $dir    = $this->_uploads;
+      $cntr   = 0;
+
+      $image = $_FILES['file']['tmp_name'];
+      $img = new \Systems\Lib\Image();
+      $id = convertNorawat($_POST['no_rawat']);
+      if ($img->load($image)) {
+          $imgName = time().$cntr++;
+          $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+          $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if($query) {
+            echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+          }
+      }
+
+      exit();
+
+    }
+
     public function postProviderList()
     {
 
@@ -722,6 +755,13 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function convertNorawat($text)
+    {
+        setlocale(LC_ALL, 'en_EN');
+        $text = str_replace('/', '', trim($text));
+        return $text;
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -734,6 +774,8 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));

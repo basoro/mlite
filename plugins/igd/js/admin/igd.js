@@ -2,6 +2,7 @@
 $("#form_rincian").hide();
 $("#form_soap").hide();
 $("#form_sep").hide();
+$("#form_berkasdigital").hide();
 $("#histori_pelayanan").hide();
 $("#notif").hide();
 $('#provider').hide();
@@ -543,23 +544,27 @@ $("#soap").on("click",".hapus_soap", function(event){
 // tombol batal diklik
 $("#form_rincian").on("click", "#selesai", function(event){
   bersih();
+  $("#form_berkasdigital").hide();
   $("#form_rincian").hide();
   $("#form_soap").hide();
   $("#form").show();
   $("#display").show();
   $("#rincian").hide();
   $("#soap").hide();
+  $("#berkasdigital").hide();
 });
 
 // tombol batal diklik
 $("#form_soap").on("click", "#selesai_soap", function(event){
   bersih();
+  $("#form_berkasdigital").hide();
   $("#form_rincian").hide();
   $("#form_soap").hide();
   $("#form").show();
   $("#display").show();
   $("#rincian").hide();
   $("#soap").hide();
+  $("#berkasdigital").hide();
 });
 
 // ketika baris data diklik

@@ -17,7 +17,7 @@
       </thead>
       <tbody>
         {loop: $rawat_inap.list}
-        <tr>
+        <tr{if: $value.stts_pulang != '-'} style="background-color: #dff0d8 !important;"{/if}>
           <td style="white-space: nowrap;">
             <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.no_rkm_medis} <span class="caret"></span></button></span>
             <ul class="dropdown-menu" role="menu">

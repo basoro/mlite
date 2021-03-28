@@ -1,0 +1,123 @@
+<div id="form_berkasdigital">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="tgl_perawatan" class="col-sm-3 control-label">Tanggal</label>
+            <div class="col-sm-4">
+              <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
+            </div>
+            <label for="pnd" class="col-sm-1 control-label">Jam</label>
+            <div class="col-sm-4">
+              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{?=date('H:i:s')?}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="taid_pendaftarannggal" class="col-sm-3 control-label">Id Rawat</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rawat" placeholder="ID Rawat Jalan" class="form-control" id="no_rawat" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_pasien" class="col-sm-3 control-label">Nomor RM</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rkm_medis" class="form-control" id="no_rkm_medis" placeholder="Nomor Rekam Medik" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+              <label for="nama_pasien" class="col-sm-3 control-label">Kategori Berkas</label>
+              <div class="col-sm-9">
+                <select name="kode" id="kode" class="form-control">
+                  {loop: $master_berkas_digital}
+                    <option value="{$value.kode}">{$value.nama}</option>
+                  {/loop}
+                </select>
+              </div>
+          </div>
+          <div class="form-group">
+              <label for="nama_pasien" class="col-sm-3 control-label">Pilih Berkas</label>
+              <div class="col-sm-9">
+                <input type="file" name="berkas" accept="image/*" id="berkas" class="form-control" />
+                <div id="berkasdigitalstatus"></div>
+              </div>
+          </div>
+          <div class="m-t-xl">
+            <button type="button" name="button" class="btn btn-primary" id="simpan_berkas_digital"><i class="fa fa-save"></i><span class="hidden-xs"> Unggah Berkas</span></button>
+            <button type="button" name="button" class="btn btn-success" id="selesai_berkasdigital"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#form_berkasdigital").on("click", "#simpan_berkas_digital", function(event){
+      var property = document.getElementById('berkas').files[0];
+      var image_name = property.name;
+      var image_extension = image_name.split('.').pop().toLowerCase();
+
+      if(jQuery.inArray(image_extension,['gif','jpg','jpeg','png']) == -1){
+        alert("Invalid image file");
+      }
+
+      var form_data = new FormData();
+      var no_rawat = $('input:text[name=no_rawat]').val();
+      form_data.append("file",property);
+      form_data.append("no_rawat",$('#no_rawat').val());
+      form_data.append("kode",$('#kode').val());
+      $.ajax({
+        url:'{?=url([ADMIN,'rawat_inap','saveberkasdigital'])?}',
+        method:'POST',
+        data:form_data,
+        contentType:false,
+        cache:false,
+        processData:false,
+        beforeSend:function(){
+          $('#berkasdigitalstatus').html('Loading......');
+        },
+        success:function(data){
+          console.log(data);
+          $('#berkasdigitalstatus').html(data);
+
+          var baseURL = mlite.url + '/' + mlite.admin;
+          event.preventDefault();
+          var url = baseURL + '/igd/berkasdigital?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#berkasdigital").html(data).show();
+          });
+
+        }
+      });
+
+  });
+  // tombol batal diklik
+  $("#form_berkasdigital").on("click", "#selesai_berkasdigital", function(event){
+    bersih();
+    $("#form_berkasdigital").hide();
+    $("#form_rincian").hide();
+    $("#form_soap").hide();
+    $("#form").show();
+    $("#display").show();
+    $("#rincian").hide();
+    $("#berkasdigital").hide();
+    $("#soap").hide();
+  });
+
+</script>
