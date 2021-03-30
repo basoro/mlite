@@ -9,7 +9,9 @@
     <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/animate.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$mlite.version)?}" rel="stylesheet">
+    <link href="{?=url(THEMES.'/admin/css/selectator.css?v='.$mlite.version)?}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
+
     <!-- PWA Support -->
     <link rel="manifest" href="{$mlite.path}/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -38,7 +40,7 @@
     <script src="{$mlite.path}/assets/jscripts/html.sortable.min.js?v={$mlite.version}"></script>
     <script src="{$mlite.path}/assets/jscripts/tinynav.min.js?v={$mlite.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$mlite.version)?}"></script>
-    <script src="{?=url(THEMES.'/admin/js/selectator.min.js?v='.$mlite.version)?}"></script>
+    <script src="{?=url(THEMES.'/admin/js/selectator.js?v='.$mlite.version)?}"></script>
     <script>
         var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
     </script>
