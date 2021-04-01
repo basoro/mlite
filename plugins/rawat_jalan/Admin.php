@@ -333,6 +333,9 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
       $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
 
+      $waapitoken =  $this->settings->get('settings.waapitoken');
+      $nama_instansi =  $this->settings->get('settings.nama_instansi');
+
       if (isset($_POST['valid'])) {
           if (isset($_POST['no_rkm_medis']) && !empty($_POST['no_rkm_medis'])) {
               foreach ($_POST['no_rkm_medis'] as $item) {
@@ -438,7 +441,7 @@ class Admin extends AdminModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT booking_registrasi.*, pasien.nm_pasien, pasien.alamat, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, pasien.no_peserta FROM booking_registrasi, pasien, dokter, poliklinik, penjab WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND booking_registrasi.kd_dokter = dokter.kd_dokter AND booking_registrasi.kd_poli = poliklinik.kd_poli AND booking_registrasi.kd_pj = penjab.kd_pj AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
+      $query = $this->db()->pdo()->prepare("SELECT booking_registrasi.*, pasien.nm_pasien, pasien.alamat, pasien.no_tlp, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, pasien.no_peserta FROM booking_registrasi, pasien, dokter, poliklinik, penjab WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND booking_registrasi.kd_dokter = dokter.kd_dokter AND booking_registrasi.kd_poli = poliklinik.kd_poli AND booking_registrasi.kd_pj = penjab.kd_pj AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
 
@@ -451,7 +454,7 @@ class Admin extends AdminModule
       }
 
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('booking.html', ['booking' => $this->assign]);
+      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'nama_instansi' => $nama_instansi]);
 
     }
 
