@@ -881,7 +881,7 @@ class Admin extends AdminModule
           $pdf->Cell(120 ,5,'',0,0);
           $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
 
-          $image = "//chart.googleapis.com/chart?cht=qr&chs=100x100&chl=".$this->core->getUserInfo('fullname', null, true);
+          $image = "https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=".$this->core->getUserInfo('fullname', null, true);
           $pdf->Cell(115 ,5,'',0,0);
           $pdf->Cell( 69, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),40,40,'png'), 0, 0, 'L', false );
           $pdf->Cell(189 ,35,'',0,1);//end of line
