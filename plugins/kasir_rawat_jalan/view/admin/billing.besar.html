@@ -5,6 +5,8 @@
 		<title>Bukti Pembayaran </title>
 		<meta charset="UTF-8">
 		<link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+		<script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
 	<style>
 	body {
 		margin-top:20px;
@@ -219,9 +221,66 @@
 		<center>
 			<button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
 			<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Kirim SMS</button>
-			<button type="button" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
 			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
 		</center>
 
+		<!-- Modal -->
+	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	          <h4 class="modal-title">Modal title</h4>
+	        </div>
+	        <div class="modal-body">
+		        <div class="form-floating number">
+							<label for="floatingPassword">Nomor</label>
+		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+		        </div>
+		        <div class="form-floating message">
+							<label for="floatingPassword">Pesan</label>
+		          <input type="text" name="message" class="form-control" id="message" placeholder="Tulis pesan anda..">
+		        </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+	          <button type="button" class="btn btn-primary" onclick="loadDoc()" data-dismiss="modal">Kirim</button>
+	        </div>
+	      </div><!-- /.modal-content -->
+	    </div><!-- /.modal-dialog -->
+	  </div><!-- /.modal -->
+
 </body>
+<script>
+function loadDoc() {
+	var xhttp = new XMLHttpRequest();
+	var sender = '{$settings.waapitoken}';
+	var number = document.getElementById("number").value;
+	var message = document.getElementById("message").value;
+	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	console.log(number + " - " + message);
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("demo").innerHTML = this.responseText;
+			//alert(xhttp.responseText.status);
+			var data=xhttp.responseText;
+			var jsonResponse = JSON.parse(data);
+			//alert(jsonResponse["status"]);
+			if(jsonResponse["status"] == true) {
+				alert('Sukses mengirim pesan.');
+				document.getElementById("demo").innerHTML = 'Sukses mengirim pesan';
+			} else {
+				alert('Gagal mengirim pesan.');
+			}
+		}
+	};
+	xhttp.open("POST", "https://wa.basoro.id/send-message", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("sender=" + sender + "&number=" + number + "&message=" + message);
+	xhttp.open("POST", "https://wa.basoro.id/send-media", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("sender=" + sender + "&number=" + number + "&caption=" + message + "&file=" + file);
+}
+</script>
 </html>

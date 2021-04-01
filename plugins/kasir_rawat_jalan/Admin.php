@@ -2,6 +2,9 @@
 namespace Plugins\Kasir_Rawat_Jalan;
 
 use Systems\AdminModule;
+use Systems\Lib\Fpdf\FPDF;
+//use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\QR_BarCode;
 
 class Admin extends AdminModule
 {
@@ -669,6 +672,11 @@ class Admin extends AdminModule
           ->group('jns_perawatan.nm_perawatan')
           ->toArray();
 
+        $total_rawat_jl_dr = 0;
+        foreach ($result_detail['rawat_jl_dr'] as $row) {
+          $total_rawat_jl_dr += $row['biaya_rawat'];
+        }
+
         $result_detail['rawat_jl_pr'] = $this->db('rawat_jl_pr')
           ->select('jns_perawatan.nm_perawatan')
           ->select(['biaya_rawat' => 'rawat_jl_pr.biaya_rawat'])
@@ -678,6 +686,11 @@ class Admin extends AdminModule
           ->where('rawat_jl_pr.no_rawat', $_GET['no_rawat'])
           ->group('jns_perawatan.nm_perawatan')
           ->toArray();
+
+        $total_rawat_jl_pr = 0;
+        foreach ($result_detail['rawat_jl_pr'] as $row) {
+          $total_rawat_jl_pr += $row['biaya_rawat'];
+        }
 
         $result_detail['rawat_jl_drpr'] = $this->db('rawat_jl_drpr')
           ->select('jns_perawatan.nm_perawatan')
@@ -689,11 +702,21 @@ class Admin extends AdminModule
           ->group('jns_perawatan.nm_perawatan')
           ->toArray();
 
+        $total_rawat_jl_drpr = 0;
+        foreach ($result_detail['rawat_jl_drpr'] as $row) {
+          $total_rawat_jl_drpr += $row['biaya_rawat'];
+        }
+
         $result_detail['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
           ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
           ->where('no_rawat', $_GET['no_rawat'])
           ->where('detail_pemberian_obat.status', 'Ralan')
           ->toArray();
+
+        $total_detail_pemberian_obat = 0;
+        foreach ($result_detail['detail_pemberian_obat'] as $row) {
+          $total_detail_pemberian_obat += $row['total'];
+        }
 
         $result_detail['periksa_lab'] = $this->db('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -701,18 +724,175 @@ class Admin extends AdminModule
           ->where('periksa_lab.status', 'Ralan')
           ->toArray();
 
+        $total_periksa_lab = 0;
+        foreach ($result_detail['periksa_lab'] as $row) {
+          $total_periksa_lab += $row['biaya'];
+        }
+
         $result_detail['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
           ->where('no_rawat', $_GET['no_rawat'])
           ->where('periksa_radiologi.status', 'Ralan')
           ->toArray();
 
+        $total_periksa_radiologi = 0;
+        foreach ($result_detail['periksa_radiologi'] as $row) {
+          $total_periksa_radiologi += $row['biaya'];
+        }
+
         $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
           ->where('no_rawat', $_GET['no_rawat'])
           ->toArray();
 
+        $total_tambahan_biaya = 0;
+        foreach ($result_detail['tambahan_biaya'] as $row) {
+          $total_tambahan_biaya += $row['besar_biaya'];
+        }
+
         $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+
+        /* Print as pdf */
+        //if(isset($_GET['print']) && $_GET['print'] == 'pdf') {
+          $qr = new QR_BarCode();
+          $pdf = new FPDF('P','mm','A4');
+          $pdf->AddPage();
+
+          //set font to arial, bold, 14pt
+          $pdf->SetFont('Arial','B',14);
+
+          //Cell(width , height , text , border , end line , [align] )
+
+          $pdf->Cell(120 ,5,$settings['nama_instansi'],0,0);
+          $pdf->Cell(69 ,5,'INVOICE',0,1);//end of line
+
+          //set font to arial, regular, 12pt
+          $pdf->SetFont('Arial','',12);
+
+          $pdf->Cell(120 ,5,$settings['alamat'],0,0);
+          $pdf->Cell(69 ,5,'',0,1);//end of line
+
+          $pdf->Cell(120 ,5,$settings['kota'].' - '.$settings['propinsi'],0,0);
+          $pdf->Cell(25 ,5,'Tanggal',0,0);
+          $pdf->Cell(44 ,5,': '.$result['tgl_billing'],0,1);//end of line
+
+          $pdf->Cell(120 ,5,$settings['nomor_telepon'],0,0);
+          $pdf->Cell(25 ,5,'Faktur',0,0);
+          $pdf->Cell(44 ,5,': '.$result['kd_billing'],0,1);//end of line
+
+          $pdf->Cell(120 ,5,$settings['email'],0,0);
+          $pdf->Cell(25 ,5,'Nomor RM',0,0);
+          $pdf->Cell(44 ,5,': '.$pasien['no_rkm_medis'],0,1);//end of line
+
+          //make a dummy empty cell as a vertical spacer
+          $pdf->Cell(189 ,10,'',0,1);//end of line
+
+          //billing address
+          $pdf->Cell(100 ,5,'Kepada',0,1);//end of line
+
+          //add dummy cell at beginning of each line for indentation
+          $pdf->Cell(14 ,5,'',0,0);
+          $pdf->Cell(90 ,5,$pasien['nm_pasien'],0,1);
+
+          $pdf->Cell(14 ,5,'',0,0);
+          $pdf->Cell(90 ,5,$pasien['alamat'],0,1);
+
+          $pdf->Cell(14 ,5,'',0,0);
+          $pdf->Cell(90 ,5,$pasien['no_tlp'],0,1);
+
+          //make a dummy empty cell as a vertical spacer
+          $pdf->Cell(189 ,10,'',0,1);//end of line
+
+          //invoice contents
+          $pdf->SetFont('Arial','B',12);
+
+          $pdf->Cell(10 ,7,'No',1,0);
+          $pdf->Cell(110 ,7,'Item',1,0);
+          $pdf->Cell(25 ,7,'Jumlah',1,0);
+          $pdf->Cell(44 ,7,'Total',1,1);//end of line
+
+          $pdf->SetFont('Arial','',11);
+
+          //Numbers are right-aligned so we give 'R' after new line parameter
+
+          $pdf->Cell(10 ,5,'1',1,0);
+          $pdf->Cell(110 ,5,'Biaya Pendaftaran Poliklinik',1,0);
+          $pdf->Cell(25 ,5,'1',1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($result_detail['poliklinik']['registrasi'],2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'2',1,0);
+          $pdf->Cell(110 ,5,'Biaya Obat & BHP',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['detail_pemberian_obat']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_detail_pemberian_obat,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'3',1,0);
+          $pdf->Cell(110 ,5,'Jasa Dokter',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['rawat_jl_dr']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_rawat_jl_dr,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'4',1,0);
+          $pdf->Cell(110 ,5,'Jasa Perawat',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['rawat_jl_pr']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_rawat_jl_pr,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'5',1,0);
+          $pdf->Cell(110 ,5,'Jasa Dokter & Perawat',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['rawat_jl_drpr']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_rawat_jl_drpr,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'6',1,0);
+          $pdf->Cell(110 ,5,'Jasa Laboratorium',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['periksa_lab']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_periksa_lab,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'7',1,0);
+          $pdf->Cell(110 ,5,'Jasa Radiologi',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['periksa_radiologi']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_periksa_radiologi,2,',','.'),1,1,'R');//end of line
+
+          $pdf->Cell(10 ,5,'8',1,0);
+          $pdf->Cell(110 ,5,'Biaya Tambahan',1,0);
+          $pdf->Cell(25 ,5,count($result_detail['tambahan_biaya']),1,0, 'C');
+          $pdf->Cell(44 ,5,number_format($total_tambahan_biaya,2,',','.'),1,1,'R');//end of line
+
+          $pdf->SetFont('Arial','B',14);
+
+          //summary
+          /*$pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(25 ,5,'Subtotal',0,0);
+          $pdf->Cell(44 ,5,'4,450',1,1,'R');//end of line
+
+          $pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(25 ,5,'Taxable',0,0);
+          $pdf->Cell(44 ,5,'0',1,1,'R');//end of line
+
+          $pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(25 ,5,'Tax Rate',0,0);
+          $pdf->Cell(44 ,5,'10%',1,1,'R');//end of line*/
+
+          $pdf->Cell(120 ,15,'',0,0);
+          $pdf->Cell(25 ,15,'Total',0,0);
+          $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$total_tambahan_biaya,2,',','.'),0,0,'R');//end of line
+
+          $pdf->Cell(189 ,20,'',0,1);//end of line
+
+          $pdf->SetFont('Arial','',11);
+
+          $pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
+
+          $image = "https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=".$this->core->getUserInfo('fullname', null, true);
+          $pdf->Cell(115 ,5,'',0,0);
+          $pdf->Cell( 69, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),40,40,'png'), 0, 0, 'L', false );
+          $pdf->Cell(189 ,35,'',0,1);//end of line
+          $pdf->Cell(120 ,10,'',0,0);
+          $pdf->Cell(69 ,10,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+
+          unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+          $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
+          //$pdf->Output();
+        //}
+
         echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
@@ -724,7 +904,6 @@ class Admin extends AdminModule
       }
       exit();
     }
-
 
     public function getJavascript()
     {
