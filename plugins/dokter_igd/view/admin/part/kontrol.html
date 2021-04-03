@@ -1,0 +1,56 @@
+<form name="ralan" action="{?=url(ADMIN.'/dokter_igd/kontrolsave/'.@$dokter_igd.no_rawat)?}#soap" method="POST">
+<div class="panel-default">
+    <div class="panel-body">
+        <div class="post">
+            <div class="post-content">
+                <div class="row clearfix">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Diagnosa</label>
+                            <input type="text" name="diagnosa" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tindakan / Terapi</label>
+                            <input type="text" name="terapi" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Alasan Kontrol</label>
+                            <textarea name="alasan1" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Rencana Tindak Lanjut</label>
+                            <textarea name="rtl1" class="form-control" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal Surat</label>
+                            <input type="text" name="tanggal_rujukan" class="form-control datepicker" value="{?=date('Y-m-d')?}" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal Datang</label>
+                            <input type="text" name="tanggal_datang" class="form-control datepicker" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <div class="post">
+            <div class="post-content">
+                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                <a href="#" class="btn btn-default">Batal</a>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
