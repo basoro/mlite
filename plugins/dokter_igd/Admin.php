@@ -7,6 +7,7 @@ use Plugins\Icd\DB_ICD;
 class Admin extends AdminModule
 {
 
+    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
     public function navigation()
     {
         return [
