@@ -328,6 +328,8 @@ class Admin extends AdminModule
 
         }
 
+        exit();
+
     }
 
     public function postHapus()
