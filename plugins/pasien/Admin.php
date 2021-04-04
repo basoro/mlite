@@ -144,7 +144,8 @@ class Admin extends AdminModule
           'agama' => $agama,
           'pnd' => $pnd,
           'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $no_rkm_medis+1
+          'no_rkm_medis_baru' => $no_rkm_medis+1,
+          'waapitoken' => $this->settings->get('settings.waapitoken')
         ]);
       } else {
         $pasien = [
@@ -196,7 +197,8 @@ class Admin extends AdminModule
           'agama' => $agama,
           'pnd' => $pnd,
           'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $no_rkm_medis
+          'no_rkm_medis_baru' => $no_rkm_medis,
+          'waapitoken' => $this->settings->get('settings.waapitoken')
         ]);
       }
       exit();
