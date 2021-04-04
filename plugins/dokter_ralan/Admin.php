@@ -1612,8 +1612,6 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
-
-        // JS
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
 
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
