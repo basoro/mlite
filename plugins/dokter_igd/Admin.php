@@ -1515,6 +1515,73 @@ class Admin extends AdminModule
           }
           echo json_encode($array, true);
           break;
+          case "aturan_pakai":
+          $rows = $this->db('master_aturan_pakai')->like('aturan', '%'.$_GET['aturan'].'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'aturan'  => $row['aturan']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+          case "jns_perawatan":
+          $rows = $this->db('jns_perawatan')->like('nm_perawatan', '%'.$_GET['nm_perawatan'].'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kd_jenis_prw' => $row['kd_jenis_prw'],
+                'nm_perawatan'  => $row['nm_perawatan']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+          case "jns_perawatan_lab":
+          $rows = $this->db('jns_perawatan_lab')->like('nm_perawatan', '%'.$_GET['nm_perawatan'].'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kd_jenis_prw' => $row['kd_jenis_prw'],
+                'nm_perawatan'  => $row['nm_perawatan']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+          case "jns_perawatan_radiologi":
+          $rows = $this->db('jns_perawatan_radiologi')->like('nm_perawatan', '%'.$_GET['nm_perawatan'].'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kd_jenis_prw' => $row['kd_jenis_prw'],
+                'nm_perawatan'  => $row['nm_perawatan']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+          case "icd10":
+          $phrase = '';
+          if(isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+          $rows = $this->data_icd('icd10')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kd_penyakit' => $row['kode'],
+                'nm_penyakit'  => $row['nama']
+            );
+          }
+          echo json_encode($array, true);
+          break;
+          case "icd9":
+          $phrase = '';
+          if(isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+          $rows = $this->data_icd('icd9')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
+          foreach ($rows as $row) {
+            $array[] = array(
+                'kode' => $row['kode'],
+                'deskripsi_panjang'  => $row['nama']
+            );
+          }
+          echo json_encode($array, true);
+          break;
         }
         exit();
     }

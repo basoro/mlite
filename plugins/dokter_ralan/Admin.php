@@ -1523,7 +1523,6 @@ class Admin extends AdminModule
           }
           echo json_encode($array, true);
           break;
-          break;
           case "aturan_pakai":
           $rows = $this->db('master_aturan_pakai')->like('aturan', '%'.$_GET['aturan'].'%')->toArray();
           foreach ($rows as $row) {
@@ -1568,11 +1567,11 @@ class Admin extends AdminModule
           if(isset($_GET['s']))
             $phrase = $_GET['s'];
 
-          $rows = $this->db('penyakit')->like('kd_penyakit', '%'.$phrase.'%')->orLike('nm_penyakit', '%'.$phrase.'%')->toArray();
+          $rows = $this->data_icd('icd10')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
-                'kd_penyakit' => $row['kd_penyakit'],
-                'nm_penyakit'  => $row['nm_penyakit']
+                'kd_penyakit' => $row['kode'],
+                'nm_penyakit'  => $row['nama']
             );
           }
           echo json_encode($array, true);
@@ -1582,11 +1581,11 @@ class Admin extends AdminModule
           if(isset($_GET['s']))
             $phrase = $_GET['s'];
 
-          $rows = $this->db('icd9')->like('kode', '%'.$phrase.'%')->orLike('deskripsi_panjang', '%'.$phrase.'%')->toArray();
+          $rows = $this->data_icd('icd9')->like('kode', '%'.$phrase.'%')->orLike('nama', '%'.$phrase.'%')->toArray();
           foreach ($rows as $row) {
             $array[] = array(
                 'kode' => $row['kode'],
-                'deskripsi_panjang'  => $row['deskripsi_panjang']
+                'deskripsi_panjang'  => $row['nama']
             );
           }
           echo json_encode($array, true);
