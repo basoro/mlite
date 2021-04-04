@@ -17,6 +17,7 @@ class Admin extends AdminModule
 
     public function getManage()
     {
+        $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
         $this->_addHeaderFiles();
 
         $perpage = '10';
@@ -276,7 +277,7 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postSavePhoto()
+    public function postSavePhoto($no_rkm_medis = null)
     {
 
       /*if($_FILES['file']['name'] != ''){
@@ -290,9 +291,33 @@ class Admin extends AdminModule
           echo '<img src="'.url().'/uploads/'.$name.'" height="100" width="100" />';
       }*/
 
+        if($no_rkm_medis != null) {
+          $_POST['no_rkm_medis'] = $no_rkm_medis;
+        }
+
         $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
 
         if (($photo = isset_or($_FILES['file']['tmp_name'], false)) || !$_POST['no_rkm_medis']) {
+            $img = new \Systems\Lib\Image;
+            if ($img->load($photo)) {
+                if ($img->getInfos('width') < $img->getInfos('height')) {
+                    $img->crop(0, 0, $img->getInfos('width'), $img->getInfos('width'));
+                } else {
+                    $img->crop(0, 0, $img->getInfos('height'), $img->getInfos('height'));
+                }
+
+                if ($img->getInfos('width') > 512) {
+                    $img->resize(512, 512);
+                }
+
+                $gambar = "pages/upload/".uniqid('photo').".".$img->getInfos('type');
+                //$gambar = "pages/upload/".$_POST['no_rkm_medis'].".".$img->getInfos('type');
+            }
+
+        }
+
+        //if (($photo = isset_or($_FILES['webcam']['tmp_name'], false)) || !$_POST['no_rkm_medis']) {
+        if ($photo = isset_or($_FILES['webcam']['tmp_name'], false)) {
             $img = new \Systems\Lib\Image;
             if ($img->load($photo)) {
                 if ($img->getInfos('width') < $img->getInfos('height')) {

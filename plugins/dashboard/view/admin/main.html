@@ -53,13 +53,11 @@
   <p class="title">{$settings.nama_instansi}</p>
   <p class="alamat">{$settings.alamat} - {$settings.kota} - {$settings.propinsi}</p>
 </div>
-{if: $presensi}
 <div class="btn-group">
     <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
         <i class="fa fa-plus"></i> Presensi Online
     </button>
 </div>
-{/if}
 <!-- The Modal -->
 <div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
   <div class="modal-dialog">

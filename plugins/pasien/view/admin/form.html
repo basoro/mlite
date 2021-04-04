@@ -174,11 +174,30 @@
     <div class="text-center">
       <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
       <button type="button" name="button" class="btn btn-info" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
+      <button type="button" name="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="fa fa-camera"></i><span class="hidden-xs"> Foto</span></button>
       <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
     </div>
   </div>
   {/if}
+</div>
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url([ADMIN,'pasien','manage'])?}">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <input type="button" class="btn btn-info" value="Ambil Foto" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
 </div>
 <script type="text/javascript">
   $('select').selectator();
@@ -338,5 +357,54 @@
       });
     }
     event.preventDefault();
+  });
+</script>
+<script>
+  $(document).ready(function() {
+
+      $('#myModal').on('show.bs.modal', function() {
+
+          //var no_rkm_medis = '000003';
+          //var no_rkm_medis = $('#myModal .no_rkm_medis').attr('data-content',"click "+$(this).attr('data-no_rkm_medis'));
+          //var no_rkm_medis = $("#myModal .no_rkm_medis").val($(this).data('no_rkm_medis'));;
+          //alert(no_rkm_medis);
+          //var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+          //$('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+
+          Webcam.set({
+              width:240,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+      });
+      $("#myModal").on("hidden.bs.modal", function () {
+
+          var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+          //alert(no_rkm_medis);
+          var shutter = new Audio();
+          shutter.autoplay = false;
+          shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/pasien/audio/shutter.ogg' : '{?=url()?}/plugins/pasien/audio/shutter.mp3';
+          shutter.play();
+
+          Webcam.snap(function(data_uri){
+              document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+          });
+
+          var base64image = document.getElementById("imageprev").src;
+
+          //Webcam.upload(base64image, '{?=url([ADMIN,'pasien','savephoto',' + no_rkm_medis + '])?}', function(code, text) {
+          Webcam.upload(base64image, '{?=url(ADMIN)?}/pasien/savephoto/' + no_rkm_medis + '/?t=' + mlite.token, function(code, text) {
+          });
+
+          Webcam.reset();
+
+          window.location.href = '{?=url([ADMIN,'pasien','manage'])?}';
+
+      });
   });
 </script>
