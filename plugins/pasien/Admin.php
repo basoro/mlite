@@ -145,7 +145,8 @@ class Admin extends AdminModule
           'pnd' => $pnd,
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $no_rkm_medis+1,
-          'waapitoken' => $this->settings->get('settings.waapitoken')
+          'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
         ]);
       } else {
         $pasien = [
@@ -198,7 +199,8 @@ class Admin extends AdminModule
           'pnd' => $pnd,
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $no_rkm_medis,
-          'waapitoken' => $this->settings->get('settings.waapitoken')
+          'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
         ]);
       }
       exit();
@@ -277,6 +279,13 @@ class Admin extends AdminModule
       }
 
       exit();
+    }
+
+    public function getUploadPhoto()
+    {
+      $no_rkm_medis = parseURL()[2];
+      $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
+      return $this->draw('uploadphoto.html', ['no_rkm_medis' => $no_rkm_medis]);
     }
 
     public function postSavePhoto($no_rkm_medis = null)

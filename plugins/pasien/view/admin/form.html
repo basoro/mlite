@@ -174,7 +174,7 @@
     <div class="text-center">
       <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
       <button type="button" name="button" class="btn btn-info" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
-      <button type="button" name="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal"><i class="fa fa-camera"></i><span class="hidden-xs"> Foto</span></button>
+      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning"><i class="fa fa-camera"></i><span class="hidden-xs"> Foto</span></a>
       <button type="button" name="button" class="btn btn-primary" data-toggle="modal" data-target="#waModal" data-no_tlp={$pasien.no_tlp}><i class="fa fa-whatsapp"></i><span class="hidden-xs"> Kirim WA</span></button>
       <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>

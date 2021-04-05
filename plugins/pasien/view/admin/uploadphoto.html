@@ -1,0 +1,40 @@
+<div class="text-center">
+<div id="webcam" style="width:320px; height:240px;margin:0 auto;"></div>
+<input type="hidden" name="image" id="image-tag">
+<div id="results"></div>
+<br><br>
+<button type="button" class="btn btn-primary" onclick="SimpanFoto()">Simpan</button>
+</div>
+<script language="JavaScript">
+
+        Webcam.set( 'constraints', {
+            width: 320,
+            height: 240,
+            facingMode: { exact: "environment" }
+        } );
+        Webcam.attach('webcam');
+
+        function SimpanFoto()
+        {
+          var no_rkm_medis = '{$no_rkm_medis}';
+          var shutter = new Audio();
+          shutter.autoplay = false;
+          shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/pasien/audio/shutter.ogg' : '{?=url()?}/plugins/pasien/audio/shutter.mp3';
+          shutter.play();
+
+          Webcam.snap(function(data_uri){
+              document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+          });
+
+          var base64image = document.getElementById("imageprev").src;
+
+          Webcam.upload(base64image, '{?=url([ADMIN,'pasien','savephoto',$no_rkm_medis])?}', function(code, text) {
+          });
+
+          Webcam.reset();
+
+          window.location.href = '{?=url([ADMIN,'pasien','manage'])?}';
+
+        }
+
+</script>
