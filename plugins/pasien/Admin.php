@@ -50,7 +50,8 @@ class Admin extends AdminModule
           'halaman' => $halaman,
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
-          'cek_vclaim' => $cek_vclaim
+          'cek_vclaim' => $cek_vclaim,
+          'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
 
     }
@@ -111,7 +112,8 @@ class Admin extends AdminModule
           'halaman' => $halaman,
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
-          'cek_vclaim' => $cek_vclaim
+          'cek_vclaim' => $cek_vclaim,
+          'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
 
         exit();
@@ -146,6 +148,7 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $no_rkm_medis+1,
           'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
         ]);
       } else {
@@ -156,23 +159,23 @@ class Admin extends AdminModule
           'jk' => '',
           'tmp_lahir' => '',
           'tgl_lahir' => '',
-          'nm_ibu' => '',
+          'nm_ibu' => '-',
           'alamat' => '',
-          'gol_darah' => '',
-          'pekerjaan' => '',
+          'gol_darah' => '-',
+          'pekerjaan' => '-',
           'stts_nikah' => '',
-          'agama' => '',
+          'agama' => 'ISLAM',
           'tgl_daftar' => date('Y-m-d'),
           'no_tlp' => '',
           'umur' => '',
-          'pnd' => '',
+          'pnd' => '-',
           'keluarga' => '',
-          'namakeluarga' => '',
+          'namakeluarga' => '-',
           'kd_pj' => '',
           'no_peserta' => '',
-          'kd_kel' => '',
-          'kd_kec' => '',
-          'kd_kab' => '',
+          'kd_kel' => '1',
+          'kd_kec' => '1',
+          'kd_kab' => '1',
           'pekerjaanpj' => '',
           'alamatpj' => '',
           'kelurahanpj' => '',
@@ -182,14 +185,14 @@ class Admin extends AdminModule
           'suku_bangsa' => '',
           'bahasa_pasien' => '',
           'cacat_fisik' => '',
-          'email' => '',
+          'email' => '-',
           'nip' => '',
-          'kd_prop' => '',
+          'kd_prop' => '1',
           'propinsipj' => '',
-          'propinsi' => ['nm_prop' => ''],
-          'kabupaten' => ['nm_kab' => ''],
-          'kecamatan' => ['nm_kec' => ''],
-          'kelurahan' => ['nm_kel' => '']
+          'propinsi' => ['nm_prop' => '-'],
+          'kabupaten' => ['nm_kab' => '-'],
+          'kecamatan' => ['nm_kec' => '-'],
+          'kelurahan' => ['nm_kel' => '-']
         ];
         echo $this->draw('form.html', [
           'pasien' => $pasien,
@@ -200,7 +203,8 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $no_rkm_medis,
           'waapitoken' => $this->settings->get('settings.waapitoken'),
-          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
+          'admin_mode' => $this->settings->get('settings.admin_mode'),
+          'urlUploadPhoto' => ''
         ]);
       }
       exit();

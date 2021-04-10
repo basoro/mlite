@@ -143,6 +143,10 @@ $("#display").on("click", ".edit", function(event){
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
     $("#bukaform").attr("id", "tutupform");
+    $("#kartu").removeClass('hidden');
+    $("#kirimwa").removeClass('hidden');
+    $("#foto").removeClass('hidden');
+    $("#hapus").removeClass('hidden');
   });
 });
 
