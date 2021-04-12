@@ -1,0 +1,79 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Presensi Masuk</h3>
+            </div>
+            <div class="panel-body">
+              <div class="row clearfix">
+                <div class="col col-md-6">
+                  <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($presensi.totalRecords)?}</h3>
+                </div>
+                <div class="col col-md-6">
+                  <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                      <div class="input-group">
+                          <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
+                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                          <span class="input-group-btn">
+                              <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                          </span>
+                      </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="table-responsive no-margin">
+                <table id="presensi" class="table table-striped no-margin" width="100%">
+                  <thead>
+                    <tr>
+                      <th>Nama</th>
+                      <th>Shift</th>
+                      <th>Jam Datang</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {if: !empty($presensi.list)}
+                    {loop: $presensi.list}
+                    <tr>
+                      <td>
+                        <a href="{$value.photo}" class="gallery">
+                          <img src="{$value.photo}" alt="Profile Image" width="40" height="40" style="border-radius:50%;">
+                        </a>
+                        <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
+                      </td>
+                      <td>{$value.shift}</td>
+                      <td>{$value.jam_datang}</td>
+                    </tr>
+                    {/loop}
+                    {else}
+                    <tr>
+                      <td colspan="4" class="text-center">Kosong</td>
+                    </tr>
+                    {/if}
+                  </tbody>
+                </table>
+              </div>
+              {$presensi.pagination}
+            </div>
+        </div>
+    </div>
+</article>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Lokasi Presensi</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function () {
+    $('.gallery').lightbox();
+});
+</script>

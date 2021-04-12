@@ -1,0 +1,61 @@
+<article class="row">
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+				<h3 class="panel-title">Kelola Galeri Pasien</h3>
+			</div>
+            <div class="panel-body">
+                {if: !empty($galleries)}
+				<div class="table-responsive no-margin">
+					<table class="table table-striped display no-margin" width="100%">
+						<thead>
+							<tr>
+								<th>Nama</th>
+								<th>Tag</th>
+								<th class="text-right">Aksi</th>
+							</tr>
+						</thead>
+						<tbody>
+							{loop: $galleries}
+							<tr>
+								<td><a href="{$value.editURL}">{$value.name}</a></td>
+								<td><code>{$value.tag}</code></td>
+								<td class="text-right">
+									<a href="{$value.editURL}" class="btn btn-xs btn-success">
+										<i class="fa fa-pencil"></i> <span class="hidden-xs">Ubah</span>
+									</a>
+									<a href="{$value.delURL}" class="btn btn-xs btn-danger" data-confirm="Anda ingin menghapus?">
+										<i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+									</a>
+								</td>
+							</tr>
+							{/loop}
+						</tbody>
+					</table>
+				</div>
+                {else}
+                <p class="no-margin">Kosong</p>
+                {/if}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+				<h3 class="panel-title">Tambah</h3>
+			</div>
+            <div class="panel-body">
+        		    <form action="{?=url(ADMIN.'/pasien_galleries/add')?}" method="POST">
+    	            <div class="form-group">
+    	                <label>Nama Pasien</label>
+                      <select name="name" class="form-control pasien_ajax">
+                      </select>
+    	            </div>
+    	            <input type="submit" class="btn btn-primary" value="Simpan" />
+                </form>
+            </div>
+        </div>
+    </div>
+</article>
+<br><br><br>
