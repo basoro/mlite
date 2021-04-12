@@ -38,7 +38,6 @@ class Site extends Main
         $assign['theme']    = url(THEMES.'/'.$this->settings->get('settings.theme'));
         $assign['logo'] = $this->settings->get('settings.logo');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
-        $assign['nama_instansi']         = $this->settings->get('settings.nama_instansi');
         $assign['version']       = $this->settings->get('settings.version');
 
         $assign['header']   = isset_or($this->appends['header'], ['']);

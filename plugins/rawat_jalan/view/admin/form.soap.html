@@ -28,16 +28,16 @@
   <div class="col-md-9">
     <div class="panel panel-default">
       <div class="panel-body">
-        <h4>Pemeriksaan</h4>
-        <div class="form-group">
+        <h4 class="{if: $admin_mode == 'simple'}hidden{/if}">Pemeriksaan</h4>
+        <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
           <div class="row">
+            <div class="col-sm-2">
+              <label for="nama_pasien">Tensi(mmHg)</label>
+              <input type="text" name="tensi" class="form-control" placeholder="" value="-">
+            </div>
             <div class="col-sm-2">
               <label for="nama_pasien">Suhu(C)</label>
               <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
-            </div>
-            <div class="col-sm-2">
-              <label for="nama_pasien">Tensi(mmHg)</label>
-              <input type="text" name="tensi" class="form-control" placeholder="" value="">
             </div>
             <div class="col-sm-2">
               <label for="nama_pasien">Nadi(/mnt)</label>
@@ -57,16 +57,16 @@
             </div>
           </div>
         </div>
-        <div class="form-group">
+        <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
           <div class="row">
+            <div class="col-sm-3">
+              <label for="nama_pasien">Kesadaran</label>
+              <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
+              <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
             <div class="col-sm-3">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
-            </div>
-            <div class="col-sm-3">
-              <label for="nama_pasien">Kesadaran</label>
-              <input type="text" name="kesadaran" class="form-control" placeholder="" value="">
-              <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
             </div>
             <div class="col-sm-3">
               <label for="nama_pasien">Alergi</label>
@@ -97,7 +97,9 @@
         </div>
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+          <span class="{if: $admin_mode == 'simple'}hidden{/if}">
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
+          </span>
           <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
         </div>

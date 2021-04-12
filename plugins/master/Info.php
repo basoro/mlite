@@ -446,6 +446,11 @@
           $core->db()->pdo()->exec("ALTER TABLE `master_aturan_pakai`
             ADD PRIMARY KEY (`aturan`);");
 
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `metode_racik` (
+            `kd_racik` varchar(3) NOT NULL,
+            `nm_racik` varchar(30) NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `master_berkas_digital` (
             `kode` varchar(10) NOT NULL,
             `nama` varchar(100) DEFAULT NULL

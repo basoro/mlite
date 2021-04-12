@@ -7,8 +7,10 @@
           <th>Nama Pasien</th>
           <th>Tgl. Lahir</th>
           <th>Jenis Kelamin</th>
+          {if: $admin_mode == 'complex'}
           <th>Gol. Darah</th>
           <th>Pekerjaan</th>
+          {/if}
           <th>Alamat</th>
           <th>Telepon</th>
           <th>Tgl. Daftar</th>
@@ -33,8 +35,10 @@
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.tgl_lahir}</td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+          {if: $admin_mode == 'complex'}
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.gol_darah}</td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.pekerjaan}</td>
+          {/if}
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.alamat}</td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.no_tlp}</td>
           <td class="edit" data-no_rkm_medis="{$value.no_rkm_medis}" style="white-space: nowrap;">{$value.tgl_daftar}</td>

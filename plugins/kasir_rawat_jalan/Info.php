@@ -42,6 +42,10 @@
           $core->db()->pdo()->exec("ALTER TABLE `mlite_billing`
             MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;");
 
+          if (!is_dir(UPLOADS."/invoices")) {
+              mkdir(UPLOADS."/invoices", 0777);
+          }
+
         },
         'uninstall'     =>  function() use($core)
         {

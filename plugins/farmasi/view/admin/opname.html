@@ -117,13 +117,13 @@ $(document).ready(function(){
     $('#update_form').on('submit', function(event){
         event.preventDefault();
         if($('.check_box:checked').length > 0){
-            alert($(this).serialize());
+            //alert($(this).serialize());
             $.ajax({
                 url:"{?=url([ADMIN,'farmasi','opnameupdate'])?}",
                 method:"POST",
                 data:$(this).serialize(),
                 success:function(data){
-                    alert(data);
+                    //alert(data);
                     alert('Data stok opname berhasil diperbarui');
                     $('.dataTables').DataTable().clear().destroy();
                     fetch_data();

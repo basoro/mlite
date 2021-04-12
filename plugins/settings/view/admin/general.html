@@ -158,10 +158,10 @@
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="0" {if: $settings.cekstatusbayar == '0'}checked{/if} /> Tidak
+                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false'}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="1" {if: $settings.cekstatusbayar == '1'}checked{/if} /> Ya
+                               <input type="radio" name="cekstatusbayar" value="true" {if: $settings.cekstatusbayar == 'true'}checked{/if} /> Ya
                             </label>
                         </div>
                     </div>
@@ -169,10 +169,10 @@
                         <label>Aktifkan Cek Limit Kuota</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="0" {if: $settings.ceklimit == '0'}checked{/if} /> Tidak
+                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false'}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="1" {if: $settings.ceklimit == '1'}checked{/if} /> Ya
+                               <input type="radio" name="ceklimit" value="true" {if: $settings.ceklimit == 'true'}checked{/if} /> Ya
                             </label>
                         </div>
                     </div>
@@ -198,6 +198,17 @@
                         <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
                     </div>
                     {/if}
+                    <div class="form-group">
+                         <label>Mode Admin</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="admin_mode" value="simple" {if: $settings.admin_mode == 'simple'}checked{/if} /> Sederhana
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="admin_mode" value="complex" {if: $settings.admin_mode == 'complex'}checked{/if} /> Lengkap
+                             </label>
+                         </div>
+                    </div>
                     <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />

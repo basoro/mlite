@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row clearfix">
+                <div class="row clearfix {if: $admin_mode == 'simple'}hidden{/if}">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Tensi</label>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row clearfix">
+                <div class="row clearfix {if: $admin_mode == 'simple'}hidden{/if}">
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Suhu</label>
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="row clearfix">
+                <div class="row clearfix {if: $admin_mode == 'simple'}hidden{/if}">
                   <div class="col-sm-3">
                     <label for="nama_pasien">GCS(E,V,M)</label>
                     <input type="text" name="gcs" class="form-control" placeholder="" value="{$dokter_ralan.soap.berat}">
@@ -127,7 +127,7 @@
         <div class="post">
             <div class="post-content">
                 <div class="row clearfix">
-                    <div class="col-md-4">
+                    <div class="col-md-4 {if: $admin_mode == 'simple'}hidden{/if}">
                         <div class="form-group">
                             <label>Diagnosa (ICD-10)</label>
                             <select name="kd_penyakit[]" class="form-control icd10" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
@@ -137,7 +137,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4 {if: $admin_mode == 'simple'}hidden{/if}">
                         <div class="form-group">
                             <label>Tindakan (ICD-9)</label>
                             <select name="kode[]" class="form-control icd9" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
@@ -147,7 +147,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="{if: $admin_mode == 'simple'}col-md-12{else}col-md-4{/if}">
                         <div class="form-group">
                             <label>Perawatan</label>
                             <select name="kd_jenis_prw[]" class="form-control jns_perawatan" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
