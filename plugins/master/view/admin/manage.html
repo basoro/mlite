@@ -1,7 +1,17 @@
-<article class="row">
+<div class="row m-b-xl">
+    <div class="col col-md-12">
+        <div class="input-group">
+          <input type="text" id="cari_submodul" minlength="3" class="form-control" placeholder="Pencarian master data..." required>
+          <span class="input-group-btn">
+            <button class="btn btn-default" type="button"  data-dismiss="modal"><i class="fa fa-close"></i></button>
+          </span>
+        </div>
+    </div>
+</div>
+<div class="row">
     <div class="col-md-12">
         <div class="row">
-            <ul class="modules" style="padding:0;margin:0;">
+            <ul id="list_submodul" class="modules" style="padding:0;margin:0;">
                 {loop: $sub_modules}
                 <li class="module" data-module="{$value.dir}">
                     <div class="panel panel-default">
@@ -20,4 +30,14 @@
             </ul>
         </div>
     </div>
-</article>
+</div>
+<script>
+$(document).ready(function(){
+  $("#cari_submodul").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#list_submodul li").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>

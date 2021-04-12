@@ -1024,7 +1024,7 @@ $(document).ready(function () {
     minSearchLength: 1,
     valueField: 'kode_brng',
     textField: 'nama_brng'
-  });  
+  });
   $('.master_aturan_pakai').selectator({
     labels: {
       search: 'Cari aturan pakai...'

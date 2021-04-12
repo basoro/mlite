@@ -32,7 +32,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
     }
 
     public function anyDisplay()
@@ -52,7 +52,7 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
         exit();
     }
 
@@ -605,16 +605,18 @@ class Admin extends AdminModule
         $result[] = $row;
       }
 
-      $rows_ranap = $this->db('pemeriksaan_ranap')
-       ->where('no_rawat', $_POST['no_rawat'])
-       ->toArray();
       $result_ranap = [];
-      foreach ($rows_ranap as $row) {
-       $row['nomor'] = $i++;
-       $result_ranap[] = $row;
+      if($this->db('mlite_settings')->where('module', 'rawat_inap')->oneArray()) {
+        $rows_ranap = $this->db('pemeriksaan_ranap')
+         ->where('no_rawat', $_POST['no_rawat'])
+         ->toArray();
+        foreach ($rows_ranap as $row) {
+         $row['nomor'] = $i++;
+         $result_ranap[] = $row;
+        }
       }
 
-      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
       exit();
     }
 
@@ -889,9 +891,14 @@ class Admin extends AdminModule
             $this->assign['rawat_jl_dr'] = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_jl_pr'] = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
             $this->assign['rawat_jl_drpr'] = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
-            $this->assign['rawat_inap_dr'] = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
-            $this->assign['rawat_inap_pr'] = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
-            $this->assign['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            $this->assign['rawat_inap_dr'] = [];
+            $this->assign['rawat_inap_pr'] = [];
+            $this->assign['rawat_inap_drpr'] = [];
+            if($this->db('mlite_settings')->where('module', 'rawat_inap')->oneArray()) {
+              $this->assign['rawat_inap_dr'] = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+              $this->assign['rawat_inap_pr'] = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+              $this->assign['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $id)->toArray();
+            }
             $this->assign['catatan'] = $this->db('catatan_perawatan')->where('no_rawat', $id)->oneArray();
             $rows_permintaan_resep = $this->db('resep_obat')
                 ->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
@@ -969,9 +976,14 @@ class Admin extends AdminModule
                 $rawat_jl_dr = $this->db('rawat_jl_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_jl_pr = $this->db('rawat_jl_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
                 $rawat_jl_drpr = $this->db('rawat_jl_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
-                $rawat_inap_dr = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
-                $rawat_inap_pr = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
-                $rawat_inap_drpr = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                $rawat_inap_dr = [];
+                $rawat_inap_pr = [];
+                $rawat_inap_drpr = [];
+                if($this->db('mlite_settings')->where('module', 'rawat_inap')->oneArray()) {
+                  $rawat_inap_dr = $this->db('rawat_inap_dr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_dr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                  $rawat_inap_pr = $this->db('rawat_inap_pr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_pr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                  $rawat_inap_drpr = $this->db('rawat_inap_drpr')->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_inap_drpr.kd_jenis_prw')->where('no_rawat', $row['no_rawat'])->toArray();
+                }
                 $detail_pemberian_obat = $this->db('aturan_pakai')
                   ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
                   ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
@@ -1015,7 +1027,7 @@ class Admin extends AdminModule
                 $this->assign['riwayat'][] = $row;
             }
 
-            return $this->draw('view.html', ['dokter_ralan' => $this->assign]);
+            return $this->draw('view.html', ['dokter_ralan' => $this->assign, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
         } else {
             redirect(url([ADMIN, 'dokter_ralan', 'manage']));
         }
@@ -1177,12 +1189,23 @@ class Admin extends AdminModule
                   ]);
               }
 
-              $query = $this->db('catatan_perawatan')
-                ->where('no_rawat', revertNorawat($id))
-                ->where('kd_dokter', $this->core->getUserInfo('username', null, true))
-                ->update([
-                  'catatan' => $_POST['catatan']
-              ]);
+              if($this->db('catatan_perawatan')->where('no_rawat', revertNorawat($id))->oneArray()){
+                $query = $this->db('catatan_perawatan')
+                  ->where('no_rawat', revertNorawat($id))
+                  ->where('kd_dokter', $this->core->getUserInfo('username', null, true))
+                  ->update([
+                    'catatan' => $_POST['catatan']
+                ]);
+              } else {
+                $query = $this->db('catatan_perawatan')
+                  ->save([
+                    'tanggal' => date('Y-m-d'),
+                    'jam' => date('H:i:s'),
+                    'no_rawat' => revertNorawat($id),
+                    'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                    'catatan' => $_POST['catatan']
+                ]);                
+              }
 
             }
 
