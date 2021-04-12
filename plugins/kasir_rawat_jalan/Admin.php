@@ -3,8 +3,7 @@ namespace Plugins\Kasir_Rawat_Jalan;
 
 use Systems\AdminModule;
 use Systems\Lib\Fpdf\FPDF;
-//use Systems\Lib\Fpdf\PDF_MC_Table;
-use Systems\Lib\QR_BarCode;
+use Systems\Lib\QRCode;
 
 class Admin extends AdminModule
 {
@@ -754,7 +753,6 @@ class Admin extends AdminModule
 
         /* Print as pdf */
         //if(isset($_GET['print']) && $_GET['print'] == 'pdf') {
-          $qr = new QR_BarCode();
           $pdf = new FPDF('P','mm','A4');
           $pdf->AddPage();
 
@@ -881,16 +879,26 @@ class Admin extends AdminModule
           $pdf->Cell(120 ,5,'',0,0);
           $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
 
-          $image = "https://chart.googleapis.com/chart?cht=qr&chs=100x100&chl=".urlencode($this->core->getUserInfo('fullname', null, true));
-          $pdf->Cell(115 ,5,'',0,0);
-          $pdf->Cell( 69, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),40,40,'png'), 0, 0, 'L', false );
-          $pdf->Cell(189 ,35,'',0,1);//end of line
-          $pdf->Cell(120 ,10,'',0,0);
-          $pdf->Cell(69 ,10,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+          $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+          //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+          $im=$qr->createImage(4,4);
+          imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+          imagedestroy($im);
 
-          unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+          $image = BASE_DIR."/admin/tmp/qrcode.png";
+
+          $pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
+          $pdf->Cell(189 ,32,'',0,1);//end of line
+          $pdf->Cell(120 ,5,'',0,0);
+          $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+
+          if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
+            unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+          }
+
           $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
-          //$pdf->Output();
+          $pdf->Output();
         //}
 
         echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);

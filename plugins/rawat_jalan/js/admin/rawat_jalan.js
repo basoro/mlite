@@ -58,7 +58,17 @@ $("#form").on("click","#no_reg", function(event){
     kd_poli: kd_poli,
     kd_dokter: kd_dokter
   } ,function(data) {
-    $("#no_reg").val(data);
+    if(data == '888888') {
+      alert('Kuota pendaftaran sudah terpenuhi.\nSilahkan pilih tanggal lain atau pilih dokter lain.');
+      $("#no_reg").val();
+      $('input:text[name=no_reg]').attr("disabled", true);
+    } else if(data == '999999') {
+      alert('Kuota pendaftaran sudah terpenuhi.\nSilahkan pilih tanggal lain.');
+      $("#no_reg").val();
+      $('input:text[name=no_reg]').attr("disabled", true);
+    } else {
+      $("#no_reg").val(data);
+    }
   });
 });
 
@@ -72,7 +82,7 @@ $("#form").on("click", "#simpan", function(event){
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
   var kd_pj = $('select[name=kd_pj]').val();
-  var stts_daftar = $('input:text[name=stts_daftar]').val();
+  var stts_daftar = $('input:hidden[name=stts_daftar]').val();
 
   var url = baseURL + '/rawat_jalan/save?t=' + mlite.token;
 
@@ -85,7 +95,7 @@ $("#form").on("click", "#simpan", function(event){
   else if(no_rkm_medis == '') {
     alert('Data pasien rawat masih kosong! Silahkan pilih pasien.')
   }
-  else if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama' || stts_daftar == '-')) {
+  else if(!(stts_daftar == 'Baru' || stts_daftar == 'Lama')) {
     bootbox.alert("Ada tagihan belum diselesaikan. Silahkan hubungi kasir atau admin!");
   } else {
     $.post(url,{

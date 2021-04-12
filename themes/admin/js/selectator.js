@@ -48,6 +48,8 @@
 			render: {
 				selected_item: function (_item, escape) {
 					var html = '';
+					if (typeof _item.font !== 'undefined')
+						html += '<div class="' + self.options.prefix + 'selected_item_left">' + _item.font + '</div>';
 					if (typeof _item.left !== 'undefined')
 						html += '<div class="' + self.options.prefix + 'selected_item_left"><img src="' + escape(_item.left) + '" alt=""></div>';
 					if (typeof _item.right !== 'undefined')
@@ -60,6 +62,8 @@
 				},
 				option: function (_item, escape) {
 					var html = '';
+					if (typeof _item.font !== 'undefined')
+						html += '<div class="' + self.options.prefix + 'option_left">' + _item.font + '</div>';
 					if (typeof _item.left !== 'undefined')
 						html += '<div class="' + self.options.prefix + 'option_left"><img src="' + escape(_item.left) + '" alt=""></div>';
 					if (typeof _item.right !== 'undefined')
@@ -106,7 +110,8 @@
 			left:     37,
 			up:       38,
 			right:    39,
-			down:     40
+			down:     40,
+			font:     41
 		};
 
 
@@ -327,6 +332,7 @@
 							hideDropdown();
 						}
 						break;
+					case key.font:
 					case key.left:
 					case key.right:
 					case key.up:
@@ -339,7 +345,7 @@
 						load();
 						break;
 				}
-				if (self.$container_element.hasClass('options-hidden') && (keyCode === key.left || keyCode === key.right || keyCode === key.up || keyCode === key.down)) {
+				if (self.$container_element.hasClass('options-hidden') && (keyCode === key.font || keyCode === key.left || keyCode === key.right || keyCode === key.up || keyCode === key.down)) {
 					showDropdown();
 				}
 				resizeSearchInput();

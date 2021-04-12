@@ -4,7 +4,6 @@ namespace Plugins\Kepegawaian;
 
 use Systems\AdminModule;
 use Systems\Lib\Fpdf\PDF_MC_Table;
-use Systems\Lib\QR_BarCode;
 
 class Admin extends AdminModule
 {
@@ -108,7 +107,6 @@ class Admin extends AdminModule
     public function getEdit($id)
     {
         $this->_addHeaderFiles();
-        $qr = new QR_BarCode();
         $row = $this->db('pegawai')->oneArray($id);
         if (!empty($row)) {
             $this->assign['form'] = $row;
@@ -129,13 +127,6 @@ class Admin extends AdminModule
             $this->assign['emergency_index'] = $this->db('emergency_index')->toArray();
 
             $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/penggajian/'.$row['photo']);
-
-            $qr->pegawai($row['nama'], $row['nik']);
-            $qr->qrCode(180, UPLOADS.'/qrcode/pegawai/'.$row['nik'].'.png');
-            $file_url = url().'/uploads/qrcode/pegawai/'.$row['nik'].'.png';
-            $QR = imagecreatefrompng(UPLOADS.'/qrcode/pegawai/'.$row['nik'].'.png');
-            imagepng($QR,UPLOADS.'/qrcode/pegawai/'.$row['nik'].'.png');
-            $this->assign['qrCode'] = $file_url;
 
             return $this->draw('form.html', ['pegawai' => $this->assign]);
         } else {

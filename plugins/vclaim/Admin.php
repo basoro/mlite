@@ -3,7 +3,7 @@ namespace Plugins\Vclaim;
 
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
-use Systems\Lib\QR_BarCode;
+use Systems\Lib\QRCode;
 
 class Admin extends AdminModule
 {
@@ -285,29 +285,15 @@ class Admin extends AdminModule
         $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
         $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
 
-        $qr = new QR_BarCode();
-        $qr->sep($data_sep['nama_pasien'], $data_sep['nomr'], $data_sep['no_rawat'], $data_sep['no_sep']);
-        $qr->qrCode(180, UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
+        $qr=QRCode::getMinimumQRCode($data_sep['no_sep'],QR_ERROR_CORRECT_LEVEL_L);
+        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+        $im=$qr->createImage(4,4);
+        imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+        imagedestroy($im);
 
-        $logo_url = url().'/'.$this->settings->get('settings.logo');
-        $file_url = url().'/uploads/qrcode/sep/'.$no_sep.'.png';
-        $QR = imagecreatefrompng(UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
+        $image = BASE_DIR."/admin/tmp/qrcode.png";
 
-        $logo = imagecreatefromstring(file_get_contents($logo_url));
-        $QR_width = imagesx($QR);
-        $QR_height = imagesy($QR);
-
-        $logo_width = imagesx($logo);
-        $logo_height = imagesy($logo);
-
-        $logo_qr_width = $QR_width/3;
-        $scale = $logo_width/$logo_qr_width;
-        $logo_qr_height = $logo_height/$scale;
-
-        imagecopyresampled($QR, $logo, $QR_width/3, $QR_height/3, 0, 0, $logo_qr_width, $logo_qr_height, $logo_width, $logo_height);
-        imagepng($QR,UPLOADS.'/qrcode/sep/'.$no_sep.'.png');
-
-        $data_sep['qrCode'] = $file_url;
+        $data_sep['qrCode'] = $image;
         $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
         $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
         $data_sep['potensi_prb'] = $potensi_prb['prb'];

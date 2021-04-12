@@ -31,17 +31,14 @@ define('FILE_LOCK', false);
 // Basic modules
 define('BASIC_MODULES', serialize([
     8 => 'settings',
-    //4 => 'master',
-    //1 => 'pasien',
-    //2 => 'rawat_jalan',
-    //3 => 'kasir_rawat_jalan',
-    //11 => 'rawat_inap',
-    //5 => 'anjungan',
     0 => 'dashboard',
+    1 => 'master',
+    2 => 'pasien',
+    3 => 'rawat_jalan',
+    4 => 'kasir_rawat_jalan',
+    5 => 'kepegawaian',
     7 => 'users',
-    6 => 'modules',
-    //9 => 'icd',
-    //10 => 'vclaim'
+    6 => 'modules'
 ]));
 
 // Developer mode
