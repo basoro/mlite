@@ -39,6 +39,7 @@ class Site extends Main
         $assign['logo'] = $this->settings->get('settings.logo');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $assign['version']       = $this->settings->get('settings.version');
+        $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
         $assign['header']   = isset_or($this->appends['header'], ['']);
         $assign['footer']   = isset_or($this->appends['footer'], ['']);

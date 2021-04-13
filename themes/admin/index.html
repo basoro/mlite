@@ -223,6 +223,7 @@
               {if: $mlite.module_rawat_inap}
               <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
               {/if}
+              {if: $mlite.cek_anjungan}
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Informasi
                 <span class="caret"></span></a>
@@ -239,6 +240,7 @@
                   <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
                 </ul>
               </li>
+              {/if}
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-about.png') ?}" alt=""> KhanzaLITE
                 <span class="caret"></span></a>

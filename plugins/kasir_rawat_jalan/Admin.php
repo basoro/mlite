@@ -35,8 +35,10 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_laboratorium = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
+        $cek_radiologi = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_laboratorium' => $cek_laboratorium, 'cek_radiologi' => $cek_radiologi]);
     }
 
     public function anyDisplay()
@@ -55,8 +57,10 @@ class Admin extends AdminModule
           $status_periksa = $_POST['status_periksa'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_laboratorium = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
+        $cek_radiologi = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_laboratorium' => $cek_laboratorium, 'cek_radiologi' => $cek_radiologi]);
         exit();
     }
 
@@ -385,6 +389,9 @@ class Admin extends AdminModule
 
     public function anyRincian()
     {
+
+      $cek_laboratorium = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
+      $cek_radiologi = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
 
       $poliklinik = $this->db('poliklinik')
         ->join('reg_periksa', 'reg_periksa.kd_poli=poliklinik.kd_poli')
@@ -898,7 +905,7 @@ class Admin extends AdminModule
           }
 
           $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
-          $pdf->Output();
+          //$pdf->Output();
         //}
 
         echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
