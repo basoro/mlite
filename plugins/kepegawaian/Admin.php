@@ -145,6 +145,11 @@ class Admin extends AdminModule
             $this->assign['stts_wp'] = $this->db('stts_wp')->where('stts',$row['stts_wp'])->oneArray();
             $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'manage']);
 
+            $this->assign['fotoURL'] = url('/plugins/kepegawaian/img/default.png');
+            if(!empty($row['photo'])) {
+              $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
+            }
+
             return $this->draw('view.html', ['kepegawaian' => $this->assign]);
         } else {
             redirect(url([ADMIN, 'kepegawaian', 'manage']));
