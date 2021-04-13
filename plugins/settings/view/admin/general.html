@@ -89,7 +89,7 @@
                 </div>
                 <div class="panel-body">
                     {if: $settings.master}
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_rawat_igd)}hidden{/if}">
                         <label>IGD</label>
                         <select name="igd" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
@@ -97,7 +97,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_laboratorium)}hidden{/if}">
                         <label>Laboratorium</label>
                         <select name="laboratorium" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
@@ -105,7 +105,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_laboratorium)}hidden{/if}">
                         <label>Penanggung Jawab Laboratorium</label>
                         <select name="pj_laboratorium" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
@@ -113,7 +113,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_radiologi)}hidden{/if}">
                         <label>Radiologi</label>
                         <select name="radiologi" class="form-control" data-use-search="true">
                             {loop: $settings.poliklinik}
@@ -121,7 +121,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_radiologi)}hidden{/if}">
                         <label>Penanggung Jawab Radiologi</label>
                         <select name="pj_radiologi" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
@@ -132,7 +132,7 @@
                     {/if}
                     {if: $settings.rawat_jalan}
                     <div class="form-group">
-                         <label>Dokter Rawat Jalan</label>
+                         <label>Antrian Rawat Jalan</label>
                          <div class="radio">
                              <label class="radio-inline">
                                 <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
@@ -199,7 +199,7 @@
                     </div>
                     {/if}
                     <div class="form-group">
-                         <label>Mode Admin</label>
+                         <label>Mode Input Admin</label>
                          <div class="radio">
                              <label class="radio-inline">
                                 <input type="radio" name="admin_mode" value="simple" {if: $settings.admin_mode == 'simple'}checked{/if} /> Sederhana
