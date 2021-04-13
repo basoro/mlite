@@ -3,8 +3,6 @@
  A plugin for select elements
  version 3.3, Oct 17th, 2020
  by Ingi á Steinamørk
-
- The MIT License (MIT)
 */
 
 (function($) {
