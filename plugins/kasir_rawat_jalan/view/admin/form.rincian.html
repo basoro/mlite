@@ -42,11 +42,11 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Laboratorium</label>
             <div class="col-sm-4">
-              <input type="text" name="laboratorium" class="form-control" placeholder="Nama Layanan" value="">
+              <input type="text" name="laboratorium" class="form-control" placeholder="Nama Layanan" value="" {if: empty($cek_laboratorium)}disabled{/if}>
             </div>
             <label for="" class="col-sm-1 control-label">Rad.</label>
             <div class="col-sm-4">
-              <input type="text" name="radiologi" class="form-control" placeholder="Nama Layanan" value="">
+              <input type="text" name="radiologi" class="form-control" placeholder="Nama Layanan" value="" {if: empty($cek_radiologi)}disabled{/if}>
             </div>
           </div>
         </div>
