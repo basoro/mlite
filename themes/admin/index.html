@@ -439,6 +439,9 @@
         });
       });
     });
+    $("#moduleModal").on('hidden.bs.modal', function (e) {
+        $("#moduleModal iframe").attr("src", $("#moduleModal iframe").attr("src"));
+    });
     </script>
     <!-- End PWA Support -->
     <script src="{?= url(THEMES.'/admin/js/scripts.js?v='.$mlite.version) ?}"></script>
