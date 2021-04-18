@@ -463,3 +463,25 @@
   	xhttp.send("sender=" + sender + "&number=" + number + "&message=" + message);
   }
 </script>
+<script type="text/javascript">
+    var queryString = new Array();
+    $(function () {
+        if (queryString.length == 0) {
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            var baseURL = mlite.url + '/' + mlite.admin;
+            event.preventDefault();
+        }
+        if (queryString["nama"] != null && queryString["no_telp"] != null) {
+            $('input:text[name=nm_pasien]').val(queryString["nama"]);
+            $('input:text[name=no_tlp]').val(queryString["no_telp"]);
+            $('textarea[name=alamat]').val(queryString["alamat"]);
+        }
+    });
+</script>
