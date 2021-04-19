@@ -47,6 +47,7 @@ class Admin extends AdminModule
                 'nama' => 'booking_periksa.nama',
                 'no_telp' => 'booking_periksa.no_telp',
                 'alamat' => 'booking_periksa.alamat',
+                'email' => 'booking_periksa.email',
                 'nm_poli' => 'poliklinik.nm_poli',
                 'status' => 'booking_periksa.status',
                 'tanggal_booking' => 'booking_periksa.tanggal_booking'
