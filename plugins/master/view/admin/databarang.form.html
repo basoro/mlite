@@ -226,4 +226,17 @@
          locale: 'id',
        });
    });
+   $('input:text[name=dasar]').keyup(function(){
+       $('input:text[name=h_beli]').val(this.value);
+       $('input:text[name=ralan]').val(this.value);
+       $('input:text[name=kelas1]').val(this.value);
+       $('input:text[name=kelas2]').val(this.value);
+       $('input:text[name=kelas3]').val(this.value);
+       $('input:text[name=utama]').val(this.value);
+       $('input:text[name=vip]').val(this.value);
+       $('input:text[name=vvip]').val(this.value);
+       $('input:text[name=beliluar]').val(this.value);
+       $('input:text[name=jualbebas]').val(this.value);
+       $('input:text[name=karyawan]').val(this.value);
+   });
 </script>

@@ -104,4 +104,8 @@
 </div>
 <script type="text/javascript">
   $('select').selectator();
+  $('input:text[name=bhp], input:text[name=bagian_rs], input:text[name=tarif_perujuk], input:text[name=tarif_tindakan_dokter], input:text[name=tarif_tindakan_petugas], input:text[name=kso], input:text[name=menejemen]').keyup(function(){
+      var total_byr = parseInt($('input:text[name=bhp]').val()) + parseInt($('input:text[name=bagian_rs]').val()) + parseInt($('input:text[name=tarif_perujuk]').val()) + parseInt($('input:text[name=tarif_tindakan_dokter]').val()) + parseInt($('input:text[name=tarif_tindakan_petugas]').val()) + parseInt($('input:text[name=kso]').val()) + parseInt($('input:text[name=menejemen]').val());
+      $('input:text[name=total_byr]').val(total_byr);
+  });
 </script>
