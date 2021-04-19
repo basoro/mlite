@@ -120,4 +120,16 @@
 </div>
 <script type="text/javascript">
   $('select').selectator();
+  $('input:text[name=bhp], input:text[name=material], input:text[name=tarif_tindakandr], input:text[name=kso], input:text[name=menejemen]').keyup(function(){
+      var total_byrdr = parseInt($('input:text[name=bhp]').val()) + parseInt($('input:text[name=material]').val()) + parseInt($('input:text[name=tarif_tindakandr]').val()) + parseInt($('input:text[name=kso]').val()) + parseInt($('input:text[name=menejemen]').val());
+      $('input:text[name=total_byrdr]').val(total_byrdr);
+  });
+  $('input:text[name=bhp], input:text[name=material], input:text[name=tarif_tindakanpr], input:text[name=kso], input:text[name=menejemen]').keyup(function(){
+      var total_byrpr = parseInt($('input:text[name=bhp]').val()) + parseInt($('input:text[name=material]').val()) + parseInt($('input:text[name=tarif_tindakanpr]').val()) + parseInt($('input:text[name=kso]').val()) + parseInt($('input:text[name=menejemen]').val());
+      $('input:text[name=total_byrpr]').val(total_byrpr);
+  });
+  $('input:text[name=bhp], input:text[name=material], input:text[name=tarif_tindakandr], input:text[name=tarif_tindakanpr], input:text[name=kso], input:text[name=menejemen]').keyup(function(){
+      var total_byrdrpr = parseInt($('input:text[name=bhp]').val()) + parseInt($('input:text[name=material]').val()) + parseInt($('input:text[name=tarif_tindakandr]').val()) + parseInt($('input:text[name=tarif_tindakanpr]').val()) + parseInt($('input:text[name=kso]').val()) + parseInt($('input:text[name=menejemen]').val());
+      $('input:text[name=total_byrdrpr]').val(total_byrdrpr);
+  });
 </script>
