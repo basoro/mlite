@@ -15,6 +15,7 @@
                 <th>Nama Pasien</th>
                 <th>No. Referensi</th>
                 <th>No. Rek. Virtual</th>
+                <th>URL Pembayaran</th>
                 <th>Biaya</th>
                 <th>Status</th>
               </tr>
@@ -29,7 +30,8 @@
                 <td>{$value.nm_pasien}</td>
                 <td>{$value.reference}</td>
                 <td>{$value.vaNumber}</td>
-                <td>{$value.amount}</td>
+                <td><button type="button" class="btn btn-xs btn-info"><a href="{$value.paymentUrl}" target="_blank">Open <i class="fa fa-money"></i></a></button></td>
+                <td>Rp. {?= number_format($value.amount,2,',','.')?}</td>
                 <td>{$value.statusMessage}</td>
               </tr>
               {/loop}
