@@ -25,8 +25,6 @@ abstract class Main
     {
         $this->setSession();
 
-        //$dbFile = BASE_DIR.'/systems/data/database.sdb';
-
         QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
 
         $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
@@ -37,8 +35,48 @@ abstract class Main
           $this->freshInstall();
         }
 
+        if (!is_dir(WEBAPPS_PATH)) {
+            mkdir(WEBAPPS_PATH, 0777);
+        }
+
         if (!is_dir(UPLOADS)) {
             mkdir(UPLOADS, 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/berkasrawat")) {
+            mkdir(WEBAPPS_PATH."/berkasrawat", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/berkasrawat/pages")) {
+            mkdir(WEBAPPS_PATH."/berkasrawat/pages", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/berkasrawat/pages/upload")) {
+            mkdir(WEBAPPS_PATH."/berkasrawat/pages/upload", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/presensi")) {
+            mkdir(WEBAPPS_PATH."/presensi", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/penggajian")) {
+            mkdir(WEBAPPS_PATH."/penggajian", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/photopasien")) {
+            mkdir(WEBAPPS_PATH."/photopasien", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/penggajian/pages")) {
+            mkdir(WEBAPPS_PATH."/penggajian/pages", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/penggajian/pages/pegawai")) {
+            mkdir(WEBAPPS_PATH."/penggajian/pages/pegawai", 0777);
+        }
+
+        if (!is_dir(WEBAPPS_PATH."/penggajian/pages/pegawai/photo")) {
+            mkdir(WEBAPPS_PATH."/penggajian/pages/pegawai/photo", 0777);
         }
 
         if (!is_dir(UPLOADS."/settings")) {
@@ -46,12 +84,6 @@ abstract class Main
         }
 
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-
-        //if (file_exists($dbFile)) {
-        //    QueryWrapper::connect("sqlite:{$dbFile}");
-        //} else {
-        //    $this->freshInstall($dbFile);
-        //}
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -373,7 +405,6 @@ abstract class Main
 
     private function freshInstall()
     {
-        //QueryWrapper::connect("sqlite:{$dbFile}");
         QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
         $pdo = QueryWrapper::pdo();
 
@@ -394,7 +425,6 @@ abstract class Main
         foreach ($modules as $order => $name) {
             $core->db('mlite_modules')->save(['dir' => $name, 'sequence' => $order]);
         }
-
 
         redirect(url());
     }
