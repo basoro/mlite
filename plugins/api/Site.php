@@ -821,6 +821,7 @@ class Site extends SiteModule
                 echo json_encode($send_data);
               } else {
                 foreach ($result as $row) {
+                  $row['biaya'] = $this->settings->get('api.duitku_paymentAmount');
                   $results[] = $row;
                 }
                 echo json_encode($results);
@@ -865,7 +866,7 @@ class Site extends SiteModule
               $tanggal = trim($_REQUEST['tanggal']);
               $kd_poli = trim($_REQUEST['kd_poli']);
               $kd_dokter = trim($_REQUEST['kd_dokter']);
-              $kd_pj = trim($_REQUEST['kd_pj']);
+              $kd_pj = $this->settings->get('api.duitku_kdpj');
 
               $tentukan_hari=date('D',strtotime($tanggal));
               $day = array(
