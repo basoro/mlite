@@ -76,6 +76,10 @@ return [
         $core->db()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD PRIMARY KEY (`no_rkm_medis`);");
 
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
+          `no_rkm_medis` varchar(15) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
+
         $core->db()->pdo()->exec("ALTER TABLE `pasien`
           ADD CONSTRAINT `pasien_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
           ADD CONSTRAINT `pasien_ibfk_3` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,

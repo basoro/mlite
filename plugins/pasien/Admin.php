@@ -122,12 +122,6 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
-      $no_rkm_medis = '000001';
-      $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
-      if($max_id['no_rkm_medis']) {
-        $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
-      }
-
       $penjab = $this->db('penjab')->toArray();
       $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
       $agama = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
@@ -146,7 +140,7 @@ class Admin extends AdminModule
           'agama' => $agama,
           'pnd' => $pnd,
           'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $no_rkm_medis+1,
+          'no_rkm_medis_baru' => $this->core->setNoRM()+1,
           'waapitoken' => $this->settings->get('settings.waapitoken'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
@@ -234,12 +228,7 @@ class Admin extends AdminModule
       }
 
       if (!$pasien) {
-        $no_rkm_medis = '000001';
-        $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
-        if($max_id['no_rkm_medis']) {
-          $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
-        }
-        $_POST['no_rkm_medis'] = $no_rkm_medis;
+        $_POST['no_rkm_medis'] = $this->core->setNoRM()+1;
         $_POST['tmp_lahir'] = '-';
         $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $_POST['pekerjaanpj'] = '-';
@@ -259,12 +248,7 @@ class Admin extends AdminModule
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->save($_POST);
         if($query) {
-          $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
-          $check_table->execute();
-          $check_table = $check_table->fetch();
-          if($check_table) {
-            $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-          }
+          $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
         }
       } else {
         unset($_POST['nm_prop']);
