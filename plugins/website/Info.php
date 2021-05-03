@@ -8,6 +8,51 @@ return [
     'icon'          =>  'globe',
     'pages'         =>  ['Website' => 'website'],
     'install'       =>  function () use ($core) {
+        $core->db()->pdo()->exec("CREATE TABLE `booking_periksa` (
+          `no_booking` varchar(17) NOT NULL,
+          `tanggal` date DEFAULT NULL,
+          `nama` varchar(40) DEFAULT NULL,
+          `alamat` varchar(200) DEFAULT NULL,
+          `no_telp` varchar(40) DEFAULT NULL,
+          `email` varchar(50) DEFAULT NULL,
+          `kd_poli` varchar(5) DEFAULT NULL,
+          `tambahan_pesan` varchar(400) DEFAULT NULL,
+          `status` enum('Diterima','Ditolak','Belum Dibalas') NOT NULL,
+          `tanggal_booking` datetime NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa`
+          ADD PRIMARY KEY (`no_booking`),
+          ADD UNIQUE KEY `tanggal` (`tanggal`,`no_telp`),
+          ADD KEY `kd_poli` (`kd_poli`);");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa`
+          ADD CONSTRAINT `booking_periksa_ibfk_1` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+        $core->db()->pdo()->exec("CREATE TABLE `booking_periksa_balasan` (
+          `no_booking` varchar(17) NOT NULL,
+          `balasan` text DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa_balasan`
+          ADD PRIMARY KEY (`no_booking`);");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa_balasan`
+          ADD CONSTRAINT `booking_periksa_balasan_ibfk_1` FOREIGN KEY (`no_booking`) REFERENCES `booking_periksa` (`no_booking`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+        $core->db()->pdo()->exec("CREATE TABLE `booking_periksa_diterima` (
+          `no_booking` varchar(17) NOT NULL,
+          `no_rkm_medis` varchar(15) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa_diterima`
+          ADD PRIMARY KEY (`no_booking`),
+          ADD KEY `no_rkm_medis` (`no_rkm_medis`);");
+
+        $core->db()->pdo()->exec("ALTER TABLE `booking_periksa_diterima`
+          ADD CONSTRAINT `booking_periksa_diterima_ibfk_1` FOREIGN KEY (`no_booking`) REFERENCES `booking_periksa` (`no_booking`) ON DELETE CASCADE ON UPDATE CASCADE,
+          ADD CONSTRAINT `booking_periksa_diterima_ibfk_2` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'login', '1')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'logo', 'website/logo.png')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('website', 'logo_icon', 'website/icon-logo.png')");

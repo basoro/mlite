@@ -128,7 +128,6 @@ class Site extends SiteModule
               $query = $this->db('pasien')->save($_POST);
               if($query) {
                 $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-
                 $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
 
                 $data['state'] = 'valid';
@@ -769,6 +768,268 @@ class Site extends SiteModule
               $rows['tanggal'] = getDayIndonesia(date('Y-m-d', date($rows['published_at']))).', '.dateIndonesia(date('Y-m-d', date($rows['published_at'])));
               $results[] = $rows;
               echo json_encode($results);
+            break;
+            case "telemedicine":
+              $tanggal = @$_REQUEST['tanggal'];
+
+              if($tanggal) {
+                $getTanggal = $tanggal;
+              } else {
+                $getTanggal = date('Y-m-d');
+              }
+              $results = array();
+
+              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
+              $hari->execute();
+              $hari = $hari->fetch(\PDO::FETCH_OBJ);
+
+              $namahari = "";
+              if($hari->dt == "Sunday"){
+                  $namahari = "AKHAD";
+              }else if($hari->dt == "Monday"){
+                  $namahari = "SENIN";
+              }else if($hari->dt == "Tuesday"){
+                  $namahari = "SELASA";
+              }else if($hari->dt == "Wednesday"){
+                  $namahari = "RABU";
+              }else if($hari->dt == "Thursday"){
+                  $namahari = "KAMIS";
+              }else if($hari->dt == "Friday"){
+                  $namahari = "JUMAT";
+              }else if($hari->dt == "Saturday"){
+                  $namahari = "SABTU";
+              }
+
+              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter, poliklinik.kd_poli FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
+              $sql->execute();
+              $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
+
+              if(!$result){
+                $send_data['state'] = 'notfound';
+                echo json_encode($send_data);
+              } else {
+                foreach ($result as $row) {
+                  $row['biaya'] = $this->settings->get('api.duitku_paymentAmount');
+                  $results[] = $row;
+                }
+                echo json_encode($results);
+              }
+            break;
+            case "duitku_callback":
+              $apiKey = $this->settings->get('api.duitku_merchantKey'); // from duitku // settings.duitku_merchantKey
+              $merchantCode = isset($_POST['merchantCode']) ? $_POST['merchantCode'] : null;
+              $amount = isset($_POST['amount']) ? $_POST['amount'] : null;
+              $merchantOrderId = isset($_POST['merchantOrderId']) ? $_POST['merchantOrderId'] : null;
+              $productDetail = isset($_POST['productDetail']) ? $_POST['productDetail'] : null;
+              $additionalParam = isset($_POST['additionalParam']) ? $_POST['additionalParam'] : null;
+              $paymentMethod = isset($_POST['paymentCode']) ? $_POST['paymentCode'] : null;
+              $resultCode = isset($_POST['resultCode']) ? $_POST['resultCode'] : null;
+              $merchantUserId = isset($_POST['merchantUserId']) ? $_POST['merchantUserId'] : null;
+              $reference = isset($_POST['reference']) ? $_POST['reference'] : null;
+              $signature = isset($_POST['signature']) ? $_POST['signature'] : null;
+
+              if(!empty($merchantCode) && !empty($amount) && !empty($merchantOrderId) && !empty($signature)) {
+                  $params = $merchantCode . $amount . $merchantOrderId . $apiKey;
+                  $calcSignature = md5($params);
+                  if($signature == $calcSignature) {
+                      //Your code here
+                  	  if($resultCode == "00") {
+                  	     echo "SUCCESS"; // Save to database
+                     	} else {
+                         echo "FAILED"; // Please update the status to FAILED in database
+                      }
+                  } else {
+                      throw new Exception('Bad Signature');
+                  }
+              }
+              else
+              {
+                  throw new Exception('Bad Parameter');
+              }
+            break;
+            case "telemedicinedaftar":
+              $send_data = array();
+
+              $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
+              $tanggal = trim($_REQUEST['tanggal']);
+              $kd_poli = trim($_REQUEST['kd_poli']);
+              $kd_dokter = trim($_REQUEST['kd_dokter']);
+              $kd_pj = $this->settings->get('api.duitku_kdpj');
+
+              $tentukan_hari=date('D',strtotime($tanggal));
+              $day = array(
+                'Sun' => 'AKHAD',
+                'Mon' => 'SENIN',
+                'Tue' => 'SELASA',
+                'Wed' => 'RABU',
+                'Thu' => 'KAMIS',
+                'Fri' => 'JUMAT',
+                'Sat' => 'SABTU'
+              );
+              $hari=$day[$tentukan_hari];
+
+              $jadwal = $this->db('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
+
+              $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
+
+              if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+                $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
+              }
+
+              $curr_count = $check_kuota['count'];
+              $curr_kuota = $jadwal['kuota'];
+              $online = $curr_kuota / $this->settings->get('api.apam_limit');
+
+              $check = $this->db('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', $tanggal)->oneArray();
+
+              if($curr_count > $online) {
+                $send_data['state'] = 'limit';
+                echo json_encode($send_data);
+              }
+              else if(!$check) {
+                  $mysql_date = date( 'Y-m-d' );
+                  $mysql_time = date( 'H:m:s' );
+                  $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
+
+                  $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+                    $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  }
+                  if(empty($max_id['no_reg'])) {
+                    $max_id['no_reg'] = '000';
+                  }
+                  $no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+                  unset($_POST);
+                  $_POST['no_rkm_medis'] = $no_rkm_medis;
+                  $_POST['tanggal_periksa'] = $tanggal;
+                  $_POST['kd_poli'] = $kd_poli;
+                  $_POST['kd_dokter'] = $kd_dokter;
+                  $_POST['kd_pj'] = $kd_pj;
+                  $_POST['no_reg'] = $no_reg;
+                  $_POST['tanggal_booking'] = $mysql_date;
+                  $_POST['jam_booking'] = $mysql_time;
+                  $_POST['waktu_kunjungan'] = $waktu_kunjungan;
+                  $_POST['limit_reg'] = '1';
+                  $_POST['status'] = 'Belum';
+
+                  $this->db('booking_registrasi')->save($_POST);
+
+                  $send_data['state'] = 'success';
+                  echo json_encode($send_data);
+
+
+                  $pasien = $this->db('pasien')->where('no_rkm_medis', $_REQUEST['no_rkm_medis'])->oneArray();
+                  $merchantCode = $this->settings->get('api.duitku_merchantCode'); // from duitku // settings.duitku_merchantCode
+                  $merchantKey = $this->settings->get('api.duitku_merchantKey'); // from duitku // settings.duitku_merchantKey
+                  $paymentAmount = $this->settings->get('api.duitku_paymentAmount'); // settings.duitku_paymentAmount
+                  $paymentMethod = $this->settings->get('api.duitku_paymentMethod'); // WW = duitku wallet, VC = Credit Card, MY = Mandiri Clickpay, BK = BCA KlikPay
+                  $merchantOrderId = time(); // from merchant, unique
+                  $productDetails = $this->settings->get('api.duitku_productDetails'); //settings.duitku_productDetails
+                  $email = $pasien['email']; // your customer email
+                  $phoneNumber = $pasien['no_tlp']; // your customer phone number (optional)
+                  $additionalParam = ''; // optional
+                  $merchantUserInfo = ''; // optional
+                  $customerVaName = $pasien['nm_pasien']; // display name on bank confirmation display
+                  $callbackUrl = url().'/api/apam/?action=duitku_callback&token='.$token; // url for callback
+                  $returnUrl = url().'/api/apam/?action=duitku&token='.$token; // url for redirect
+                  $expiryPeriod = $this->settings->get('api.duitku_expiryPeriod'); // set the expired time in minutes
+
+                  $signature = md5($merchantCode . $merchantOrderId . $paymentAmount . $merchantKey);
+
+                  $item1 = array(
+                      'name' => $this->settings->get('api.duitku_productDetails'), //settings.duitku_productDetails
+                      'price' => $this->settings->get('api.duitku_paymentAmount'), //settings.duitku_paymentAmount
+                      'quantity' => 1);
+                  $itemDetails = array(
+                      $item1
+                  );
+
+                  $params = array(
+                      'merchantCode' => $merchantCode,
+                      'paymentAmount' => $paymentAmount,
+                      'paymentMethod' => $paymentMethod,
+                      'merchantOrderId' => $merchantOrderId,
+                      'productDetails' => $productDetails,
+                      'additionalParam' => $additionalParam,
+                      'merchantUserInfo' => $merchantUserInfo,
+              	      'customerVaName' => $customerVaName,
+                      'email' => $email,
+                      'phoneNumber' => $phoneNumber,
+                      'itemDetails' => $itemDetails,
+                      'callbackUrl' => $callbackUrl,
+                      'returnUrl' => $returnUrl,
+                      'signature' => $signature,
+              	      'expiryPeriod' => $expiryPeriod
+                  );
+
+                  $params_string = json_encode($params);
+                  $url = 'https://sandbox.duitku.com/webapi/api/merchant/v2/inquiry'; // Sandbox
+                  // $url = 'https://passport.duitku.com/webapi/api/merchant/v2/inquiry'; // Production
+                  $ch = curl_init();
+
+                  curl_setopt($ch, CURLOPT_URL, $url);
+                  curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+                  curl_setopt($ch, CURLOPT_POSTFIELDS, $params_string);
+                  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                      'Content-Type: application/json',
+                      'Content-Length: ' . strlen($params_string))
+                  );
+                  curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+
+                  //execute post
+                  $request = curl_exec($ch);
+                  $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+                  if($httpCode == 200) {
+                    $result_duitku = json_decode($request, true);
+                    $this->db('mlite_duitku')->save([
+                      'tanggal' => $waktu_kunjungan,
+                      'no_rkm_medis' => $pasien['no_rkm_medis'],
+                      'paymentUrl' => $result_duitku['paymentUrl'],
+                      'merchantCode' => $result_duitku['merchantCode'],
+                      'reference' => $result_duitku['reference'],
+                      'vaNumber' => $result_duitku['vaNumber'],
+                      'amount' => $result_duitku['amount'],
+                      'statusCode' => $result_duitku['statusCode'],
+                      'statusMessage' => $result_duitku['statusMessage']
+                    ]);
+                  }
+
+                  $get_pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+                  $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+                  if($get_pasien['no_tlp'] !='') {
+                    $ch = curl_init();
+                    $url = "https://wa.basoro.id/send-message";
+                    curl_setopt($ch, CURLOPT_URL,$url);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, "sender=".$this->settings->get('settings.waapitoken')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $output = curl_exec ($ch);
+                    curl_close ($ch);
+                  }
+
+              }
+              else{
+                  $send_data['state'] = 'duplication';
+                  echo json_encode($send_data);
+              }
+            break;
+            case "telemedicinesukses":
+              $results = array();
+              $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
+              $date = date('Y-m-d');
+              $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab, a.jam_booking FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_booking = '$date' AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
+              $query = $this->db()->pdo()->prepare($sql);
+              $query->execute();
+              $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
+              foreach ($rows as $row) {
+                $mlite_duitku = $this->db('mlite_duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
+                $row['paymentUrl'] = $mlite_duitku['paymentUrl'];
+                $results[] = $row;
+              }
+              echo json_encode($results, JSON_PRETTY_PRINT);
             break;
             default:
               echo 'Default';

@@ -153,8 +153,8 @@ $("#display").on("click", ".edit", function(event){
 
     $.post(url, {no_rawat: no_rawat} ,function(data) {
       $("#stts_daftar").html(data).show();
-      var stts_daftar = $('input:text[name=get_stts_daftar]').val();
-      $('input:hidden[name=stts_daftar]').val(stts_daftar);
+      var get_stts_daftar = $('input:text[name=get_stts_daftar]').val();
+      $('input:hidden[name=stts_daftar]').val(get_stts_daftar);
     });
   });
 });

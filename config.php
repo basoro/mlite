@@ -11,7 +11,7 @@ define('DBNAME', 'sik');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/webapps');
-define('WEBAPPS_PATH', BASE_DIR . '/../webapps');
+define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
 // Admin cat name
 define('ADMIN', 'admin');

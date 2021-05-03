@@ -28,6 +28,7 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->toArray();
+        $penjab = $this->db('penjab')->toArray();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
@@ -40,7 +41,8 @@ class Site extends SiteModule
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_anjungan'),
-          'poliklinik' => $poliklinik
+          'poliklinik' => $poliklinik,
+          'penjab' => $penjab
         ]);
 
         $assign = [
