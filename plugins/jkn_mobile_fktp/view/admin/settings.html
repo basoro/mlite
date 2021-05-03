@@ -1,0 +1,46 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/jkn_mobile_fktp/saveSettings')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" name="jkn_mobile_fktp[username]" class="form-control" value="{$settings.jkn_mobile_fktp.username}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="text" name="jkn_mobile_fktp[password]" class="form-control" value="{$settings.jkn_mobile_fktp.password}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Header Token</label>
+                        <input type="text" name="jkn_mobile_fktp[header]" class="form-control" value="{$settings.jkn_mobile_fktp.header}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Header Username</label>
+                        <input type="text" name="jkn_mobile_fktp[header_username]" class="form-control" value="{$settings.jkn_mobile_fktp.header_username}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Header Password</label>
+                        <input type="text" name="jkn_mobile_fktp[header_password]" class="form-control" value="{$settings.jkn_mobile_fktp.header_password}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Hari Daftar</label>
+                        <input type="text" name="jkn_mobile_fktp[hari]" class="form-control" value="{$settings.jkn_mobile_fktp.hari}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Tampilkan Poli</label>
+                        <select name="jkn_mobile_fktp[display][]" class="form-control" multiple>
+                          {loop: $settings.poliklinik}
+                            <option value="{$value.kd_poli}" {$value.attr}>{$value.nm_poli}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

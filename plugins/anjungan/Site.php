@@ -46,8 +46,8 @@ class Site extends SiteModule
         ]);
 
         $assign = [
-            'title' => '',
-            'desc' => '',
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -78,8 +78,8 @@ class Site extends SiteModule
         ]);
 
         $assign = [
-            'title' => '',
-            'desc' => '',
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -87,7 +87,6 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
-        //exit();
     }
 
     public function _resultDisplayAntrianPoli()
@@ -350,8 +349,8 @@ class Site extends SiteModule
         }
 
         $assign = [
-            'title' => '',
-            'desc' => '',
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -383,8 +382,8 @@ class Site extends SiteModule
         ]);
 
         $assign = [
-            'title' => '',
-            'desc' => '',
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -845,8 +844,8 @@ class Site extends SiteModule
       ]);
 
       $assign = [
-          'title' => '',
-          'desc' => '',
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
           'content' => $content
       ];
 

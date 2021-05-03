@@ -10,10 +10,11 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'index',
-            'Rawat Jalan'   => 'manage',
-            'Booking'          => 'booking',
-            'Jadwal Dokter'          => 'jadwal'
+            'Kelola'              => 'index',
+            'Rawat Jalan'         => 'manage',
+            'Booking Registrasi'  => 'booking',
+            'Booking Periksa'     => 'bookingperiksa',
+            'Jadwal Dokter'       => 'jadwal'
         ];
     }
 
@@ -462,6 +463,54 @@ class Admin extends AdminModule
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'nama_instansi' => $nama_instansi]);
 
+    }
+
+    public function getBookingPeriksa()
+    {
+        $date = date('Y-m-d');
+        $text = 'Booking Pendaftaran';
+
+        // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+
+        return $this->draw('booking.periksa.html',
+          [
+            'text' => $text,
+            'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'nama_instansi' => $this->settings->get('settings.nama_instansi'),
+            'booking' => $this->db('booking_periksa')
+              ->select([
+                'no_booking' => 'booking_periksa.no_booking',
+                'tanggal' => 'booking_periksa.tanggal',
+                'nama' => 'booking_periksa.nama',
+                'no_telp' => 'booking_periksa.no_telp',
+                'alamat' => 'booking_periksa.alamat',
+                'email' => 'booking_periksa.email',
+                'nm_poli' => 'poliklinik.nm_poli',
+                'status' => 'booking_periksa.status',
+                'tanggal_booking' => 'booking_periksa.tanggal_booking'
+              ])
+              ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
+              ->where('tambahan_pesan', 'jkn_mobile_v2')
+              ->toArray()
+          ]
+        );
+    }
+
+    public function postSaveBookingPeriksa()
+    {
+      $this->db('booking_periksa')->where('no_booking', $_POST['no_booking'])->save(['status' => $_POST['status']]);
+      $this->db('booking_periksa_balasan')
+      ->save([
+        'no_booking' => $_POST['no_booking'],
+        'balasan' => $_POST['message']
+      ]);
+      exit();
     }
 
     public function getJadwal()

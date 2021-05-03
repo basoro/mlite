@@ -87,18 +87,12 @@ class Site extends SiteModule
 
               unset($_POST);
 
-              $no_rkm_medis = '000001';
-              $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
-              if($max_id['no_rkm_medis']) {
-                $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
-              }
-
               $_POST['nm_pasien'] = trim($_REQUEST['nm_pasien']);
               $_POST['email'] = trim($_REQUEST['email']);
               $_POST['no_ktp'] = trim($_REQUEST['no_ktp']);
               $_POST['no_tlp'] = trim($_REQUEST['no_tlp']);
 
-              $_POST['no_rkm_medis'] = $no_rkm_medis;
+              $_POST['no_rkm_medis'] = $this->core->setNoRM()+1;
               $_POST['jk'] = trim($_REQUEST['jk']);
               $_POST['tmp_lahir'] = '-';
               $_POST['tgl_lahir'] = trim($_REQUEST['tgl_lahir']);
@@ -133,13 +127,7 @@ class Site extends SiteModule
 
               $query = $this->db('pasien')->save($_POST);
               if($query) {
-                $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
-                $check_table->execute();
-                $check_table = $check_table->fetch();
-                if($check_table) {
-                  $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-                }
-
+                $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
                 $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
 
                 $data['state'] = 'valid';

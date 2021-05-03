@@ -8,7 +8,6 @@ return [
     'icon'          =>  'globe',
     'pages'         =>  ['Website' => 'website'],
     'install'       =>  function () use ($core) {
-
         $core->db()->pdo()->exec("CREATE TABLE `booking_periksa` (
           `no_booking` varchar(17) NOT NULL,
           `tanggal` date DEFAULT NULL,
