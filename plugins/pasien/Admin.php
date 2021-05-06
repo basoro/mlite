@@ -140,7 +140,7 @@ class Admin extends AdminModule
           'agama' => $agama,
           'pnd' => $pnd,
           'keluarga' => $keluarga,
-          'no_rkm_medis_baru' => $this->core->setNoRM()+1,
+          'no_rkm_medis_baru' => $this->core->setNoRM(),
           'waapitoken' => $this->settings->get('settings.waapitoken'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
@@ -228,7 +228,7 @@ class Admin extends AdminModule
       }
 
       if (!$pasien) {
-        $_POST['no_rkm_medis'] = $this->core->setNoRM()+1;
+        $_POST['no_rkm_medis'] = $this->core->setNoRM();
         $_POST['tmp_lahir'] = '-';
         $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $_POST['pekerjaanpj'] = '-';
