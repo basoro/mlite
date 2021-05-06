@@ -92,7 +92,7 @@ class Site extends SiteModule
               $_POST['no_ktp'] = trim($_REQUEST['no_ktp']);
               $_POST['no_tlp'] = trim($_REQUEST['no_tlp']);
 
-              $_POST['no_rkm_medis'] = $this->core->setNoRM()+1;
+              $_POST['no_rkm_medis'] = $this->core->setNoRM();
               $_POST['jk'] = trim($_REQUEST['jk']);
               $_POST['tmp_lahir'] = '-';
               $_POST['tgl_lahir'] = trim($_REQUEST['tgl_lahir']);
