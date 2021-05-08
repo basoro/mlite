@@ -122,6 +122,25 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $("#btn_cetak").click(function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
+    var cari = $('input:text[name=cari]').val();
+
+    $.post(url, {cari: cari} ,function(data) {
+      //window.open(baseURL + '/pasien/cetakpdf?t=' + mlite.token);
+      $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/pasien/cetakpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+    });
+
+		return false;
+  });
 </script>

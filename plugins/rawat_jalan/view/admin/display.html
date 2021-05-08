@@ -294,3 +294,18 @@
       $(this).removeData('bs.modal');
   });
 </script>
+<script>
+  $("#btn_cetak").click(function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/rawat_jalan/cetak?t=' + mlite.token;
+    var cari = $('input:text[name=cari]').val();
+    var tgl_awal = $('input:text[name=periode_rawat_jalan]').val();
+    var tgl_akhir = $('input:text[name=periode_rawat_jalan_akhir]').val();
+
+    $.post(url, {cari: cari, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir} ,function(data) {
+      window.open(baseURL + '/rawat_jalan/cetakpdf?t=' + mlite.token);
+    });
+
+		return false;
+  });
+</script>

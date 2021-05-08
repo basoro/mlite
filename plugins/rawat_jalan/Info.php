@@ -103,9 +103,11 @@
             `status_poli` enum('Lama','Baru') NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+          /*
           $core->db()->pdo()->exec("INSERT INTO `reg_periksa` (`no_reg`, `no_rawat`, `tgl_registrasi`, `jam_reg`, `kd_dokter`, `no_rkm_medis`, `kd_poli`, `p_jawab`, `almt_pj`, `hubunganpj`, `biaya_reg`, `stts`, `stts_daftar`, `status_lanjut`, `kd_pj`, `umurdaftar`, `sttsumur`, `status_bayar`, `status_poli`) VALUES
           ('001', '2020/12/26/000001', '2020-12-26', '08:00:00', 'DR001', '000001', '-', '-', '-', 'AYAH', 0, 'Belum', 'Baru', 'Ralan', '-', 1, 'Th', 'Sudah Bayar', 'Baru');");
-
+          */
+          
           $core->db()->pdo()->exec("ALTER TABLE `dokter`
             ADD PRIMARY KEY (`kd_dokter`),
             ADD KEY `kd_sps` (`kd_sps`),

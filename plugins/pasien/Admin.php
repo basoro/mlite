@@ -2,6 +2,7 @@
 namespace Plugins\Pasien;
 
 use Systems\AdminModule;
+use Systems\Lib\Fpdf\PDF_MC_Table;
 use Plugins\Pasien\DB_Wilayah;
 use Plugins\Icd\DB_ICD;
 
@@ -644,6 +645,86 @@ class Admin extends AdminModule
       $this->tpl->set('riwayat', $this->tpl->noParse_array(htmlspecialchars_array($riwayat)));
       echo $this->draw('riwayat.perawatan.dokter.html');
       exit();
+    }
+
+    public function postCetak()
+    {
+      $this->core->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
+      $cari = $_POST['cari'];
+      $this->core->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+        `temp1`,
+        `temp2`,
+        `temp3`,
+        `temp4`,
+        `temp5`,
+        `temp6`,
+        `temp7`,
+        `temp8`,
+        `temp9`,
+        `temp10`,
+        `temp11`,
+        `temp12`,
+        `temp13`,
+        `temp14`,
+        `temp15`,
+        `temp16`,
+        `temp17`,
+        `temp18`,
+        `temp19`,
+        `temp20`,
+        `temp21`,
+        `temp22`,
+        `temp23`,
+        `temp24`,
+        `temp25`,
+        `temp26`,
+        `temp27`,
+        `temp28`,
+        `temp29`,
+        `temp30`,
+        `temp31`,
+        `temp32`,
+        `temp33`,
+        `temp34`,
+        `temp35`,
+        `temp36`
+      )
+      SELECT *
+      FROM `pasien`
+      WHERE (`no_rkm_medis` LIKE '%$cari%' OR `nm_pasien` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
+      ");
+      exit();
+    }
+
+    public function getCetakPdf()
+    {
+      $tmp = $this->db('mlite_temporary')->toArray();
+      $logo = url().'/'.$this->settings->get('settings.logo');
+
+      $pdf = new PDF_MC_Table('L','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image($logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 345, 30);
+      $pdf->Line(10, 31, 345, 31);
+      $pdf->Text(10, 40, 'DATA PASIEN');
+      $pdf->Ln(34);
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->SetWidths(array(25,245,65));
+      $pdf->Row(array('No RM','Nama Pasien','Tanggal Lahir'));
+      foreach ($tmp as $hasil) {
+        $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3']));
+      }
+      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
     public function anyWilayah()

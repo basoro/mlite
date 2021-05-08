@@ -3,6 +3,7 @@ namespace Plugins\Rawat_Jalan;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
+use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -1050,6 +1051,72 @@ class Admin extends AdminModule
         setlocale(LC_ALL, 'en_EN');
         $text = str_replace('/', '', trim($text));
         return $text;
+    }
+
+    public function postCetak()
+    {
+      $this->core->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
+      $cari = $_POST['cari'];
+      $tgl_awal = $_POST['tgl_awal'];
+      $tgl_akhir = $_POST['tgl_akhir'];
+      $this->core->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+        `temp1`,
+        `temp2`,
+        `temp3`,
+        `temp4`,
+        `temp5`,
+        `temp6`,
+        `temp7`,
+        `temp8`,
+        `temp9`,
+        `temp10`,
+        `temp11`,
+        `temp12`,
+        `temp13`,
+        `temp14`,
+        `temp15`,
+        `temp16`,
+        `temp17`,
+        `temp18`,
+        `temp19`
+      )
+      SELECT *
+      FROM `reg_periksa`
+      WHERE (`no_rawat` LIKE '%$cari%' OR `tgl_registrasi` LIKE '%$cari%')
+      AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
+      ");
+      exit();
+    }
+
+    public function getCetakPdf()
+    {
+      $tmp = $this->db('mlite_temporary')->toArray();
+      $logo = url().'/'.$this->settings->get('settings.logo');
+
+      $pdf = new PDF_MC_Table('L','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image($logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 200, 30);
+      $pdf->Line(10, 31, 200, 31);
+      $pdf->Text(10, 40, 'DATA PASIEN');
+      $pdf->Ln(34);
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->SetWidths(array(25,25,25,25,25));
+      $pdf->Row(array('No Rawat','No Antrian','Nama Pasien','No RM','Tanggal Lahir'));
+      //foreach ($tmp as $hasil) {
+      //  $pdf->Row(array($hasil['temp2'],$hasil['temp1'],$hasil['temp3'],$hasil['temp4'],$hasil['temp5']));
+      //}
+      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
     public function getJavascript()

@@ -126,7 +126,7 @@ class Admin extends AdminModule
             $this->assign['bank'] = $this->db('bank')->toArray();
             $this->assign['emergency_index'] = $this->db('emergency_index')->toArray();
 
-            $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/penggajian/'.$row['photo']);
+            $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
 
             return $this->draw('form.html', ['pegawai' => $this->assign]);
         } else {
@@ -145,7 +145,7 @@ class Admin extends AdminModule
             $this->assign['stts_wp'] = $this->db('stts_wp')->where('stts',$row['stts_wp'])->oneArray();
             $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'manage']);
 
-            $this->assign['fotoURL'] = url('/plugins/kepegawaian/img/default.png');
+            $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
             if(!empty($row['photo'])) {
               $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
             }
