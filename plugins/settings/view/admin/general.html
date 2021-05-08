@@ -216,6 +216,17 @@
                          </div>
                     </div>
                     <div class="form-group">
+                         <label>Input Kasir</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="input_kasir" value="ya" {if: $settings.input_kasir == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak'}checked{/if} /> Tidak
+                             </label>
+                         </div>
+                    </div>
+                    <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
                     </div>
