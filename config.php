@@ -10,7 +10,7 @@ define('DBPASS', 'basoro');
 define('DBNAME', 'mlite');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://localhost/webapps');
+define('WEBAPPS_URL', 'http://localhost/Khanza-Lite/webapps');
 define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
 // Admin cat name
