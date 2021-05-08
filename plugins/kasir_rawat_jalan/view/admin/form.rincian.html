@@ -26,9 +26,10 @@
             </div>
             <label for="" class="col-sm-1 control-label">Tmb.</label>
             <div class="col-sm-4">
-              <input type="text" name="tambahan_biaya" class="form-control" placeholder="Tambah Biaya" value="">
+              <input type="text" name="tambahan_biaya" class="form-control" placeholder="Tambah Biaya" value="" {if: $rawat_jalan.input_kasir == 'tidak'}disabled{/if}>
             </div>
           </div>
+          {if: $rawat_jalan.input_kasir == 'ya'}
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tindakan</label>
             <div class="col-sm-4">
@@ -49,6 +50,7 @@
               <input type="text" name="radiologi" class="form-control" placeholder="Nama Layanan" value="" {if: empty($cek_radiologi)}disabled{/if}>
             </div>
           </div>
+          {/if}
         </div>
       </div>
     </div>

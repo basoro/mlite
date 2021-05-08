@@ -77,6 +77,7 @@ class Admin extends AdminModule
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
         $this->assign['jam_reg']= date('H:i:s');
+        $this->assign['input_kasir'] = $this->settings('settings', 'input_kasir');
 
         $sql = "SELECT reg_periksa.*,
             pasien.*,
