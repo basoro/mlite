@@ -658,7 +658,7 @@ class Admin extends AdminModule
         'rtl2' => '',
         'tanggal_datang' => $_POST['tanggal_datang'],
         'tanggal_rujukan' => $_POST['tanggal_rujukan'],
-        'no_antrian' => $this->setNoSKDP(),
+        'no_antrian' => $this->core->setNoSKDP(),
         'kd_dokter' => $this->core->getUserInfo('username', null, true),
         'status' => 'Menunggu'
       ]);
@@ -671,9 +671,9 @@ class Admin extends AdminModule
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'tanggal_periksa' => $_POST['tanggal_datang'],
             'kd_dokter' => $this->core->getUserInfo('username', null, true),
-            'kd_poli' => $this->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-            'no_reg' => $this->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_rujukan']),
-            'kd_pj' => $this->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
+            'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
+            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_rujukan']),
+            'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
             'limit_reg' => 0,
             'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
             'status' => 'Belum'
@@ -692,38 +692,6 @@ class Admin extends AdminModule
     {
       $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
-    }
-
-    public function setNoSKDP()
-    {
-        $year = date('Y');
-        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
-        $last_no->execute();
-        $last_no = $last_no->fetch();
-        if(empty($last_no[0])) {
-          $last_no[0] = '000000';
-        }
-        $next_no = sprintf('%06s', ($last_no[0] + 1));
-        return $next_no;
-    }
-
-    public function getRegPeriksaInfo($field, $no_rawat)
-    {
-        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
-        return $row[$field];
-    }
-
-    public function setNoBooking($kd_dokter, $date)
-    {
-        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
-        $last_no_reg->execute();
-        $last_no_reg = $last_no_reg->fetch();
-        if(empty($last_no_reg[0])) {
-          $last_no_reg[0] = '000';
-        }
-        $next_no_reg = sprintf('%03s', ($last_no_reg[0] + 1));
-
-        return $next_no_reg;
     }
 
     public function anyLayanan()
@@ -1465,29 +1433,6 @@ class Admin extends AdminModule
           };
       }
       redirect(url([ADMIN, 'dokter_igd', 'view', $id]));
-    }
-
-    public function postMaxid()
-    {
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
-      if(empty($max_id['no_rawat'])) {
-        $max_id['no_rawat'] = '000000';
-      }
-      $_next_no_rawat = sprintf('%06s', ($max_id['no_rawat'] + 1));
-      $next_no_rawat = date('Y/m/d').'/'.$_next_no_rawat;
-      echo $next_no_rawat;
-      exit();
-    }
-
-    public function postMaxAntrian()
-    {
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $_POST['kd_poli'])->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
-      if(empty($max_id['no_reg'])) {
-        $max_id['no_reg'] = '000';
-      }
-      $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
-      echo $_next_no_reg;
-      exit();
     }
 
     public function getAjax()
