@@ -89,7 +89,7 @@ class Admin extends AdminModule
         }
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
+        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
         $this->assign['no_rawat'] = '';
@@ -1059,30 +1059,14 @@ class Admin extends AdminModule
       $cari = $_POST['cari'];
       $tgl_awal = $_POST['tgl_awal'];
       $tgl_akhir = $_POST['tgl_akhir'];
+      $igd = $this->settings->get('settings.igd');
       $this->core->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
-        `temp1`,
-        `temp2`,
-        `temp3`,
-        `temp4`,
-        `temp5`,
-        `temp6`,
-        `temp7`,
-        `temp8`,
-        `temp9`,
-        `temp10`,
-        `temp11`,
-        `temp12`,
-        `temp13`,
-        `temp14`,
-        `temp15`,
-        `temp16`,
-        `temp17`,
-        `temp18`,
-        `temp19`
+        `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,`temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,`temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
       )
       SELECT *
       FROM `reg_periksa`
       WHERE (`no_rawat` LIKE '%$cari%' OR `tgl_registrasi` LIKE '%$cari%')
+      AND `kd_poli` <> '$igd'
       AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
       ");
       exit();
@@ -1106,16 +1090,21 @@ class Admin extends AdminModule
       $pdf->SetFont('Arial', '', 10);
       $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
       $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 200, 30);
-      $pdf->Line(10, 31, 200, 31);
-      $pdf->Text(10, 40, 'DATA PASIEN');
+      $pdf->Line(10, 30, 345, 30);
+      $pdf->Line(10, 31, 345, 31);
+      $pdf->SetFont('Arial', 'B', 13);
+      $pdf->Text(10, 40, 'DATA PENDAFTARAN POLIKLINIK');
       $pdf->Ln(34);
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->SetWidths(array(25,35,20,80,25,50,50,50));
+      $pdf->Row(array('Tanggal','No. Rawat','No. Reg','Nama Pasien','No. RM','Poliklinik','Dokter','Penjamin'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->SetWidths(array(25,25,25,25,25));
-      $pdf->Row(array('No Rawat','No Antrian','Nama Pasien','No RM','Tanggal Lahir'));
-      //foreach ($tmp as $hasil) {
-      //  $pdf->Row(array($hasil['temp2'],$hasil['temp1'],$hasil['temp3'],$hasil['temp4'],$hasil['temp5']));
-      //}
+      foreach ($tmp as $hasil) {
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $hasil['temp7'])->oneArray();
+        $dokter = $this->db('dokter')->where('kd_dokter', $hasil['temp5'])->oneArray();
+        $penjab = $this->db('penjab')->where('kd_pj', $hasil['temp15'])->oneArray();
+        $pdf->Row(array($hasil['temp3'],$hasil['temp2'],$hasil['temp1'],$this->core->getPasienInfo('nm_pasien', $hasil['temp6']),$hasil['temp6'],$poliklinik['nm_poli'],$dokter['nm_dokter'],$penjab['png_jawab']));
+      }
       $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
