@@ -716,13 +716,19 @@ class Admin extends AdminModule
       $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
       $pdf->Line(10, 30, 345, 30);
       $pdf->Line(10, 31, 345, 31);
+      $pdf->SetFont('Arial', 'B', 13);
       $pdf->Text(10, 40, 'DATA PASIEN');
       $pdf->Ln(34);
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->SetWidths(array(20,65,35,25,25,70,25,30,40));
+      $pdf->Row(array('No. RM','Nama Pasien','No. KTP','J. Kelamin','Tgl. Lahir','Alamat','Tgl. Daftar','No. Telp','Email'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->SetWidths(array(25,245,65));
-      $pdf->Row(array('No RM','Nama Pasien','Tanggal Lahir'));
       foreach ($tmp as $hasil) {
-        $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3']));
+        $j_kelamin = 'Laki-Laki';
+        if($hasil['temp4'] == 'P') {
+          $j_kelamin = 'Perempuan';
+        }
+        $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3'],$j_kelamin,$hasil['temp6'],$hasil['temp8'],$hasil['temp13'],$hasil['temp14'],$hasil['temp33']));
       }
       $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
