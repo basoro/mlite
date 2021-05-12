@@ -764,7 +764,7 @@ class Admin extends AdminModule
         $pdf = new PDF_MC_Table('P','mm','A4');
         $pdf->AddPage();
 
-        $pdf->Image(url().'/'.$settings['logo'], 10, 10, '18', '18', 'png');
+        $pdf->Image('../'.$settings['logo'], 10, 10, '18', '18', 'png');
 
         //set font to arial, bold, 14pt
         $pdf->SetFont('Arial','B',14);

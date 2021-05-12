@@ -228,7 +228,7 @@ class Admin extends AdminModule
     public function getPrint()
     {
       $pasien = $this->db('pegawai')->toArray();
-      $logo = url().'/'.$this->settings->get('settings.logo');
+      $logo = $this->settings->get('settings.logo');
 
       $pdf = new PDF_MC_Table();
       $pdf->AddPage();
@@ -237,7 +237,7 @@ class Admin extends AdminModule
       $pdf->SetLeftMargin(10);
       $pdf->SetRightMargin(10);
 
-      $pdf->Image($logo, 10, 8, '18', '18', 'png');
+      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
       $pdf->SetFont('Arial', '', 24);
       $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
