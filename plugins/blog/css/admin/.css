@@ -1,0 +1,20 @@
+#textarea-tabs {
+    border-bottom: 0;
+}
+    #textarea-tabs > li > a
+    {
+        border-top: 0;
+    }
+    #textarea-tabs > li.active > a,
+    #textarea-tabs > li.active > a:hover,
+    #textarea-tabs > li.active > a:focus {
+        border-color: #ccc;
+        border-top: 0;
+    }
+#textarea-tabs.markItUp {
+    margin-top: -5px;
+}
+.markItUpFooter {
+    position: relative;
+    z-index: 1;
+}

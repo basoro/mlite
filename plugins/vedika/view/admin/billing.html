@@ -1,0 +1,102 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Billing</h4>
+</div>
+<div class="modal-body">
+  <div class="clearfix">
+            <table width='100%' bgcolor='#ffffff' align='left' border='0' padding='0' cellspacing='0' cellpadding='0'>
+            <tr class='isi12' padding='0'>
+            <td colspan='7' padding='0'>
+                   <table width='100%' bgcolor='#ffffff' align='left' border='0' cellspacing='0' cellpadding='0'>
+                        <tr>
+                            <td  width='20%'>
+				<img width='45' height='45' src='data:image/jpeg;base64,{?=base64_encode($instansi.logo)?}'/>
+			    </td>
+			    <td>
+				<center>
+				    <font color='000000' size='3'  face='Tahoma'>{$instansi.nama_instansi}</font><br>
+				    <font color='000000' size='1'  face='Tahoma'>
+					{$instansi.alamat_instansi}, {$instansi.kabupaten}, {$instansi.propinsi}<br>
+                      Telepon: {$instansi.kontak} - e-Mail : {$instansi.email}
+                                    </font>
+				</center>
+			    </td>
+                            <td  width='20%'>
+				&nbsp;
+			    </td>
+                        </tr>
+                  </table>
+            </td>
+            </tr>
+            <tr>
+              <td colspan='7' padding='0'>
+               <hr/>
+                <center><font color='333333' size='1'  face='Tahoma'>BILLING</font> </center>
+              </td>
+            </tr>
+{loop: $billing}
+<tr class='isi12' padding='0'>
+  <td padding='0' width='18%'><font color='111111' size='1'  face='Tahoma'>{$value.0}</td>
+  <td padding='0' width='40%'><font color='111111' size='1'  face='Tahoma'>{$value.1}</td>
+  <td padding='0' width='2%'><font color='111111' size='1'  face='Tahoma'>{$value.2}</td>
+  <td padding='0' width='10%' align='right'><font color='111111' size='1'  face='Tahoma'>{$value.3}</td>
+  <td padding='0' width='5%' align='right'><font color='111111' size='1'  face='Tahoma'>{$value.4}</td>
+  <td padding='0' width='10%' align='right'><font color='111111' size='1'  face='Tahoma'>{$value.5}</td>
+  <td padding='0' width='15%' align='right'><font color='111111' size='1'  face='Tahoma'>{$value.6}</td>
+</tr>
+{/loop}
+
+                <tr class='isi12' padding='0'>
+                            <td padding='0' width='18%'><font color='111111' size='1'  face='Tahoma'><b>TOTAL BIAYA</b></td>
+                            <td padding='0' width='40%'><font color='111111' size='1'  face='Tahoma'><b>:</b></td>
+                            <td padding='0' width='2%'><font color='111111' size='1'  face='Tahoma'></td>
+                            <td padding='0' width='10%' align='right'><font color='111111' size='1'  face='Tahoma'></td>
+                            <td padding='0' width='5%' align='right'><font color='111111' size='1'  face='Tahoma'></td>
+                            <td padding='0' width='10%' align='right'><font color='111111' size='1'  face='Tahoma'></td>
+                            <td padding='0' width='15%' align='right'><font color='111111' size='1'  face='Tahoma'><b>{$total}</b></td>
+                        </tr>
+                        <tr class='isi12' padding='0'>
+			    <td colspan='7' padding='0'>
+                                <table width='100%' bgcolor='#ffffff' align='left' border='0' padding='0' cellspacing='0' cellpadding='0'>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='center'><font color='000000' size='1'  face='Tahoma'>&nbsp;</font></td>
+                                    </tr>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%' align=center><font color='000000' size='1'  face='Tahoma'>Keluarga Pasien</td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='center'><font color='000000' size='1'  face='Tahoma'></font></td>
+                                    </tr>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%' align=center><font color='000000' size='1'  face='Tahoma'></td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='center'><font color='000000' size='1'  face='Tahoma'>Kasir</font></td>
+                                    </tr>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%'><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='right'><font color='000000' size='1'  face='Tahoma'></font></td>
+                                    </tr>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%'><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='right'><font color='000000' size='1'  face='Tahoma'></font></td>
+                                    </tr>
+                                    <tr class='isi12' padding='0'>
+                                     <td padding='0' width='40%' align=center><font color='000000' size='1'  face='Tahoma'>( ............................. )</td>
+                                     <td padding='0' width='20%' align=center><font color='000000' size='1'  face='Tahoma'>&nbsp;</td>
+                                     <td padding='0' width='40%' align='center'><font color='000000' size='1'  face='Tahoma'>( ............................. )</font></td>
+                                    </tr>
+                              </table>
+                            </td>
+                        </tr>
+                        <tr class='isi12' padding='0'>
+			    <td colspan='7' padding='0'>&nbsp</td>
+                        </tr>
+                </table>
+                </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
