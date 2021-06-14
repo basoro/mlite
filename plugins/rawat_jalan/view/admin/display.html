@@ -91,6 +91,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   $('a[href="#soap"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -292,5 +299,21 @@
 <script>
   $('body').on('hidden.bs.modal', '.modal', function () {
       $(this).removeData('bs.modal');
+  });
+</script>
+<script>
+  $("#btn_cetak").click(function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/rawat_jalan/cetak?t=' + mlite.token;
+    var cari = $('input:text[name=cari]').val();
+    var tgl_awal = $('input:text[name=periode_rawat_jalan]').val();
+    var tgl_akhir = $('input:text[name=periode_rawat_jalan_akhir]').val();
+
+    $.post(url, {cari: cari, tgl_awal: tgl_awal, tgl_akhir: tgl_akhir} ,function(data) {
+      //window.open(baseURL + '/rawat_jalan/cetakpdf?t=' + mlite.token);
+      $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/rawat_jalan/cetakpdf?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+    });
+
+		return false;
   });
 </script>

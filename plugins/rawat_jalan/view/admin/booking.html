@@ -54,6 +54,7 @@
                         <th>Jam. Booking</th>
                         <th>Tgl. Periksa</th>
                         <th>Status</th>
+                        <th>Aksi</th>
       								</tr>
       							</thead>
       							<tbody>
@@ -71,6 +72,7 @@
                         <td>{$value.jam_booking}</td>
                         <td>{$value.tanggal_periksa}</td>
                         <td>{$value.status}</td>
+                        <td><button type="button" class="btn btn-xs btn-success" data-toggle="modal" href="#waModal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;Sekedar mengingatkan jadwal kontrol anda: &#013;&#010;Tanggal: {$value.tanggal_periksa} &#013;&#010;Nomor Antrian: {$value.no_reg} &#013;&#010;Poliklinik: {$value.nm_poli}&#013;&#010;&#013;&#010;Bawalah kartu berobat anda. &#013;&#010;Datanglah 30 menit sebelumnya.&#013;&#010;&#013;&#010;-------------------&#013;&#010;Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih"><i class="fa fa-whatsapp"></i></button></td>
       								</tr>
       								{/loop}
       								{else}
@@ -85,6 +87,31 @@
         </div>
     </div>
 </article>
+<!-- Modal -->
+<div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 
 <script>
 $(".list-item").change(function() {
@@ -102,4 +129,40 @@ $(".check-all").change(function(e) {
 
     $('.list-item').change();
 });
+//triggered when modal is about to be shown
+$('#waModal').on('show.bs.modal', function(e) {
+    //get data-id attribute of the clicked element
+    var no_tlp = $(e.relatedTarget).data('no_tlp');
+    var nm_pasien = $(e.relatedTarget).data('nm_pasien');
+    //populate the textbox
+    $(e.currentTarget).find('input[name="number"]').val(no_tlp);
+    $(e.currentTarget).find('textarea[name="message"]').val(nm_pasien);
+});
+</script>
+<script>
+function KirimWA() {
+	var xhttp = new XMLHttpRequest();
+	var sender = '{$waapitoken}';
+	var number = document.getElementById("number").value;
+	var message = document.getElementById("message").value;
+	console.log(number + " - " + message);
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			//document.getElementById("demo").innerHTML = this.responseText;
+			//alert(xhttp.responseText.status);
+			var data=xhttp.responseText;
+			var jsonResponse = JSON.parse(data);
+			//alert(jsonResponse["status"]);
+			if(jsonResponse["status"] == true) {
+				alert('Sukses mengirim pesan.');
+				document.getElementById("demo").innerHTML = 'Sukses mengirim pesan';
+			} else {
+				alert('Gagal mengirim pesan.');
+			}
+		}
+	};
+	xhttp.open("POST", "https://wa.basoro.id/send-message", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("sender=" + sender + "&number=" + number + "&message=" + message);
+}
 </script>

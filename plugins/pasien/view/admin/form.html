@@ -21,62 +21,64 @@
             </div>
           </div>
           <div class="form-group">
-            <label for="" class="col-sm-3 control-label">Nama Ibu</label>
+            <label for="jk" class="col-sm-3 control-label">Sex</label>
             <div class="col-sm-4">
-              <input type="text" name="nm_ibu" class="form-control" value="{$pasien.nm_ibu}">
+              <label class="radio-inline"><input type="radio" name="jk" value="L" {if: $pasien.jk == 'L'}checked{/if}><span class="fa fa-male"></span></label>
+              <label class="radio-inline"><input type="radio" name="jk" value="P" {if: $pasien.jk == 'P'}checked{/if}><span class="fa fa-female"></span></label>
             </div>
             <label for="tgl_lahir" class="col-sm-2 control-label">Tgl. Lahir</label>
             <div class="col-sm-3">
               <input type="text" id="tgl_lahir" name="tgl_lahir" class="form-control tgl_lahir" value="{$pasien.tgl_lahir}">
             </div>
           </div>
-          <div class="form-group">
-            <label for="jk" class="col-sm-3 control-label">Sex</label>
-            <div class="col-sm-4">
-              <label class="radio-inline"><input type="radio" name="jk" value="L" {if: $pasien.jk == 'L'}checked{/if}><span class="fa fa-male"></span></label>
-              <label class="radio-inline"><input type="radio" name="jk" value="P" {if: $pasien.jk == 'P'}checked{/if}><span class="fa fa-female"></span></label>
+          <div class="{if: $admin_mode == 'simple'}hidden{/if}">
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Nama Ibu</label>
+              <div class="col-sm-4">
+                <input type="text" name="nm_ibu" class="form-control" value="{$pasien.nm_ibu}">
+              </div>
+              <label for="gol_darah" class="col-sm-2 control-label">Darah</label>
+              <div class="col-sm-3">
+                <select class="form-control" name="gol_darah" id="gol_darah">
+                  <option value="O" {if: $pasien.gol_darah == 'O'}selected{/if}>O</option>
+                  <option value="A" {if: $pasien.gol_darah == 'A'}selected{/if}>A</option>
+                  <option value="B" {if: $pasien.gol_darah == 'B'}selected{/if}>B</option>
+                  <option value="AB" {if: $pasien.gol_darah == 'AB'}selected{/if}>AB</option>
+                  <option value="-" {if: $pasien.gol_darah == '-'}selected{/if}>-</option>
+                </select>
+              </div>
             </div>
-            <label for="gol_darah" class="col-sm-2 control-label">Darah</label>
-            <div class="col-sm-3">
-              <select class="form-control" name="gol_darah" id="gol_darah">
-                <option value="O" {if: $pasien.gol_darah == 'O'}selected{/if}>O</option>
-                <option value="A" {if: $pasien.gol_darah == 'A'}selected{/if}>A</option>
-                <option value="B" {if: $pasien.gol_darah == 'B'}selected{/if}>B</option>
-                <option value="AB" {if: $pasien.gol_darah == 'AB'}selected{/if}>AB</option>
-                <option value="-" {if: $pasien.gol_darah == '-'}selected{/if}>-</option>
-              </select>
+            <div class="form-group">
+              <label for="stts_nikah" class="col-sm-3 control-label">Status Nikah</label>
+              <div class="col-sm-4">
+                <select name="stts_nikah" class="form-control">
+                  {loop: $stts_nikah}
+                    <option value="{$value}"{if: $value == $pasien.stts_nikah} selected{/if}>{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+              <label for="no_peserta" class="col-sm-2 control-label">Agama</label>
+              <div class="col-sm-3">
+                <select name="agama" class="form-control">
+                  {loop: $agama}
+                    <option value="{$value}"{if: $value == $pasien.agama} selected{/if}>{$value}</option>
+                  {/loop}
+                </select>
+              </div>
             </div>
-          </div>
-          <div class="form-group">
-            <label for="stts_nikah" class="col-sm-3 control-label">Status Nikah</label>
-            <div class="col-sm-4">
-              <select name="stts_nikah" class="form-control">
-                {loop: $stts_nikah}
-                  <option value="{$value}"{if: $value == $pasien.stts_nikah} selected{/if}>{$value}</option>
-                {/loop}
-              </select>
-            </div>
-            <label for="no_peserta" class="col-sm-2 control-label">Agama</label>
-            <div class="col-sm-3">
-              <select name="agama" class="form-control">
-                {loop: $agama}
-                  <option value="{$value}"{if: $value == $pasien.agama} selected{/if}>{$value}</option>
-                {/loop}
-              </select>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="pekerjaan" class="col-sm-3 control-label">Pekerjaan</label>
-            <div class="col-sm-4">
-              <input type="text" name="pekerjaan" class="form-control" value="{$pasien.pekerjaan}">
-            </div>
-            <label for="pnd" class="col-sm-2 control-label">PND</label>
-            <div class="col-sm-3">
-              <select class="form-control" name="pnd" id="pnd">
-                {loop: $pnd}
-                <option value="{$value}" {if: $value == $pasien.pnd}selected{/if}>{$value}</option>
-                {/loop}
-              </select>
+            <div class="form-group">
+              <label for="pekerjaan" class="col-sm-3 control-label">Pekerjaan</label>
+              <div class="col-sm-4">
+                <input type="text" name="pekerjaan" class="form-control" value="{$pasien.pekerjaan}">
+              </div>
+              <label for="pnd" class="col-sm-2 control-label">PND</label>
+              <div class="col-sm-3">
+                <select class="form-control" name="pnd" id="pnd">
+                  {loop: $pnd}
+                  <option value="{$value}" {if: $value == $pasien.pnd}selected{/if}>{$value}</option>
+                  {/loop}
+                </select>
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -101,18 +103,20 @@
     <div class="panel panel-default">
       <div class="panel-body">
         <div class="form-horizontal">
-          <div class="form-group">
-            <label for="asuransi" class="col-sm-3 control-label">Keluarga</label>
-            <div class="col-sm-4">
-              <select class="form-control" name="keluarga">
-                {loop: $keluarga}
-                <option value="{$value}" {if: $value == $pasien.keluarga}selected{/if}>{$value}</option>
-                {/loop}
-              </select>
-            </div>
-            <label for="namakeluarga" class="col-sm-1 control-label">Nama</label>
-            <div class="col-sm-4">
-              <input type="text" name="namakeluarga" class="form-control" value="{$pasien.namakeluarga}">
+          <div class="{if: $admin_mode == 'simple'}hidden{/if}">
+            <div class="form-group">
+              <label for="asuransi" class="col-sm-3 control-label">Keluarga</label>
+              <div class="col-sm-4">
+                <select class="form-control" name="keluarga">
+                  {loop: $keluarga}
+                  <option value="{$value}" {if: $value == $pasien.keluarga}selected{/if}>{$value}</option>
+                  {/loop}
+                </select>
+              </div>
+              <label for="namakeluarga" class="col-sm-1 control-label">Nama</label>
+              <div class="col-sm-4">
+                <input type="text" name="namakeluarga" class="form-control" value="{$pasien.namakeluarga}">
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -127,32 +131,34 @@
               <textarea name="alamat" rows="3" class="form-control">{$pasien.alamat}</textarea>
             </div>
           </div>
-          <div class="form-group">
-            <label for="propinsi" class="col-sm-3 control-label">Propinsi</label>
-            <div class="col-sm-4">
-              <input type="text" name="nm_prop" id="nm_prop" class="form-control" value="{$pasien.propinsi.nm_prop}" />
-              <input type="hidden" name="kd_prop" id="kd_prop" class="form-control" value="{$pasien.kd_prop}" />
-              <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+          <div class="{if: $admin_mode == 'simple'}hidden{/if}">
+            <div class="form-group">
+              <label for="propinsi" class="col-sm-3 control-label">Propinsi</label>
+              <div class="col-sm-4">
+                <input type="text" name="nm_prop" id="nm_prop" class="form-control" value="{$pasien.propinsi.nm_prop}" />
+                <input type="hidden" name="kd_prop" id="kd_prop" class="form-control" value="{$pasien.kd_prop}" />
+                <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+              <label for="kota" class="col-sm-1 control-label">Kota</label>
+              <div class="col-sm-4">
+                <input type="text" name="nm_kab" id="nm_kab" class="form-control" value="{$pasien.kabupaten.nm_kab}" />
+                <input type="hidden" name="kd_kab" id="kd_kab" class="form-control" value="{$pasien.kd_kab}" />
+                <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
             </div>
-            <label for="kota" class="col-sm-1 control-label">Kota</label>
-            <div class="col-sm-4">
-              <input type="text" name="nm_kab" id="nm_kab" class="form-control" value="{$pasien.kabupaten.nm_kab}" />
-              <input type="hidden" name="kd_kab" id="kd_kab" class="form-control" value="{$pasien.kd_kab}" />
-              <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="kecamatan" class="col-sm-3 control-label">Kecamatan</label>
-            <div class="col-sm-4">
-              <input type="text" name="nm_kec" id="nm_kec" class="form-control" value="{$pasien.kecamatan.nm_kec}" />
-              <input type="hidden" name="kd_kec" id="kd_kec" class="form-control" value="{$pasien.kd_kec}" />
-              <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
-            </div>
-            <label for="desa" class="col-sm-1 control-label">Desa</label>
-            <div class="col-sm-4">
-              <input type="text" name="nm_kel" id="nm_kel" class="form-control" value="{$pasien.kelurahan.nm_kel}" />
-              <input type="hidden" name="kd_kel" id="kd_kel" class="form-control" value="{$pasien.kd_kel}" />
-              <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            <div class="form-group">
+              <label for="kecamatan" class="col-sm-3 control-label">Kecamatan</label>
+              <div class="col-sm-4">
+                <input type="text" name="nm_kec" id="nm_kec" class="form-control" value="{$pasien.kecamatan.nm_kec}" />
+                <input type="hidden" name="kd_kec" id="kd_kec" class="form-control" value="{$pasien.kd_kec}" />
+                <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+              <label for="desa" class="col-sm-1 control-label">Desa</label>
+              <div class="col-sm-4">
+                <input type="text" name="nm_kel" id="nm_kel" class="form-control" value="{$pasien.kelurahan.nm_kel}" />
+                <input type="hidden" name="kd_kel" id="kd_kel" class="form-control" value="{$pasien.kd_kel}" />
+                <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
             </div>
           </div>
           <div class="form-group">
@@ -173,13 +179,58 @@
   <div class="col-md-12 m-b-xl">
     <div class="text-center">
       <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
-      <button type="button" name="button" class="btn btn-info" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
-      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-info hidden" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
+      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning hidden hidden-lg hidden-md" id="foto"><i class="fa fa-camera"></i></a>
+      <button type="button" name="button" class="btn btn-primary hidden" id="kirimwa" data-toggle="modal" data-target="#waModal" data-no_tlp={$pasien.no_tlp}><i class="fa fa-whatsapp"></i><span class="hidden-xs"> Kirim WA</span></button>
+      <button type="button" name="button" class="btn btn-danger hidden" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
     </div>
   </div>
   {/if}
 </div>
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url([ADMIN,'pasien','manage'])?}">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <input type="button" class="btn btn-info" value="Ambil Foto" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script type="text/javascript">
   $('select').selectator();
 </script>
@@ -339,4 +390,98 @@
     }
     event.preventDefault();
   });
+</script>
+<script>
+  $(document).ready(function() {
+
+      $('#myModal').on('show.bs.modal', function() {
+          Webcam.set({
+              width:320,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+      });
+      $("#myModal").on("hidden.bs.modal", function () {
+
+          var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+          //alert(no_rkm_medis);
+          var shutter = new Audio();
+          shutter.autoplay = false;
+          shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/pasien/audio/shutter.ogg' : '{?=url()?}/plugins/pasien/audio/shutter.mp3';
+          shutter.play();
+
+          Webcam.snap(function(data_uri){
+              document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+          });
+
+          var base64image = document.getElementById("imageprev").src;
+
+          //Webcam.upload(base64image, '{?=url([ADMIN,'pasien','savephoto',' + no_rkm_medis + '])?}', function(code, text) {
+          Webcam.upload(base64image, '{?=url(ADMIN)?}/pasien/savephoto/' + no_rkm_medis + '/?t=' + mlite.token, function(code, text) {
+          });
+
+          Webcam.reset();
+
+          window.location.href = '{?=url([ADMIN,'pasien','manage'])?}';
+
+      });
+  });
+</script>
+<script>
+  //triggered when modal is about to be shown
+  $('#waModal').on('show.bs.modal', function(e) {
+      //get data-id attribute of the clicked element
+      var no_tlp = $(e.relatedTarget).data('no_tlp');
+      //populate the textbox
+      $(e.currentTarget).find('input[name="number"]').val(no_tlp);
+  });
+  function KirimWA() {
+  	var xhttp = new XMLHttpRequest();
+  	var sender = '{$waapitoken}';
+  	var number = document.getElementById("number").value;
+  	var message = document.getElementById("message").value;
+  	console.log(number + " - " + message);
+  	xhttp.onreadystatechange = function() {
+  		if (this.readyState == 4 && this.status == 200) {
+  			var data=xhttp.responseText;
+  			var jsonResponse = JSON.parse(data);
+  			if(jsonResponse["status"] == true) {
+  				alert('Sukses mengirim pesan.');
+  				document.getElementById("demo").innerHTML = 'Sukses mengirim pesan';
+  			} else {
+  				alert('Gagal mengirim pesan.');
+  			}
+  		}
+  	};
+  	xhttp.open("POST", "https://wa.basoro.id/send-message", true);
+  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	xhttp.send("sender=" + sender + "&number=" + number + "&message=" + message);
+  }
+</script>
+<script type="text/javascript">
+    var queryString = new Array();
+    $(function () {
+        if (queryString.length == 0) {
+            if (window.location.search.split('?').length > 1) {
+                var params = window.location.search.split('?')[1].split('&');
+                for (var i = 0; i < params.length; i++) {
+                    var key = params[i].split('=')[0];
+                    var value = decodeURIComponent(params[i].split('=')[1]);
+                    queryString[key] = value;
+                }
+            }
+            var baseURL = mlite.url + '/' + mlite.admin;
+            event.preventDefault();
+        }
+        if (queryString["nama"] != null && queryString["no_telp"] != null) {
+            $('input:text[name=nm_pasien]').val(queryString["nama"]);
+            $('input:text[name=no_tlp]').val(queryString["no_telp"]);
+            $('textarea[name=alamat]').val(queryString["alamat"]);
+        }
+    });
 </script>

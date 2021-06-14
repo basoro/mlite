@@ -60,9 +60,9 @@
                   </div>
     	            <div class="form-group">
     	                <label>Akses</label>
-    	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
+    	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>
     	                	{loop: $users.modules}
-    	                	<option value="{$value.dir}" data-left="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
+    	                	<option value="{$value.dir}" data-font="<i class='fa fa-{$value.icon}'></i>" {$value.attr}>{$value.name}</option>
     	                	{/loop}
     	                </select>
     	            </div>

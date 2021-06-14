@@ -1,18 +1,3 @@
-$( function() {
-  $('.datepicker').datetimepicker({
-    format: 'YYYY-MM-DD',
-    locale: 'id'
-  });
-} );
-$(document).ready(function() {
-    if (location.hash) {
-        $("a[href='" + location.hash + "']").tab("show");
-    }
-    $(document.body).on("click", "a[data-toggle='tab']", function(event) {
-        location.hash = this.getAttribute("href");
-    });
-});
-
 // sembunyikan form dan notif
 $("#form_rincian").hide();
 $("#form_soap").hide();

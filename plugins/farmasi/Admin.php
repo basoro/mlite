@@ -93,6 +93,14 @@ class Admin extends AdminModule
               'no_batch' => '0',
               'no_faktur' => '0'
             ]);
+            if($query2) {
+              $this->db('gudangbarang')
+                ->where('kode_brng', $_POST['kode_brng'])
+                ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
+                ->save([
+                  'stok' => $get_gudangbarang['stok'] + $_POST['stok']
+              ]);
+            }
         } else {
 
           $query = $this->db('riwayat_barang_medis')
@@ -170,6 +178,16 @@ class Admin extends AdminModule
               'no_batch' => '0',
               'no_faktur' => '0'
             ]);
+            if($query) {
+              $this->db('gudangbarang')->save([
+                'kode_brng' => $_POST['kode_brng'],
+                'kd_bangsal' => $this->settings->get('farmasi.gudang'),
+                'stok' => $_POST['stok'],
+                'no_batch' => '0',
+                'no_faktur' => '0'
+              ]);
+            }
+
         } else {
 
           $query = $this->db('riwayat_barang_medis')
@@ -205,24 +223,23 @@ class Admin extends AdminModule
               'no_batch' => '0',
               'no_faktur' => '0'
             ]);
-        }
-        if($query) {
-          $this->db('gudangbarang')->save([
-            'kode_brng' => $_POST['kode_brng'],
-            'kd_bangsal' => $this->settings->get('farmasi.gudang'),
-            'stok' => $stok - $_POST['stok'],
-            'no_batch' => '0',
-            'no_faktur' => '0'
-          ]);
-        }
-        if($query2) {
-          $this->db('gudangbarang')->save([
-            'kode_brng' => $_POST['kode_brng'],
-            'kd_bangsal' => $_POST['kd_bangsal'],
-            'stok' => $_POST['stok'],
-            'no_batch' => '0',
-            'no_faktur' => '0'
-          ]);
+          if($query) {
+            $this->db('gudangbarang')
+              ->where('kode_brng', $_POST['kode_brng'])
+              ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
+              ->save([
+                'stok' => $get_gudangbarang['stok'] - $_POST['stok']
+            ]);
+          }
+          if($query2) {
+            $this->db('gudangbarang')->save([
+              'kode_brng' => $_POST['kode_brng'],
+              'kd_bangsal' => $_POST['kd_bangsal'],
+              'stok' => $_POST['stok'],
+              'no_batch' => '0',
+              'no_faktur' => '0'
+            ]);
+          }
         }
       }
 

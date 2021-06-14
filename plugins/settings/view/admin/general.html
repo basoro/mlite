@@ -89,6 +89,7 @@
                 </div>
                 <div class="panel-body">
                     {if: $settings.master}
+                    {if: $settings.module_rawat_igd}
                     <div class="form-group">
                         <label>IGD</label>
                         <select name="igd" class="form-control" data-use-search="true">
@@ -97,6 +98,8 @@
                             {/loop}
                         </select>
                     </div>
+                    {/if}
+                    {if: $settings.module_laboratorium}
                     <div class="form-group">
                         <label>Laboratorium</label>
                         <select name="laboratorium" class="form-control" data-use-search="true">
@@ -105,7 +108,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_laboratorium)}hidden{/if}">
                         <label>Penanggung Jawab Laboratorium</label>
                         <select name="pj_laboratorium" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
@@ -113,6 +116,8 @@
                             {/loop}
                         </select>
                     </div>
+                    {/if}
+                    {if: $settings.module_radiologi}
                     <div class="form-group">
                         <label>Radiologi</label>
                         <select name="radiologi" class="form-control" data-use-search="true">
@@ -121,7 +126,7 @@
                             {/loop}
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group {if: empty($settings.module_radiologi)}hidden{/if}">
                         <label>Penanggung Jawab Radiologi</label>
                         <select name="pj_radiologi" class="form-control" data-use-search="true">
                             {loop: $settings.dokter}
@@ -130,9 +135,10 @@
                         </select>
                     </div>
                     {/if}
+                    {/if}
                     {if: $settings.rawat_jalan}
                     <div class="form-group">
-                         <label>Dokter Rawat Jalan</label>
+                         <label>Antrian Rawat Jalan</label>
                          <div class="radio">
                              <label class="radio-inline">
                                 <input type="radio" name="dokter_ralan_per_dokter" value="true" {if: $settings.dokter_ralan_per_dokter == 'true'}checked{/if} /> Per Dokter
@@ -158,10 +164,10 @@
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="0" {if: $settings.cekstatusbayar == '0'}checked{/if} /> Tidak
+                               <input type="radio" name="cekstatusbayar" value="false" {if: $settings.cekstatusbayar == 'false'}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
-                               <input type="radio" name="cekstatusbayar" value="1" {if: $settings.cekstatusbayar == '1'}checked{/if} /> Ya
+                               <input type="radio" name="cekstatusbayar" value="true" {if: $settings.cekstatusbayar == 'true'}checked{/if} /> Ya
                             </label>
                         </div>
                     </div>
@@ -169,12 +175,16 @@
                         <label>Aktifkan Cek Limit Kuota</label>
                         <div class="radio">
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="0" {if: $settings.ceklimit == '0'}checked{/if} /> Tidak
+                               <input type="radio" name="ceklimit" value="false" {if: $settings.ceklimit == 'false'}checked{/if} /> Tidak
                             </label>
                             <label class="radio-inline">
-                               <input type="radio" name="ceklimit" value="1" {if: $settings.ceklimit == '1'}checked{/if} /> Ya
+                               <input type="radio" name="ceklimit" value="true" {if: $settings.ceklimit == 'true'}checked{/if} /> Ya
                             </label>
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Token WhatsApp API</label>
+                        <input type="text" name="waapitoken" class="form-control" value="{$settings.waapitoken}" />
                     </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
@@ -195,6 +205,29 @@
                     </div>
                     {/if}
                     <div class="form-group">
+                         <label>Mode Input Admin</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="admin_mode" value="simple" {if: $settings.admin_mode == 'simple'}checked{/if} /> Sederhana
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="admin_mode" value="complex" {if: $settings.admin_mode == 'complex'}checked{/if} /> Lengkap
+                             </label>
+                         </div>
+                    </div>
+                    <div class="form-group">
+                         <label>Input Kasir</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="input_kasir" value="ya" {if: $settings.input_kasir == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="input_kasir" value="tidak" {if: $settings.input_kasir == 'tidak'}checked{/if} /> Tidak
+                             </label>
+                         </div>
+                    </div>
+                    <!--
+                    <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
                     </div>
@@ -209,6 +242,7 @@
                              </label>
                          </div>
                     </div>
+                    -->
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
@@ -253,7 +287,7 @@
                 <div class="panel-body">
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi</dt>
-                        <dd>{$settings.version} <a href="{$updateurl}" class="small">(Cek Update)</a></dd>
+                        <dd>{$settings.version}</dd>
                         <dt>Status</dt>
                         <dd>
                             {$settings.license.name}

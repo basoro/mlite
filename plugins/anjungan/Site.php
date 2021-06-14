@@ -28,6 +28,7 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->toArray();
+        $penjab = $this->db('penjab')->toArray();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
@@ -40,12 +41,13 @@ class Site extends SiteModule
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_anjungan'),
-          'poliklinik' => $poliklinik
+          'poliklinik' => $poliklinik,
+          'penjab' => $penjab
         ]);
 
         $assign = [
-            'title' => $this->settings->get('blog.title'),
-            'desc' => $this->settings->get('blog.desc'),
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -53,7 +55,6 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
-        //exit();
     }
 
     public function getDisplayAntrianPoli()
@@ -77,8 +78,8 @@ class Site extends SiteModule
         ]);
 
         $assign = [
-            'title' => $this->settings->get('blog.title'),
-            'desc' => $this->settings->get('blog.desc'),
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -86,7 +87,6 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
-        //exit();
     }
 
     public function _resultDisplayAntrianPoli()
@@ -349,8 +349,8 @@ class Site extends SiteModule
         }
 
         $assign = [
-            'title' => $this->settings->get('blog.title'),
-            'desc' => $this->settings->get('blog.desc'),
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -382,8 +382,8 @@ class Site extends SiteModule
         ]);
 
         $assign = [
-            'title' => $this->settings->get('blog.title'),
-            'desc' => $this->settings->get('blog.desc'),
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
             'content' => $content
         ];
 
@@ -844,8 +844,8 @@ class Site extends SiteModule
       ]);
 
       $assign = [
-          'title' => $this->settings->get('blog.title'),
-          'desc' => $this->settings->get('blog.desc'),
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
           'content' => $content
       ];
 

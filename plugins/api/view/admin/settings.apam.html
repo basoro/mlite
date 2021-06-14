@@ -49,7 +49,7 @@
                         <input type="text" name="api[apam_smtp_password]" class="form-control" value="{$settings.api.apam_smtp_password}">
                     </div>
                     <div class="form-group">
-                        <label>Cara Bayar Umum</label>
+                        <label>Cara Bayar APAM</label>
                         <select name="api[apam_kdpj]" class="form-control">
                           {loop: $settings.penjab}
                             <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.api.apam_kdpj} selected{/if}>{$value.png_jawab}</option>
@@ -74,9 +74,57 @@
                         <input type="text" name="api[apam_kdkec]" id="kd_kec" class="form-control" value="{$settings.api.apam_kdkec}" />
                         <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
                     </div>
-                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan e-Payment Telemedicine Duitku</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Cara Bayar Telemedicine</label>
+                        <select name="api[duitku_kdpj]" class="form-control">
+                          {loop: $settings.penjab}
+                            <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.api.duitku_kdpj} selected{/if}>{$value.png_jawab}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Merchant Code</label>
+                        <input type="text" name="api[duitku_merchantCode]" class="form-control" value="{$settings.api.duitku_merchantCode}"/>
+                        <p>Ada di dashboard Duitku.COM</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Merchant Key</label>
+                        <input type="text" name="api[duitku_merchantKey]" class="form-control" value="{$settings.api.duitku_merchantKey}"/>
+                        <p>Ada di dashboard Duitku.COM</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Biaya Konsultasi Telemedicine</label>
+                        <input type="text" name="api[duitku_paymentAmount]" class="form-control" value="{$settings.api.duitku_paymentAmount}"/>
+                        <p>Biaya Konsultasi Online (Duitku Payment Amount)</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <input type="text" name="api[duitku_paymentMethod]" class="form-control" value="{$settings.api.duitku_paymentMethod}">
+                        <p>A1 = ATM Bersama, WW = duitku wallet, VC = Credit Card, MY = Mandiri Clickpay, BK = BCA KlikPay</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Layanan Telemedicine</label>
+                        <input type="text" name="api[duitku_productDetails]" class="form-control" value="{$settings.api.duitku_productDetails}">
+                    </div>
+                    <div class="form-group">
+                        <label>Expired Period</label>
+                        <input type="text" name="api[duitku_expiryPeriod]" class="form-control" value="{$settings.api.duitku_expiryPeriod}">
+                        <p>Batas kadaluarsa pembayaran Virtual Account</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+          <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
         </div>
     </form>
 </article>

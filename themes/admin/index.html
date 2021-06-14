@@ -10,6 +10,7 @@
     <link href="{$mlite.path}/assets/css/animate.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{?=url(THEMES.'/admin/css/style.css?v='.$mlite.version)?}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
+
     <!-- PWA Support -->
     <link rel="manifest" href="{$mlite.path}/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -38,157 +39,11 @@
     <script src="{$mlite.path}/assets/jscripts/html.sortable.min.js?v={$mlite.version}"></script>
     <script src="{$mlite.path}/assets/jscripts/tinynav.min.js?v={$mlite.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$mlite.version)?}"></script>
-    <script src="{?=url(THEMES.'/admin/js/selectator.min.js?v='.$mlite.version)?}"></script>
+    <script src="{?=url(THEMES.'/admin/js/selectator.js?v='.$mlite.version)?}"></script>
     <script>
         var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
     </script>
     {loop: $mlite.header}{$value}{/loop}
-    <style media="screen">
-    .navbar img.logo {
-      display: inline-block;
-      height: 30px;
-      width: 30px;
-      margin-top: -5px;
-    }
-    .navbar img.menu_icon {
-      display: inline-block;
-      height: 24px;
-      width: 24px;
-      margin-top: -2px;
-    }
-    .modal-fullscreen {
-      background: transparent;
-    }
-    .modal-fullscreen .modal-content {
-      background: transparent;
-      border: 0;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-    }
-    .modal-fullscreen .modal-dialog {
-      margin: 0;
-      margin-right: auto;
-      margin-left: auto;
-      width: 100%;
-    }
-    .modal-penuh .modal-content {
-      border: 0;
-      -webkit-box-shadow: none;
-      box-shadow: none;
-    }
-    .modal-penuh .modal-dialog {
-      margin: 0;
-      margin-right: auto;
-      margin-left: auto;
-      width: 90%;
-    }
-    .module {
-        display: inline-block;
-        width: 20%;
-        padding-left: 15px;
-        padding-right: 15px;
-        margin-right: -4px;
-    }
-    .module .panel-body {
-        display: block;
-        padding: 0px 0px 10.5px 0px;
-    }
-    .module .panel-body h4 {
-        margin-bottom: 0;
-    }
-    .module .panel-body:hover {
-        text-decoration: none;
-        background-color: #ddd;
-    }
-    .module .panel-body .panel-thumb {
-        background: #ddd;
-        height: 124px;
-        position: relative;
-        color: #222;
-        overflow: hidden;
-    }
-    .module .panel-body .panel-thumb .fa {
-        font-size: 48px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        transition: all 0.3s;
-        -webkit-transition: all 0.3s;
-    }
-    .module .panel-body .panel-thumb img {
-        width: 60px;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        -webkit-transform: translate(-50%, -50%);
-        transition: all 0.3s;
-        -webkit-transition: all 0.3s;
-    }
-    .module .panel-body .panel-thumb .desc {
-        opacity: 0;
-        font-size: 16px;
-        color: #000;
-        position: absolute;
-        top: 50%;
-        left: 0;
-        width: 100%;
-        padding: 0px 10px;
-        text-align: center;
-        transform: translateY(-50%);
-        -webkit-transform: translateY(-50%);
-        font-weight: 400;
-        transition: all 0.5s;
-        -webkit-transition: all 0.5s;
-    }
-    .module .panel-body .panel-thumb:hover .fa {
-        opacity: 0.2;
-        font-size: 200px;
-    }
-    .module .panel-body .panel-thumb:hover img {
-        opacity: 0.4;
-        position: absolute;
-        transform: scale(6);
-    }
-    .module .panel-body .panel-thumb:hover .desc {
-        opacity: 1;
-    }
-    @media (min-width: 992px) and (max-width: 1200px) {
-        .module {
-            width: 33.33%;
-        }
-    }
-    @media (min-width: 480px) and (max-width: 992px) {
-        .module {
-            width: 50%;
-        }
-    }
-    @media (max-width: 480px) {
-        .module {
-            width: 100%;
-        }
-    }
-    .icon-bar {
-      width: 100%;
-      background-color: #555;
-      overflow: auto;
-      bottom:0;
-      position: fixed;
-      z-index: 1000;
-    }
-
-    .icon-bar a {
-      float: left;
-      width: 20%;
-      text-align: center;
-      padding: 10px 0;
-      transition: all 0.3s ease;
-      color: white;
-      font-size: 24px;
-    }
-    </style>
 </head>
 
 <body>
@@ -215,9 +70,14 @@
             <ul class="nav navbar-nav">
               <li><a href="#" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
+              {if: $mlite.module_igd}
               <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> IGD</a></li>
+              {/if}
               <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Rawat Jalan</a></li>
+              {if: $mlite.module_rawat_inap}
               <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
+              {/if}
+              {if: $mlite.cek_anjungan}
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Informasi
                 <span class="caret"></span></a>
@@ -234,6 +94,7 @@
                   <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
                 </ul>
               </li>
+              {/if}
               <li class="dropdown">
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-about.png') ?}" alt=""> KhanzaLITE
                 <span class="caret"></span></a>
@@ -329,7 +190,7 @@
                     <div class="row">
                       <div class="col col-md-12">
                           <div class="input-group">
-                            <input type="text" id="cari_modul" minlength="3" class="form-control" placeholder="Pencarian..." required>
+                            <input type="text" id="cari_modul" minlength="3" class="form-control" placeholder="Pencarian modul..." required>
                             <span class="input-group-btn">
                               <button class="btn btn-default" type="button"  data-dismiss="modal"><i class="fa fa-close"></i></button>
                             </span>
@@ -431,6 +292,9 @@
           $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
         });
       });
+    });
+    $("#moduleModal").on('hidden.bs.modal', function (e) {
+        $("#moduleModal iframe").attr("src", $("#moduleModal iframe").attr("src"));
     });
     </script>
     <!-- End PWA Support -->

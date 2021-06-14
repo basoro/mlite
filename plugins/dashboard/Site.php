@@ -17,7 +17,6 @@ class Site extends SiteModule
     public function getIndex()
     {
 
-      //$this->route('login', function () {
         $assign = [];
         $assign['notify']   = $this->core->getNotify();
         $assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
@@ -26,9 +25,11 @@ class Site extends SiteModule
         $assign['nama_instansi']         = $this->settings->get('settings.nama_instansi');
         $assign['logo']         = $this->settings->get('settings.logo');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
+        $assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
+        $assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
+        $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
         echo $this->draw('main.html', ['mlite' => $assign]);
         exit();
-      //});
     }
 
 }

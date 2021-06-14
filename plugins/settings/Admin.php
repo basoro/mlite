@@ -29,7 +29,7 @@ class Admin extends AdminModule
         return [
             'Pengaturan'          => 'manage',
             'Umum'          => 'general',
-            'Tema' => 'theme',
+            //'Tema' => 'theme',
             'Pembaruan'          => 'updates',
         ];
     }
@@ -38,7 +38,7 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum KhanzaLITE'],
-        ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
+        //['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -47,6 +47,9 @@ class Admin extends AdminModule
     public function getGeneral()
     {
         $settings = $this->settings('settings');
+        $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
+        $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
+        $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
         $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];

@@ -48,8 +48,10 @@ return [
           `propinsipj` varchar(30) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+        /*
         $core->db()->pdo()->exec("INSERT INTO `pasien` (`no_rkm_medis`, `nm_pasien`, `no_ktp`, `jk`, `tmp_lahir`, `tgl_lahir`, `nm_ibu`, `alamat`, `gol_darah`, `pekerjaan`, `stts_nikah`, `agama`, `tgl_daftar`, `no_tlp`, `umur`, `pnd`, `keluarga`, `namakeluarga`, `kd_pj`, `no_peserta`, `kd_kel`, `kd_kec`, `kd_kab`, `pekerjaanpj`, `alamatpj`, `kelurahanpj`, `kecamatanpj`, `kabupatenpj`, `perusahaan_pasien`, `suku_bangsa`, `bahasa_pasien`, `cacat_fisik`, `email`, `nip`, `kd_prop`, `propinsipj`) VALUES
         ('000001', 'Fulan Bin Fulan', '6307064910000007', 'L', '-', '2019-09-18', '-', '-', 'O', '-', 'JOMBLO', 'Islam', '2019-09-21', '0', '0', 'S1', 'AYAH', '-', 'BPJ', '0001535601993', 1, 1, 1, '-', '-', '-', '-', '-', '-', 1, 1, 1, '-', '0', 1, '-');");
+        */
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `personal_pasien` (
           `no_rkm_medis` varchar(15) NOT NULL,
@@ -76,6 +78,14 @@ return [
         $core->db()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD PRIMARY KEY (`no_rkm_medis`);");
 
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
+          `no_rkm_medis` varchar(15) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
+
+        /*
+        $core->db()->pdo()->exec("INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES ('000001');");
+        */
+        
         $core->db()->pdo()->exec("ALTER TABLE `pasien`
           ADD CONSTRAINT `pasien_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
           ADD CONSTRAINT `pasien_ibfk_3` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
@@ -88,6 +98,109 @@ return [
 
         $core->db()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD CONSTRAINT `personal_pasien_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_temporary` (
+          `temp1` text NOT NULL,
+          `temp2` text NOT NULL,
+          `temp3` text NOT NULL,
+          `temp4` text NOT NULL,
+          `temp5` text NOT NULL,
+          `temp6` text NOT NULL,
+          `temp7` text NOT NULL,
+          `temp8` text NOT NULL,
+          `temp9` text NOT NULL,
+          `temp10` text NOT NULL,
+          `temp11` text NOT NULL,
+          `temp12` text NOT NULL,
+          `temp13` text NOT NULL,
+          `temp14` text NOT NULL,
+          `temp15` text NOT NULL,
+          `temp16` text NOT NULL,
+          `temp17` text NOT NULL,
+          `temp18` text NOT NULL,
+          `temp19` text NOT NULL,
+          `temp20` text NOT NULL,
+          `temp21` text NOT NULL,
+          `temp22` text NOT NULL,
+          `temp23` text NOT NULL,
+          `temp24` text NOT NULL,
+          `temp25` text NOT NULL,
+          `temp26` text NOT NULL,
+          `temp27` text NOT NULL,
+          `temp28` text NOT NULL,
+          `temp29` text NOT NULL,
+          `temp30` text NOT NULL,
+          `temp31` text NOT NULL,
+          `temp32` text NOT NULL,
+          `temp33` text NOT NULL,
+          `temp34` text NOT NULL,
+          `temp35` text NOT NULL,
+          `temp36` text NOT NULL,
+          `temp37` text NOT NULL,
+          `temp38` text NOT NULL,
+          `temp39` text NOT NULL,
+          `temp40` text NOT NULL,
+          `temp41` text NOT NULL,
+          `temp42` text NOT NULL,
+          `temp43` text NOT NULL,
+          `temp44` text NOT NULL,
+          `temp45` text NOT NULL,
+          `temp46` text NOT NULL,
+          `temp47` text NOT NULL,
+          `temp48` text NOT NULL,
+          `temp49` text NOT NULL,
+          `temp50` text NOT NULL,
+          `temp51` text NOT NULL,
+          `temp52` text NOT NULL,
+          `temp53` text NOT NULL,
+          `temp54` text NOT NULL,
+          `temp55` text NOT NULL,
+          `temp56` text NOT NULL,
+          `temp57` text NOT NULL,
+          `temp58` text NOT NULL,
+          `temp59` text NOT NULL,
+          `temp60` text NOT NULL,
+          `temp61` text NOT NULL,
+          `temp62` text NOT NULL,
+          `temp63` text NOT NULL,
+          `temp64` text NOT NULL,
+          `temp65` text NOT NULL,
+          `temp66` text NOT NULL,
+          `temp67` text NOT NULL,
+          `temp68` text NOT NULL,
+          `temp69` text NOT NULL,
+          `temp70` text NOT NULL,
+          `temp71` text NOT NULL,
+          `temp72` text NOT NULL,
+          `temp73` text NOT NULL,
+          `temp74` text NOT NULL,
+          `temp75` text NOT NULL,
+          `temp76` text NOT NULL,
+          `temp77` text NOT NULL,
+          `temp78` text NOT NULL,
+          `temp79` text NOT NULL,
+          `temp80` text NOT NULL,
+          `temp81` text NOT NULL,
+          `temp82` text NOT NULL,
+          `temp83` text NOT NULL,
+          `temp84` text NOT NULL,
+          `temp85` text NOT NULL,
+          `temp86` text NOT NULL,
+          `temp87` text NOT NULL,
+          `temp88` text NOT NULL,
+          `temp89` text NOT NULL,
+          `temp90` text NOT NULL,
+          `temp91` text NOT NULL,
+          `temp92` text NOT NULL,
+          `temp93` text NOT NULL,
+          `temp94` text NOT NULL,
+          `temp95` text NOT NULL,
+          `temp96` text NOT NULL,
+          `temp97` text NOT NULL,
+          `temp98` text NOT NULL,
+          `temp99` text NOT NULL,
+          `temp100` text NOT NULL
+        ) ENGINE=MyISAM DEFAULT CHARSET=latin1;");
 
     },
     'uninstall'     =>  function() use($core)

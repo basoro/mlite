@@ -3,6 +3,7 @@ namespace Plugins\Rawat_Jalan;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
+use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -10,10 +11,11 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'index',
-            'Rawat Jalan'   => 'manage',
-            'Booking'          => 'booking',
-            'Jadwal Dokter'          => 'jadwal'
+            'Kelola'              => 'index',
+            'Rawat Jalan'         => 'manage',
+            'Booking Registrasi'  => 'booking',
+            'Booking Periksa'     => 'bookingperiksa',
+            'Jadwal Dokter'       => 'jadwal'
         ];
     }
 
@@ -50,7 +52,7 @@ class Admin extends AdminModule
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'responsivevoice' => $responsivevoice]);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
     }
 
     public function anyDisplay()
@@ -75,7 +77,7 @@ class Admin extends AdminModule
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
         exit();
     }
 
@@ -87,7 +89,7 @@ class Admin extends AdminModule
         }
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
+        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
         $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->db('penjab')->toArray();
         $this->assign['no_rawat'] = '';
@@ -240,19 +242,25 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
-            $bg_status = 'text-danger';
+            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar_hidden = $stts_daftar;
+            if($this->settings->get('settings.cekstatusbayar') == 'false'){
+              $stts_daftar_hidden = 'Lama';
+            }
+            $bg_status = 'has-error';
           } else {
             $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
-              $bg_status = 'text-info';
+              $bg_status = 'has-info';
+              $stts_daftar_hidden = $stts_daftar;
             } else {
               $stts_daftar = 'Baru';
-              $bg_status = 'text-success';
+              $bg_status = 'has-success';
+              $stts_daftar_hidden = $stts_daftar;
             }
           }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
       } else {
         $rawat = $this->db('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
@@ -332,6 +340,9 @@ class Admin extends AdminModule
       // JS
       $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
       $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
+
+      $waapitoken =  $this->settings->get('settings.waapitoken');
+      $nama_instansi =  $this->settings->get('settings.nama_instansi');
 
       if (isset($_POST['valid'])) {
           if (isset($_POST['no_rkm_medis']) && !empty($_POST['no_rkm_medis'])) {
@@ -438,7 +449,7 @@ class Admin extends AdminModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT booking_registrasi.*, pasien.nm_pasien, pasien.alamat, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, pasien.no_peserta FROM booking_registrasi, pasien, dokter, poliklinik, penjab WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND booking_registrasi.kd_dokter = dokter.kd_dokter AND booking_registrasi.kd_poli = poliklinik.kd_poli AND booking_registrasi.kd_pj = penjab.kd_pj AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
+      $query = $this->db()->pdo()->prepare("SELECT booking_registrasi.*, pasien.nm_pasien, pasien.alamat, pasien.no_tlp, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab, pasien.no_peserta FROM booking_registrasi, pasien, dokter, poliklinik, penjab WHERE booking_registrasi.no_rkm_medis = pasien.no_rkm_medis AND booking_registrasi.kd_dokter = dokter.kd_dokter AND booking_registrasi.kd_poli = poliklinik.kd_poli AND booking_registrasi.kd_pj = penjab.kd_pj AND (booking_registrasi.no_rkm_medis LIKE ? OR pasien.nm_pasien LIKE ?) AND booking_registrasi.tanggal_periksa BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
 
@@ -451,8 +462,56 @@ class Admin extends AdminModule
       }
 
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('booking.html', ['booking' => $this->assign]);
+      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'nama_instansi' => $nama_instansi]);
 
+    }
+
+    public function getBookingPeriksa()
+    {
+        $date = date('Y-m-d');
+        $text = 'Booking Pendaftaran';
+
+        // CSS
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+
+        return $this->draw('booking.periksa.html',
+          [
+            'text' => $text,
+            'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'nama_instansi' => $this->settings->get('settings.nama_instansi'),
+            'booking' => $this->db('booking_periksa')
+              ->select([
+                'no_booking' => 'booking_periksa.no_booking',
+                'tanggal' => 'booking_periksa.tanggal',
+                'nama' => 'booking_periksa.nama',
+                'no_telp' => 'booking_periksa.no_telp',
+                'alamat' => 'booking_periksa.alamat',
+                'email' => 'booking_periksa.email',
+                'nm_poli' => 'poliklinik.nm_poli',
+                'status' => 'booking_periksa.status',
+                'tanggal_booking' => 'booking_periksa.tanggal_booking'
+              ])
+              ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
+              ->where('tambahan_pesan', 'jkn_mobile_v2')
+              ->toArray()
+          ]
+        );
+    }
+
+    public function postSaveBookingPeriksa()
+    {
+      $this->db('booking_periksa')->where('no_booking', $_POST['no_booking'])->save(['status' => $_POST['status']]);
+      $this->db('booking_periksa_balasan')
+      ->save([
+        'no_booking' => $_POST['no_booking'],
+        'balasan' => $_POST['message']
+      ]);
+      exit();
     }
 
     public function getJadwal()
@@ -798,7 +857,7 @@ class Admin extends AdminModule
         }
       }
 
-      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur]);
+      echo $this->draw('soap.html', ['pemeriksaan' => $result, 'pemeriksaan_ranap' => $result_ranap, 'diagnosa' => $diagnosa, 'prosedur' => $prosedur, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
       exit();
     }
 
@@ -831,7 +890,7 @@ class Admin extends AdminModule
 
     public function anyBerkasDigital()
     {
-      $berkas_digital = $this->db('berkas_digital_perawatan')->toArray();
+      $berkas_digital = $this->db('berkas_digital_perawatan')->where('no_rawat', $_POST['no_rawat'])->toArray();
       echo $this->draw('berkasdigital.html', ['berkas_digital' => $berkas_digital]);
       exit();
     }
@@ -922,6 +981,32 @@ class Admin extends AdminModule
         $max_id['no_reg'] = '000';
       }
       $_next_no_reg = sprintf('%03s', ($max_id['no_reg'] + 1));
+
+      $date = date('Y-m-d');
+      $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+      $day = array(
+        'Sun' => 'AKHAD',
+        'Mon' => 'SENIN',
+        'Tue' => 'SELASA',
+        'Wed' => 'RABU',
+        'Thu' => 'KAMIS',
+        'Fri' => 'JUMAT',
+        'Sat' => 'SABTU'
+      );
+      $hari=$day[$tentukan_hari];
+
+      $jadwal_dokter = $this->db('jadwal')->where('kd_poli', $_POST['kd_poli'])->where('kd_dokter', $_POST['kd_dokter'])->where('hari_kerja', $hari)->oneArray();
+      $jadwal_poli = $this->db('jadwal')->where('kd_poli', $_POST['kd_poli'])->where('hari_kerja', $hari)->toArray();
+      $kuota_poli = 0;
+      foreach ($jadwal_poli as $row) {
+        $kuota_poli += $row['kuota'];
+      }
+      if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true' && $this->settings->get('settings.ceklimit') == 'true' && $_next_no_reg > $jadwal_dokter['kuota']) {
+        $_next_no_reg = '888888';
+      }
+      if($this->settings->get('settings.dokter_ralan_per_dokter') == 'false' && $this->settings->get('settings.ceklimit') == 'true' && $_next_no_reg > $kuota_poli) {
+        $_next_no_reg = '999999';
+      }
       echo $_next_no_reg;
       exit();
     }
@@ -966,6 +1051,61 @@ class Admin extends AdminModule
         setlocale(LC_ALL, 'en_EN');
         $text = str_replace('/', '', trim($text));
         return $text;
+    }
+
+    public function postCetak()
+    {
+      $this->core->db()->pdo()->exec("DELETE FROM `mlite_temporary`");
+      $cari = $_POST['cari'];
+      $tgl_awal = $_POST['tgl_awal'];
+      $tgl_akhir = $_POST['tgl_akhir'];
+      $igd = $this->settings->get('settings.igd');
+      $this->core->db()->pdo()->exec("INSERT INTO `mlite_temporary` (
+        `temp1`,`temp2`,`temp3`,`temp4`,`temp5`,`temp6`,`temp7`,`temp8`,`temp9`,`temp10`,`temp11`,`temp12`,`temp13`,`temp14`,`temp15`,`temp16`,`temp17`,`temp18`,`temp19`
+      )
+      SELECT *
+      FROM `reg_periksa`
+      WHERE (`no_rawat` LIKE '%$cari%' OR `tgl_registrasi` LIKE '%$cari%')
+      AND `kd_poli` <> '$igd'
+      AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
+      ");
+      exit();
+    }
+
+    public function getCetakPdf()
+    {
+      $tmp = $this->db('mlite_temporary')->toArray();
+      $logo = $this->settings->get('settings.logo');
+
+      $pdf = new PDF_MC_Table('L','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 345, 30);
+      $pdf->Line(10, 31, 345, 31);
+      $pdf->SetFont('Arial', 'B', 13);
+      $pdf->Text(10, 40, 'DATA PENDAFTARAN POLIKLINIK');
+      $pdf->Ln(34);
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->SetWidths(array(25,35,20,80,25,50,50,50));
+      $pdf->Row(array('Tanggal','No. Rawat','No. Reg','Nama Pasien','No. RM','Poliklinik','Dokter','Penjamin'));
+      $pdf->SetFont('Arial', '', 10);
+      foreach ($tmp as $hasil) {
+        $poliklinik = $this->db('poliklinik')->where('kd_poli', $hasil['temp7'])->oneArray();
+        $dokter = $this->db('dokter')->where('kd_dokter', $hasil['temp5'])->oneArray();
+        $penjab = $this->db('penjab')->where('kd_pj', $hasil['temp15'])->oneArray();
+        $pdf->Row(array($hasil['temp3'],$hasil['temp2'],$hasil['temp1'],$this->core->getPasienInfo('nm_pasien', $hasil['temp6']),$hasil['temp6'],$poliklinik['nm_poli'],$dokter['nm_dokter'],$penjab['png_jawab']));
+      }
+      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
     public function getJavascript()

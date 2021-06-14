@@ -30,10 +30,10 @@ class Admin extends AdminModule
         );
         $hari=$day[date('D',strtotime(date('Y-m-d')))];
 
-        $kepegawaian = $this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray();
+        $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $cek_presensi = [];
         $jam_jaga = [];
-        if($kepegawaian) {
+        if($presensi) {
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
           $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
           $jam_jaga = $this->db('jam_jaga')->group('jam_masuk')->toArray();
@@ -42,7 +42,7 @@ class Admin extends AdminModule
           'settings' => $settings,
           'cek_presensi' => $cek_presensi,
           'jam_jaga' => $jam_jaga,
-          'kepegawaian' => $kepegawaian
+          'presensi' => $presensi
         ]);
     }
 

@@ -111,12 +111,8 @@
               kd_bangsal: kd_bangsal,
               stok: stok,
             } ,function(data) {
-              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
-              //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
-              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-              "Set Stok telah disimpan!"+
-              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-              "</div>").show();
+              alert('Set Stok telah disimpan!');
+              window.location.href = baseURL + '/farmasi/manage?t=' + mlite.token;
             });
           }
         }

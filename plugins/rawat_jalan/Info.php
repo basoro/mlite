@@ -103,9 +103,11 @@
             `status_poli` enum('Lama','Baru') NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+          /*
           $core->db()->pdo()->exec("INSERT INTO `reg_periksa` (`no_reg`, `no_rawat`, `tgl_registrasi`, `jam_reg`, `kd_dokter`, `no_rkm_medis`, `kd_poli`, `p_jawab`, `almt_pj`, `hubunganpj`, `biaya_reg`, `stts`, `stts_daftar`, `status_lanjut`, `kd_pj`, `umurdaftar`, `sttsumur`, `status_bayar`, `status_poli`) VALUES
           ('001', '2020/12/26/000001', '2020-12-26', '08:00:00', 'DR001', '000001', '-', '-', '-', 'AYAH', 0, 'Belum', 'Baru', 'Ralan', '-', 1, 'Th', 'Sudah Bayar', 'Baru');");
-
+          */
+          
           $core->db()->pdo()->exec("ALTER TABLE `dokter`
             ADD PRIMARY KEY (`kd_dokter`),
             ADD KEY `kd_sps` (`kd_sps`),
@@ -922,6 +924,53 @@
           $core->db()->pdo()->exec("ALTER TABLE `skdp_bpjs`
             ADD CONSTRAINT `skdp_bpjs_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE,
             ADD CONSTRAINT `skdp_bpjs_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `jadwal` (
+            `kd_dokter` varchar(20) NOT NULL,
+            `hari_kerja` enum('SENIN','SELASA','RABU','KAMIS','JUMAT','SABTU','AKHAD') NOT NULL DEFAULT 'SENIN',
+            `jam_mulai` time NOT NULL DEFAULT '00:00:00',
+            `jam_selesai` time DEFAULT NULL,
+            `kd_poli` char(5) DEFAULT NULL,
+            `kuota` int(11) DEFAULT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `jadwal`
+            ADD PRIMARY KEY (`kd_dokter`,`hari_kerja`,`jam_mulai`),
+            ADD KEY `kd_dokter` (`kd_dokter`),
+            ADD KEY `kd_poli` (`kd_poli`),
+            ADD KEY `jam_mulai` (`jam_mulai`),
+            ADD KEY `jam_selesai` (`jam_selesai`);");
+
+          $core->db()->pdo()->exec("ALTER TABLE `jadwal`
+            ADD CONSTRAINT `jadwal_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `jadwal_ibfk_2` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON UPDATE CASCADE;");
+
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_registrasi` (
+            `tanggal_booking` date DEFAULT NULL,
+            `jam_booking` time DEFAULT NULL,
+            `no_rkm_medis` varchar(15) NOT NULL,
+            `tanggal_periksa` date NOT NULL,
+            `kd_dokter` varchar(20) DEFAULT NULL,
+            `kd_poli` varchar(5) DEFAULT NULL,
+            `no_reg` varchar(8) DEFAULT NULL,
+            `kd_pj` char(3) DEFAULT NULL,
+            `limit_reg` int(1) DEFAULT NULL,
+            `waktu_kunjungan` datetime DEFAULT NULL,
+            `status` enum('Terdaftar','Belum','Batal','Dokter Berhalangan') DEFAULT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `booking_registrasi`
+            ADD PRIMARY KEY (`no_rkm_medis`,`tanggal_periksa`),
+            ADD KEY `kd_dokter` (`kd_dokter`),
+            ADD KEY `kd_poli` (`kd_poli`),
+            ADD KEY `no_rkm_medis` (`no_rkm_medis`),
+            ADD KEY `kd_pj` (`kd_pj`);");
+
+          $core->db()->pdo()->exec("ALTER TABLE `booking_registrasi`
+            ADD CONSTRAINT `booking_registrasi_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `booking_registrasi_ibfk_2` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `booking_registrasi_ibfk_3` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `booking_registrasi_ibfk_4` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
         },
         'uninstall'     =>  function() use($core)

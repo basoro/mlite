@@ -143,6 +143,10 @@ $("#display").on("click", ".edit", function(event){
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
     $("#bukaform").attr("id", "tutupform");
+    $("#kartu").removeClass('hidden');
+    $("#kirimwa").removeClass('hidden');
+    $("#foto").removeClass('hidden');
+    $("#hapus").removeClass('hidden');
   });
 });
 
@@ -284,4 +288,14 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
+});
+
+$(function () {
+    if (window.location.href.indexOf("nama") > -1) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        $("#form").show().load(baseURL + '/pasien/form?t=' + mlite.token);
+        $("#bukaform").val("Tutup Form");
+        $("#bukaform").attr("id", "tutupform");
+    }
 });

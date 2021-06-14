@@ -3,7 +3,7 @@
 namespace Plugins\JKN_Mobile;
 
 use Systems\SiteModule;
-use Systems\Lib\BpjsRequest;
+use Systems\Lib\BpjsService;
 
 class Site extends SiteModule
 {
@@ -306,7 +306,7 @@ class Site extends SiteModule
                         $url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
                         $consid = $this->settings->get('settings.BpjsConsID');
                         $secretkey = $this->settings->get('settings.BpjsSecretKey');
-                        $output = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+                        $output = BpjsService::get($url, NULL, $consid, $secretkey);
                         $output = json_decode($output, true);
 
                         $_POST['no_rkm_medis'] = $this->core->setNoRM();

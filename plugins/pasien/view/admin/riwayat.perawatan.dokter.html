@@ -212,6 +212,7 @@
                       <img src="{$riwayat.fotoURL}" width="96" height="96" class="img-thumbnail" id="photoPreview" style="cursor:pointer;color:red;" onclick="$('input[name=photo]').click()" />
                       <input type="file" name="photo" class="form-control hidden" id="photo" />
                     </div>
+                    <div id="uploadstatus"></div>
                     <h4>{$riwayat.pasien.nm_pasien}</h4>
                 </div>
                 <div class="content-area">
@@ -546,10 +547,13 @@ $("input[name=photo]").change(function() {
         cache:false,
         processData:false,
         beforeSend:function(){
-          $('#photoPreview').html('Loading......');
+          $('#photoPreview').hide();
+          $('#uploadstatus').html('<img src="{?=url()?}/assets/img/loading.gif" height="100" width="100" />');
         },
         success:function(data){
           console.log(data);
+          $('#uploadstatus').hide();
+          $('#photoPreview').show();
           $('#photoPreview').html(data);
         }
       });
@@ -557,5 +561,5 @@ $("input[name=photo]").change(function() {
   });
 </script>
 <script type="text/javascript">
-  $('.images').lightbox();  
+  $('.images').lightbox();
 </script>

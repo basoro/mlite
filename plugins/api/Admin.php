@@ -12,6 +12,7 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Notifikasi APAM' => 'notifikasi',
             'Pengaturan APAM' => 'settingsapam',
+            'Payment Duitku' => 'paymentduitku',
         ];
     }
 
@@ -171,5 +172,24 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'api', 'settingsapam']));
     }
     /* End Settings Farmasi Section */
+
+    public function getPaymentDuitku()
+    {
+
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+
+      $return['list'] = $this->db('mlite_duitku')
+        ->join('pasien', 'pasien.no_rkm_medis=mlite_duitku.no_rkm_medis')
+        ->desc('id')
+        ->limit(10)
+        ->toArray();
+
+      return $this->draw('payment.duitku.html', [
+        'paymentduitku' => $return
+      ]);
+
+    }
 
 }

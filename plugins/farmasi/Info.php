@@ -9,11 +9,6 @@ return [
 
     'install'       =>  function () use ($core) {
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `metode_racik` (
-          `kd_racik` varchar(3) NOT NULL,
-          `nm_racik` varchar(30) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `opname` (
           `kode_brng` varchar(15) NOT NULL,
           `h_beli` double DEFAULT NULL,

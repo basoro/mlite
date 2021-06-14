@@ -280,9 +280,20 @@
                 <label>Alamat Lengkap</label>
                 <textarea class="form-control" placeholder="" id="alamat_daftar" disabled></textarea>
               </div>
-              <div class="form-group">
-                <label>Tanggal Kunjungan</label>
-                <input type="text" class="form-control" name="datepicker" id="tgl_registrasi_daftar" placeholder="">
+              <div class="form-row">
+                <div class="col form-group">
+                  <label>Cara Bayar</label>
+                  <select class="form-control" name="kd_pj" id="kdpj">
+                    <option value="" selected >Pilih Cara Bayar</option>
+                    {loop: $penjab}
+                    <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                    {/loop}
+                  </select>
+                 </div>
+                 <div class="col form-group">
+                  <label>Tanggal Kunjungan</label>
+                  <input type="text" class="form-control" name="datepicker" id="tgl_registrasi_daftar" placeholder="">
+                 </div>
               </div>
               <div class="form-row">
                 <div class="col form-group">

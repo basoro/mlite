@@ -38,12 +38,16 @@ class Admin extends AdminModule
         return $this->draw('booking.html',
           [
             'text' => $text,
+            'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'nama_instansi' => $this->settings->get('settings.nama_instansi'),
             'booking' => $this->db('booking_periksa')
               ->select([
                 'no_booking' => 'booking_periksa.no_booking',
                 'tanggal' => 'booking_periksa.tanggal',
                 'nama' => 'booking_periksa.nama',
                 'no_telp' => 'booking_periksa.no_telp',
+                'alamat' => 'booking_periksa.alamat',
+                'email' => 'booking_periksa.email',
                 'nm_poli' => 'poliklinik.nm_poli',
                 'status' => 'booking_periksa.status',
                 'tanggal_booking' => 'booking_periksa.tanggal_booking'
@@ -52,6 +56,17 @@ class Admin extends AdminModule
               ->toArray()
           ]
         );
+    }
+
+    public function postSaveBooking()
+    {
+      $this->db('booking_periksa')->where('no_booking', $_POST['no_booking'])->save(['status' => $_POST['status']]);
+      $this->db('booking_periksa_balasan')
+      ->save([
+        'no_booking' => $_POST['no_booking'],
+        'balasan' => $_POST['message']
+      ]);
+      exit();
     }
 
     public function getSettings()
