@@ -147,23 +147,28 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
         if($this->core->getUserInfo('id') == 1){
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }else{
             $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
-            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }
@@ -176,7 +181,7 @@ class Admin extends AdminModule
         if($this->core->getUserInfo('id') == 1){
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
@@ -185,10 +190,10 @@ class Admin extends AdminModule
         }else{
         $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
-            ->where('jadwal_pegawai.tahun',date('Y'))
+            ->where('jadwal_pegawai.tahun',$tahun)
             ->where('jadwal_pegawai.bulan',$bulan)
-            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -198,7 +203,7 @@ class Admin extends AdminModule
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
-                $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id']]);
+                $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id'] , $bulan , $tahun]);
                 // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
                 // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
                 // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
@@ -225,6 +230,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        $this->assign['tahun'] = array('','2020', '2021');
         return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
     }
 
@@ -280,15 +286,15 @@ class Admin extends AdminModule
         return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
     }
 
-    public function getJadwalEdit($id)
+    public function getJadwalEdit($id,$bulan,$tahun)
     {
         $this->_addHeaderFiles();
-        $row = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', date('Y'))->where('bulan', date('m'))->oneArray();
+        $row = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', $tahun)->where('bulan', $bulan)->oneArray();
         if (!empty($row)){
             $this->assign['form'] = $row;
             $this->assign['id'] = $this->db('pegawai')->toArray();
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
-            $this->assign['tahun'] = date('Y');
+            $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
             return $this->draw('jadwal.form.html', ['jadwal' => $this->assign]);
@@ -347,28 +353,33 @@ class Admin extends AdminModule
             $bulan = $_GET['b'];
         }
 
+        $tahun = date('Y');
+        if (isset($_GET['y'])) {
+            $tahun = $_GET['y'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('id') == 1){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }else{
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-                ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-                ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-                ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
+                ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+                ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&y='.$tahun.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -389,8 +400,8 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
+            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -410,10 +421,10 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date('Y-'.$bulan).'-01')
-            ->where('jam_datang', '<', date('Y-'.$bulan).'-31')
-            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             // ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -427,7 +438,7 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-
+                
                 $day = array(
                     'Sun' => 'AKHAD',
                     'Mon' => 'SENIN',
@@ -448,17 +459,63 @@ class Admin extends AdminModule
                     ->where('rekap_presensi.jam_datang',$row['jam_datang'])
                     ->asc('jam_datang')
                     ->oneArray();
+                $stts1 = '';
+                $stts2 = '';
 
+                $s = $row['jam_datang'];
+                $dt = new \DateTime($s);
+                $tm = $dt->format('h:i:s');
+
+                $w = $row['jam_pulang'];
+                $dd = new \DateTime($w);
+                $tp = $dd->format('H:i:s');
+            
                 $row['date']=$day[date('D',strtotime(date($jam_datang['year'].'-'.$jam_datang['month'].'-'.$jam_datang['day'])))];
                 switch (true) {
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '14:01:00' and $tp < '14:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
                         break;
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
                         $efektif = 'INTERVAL 0 HOUR';
@@ -466,6 +523,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -482,10 +557,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '14:01:00' and $tp < '14:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -494,6 +605,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SELASA' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -510,10 +639,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '14:01:00' and $tp < '14:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -522,6 +687,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'RABU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -538,10 +721,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '14:01:00' and $tp < '14:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -550,6 +769,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'KAMIS' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -566,10 +803,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 3 HOUR';
                         $efektif = 'INTERVAL 30 MINUTE';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '10:30:00' and $tp < '10:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '10:01:00' and $tp < '10:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '09:30:00' and $tp < '10:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '09:29:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -578,6 +851,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'JUMAT' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -594,10 +885,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 5 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '13:00:00' and $tp < '13:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -606,6 +933,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'SABTU' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -622,10 +967,46 @@ class Admin extends AdminModule
                     case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Pagi'):
                         $interval = 'INTERVAL 6 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '08:11:00' and $tm < '08:30:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '08:31:00' and $tm < '09:00:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '09:01:00' and $tm < '09:30:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '09:31:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '14:01:00' and $tp < '14:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '13:31:00' and $tp < '14:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '13:01:00' and $tp < '13:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '13:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang'):
                         $interval = 'INTERVAL 5 HOUR';
                         $efektif = 'INTERVAL 1 HOUR';
+                        if ($tm > '14:41:00' and $tm < '15:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '15:01:00' and $tm < '15:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '15:31:00' and $tm < '16:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '16:00:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '20:01:00' and $tp < '20:19:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '19:31:00' and $tp < '20:00:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '19:01:00' and $tp < '19:30:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '19:00:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Siang - Gizi'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -634,6 +1015,24 @@ class Admin extends AdminModule
                     case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam'):
                         $interval = 'INTERVAL 10 * 60 + 30 MINUTE';
                         $efektif = 'INTERVAL 2 HOUR';
+                        if ($tm > '20:41:00' and $tm < '21:00:00') {
+                            $stts1 = 'TL1';
+                        }elseif ($tm > '21:01:00' and $tm < '21:30:00') {
+                            $stts1 = 'TL2';
+                        }elseif ($tm > '21:31:00' and $tm < '22:00:00') {
+                            $stts1 = 'TL3';
+                        }elseif ($tm > '22:01:00') {
+                            $stts1 = 'TL4';
+                        }
+                        if ($tp > '07:31:00' and $tp < '07:49:00') {
+                            $stts2 = 'PSW1';
+                        }elseif ($tp > '07:01:00' and $tp < '07:30:00') {
+                            $stts2 = 'PSW2';
+                        }elseif ($tp > '06:31:00' and $tp < '07:00:00') {
+                            $stts2 = 'PSW3';
+                        }elseif ($tp < '06:30:00') {
+                            $stts2 = 'PSW4';
+                        }
                         break;
                     case ($row['date'] == 'AKHAD' and $jam_datang['shift'] == 'Malam - Gizi (Masak)'):
                         $interval = 'INTERVAL 0 HOUR';
@@ -652,7 +1051,7 @@ class Admin extends AdminModule
                         $efektif = 'INTERVAL 1 HOUR';
                         break;
                 }
-
+                
                 $row['efektif'] = $this->db('rekap_presensi')
                         ->select([
                         'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
@@ -660,7 +1059,8 @@ class Admin extends AdminModule
                         ->where('rekap_presensi.id',$row['id'])
                         ->where('rekap_presensi.jam_datang',$row['jam_datang'])
                         ->oneArray();
-
+                $row['stts1'] = $stts1;
+                $row['stts2'] = $stts2;
                 $this->assign['list'][] = $row;
             }
 
@@ -693,19 +1093,21 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-
+        
+        
         $this->assign['totalminus'] = '-'.$timesplus;
-
+    
         $this->assign['totalplus'] = $timesminus;
-
-
+        
+        // $this->assign['stts1'] = $stts1;
+        // $this->assign['stts2'] = $stts2;
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = date('Y');
+        $this->assign['tahun'] = array('','2020', '2021');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&s='.$phrase]);
+        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
-
+    
     public function getCetakRekap()
     {
         $phrase = '';
@@ -752,16 +1154,16 @@ class Admin extends AdminModule
           ->asc('jam_datang')
           ->toArray();
 
-        $logo = $this->settings->get('settings.logo');
-
+        $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
+  
         $pdf = new PDF_MC_Table();
         $pdf->AddPage();
         $pdf->SetAutoPageBreak(true, 10);
         $pdf->SetTopMargin(10);
         $pdf->SetLeftMargin(10);
         $pdf->SetRightMargin(10);
-
-        $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
+  
+        $pdf->Image($logo, 10, 8, '18', '18', 'png');
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
         $pdf->SetFont('Arial', '', 10);
@@ -987,11 +1389,11 @@ class Admin extends AdminModule
                         ->where('rekap_presensi.id',$hasil['id'])
                         ->where('rekap_presensi.jam_datang',$hasil['jam_datang'])
                         ->oneArray();
-            $total[] = $hasil;
+            $total[] = $hasil; 
             $count++;
           $pdf->Row(array($hasil['nama'],$hasil['shift'],$hasil['jam_datang'],$hasil['jam_pulang'],$hasil['durasi'],$hasil['efektif']['efektif'],$hasil['efektif']['kurang']));
         }
-
+        
         $secondplus = 0;
         $secondminus = 0;
         foreach ($total as $time) {
@@ -1018,15 +1420,15 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-
+        
         $pdf->Ln(34);
         $pdf->SetFont('Arial', '', 10);
         $pdf->SetAligns(array("C", "C" , "C"));
         $pdf->SetWidths(array(63, 63, 63));
         $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: -".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
-
+        
         $pdf->Output('laporan_presensi_'.date('Y-m-d').'.pdf','I');
-
+  
     }
 
     public function getPrint($phrase = null, $tanggal = null)
@@ -1056,7 +1458,7 @@ class Admin extends AdminModule
           ->orLike('shift', '%'.$phrase.'%')
           ->asc('jam_datang')
           ->toArray();
-      $logo = $this->settings->get('settings.logo');
+      $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
 
       $pdf = new PDF_MC_Table('L','mm','Legal');
       $pdf->AddPage();
@@ -1065,7 +1467,7 @@ class Admin extends AdminModule
       $pdf->SetLeftMargin(10);
       $pdf->SetRightMargin(10);
 
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
+      $pdf->Image($logo, 10, 8, '18', '18', 'png');
       $pdf->SetFont('Arial', '', 24);
       $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
@@ -1087,7 +1489,7 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id,$tanggal)
     {
-      $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+      $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
       $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
 
       $this->tpl->set('geo', $geo);
@@ -1118,8 +1520,8 @@ class Admin extends AdminModule
         }else{
             $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
-            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->toArray();
@@ -1157,8 +1559,8 @@ class Admin extends AdminModule
               'photo' => 'temporary_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = temporary_presensi.id')
-            ->where('departemen', $this->getPegawaiInfo('departemen',$username))
-            ->where('bidang', $this->getPegawaiInfo('bidang',$username))
+            ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+            ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -1170,7 +1572,6 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-                $row['time'] = strtotime(date('Y-m-d H:i:s')) - strtotime($row['jam_datang']);
                 $this->assign['list'][] = $row;
             }
         }
@@ -1314,12 +1715,6 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
-    public function getPegawaiInfo($field, $nik)
-    {
-        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
-        return $row[$field];
-    }
-
     public function getJavascript()
     {
         header('Content-type: text/javascript');
@@ -1330,16 +1725,12 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         // CSS
-        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
-        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
-
-        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
-        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
-        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'presensi', 'javascript']), 'footer');

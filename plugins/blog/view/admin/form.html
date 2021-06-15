@@ -1,0 +1,113 @@
+<article class="row">
+	<form name="page" action="{?=url(ADMIN.'/blog/save/'.isset_or($blog.form.id, null))?}" method="POST" enctype="multipart/form-data">
+		<div class="col-md-8">
+		    <div class="panel panel-default">
+                <div class="panel-heading">
+		            <h3 class="panel-title">{$blog.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Judul</label>
+                        <input type="text" name="title" class="form-control" value="{$blog.form.title}" required />
+                    </div>
+					<div class="progress-wrapper">
+						<div class="progress no-margin collapse">
+							<div class="progress-bar progress-bar-striped active" role="progressbar">
+							</div>
+						</div>
+					</div>
+                    <div class="form-group no-margin">
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="full-text">
+                                <textarea name="content" rows="16" class="editor form-control" data-editor="{$blog.editor}">{$blog.form.content}</textarea>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="short-text">
+                                <textarea name="intro" rows="16" class="editor form-control" data-editor="{$blog.editor}">{$blog.form.intro}</textarea>
+                            </div>
+                        </div>
+                        <ul class="nav nav-tabs" role="tablist" id="textarea-tabs">
+                            <li class="active"><a href="#full-text" role="tab" data-toggle="tab">Isi</a></li>
+                            <li><a href="#short-text" role="tab" data-toggle="tab">Intro</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+	    </div>
+
+	    <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan</h3>
+                </div>
+                <div class="panel-body">
+        	    	<div class="form-group">
+                        <label>Cover</label>
+                        {if: !empty($blog.form.cover_photo)}
+                        <div style="position:relative;">
+                    		<img src="{?= url('uploads/blog/'.$blog.form.cover_photo) ?}?{$blog.form.updated_at}" class="img-responsive" />
+                    		<input type="file" name="cover_photo" class="form-control" />
+                    		<a href="{$blog.coverDeleteURL}" class="btn btn-danger" style="position:absolute; right:5px; top:5px;">Hapus Foto</a>
+                    	</div>
+                        {else}
+                        <input type="file" name="cover_photo" class="form-control"/>
+                        {/if}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" name="slug" class="form-control" value="{$blog.form.slug}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                        	<option value="0"{if: $blog.form.status == 0} selected{/if}>Draft</option>
+                        	<option value="1"{if: $blog.form.status == 1} selected{/if}>Sembunyi</option>
+                        	<option value="2"{if: $blog.form.status == 2} selected{/if}>Terbit</option>
+                    	</select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <select name="tags[]" class="form-control" multiple>
+                        {loop: $blog.form.tags}
+                            <option value="{$value.name}" selected>{$value.name}</option>
+                        {/loop}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Penulis</label>
+                        <select name="user_id" class="form-control">
+                        	{loop: $blog.users}
+                        	<option value="{$value.id}"{if: $value.id == $blog.author} selected{/if}>
+                                {if: !empty($value.fullname)}
+                                {$value.fullname} ({$value.username})
+                                {else}
+                                {$value.username}
+                                {/if}
+                            </option>
+                        	{/loop}
+                    	</select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Terbit</label>
+                        <input type="datetime-local" class="form-control" name="published_at" value="{$blog.form.date}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label><input type="checkbox" name="comments" value="1" {if: $blog.form.comments == 1}checked{/if} /> Komentar</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><input type="checkbox" name="markdown" value="1" {if: $blog.form.markdown == 1}checked{/if} /> Markdown</label>
+                    </div>
+
+                    <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
+                    <a href="{$blog.manageURL}" class="btn btn-default">Batal</a>
+                </div>
+            </div>
+        </div>
+	</form>
+</article>

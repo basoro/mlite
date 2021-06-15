@@ -1,0 +1,199 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/api/saveSettingsApam')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>APAM Security Key</label>
+                        <input type="text" name="api[apam_key]" class="form-control" value="{$settings.api.apam_key}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Status Daftar</label>
+                        <input type="text" name="api[apam_status_daftar]" class="form-control" value="{$settings.api.apam_status_daftar}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Status Dilayani</label>
+                        <input type="text" name="api[apam_status_dilayani]" class="form-control" value="{$settings.api.apam_status_dilayani}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Webapps URL</label>
+                        <input type="text" name="api[apam_webappsurl]" class="form-control" value="{$settings.api.apam_webappsurl}"/>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM No RM Petugas</label>
+                        <input type="text" name="api[apam_normpetugas]" class="form-control" value="{$settings.api.apam_normpetugas}"/>
+                        <p>Pisahkan dengan tanda koma</p>
+                    </div>
+                    <div class="form-group">
+                        <label>APAM Limit Kuota</label>
+                        <input type="text" name="api[apam_limit]" class="form-control" value="{$settings.api.apam_limit}"/>
+                        <p>Limit untuk kuota. Misal 2 (50%), 4 (25%) dari kuota dalam jadwal</p>
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Server</label>
+                        <input type="text" name="api[apam_smtp_host]" class="form-control" value="{$settings.api.apam_smtp_host}">
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Port</label>
+                        <input type="text" name="api[apam_smtp_port]" class="form-control" value="{$settings.api.apam_smtp_port}">
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Username</label>
+                        <input type="text" name="api[apam_smtp_username]" class="form-control" value="{$settings.api.apam_smtp_username}">
+                    </div>
+                    <div class="form-group">
+                        <label>SMTP Password</label>
+                        <input type="text" name="api[apam_smtp_password]" class="form-control" value="{$settings.api.apam_smtp_password}">
+                    </div>
+                    <div class="form-group">
+                        <label>Cara Bayar APAM</label>
+                        <select name="api[apam_kdpj]" class="form-control">
+                          {loop: $settings.penjab}
+                            <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.api.apam_kdpj} selected{/if}>{$value.png_jawab}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="propinsi">Kode Propinsi</label>
+                        <input type="hidden" name="nm_prop" id="nm_prop" class="form-control" value="" />
+                        <input type="text" name="api[apam_kdprop]" id="kd_prop" class="form-control" value="{$settings.api.apam_kdprop}" />
+                        <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="kota">Kode Kota/Kabupaten</label>
+                        <input type="hidden" name="nm_kab" id="nm_kab" class="form-control" value="" />
+                        <input type="text" name="api[apam_kdkab]" id="kd_kab" class="form-control" value="{$settings.api.apam_kdkab}" />
+                        <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                    </div>
+                    <div class="form-group">
+                        <label for="kecamatan">Kode Kecamatan</label>
+                        <input type="hidden" name="nm_kec" id="nm_kec" class="form-control" value="" />
+                        <input type="text" name="api[apam_kdkec]" id="kd_kec" class="form-control" value="{$settings.api.apam_kdkec}" />
+                        <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan e-Payment Telemedicine Duitku</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Cara Bayar Telemedicine</label>
+                        <select name="api[duitku_kdpj]" class="form-control">
+                          {loop: $settings.penjab}
+                            <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.api.duitku_kdpj} selected{/if}>{$value.png_jawab}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Merchant Code</label>
+                        <input type="text" name="api[duitku_merchantCode]" class="form-control" value="{$settings.api.duitku_merchantCode}"/>
+                        <p>Ada di dashboard Duitku.COM</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Merchant Key</label>
+                        <input type="text" name="api[duitku_merchantKey]" class="form-control" value="{$settings.api.duitku_merchantKey}"/>
+                        <p>Ada di dashboard Duitku.COM</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Biaya Konsultasi Telemedicine</label>
+                        <input type="text" name="api[duitku_paymentAmount]" class="form-control" value="{$settings.api.duitku_paymentAmount}"/>
+                        <p>Biaya Konsultasi Online (Duitku Payment Amount)</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Payment Method</label>
+                        <input type="text" name="api[duitku_paymentMethod]" class="form-control" value="{$settings.api.duitku_paymentMethod}">
+                        <p>A1 = ATM Bersama, WW = duitku wallet, VC = Credit Card, MY = Mandiri Clickpay, BK = BCA KlikPay</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Layanan Telemedicine</label>
+                        <input type="text" name="api[duitku_productDetails]" class="form-control" value="{$settings.api.duitku_productDetails}">
+                    </div>
+                    <div class="form-group">
+                        <label>Expired Period</label>
+                        <input type="text" name="api[duitku_expiryPeriod]" class="form-control" value="{$settings.api.duitku_expiryPeriod}">
+                        <p>Batas kadaluarsa pembayaran Virtual Account</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+          <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+        </div>
+    </form>
+</article>
+<script>
+  $('#kd_prop').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'pasien', 'wilayah?show=caripropinsi'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#propinsiList').fadeIn();
+              $('#propinsiList').html(data);
+           }
+        });
+     }
+  });
+  $('#propinsiList').on('click', 'li', function(){
+     $('#nm_prop').val($(this).text().split(': ')[1]);
+     $('#kd_prop').val($(this).text().split(': ')[0]);
+     $('#propinsiList').fadeOut();
+  });
+  $('#kd_kab').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikabupaten'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#kabupatenList').fadeIn();
+              $('#kabupatenList').html(data);
+           }
+        });
+     }
+  });
+  $('#kabupatenList').on('click', 'li', function(){
+       $('#nm_kab').val($(this).text().split(': ')[1]);
+       $('#kd_kab').val($(this).text().split(': ')[0]);
+       $('#kabupatenList').fadeOut();
+  });
+  $('#kd_kec').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikecamatan'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#kecamatanList').fadeIn();
+                      $('#kecamatanList').html(data);
+                 }
+            });
+       }
+  });
+  $('#kecamatanList').on('click', 'li', function(){
+       $('#nm_kec').val($(this).text().split(': ')[1]);
+       $('#kd_kec').val($(this).text().split(': ')[0]);
+       $('#kecamatanList').fadeOut();
+  });
+
+ </script>
