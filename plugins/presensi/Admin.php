@@ -1102,7 +1102,7 @@ class Admin extends AdminModule
         // $this->assign['stts1'] = $stts1;
         // $this->assign['stts2'] = $stts2;
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = array('','2020', '2021');
+        $this->assign['tahun'] = array('','2020', '2021','2022');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
