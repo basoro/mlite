@@ -33,6 +33,7 @@
       footer a, footer a:hover {
         color: #fff;
       }
+      tr:nth-child(even) {color: #ffffff;}
     </style>
 </head>
 <body>
@@ -49,7 +50,7 @@
     <tbody>
       {loop: $display}
       <tr>
-        <th width="30%">{$value.nm_dokter}<small> - {$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
+        <th width="30%">{$value.nm_dokter}<br><small>{$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
         <td width="20%">{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
         <td>
           <marquee scrollamount="3">
