@@ -9,7 +9,7 @@
     			<fieldset>
                   <div class="form-group">
                       <label>ID Pegawai</label>
-                      <select class="form-control" name="id">
+                      <select class="form-control" data-use-search="true" data-options-height="10px" name="id">
                         <option>Pilih Pegawai</option>
                         {loop: $barcode.pegawai}
                         <option value="{$value.id}"{if: $value.id == $barcode.form.id} selected{/if}>{$value.nama} - ({$value.nik})</option>
