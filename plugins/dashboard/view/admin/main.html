@@ -71,10 +71,10 @@
       <div class="modal-body">
         <center>
           <div id="camera"></div><br>
-          <select class="form-control" id="shift" style="width:250px;">
+          <select class="form-control" id="shift" style="width:240px;">
             <option value="">Pilih Shift</option>
             {loop: $jam_jaga}
-            <option value="{$value.shift}">{$value.jam_masuk} - {$value.jam_pulang}</option>
+            <option value="{$value.shift}"><i>{$value.shift}</i> : {$value.jam_masuk} - {$value.jam_pulang}</option>
             {/loop}
           </select><br><br>
           <input type="button" class="btn btn-info" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
