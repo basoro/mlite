@@ -22,7 +22,7 @@
             <form name="jagaadd" action="{?=url(ADMIN.'/presensi/jagasave/'.@$jagaadd.form.no_id)?}" method="POST">
               <div class="form-group">
                 <label>Departemen</label>
-                <select name="dep_id" id="dep_id" class="form-control">
+                <select name="dep_id" id="dep_id" data-use-search="true" data-options-height="10px" class="form-control">
                   {loop: $jagaadd.dep_id}
                     <option value="{$value.dep_id}"{if: $value.dep_id == $jagaadd.form.dep_id} selected{/if}>{$value.nama}</option>
                   {/loop}
@@ -31,7 +31,7 @@
               </div>
               <div class="form-group">
                 <label>Shift</label>
-                <select name="shift" id="shift" class="form-control">
+                <select name="shift" id="shift" data-use-search="true" data-options-height="10px" class="form-control">
                   {loop: $jagaadd.shift}
                     <option value="{$value.shift}"{if: $value.shift == $jagaadd.form.shift} selected{/if}>{$value.shift}</option>
                   {/loop}
@@ -41,7 +41,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Jam Masuk</label>
-                    <select name="jam_masuk" id="jam_masuk" class="form-control">
+                    <select name="jam_masuk" id="jam_masuk" data-use-search="true" data-options-height="10px" class="form-control">
                       {loop: $jagaadd.shift}
                         <option value="{$value.jam_masuk}"{if: $value.jam_masuk == $jagaadd.form.jam_masuk} selected{/if}>{$value.jam_masuk}</option>
                       {/loop}
@@ -51,7 +51,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Jam Pulang</label>
-                    <select name="jam_pulang" id="jam_pulang" class="form-control">
+                    <select name="jam_pulang" id="jam_pulang" data-use-search="true" data-options-height="10px" class="form-control">
                       {loop: $jagaadd.shift}
                         <option value="{$value.jam_pulang}"{if: $value.jam_pulang == $jagaadd.form.jam_pulang} selected{/if}>{$value.jam_pulang}</option>
                       {/loop}
