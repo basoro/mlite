@@ -10,19 +10,19 @@ class Site extends SiteModule
 
     public function init()
     {
-      $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
-      $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
-      $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
+        $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
+        $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
+        $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
     }
 
     public function routes()
     {
         $this->route('jknmobile_v2', 'getIndex');
         $this->route('jknmobile_v2/token', 'getToken');
+        $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
         $this->route('jknmobile_v2/antrian/status', 'getStatusAntrian');
         $this->route('jknmobile_v2/antrian/sisa', 'getSisaAntrian');
         $this->route('jknmobile_v2/antrian/batal', 'getBatalAntrian');
-        $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
         $this->route('jknmobile_v2/pasien/baru', 'getPasienBaru');
         $this->route('jknmobile_v2/pasien/checkin', 'getPasienCheckIn');
         $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
@@ -66,215 +66,6 @@ class Site extends SiteModule
                     'code' => 201
                 )
             );
-        }
-        echo json_encode($response);
-    }
-
-    public function getStatusAntrian()
-    {
-        echo $this->_resultStatusAntrian();
-        exit();
-    }
-
-    private function _resultStatusAntrian()
-    {
-        header("Content-Type: application/json");
-        $header = apache_request_headers();
-        $konten = trim(file_get_contents("php://input"));
-        $decode = json_decode($konten, true);
-        $response = array();
-
-        $tentukan_hari=date('D',strtotime($decode['tanggalperiksa']));
-        $day = array(
-          'Sun' => 'AKHAD',
-          'Mon' => 'SENIN',
-          'Tue' => 'SELASA',
-          'Wed' => 'RABU',
-          'Thu' => 'KAMIS',
-          'Fri' => 'JUMAT',
-          'Sat' => 'SABTU'
-        );
-        $hari=$day[$tentukan_hari];
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            if(!$this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Poli Tidak Ditemukan',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else if(!$this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray()){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Dokter Tidak Ditemukan',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else if(!$this->db('jadwal')
-                ->join('maping_dokter_dpjpvclaim', 'maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter')
-                ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $decode['kodedokter'])
-                ->where('hari_kerja', $hari)
-                ->where('jam_mulai', strtok($decode['jampraktek'], '-').':00')
-                ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
-                ->oneArray()){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Jadwal Praktek Tidak Ditemukan '.$hari,
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else if(date("Y-m-d")>$decode['tanggalperiksa']){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Tanggal Periksa Tidak Berlaku',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else{
-                $response = array(
-                    'response' => array(
-                        'namapoli' => 'Gigi',
-                        'namadokter' => 'drg. Faisol Basoro',
-                        'totalantrean' => 15,
-                        'sisaantrean' => 5,
-                        'antreanpanggil' => 'A5',
-                        'sisakuotajkn' => 15,
-                        'kuotajkn' => 20,
-                        'sisakuotanonjkn' => 15,
-                        'kuotanonjkn' => 20,
-                        'keterangan' => ''
-                    ),
-                    'metadata' => array(
-                        'message' => 'Ok',
-                        'code' => 200
-                    )
-                );
-            }
-        } else {
-            $response = array(
-                'metadata' => array(
-                    'message' => 'Access denied',
-                    'code' => 201
-                )
-            );
-        }
-        echo json_encode($response);
-    }
-
-    public function getSisaAntrian()
-    {
-        echo $this->_resultSisaAntrian();
-        exit();
-    }
-
-    private function _resultSisaAntrian()
-    {
-        header("Content-Type: application/json");
-        $header = apache_request_headers();
-        $konten = trim(file_get_contents("php://input"));
-        $decode = json_decode($konten, true);
-        $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            if($decode['kodebooking'] == ''){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Kode booking tidak boleh kosong',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            } else if(!$this->db('booking_registrasi')->where('no_reg', $decode['kodebooking'])->oneArray()) {
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Kode Booking Tidak Ditemukan',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            } else {
-                $response = array(
-                    'response' => array(
-                        'nomorantrean' => 'A5',
-                        'namapoli' => 'Gigi',
-                        'namadokter' => 'drg. Faisol Basoro',
-                        'sisaantrean' => 12,
-                        'antreanpanggil' => 'A8',
-                        'waktutunggu' => 9000,
-                        'keterangan' => ''
-                    ),
-                    'metadata' => array(
-                        'message' => 'Ok',
-                        'code' => 200
-                    )
-                );
-                http_response_code(200);
-            }
-        } else {
-            $response = array(
-                'metadata' => array(
-                    'message' => 'Access denied',
-                    'code' => 201
-                )
-            );
-            http_response_code(201);
-        }
-        echo json_encode($response);
-    }
-
-    public function getBatalAntrian()
-    {
-        echo $this->_resultBatalAntrian();
-        exit();
-    }
-
-    private function _resultBatalAntrian()
-    {
-        header("Content-Type: application/json");
-        $header = apache_request_headers();
-        $konten = trim(file_get_contents("php://input"));
-        $decode = json_decode($konten, true);
-        $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            if($decode['kodebooking'] == ''){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Kode booking tidak boleh kosong',
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            } else {
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Ok',
-                        'code' => 200
-                    )
-                );
-                http_response_code(200);
-            }
-        } else {
-            $response = array(
-                'metadata' => array(
-                    'message' => 'Access denied',
-                    'code' => 201
-                )
-            );
-            http_response_code(201);
         }
         echo json_encode($response);
     }
@@ -575,6 +366,215 @@ class Site extends SiteModule
         echo json_encode($response);
     }
 
+    public function getStatusAntrian()
+    {
+        echo $this->_resultStatusAntrian();
+        exit();
+    }
+
+    private function _resultStatusAntrian()
+    {
+        header("Content-Type: application/json");
+        $header = apache_request_headers();
+        $konten = trim(file_get_contents("php://input"));
+        $decode = json_decode($konten, true);
+        $response = array();
+
+        $tentukan_hari=date('D',strtotime($decode['tanggalperiksa']));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+            if(!$this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Poli Tidak Ditemukan',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(!$this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray()){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Dokter Tidak Ditemukan',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(!$this->db('jadwal')
+                ->join('maping_dokter_dpjpvclaim', 'maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter')
+                ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $decode['kodedokter'])
+                ->where('hari_kerja', $hari)
+                ->where('jam_mulai', strtok($decode['jampraktek'], '-').':00')
+                ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
+                ->oneArray()){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Jadwal Praktek Tidak Ditemukan '.$hari,
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(date("Y-m-d")>$decode['tanggalperiksa']){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Tanggal Periksa Tidak Berlaku',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else{
+                $response = array(
+                    'response' => array(
+                        'namapoli' => 'Gigi',
+                        'namadokter' => 'drg. Faisol Basoro',
+                        'totalantrean' => 15,
+                        'sisaantrean' => 5,
+                        'antreanpanggil' => 'A5',
+                        'sisakuotajkn' => 15,
+                        'kuotajkn' => 20,
+                        'sisakuotanonjkn' => 15,
+                        'kuotanonjkn' => 20,
+                        'keterangan' => ''
+                    ),
+                    'metadata' => array(
+                        'message' => 'Ok',
+                        'code' => 200
+                    )
+                );
+            }
+        } else {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Access denied',
+                    'code' => 201
+                )
+            );
+        }
+        echo json_encode($response);
+    }
+
+    public function getSisaAntrian()
+    {
+        echo $this->_resultSisaAntrian();
+        exit();
+    }
+
+    private function _resultSisaAntrian()
+    {
+        header("Content-Type: application/json");
+        $header = apache_request_headers();
+        $konten = trim(file_get_contents("php://input"));
+        $decode = json_decode($konten, true);
+        $response = array();
+
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+            if($decode['kodebooking'] == ''){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Kode booking tidak boleh kosong',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            } else if(!$this->db('booking_registrasi')->where('no_reg', $decode['kodebooking'])->oneArray()) {
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Kode Booking Tidak Ditemukan',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            } else {
+                $response = array(
+                    'response' => array(
+                        'nomorantrean' => 'A5',
+                        'namapoli' => 'Gigi',
+                        'namadokter' => 'drg. Faisol Basoro',
+                        'sisaantrean' => 12,
+                        'antreanpanggil' => 'A8',
+                        'waktutunggu' => 9000,
+                        'keterangan' => ''
+                    ),
+                    'metadata' => array(
+                        'message' => 'Ok',
+                        'code' => 200
+                    )
+                );
+                http_response_code(200);
+            }
+        } else {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Access denied',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        }
+        echo json_encode($response);
+    }
+
+    public function getBatalAntrian()
+    {
+        echo $this->_resultBatalAntrian();
+        exit();
+    }
+
+    private function _resultBatalAntrian()
+    {
+        header("Content-Type: application/json");
+        $header = apache_request_headers();
+        $konten = trim(file_get_contents("php://input"));
+        $decode = json_decode($konten, true);
+        $response = array();
+
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+            if($decode['kodebooking'] == ''){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Kode booking tidak boleh kosong',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            } else {
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Ok',
+                        'code' => 200
+                    )
+                );
+                http_response_code(200);
+            }
+        } else {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Access denied',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        }
+        echo json_encode($response);
+    }
+
     public function getPasienBaru()
     {
         echo $this->_resultPasienBaru();
@@ -849,139 +849,139 @@ class Site extends SiteModule
 
     public function _getJadwal($kodepoli, $tanggal)
     {
-      $url = $this->bpjsurl.'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $url = $this->bpjsurl.'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     public function _getUpdateJadwal($data = [])
     {
-      $data = [
-          'kodepoli' => 'ANA',
-          'kodesubspesialis' => '1',
-          'kodedokter' => '123456',
-          'jadwal' => [
-            array(
-              'hari' => '1',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-            array(
-              'hari' => '2',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-            array(
-              'hari' => '3',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-            array(
-              'hari' => '4',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-            array(
-              'hari' => '5',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-            array(
-              'hari' => '6',
-              'buka' => '08:00',
-              'tutup' => '12:00'
-            ),
-          ]
-      ];
+        $data = [
+            'kodepoli' => 'ANA',
+            'kodesubspesialis' => '1',
+            'kodedokter' => '123456',
+            'jadwal' => [
+              array(
+                'hari' => '1',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+              array(
+                'hari' => '2',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+              array(
+                'hari' => '3',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+              array(
+                'hari' => '4',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+              array(
+                'hari' => '5',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+              array(
+                'hari' => '6',
+                'buka' => '08:00',
+                'tutup' => '12:00'
+              ),
+            ]
+        ];
 
-      $data = json_encode($data);
-      $url = $this->bpjsurl.'updatejadwaldokter';
-      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $data = json_encode($data);
+        $url = $this->bpjsurl.'updatejadwaldokter';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     public function _getAntreanAdd($data = [])
     {
-      $data = [
-          'kodebooking' => '16032021A001',
-          'jenispasien' => 'JKN',
-          'nomorkartu' => '00012345678',
-          'nik' => '3212345678987654',
-          'nohp' => '085635228888',
-          'kodepoli' => 'ANA',
-          'namapoli' => 'Anak',
-          'norm' => '123345',
-          'tanggalperiksa' => '2021-03-28',
-          'kodedokter' => 12345,
-          'namadokter' => 'Dr. Hendra',
-          'jampraktek' => '08:00-16:00',
-          'jeniskunjungan' => 1,
-          'nomorreferensi' => '0001R0040116A000001',
-          'nomorantrean' => 'A-12',
-          'angkaantrean' => 12,
-          'estimasidilayani' => 1615869169000,
-          'sisakuotajkn' => 5,
-          'kuotajkn' => 30,
-          'sisakuotanonjkn' => 5,
-          'kuotanonjkn' => 30,
-          'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-      ];
+        $data = [
+            'kodebooking' => '16032021A001',
+            'jenispasien' => 'JKN',
+            'nomorkartu' => '00012345678',
+            'nik' => '3212345678987654',
+            'nohp' => '085635228888',
+            'kodepoli' => 'ANA',
+            'namapoli' => 'Anak',
+            'norm' => '123345',
+            'tanggalperiksa' => '2021-03-28',
+            'kodedokter' => 12345,
+            'namadokter' => 'Dr. Hendra',
+            'jampraktek' => '08:00-16:00',
+            'jeniskunjungan' => 1,
+            'nomorreferensi' => '0001R0040116A000001',
+            'nomorantrean' => 'A-12',
+            'angkaantrean' => 12,
+            'estimasidilayani' => 1615869169000,
+            'sisakuotajkn' => 5,
+            'kuotajkn' => 30,
+            'sisakuotanonjkn' => 5,
+            'kuotanonjkn' => 30,
+            'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+        ];
 
-      $data = json_encode($data);
-      $url = $this->bpjsurl.'antrean/add';
-      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $data = json_encode($data);
+        $url = $this->bpjsurl.'antrean/add';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     public function _getAntreanBatal($data = [])
     {
-      $data = [
-          'kodebooking' => '16032021A001',
-          'keterangan' => 'Terjadi perubahan jadwal dokter, silahkan daftar kembali'
-      ];
+        $data = [
+            'kodebooking' => '16032021A001',
+            'keterangan' => 'Terjadi perubahan jadwal dokter, silahkan daftar kembali'
+        ];
 
-      $data = json_encode($data);
-      $url = $this->bpjsurl.'antrean/batal';
-      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $data = json_encode($data);
+        $url = $this->bpjsurl.'antrean/batal';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     public function _getAntreanUpdateWaktu($data = [])
     {
-      $data = [
-          'kodebooking' => '16032021A001',
-          'taskid' => '1',
-          'waktu' => '1616559330000'
-      ];
+        $data = [
+            'kodebooking' => '16032021A001',
+            'taskid' => '1',
+            'waktu' => '1616559330000'
+        ];
 
-      $data = json_encode($data);
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $data = json_encode($data);
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     public function _getAntreanGetListTask($data = [])
     {
-      $data = [
-          'kodebooking' => '16032021A001'
-      ];
+        $data = [
+            'kodebooking' => '16032021A001'
+        ];
 
-      $data = json_encode($data);
-      $url = $this->bpjsurl.'antrean/getlisttask';
-      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
-      $json = json_decode($output, true);
-      echo json_encode($json);
-      exit();
+        $data = json_encode($data);
+        $url = $this->bpjsurl.'antrean/getlisttask';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
     }
 
     private function _getToken()
