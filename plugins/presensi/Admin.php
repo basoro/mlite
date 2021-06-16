@@ -348,6 +348,12 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
+        $bidang = urlencode($_GET['ruang']);
+        $ruang = '';
+        if(isset($bidang)){
+            $ruang = $bidang;
+        }
+
         $bulan = date('m');
         if (isset($_GET['b'])) {
             $bulan = $_GET['b'];
@@ -364,7 +370,8 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+                ->like('bidang','%'.$ruang.'%')
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
                 ->toArray();
@@ -372,7 +379,7 @@ class Admin extends AdminModule
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-31')
+                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
                 ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
@@ -391,6 +398,8 @@ class Admin extends AdminModule
             ->select([
               'nama' => 'pegawai.nama',
               'departemen' => 'pegawai.departemen',
+              'jbtn' => 'pegawai.jbtn',
+              'bidang' => 'pegawai.bidang',
               'id' => 'rekap_presensi.id',
               'shift' => 'rekap_presensi.shift',
               'jam_datang' => 'rekap_presensi.jam_datang',
@@ -402,6 +411,7 @@ class Admin extends AdminModule
             ->join('pegawai','pegawai.id = rekap_presensi.id')
             ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
             ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+            ->like('bidang','%'.$ruang.'%')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -412,6 +422,8 @@ class Admin extends AdminModule
             ->select([
               'nama' => 'pegawai.nama',
               'departemen' => 'pegawai.departemen',
+              'jbtn' => 'pegawai.jbtn',
+              'bidang' => 'pegawai.bidang',
               'id' => 'rekap_presensi.id',
               'shift' => 'rekap_presensi.shift',
               'jam_datang' => 'rekap_presensi.jam_datang',
@@ -1104,6 +1116,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['tahun'] = array('','2020', '2021','2022');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        $this->assign['bidang'] = $this->db('bidang')->toArray();
         $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
@@ -1536,6 +1549,8 @@ class Admin extends AdminModule
         $rows = $this->db('temporary_presensi')
             ->select([
               'nama' => 'pegawai.nama',
+              'jbtn' => 'pegawai.jbtn',
+              'bidang' => 'pegawai.bidang',
               'id' => 'temporary_presensi.id',
               'shift' => 'temporary_presensi.shift',
               'jam_datang' => 'temporary_presensi.jam_datang',

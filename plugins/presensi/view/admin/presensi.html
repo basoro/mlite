@@ -27,7 +27,9 @@
                 <thead>
                   <tr>
                     <th>Nama</th>
+                    <th>Jabatan</th>
                     <th>Shift</th>
+                    <th>Ruangan</th>
                     <th>Jam Datang</th>
                   </tr>
                 </thead>
@@ -41,7 +43,9 @@
                       </a>
                       <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
                     </td>
+                    <td>{$value.jbtn}</td>
                     <td>{$value.shift}</td>
+                    <td>{$value.bidang}</td>
                     <td>{$value.jam_datang}</td>
                   </tr>
                   {/loop}
