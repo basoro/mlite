@@ -123,22 +123,22 @@
             </ul>
           </div>
         </nav>
-		{if: $mlite.notify}
-        <div id="notify" class="alert alert-{$mlite.notify.type} alert-dismissible fade in" role="alert">
-            {$mlite.notify.text}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-		{/if}
+    		{if: $mlite.notify}
+            <div id="notify" class="alert alert-{$mlite.notify.type} alert-dismissible fade in" role="alert">
+                {$mlite.notify.text}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+    		{/if}
 
         {if: $module.name == 'Dashboard'}
           {$module.content}
         {else}
-        <section id="content-wrapper" style="margin-bottom:20px;">
+        <section id="content-wrapper">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-12">
+                    <div class="col-lg-12" style="margin-bottom:50px !important;">
                         <h2 class="content-title">{if: $module.name !== 'Dashboard'}{$module.name} <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a>{/if}</h2>
                         {$module.content}
                     </div>

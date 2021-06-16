@@ -12,6 +12,7 @@ class Admin extends AdminModule
     {
         if ($this->core->getUserInfo('role') == 'admin') {
             return [
+                'Kelola' => 'manage',
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
                 'Barcode Presensi' => 'barcode',
@@ -20,11 +21,32 @@ class Admin extends AdminModule
             ];
         }else{
             return [
+                'Kelola' => 'manage',
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
                 'Jadwal Pegawai' => 'jadwal'
             ];
         }
+    }
+
+    public function getManage()
+    {
+      if ($this->core->getUserInfo('role') == 'admin') {
+        $sub_modules = [
+          ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
+          ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+          ['name' => 'Barcode Presensi', 'url' => url([ADMIN, 'presensi', 'barcode']), 'icon' => 'cubes', 'desc' => 'Barcode Presensi Pegawai'],
+          ['name' => 'Jam Jaga', 'url' => url([ADMIN, 'presensi', 'jamjaga']), 'icon' => 'cubes', 'desc' => 'Jam Jaga Pegawai'],
+          ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
+        ];
+      } else {
+        $sub_modules = [
+          ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
+          ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+          ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
+        ];
+      }
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getJamJaga($page = 1)
@@ -450,7 +472,7 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row = htmlspecialchars_array($row);
                 $row['mapURL']  = url([ADMIN, 'presensi', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
-                
+
                 $day = array(
                     'Sun' => 'AKHAD',
                     'Mon' => 'SENIN',
@@ -481,7 +503,7 @@ class Admin extends AdminModule
                 $w = $row['jam_pulang'];
                 $dd = new \DateTime($w);
                 $tp = $dd->format('H:i:s');
-            
+
                 $row['date']=$day[date('D',strtotime(date($jam_datang['year'].'-'.$jam_datang['month'].'-'.$jam_datang['day'])))];
                 switch (true) {
                     case ($row['date'] == 'SENIN' and $jam_datang['shift'] == 'Pagi'):
@@ -1063,7 +1085,7 @@ class Admin extends AdminModule
                         $efektif = 'INTERVAL 1 HOUR';
                         break;
                 }
-                
+
                 $row['efektif'] = $this->db('rekap_presensi')
                         ->select([
                         'efektif' => 'CAST(rekap_presensi.durasi as TIME) - '.$efektif,
@@ -1105,12 +1127,12 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
-        
+
+
         $this->assign['totalminus'] = '-'.$timesplus;
-    
+
         $this->assign['totalplus'] = $timesminus;
-        
+
         // $this->assign['stts1'] = $stts1;
         // $this->assign['stts2'] = $stts2;
         $this->assign['getStatus'] = isset($_GET['status']);
@@ -1120,7 +1142,7 @@ class Admin extends AdminModule
         $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
-    
+
     public function getCetakRekap()
     {
         $phrase = '';
@@ -1168,14 +1190,14 @@ class Admin extends AdminModule
           ->toArray();
 
         $logo = 'data:image/png;base64,' . base64_encode($this->core->getSettings('logo'));
-  
+
         $pdf = new PDF_MC_Table();
         $pdf->AddPage();
         $pdf->SetAutoPageBreak(true, 10);
         $pdf->SetTopMargin(10);
         $pdf->SetLeftMargin(10);
         $pdf->SetRightMargin(10);
-  
+
         $pdf->Image($logo, 10, 8, '18', '18', 'png');
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
@@ -1402,11 +1424,11 @@ class Admin extends AdminModule
                         ->where('rekap_presensi.id',$hasil['id'])
                         ->where('rekap_presensi.jam_datang',$hasil['jam_datang'])
                         ->oneArray();
-            $total[] = $hasil; 
+            $total[] = $hasil;
             $count++;
           $pdf->Row(array($hasil['nama'],$hasil['shift'],$hasil['jam_datang'],$hasil['jam_pulang'],$hasil['durasi'],$hasil['efektif']['efektif'],$hasil['efektif']['kurang']));
         }
-        
+
         $secondplus = 0;
         $secondminus = 0;
         foreach ($total as $time) {
@@ -1433,15 +1455,15 @@ class Admin extends AdminModule
         $minutes = floor($secondminus/60);
         $secondminus -= $minutes*60;
         $timesminus = $hours.':'.$minutes.':'.$secondminus;
-        
+
         $pdf->Ln(34);
         $pdf->SetFont('Arial', '', 10);
         $pdf->SetAligns(array("C", "C" , "C"));
         $pdf->SetWidths(array(63, 63, 63));
         $pdf->Row(array("Kelebihan Jam Kerja: ".$timesminus, "Kekurangan Jam Kerja: -".$timesplus, "Jumlah Hari: ".$count), array("", "", ""), 1);
-        
+
         $pdf->Output('laporan_presensi_'.date('Y-m-d').'.pdf','I');
-  
+
     }
 
     public function getPrint($phrase = null, $tanggal = null)
