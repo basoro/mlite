@@ -11,11 +11,18 @@
           </div>
           <div class="panel-body">
             <div class="row clearfix">
-              <div class="col col-md-7">
+              <div class="col col-md-5">
                 <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3>
               </div>
-              <div class="col col-md-5">
+              <div class="col col-md-7">
                 <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+                  <div class="input-group">
+                    <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" placeholder="Ruangan">
+                      {loop: $rekap.bidang}
+                        <option value="{$value.nama}">{$value.nama}</option>
+                      {/loop}
+                    </select>
+                  </div>
                   <div class="input-group">
                     <select name="b" id="bulan" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Bulan">
                       {loop: $rekap.bulan}
@@ -46,7 +53,9 @@
                 <thead>
                   <tr>
                       <th>Nama</th>
+                      <th>Jabatan</th>
                       <th>Shift</th>
+                      <th>Ruangan</th>
                       <th>Jam Datang</th>
                       <th>Jam Pulang</th>
                       <th>Durasi</th>
@@ -66,7 +75,9 @@
                       </a>
                       <div style="display:inline;padding-left:10px;padding-top:10px;"><a href="{$value.mapURL}" data-toggle="modal" data-target="#myModal">{$value.nama}</a></div>
                     </td>
+                    <td>{$value.jbtn}</td>
                     <td>{$value.shift}</td>
+                    <td>{$value.bidang}</td>
                     <td>{$value.jam_datang}</td>
                     <td>{$value.jam_pulang}</td>
                     <td>{$value.durasi}</td>
