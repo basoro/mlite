@@ -1,29 +1,53 @@
 <div class="row">
   <div class="col-md-12 text-center">
-    <img src="{?=url(MODULES.'/kepegawaian/img/default.png')?}" width="180" height="180" class="img-thumbnail" alt="Profile Image" />
+    <img src="{?=url(MODULES.'/kepegawaian/img/default.png')?}" width="120" height="120" class="img-thumbnail" alt="Profile Image" />
     <br>
   </div>
 </div>
-<h4 class="text-center">drg. Faisol Basoro</h4>
+<h4 class="text-center">{$profil.nama}</h4>
+<h4 class="text-center">NIP/NIK: {$profil.nik}</h4>
+<div class="row" style="margin-bottom:20px;">
+  <div class="col-md-12">
+    <div class="text-center">
+      <button class="btn btn-big btn-primary">{$tanggal}</button>
+    </div>
+  </div>
+</div>
 <div class="row">
   <div class="col-xs-6">
     <div class="panel panel-default">
       <div class="panel-body text-center">
-        <h2>Presensi<br>103</h2>
+        <h4>Presensi<br>{?=count($presensi)?}</h4>
       </div>
     </div>
   </div>
   <div class="col-xs-6">
     <div class="panel panel-default">
       <div class="panel-body text-center">
-        <h2>Absensi<br>4</h2>
+        <h4>Absensi<br>{?=count($absensi)?}</h4>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body text-center">
+        <h4>TPP<br>96%</h4>
+      </div>
+    </div>
+  </div>
+  <div class="col-xs-6">
+    <div class="panel panel-default">
+      <div class="panel-body text-center">
+        <h4>Remun<br>97%</h4>
       </div>
     </div>
   </div>
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-12">
         <div class="row">
             <ul class="modules" style="padding:0;margin:0;">
                 {loop: $sub_modules}
