@@ -10,12 +10,25 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
+            'Kelola' => 'manage',
             'Biodata' => 'biodata',
             'Presensi Masuk' => 'presensi',
             'Rekap Presensi' => 'rekap_presensi',
             'Jadwal Pegawai' => 'jadwal',
             'Ganti Password' => 'ganti_pass'
         ];
+    }
+
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Biodata', 'url' => url([ADMIN, 'profil', 'biodata']), 'icon' => 'cubes', 'desc' => 'Biodata Pegawai'],
+        ['name' => 'Presensi', 'url' => url([ADMIN, 'profil', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
+        ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'profil', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+        ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
+        ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getBiodata()
