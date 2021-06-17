@@ -15,14 +15,14 @@
                 <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3>
               </div>
               <div class="col col-md-7">
+                <div class="input-group">
+                  <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" placeholder="Ruangan">
+                    {loop: $rekap.bidang}
+                      <option value="{$value.nama}">{$value.nama}</option>
+                    {/loop}
+                  </select>
+                </div>
                 <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                  <div class="input-group">
-                    <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" placeholder="Ruangan">
-                      {loop: $rekap.bidang}
-                        <option value="{$value.nama}">{$value.nama}</option>
-                      {/loop}
-                    </select>
-                  </div>
                   <div class="input-group">
                     <select name="b" id="bulan" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Bulan">
                       {loop: $rekap.bulan}
