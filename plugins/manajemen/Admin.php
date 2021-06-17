@@ -719,6 +719,107 @@ class Admin extends AdminModule
         return $return;
     }
 
+    public function countPxDrRj()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('reg_periksa')
+            ->select([
+              'count'       => 'COUNT(DISTINCT reg_periksa.no_rawat)',
+              'nm_dokter'     => 'dokter.nm_dokter',
+            ])
+            ->join('dokter', 'reg_periksa.kd_dokter = dokter.kd_dokter')
+            ->where('reg_periksa.tgl_registrasi', $date)
+            ->group(['reg_periksa.kd_dokter'])
+            ->desc('dokter.nm_dokter');
+
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_dokter'];
+                $return['visits'][] = $value['count'];
+
+            }
+        return $return;
+    }
+
+    public function countPxDrRi()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('kamar_inap')
+            ->select([
+              'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
+              'nm_dokter'     => 'dokter.nm_dokter',
+            ])
+            ->join('dpjp_ranap', 'dpjp_ranap.no_rawat = kamar_inap.no_rawat')
+            ->join('dokter', 'dpjp_ranap.kd_dokter = dokter.kd_dokter')
+            ->where('kamar_inap.stts_pulang', '-')
+            ->group(['dpjp_ranap.kd_dokter'])
+            ->desc('dokter.nm_dokter');
+
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_dokter'];
+                $return['visits'][] = $value['count'];
+            }
+
+        return $return;
+    }
+
+    public function countResepDr()
+    {
+        $date = date('Y-m-d');
+        $query = $this->db('resep_obat')
+            ->select([
+              'count'       => 'COUNT(DISTINCT resep_obat.no_rawat)',
+              'nm_dokter'     => 'dokter.nm_dokter',
+            ])
+            ->join('dokter', 'resep_obat.kd_dokter = dokter.kd_dokter')
+            ->where('resep_obat.tgl_peresepan', $date)
+            ->group(['resep_obat.kd_dokter'])
+            ->desc('dokter.nm_dokter');
+
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            foreach ($data as $value) {
+                $return['labels'][] = $value['nm_dokter'];
+                $return['visits'][] = $value['count'];
+
+            }
+        return $return;
+    }
+
+    public function sumPdptLain()
+    {
+        $date = date('Y-m-d');
+        $record = $this->db('pemasukan_lain')
+            ->select([
+                'sum' => 'SUM(besar)',
+            ])
+            ->where('tanggal', $date)
+            ->oneArray();
+
+        return $record['sum'];
+    }
+
     public function getPendaftaran()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
@@ -828,8 +929,17 @@ class Admin extends AdminModule
 
     public function getDokter()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('dokter.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+
+            $settings = htmlspecialchars_array($this->settings('manajemen'));
+            $stats['poliChart'] = $this->countPxDrRj();
+            $stats['ranapChart'] = $this->countPxDrRi();
+
+        return $this->draw('dokter.html',[
+            'settings' => $settings,
+            'stats' => $stats,
+        ]);
     }
 
     public function getLaboratorium()
@@ -902,8 +1012,14 @@ class Admin extends AdminModule
 
     public function getApotek()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('apotek.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['poliChart'] = $this->countResepDr(); 
+        return $this->draw('apotek.html',[
+            'settings' => $settings,
+            'stats' => $stats,
+        ]);
     }
 
     public function getFarmasi()
@@ -914,8 +1030,13 @@ class Admin extends AdminModule
 
     public function getKasir()
     {
-      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-      return $this->draw('kasir.html');
+        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+        $settings = htmlspecialchars_array($this->settings('manajemen'));
+        $stats['getDapat'] = number_format($this->sumPdptLain(),0,'','.');
+        return $this->draw('kasir.html',[
+            'settings' => $settings,
+            'stats' => $stats,
+        ]);
     }
 
     public function getPresensi()
