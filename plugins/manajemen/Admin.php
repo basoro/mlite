@@ -161,6 +161,83 @@ class Admin extends AdminModule
         return $record['count'];
     }
 
+    public function countCurrentTempPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->db('temporary_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getTotalAbsen(){
+        $total=$this->countCurrentTempPresensi()+$this->countRkpPresensi() ;
+        return $total;
+    }
+
+    public function getBelumAbsen(){
+        $total=$this->getJadwalJaga()-$this->getTotalAbsen() ;
+        echo $total;
+        return $total;
+    }
+
+    public function countPegawai()
+    {
+        $status = 'AKTIF';
+        $record = $this->db('pegawai')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->where ('stts_aktif', $status)
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function countRkpPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->db('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getJadwalJaga()
+    {
+      $date = date('d');
+      $bulan = date('m');
+      $tahun = date('y');
+      $data = array_column($this->db('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
+    //   //print_r($data);
+    //   print("<pre>".print_r($data,true)."</pre>");
+       $hasil = count($data);
+    //   echo $hasil;
+    //   exit();
+      return $hasil;
+    }
+
+    public function getIjin()
+    {
+        $record = $this->db('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->where ('keterangan', '!=' , '')
+          	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
+            ->oneArray();
+        echo $record;
+        return $record['count'];
+    }
+
     public function countLastCurrentVisite()
     {
         $date = date('Y-m-d', strtotime('-1 days'));
@@ -347,6 +424,17 @@ class Admin extends AdminModule
                 $return['labels'][] = $value['nm_poli'];
                 $return['visits'][] = $value['count'];
             }
+
+        return $return;
+    }
+
+    public function presensiChartHari()
+    {
+            $return = [
+                'labels'  => 'Belum Absen',
+                'visits'  => $this->getBelumAbsen(),
+            ];
+
 
         return $return;
     }
@@ -580,7 +668,7 @@ class Admin extends AdminModule
         $count = $query->fetchColumn();
         return $count;
     }
-    
+
     public function countKamarInap()
     {
         $date = date('Y-m-d');
@@ -631,107 +719,6 @@ class Admin extends AdminModule
         return $return;
     }
 
-    public function countPxDrRj()
-    {
-        $date = date('Y-m-d');
-        $query = $this->db('reg_periksa')
-            ->select([
-              'count'       => 'COUNT(DISTINCT reg_periksa.no_rawat)',
-              'nm_dokter'     => 'dokter.nm_dokter',
-            ])
-            ->join('dokter', 'reg_periksa.kd_dokter = dokter.kd_dokter')
-            ->where('reg_periksa.tgl_registrasi', $date)
-            ->group(['reg_periksa.kd_dokter'])
-            ->desc('dokter.nm_dokter');
-
-
-            $data = $query->toArray();
-
-            $return = [
-                'labels'  => [],
-                'visits'  => [],
-            ];
-
-            foreach ($data as $value) {
-                $return['labels'][] = $value['nm_dokter'];
-                $return['visits'][] = $value['count'];
-            
-            }
-        return $return;
-    }
-
-    public function countPxDrRi()
-    {
-        $date = date('Y-m-d');
-        $query = $this->db('kamar_inap')
-            ->select([
-              'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
-              'nm_dokter'     => 'dokter.nm_dokter',
-            ])
-            ->join('dpjp_ranap', 'dpjp_ranap.no_rawat = kamar_inap.no_rawat')
-            ->join('dokter', 'dpjp_ranap.kd_dokter = dokter.kd_dokter')
-            ->where('kamar_inap.stts_pulang', '-')
-            ->group(['dpjp_ranap.kd_dokter'])
-            ->desc('dokter.nm_dokter');
-
-
-            $data = $query->toArray();
-
-            $return = [
-                'labels'  => [],
-                'visits'  => [],
-            ];
-
-            foreach ($data as $value) {
-                $return['labels'][] = $value['nm_dokter'];
-                $return['visits'][] = $value['count'];
-            }
-
-        return $return;
-    }
-
-    public function countResepDr()
-    {
-        $date = date('Y-m-d');
-        $query = $this->db('resep_obat')
-            ->select([
-              'count'       => 'COUNT(DISTINCT resep_obat.no_rawat)',
-              'nm_dokter'     => 'dokter.nm_dokter',
-            ])
-            ->join('dokter', 'resep_obat.kd_dokter = dokter.kd_dokter')
-            ->where('resep_obat.tgl_peresepan', $date)
-            ->group(['resep_obat.kd_dokter'])
-            ->desc('dokter.nm_dokter');
-
-
-            $data = $query->toArray();
-
-            $return = [
-                'labels'  => [],
-                'visits'  => [],
-            ];
-
-            foreach ($data as $value) {
-                $return['labels'][] = $value['nm_dokter'];
-                $return['visits'][] = $value['count'];
-            
-            }
-        return $return;
-    }
-
-    public function sumPdptLain()
-    {
-        $date = date('Y-m-d');
-        $record = $this->db('pemasukan_lain')
-            ->select([
-                'sum' => 'SUM(besar)',
-            ])
-            ->where('tanggal', $date)
-            ->oneArray();
-
-        return $record['sum'];
-    }
-
     public function getPendaftaran()
     {
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
@@ -760,7 +747,7 @@ class Admin extends AdminModule
         if($this->countCurrentVisiteBaru() != 0) {
             $stats['percentDaysBaru'] = number_format((($this->countCurrentVisiteBaru()-$this->countLastCurrentVisiteBaru())/$this->countCurrentVisiteBaru())*100,0,'','.');
         }
-        
+
       return $this->draw('pendaftaran.html',[
         'settings' => $settings,
         'stats' => $stats,
@@ -832,7 +819,7 @@ class Admin extends AdminModule
         if($this->countRanap('tgl_keluar','Meninggal') != 0) {
             $stats['percentDead'] = number_format((($this->countRanap('tgl_keluar','Meninggal')-$this->countLastRanap('tgl_keluar','Meninggal'))/$this->countRanap('tgl_keluar','Meninggal'))*100,0,'','.');
         }
-        
+
       return $this->draw('rawatinap.html',[
         'settings' => $settings,
         'stats' => $stats,
@@ -841,17 +828,8 @@ class Admin extends AdminModule
 
     public function getDokter()
     {
-        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
-
-            $settings = htmlspecialchars_array($this->settings('manajemen'));
-            $stats['poliChart'] = $this->countPxDrRj();
-            $stats['ranapChart'] = $this->countPxDrRi();
-            
-        return $this->draw('dokter.html',[
-            'settings' => $settings,
-            'stats' => $stats,
-        ]);
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      return $this->draw('dokter.html');
     }
 
     public function getLaboratorium()
@@ -881,7 +859,7 @@ class Admin extends AdminModule
         if($this->countYear('periksa_lab','Lab1') != 0) {
             $stats['percentYears'] = number_format((($this->countYear('periksa_lab','Lab1')-$this->countLastYear('periksa_lab','Lab1'))/$this->countYear('periksa_lab','Lab1'))*100,0,'','.');
         }
-        
+
       return $this->draw('laboratorium.html',[
         'settings' => $settings,
         'stats' => $stats,
@@ -915,7 +893,7 @@ class Admin extends AdminModule
         if($this->countYear('periksa_radiologi','rad1') != 0) {
             $stats['percentYears'] = number_format((($this->countYear('periksa_radiologi','rad1')-$this->countLastYear('periksa_radiologi','rad1'))/$this->countYear('periksa_radiologi','rad1'))*100,0,'','.');
         }
-        
+
       return $this->draw('radiologi.html',[
         'settings' => $settings,
         'stats' => $stats,
@@ -924,14 +902,8 @@ class Admin extends AdminModule
 
     public function getApotek()
     {
-        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
-        $settings = htmlspecialchars_array($this->settings('manajemen'));
-        $stats['poliChart'] = $this->countResepDr(); 
-        return $this->draw('apotek.html',[
-            'settings' => $settings,
-            'stats' => $stats,
-        ]);
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      return $this->draw('apotek.html');
     }
 
     public function getFarmasi()
@@ -942,13 +914,92 @@ class Admin extends AdminModule
 
     public function getKasir()
     {
-        $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
-        $settings = htmlspecialchars_array($this->settings('manajemen'));
-        $stats['getDapat'] = number_format($this->sumPdptLain(),0,'','.');
-        return $this->draw('kasir.html',[
-            'settings' => $settings,
-            'stats' => $stats,
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      return $this->draw('kasir.html');
+    }
+
+    public function getPresensi()
+    {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+      $settings = htmlspecialchars_array($this->settings('manajemen'));
+      $stats['getVisities'] = number_format($this->getTotalAbsen(),0,'','.');
+      $stats['getBelumAbsen'] = number_format($this->getBelumAbsen(),0,'','.');
+      $stats['getHarusAbsen'] = number_format($this->getJadwalJaga(),0,'','.');
+      $stats['presensiChart'] = $this->presensiChart(15);
+
+      $stats['getIjin'] = number_format($this->getIjin(),0,'','.');
+
+      $stats['percentTotal'] = 0;
+        if($this->getTotalAbsen() != 0) {
+            $stats['percentTotal'] = number_format((($this->getTotalAbsen()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+
+      return $this->draw('presensi.html',[
+        'settings' => $settings,
+        'stats' => $stats,
         ]);
+    }
+
+    public function presensiChart($days = 14, $offset = 0)
+    {
+        $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
+        $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+        $query = $this->db('rekap_presensi')
+            ->select([
+              'count' => 'COUNT(photo)',
+              'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
+              'formatedDate' => 'jam_datang',
+            ])
+            ->where('jam_datang', '>=', $date.' 00:00:00')
+            ->group(['formatedDate'])
+            ->asc('formatedDate');
+
+            $data = $query->toArray();
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+            ];
+
+            while ($time < (time() - ($offset * 86400))) {
+                $return['labels'][] = '"'.date("Y-m-d", $time).'"';
+                $return['readable'][] = '"'.date("d M Y", $time).'"';
+                $return['visits'][] = 0;
+                $return['visits2'][] = 0;
+
+                $time = strtotime('+1 day', $time);
+            }
+
+            foreach ($data as $day) {
+                $index = array_search('"'.date('Y-m-d', strtotime($day['formatedDate'])).'"', $return['labels']);
+                if ($index === false) {
+                    continue;
+                }
+
+                $return['visits'][$index] = $day['count'];
+                $return['visits2'][$index] = $day['count2'];
+            }
+
+        return $return;
+    }
+
+    public function getCoba($days = 14, $offset = 0)
+    {
+      $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+      $query = $this->db('rekap_presensi')
+          ->select([
+            'count' => 'COUNT(photo)',
+            'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
+          ])
+          ->where('jam_datang', '>=', $date.' 00:00:00');
+
+
+      $data = $query->toArray();
+      print_r($data);
+      exit();
     }
 
     public function getSettings()

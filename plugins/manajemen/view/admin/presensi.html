@@ -1,0 +1,172 @@
+<ul class="nav nav-tabs">
+    <li><a href="{?=url([ADMIN,'manajemen','dashboard'])?}">Dashboard</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','pendaftaran'])?}">Pendaftaran</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','rawatjalan'])?}">Rawat Jalan</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','rawatinap'])?}">Rawat Inap</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','dokter'])?}">Dokter</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','laboratorium'])?}">Laboratorium</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','radiologi'])?}">Radiologi</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','apotek'])?}">Apotek</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','farmasi'])?}">Farmasi</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','kasir'])?}">Kasir</a></li>
+    <li class="active"><a href="{?=url([ADMIN,'manajemen','presensi'])?}">Presensi</a></li>
+</ul>
+<br>
+<div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-danger">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Total Pegawai Terjadwal</div>
+                    <div class="stat-bold">
+                        {?= $stats.getHarusAbsen ?} Orang
+                        <!-- <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentTotal ?}%)
+                        </span> -->
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-info">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-calendar fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Pegawai Sudah Absen</div>
+                    <div class="stat-bold">
+                        {?= $stats.getVisities ?} Orang
+                        <!-- <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentDays >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentDays ?}%)
+                        </span> -->
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-users fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Pegawai Belum Absen</div>
+                    <div class="stat-bold">
+                        {?= $stats.getBelumAbsen ?} Orang
+                        <!-- <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentDaysBaru >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentDaysBaru ?}%)
+                        </span> -->
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-success">
+                    <span class="fa-2x fa-stack fa-lg pull-left">
+                        <i class="fa fa-wheelchair fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey">Pegawai Ijin/TL/TK</div>
+                    <div class="stat-bold">
+                        {?= $stats.getIjin ?} Orang
+                        <!-- <span class="stat-up-down">
+                            <i class="fa fa-arrow-circle-{if: $stats.percentDaysBatal >= 0}up{else}down{/if}"></i>
+                            ({?= $stats.percentDaysBatal ?}%)
+                        </span> -->
+                    </div>
+              </div>
+        </div>
+    </div>
+</div>
+
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Presensi Hari Ini</h3>
+            </div>
+              <div class="panel-body">
+                    <canvas id="visits"
+                    style="width:100%; height:300px;"
+                    data-chart="line"
+                    data-labels='[{?= implode(",", $stats.presensiChart.readable) ?}]'
+                    data-datasets='[
+                        {
+                            label: "Presensi",
+                            data: [{?= implode(',', $stats.presensiChart.visits) ?}],
+                            backgroundColor: "rgba(255, 87, 34, 0.2)",
+                            borderColor: "rgba(255, 87, 34, 1)"
+                        },
+                        {
+                            label: "Absensi",
+                            data: [{?= implode(',', $stats.presensiChart.visits2) ?}],
+                            backgroundColor: "rgba(0, 0, 255, 0.2)",
+                            borderColor: "rgba(0, 0, 255, 1)"
+                        }
+                    ]'></canvas>
+              </div>
+        </div>
+    </div>
+</article>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+      var defaultColors = [
+          "rgba(131, 58, 163, 0.5)", "rgba(201, 216, 88, 0.5)", "rgba(5, 183, 196, 0.5)", "rgba(139, 20, 229, 0.5)", "rgba(85, 150, 219, 0.5)", "rgba(46, 151, 155, 0.5)", "rgba(169, 99, 226, 0.5)", "rgba(90, 27, 209, 0.5)", "rgba(123, 160, 3, 0.5)", "rgba(161, 95, 226, 0.5)", "rgba(201, 59, 214, 0.5)", "rgba(9, 102, 104, 0.5)", "rgba(81, 118, 186, 0.5)", "rgba(220, 63, 252, 0.5)", "rgba(252, 63, 82, 0.5)", "rgba(97, 249, 176, 0.5)", "rgba(232, 30, 154, 0.5)", "rgba(239, 7, 231, 0.5)", "rgba(107, 239, 211, 0.5)", "rgba(168, 10, 23, 0.5)", "rgba(221, 90, 99, 0.5)", "rgba(35, 102, 237, 0.5)", "rgba(15, 226, 216, 0.5)", "rgba(63, 122, 211, 0.5)", "rgba(226, 88, 86, 0.5)", "rgba(232, 98, 85, 0.5)", "rgba(168, 6, 226, 0.5)"
+      ];
+      var charts = [];
+      $('[data-chart]').each(function() {
+          var name = $(this).attr('id') || false;
+
+          if(name === false)
+              return;
+
+          var type = $(this).data('chart');
+          var labels = $(this).data('labels');
+          var data = $(this).data('datasets');
+
+          var options = {};
+          if(type == 'bar')
+          {
+              options = Object.assign(options, {scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  }});
+          }
+
+          var backgroundColor = function() {
+              if(type == 'pie')
+                  return defaultColors;
+              else
+                  return 'rgba(248, 190, 18, 0.2)';
+          }
+          var datasets = [];
+          data = eval(data);
+          data.forEach(function(e) {
+              datasets.push(Object.assign({
+                  label: '',
+                  data: [],
+                  borderWidth: 1,
+                  backgroundColor: backgroundColor()
+              }, e))
+          });
+
+          var ctx = document.getElementById(name);
+          var myChart = new Chart(ctx, {
+              type: type,
+              data: {
+                  labels: labels,
+                  datasets: datasets
+              },
+              options: options
+          });
+      });
+  });
+</script>
