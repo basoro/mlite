@@ -232,6 +232,7 @@ class Admin extends AdminModule
                 'count' => 'COUNT(DISTINCT id)',
             ])
             ->where ('keterangan', '!=' , '')
+          	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
             ->oneArray();
         echo $record;
         return $record['count'];
@@ -925,7 +926,7 @@ class Admin extends AdminModule
       $stats['getVisities'] = number_format($this->getTotalAbsen(),0,'','.');
       $stats['getBelumAbsen'] = number_format($this->getBelumAbsen(),0,'','.');
       $stats['getHarusAbsen'] = number_format($this->getJadwalJaga(),0,'','.');
-      $stats['presensiChart'] = $this->presensiChart(19);
+      $stats['presensiChart'] = $this->presensiChart(15);
 
       $stats['getIjin'] = number_format($this->getIjin(),0,'','.');
 
@@ -940,15 +941,15 @@ class Admin extends AdminModule
         ]);
     }
 
-    public function presensiChart($days = 18, $offset = 0)
+    public function presensiChart($days = 14, $offset = 0)
     {
         $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
         $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
 
         $query = $this->db('rekap_presensi')
             ->select([
-              'count' => 'COUNT(DISTINCT photo)',
-              'count2' => "COUNT(DISTINCT IF(keterangan = '', 1, NULL))",
+              'count' => 'COUNT(photo)',
+              'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
               'formatedDate' => 'jam_datang',
             ])
             ->where('jam_datang', '>=', $date.' 00:00:00')
