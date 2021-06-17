@@ -33,7 +33,11 @@ class Admin extends AdminModule
       $tanggal = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $presensi = $this->db('rekap_presensi')->where('id',$profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m').'%')->toArray();
       $absensi = $this->db('rekap_presensi')->where('id',$profil['id'])->where('photo', '')->like('jam_datang', date('Y-m').'%')->toArray();
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi]);
+      $fotoURL = url(MODULES.'/kepegawaian/img/default.png');
+      if(!empty($profil['photo'])) {
+        $fotoURL = WEBAPPS_URL.'/penggajian/'.$profil['photo'];
+      }
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
 
     public function getBiodata()
