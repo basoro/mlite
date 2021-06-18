@@ -1,0 +1,88 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="180">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script type='text/javascript' src='//cdn.jsdelivr.net/jquery.marquee/1.4.0/jquery.marquee.min.js'></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+      	background: #0264d6;
+      	height:calc(100vh);
+      	width:100%;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+      tr:nth-child(even) {color: #ffffff;}
+
+      .marquee {
+        width: 100%;
+        overflow: scroll;
+        /* border: 1px solid #ccc; */
+        background:#0264d6;
+      }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Bed Management {$settings.nama_instansi}</h1>
+  <table class="table table-bordered table-striped lead text-primary">
+    <thead class="bg-primary">
+      <tr>
+        <th width="30%">Bangsal</th>
+        <th width="20%">Kelas</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="marquee" data-direction='up' data-duration='20000' startVisible='true' data-gap='10' data-duplicated='true' >
+  <table class="table table-bordered table-striped lead text-primary">
+    <tbody>
+      {loop: $display}
+      <tr>
+        <td width="30%">{$value.nm_bangsal}</td>
+        <td width="20%">{$value.kelas}</td>
+        <td>
+          Jumlah Kosong : {$value.kosong.jumlah} | Jumlah Terisi : {$value.isi.jumlah}
+        </td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+  </div>
+</div>
+<footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+  <div class="canvas">
+    <p class="pull-right">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$powered}.
+    </p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+  </div>
+</footer>
+</body>
+</html>
+<script>
+$('.marquee').marquee()
+</script>

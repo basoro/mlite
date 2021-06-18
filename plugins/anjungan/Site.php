@@ -16,6 +16,7 @@ class Site extends SiteModule
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/presensi', 'getPresensi');
         $this->route('anjungan/presensi/upload', 'getUpload');
+        $this->route('anjungan/bed', 'getDisplayBed');
     }
 
     public function getIndex()
@@ -983,6 +984,72 @@ class Site extends SiteModule
       }
       //echo 'Upload';
       exit();
+    }
+
+    public function getDisplayBed()
+    {
+        $title = 'Display Bed Management';
+        $logo  = $this->settings->get('settings.logo');
+        $display = $this->_resultDisplayBed();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.bed.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayBed()
+    {
+        $query = $this->db()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal , b.kelas");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['kosong'] = $this->db('kamar')
+                  ->select(['jumlah' => 'COUNT(kamar.status)'])
+                  ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+                  ->where('bangsal.kd_bangsal', $row['kd_bangsal'])
+                  ->where('kamar.kelas',$row['kelas'])
+                  ->where('kamar.status','KOSONG')
+                  ->where('kamar.statusdata','1')
+                  ->group(array('kamar.kd_bangsal','kamar.kelas'))
+                  ->oneArray();
+                $row['isi'] = $this->db('kamar')
+                  ->select(['jumlah' => 'COUNT(kamar.status)'])
+                  ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
+                  ->where('bangsal.kd_bangsal', $row['kd_bangsal'])
+                  ->where('kamar.kelas',$row['kelas'])
+                  ->where('kamar.status','ISI')
+                  ->where('kamar.statusdata','1')
+                  ->group(array('kamar.kd_bangsal','kamar.kelas'))
+                  ->oneArray();
+                $result[] = $row;
+            }
+        }
+
+        return $result;
     }
 
 }

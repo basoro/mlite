@@ -370,29 +370,34 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
-        $bidang = urlencode($_GET['ruang']);
+        $tgl_kunjungan = date('Y-m-d');
+        $tgl_kunjungan_akhir = date('Y-m-d');
+        // $status_periksa = '';
+        // $status_bayar = '';
+
+        if(isset($_GET['awal'])) {
+        $tgl_kunjungan = $_GET['awal'];
+        }
+        if(isset($_GET['akhir'])) {
+        $tgl_kunjungan_akhir = $_GET['akhir'];
+        }
+
         $ruang = '';
-        if(isset($bidang)){
-            $ruang = $bidang;
+        if (isset($_GET['ruang'])){
+            $ruang = $_GET['ruang'];
         }
-
-        $bulan = date('m');
-        if (isset($_GET['b'])) {
-            $bulan = $_GET['b'];
-        }
-
-        $tahun = date('Y');
-        if (isset($_GET['y'])) {
-            $tahun = $_GET['y'];
-        }
-
+        
         $username = $this->core->getUserInfo('username', null, true);
 
-        if($this->core->getUserInfo('id') == 1){
+        if($this->core->getUserInfo('role') == 'admin'){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+                // ->like('jam_datang',$tahun.'%')
+                // ->like('jam_datang',$tahun.'-'.$bulan.'%')
+                // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
+                ->where('jam_datang', '>=', $tgl_kunjungan)
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir)
+                // ->wherebetween('jam_datang',[$tgl_kunjungan,$tgl_kunjungan_akhir])
                 ->like('bidang','%'.$ruang.'%')
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
@@ -408,14 +413,14 @@ class Admin extends AdminModule
                 ->asc('jam_datang')
                 ->toArray();
         }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?b='.$bulan.'&y='.$tahun.'&s='.$phrase]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'rekap_presensi', '%d?awal='.$tgl_kunjungan.'&akhir='.$tgl_kunjungan_akhir.'&s='.$phrase]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
         // list
         $offset = $pagination->offset();
 
-        if($this->core->getUserInfo('id') == 1){
+        if($this->core->getUserInfo('role') == 'admin'){
         $rows = $this->db('rekap_presensi')
             ->select([
               'nama' => 'pegawai.nama',
@@ -431,8 +436,12 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+            // ->like('jam_datang',$tahun.'%')
+            // ->like('jam_datang',$tahun.'-'.$bulan.'%')
+            // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
+            ->where('jam_datang', '>=', $tgl_kunjungan)
+            ->where('jam_datang', '<=', $tgl_kunjungan_akhir)
+            // ->whereBetween('jam_datang',[$tgl_kunjungan,$tgl_kunjungan_akhir])
             ->like('bidang','%'.$ruang.'%')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -455,8 +464,11 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-            ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+            ->like('jam_datang',$tahun.'%')
+            ->like('jam_datang',$tahun.'-'.$bulan.'%')
+            // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
+            // ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
+            // ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
@@ -1138,6 +1150,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['tahun'] = array('','2020', '2021','2022');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        $this->assign['tanggal'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30' ,'31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
         $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
@@ -1764,10 +1777,13 @@ class Admin extends AdminModule
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'presensi', 'javascript']), 'footer');
