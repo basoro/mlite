@@ -598,7 +598,7 @@ class Site extends SiteModule
               } else {
                $sql .= " AND a.no_rkm_medis = '$no_rkm_medis'";
               }
-              $sql .= " ORDER BY a.tanggal ASC";
+              $sql .= " ORDER BY a.tanggal DESC";
               $query = $this->db()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -674,6 +674,7 @@ class Site extends SiteModule
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
+                $row['registrasi'] = number_format($row['registrasi'],2,',','.');
                 $results[] = $row;
               }
               echo json_encode($results);
@@ -685,6 +686,7 @@ class Site extends SiteModule
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
+                $row['trf_kamar'] = number_format($row['trf_kamar'],2,',','.');
                 $results[] = $row;
               }
               echo json_encode($results);
