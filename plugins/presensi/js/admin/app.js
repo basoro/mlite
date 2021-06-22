@@ -22,11 +22,13 @@ $(document).ready(function(){
       alert('Tanggal akhir masih kosong!')
     }
 
-      var optionText = document.getElementById("bidang").value;
-      var option = optionText.toLowerCase();
-      var opt = decodeURI(option);
+    var ss = decodeURI(s);
 
-    window.location.href = baseURL+'/presensi/rekap_presensi?awal='+periode_rawat_jalan+'&akhir='+periode_rawat_jalan_akhir+'&ruang='+opt+'&s='+s+'&t={?=$_SESSION[token]?}'
+    var optionText = document.getElementById("bidang").value;
+    var option = optionText.toLowerCase();
+    var opt = decodeURI(option);
+
+    window.location.href = baseURL+'/presensi/rekap_presensi?awal='+periode_rawat_jalan+'&akhir='+periode_rawat_jalan_akhir+'&ruang='+opt+'&s='+ss+'&t={?=$_SESSION[token]?}'
     
     event.stopPropagation();
   
