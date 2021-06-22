@@ -15,7 +15,7 @@
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block">Semua</div>
               </li>
-              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <!-- <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <div id="belum_periode_rawat_jalan" class="btn btn-primary btn-block">Per Tahun</div>
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
@@ -23,7 +23,7 @@
               </li>
               <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <div id="lunas_periode_rawat_jalan" class="btn btn-primary btn-block">Per Hari</div>
-              </li>
+              </li> -->
               <!-- <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                 <div id="btn_cetak" class="btn btn-primary btn-block" data-toggle="modal">Cetak</div>
               </li> -->
@@ -52,66 +52,19 @@
                     {/loop}
                   </select>
                 </div>
-                <!-- <label class="my-5 mr-4" for="Bidang">Ruang</label>
-                  <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="custom-select my-6 mr-sm-2 bidang" placeholder="Ruangan" style="margin-top:5px;margin-bottom:15px;">
-                    {loop: $rekap.bidang}
-                      <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
-                    {/loop}
-                  </select> -->
-                <!-- <div class="form-group row">
-                  <label for="bidang" class="col-sm-3 col-form-label">Ruang</label>
-                  <div class="col-sm-9">
-                    <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" placeholder="Ruangan" style="margin-top:5px;margin-bottom:15px;">
-                      {loop: $rekap.bidang}
-                        <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
-                      {/loop}
-                    </select>
-                  </div>
-                </div> -->
-                <!-- <div class="input-group mb-3">
-                  <div class="input-group-prepend">
-                    <span class="input-group-text" id="">First and last name</span>
-                  </div>
-                  <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control form-inline  bidang" placeholder="Ruangan">
-                    {loop: $rekap.bidang}
-                      <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
-                    {/loop}
-                  </select>
-                </div> -->
               </div>
               {/if}
               <div class="col col-md-2">
-                <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-                  <!-- <div class="input-group">
-                    <select name="h" id="hari" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Tanggal">
-                      {loop: $rekap.tanggal}
-                        <option value="{$value}">{$value}</option>
-                      {/loop}
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <select name="b" id="bulan" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Bulan">
-                      {loop: $rekap.bulan}
-                        <option value="{$value}">{$value}</option>
-                      {/loop}
-                    </select>
-                  </div>
-                  <div class="input-group">
-                    <select name="y" id="tahun" data-use-search="true" data-options-height="10px" class="form-control" placeholder="Tahun">
-                        {loop: $rekap.tahun}
-                          <option value="{$value}">{$value}</option>
-                        {/loop}
-                      </select>
-                  </div> -->
+                <!-- <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;"> -->
                   <div class="input-group">
                     <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
                     <!-- <input type="hidden" name="tanggal"> -->
                     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                     <span class="input-group-btn">
-                      <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                      <button class="btn btn-default" id="cari" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                     </span>
                   </div>
-                </form>
+                <!-- </form> -->
               </div>
             </div>
           <div class="table-responsive no-margin" id="display">

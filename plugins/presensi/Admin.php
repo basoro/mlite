@@ -392,12 +392,8 @@ class Admin extends AdminModule
         if($this->core->getUserInfo('role') == 'admin'){
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                // ->like('jam_datang',$tahun.'%')
-                // ->like('jam_datang',$tahun.'-'.$bulan.'%')
-                // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
-                ->where('jam_datang', '>=', $tgl_kunjungan)
-                ->where('jam_datang', '<=', $tgl_kunjungan_akhir)
-                // ->wherebetween('jam_datang',[$tgl_kunjungan,$tgl_kunjungan_akhir])
+                ->where('jam_datang', '>=', $tgl_kunjungan.' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir.' 23:59:59')
                 ->like('bidang','%'.$ruang.'%')
                 ->like('nama', '%'.$phrase.'%')
                 ->asc('jam_datang')
@@ -405,8 +401,8 @@ class Admin extends AdminModule
         }else{
             $totalRecords = $this->db('rekap_presensi')
                 ->join('pegawai','pegawai.id = rekap_presensi.id')
-                ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-                ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+                ->where('jam_datang', '>=', $tgl_kunjungan.' 00:00:00')
+                ->where('jam_datang', '<=', $tgl_kunjungan_akhir.' 23:59:59')
                 ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                 ->like('nama', '%'.$phrase.'%')
@@ -436,12 +432,8 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            // ->like('jam_datang',$tahun.'%')
-            // ->like('jam_datang',$tahun.'-'.$bulan.'%')
-            // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
-            ->where('jam_datang', '>=', $tgl_kunjungan)
-            ->where('jam_datang', '<=', $tgl_kunjungan_akhir)
-            // ->whereBetween('jam_datang',[$tgl_kunjungan,$tgl_kunjungan_akhir])
+            ->where('jam_datang', '>=', $tgl_kunjungan.' 00:00:00')
+            ->where('jam_datang', '<=', $tgl_kunjungan_akhir.' 23:59:59')
             ->like('bidang','%'.$ruang.'%')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
@@ -464,15 +456,11 @@ class Admin extends AdminModule
               'photo' => 'rekap_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = rekap_presensi.id')
-            ->like('jam_datang',$tahun.'%')
-            ->like('jam_datang',$tahun.'-'.$bulan.'%')
-            // ->like('jam_datang',$tahun.'-'.$bulan.'-'.$hari.'%')
-            // ->where('jam_datang', '>', date($tahun.'-'.$bulan).'-01')
-            // ->where('jam_datang', '<', date($tahun.'-'.$bulan).'-32')
+            ->where('jam_datang', '>=', $tgl_kunjungan.' 00:00:00')
+            ->where('jam_datang', '<=', $tgl_kunjungan_akhir.' 23:59:59')
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
             ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
             ->like('nama', '%'.$phrase.'%')
-            // ->orLike('shift', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
             ->limit($perpage)
@@ -1558,11 +1546,10 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
-        if($this->core->getUserInfo('id') == 1){
+        if($this->core->getUserInfo('role') == 'admin'){
         $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
             ->like('nama', '%'.$phrase.'%')
-            // ->orLike('jam_datang', '%'.date('Y-m').'%')
             ->asc('jam_datang')
             ->toArray();
         }else{
@@ -1580,7 +1567,7 @@ class Admin extends AdminModule
 
         // list
         $offset = $pagination->offset();
-        if($this->core->getUserInfo('id') == 1){
+        if($this->core->getUserInfo('role') == 'admin'){
         $rows = $this->db('temporary_presensi')
             ->select([
               'nama' => 'pegawai.nama',
