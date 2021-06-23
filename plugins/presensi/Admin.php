@@ -1525,7 +1525,7 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id,$tanggal)
     {
-      $geo = $this->db('geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+      $geo = $this->db('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
       $pegawai = $this->db('pegawai')->where('id', $id)->oneArray();
 
       $this->tpl->set('geo', $geo);
