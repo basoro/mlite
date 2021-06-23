@@ -88,10 +88,15 @@ class Site extends SiteModule
               unset($_POST);
 
               $no_rkm_medis = '000001';
-              $max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
+              /*$max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
               if($max_id['no_rkm_medis']) {
                 $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
-              }
+              }*/
+
+              $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
+              $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
+              $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
+              $no_rkm_medis = $next_no_rm;
 
               $_POST['nm_pasien'] = trim($_REQUEST['nm_pasien']);
               $_POST['email'] = trim($_REQUEST['email']);
@@ -115,7 +120,7 @@ class Site extends SiteModule
               $_POST['namakeluarga'] = '-';
               $_POST['kd_pj'] = $this->settings->get('api.apam_kdpj');
               $_POST['no_peserta'] = '';
-              $_POST['kd_kel'] = '-';
+              $_POST['kd_kel'] = '1';
               $_POST['kd_kec'] = $this->settings->get('api.apam_kdkec');
               $_POST['kd_kab'] = $this->settings->get('api.apam_kdkab');
               $_POST['pekerjaanpj'] = '-';
@@ -593,7 +598,7 @@ class Site extends SiteModule
               } else {
                $sql .= " AND a.no_rkm_medis = '$no_rkm_medis'";
               }
-              $sql .= " ORDER BY a.tanggal";
+              $sql .= " ORDER BY a.tanggal DESC";
               $query = $this->db()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -669,6 +674,7 @@ class Site extends SiteModule
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
+                $row['registrasi'] = number_format($row['registrasi'],2,',','.');
                 $results[] = $row;
               }
               echo json_encode($results);
@@ -680,6 +686,7 @@ class Site extends SiteModule
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
+                $row['trf_kamar'] = number_format($row['trf_kamar'],2,',','.');
                 $results[] = $row;
               }
               echo json_encode($results);
