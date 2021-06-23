@@ -40,11 +40,32 @@ $(document).ready(function(){
     var s  = $('input:text[name=s]').val();
   
     
-      var optionText = document.getElementById("bidang").value;
-      var option = optionText.toLowerCase();
-      var opt = decodeURI(option);
+    var optionText = document.getElementById("bidang").value;
+    var option = optionText.toLowerCase();
+    var opt = decodeURI(option);
 
     window.location.href = baseURL+'/presensi/rekap_presensi?s='+s+'&ruang='+opt+'&t={?=$_SESSION[token]?}'
+    
+  
+    event.stopPropagation();
+  
+  });
+  $('#presensi_masuk').on('click', '#cari', function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url    = baseURL + '/presensi/presensi?t=' + mlite.token;
+    var s  = $('input:text[name=s]').val();
+  
+    
+    var optionText = document.getElementById("bidang").value;
+    var option = optionText.toLowerCase();
+    var opt = decodeURI(option);
+
+    var depop = document.getElementById("dep").value;
+    var depo = depop.toLowerCase();
+    var dep = decodeURI(depo);
+
+    window.location.href = baseURL+'/presensi/presensi?s='+s+'&ruang='+opt+'&dep='+dep+'&t={?=$_SESSION[token]?}'
     
   
     event.stopPropagation();
