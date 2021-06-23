@@ -1543,12 +1543,24 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
+        $ruang = '';
+        if (isset($_GET['ruang'])){
+            $ruang = $_GET['ruang'];
+        }
+
+        $dep = '';
+        if (isset($_GET['dep'])){
+            $dep = $_GET['dep'];
+        }
+
         $username = $this->core->getUserInfo('username', null, true);
 
         // pagination
         if($this->core->getUserInfo('role') == 'admin'){
         $totalRecords = $this->db('temporary_presensi')
             ->join('pegawai','pegawai.id = temporary_presensi.id')
+            ->like('departemen','%'.$dep.'%')
+            ->like('bidang','%'.$ruang.'%')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->toArray();
@@ -1580,6 +1592,8 @@ class Admin extends AdminModule
               'photo' => 'temporary_presensi.photo'
             ])
             ->join('pegawai','pegawai.id = temporary_presensi.id')
+            ->like('departemen','%'.$dep.'%')
+            ->like('bidang','%'.$ruang.'%')
             ->like('nama', '%'.$phrase.'%')
             ->asc('jam_datang')
             ->offset($offset)
@@ -1612,6 +1626,8 @@ class Admin extends AdminModule
                 $this->assign['list'][] = $row;
             }
         }
+        $this->assign['bidang'] = $this->db('bidang')->toArray();
+        $this->assign['dep'] = $this->db('departemen')->toArray();
 
         return $this->draw('presensi.html', ['presensi' => $this->assign]);
     }

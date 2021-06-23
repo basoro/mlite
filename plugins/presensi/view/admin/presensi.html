@@ -1,5 +1,5 @@
 <article class="row">
-  <div class="col-md-12">
+  <div class="col-md-12" id="presensi_masuk"> 
       <div class="panel panel-default">
           <div class="panel-heading">
               <h3 class="panel-title">Presensi Masuk</h3>
@@ -9,16 +9,42 @@
               <div class="col col-md-6">
                 <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($presensi.totalRecords)?}</h3>
               </div>
-              <div class="col col-md-6">
-                <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+              {if: $this->core->getUserInfo('role') == 'admin'}
+              <div class="col col-md-2">
+                <div class="input-group">
+                  <!-- <label for="bidang">Ruang</label> -->
+                  <select name="departemen" id="dep" data-use-search="true" data-options-height="10px" class="form-control dep" style="margin-top:5px;margin-bottom:15px;">
+                      <option value="">---Pilih Departemen---</option>
+                    {loop: $presensi.dep}
+                      <option value="{$value.dep_id}" class="dropdown-item">{$value.nama}</option>
+                    {/loop}
+                  </select>
+                </div>
+              </div>
+              {/if}
+              {if: $this->core->getUserInfo('role') == 'admin'}
+              <div class="col col-md-2">
+                <div class="input-group">
+                  <!-- <label for="bidang">Ruang</label> -->
+                  <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px" class="form-control bidang" style="margin-top:5px;margin-bottom:15px;">
+                      <option value="">---Pilih Ruangan---</option>
+                    {loop: $presensi.bidang}
+                      <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
+                    {/loop}
+                  </select>
+                </div>
+              </div>
+              {/if}
+              <div class="col col-md-2">
+                <!-- <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;"> -->
                     <div class="input-group">
                         <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
                         <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                         <span class="input-group-btn">
-                            <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                            <button class="btn btn-default" id="cari" type="submit"><span class="glyphicon glyphicon-search"></span></button>
                         </span>
                     </div>
-                </form>
+                <!-- </form> -->
               </div>
             </div>
 
