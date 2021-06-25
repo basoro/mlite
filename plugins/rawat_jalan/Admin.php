@@ -1065,8 +1065,7 @@ class Admin extends AdminModule
       )
       SELECT *
       FROM `reg_periksa`
-      WHERE (`no_rawat` LIKE '%$cari%' OR `tgl_registrasi` LIKE '%$cari%')
-      AND `kd_poli` <> '$igd'
+      WHERE `kd_poli` <> '$igd'
       AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
       ");
       exit();

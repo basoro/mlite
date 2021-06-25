@@ -34,8 +34,8 @@
       {loop: $pemeriksaan}
       <tr>
         {if: $admin_mode == 'complex'}
-        <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
-        <td rowspan="6" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="5" style="vertical-align:top;">{$value.nomor}</td>
+        <td rowspan="4" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Jalan</b><br>
           {$value.tgl_perawatan} {$value.jam_rawat}
         </td>
@@ -56,10 +56,12 @@
         {/if}
       </tr>
       {if: $admin_mode == 'complex'}
+      <!--
       <tr>
         <th colspan="2">Kesadaran</th>
         <td colspan="6">{$value.kesadaran}</td>
       </tr>
+	  -->
       <tr>
         <th colspan="2">Imunisasi</th>
         <td colspan="6">{$value.imun_ke}</td>
@@ -73,10 +75,12 @@
         <th colspan="2">Obyektif</th>
         <td colspan="6">{$value.pemeriksaan}</td>
       </tr>
+      <!--
       <tr>
         <th colspan="2">Assesment</th>
         <td colspan="6">{$value.penilaian}</td>
       </tr>
+	  -->
       <tr>
         <td>
           <div class="">
@@ -91,12 +95,10 @@
               data-tinggi="{$value.tinggi}"
               data-berat="{$value.berat}"
               data-gcs="{$value.gcs}"
-              data-kesadaran="{$value.kesadaran}"
               data-alergi="{$value.alergi}"
               data-imun_ke="{$value.imun_ke}"
               data-keluhan="{$value.keluhan}"
               data-pemeriksaan="{$value.pemeriksaan}"
-              data-penilaian="{$value.penilaian}"
               data-rtl="{$value.rtl}"
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
@@ -112,8 +114,8 @@
       {/loop}
       {loop: $pemeriksaan_ranap as $data}
       <tr>
-        <td rowspan="5" style="vertical-align:top;">{$data.nomor}</td>
-        <td rowspan="4" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="3" style="vertical-align:top;">{$data.nomor}</td>
+        <td rowspan="2" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Inap</b><br>
           {$data.tgl_perawatan} {$data.jam_rawat}
         </td>
@@ -130,6 +132,7 @@
         <th colspan="2">Subyektif</th>
         <td colspan="6">{$data.keluhan}</td>
       </tr>
+      <!--
       <tr>
         <th colspan="2">Obyektif</th>
         <td colspan="6">{$data.pemeriksaan}</td>
@@ -138,6 +141,7 @@
         <th colspan="2">Assesment</th>
         <td colspan="6">{$data.penilaian}</td>
       </tr>
+	  -->
       <tr>
         <td>
           <div class="">
@@ -155,8 +159,6 @@
               data-alergi="{$data.alergi}"
               data-keluhan="{$data.keluhan}"
               data-pemeriksaan="{$data.pemeriksaan}"
-              data-penilaian="{$data.penilaian}"
-              data-rtl="{$data.rtl}"
               disabled
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
@@ -167,8 +169,12 @@
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
           </div>
         </td>
+        <th colspan="2">Obyektif</th>
+        <td colspan="6">{$data.pemeriksaan}</td>
+        <!--
         <th colspan="2">Plan</th>
         <td colspan="6">{$data.rtl}</td>
+		-->
       </tr>
       {/loop}
     </tbody>

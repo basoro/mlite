@@ -409,14 +409,13 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   tinggi : tinggi,
   berat : berat,
   gcs : gcs,
-  kesadaran : kesadaran,
   alergi : alergi,
   imun_ke: imun_ke,
   keluhan : keluhan,
   pemeriksaan : pemeriksaan,
-  penilaian : penilaian,
   rtl : rtl
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/igd/soap?t=' + mlite.token;
