@@ -160,7 +160,7 @@ return [
         ('Midle Malam5', '22:00:00', '07:00:00');");
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_geolocation_presensi` (
-            `id` int(11) NOT NULL PRIMARY KEY,
+            `id` int(11) NOT NULL,
             `tanggal` date DEFAULT NULL,
             `latitude` varchar(200) NOT NULL,
             `longitude` varchar(200) NOT NULL
