@@ -181,7 +181,7 @@ class Admin extends AdminModule
         $totalRecords = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',$tahun)
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->like('jadwal_pegawai.bulan',$bulan.'%')
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->toArray();
         }else{
@@ -204,7 +204,7 @@ class Admin extends AdminModule
             $rows = $this->db('jadwal_pegawai')
             ->join('pegawai','pegawai.id=jadwal_pegawai.id')
             ->where('jadwal_pegawai.tahun',$tahun)
-            ->where('jadwal_pegawai.bulan',$bulan)
+            ->like('jadwal_pegawai.bulan',$bulan.'%')
             ->like('pegawai.nama', '%'.$phrase.'%')
             ->offset($offset)
             ->limit($perpage)
@@ -299,9 +299,13 @@ class Admin extends AdminModule
                 'h31' => '',
             ];
         }
-
-        $this->assign['id'] = $this->db('pegawai')->toArray();
-        $this->assign['h1'] = $this->db('jam_masuk')->toArray();
+        $username = $this->core->getUserInfo('username', null, true);
+        $this->assign['id'] = $this->db('pegawai')
+                                    ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+                                    ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+                                    ->where('stts_aktif','AKTIF')
+                                    ->toArray();
+        $this->assign['h1'] = $this->db('jam_masuk')->where('departemen', $this->core->getPegawaiInfo('departemen',$username))->toArray();
         $this->assign['tahun'] = date('Y');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
@@ -313,9 +317,14 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $row = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', $tahun)->where('bulan', $bulan)->oneArray();
         if (!empty($row)){
+            $username = $this->core->getUserInfo('username', null, true);
             $this->assign['form'] = $row;
-            $this->assign['id'] = $this->db('pegawai')->toArray();
-            $this->assign['h1'] = $this->db('jam_masuk')->toArray();
+            $this->assign['id'] = $this->db('pegawai')
+                                    ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
+                                    ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
+                                    ->where('stts_aktif','AKTIF')
+                                    ->toArray();
+            $this->assign['h1'] = $this->db('jam_masuk')->where('departemen', $this->core->getPegawaiInfo('departemen',$username))->toArray();
             $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
 
@@ -386,7 +395,7 @@ class Admin extends AdminModule
         if (isset($_GET['ruang'])){
             $ruang = $_GET['ruang'];
         }
-        
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('role') == 'admin'){
