@@ -64,7 +64,7 @@ Pemasangan
 
 ### Peringatan!
 
-+ Urutan aktifasi modul-modul
++ Aktifasi modul-modul yang belum diaktifkan jika diperlukan, misalnya...
   - IGD
   - Apotek Ralan
   - Dokter Ralan
