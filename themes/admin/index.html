@@ -79,14 +79,16 @@
               {/if}
               {if: $mlite.cek_anjungan}
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Informasi
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Anjungan
                 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  <li><a href="{?=url()?}/anjungan/presensi">Presensi Pegawai</a></li>
+                  <li role="separator" class="divider"></li>
                   <li><a href="#">Rawat Jalan</a></li>
                   <li><a href="#">Rawat Inap</a></li>
                   <li><a href="#">Laboratorium</a></li>
                   <li><a href="#">Radiologi</a></li>
-                  <li><a href="#">Ketersediaan Kamar</a></li>
+                  <li><a href="{?=url()?}/anjungan/bed">Ketersediaan Kamar</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
                   <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
