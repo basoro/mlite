@@ -236,6 +236,7 @@ function bersih(){
   $('input:radio[name=jk]').val("").removeAttr('checked');
   $('input:text[name=no_rkm_medis]').val("");
   $('input:text[name=pekerjaan]').val("");
+  $('input:text[name=no_ktp]').val("");
   $('textarea[name=alamat]').val("");
   $('input:text[name=telepon]').val("");
   $('#tgl_daftar').val("");
