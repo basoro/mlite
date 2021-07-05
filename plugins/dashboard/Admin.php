@@ -10,7 +10,6 @@ class Admin extends AdminModule
     {
         return [
             'Main' => 'main',
-            //'Menu' => 'menu'
         ];
     }
 

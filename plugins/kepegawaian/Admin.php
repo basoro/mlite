@@ -10,13 +10,24 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Data Pegawai' => 'manage',
+            'Kelola' => 'manage',
+            'Data Pegawai' => 'index',
             'Tambah Baru' => 'add',
             'Master Pegawai' => 'master',
         ];
     }
 
-    public function getManage($page = 1)
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
+        ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
+        ['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    }
+
+    public function getIndex($page = 1)
     {
 
         $this->_addHeaderFiles();
@@ -36,7 +47,7 @@ class Admin extends AdminModule
         $this->assign['getStatus'] = isset($_GET['status']);
         $this->assign['printURL'] = url([ADMIN, 'kepegawaian', 'print']);
 
-        return $this->draw('manage.html', ['pegawai' => $this->assign]);
+        return $this->draw('index.html', ['pegawai' => $this->assign]);
 
     }
 
@@ -130,7 +141,7 @@ class Admin extends AdminModule
 
             return $this->draw('form.html', ['pegawai' => $this->assign]);
         } else {
-            redirect(url([ADMIN, 'kepegawaian', 'manage']));
+            redirect(url([ADMIN, 'kepegawaian', 'index']));
         }
     }
 
@@ -143,7 +154,7 @@ class Admin extends AdminModule
             $this->assign['pegawai'] = $row;
             $this->assign['petugas'] = $this->db('petugas')->where('nip',$row['nik'])->oneArray();
             $this->assign['stts_wp'] = $this->db('stts_wp')->where('stts',$row['stts_wp'])->oneArray();
-            $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'manage']);
+            $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'index']);
 
             $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
             if(!empty($row['photo'])) {
@@ -152,7 +163,7 @@ class Admin extends AdminModule
 
             return $this->draw('view.html', ['kepegawaian' => $this->assign]);
         } else {
-            redirect(url([ADMIN, 'kepegawaian', 'manage']));
+            redirect(url([ADMIN, 'kepegawaian', 'index']));
         }
     }
 

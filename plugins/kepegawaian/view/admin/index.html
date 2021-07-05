@@ -1,0 +1,52 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Data Pegawai</h3>
+            </div>
+            <div class="panel-body">
+    					<div class="table-responsive no-margin">
+    						<table class="table table-striped no-margin display" width="100%">
+    							<thead>
+    								<tr>
+    									<th>Kode Pegawai</th>
+    									<th>Nama Pegawai</th>
+                      <th>Tempat Lahir</th>
+                      <th>Tanggal Lahir</th>
+                      <th>Departemen</th>
+                      <th>Bidang</th>
+                      <th>Status</th>
+    									<th class="text-right">Aksi</th>
+    								</tr>
+    							</thead>
+    							<tbody>
+            				{if: !empty($pegawai.list)}
+    								{loop: $pegawai.list}
+    								<tr>
+    									<td>{$value.nik}</td>
+    									<td>{$value.nama}</td>
+                      <td>{$value.tmp_lahir}</td>
+                      <td>{$value.tgl_lahir}</td>
+                      <td>{$value.departemen}</td>
+                      <td>{$value.bidang}</td>
+                      <td>{$value.stts_aktif}</td>
+    									<td class="text-right">
+    										<a href="{$value.viewURL}" class="btn btn-primary btn-xs">
+    											<i class="fa fa-search"></i> <span class="hidden-xs">Tampil</span>
+    										</a>
+    										<a href="{$value.editURL}" class="btn btn-success btn-xs">
+    											<i class="fa fa-pencil"></i> <span class="hidden-xs">Ganti</span>
+    										</a>
+    									</td>
+    								</tr>
+    								{/loop}
+    								{else}
+    								<tr><td colspan="6" class="text-center">Kosong</td></tr>
+    								{/if}
+    							</tbody>
+    						</table>
+    					</div>
+            </div>
+        </div>
+    </div>
+</article>

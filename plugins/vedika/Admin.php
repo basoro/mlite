@@ -11,11 +11,21 @@ class Admin extends AdminModule
     {
         return [
             'Manage' => 'manage',
+            'Index' => 'index',
             'Pengaturan' => 'settings',
         ];
     }
 
-    public function getManage($page = 1)
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'index']), 'icon' => 'code', 'desc' => 'Index Vedika'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
+    }
+
+    public function getIndex($page = 1)
     {
       $this->_addHeaderFiles();
       $start_date = date('Y-m-d');
@@ -34,7 +44,7 @@ class Admin extends AdminModule
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'manage', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination','5');
       $this->assign['totalRecords'] = $totalRecords;
 
@@ -92,8 +102,8 @@ class Admin extends AdminModule
       $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
       $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
 
-      $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'manage', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('manage.html', ['vedika' => $this->assign]);
+      $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'index', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      return $this->draw('index.html', ['vedika' => $this->assign]);
 
     }
 
@@ -212,7 +222,7 @@ class Admin extends AdminModule
       } else {
           $this->notify('failure', 'Simpan gagal');
       }
-      //redirect(url([ADMIN, 'vedika', 'manage']));
+      //redirect(url([ADMIN, 'vedika', 'index']));
     }
     public function getPDF($id)
     {

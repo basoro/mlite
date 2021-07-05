@@ -10,10 +10,21 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
+            'Manage' => 'manage',
+            'Index' => 'index',
             'Booking Daftar' => 'booking',
             'Pengaturan' => 'settings'
         ];
+    }
+
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Index', 'url' => url([ADMIN, 'website', 'index']), 'icon' => 'globe', 'desc' => 'Index Website'],
+        ['name' => 'Booking Daftar', 'url' => url([ADMIN, 'website', 'booking']), 'icon' => 'globe', 'desc' => 'Data Booking Daftar'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'website', 'settings']), 'icon' => 'globe', 'desc' => 'Pengaturan Website'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getIndex()
