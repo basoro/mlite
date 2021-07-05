@@ -65,26 +65,20 @@ Pemasangan
 ### Peringatan!
 
 + Urutan aktifasi modul-modul
-  - Master Data
-  - Pendaftaran Pasien
-  - Rawat Jalan
-  - Kepegawaian
-  - Presensi
-  - Profil
   - IGD
-  - Kasir Rawat Jalan
   - Apotek Ralan
   - Dokter Ralan
   - Laboratorium
   - Radiologi
-  - Farmasi
   - ICD 9 - 10 Request
+  - Presensi
+  - Profil
   - Dan seterusnya....
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Khanza LITE 2021 tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
-```
+```bash
 location  / {
     index  index.php;
     if (!-e $request_filename) {
@@ -100,19 +94,19 @@ location  /admin {
 
 Jika ada didalam folder, misalnya `Khanza-Lite`
 
-````
-location  /Khanza-Lite {
+```bash
+location  /lite {
     index  index.php;
     if (!-e $request_filename) {
-        rewrite / /Khanza-Lite/index.php last;
+        rewrite / /lite/index.php last;
     }
 }
 
-location  /Khanza-Lite/admin {
+location  /ite/admin {
     index index.php;
-    try_files $uri $uri/ /Khanza-Lite/admin/index.php?$args;
+    try_files $uri $uri/ /lite/admin/index.php?$args;
 }
-````
+```
 
 Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `admin` Kata sandi: `admin`
