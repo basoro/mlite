@@ -102,7 +102,7 @@ location  /lite {
     }
 }
 
-location  /ite/admin {
+location  /lite/admin {
     index index.php;
     try_files $uri $uri/ /lite/admin/index.php?$args;
 }
