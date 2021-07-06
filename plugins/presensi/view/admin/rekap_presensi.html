@@ -41,7 +41,6 @@
               <div class="col col-md-8">
                 <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?} | Total Kurang: {$rekap.totalminus} | Total Lebih: {$rekap.totalplus}</h3>
               </div>
-              {if: $this->core->getUserInfo('role') == 'admin'}
               <div class="col col-md-2">
                 <div class="input-group">
                   <!-- <label for="bidang">Ruang</label> -->
@@ -53,7 +52,6 @@
                   </select>
                 </div>
               </div>
-              {/if}
               <div class="col col-md-2">
                 <!-- <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;"> -->
                   <div class="input-group">

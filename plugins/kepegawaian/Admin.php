@@ -21,7 +21,7 @@ class Admin extends AdminModule
 
         $this->_addHeaderFiles();
 
-        $rows = $this->db('pegawai')->toArray();
+        $rows = $this->db('pegawai')->where('stts_aktif','AKTIF')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {

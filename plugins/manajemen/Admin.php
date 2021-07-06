@@ -213,7 +213,7 @@ class Admin extends AdminModule
 
     public function getJadwalJaga()
     {
-      $date = date('d');
+      $date = date('j');
       $bulan = date('m');
       $tahun = date('y');
       $data = array_column($this->db('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
@@ -1063,26 +1063,20 @@ class Admin extends AdminModule
         ]);
     }
 
-    public function presensiChart($days = 14, $offset = 0)
+  	public function presensiChart($days = 14, $offset = 0)
     {
         $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
         $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
 
-        $query = $this->db('rekap_presensi')
-            ->select([
-              'count' => 'COUNT(photo)',
-              'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
-              'formatedDate' => 'jam_datang',
-            ])
-            ->where('jam_datang', '>=', $date.' 00:00:00')
-            ->group(['formatedDate'])
-            ->asc('formatedDate');
+        $query = $this->db()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
+        $query->execute();
 
-            $data = $query->toArray();
+        $data = $query->fetchAll(\PDO::FETCH_ASSOC);
 
             $return = [
                 'labels'  => [],
                 'visits'  => [],
+                'visits2'  => [],
             ];
 
             while ($time < (time() - ($offset * 86400))) {
@@ -1095,7 +1089,7 @@ class Admin extends AdminModule
             }
 
             foreach ($data as $day) {
-                $index = array_search('"'.date('Y-m-d', strtotime($day['formatedDate'])).'"', $return['labels']);
+                $index = array_search('"'.$day['jam'].'"', $return['labels']);
                 if ($index === false) {
                     continue;
                 }
