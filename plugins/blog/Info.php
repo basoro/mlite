@@ -75,9 +75,9 @@ return [
         copy(MODULES.'/blog/img/default.jpg', UPLOADS.'/blog/default2.jpg');
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags_relationship`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags_relationship`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog`");
         $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'blog'");
         deleteDir(UPLOADS."/blog");
     }

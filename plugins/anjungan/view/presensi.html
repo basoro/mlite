@@ -167,7 +167,7 @@
 
           navigator.geolocation.getCurrentPosition(
               function(position) {
-                $.post('{?=url(ADMIN.'/dashboard/geolocation/')?}', {lat: position.coords.latitude, lng: position.coords.longitude});
+                $.get('{?=url(ADMIN.'/dashboard/geolocation/')?}', {lat: position.coords.latitude, lng: position.coords.longitude});
               },
               function error(err) {},
               {enableHighAccuracy: true, timeout: 5000}

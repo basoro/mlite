@@ -855,6 +855,26 @@ class Site extends SiteModule
       $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
     }
 
+    public function getGeolocation()
+    {
+
+      $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+
+      if(isset($_GET['lat'], $_GET['lng'])) {
+          if(!$this->db('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
+              $this->db('mlite_geolocation_presensi')
+                ->save([
+                  'id' => $idpeg['id'],
+                  'tanggal' => date('Y-m-d'),
+                  'latitude' => $_GET['lat'],
+                  'longitude' => $_GET['lng']
+              ]);
+          }
+      }
+
+      exit();
+    }
+
     public function getUpload()
     {
       if ($photo = isset_or($_FILES['webcam']['tmp_name'], false)) {
