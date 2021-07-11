@@ -20,7 +20,7 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'manage']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
+        ['name' => 'Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'index']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
       ];
@@ -56,7 +56,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Hapus gagal');
         }
-        redirect(url([ADMIN, 'farmasi', 'manage']));
+        redirect(url([ADMIN, 'farmasi', 'index']));
     }
 
     public function getRestore($id)
@@ -66,7 +66,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Restore gagal');
         }
-        redirect(url([ADMIN, 'farmasi', 'manage']));
+        redirect(url([ADMIN, 'farmasi', 'index']));
     }
 
     public function postSetStok()
