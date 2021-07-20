@@ -50,6 +50,7 @@ class Admin extends AdminModule
           [
             'text' => $text,
             'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
             'nama_instansi' => $this->settings->get('settings.nama_instansi'),
             'booking' => $this->db('booking_periksa')
               ->select([

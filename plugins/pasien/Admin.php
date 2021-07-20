@@ -143,6 +143,7 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $this->core->setNoRM(),
           'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
         ]);
@@ -198,6 +199,7 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $this->core->setNoRM(),
           'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => ''
         ]);

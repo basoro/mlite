@@ -342,6 +342,7 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
 
       $waapitoken =  $this->settings->get('settings.waapitoken');
+      $waapiphonenumber =  $this->settings->get('settings.waapiphonenumber');
       $nama_instansi =  $this->settings->get('settings.nama_instansi');
 
       if (isset($_POST['valid'])) {
@@ -462,7 +463,7 @@ class Admin extends AdminModule
       }
 
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'nama_instansi' => $nama_instansi]);
+      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'waapiphonenumber' => $waapiphonenumber, 'nama_instansi' => $nama_instansi]);
 
     }
 
@@ -483,6 +484,7 @@ class Admin extends AdminModule
           [
             'text' => $text,
             'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
             'nama_instansi' => $this->settings->get('settings.nama_instansi'),
             'booking' => $this->db('booking_periksa')
               ->select([

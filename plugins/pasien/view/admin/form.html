@@ -180,7 +180,7 @@
     <div class="text-center">
       <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
       <button type="button" name="button" class="btn btn-info hidden" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
-      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning hidden hidden-lg hidden-md" id="foto"><i class="fa fa-camera"></i></a>
+      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning hidden hidden-lg hidden-lg" id="foto"><i class="fa fa-camera"></i></a>
       <button type="button" name="button" class="btn btn-primary hidden" id="kirimwa" data-toggle="modal" data-target="#waModal" data-no_tlp={$pasien.no_tlp}><i class="fa fa-whatsapp"></i><span class="hidden-xs"> Kirim WA</span></button>
       <button type="button" name="button" class="btn btn-danger hidden" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
@@ -442,25 +442,25 @@
   });
   function KirimWA() {
   	var xhttp = new XMLHttpRequest();
-  	var sender = '{$waapitoken}';
+    var api_key = '{$waapitoken}';
+  	var sender = '{$waapiphonenumber}';
   	var number = document.getElementById("number").value;
   	var message = document.getElementById("message").value;
-  	console.log(number + " - " + message);
+  	console.log(api_key + " - " + number + " - " + message);
   	xhttp.onreadystatechange = function() {
   		if (this.readyState == 4 && this.status == 200) {
   			var data=xhttp.responseText;
   			var jsonResponse = JSON.parse(data);
   			if(jsonResponse["status"] == true) {
   				alert('Sukses mengirim pesan.');
-  				document.getElementById("demo").innerHTML = 'Sukses mengirim pesan';
   			} else {
   				alert('Gagal mengirim pesan.');
   			}
   		}
   	};
-  	xhttp.open("POST", "https://wa.basoro.id/send-message", true);
+  	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
   	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  	xhttp.send("sender=" + sender + "&number=" + number + "&message=" + message);
+  	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
   }
 </script>
 <script type="text/javascript">
