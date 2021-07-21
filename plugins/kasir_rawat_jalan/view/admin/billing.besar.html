@@ -270,7 +270,7 @@ function KirimWA() {
 			if(jsonResponse["status"] == true) {
 				alert('Sukses mengirim pesan.');
 			} else {
-				alert('Gagal mengirim pesan.');
+				alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
 			}
 		}
 	};
