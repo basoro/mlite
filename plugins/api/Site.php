@@ -560,10 +560,10 @@ class Site extends SiteModule
                   $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
-                    $url = "https://wa.basoro.id/send-message";
+                    $url = "https://wa.basoro.id/api/send-message.php";
                     curl_setopt($ch, CURLOPT_URL,$url);
                     curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, "sender=".$this->settings->get('settings.waapitoken')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nBawalah kartu berobat anda. \nDatanglah 30 menit sebelumnya.\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, "api_key=".$this->settings->get('settings.waapitoken')."&sender=".$this->settings->get('settings.waapiphonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nBawalah kartu berobat anda. \nDatanglah 30 menit sebelumnya.\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $output = curl_exec ($ch);
                     curl_close ($ch);
@@ -1020,10 +1020,10 @@ class Site extends SiteModule
                   $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
-                    $url = "https://wa.basoro.id/send-message";
+                    $url = "https://wa.basoro.id/api/send-message.php";
                     curl_setopt($ch, CURLOPT_URL,$url);
                     curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, "sender=".$this->settings->get('settings.waapitoken')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, "api_key=".$this->settings->get('settings.waapitoken')."&sender=".$this->settings->get('settings.waapiphonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $output = curl_exec ($ch);
                     curl_close ($ch);
