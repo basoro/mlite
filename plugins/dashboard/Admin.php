@@ -10,6 +10,7 @@ class Admin extends AdminModule
     {
         return [
             'Main' => 'main',
+            //'Menu' => 'menu'
         ];
     }
 
@@ -33,15 +34,20 @@ class Admin extends AdminModule
         $cek_presensi = [];
         $jam_jaga = [];
         if($presensi) {
+          $nama = $this->db('pegawai')->where('nik', $this->core->getUserInfo('username', null, true))->oneArray();
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
           $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+          $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
           $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
         }
         return $this->draw('main.html', [
           'settings' => $settings,
           'cek_presensi' => $cek_presensi,
+          'cek_rekap' => $cek_rekap,
           'jam_jaga' => $jam_jaga,
-          'presensi' => $presensi
+          'presensi' => $presensi,
+		  'nama' => $nama['nama'],
+          'cek_srq' => $this->db('mlite_srq')->where('nip', $this->core->getUserInfo('username', null, true))->like('tanggal', date('Y-m').'%')->oneArray(),
         ]);
     }
 
@@ -119,15 +125,26 @@ class Admin extends AdminModule
               $bulan = date('m');
               $tahun = date('y');
 	            $hari = date('j');
-              $hari_kurang = date('j') - 1;
+              $hari_kurang = $hari - 1;
+              $bulan_kurang = date('j', strtotime(date('Y-m-d')." -1 month"));
+              $bulan_lalu = date('m', strtotime(date('Y-m-d')." -1 month"));
+              $tahun_lalu = date('Y', strtotime(date('Y-m-d')." -1 month"));
+              $shift = $_GET['shift'];
+
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
-              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
-              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari, $_GET['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-
+              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
+              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+              
               if(!$jadwal_pegawai){
-                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $_GET['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
               }
-
+              if(!$jadwal_pegawai && $hari == '1'){
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun)->oneArray();
+              }
+              if(!$jadwal_pegawai && $bulan == '01'){
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
+              }
+              
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
               $terlambat1     = $set_keterlambatan['terlambat1'];
@@ -135,8 +152,108 @@ class Admin extends AdminModule
 
               $valid = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
 
-              if($valid){
+              $valid_2 = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
+
+			  if(($valid_2) || (!$jadwal_pegawai)){
+                $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+
+                if(!$jadwal_tambahan){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+                }
+                if(!$jadwal_tambahan && $hari == '1'){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun)->oneArray();
+                }
+                if(!$jadwal_tambahan && $bulan == '01'){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
+                }
+
+                if((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_tambahan)&&(!$valid)){
+                  $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+
+                  if(!$cek){
+                      if(empty($urlnya)){
+                          $this->notify('failure', 'Pilih shift dulu...!!!!');
+                      }else{
+
+                          $status = 'Tepat Waktu';
+
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($toleransi*60)) {
+                            $status = 'Terlambat Toleransi';
+                          }
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat1*60)) {
+                            $status = 'Terlambat I';
+                          }
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat2*60)) {
+                            $status = 'Terlambat II';
+                          }
+
+                          if(strtotime(date('Y-m-d H:i:s'))-(date('Y-m-d').' '.$jam_jaga['jam_masuk'])>($toleransi*60)) {
+                            $awal  = new \DateTime(date('Y-m-d').' '.$jam_jaga['jam_masuk']);
+                            $akhir = new \DateTime();
+                            $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
+                            $keterlambatan = $diff->format('%H:%I:%S');
+
+                          }
+
+                          $insert = $this->db('temporary_presensi')
+                            ->save([
+                              'id' => $idpeg['id'],
+                              'shift' => $jam_jaga['shift'],
+                              'jam_datang' => date('Y-m-d H:i:s'),
+                              'jam_pulang' => NULL,
+                              'status' => $status,
+                              'keterlambatan' => $keterlambatan,
+                              'durasi' => '',
+                              'photo' => $urlnya
+                            ]);
+
+                          if($insert) {
+                            $this->notify('success', 'Presensi Masuk jam '.$jam_jaga['jam_masuk'].' '.$status.' '.$keterlambatan);
+                          }
+                      }
+                  }elseif($cek){
+
+                      $status = $cek['status'];
+                      if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_pulang']))<0) {
+                        $status = $cek['status'].' & PSW';
+                      }
+
+                      $awal  = new \DateTime($cek['jam_datang']);
+                      $akhir = new \DateTime();
+                      $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
+                      $durasi = $diff->format('%H:%I:%S');
+
+                      $ubah = $this->db('temporary_presensi')
+                        ->where('id', $idpeg['id'])
+                        ->save([
+                          'jam_pulang' => date('Y-m-d H:i:s'),
+                          'status' => $status,
+                          'durasi' => $durasi
+                        ]);
+
+                      if($ubah) {
+                          $presensi = $this->db('temporary_presensi')->where('id', $cek['id'])->oneArray();
+                          $insert = $this->db('rekap_presensi')
+                            ->save([
+                              'id' => $presensi['id'],
+                              'shift' => $presensi['shift'],
+                              'jam_datang' => $presensi['jam_datang'],
+                              'jam_pulang' => $presensi['jam_pulang'],
+                              'status' => $presensi['status'],
+                              'keterlambatan' => $presensi['keterlambatan'],
+                              'durasi' => $presensi['durasi'],
+                              'keterangan' => '-',
+                              'photo' => $presensi['photo']
+                            ]);
+                          if($insert) {
+                              $this->notify('success', 'Presensi pulang telah disimpan');
+                              $this->db('temporary_presensi')->where('id', $cek['id'])->delete();
+                          }
+                      }
+                  }
+                }else{
                   $this->notify('failure', 'Anda sudah presensi untuk tanggal '.date('Y-m-d'));
+                }
               }elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_pegawai)&&(!$valid)) {
                   $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 

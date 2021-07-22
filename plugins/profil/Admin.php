@@ -53,6 +53,7 @@ class Admin extends AdminModule
         $this->assign['bidang'] = $this->db('bidang')->toArray();
         $this->assign['stts_wp'] = $this->db('stts_wp')->toArray();
         $this->assign['pendidikan'] = $this->db('pendidikan')->toArray();
+        $this->assign['jnj_jabatan'] = $this->db('jnj_jabatan')->toArray();
 
         $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/penggajian/'.$row['photo']);
 

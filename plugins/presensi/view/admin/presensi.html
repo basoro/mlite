@@ -57,6 +57,7 @@
                     <th>Shift</th>
                     <th>Ruangan</th>
                     <th>Jam Datang</th>
+                    <th>Verifikasi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -73,6 +74,11 @@
                     <td>{$value.shift}</td>
                     <td>{$value.bidang}</td>
                     <td>{$value.jam_datang}</td>
+                    <td>
+                      <a href="{$value.editURL}" class="btn btn-success btn-xs">
+                        <i class="fa fa-home"></i> <span class="hidden-xs">Verif</span>
+                      </a>
+                    </td>
                   </tr>
                   {/loop}
                   {else}

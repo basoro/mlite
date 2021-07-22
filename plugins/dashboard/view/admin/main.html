@@ -23,7 +23,12 @@
   p.alamat {
     position: absolute; bottom: 0px;left: 120px;font-size:16px;
   }
-  @media (max-width: 768px) {
+  div.coba{
+    position: relative !important;
+    top: 47px;
+    /* display: none; */
+  }
+  @media (max-width: 600px) {
     .dashboard_wall {
       position: fixed; bottom: 100px; left: 0px;min-width:600px;color: #fff !important;
     }
@@ -35,6 +40,76 @@
     }
     p.alamat {
       position: absolute; bottom: 10px;left: 80px;font-size:10px;
+    }
+    div.coba.halo {
+      position: absolute;
+      width: 82px;
+      height: 20px;
+      left: 80px;
+      top: 80px;
+
+      font-family: Graphik;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 20px;
+      /* identical to box height */
+
+
+      color: #FFFFFF;
+    }
+    div.coba{
+      position: relative;
+      width: 250px;
+      height: 84px;
+      left: 0px;
+      top: 130px;
+
+      /* background: linear-gradient(269.6deg, #56549E 0.35%, #AEA1E6 101.48%); */
+      border-radius: 0px 20px 20px 0px;
+
+    }
+  }
+  @media (max-width: 768px) and (min-width: 601px) {
+    .dashboard_wall {
+      position: fixed; bottom: 100px; left: 0px;min-width:600px;color: #fff !important;
+    }
+    img.logo {
+      width: 80px;
+    }
+    p.title {
+      position: absolute; bottom: 20px;left: 80px;color: #fff !important;font-size:18px;
+    }
+    p.alamat {
+      position: absolute; bottom: 10px;left: 80px;font-size:10px;
+    }
+    div.coba.halo {
+      position: absolute;
+      width: 152px;
+      height: 20px;
+      left: 160px;
+      top: 420px;
+
+      font-family: Graphik;
+      font-style: normal;
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 20px;
+      /* identical to box height */
+
+
+      color: #FFFFFF;
+    }
+    div.coba{
+      position: relative;
+      width: 365px;
+      height: 84px;
+      left: 0px;
+      top: 424px;
+
+      /* background: linear-gradient(269.6deg, #56549E 0.35%, #AEA1E6 101.48%); */
+      border-radius: 0px 20px 20px 0px;
+
     }
   }
   .badge-success {
@@ -56,9 +131,31 @@
 {if: $presensi}
 <div class="btn-group">
     <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
-        <i class="fa fa-plus"></i> Presensi Online
+        <i class="fa fa-plus"></i> Presensi Online 
     </button>
 </div>
+ {if: $cek_presensi}
+  <div class="alert alert-success coba" role="alert">
+    <div class="halo">
+      <b>Halo {$nama}</b>
+    </div>
+    <i class="fa fa-thumbs-up"></i>  Anda Sudah Absen
+  </div>
+  {elseif: $cek_rekap}
+  <div class="alert alert-info coba" role="alert">
+    <div class="halo">
+      <b>Halo {$nama}</b>
+    </div>
+    <i class="fa fa-check-square"></i>  Anda Sudah Presensi Pulang Hari Ini
+  </div>
+  {else}
+  <div class="alert alert-warning coba" role="alert">
+    <div class="halo">
+      <b>Halo {$nama}</b>
+    </div>
+    <i class="fa fa-exclamation-triangle"></i>  Anda Belum Absen
+  </div>
+  {/if}
 {/if}
 <!-- The Modal -->
 <div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
@@ -85,6 +182,14 @@
     </div>
   </div>
 </div>
+{if: $cek_srq}
+<script>
+  $(document).ready(function() { 
+    //alert('Bulan ini Anda belum melakukan Self Reporting Questionnaire 29. \nAnda akan dialihkan ke formulir pengisian.');
+    //window.location.href = '{?=url([ADMIN,'srq','manage'])?}';
+  });
+</script>
+{/if}
 <script>
   $(document).ready(function() {
       $('#shift').selectator('destroy');
@@ -146,3 +251,4 @@
       });
   });
 </script>
+
