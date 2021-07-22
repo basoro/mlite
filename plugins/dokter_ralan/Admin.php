@@ -910,7 +910,7 @@ class Admin extends AdminModule
                 ->toArray();
             $this->assign['fotoURL'] = url(MODULES.'/dokter_ralan/img/'.$pasien['jk'].'.png');
             if(!empty($personal_pasien['gambar'])) {
-              $this->assign['fotoURL'] = url(WEBAPPS_PATH.'/photopasien/'.$personal_pasien['gambar']);
+              $this->assign['fotoURL'] = WEBAPPS_URL.'/photopasien/'.$personal_pasien['gambar'];
             }
             $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
             $this->assign['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $id)->toArray();
