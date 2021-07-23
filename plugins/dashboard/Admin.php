@@ -46,8 +46,7 @@ class Admin extends AdminModule
           'cek_rekap' => $cek_rekap,
           'jam_jaga' => $jam_jaga,
           'presensi' => $presensi,
-		  'nama' => $nama['nama'],
-          'cek_srq' => $this->db('mlite_srq')->where('nip', $this->core->getUserInfo('username', null, true))->like('tanggal', date('Y-m').'%')->oneArray(),
+		      'nama' => $nama['nama']
         ]);
     }
 
@@ -134,7 +133,7 @@ class Admin extends AdminModule
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
               $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
               $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-              
+
               if(!$jadwal_pegawai){
                 $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
               }
@@ -144,7 +143,7 @@ class Admin extends AdminModule
               if(!$jadwal_pegawai && $bulan == '01'){
                 $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
               }
-              
+
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
               $terlambat1     = $set_keterlambatan['terlambat1'];

@@ -131,7 +131,7 @@
 {if: $presensi}
 <div class="btn-group">
     <button class="btn btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
-        <i class="fa fa-plus"></i> Presensi Online 
+        <i class="fa fa-plus"></i> Presensi Online
     </button>
 </div>
  {if: $cek_presensi}
@@ -182,14 +182,6 @@
     </div>
   </div>
 </div>
-{if: $cek_srq}
-<script>
-  $(document).ready(function() { 
-    //alert('Bulan ini Anda belum melakukan Self Reporting Questionnaire 29. \nAnda akan dialihkan ke formulir pengisian.');
-    //window.location.href = '{?=url([ADMIN,'srq','manage'])?}';
-  });
-</script>
-{/if}
 <script>
   $(document).ready(function() {
       $('#shift').selectator('destroy');
@@ -251,4 +243,3 @@
       });
   });
 </script>
-
