@@ -634,6 +634,8 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
+      $_POST['instruksi'] = '';
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
       if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ranap')->save($_POST);
       } else {

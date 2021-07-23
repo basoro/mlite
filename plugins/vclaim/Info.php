@@ -51,7 +51,7 @@ return [
         `nmkab` varchar(50) NOT NULL,
         `kdkec` varchar(10) NOT NULL,
         `nmkec` varchar(50) NOT NULL,
-        `noskdp` varchar(6) NOT NULL,
+        `noskdp` varchar(40) NOT NULL,
         `kddpjp` varchar(10) NOT NULL,
         `nmdpdjp` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");

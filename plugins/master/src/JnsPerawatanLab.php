@@ -39,6 +39,7 @@ class JnsPerawatanLab
     {
         $return['penjab'] = $this->db('penjab')->toArray();
         $return['kelas'] = ['Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP'];
+        $return['kategori'] = ['PA','PK'];
         if (isset($_POST['kd_jenis_prw'])){
           $return['form'] = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         } else {
@@ -55,7 +56,8 @@ class JnsPerawatanLab
             'total_byr' => 0,
             'kd_pj' => '',
             'status' => '',
-            'kelas' => ''
+            'kelas' => '',
+            'kategori' => ''
           ];
         }
 

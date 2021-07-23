@@ -19,7 +19,7 @@
             `agama` varchar(12) DEFAULT NULL,
             `almt_tgl` varchar(60) DEFAULT NULL,
             `no_telp` varchar(13) DEFAULT NULL,
-            `stts_nikah` enum('SINGLE','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
+            `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
             `kd_sps` char(5) DEFAULT NULL,
             `alumni` varchar(60) DEFAULT NULL,
             `no_ijn_praktek` varchar(40) DEFAULT NULL,
@@ -56,7 +56,7 @@
             `bpd` varchar(50) NOT NULL,
             `rekening` varchar(25) NOT NULL,
             `stts_aktif` enum('AKTIF','CUTI','KELUAR','TENAGA LUAR') NOT NULL,
-            `wajibmasuk` tinyint(4) NOT NULL,
+            `wajibmasuk` tinyint(2) NOT NULL,
             `pengurang` double NOT NULL,
             `indek` tinyint(4) NOT NULL,
             `mulai_kontrak` date DEFAULT NULL,
@@ -107,7 +107,7 @@
           $core->db()->pdo()->exec("INSERT INTO `reg_periksa` (`no_reg`, `no_rawat`, `tgl_registrasi`, `jam_reg`, `kd_dokter`, `no_rkm_medis`, `kd_poli`, `p_jawab`, `almt_pj`, `hubunganpj`, `biaya_reg`, `stts`, `stts_daftar`, `status_lanjut`, `kd_pj`, `umurdaftar`, `sttsumur`, `status_bayar`, `status_poli`) VALUES
           ('001', '2020/12/26/000001', '2020-12-26', '08:00:00', 'DR001', '000001', '-', '-', '-', 'AYAH', 0, 'Belum', 'Baru', 'Ralan', '-', 1, 'Th', 'Sudah Bayar', 'Baru');");
           */
-          
+
           $core->db()->pdo()->exec("ALTER TABLE `dokter`
             ADD PRIMARY KEY (`kd_dokter`),
             ADD KEY `kd_sps` (`kd_sps`),
@@ -208,7 +208,7 @@
             `tgl_lahir` date DEFAULT NULL,
             `gol_darah` enum('A','B','O','AB','-') DEFAULT NULL,
             `agama` varchar(12) DEFAULT NULL,
-            `stts_nikah` enum('SINGLE','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
+            `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
             `alamat` varchar(60) DEFAULT NULL,
             `kd_jbtn` char(4) DEFAULT NULL,
             `no_telp` varchar(13) DEFAULT NULL,
@@ -250,15 +250,19 @@
             `alergi` varchar(50) DEFAULT NULL,
             `imun_ke` enum('-','1','2','3','4','5','6','7','8','10','11','12','13') DEFAULT NULL,
             `rtl` varchar(400) NOT NULL,
-            `penilaian` varchar(400) NOT NULL
+            `penilaian` varchar(400) NOT NULL,
+            `instruksi` varchar(400) NOT NULL,
+            `nip` varchar(20) NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("ALTER TABLE `pemeriksaan_ralan`
             ADD PRIMARY KEY (`no_rawat`,`tgl_perawatan`,`jam_rawat`) USING BTREE,
-            ADD KEY `no_rawat` (`no_rawat`);");
+            ADD KEY `no_rawat` (`no_rawat`),
+            ADD KEY `nip` (`nip`) USING BTREE;");
 
           $core->db()->pdo()->exec("ALTER TABLE `pemeriksaan_ralan`
-            ADD CONSTRAINT `pemeriksaan_ralan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
+            ADD CONSTRAINT `pemeriksaan_ralan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `pemeriksaan_ralan_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `rawat_jl_dr` (
             `no_rawat` varchar(17) NOT NULL DEFAULT '',
@@ -272,7 +276,7 @@
             `kso` double DEFAULT NULL,
             `menejemen` double DEFAULT NULL,
             `biaya_rawat` double DEFAULT NULL,
-            `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+            `stts_bayar` enum('Sudah','Belum','Suspen') DEFAULT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `jns_perawatan` (
@@ -329,7 +333,7 @@
             `kso` double DEFAULT NULL,
             `menejemen` double DEFAULT NULL,
             `biaya_rawat` double DEFAULT NULL,
-            `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+            `stts_bayar` enum('Sudah','Belum','Suspen') DEFAULT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `rawat_jl_pr` (
@@ -344,7 +348,7 @@
             `kso` double DEFAULT NULL,
             `menejemen` double DEFAULT NULL,
             `biaya_rawat` double DEFAULT NULL,
-            `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+            `stts_bayar` enum('Sudah','Belum','Suspen') DEFAULT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("ALTER TABLE `rawat_jl_dr`
@@ -431,7 +435,8 @@
             `total_byr` double DEFAULT NULL,
             `kd_pj` char(3) NOT NULL,
             `status` enum('0','1') NOT NULL,
-            `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL
+            `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL,
+            `kategori` enum('PK','PA') NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `jns_perawatan_radiologi` (

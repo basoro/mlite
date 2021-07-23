@@ -612,6 +612,8 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
+      $_POST['instruksi'] = '';
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
@@ -680,11 +682,6 @@ class Admin extends AdminModule
           ]);
       }
 
-      /*if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
-        $this->db('pemeriksaan_ralan')->save($_POST);
-      } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
-      }*/
       exit();
     }
 

@@ -413,6 +413,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   var tinggi          = $('input:text[name=tinggi]').val();
   var berat           = $('input:text[name=berat]').val();
   var gcs             = $('input:text[name=gcs]').val();
+  var kesadaran       = $('input:text[name=kesadaran]').val();
   var alergi          = $('input:text[name=alergi]').val();
   var alergi          = $('input:text[name=alergi]').val();
   var keluhan         = $('textarea[name=keluhan]').val();
@@ -431,6 +432,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   tinggi : tinggi,
   berat : berat,
   gcs : gcs,
+  kesadaran : kesadaran,
   keluhan : keluhan,
   pemeriksaan : pemeriksaan,
   alergi : alergi,
@@ -452,6 +454,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     $('input:text[name=tinggi]').val("");
     $('input:text[name=berat]').val("");
     $('input:text[name=gcs]').val("");
+    $('input:text[name=kesadaran]').val("");
     $('input:text[name=alergi]').val("");
     $('textarea[name=keluhan]').val("");
     $('textarea[name=pemeriksaan]').val("");

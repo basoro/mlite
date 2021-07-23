@@ -622,6 +622,8 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
+      $_POST['instruksi'] = '';
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
@@ -690,11 +692,6 @@ class Admin extends AdminModule
           ]);
       }
 
-      /*if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
-        $this->db('pemeriksaan_ralan')->save($_POST);
-      } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
-      }*/
       exit();
     }
 
@@ -1009,6 +1006,8 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
+            $_POST['instruksi'] = '';
+            $_POST['nip'] = $this->core->getUserInfo('username', null, true);
             $cek_no_rawat = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNorawat($id))->oneArray();
             if(empty($cek_no_rawat['no_rawat'])) {
               $query = $this->db('pemeriksaan_ralan')
@@ -1029,7 +1028,9 @@ class Admin extends AdminModule
                   'alergi' => $_POST['alergi'],
                   'imun_ke' => $_POST['imun_ke'],
                   'rtl' => $_POST['rtl'],
-                  'penilaian' => $_POST['penilaian']
+                  'penilaian' => $_POST['penilaian'],
+                  'instruksi' => $_POST['instruksi'],
+                  'nip' => $_POST['nip']
               ]);
 
               $get_kd_penyakit = $_POST['kd_penyakit'];
@@ -1105,7 +1106,9 @@ class Admin extends AdminModule
                   'alergi' => $_POST['alergi'],
                   'imun_ke' => $_POST['imun_ke'],
                   'rtl' => $_POST['rtl'],
-                  'penilaian' => $_POST['penilaian']
+                  'penilaian' => $_POST['penilaian'],
+                  'instruksi' => $_POST['instruksi'],
+                  'nip' => $_POST['nip']
               ]);
 
               $get_kd_penyakit = $_POST['kd_penyakit'];

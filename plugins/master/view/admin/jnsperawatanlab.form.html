@@ -84,6 +84,16 @@
             </div>
           </div>
           <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kategori</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="kategori">
+                {loop: $jnsperawatan.kategori}
+                  <option value="{$value}"{if: $jnsperawatan.form.kategori == $value} selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
             <label for="" class="col-sm-3 control-label">Status</label>
             <div class="col-sm-9">
               <select class="form-control" name="status">

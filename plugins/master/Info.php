@@ -451,6 +451,9 @@
             `nm_racik` varchar(30) NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+          $core->db()->pdo()->exec("ALTER TABLE `metode_racik`
+            ADD PRIMARY KEY (`kd_racik`) USING BTREE;");
+
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `master_berkas_digital` (
             `kode` varchar(10) NOT NULL,
             `nama` varchar(100) DEFAULT NULL
