@@ -683,6 +683,23 @@ $("#radiologi").on("click", ".pilih_radiologi", function(event){
   $("#info_tambahan").show();
 });
 
+// ketika tombol panggil ditekan
+$("#display").on("click",".panggil", function(event){
+  event.preventDefault();
+
+  var nm_pasien 	= $(this).attr("data-nm_pasien");
+  var nm_poli = $(this).attr("data-nm_poli");
+  var no_reg = $(this).attr("data-no_reg");
+  function play (){
+    responsiveVoice.speak(
+      nm_pasien + ",nomor antrian " + no_reg + ",ke" + nm_poli ,"Indonesian Male", {pitch: 1,rate: 0.8,volume: 2}
+    );
+  }
+  play();
+
+});
+// akhir kode panggil
+
 // ketika tombol simpan diklik
 $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
