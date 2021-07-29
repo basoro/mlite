@@ -3,7 +3,7 @@
 namespace Plugins\Vedika;
 
 use Systems\AdminModule;
-use Systems\Lib\BpjsRequest;
+use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
@@ -132,18 +132,18 @@ class Admin extends AdminModule
     {
       header('Content-type: text/html');
       $date = date('Y-m-d');
-      $url = $this->options->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
-      $consid = $this->options->get('settings.BpjsConsID');
-      $secretkey = $this->options->get('settings.BpjsSecretKey');
-      $output = BpjsRequest::get($url, NULL, NULL, $consid, $secretkey);
+      $url = $this->settings->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
+      $consid = $this->settings->get('settings.BpjsConsID');
+      $secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $output = BpjsService::get($url, NULL, $consid, $secretkey);
       $data = json_decode($output, true);
       //print_r($output);
 
-      $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/'.$data['response']['noRujukan'];
+      $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/'.$data['response']['noRujukan'];
       if($_POST['asal_rujukan'] == 2) {
-        $url_rujukan = $this->options->get('settings.BpjsApiUrl').'Rujukan/RS/'.$data['response']['noRujukan'];
+        $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/RS/'.$data['response']['noRujukan'];
       }
-      $rujukan = BpjsRequest::get($url_rujukan, NULL, NULL, $consid, $secretkey);
+      $rujukan = BpjsService::get($url_rujukan, NULL, $consid, $secretkey);
       $data_rujukan = json_decode($rujukan, true);
       //print_r($rujukan);
 
@@ -159,8 +159,8 @@ class Admin extends AdminModule
 
       if($data_rujukan['metaData']['code'] == 201) {
         $data_rujukan['response']['rujukan']['tglKunjungan'] = $_POST['tgl_kunjungan'];
-        $data_rujukan['response']['rujukan']['provPerujuk']['kode'] = $this->core->getSettings('kode_ppk');
-        $data_rujukan['response']['rujukan']['provPerujuk']['nama'] = $this->core->getSettings('nama_instansi');
+        $data_rujukan['response']['rujukan']['provPerujuk']['kode'] = $this->settings->get('settings.ppk_bpjs');
+        $data_rujukan['response']['rujukan']['provPerujuk']['nama'] = $this->settings->get('settings.nama_instansi');
         $data_rujukan['response']['rujukan']['diagnosa']['kode'] = $_POST['kd_diagnosa'];
         $data_rujukan['response']['rujukan']['diagnosa']['nama'] = $data['response']['diagnosa'];
         $data_rujukan['response']['rujukan']['pelayanan']['kode'] = $jenis_pelayanan;
@@ -177,8 +177,8 @@ class Admin extends AdminModule
             'no_rujukan' => $data['response']['noRujukan'],
             'kdppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['kode'],
             'nmppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['nama'],
-            'kdppkpelayanan' => $this->core->getSettings('kode_ppk'),
-            'nmppkpelayanan' => $this->core->getSettings('nama_instansi'),
+            'kdppkpelayanan' => $this->settings->get('settings.ppk_bpjs'),
+            'nmppkpelayanan' => $this->settings->get('settings.nama_instansi'),
             'jnspelayanan' => $data_rujukan['response']['rujukan']['pelayanan']['kode'],
             'catatan' => $data['response']['catatan'],
             'diagawal' => $data_rujukan['response']['rujukan']['diagnosa']['kode'],
@@ -187,7 +187,7 @@ class Admin extends AdminModule
             'nmpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['nm_poli_bpjs'],
             'klsrawat' =>  $data['response']['kelasRawat'],
             'lakalantas' => '0',
-            'user' => $this->getUserInfo('username', null, true),
+            'user' => $this->core->getUserInfo('username', null, true),
             'nomr' => $this->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']),
             'nama_pasien' => $data['response']['peserta']['nama'],
             'tanggal_lahir' => $data['response']['peserta']['tglLahir'],
@@ -335,7 +335,7 @@ class Admin extends AdminModule
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
       $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
       $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
-      $this->tpl->set('vedika', htmlspecialchars_array($this->options('vedika')));
+      $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/pdf.html', true);
       exit();
     }
@@ -537,19 +537,6 @@ class Admin extends AdminModule
       imagedestroy($QR);
       exit();
 
-    }
-
-    public function getUserInfo($field, $id = null, $refresh = false)
-    {
-        if (!$id) {
-            $id = isset_or($_SESSION['mlite_user'], 0);
-        }
-
-        if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
-        }
-
-        return self::$userCache[$field];
     }
 
     public function getPegawaiInfo($field, $nik)
