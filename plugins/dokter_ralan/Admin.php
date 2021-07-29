@@ -627,8 +627,14 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $_POST['instruksi'] = '';
-      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+      $check_db->execute();
+      $check_db = $check_db->fetch();
+
+      if($check_db) {
+        $_POST['instruksi'] = '';
+        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      }
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
@@ -1011,32 +1017,69 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            $_POST['instruksi'] = '';
-            $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+            $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+            $check_db->execute();
+            $check_db = $check_db->fetch();
+
+            if($check_db) {
+              $_POST['instruksi'] = '';
+              $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+            }
             $cek_no_rawat = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNorawat($id))->oneArray();
             if(empty($cek_no_rawat['no_rawat'])) {
-              $query = $this->db('pemeriksaan_ralan')
-                ->save([
-                  'no_rawat' => revertNorawat($id),
-                  'tgl_perawatan' => date('Y-m-d'),
-                  'jam_rawat' => date('H:i:s'),
-                  'suhu_tubuh' => $_POST['suhu_tubuh'],
-                  'tensi' => $_POST['tensi'],
-                  'nadi' => $_POST['nadi'],
-                  'respirasi' => $_POST['respirasi'],
-                  'tinggi' => $_POST['tinggi'],
-                  'berat' => $_POST['berat'],
-                  'gcs' => $_POST['gcs'],
-                  'kesadaran' => $_POST['kesadaran'],
-                  'keluhan' => $_POST['keluhan'],
-                  'pemeriksaan' => $_POST['pemeriksaan'],
-                  'alergi' => $_POST['alergi'],
-                  'imun_ke' => $_POST['imun_ke'],
-                  'rtl' => $_POST['rtl'],
-                  'penilaian' => $_POST['penilaian'],
-                  'instruksi' => $_POST['instruksi'],
-                  'nip' => $_POST['nip']
-              ]);
+              $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+              $check_db->execute();
+              $check_db = $check_db->fetch();
+
+              if($check_db) {
+                $_POST['instruksi'] = '';
+                $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+                $query = $this->db('pemeriksaan_ralan')
+                  ->save([
+                    'no_rawat' => revertNorawat($id),
+                    'tgl_perawatan' => date('Y-m-d'),
+                    'jam_rawat' => date('H:i:s'),
+                    'suhu_tubuh' => $_POST['suhu_tubuh'],
+                    'tensi' => $_POST['tensi'],
+                    'nadi' => $_POST['nadi'],
+                    'respirasi' => $_POST['respirasi'],
+                    'tinggi' => $_POST['tinggi'],
+                    'berat' => $_POST['berat'],
+                    'gcs' => $_POST['gcs'],
+                    'kesadaran' => $_POST['kesadaran'],
+                    'keluhan' => $_POST['keluhan'],
+                    'pemeriksaan' => $_POST['pemeriksaan'],
+                    'alergi' => $_POST['alergi'],
+                    'imun_ke' => $_POST['imun_ke'],
+                    'rtl' => $_POST['rtl'],
+                    'penilaian' => $_POST['penilaian'],
+                    'instruksi' => $_POST['instruksi'],
+                    'nip' => $_POST['nip']
+                ]);
+              } else {
+                $query = $this->db('pemeriksaan_ralan')
+                  ->save([
+                    'no_rawat' => revertNorawat($id),
+                    'tgl_perawatan' => date('Y-m-d'),
+                    'jam_rawat' => date('H:i:s'),
+                    'suhu_tubuh' => $_POST['suhu_tubuh'],
+                    'tensi' => $_POST['tensi'],
+                    'nadi' => $_POST['nadi'],
+                    'respirasi' => $_POST['respirasi'],
+                    'tinggi' => $_POST['tinggi'],
+                    'berat' => $_POST['berat'],
+                    'gcs' => $_POST['gcs'],
+                    'kesadaran' => $_POST['kesadaran'],
+                    'keluhan' => $_POST['keluhan'],
+                    'pemeriksaan' => $_POST['pemeriksaan'],
+                    'alergi' => $_POST['alergi'],
+                    'imun_ke' => $_POST['imun_ke'],
+                    'rtl' => $_POST['rtl'],
+                    'penilaian' => $_POST['penilaian']
+                ]);
+              }
+
+
 
               $get_kd_penyakit = $_POST['kd_penyakit'];
               for ($i = 0; $i < count($get_kd_penyakit); $i++) {
@@ -1095,26 +1138,53 @@ class Admin extends AdminModule
 
             } else {
 
-              $query = $this->db('pemeriksaan_ralan')
-                ->where('no_rawat', revertNorawat($id))
-                ->update([
-                  'suhu_tubuh' => $_POST['suhu_tubuh'],
-                  'tensi' => $_POST['tensi'],
-                  'nadi' => $_POST['nadi'],
-                  'respirasi' => $_POST['respirasi'],
-                  'tinggi' => $_POST['tinggi'],
-                  'berat' => $_POST['berat'],
-                  'gcs' => $_POST['gcs'],
-                  'kesadaran' => $_POST['kesadaran'],
-                  'keluhan' => $_POST['keluhan'],
-                  'pemeriksaan' => $_POST['pemeriksaan'],
-                  'alergi' => $_POST['alergi'],
-                  'imun_ke' => $_POST['imun_ke'],
-                  'rtl' => $_POST['rtl'],
-                  'penilaian' => $_POST['penilaian'],
-                  'instruksi' => $_POST['instruksi'],
-                  'nip' => $_POST['nip']
-              ]);
+              $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+              $check_db->execute();
+              $check_db = $check_db->fetch();
+
+              if($check_db) {
+                $_POST['instruksi'] = '';
+                $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+                $query = $this->db('pemeriksaan_ralan')
+                  ->where('no_rawat', revertNorawat($id))
+                  ->update([
+                    'suhu_tubuh' => $_POST['suhu_tubuh'],
+                    'tensi' => $_POST['tensi'],
+                    'nadi' => $_POST['nadi'],
+                    'respirasi' => $_POST['respirasi'],
+                    'tinggi' => $_POST['tinggi'],
+                    'berat' => $_POST['berat'],
+                    'gcs' => $_POST['gcs'],
+                    'kesadaran' => $_POST['kesadaran'],
+                    'keluhan' => $_POST['keluhan'],
+                    'pemeriksaan' => $_POST['pemeriksaan'],
+                    'alergi' => $_POST['alergi'],
+                    'imun_ke' => $_POST['imun_ke'],
+                    'rtl' => $_POST['rtl'],
+                    'penilaian' => $_POST['penilaian'],
+                    'instruksi' => $_POST['instruksi'],
+                    'nip' => $_POST['nip']
+                ]);
+              } else {
+                $query = $this->db('pemeriksaan_ralan')
+                  ->where('no_rawat', revertNorawat($id))
+                  ->update([
+                    'suhu_tubuh' => $_POST['suhu_tubuh'],
+                    'tensi' => $_POST['tensi'],
+                    'nadi' => $_POST['nadi'],
+                    'respirasi' => $_POST['respirasi'],
+                    'tinggi' => $_POST['tinggi'],
+                    'berat' => $_POST['berat'],
+                    'gcs' => $_POST['gcs'],
+                    'kesadaran' => $_POST['kesadaran'],
+                    'keluhan' => $_POST['keluhan'],
+                    'pemeriksaan' => $_POST['pemeriksaan'],
+                    'alergi' => $_POST['alergi'],
+                    'imun_ke' => $_POST['imun_ke'],
+                    'rtl' => $_POST['rtl'],
+                    'penilaian' => $_POST['penilaian']
+                ]);
+              }
 
               $get_kd_penyakit = $_POST['kd_penyakit'];
               $this->db('diagnosa_pasien')->where('no_rawat', revertNorawat($id))->delete();
