@@ -220,7 +220,7 @@ class Admin extends AdminModule
       }
 
       if ($insert) {
-          $this->db('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']])
+          $this->db('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']]);
           $this->notify('success', 'Simpan sukes');
       } else {
           $this->notify('failure', 'Simpan gagal');
