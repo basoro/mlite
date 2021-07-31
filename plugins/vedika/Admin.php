@@ -7,6 +7,8 @@ use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
+    private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
+
     public function navigation()
     {
         return [
@@ -94,7 +96,7 @@ class Admin extends AdminModule
               $row['riwayatURL']  = url([ADMIN, 'vedika', 'riwayat', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
-              $row['berkasPerawatan'] = url([ADMIN, 'ralan', 'view', $this->convertNorawat($row['no_rawat'])]);
+              $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
@@ -112,8 +114,8 @@ class Admin extends AdminModule
       $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
       $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
       $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      $print_sep['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+      $print_sep['logoURL'] = url(MODULES.'/vclaim/img/bpjslogo.png');
       $print_sep['qrCode'] = url(ADMIN.'/vedika/qrcode?no_sep='.$id);
       $this->tpl->set('print_sep', $print_sep);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/sep.html', true);
@@ -218,6 +220,7 @@ class Admin extends AdminModule
       }
 
       if ($insert) {
+          $this->db('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']])
           $this->notify('success', 'Simpan sukes');
       } else {
           $this->notify('failure', 'Simpan gagal');
@@ -260,13 +263,13 @@ class Admin extends AdminModule
       $total = $total;
       $this->tpl->set('total', $total);
 
-      $instansi['logo'] = $this->core->getSettings('logo');
-      $instansi['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $instansi['alamat_instansi'] = $this->core->getSettings('alamat_instansi');
-      $instansi['kabupaten'] = $this->core->getSettings('kabupaten');
-      $instansi['propinsi'] = $this->core->getSettings('propinsi');
-      $instansi['kontak'] = $this->core->getSettings('kontak');
-      $instansi['email'] = $this->core->getSettings('email');
+      $instansi['logo'] = $this->settings->get('settings.nama_instansi');
+      $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+      $instansi['alamat_instansi'] = $this->settings->get('settings.alamat');
+      $instansi['kabupaten'] = $this->settings->get('settings.kota');
+      $instansi['propinsi'] = $this->settings->get('settings.propinsi');
+      $instansi['kontak'] = $this->settings->get('settings.nomor_telepon');
+      $instansi['email'] = $this->settings->get('settings.email');
 
       $this->tpl->set('billing', $rows);
       $this->tpl->set('instansi', $instansi);
@@ -277,8 +280,8 @@ class Admin extends AdminModule
         $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
         $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       }
-      $print_sep['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+      $print_sep['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+      $print_sep['logoURL'] = url(MODULES.'/vclaim/img/bpjslogo.png');
       $this->tpl->set('print_sep', $print_sep);
 
       $resume_pasien = $this->db('resume_pasien')
@@ -413,13 +416,13 @@ class Admin extends AdminModule
       $total = $total;
       $this->tpl->set('total', $total);
 
-      $instansi['logo'] = $this->core->getSettings('logo');
-      $instansi['nama_instansi'] = $this->core->getSettings('nama_instansi');
-      $instansi['alamat_instansi'] = $this->core->getSettings('alamat_instansi');
-      $instansi['kabupaten'] = $this->core->getSettings('kabupaten');
-      $instansi['propinsi'] = $this->core->getSettings('propinsi');
-      $instansi['kontak'] = $this->core->getSettings('kontak');
-      $instansi['email'] = $this->core->getSettings('email');
+      $instansi['logo'] = url().'/'.$this->settings->get('settings.logo');
+      $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+      $instansi['alamat_instansi'] = $this->settings->get('settings.alamat');
+      $instansi['kabupaten'] = $this->settings->get('settings.kota');
+      $instansi['propinsi'] = $this->settings->get('settings.propinsi');
+      $instansi['kontak'] = $this->settings->get('settings.nomor_telepon');
+      $instansi['email'] = $this->settings->get('settings.email');
 
       $this->tpl->set('billing', $rows);
       $this->tpl->set('instansi', $instansi);
@@ -434,11 +437,41 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getBerkasPerawatan()
+    public function anyBerkasPerawatan($no_rawat)
     {
+      $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
+      $this->assign['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $no_rawat)->toArray();
+      $this->assign['no_rawat'] = $no_rawat;
+      $this->tpl->set('berkasperawatan', $this->assign);
+
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/berkasperawatan.html', true);
       exit();
     }
+
+    public function postSaveBerkasDigital()
+    {
+
+      $dir    = $this->_uploads;
+      $cntr   = 0;
+
+      $image = $_FILES['files']['tmp_name'];
+      $img = new \Systems\Lib\Image();
+      $id = convertNorawat($_POST['no_rawat']);
+      if ($img->load($image)) {
+          $imgName = time().$cntr++;
+          $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+          $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if($query) {
+            echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+          }
+      }
+
+      exit();
+
+    }
+
     private function _getSEPInfo($field, $no_rawat)
     {
         $row = $this->db('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();

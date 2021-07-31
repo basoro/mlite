@@ -7,7 +7,7 @@
                     <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Jalan</span>
                   </span>
                   <ul class="dropdown-menu dropdown-menu-right">
-                    <form class="" action="{?=url(ADMIN.'/vedika/manage')?}" method="">
+                    <form class="" action="{?=url(ADMIN.'/vedika/index')?}" method="">
                     <li style="padding-left:5px;padding-right:5px;">
                       <input type="text" id="start_date" class="form-control tanggal" name="start_date" required>
                     </li>
@@ -16,7 +16,7 @@
                     </li>
                     <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                       <input type="submit" name="submit" class="btn btn-primary btn-block" value="Submit">
-                      <input type="text" name="t" value="{?=$_SESSION['token']?}">
+                      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
                     </li>
                     </form>
                   </ul>
@@ -129,7 +129,7 @@
                             </tr>
                             {/loop}
                             {/if}
-                            <tr><td><br><a href="{$value.berkasPerawatan}#digital" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
+                            <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
                               <td>- <a href="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
@@ -159,5 +159,12 @@
     </div>
 </div>
 <script>
-$('.gallery').lightbox();
+  $( function() {
+    $('.tanggal').datetimepicker({
+      defaultDate: '{?=date('Y-m-d')?}',
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  } );
+  $('.gallery').lightbox();
 </script>
