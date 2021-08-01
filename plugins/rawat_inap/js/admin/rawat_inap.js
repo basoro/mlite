@@ -415,7 +415,6 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   var gcs             = $('input:text[name=gcs]').val();
   var kesadaran       = $('input:text[name=kesadaran]').val();
   var alergi          = $('input:text[name=alergi]').val();
-  var alergi          = $('input:text[name=alergi]').val();
   var keluhan         = $('textarea[name=keluhan]').val();
   var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
   var penilaian       = $('textarea[name=penilaian]').val();
@@ -439,6 +438,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
   penilaian : penilaian,
   rtl : rtl
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/rawat_inap/soap?t=' + mlite.token;

@@ -319,25 +319,6 @@
   </fieldset>
   <br><br><br>
   <fieldset style="page-break-before:always;">
-    <h2><center>Berkas Digital</center></h2>
-
-    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
-        {loop: $berkas_digital_pasien}
-            <tr class="isi8">
-                    <td width="99%">
-                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;">
-                    </td>
-            </tr>
-        {/loop}
-        {loop: $berkas_digital}
-        <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
-        </tr>
-        {/loop}
-    </table>
-  </fieldset>
-  <br><br><br>
-  <fieldset style="page-break-before:always;">
 
     <div class="block-header">
              <h2><center>RESUME PERAWATAN<br>NO.{$resume_pasien.no_rawat}</center></h2>
@@ -764,6 +745,27 @@
                 </tr>
         </table>
   </fieldset>
+  <br><br><br>
+  <fieldset style="page-break-before:always;">
+    <h2><center>Berkas Digital</center></h2>
+
+    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
+        {loop: $berkas_digital_pasien}
+            <tr class="isi8">
+                    <td width="99%">
+                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;"><br>{$value.title}
+                    </td>
+            </tr>
+        {/loop}
+        {loop: $berkas_digital}
+        <tr>
+          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
+        </tr>
+        {/loop}
+    </table>
+  </fieldset>
+  <br><br><br>
+
 </body>
 <script>
 	jQuery('#qrcodeCanvas').qrcode({
