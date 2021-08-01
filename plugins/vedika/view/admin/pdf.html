@@ -604,7 +604,7 @@ Ralan :
           <table width="100%" bgcolor="#ffffff" align="left" border="0" cellspacing="0" cellpadding="0">
               <tr>
                   <td  width="20%">
-                      <img width="45" height="45" src="data:image/jpeg;base64,{?=base64_encode($instansi.logo)?}"/>
+                      <img width="45" height="45" src="{?=url()?}/{$instansi.logo}"/>
                   </td>
                   <td>
                       <center>
@@ -690,31 +690,15 @@ Ralan :
     </table>
   </fieldset>
   <br><br><br>
-  {if: $berkas_digital}
-  <!-- Berkas Digital SEP -->
-  <fieldset style="page-break-before:always;">
-    <h2><center>Berkas Digital SEP</center></h2>
-    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
-        {loop: $berkas_digital}
-        {if: $value.kode == $vedika.sep}
-        <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
-        </tr>
-        {/if}
-        {/loop}
-    </table>
-  </fieldset>
-  <br><br><br>
-  {/if}
-  <!-- Berkas Digital -->
   {if: $berkas_digital_pasien}
+  <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
     <h2><center>Identitas Pasien</center></h2>
     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
         {loop: $berkas_digital_pasien}
             <tr class="isi8">
                     <td width="99%">
-                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;">
+                      <img src="{?=url()?}/{$value.src.sm}" style="max-width: 800px;"><br>{$value.title}
                     </td>
             </tr>
         {/loop}
@@ -722,20 +706,6 @@ Ralan :
   </fieldset>
   <br><br><br>
   {/if}
-  <!-- Berkas SKDP -->
-  <fieldset style="page-break-before:always;">
-    <h2><center>Berkas Digital SKDP / Surat Kontrol</center></h2>
-    <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
-        {loop: $berkas_digital}
-      	{if: $value.kode == $vedika.skdp}
-        <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
-        </tr>
-      	{/if}
-        {/loop}
-    </table>
-  </fieldset>
-  <br><br><br>
   {if: $gambar_radiologi}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
@@ -758,7 +728,7 @@ Ralan :
         {loop: $berkas_digital}
         {if: $value.kode != $vedika.sep}
         <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
         </tr>
         {/if}
         {/loop}

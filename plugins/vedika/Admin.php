@@ -263,7 +263,7 @@ class Admin extends AdminModule
       $total = $total;
       $this->tpl->set('total', $total);
 
-      $instansi['logo'] = $this->settings->get('settings.nama_instansi');
+      $instansi['logo'] = $this->settings->get('settings.logo');
       $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
       $instansi['alamat_instansi'] = $this->settings->get('settings.alamat');
       $instansi['kabupaten'] = $this->settings->get('settings.kota');
@@ -277,7 +277,7 @@ class Admin extends AdminModule
       $print_sep = array();
       if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
         $print_sep['bridging_sep'] = $this->db('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
-        $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();        
+        $print_sep['bpjs_prb'] = $this->db('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
         $batas_rujukan = $this->db('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
         $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       }
