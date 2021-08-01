@@ -713,7 +713,7 @@ Ralan :
     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
         {loop: $gambar_radiologi}
         <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/radiologi/{$value.lokasi_gambar}" style="max-width: 800px;"></td>
+          <td><img src="{?=url(WEBAPPS_URL)?}/radiologi/{$value.lokasi_gambar}" style="max-width: 800px;"></td>
         </tr>
         {/loop}
       <p>{$hasil_radiologi.hasil}</p>
@@ -728,7 +728,7 @@ Ralan :
         {loop: $berkas_digital}
         {if: $value.kode != $vedika.sep}
         <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
+          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
         </tr>
         {/if}
         {/loop}
@@ -817,7 +817,7 @@ Ralan :
         {loop: $berkas_digital}
         {if: $value.kode == $vedika.operasi}
         <tr>
-          <td><img src="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
+          <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"></td>
         </tr>
         {/if}
         {/loop}
