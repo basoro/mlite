@@ -133,7 +133,6 @@ class Admin extends AdminModule
       $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
       $print_sep['nama_instansi'] = $this->settings->get('settings.nama_instansi');
       $print_sep['logoURL'] = url(MODULES.'/vclaim/img/bpjslogo.png');
-      $print_sep['qrCode'] = url(ADMIN.'/vedika/qrcode?no_sep='.$id);
       $this->tpl->set('print_sep', $print_sep);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/sep.html', true);
       exit();
