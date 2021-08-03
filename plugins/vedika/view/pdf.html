@@ -1167,8 +1167,8 @@ Ralan :
   <br><br><br>
   {/if}
   <!-- Berkas Digital -->
+  {if: $laporan_operasi}
   <fieldset style="page-break-before:always;">
-    {if: $laporan_operasi}
     <h4>Resume Laporan Operasi</h4>
     <table class="table">
         <tr>
@@ -1217,9 +1217,9 @@ Ralan :
        </script>
      </p>
    </div>
-   {/if}
   </fieldset>
   <br><br><br>
+  {/if}
   {if: $berkas_digital_pasien}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
