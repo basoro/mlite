@@ -4,7 +4,7 @@
             <div class="panel-heading">
                 <div class="btn-group pull-right" style="margin-top:-8px;">
                   <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-                    <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Rawat Jalan</span>
+                    <i class="fa fa-calendar"></i><span class="hidden-xs"> Pilihan dan Pemilahan</span>
                   </span>
                   <ul class="dropdown-menu dropdown-menu-right">
                     <form class="" action="{?=url(ADMIN.'/vedika/index')?}" method="">
@@ -13,6 +13,12 @@
                     </li>
                     <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                       <input type="text" id="end_date" class="form-control tanggal" name="end_date" required>
+                    </li>
+                    <li class="{if: $tab == 'ralan'}active{/if}" style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <a href="{$vedika.ralanUrl}" class="btn btn-primary btn-block" role="tab">Rawat Jalan</a>
+                    </li>
+                    <li class="{if: $tab == 'ranap'}active{/if}" style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <a href="{$vedika.ranapUrl}" class="btn btn-primary btn-block" role="tab">Rawat Inap</a>
                     </li>
                     <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
                       <input type="submit" name="submit" class="btn btn-primary btn-block" value="Submit">
@@ -48,6 +54,8 @@
       								<tr>
                         <th>Aksi dan Proses</th>
                         <th>Data Pasien</th>
+                        <th>Data Registrasi</th>
+                        <th>Data Kunjungan</th>
                         <th>Berkas Digital</th>
       								</tr>
       							</thead>
@@ -77,47 +85,51 @@
       									<td>
                           <table>
                             <tr>
-                              <td width='150px'>No.Rawat</td><td>: {$value.no_rawat}</td>
+                              <td width='120px'>No.Rawat</td><td>: {$value.no_rawat}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>No.RM</td><td>: {$value.no_rkm_medis}</td>
+                              <td width='120px'>No.RM</td><td>: {$value.no_rkm_medis}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>Nama Pasien</td><td>: {$value.nm_pasien}</td>
+                              <td width='120px'>Nama Pasien</td><td>: {?=substr($value.nm_pasien, 0, strrpos(substr($value.nm_pasien, 0, 20), ' '))?}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>Umur</td><td>: {$value.umur} {$value.sttsumur}</td>
+                              <td width='120px'>Umur</td><td>: {$value.umur} {$value.sttsumur}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>Jenis Kelamin</td><td>: {if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+                              <td width='120px'>Jenis Kelamin</td><td>: {if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>Alamat Pasien</td><td>: {$value.almt_pj}</td>
-                            </tr>
-                          </table>
-                          <table>
-                            <tr>
-                              <td width='150px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
-                            </tr>
-                            <tr>
-                              <td width='150px'>Poliklinik</td><td>: {$value.nm_poli}</td>
-                            </tr>
-                            <tr>
-                              <td width='150px'>Dokter</td><td>: {$value.nm_dokter}</td>
-                            </tr>
-                            <tr>
-                              <td width='150px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
+                              <td width='120px'>Alamat Pasien</td><td>: {?=substr($value.almt_pj, 0, strrpos(substr($value.almt_pj, 0, 20), ' '))?}</td>
                             </tr>
                           </table>
+                        </td>
+                        <td>
                           <table>
                             <tr>
-                              <td width='150px'>No. Kunjungan</td><td>: {$value.no_rujukan}</td>
+                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>No. Kartu</td><td>: {$value.no_peserta}</td>
+                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
-                              <td width='150px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                              <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
+                            </tr>
+                          </table>
+                        </td>
+                        <td>
+                          <table>
+                            <tr>
+                              <td width='120px'>No. Kunjungan</td><td>: {$value.no_rujukan}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                             </tr>
                           </table>
                         </td>
