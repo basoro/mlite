@@ -39,6 +39,8 @@ class Admin extends AdminModule
             $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
             $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
         }
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addCSS(url([ADMIN, 'users', 'css']));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
         return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => $rows]);
@@ -322,4 +324,12 @@ class Admin extends AdminModule
             return false;
         }
     }
+
+    public function getCss()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES.'/users/css/admin/users.css');
+        exit();
+    }
+
 }
