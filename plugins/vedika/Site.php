@@ -31,6 +31,7 @@ class Site extends SiteModule
         $this->route('veda/css', 'getCss');
         $this->route('veda/javascript', 'getJavascript');
         $this->route('veda/pdf/(:str)', 'getPDF');
+        $this->route('veda/createpdf/(:str)', 'getCreatePDF');
         $this->route('veda/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('veda/catatan/(:str)', 'getCatatan');
         $this->route('veda/logout', function () {
