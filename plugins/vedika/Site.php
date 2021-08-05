@@ -33,6 +33,9 @@ class Site extends SiteModule
         $this->route('veda/pdf/(:str)', 'getPDF');
         $this->route('veda/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('veda/catatan/(:str)', 'getCatatan');
+        $this->route('veda/logout', function () {
+            $this->logout();
+        });
     }
 
     public function getIndex()
@@ -45,7 +48,7 @@ class Site extends SiteModule
             ];
         } else {
             if (isset($_POST['login'])) {
-                if ($this->_login($_POST['username'], $_POST['password'], isset($_POST['remember_me']) )) {
+                if ($this->_login($_POST['username'], $_POST['password'])) {
                     if (count($arrayURL = parseURL()) > 1) {
                         $url = array_merge(['veda'], $arrayURL);
                         redirect(url($url));
@@ -544,7 +547,7 @@ class Site extends SiteModule
         return $result;
     }
 
-    private function _login($username, $password, $remember_me = false)
+    private function _login($username, $password)
     {
         // Check attempt
         $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
@@ -558,24 +561,18 @@ class Site extends SiteModule
             $attempt['expires'] = intval($attempt['expires']);
         }
 
-        $row = $this->db('mlite_users')->where('username', $username)->where('role','bpjs')->oneArray();
+        $row_username = $this->settings->get('vedika.username');
+        $row_password = $this->settings->get('vedika.password');
 
-        if ($row && password_verify(trim($password), $row['password'])) {
+        if ($row_username == $username && $row_password == $password) {
             // Reset fail attempts for this IP
             $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
-            $_SESSION['vedika_user']= $row['id'];
+            $_SESSION['vedika_user']       = $row_username['value'];
             $_SESSION['vedika_token']      = bin2hex(openssl_random_pseudo_bytes(6));
             $_SESSION['vedika_userAgent']  = $_SERVER['HTTP_USER_AGENT'];
             $_SESSION['vedika_IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
-            if ($remember_me) {
-                $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
-
-                $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
-
-                setcookie('mlite_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
-            }
             return true;
         } else {
             // Increase attempt
@@ -620,12 +617,6 @@ class Site extends SiteModule
 
     private function logout()
     {
-        if (isset($_COOKIE['vedika_remember'])) {
-            $token = explode(':', $_COOKIE['vedika_remember']);
-            $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
-            setcookie('vedika_remember', null, -1, '/');
-        }
-
         unset($_SESSION['vedika_user']);
         unset($_SESSION['vedika_token']);
         unset($_SESSION['vedika_userAgent']);
