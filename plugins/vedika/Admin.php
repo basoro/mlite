@@ -108,6 +108,7 @@ class Admin extends AdminModule
               $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
               $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
+              $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->convertNorawat($row['no_rawat'])]);
               $row['riwayatURL']  = url([ADMIN, 'vedika', 'riwayat', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
@@ -472,6 +473,14 @@ class Admin extends AdminModule
         ->oneArray();
       $this->tpl->set('resume_pasien', $resume_pasien);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/resume.html', true);
+      exit();
+    }
+
+    public function getSetStatus($id)
+    {
+      $set_status = [];
+      $this->tpl->set('set_status', $set_status);
+      echo $this->tpl->draw(MODULES.'/vedika/view/admin/setstatus.html', true);
       exit();
     }
 

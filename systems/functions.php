@@ -149,6 +149,18 @@ function addToken($url)
     return $url;
 }
 
+function addTokenVedika($url)
+{
+    if (isset($_SESSION['vedika_token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['vedika_token'];
+        } else {
+            return $url.'?t='.$_SESSION['vedika_token'];
+        }
+    }
+
+    return $url;
+}
 
 function url($data = null)
 {
@@ -181,6 +193,10 @@ function url($data = null)
 
     if (strpos($url, '/'.ADMIN.'/') !== false) {
         $url = addToken($url);
+    }
+
+    if (strpos($url, '/veda/') !== false) {
+        $url = addTokenVedika($url);
     }
 
     return $url;
@@ -478,7 +494,7 @@ if (!function_exists('apache_request_headers')) {
 
 function sendMSG($number, $msg, $sender)
 {
-    $url = "https://waapi.basoro.id/send-message"; 
+    $url = "https://waapi.basoro.id/send-message";
     $data = [
         "sender" => $sender,
         "number" => $number,
