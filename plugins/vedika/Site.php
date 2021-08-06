@@ -722,6 +722,8 @@ class Site extends SiteModule
     {
       $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
       $vedika = $this->db('mlite_vedika')->where('nosep', $id)->asc('id')->toArray();
+      $this->tpl->set('logo', $this->settings->get('settings.logo'));
+      $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
       $this->tpl->set('set_status', $set_status);
       $this->tpl->set('vedika', $vedika);
       echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);

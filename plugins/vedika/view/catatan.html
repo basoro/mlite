@@ -27,11 +27,32 @@
       <input type="submit" name="setuju" class="btn btn-success" value="Disetujui"/>
       <input type="submit" name="perbaiki" class="btn btn-danger" value="Perbaiki"/>
   </form>
+  <br><br>
   <div class="row">
     <div class="col-md-12">
-      {loop: $vedika}
-      {$value.catatan}
-      {/loop}
+      <h4>Feedback</h4>
+      <div class="comments-list">
+        {loop: $vedika}
+        <div class="media">
+          <p class="pull-right"><small>{$value.tanggal}</small></p>
+          <a class="media-left" href="#">
+            {if: $value.username == 'bpjs'}
+              <img src="{?=url()?}/assets/img/avatar-bpjs.png" width="30px">
+            {else}
+              <img src="{?=url()?}/{$logo}" width="30px">
+            {/if}
+          </a>
+          <div class="media-body">
+            {if: $value.username == 'bpjs'}
+              <h4 class="media-heading user_name">Verifikator BPJS</h4>
+            {else}
+              <h4 class="media-heading user_name">{$nama_instansi}</h4>
+            {/if}
+            <div style="font-size:14px;">{$value.catatan}</div>
+          </div>
+        </div>
+        {/loop}
+      </div>
     </div>
   </div>
 </div>
