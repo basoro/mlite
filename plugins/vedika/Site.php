@@ -843,7 +843,7 @@ class Site extends SiteModule
             // Reset fail attempts for this IP
             $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
-            $_SESSION['vedika_user']       = $row_username['value'];
+            $_SESSION['vedika_user']       = $row_username;
             $_SESSION['vedika_token']      = bin2hex(openssl_random_pseudo_bytes(6));
             $_SESSION['vedika_userAgent']  = $_SERVER['HTTP_USER_AGENT'];
             $_SESSION['vedika_IPaddress']  = $_SERVER['REMOTE_ADDR'];
