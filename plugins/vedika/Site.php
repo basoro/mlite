@@ -81,7 +81,7 @@ class Site extends SiteModule
             'nosep' => $_POST['nosep'],
             'catatan' => $_POST['catatan'],
             'status' => 'Setuju',
-            'username' => $this->core->getUserInfo('username', null, true)
+            'username' => $_SESSION['vedika_user']
           ]);
         }
 
@@ -94,7 +94,7 @@ class Site extends SiteModule
             'nosep' => $_POST['nosep'],
             'catatan' => $_POST['catatan'],
             'status' => 'Perbaiki',
-            'username' => $this->core->getUserInfo('username', null, true)
+            'username' => $_SESSION['vedika_user']
           ]);
         }
         $page = [
@@ -116,6 +116,31 @@ class Site extends SiteModule
     public function getIndexRanap()
     {
       if($this->_loginCheck()) {
+        if(isset($_POST['setuju'])) {
+          $this->db('mlite_vedika')->save([
+            'id' => NULL,
+            'tanggal' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'no_rawat' => $_POST['no_rawat'],
+            'nosep' => $_POST['nosep'],
+            'catatan' => $_POST['catatan'],
+            'status' => 'Setuju',
+            'username' => $_SESSION['vedika_user']
+          ]);
+        }
+
+        if(isset($_POST['perbaiki'])) {
+          $this->db('mlite_vedika')->save([
+            'id' => NULL,
+            'tanggal' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'no_rawat' => $_POST['no_rawat'],
+            'nosep' => $_POST['nosep'],
+            'catatan' => $_POST['catatan'],
+            'status' => 'Perbaiki',
+            'username' => $_SESSION['vedika_user']
+          ]);
+        }
         $page = [
             'title' => 'Vedika LITE',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
