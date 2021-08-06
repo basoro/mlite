@@ -31,7 +31,7 @@ class Admin extends AdminModule
     {
       if(isset($_POST['submit'])) {
         $this->db('mlite_vedika')->save([
-          'id' => '',
+          'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'no_rawat' => $_POST['no_rawat'],

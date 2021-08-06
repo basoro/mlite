@@ -74,7 +74,7 @@ class Site extends SiteModule
       if ($this->_loginCheck()) {
         if(isset($_POST['setuju'])) {
           $this->db('mlite_vedika')->save([
-            'id' => '',
+            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
@@ -87,7 +87,7 @@ class Site extends SiteModule
 
         if(isset($_POST['perbaiki'])) {
           $this->db('mlite_vedika')->save([
-            'id' => '',
+            'id' => NULL,
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
