@@ -72,7 +72,7 @@
                   <i class="fa fa-folder-open"></i> Feedback
 								</a>
                 {loop: $value.status_pengajuan as $data}
-                  {if: $data.status == 'Disetujui'}
+                  {if: $data.status == 'Setuju'}
                     <span class="label label-success"><i class="fa fa-check"></i></span>
                   {elseif: $data.status == 'Perbaiki'}
                     <span class="label label-danger"><i class="fa fa-edit"></i></span>

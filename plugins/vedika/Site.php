@@ -80,7 +80,7 @@ class Site extends SiteModule
             'no_rawat' => $_POST['no_rawat'],
             'nosep' => $_POST['nosep'],
             'catatan' => $_POST['catatan'],
-            'status' => 'Disetujui',
+            'status' => 'Setuju',
             'username' => $this->core->getUserInfo('username', null, true)
           ]);
         }
@@ -93,7 +93,7 @@ class Site extends SiteModule
             'no_rawat' => $_POST['no_rawat'],
             'nosep' => $_POST['nosep'],
             'catatan' => $_POST['catatan'],
-            'status' => 'Diperbaiki',
+            'status' => 'Perbaiki',
             'username' => $this->core->getUserInfo('username', null, true)
           ]);
         }
@@ -136,10 +136,10 @@ class Site extends SiteModule
     public function _getManage()
     {
       $this->_addHeaderFiles();
-      $ralan = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status_lanjut', 'Ralan')->like('tgl_registrasi', date('Y-m-d'))->oneArray();
-      $ranap = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status_lanjut', 'Ranap')->like('tgl_registrasi', date('Y-m-d'))->oneArray();
-      $disetujui = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->like('tgl_registrasi', date('Y-m-d'))->oneArray();
-      $catatan = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->like('tgl_registrasi', date('Y-m-d'))->oneArray();
+      $ralan = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])->join('mlite_vedika', 'reg_periksa.no_rawat=mlite_vedika.no_rawat')->where('status_lanjut', 'Ralan')->where('mlite_vedika.status', 'Pengajuan')->oneArray();
+      $ranap = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])->join('mlite_vedika', 'reg_periksa.no_rawat=mlite_vedika.no_rawat')->where('status_lanjut', 'Ranap')->where('mlite_vedika.status', 'Pengajuan')->oneArray();
+      $disetujui = $this->db('mlite_vedika')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status', 'Setuju')->oneArray();
+      $catatan = $this->db('mlite_vedika')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status', 'Perbaiki')->oneArray();
 
       $stat['ralan'] = $ralan['count'];
       $stat['ranap'] = $ranap['count'];
@@ -157,7 +157,7 @@ class Site extends SiteModule
       $end_date = date('Y-m-d');
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
       $query->execute();
       $rows = $query->fetchAll();
 
@@ -223,7 +223,7 @@ class Site extends SiteModule
       $end_date = date('Y-m-d');
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ranap' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ranap' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
       $query->execute();
       $rows = $query->fetchAll();
 
