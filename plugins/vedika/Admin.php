@@ -27,8 +27,40 @@ class Admin extends AdminModule
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
-    public function getIndex($type = 'ralan', $page = 1)
+    public function anyIndex($type = 'ralan', $page = 1)
     {
+      if(isset($_POST['submit'])) {
+        $this->db('mlite_vedika')->save([
+          'id' => '',
+          'tanggal' => date('Y-m-d'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'no_rawat' => $_POST['no_rawat'],
+          'nosep' => $_POST['nosep'],
+          'catatan' => $_POST['catatan'],
+          'status' => $_POST['status'],
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+
+      if(isset($_POST['simpanberkas'])) {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+            $imgName = time().$cntr++;
+            $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $img->save($imgPath);
+            $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+            if($query) {
+              $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+            }
+        }
+      }
+
       $this->_addHeaderFiles();
       $start_date = date('Y-m-d');
       if(isset($_GET['start_date']) && $_GET['start_date'] !='')
@@ -108,7 +140,8 @@ class Admin extends AdminModule
               $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
               $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
               $row['resumeURL']  = url([ADMIN, 'vedika', 'resume', $this->convertNorawat($row['no_rawat'])]);
-              $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->convertNorawat($row['no_rawat'])]);
+              $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['riwayatURL']  = url([ADMIN, 'vedika', 'riwayat', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url([ADMIN, 'vedika', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
@@ -478,8 +511,10 @@ class Admin extends AdminModule
 
     public function getSetStatus($id)
     {
-      $set_status = [];
+      $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
+      $vedika = $this->db('mlite_vedika')->where('nosep', $id)->asc('id')->toArray();
       $this->tpl->set('set_status', $set_status);
+      $this->tpl->set('vedika', $vedika);
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/setstatus.html', true);
       exit();
     }
@@ -665,7 +700,7 @@ class Admin extends AdminModule
     {
       $this->assign['master_berkas_digital'] = $this->db('master_berkas_digital')->toArray();
       $this->assign['berkas_digital'] = $this->db('berkas_digital_perawatan')->where('no_rawat', $no_rawat)->toArray();
-      $this->assign['no_rawat'] = $no_rawat;
+      $this->assign['no_rawat'] = revertNorawat($no_rawat);
       $this->tpl->set('berkasperawatan', $this->assign);
 
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/berkasperawatan.html', true);
@@ -694,6 +729,12 @@ class Admin extends AdminModule
 
       exit();
 
+    }
+
+    public function postSaveStatus()
+    {
+      redirect(url([ADMIN,'vedika','index']));
+      //redirect(parseURL());
     }
 
     private function _getSEPInfo($field, $no_rawat)

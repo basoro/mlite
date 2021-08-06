@@ -21,7 +21,11 @@
               </div>
           </div>
           {/if}
-          <form action="{?=url(ADMIN.'/vedika/saveberkasdigital/'.@$berkasperawatan.no_rawat)?}" method="POST" enctype="multipart/form-data">
+          <form action="" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Nomor Rawat</label>
+                  <input type="text" class="form-control" name="no_rawat" value="{$berkasperawatan.no_rawat}">
+              </div>
               <div class="form-group">
                   <label>Kategori Berkas</label>
                   <select name="kode" class="form-control">
@@ -32,10 +36,9 @@
               </div>
               <div class="form-group">
                   <label>Pilih Berkas</label>
-                  <input type="file" name="files[]" accept="image/*" multiple class="form-control" />
+                  <input type="file" name="files" accept="image/*" class="form-control" />
               </div>
-              <input type="hidden" name="no_rawat" value="{$berkasperawatan.no_rawat}">
-              <input type="submit" class="btn btn-primary" value="Unggah" />
+              <input type="submit" class="btn btn-primary" name="simpanberkas" value="Unggah" />
           </form>
       </div>
   </div>

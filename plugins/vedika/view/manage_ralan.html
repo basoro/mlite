@@ -69,8 +69,17 @@
                   <a href="{$value.downloadURL}" target="_blank"><i class="fa fa-download"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.no_sep}</a>
 								</span><br>
                 <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
-                  <i class="fa fa-folder-open"></i> Catatan Verifikator
+                  <i class="fa fa-folder-open"></i> Feedback
 								</a>
+                {loop: $value.status_pengajuan as $data}
+                  {if: $data.status == 'Disetujui'}
+                    <span class="label label-success"><i class="fa fa-check"></i></span>
+                  {elseif: $data.status == 'Perbaiki'}
+                    <span class="label label-danger"><i class="fa fa-edit"></i></span>
+                  {else}
+                    <span class="label label-info"><i class="fa fa-warning"></i></span>
+                  {/if}
+                {/loop}
               </td>
 							<td>
                 <table>

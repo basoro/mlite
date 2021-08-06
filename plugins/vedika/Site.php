@@ -72,6 +72,31 @@ class Site extends SiteModule
     public function getIndexRalan()
     {
       if ($this->_loginCheck()) {
+        if(isset($_POST['setuju'])) {
+          $this->db('mlite_vedika')->save([
+            'id' => '',
+            'tanggal' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'no_rawat' => $_POST['no_rawat'],
+            'nosep' => $_POST['nosep'],
+            'catatan' => $_POST['catatan'],
+            'status' => 'Disetujui',
+            'username' => $this->core->getUserInfo('username', null, true)
+          ]);
+        }
+
+        if(isset($_POST['perbaiki'])) {
+          $this->db('mlite_vedika')->save([
+            'id' => '',
+            'tanggal' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'no_rawat' => $_POST['no_rawat'],
+            'nosep' => $_POST['nosep'],
+            'catatan' => $_POST['catatan'],
+            'status' => 'Diperbaiki',
+            'username' => $this->core->getUserInfo('username', null, true)
+          ]);
+        }
         $page = [
             'title' => 'Vedika LITE',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
@@ -173,7 +198,8 @@ class Site extends SiteModule
               $row['sepURL'] = url(['veda', 'sep', $row['no_sep']]);
               $row['pdfURL'] = url(['veda', 'pdf', $this->convertNorawat($row['no_rawat'])]);
               $row['downloadURL'] = url(['veda', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
-              $row['catatanURL'] = url(['veda', 'catatan', $this->convertNorawat($row['no_rawat'])]);
+              $row['catatanURL'] = url(['veda', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['resumeURL']  = url(['veda', 'resume', $this->convertNorawat($row['no_rawat'])]);
               $row['billingURL'] = url(['veda', 'billing', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
@@ -694,6 +720,10 @@ class Site extends SiteModule
 
     public function getCatatan($id)
     {
+      $set_status = $this->db('bridging_sep')->where('no_sep', $id)->oneArray();
+      $vedika = $this->db('mlite_vedika')->where('nosep', $id)->asc('id')->toArray();
+      $this->tpl->set('set_status', $set_status);
+      $this->tpl->set('vedika', $vedika);
       echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
       exit();
     }

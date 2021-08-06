@@ -78,7 +78,10 @@
       										</a><br/>
                           <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
       											<i class="fa fa-check"></i> Status
-      										</a> <span class="badge">Disetujui</span>
+      										</a>
+                          {loop: $value.status_pengajuan as $data}
+                          <span class="badge badge-{if: $data.status == 'Disetujui'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
+                          {/loop}
                         </td>
       									<td>
                           <table>
