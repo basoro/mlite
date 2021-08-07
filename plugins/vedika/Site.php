@@ -182,7 +182,7 @@ class Site extends SiteModule
       $end_date = date('Y-m-d');
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ralan' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' GROUP BY reg_periksa.no_rawat");
       $query->execute();
       $rows = $query->fetchAll();
 
@@ -248,7 +248,7 @@ class Site extends SiteModule
       $end_date = date('Y-m-d');
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
-      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ranap' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND reg_periksa.status_lanjut = 'Ranap' AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' GROUP BY reg_periksa.no_rawat");
       $query->execute();
       $rows = $query->fetchAll();
 
