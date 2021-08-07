@@ -1075,6 +1075,7 @@ Ralan :
     </table>
   </fieldset>
   <br><br><br>
+  {if: $resume_pasien}
   <fieldset style="page-break-before:always;">
     <div class="block-header">
              <h2><center>RESUME PERAWATAN</center></h2>
@@ -1165,6 +1166,7 @@ Ralan :
          </div>
   </fieldset>
   <br><br><br>
+  {/if}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
     {if: $laporan_operasi}
@@ -1250,6 +1252,7 @@ Ralan :
   </fieldset>
   <br><br><br>
   {/if}
+  {if: $berkas_digital}
   <!-- Berkas Digital -->
   <fieldset style="page-break-before:always;">
     <h2><center>Berkas Digital Perawatan</center></h2>
@@ -1263,6 +1266,7 @@ Ralan :
         {/loop}
     </table>
   </fieldset>
+  {/if}
   <script>
   	jQuery('#qrcodeSEP').qrcode({
   		text	: "No.SEP: {$print_sep.bridging_sep.no_sep}"

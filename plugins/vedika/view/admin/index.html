@@ -64,21 +64,28 @@
       								{loop: $vedika.list}
       								<tr>
                         <td>
-                          <a href="{if: $value.no_sep == ''}{$value.formSepURL}{else}{$value.sepURL}{/if}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">
-                            <i class="fa fa-folder-open"></i> {$value.no_sep}
-                          </a><br/>
+                          {if: $value.no_sep == ''}
+                            <a href="{$value.formSepURL}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#moduleModal">
+                              <i class="fa fa-download"></i> Ambil SEP dari Vclaim
+                            </a>
+                          {else}
+                            <button class="btn btn-info btn-xs">
+                              <i class="fa fa-file-o"></i> {$value.no_sep}
+                            </button>
+                          {/if}
+                          <br/>
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
-      											<i class="fa fa-print"></i> Gabung PDF
+      											<i class="fa fa-print"></i> Lihat Data Klaim
       										</a><br/>
-                          <a href="{$value.riwayatURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
-      											<i class="fa fa-file-o"></i> Riwayat
-      										</a><br/>
-                          <a href="{$value.billingURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#moduleModal">
-      											<i class="fa fa-file"></i> Billing
-      										</a><br/>
-                          <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
-      											<i class="fa fa-check"></i> Status
-      										</a>
+                          {if: $value.no_sep == ''}
+                            <button class="btn btn-warning btn-xs">
+        											<i class="fa fa-check"></i> Status
+        										</button>
+                          {else}
+                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+        											<i class="fa fa-check"></i> Status
+        										</a>
+                          {/if}
                           {loop: $value.status_pengajuan as $data}
                           <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                           {/loop}
