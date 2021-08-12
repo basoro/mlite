@@ -1,0 +1,44 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kode Rekening</label>
+            <div class="col-sm-9">
+              <input type="text" id="kd_rek" name="kd_rek" class="form-control" value="{$akunrekening.form.kd_rek}" {if: !empty($akunrekening.form.kd_rek)}disabled{/if}>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Nama Rekening</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_rek" class="form-control" value="{$akunrekening.form.nm_rek}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Tipe</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="tipe">
+                <option value="N"{if: $akunrekening.form.tipe == 'N'} selected{/if}>N (Neraca)</option>
+                <option value="R"{if: $akunrekening.form.tipe == 'R'} selected{/if}>R (Rugi/Laba)</option>
+                <option value="M"{if: $akunrekening.form.tipe == 'M'} selected{/if}>M (Perubahan/Modal)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Balance</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="balance">
+                <option value="D"{if: $akunrekening.form.balance == 'D'} selected{/if}>Debet</option>
+                <option value="K"{if: $akunrekening.form.balance == 'K'} selected{/if}>Kredit</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+    </div>
+  </div>
+</div>

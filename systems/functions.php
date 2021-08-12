@@ -539,3 +539,7 @@ function sendMedia($number, $message, $sender, $filetype, $filename, $urll)
     curl_close($ch);
     return json_decode($result, true);
 }
+
+function formatDuit($duit){
+    return "Rp. ".number_format($duit,0,",",".").",-";
+}

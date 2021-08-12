@@ -698,6 +698,12 @@ $("#rincian").on("click","#simpan_billing", function(event){
   var tgl_billing            = $('#tgl_billing').val();
   var jam_billing            = $('#jam_billing').val();
   var keterangan         = $('select[name=keterangan]').val();
+  var jurnal_pendaftaran            = $('#jurnal_pendaftaran').text();
+  var jurnal_tindakan_ralan            = $('#jurnal_tindakan_ralan').text();
+  var jurnal_obat_bhp           = $('#jurnal_obat_bhp').text();
+  var jurnal_laboratorium            = $('#jurnal_laboratorium').text();
+  var jurnal_radiologi            = $('#jurnal_radiologi').text();
+  var jurnal_tambahan_biaya            = $('#jurnal_tambahan_biaya').text();
   if 	(potongan_faktur == "" )
   {
     alert ("potongan belum diisi ");
@@ -726,6 +732,12 @@ $("#rincian").on("click","#simpan_billing", function(event){
         jumlah_harus_bayar : jumlah_harus_bayar,
         jumlah_bayar       : jumlah_bayar,
         keterangan         : keterangan,
+        jurnal_pendaftaran : jurnal_pendaftaran,
+        jurnal_tindakan_ralan : jurnal_tindakan_ralan,
+        jurnal_obat_bhp : jurnal_obat_bhp,
+        jurnal_laboratorium : jurnal_laboratorium,
+        jurnal_radiologi : jurnal_radiologi,
+        jurnal_tambahan_biaya : jurnal_tambahan_biaya
         } ,function(data) {
           var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,

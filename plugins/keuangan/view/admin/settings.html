@@ -1,0 +1,26 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/keuangan/saveSettings')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Aktifkan Posting Jurnal di Kasir</label>
+                        <p class="small text-danger">Perhatian! Jika telah menjalankan fitur keuangan lengkap di Khanza Desktop disarankan untuk tidak mengaktifkan fitur ini. Karena fitur keuangan di KhanzaLITE sudah disederhadanakan, walaupun menggunakan tabel yang sama.</p>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="keuangan[jurnal_kasir]" value="0" {if: $settings.keuangan.jurnal_kasir == '0'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="keuangan[jurnal_kasir]" value="1" {if: $settings.keuangan.jurnal_kasir == '1'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

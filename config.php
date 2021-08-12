@@ -7,7 +7,7 @@ define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
 define('DBPASS', 'basoro');
-define('DBNAME', 'rsas');
+define('DBNAME', 'mlite');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/Khanza-Lite/webapps');
