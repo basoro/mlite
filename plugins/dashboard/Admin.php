@@ -33,8 +33,14 @@ class Admin extends AdminModule
         $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $cek_presensi = [];
         $jam_jaga = [];
+        $cek_rekap = [];
+        $nama_pegawai = '';
+
         if($presensi) {
-          $nama = $this->db('pegawai')->where('nik', $this->core->getUserInfo('username', null, true))->oneArray();
+          $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
+          if($this->core->getUserInfo('username', null, true) == 'admin') {
+            $nama_pegawai = 'Administrator';
+          }
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
           $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
           $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
@@ -46,7 +52,7 @@ class Admin extends AdminModule
           'cek_rekap' => $cek_rekap,
           'jam_jaga' => $jam_jaga,
           'presensi' => $presensi,
-		      'nama' => $nama['nama']
+		      'nama' => $nama_pegawai
         ]);
     }
 

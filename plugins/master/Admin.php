@@ -66,7 +66,7 @@
       	    $this->masterberkasdigital = new MasterBerkasDigital();
       	    $this->kodesatuan = new KodeSatuan();
             $this->spesialis = new Spesialis();
-	    $this->bank = new Bank();
+	          $this->bank = new Bank();
             $this->bidang = new Bidang();
             $this->departemen = new Departemen();
             $this->emergencyindex = new EmergencyIndex();
@@ -1315,7 +1315,7 @@
             exit();
         }
         /* End Spesialis Section */
-	    
+
 	/* Start Bank Section */
         public function getBank()
         {
@@ -1360,7 +1360,7 @@
             exit();
         }
         /* End Bank Section */
-	
+
 	/* Start Bidang Section */
         public function getBidang()
         {
@@ -1405,7 +1405,7 @@
             exit();
         }
         /* End Bidang Section */
-	
+
 	/* Start Departemen Section */
         public function getDepartemen()
         {
@@ -1450,7 +1450,7 @@
             exit();
         }
         /* End Departemen Section */
-	
+
 	/* Start EmergencyIndex Section */
         public function getEmergencyIndex()
         {
@@ -1495,8 +1495,8 @@
             exit();
         }
         /* End EmergencyIndex Section */
-	
-	/* Start Jabatan Section */
+
+	      /* Start Jabatan Section */
         public function getJabatan()
         {
           $this->core->addJS(url([ADMIN, 'master', 'jabatanjs']), 'footer');
@@ -1630,7 +1630,7 @@
             exit();
         }
         /* End KelompokJabatan Section */
-        	
+
         public function getCSS()
         {
             header('Content-type: text/css');
