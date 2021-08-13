@@ -51,7 +51,7 @@ return [
         copy(MODULES.'/users/img/default.png', UPLOADS.'/users/'.$avatar);
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABTABLE IF EXISTSLE `mlite_users`");
+        $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_users`");
         $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_login_attempts`");
         $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_remember_me`");
         deleteDir(UPLOADS."/users");

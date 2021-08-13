@@ -659,7 +659,7 @@ class Admin extends AdminModule
             if($query_jurnal_pendaftaran) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_pendaftaran,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_pendaftaran'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_pendaftaran'])
               ]);
@@ -681,7 +681,7 @@ class Admin extends AdminModule
             if($query_jurnal_tindakan_ralan) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_tindakan_ralan'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan_ralan'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_tindakan_ralan'])
               ]);
@@ -703,7 +703,7 @@ class Admin extends AdminModule
             if($query_jurnal_obat_bhp) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_obat_bhp,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_obat_bhp'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_obat_bhp'])
               ]);
@@ -725,7 +725,7 @@ class Admin extends AdminModule
             if($query_jurnal_laboratorium) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_laboratorium,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_laboratorium'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_laboratorium'])
               ]);
@@ -747,7 +747,7 @@ class Admin extends AdminModule
             if($query_jurnal_radiologi) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_radiologi,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_radiologi'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_radiologi'])
               ]);
@@ -769,7 +769,7 @@ class Admin extends AdminModule
             if($query_jurnal_tambahan_biaya) {
               $this->db('detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_tambahan_biaya,
-                'kd_rek' => $this->settings('jurnal', 'akun_kredit_tambahan_biaya'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tambahan_biaya'),
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_tambahan_biaya'])
               ]);
