@@ -644,14 +644,14 @@ class Admin extends AdminModule
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
       }
       exit();
     }
 
     public function postHapusSOAP()
     {
-      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
       exit();
     }
 

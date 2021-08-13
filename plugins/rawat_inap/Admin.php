@@ -621,7 +621,7 @@ class Admin extends AdminModule
 
     public function postHapusSOAP()
     {
-      $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
       exit();
     }
 
