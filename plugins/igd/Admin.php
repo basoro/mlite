@@ -214,19 +214,25 @@ class Admin extends AdminModule
           ->limit(1)
           ->oneArray();
           if($rawat) {
-            $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
-            $bg_status = 'text-danger';
+            $stts_daftar = "Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar_hidden = $stts_daftar;
+            if($this->settings->get('settings.cekstatusbayar') == 'false'){
+              $stts_daftar_hidden = 'Lama';
+            }
+            $bg_status = 'has-error';
           } else {
             $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
-              $bg_status = 'text-info';
+              $bg_status = 'has-info';
+              $stts_daftar_hidden = $stts_daftar;
             } else {
               $stts_daftar = 'Baru';
-              $bg_status = 'text-success';
+              $bg_status = 'has-success';
+              $stts_daftar_hidden = $stts_daftar;
             }
           }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
       } else {
         $rawat = $this->db('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
@@ -582,9 +588,13 @@ class Admin extends AdminModule
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $i = 1;
+      $row['nama_petugas'] = '';
+      $row['departemen_petugas'] = '';
       $result = [];
       foreach ($rows as $row) {
         $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result[] = $row;
       }
 
@@ -594,6 +604,8 @@ class Admin extends AdminModule
       $result_ranap = [];
       foreach ($rows_ranap as $row) {
         $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result_ranap[] = $row;
       }
 
@@ -608,8 +620,9 @@ class Admin extends AdminModule
       $check_db = $check_db->fetch();
 
       if($check_db) {
-        $_POST['instruksi'] = '';
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      } else {
+        unset($_POST['instruksi']);
       }
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);

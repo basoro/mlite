@@ -600,13 +600,16 @@ class Admin extends AdminModule
        }
 
       $i = 1;
-
+      $row['nama_petugas'] = '';
+      $row['departemen_petugas'] = '';
       $rows = $this->db('pemeriksaan_ralan')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $result = [];
       foreach ($rows as $row) {
         $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result[] = $row;
       }
 
@@ -617,6 +620,8 @@ class Admin extends AdminModule
          ->toArray();
         foreach ($rows_ranap as $row) {
          $row['nomor'] = $i++;
+         $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+         $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
          $result_ranap[] = $row;
         }
       }
@@ -632,8 +637,9 @@ class Admin extends AdminModule
       $check_db = $check_db->fetch();
 
       if($check_db) {
-        $_POST['instruksi'] = '';
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      } else {
+        unset($_POST['instruksi']);
       }
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);

@@ -256,6 +256,12 @@ abstract class Main
       return $result;
     }
 
+    public function getDokterInfo($field, $kd_dokter)
+    {
+        $row = $this->db('dokter')->where('nm_dokter', $kd_dokter)->oneArray();
+        return $row[$field];
+    }
+
     public function getPegawaiInfo($field, $nik)
     {
         $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
@@ -272,6 +278,12 @@ abstract class Main
     {
         $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
+    }
+
+    public function getDepartemenInfo($dep_id)
+    {
+        $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
+        return $row['nama'];
     }
 
     public function setNoRM()
