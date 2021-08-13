@@ -167,6 +167,8 @@ $("#form").on("click","#hapus", function(event){
   var url = baseURL + '/rawat_inap/hapus?t=' + mlite.token;
   //var no_rawat = $(this).attr("data-no_rawat");
   var no_rawat = $('input:text[name=no_rawat]').val();
+  var tgl_masuk = $('input:text[name=tgl_masuk]').val();
+  var jam_masuk = $('input:text[name=jam_masuk]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -174,7 +176,9 @@ $("#form").on("click","#hapus", function(event){
     if (result){
       // mengirimkan perintah penghapusan
       $.post(url, {
-        no_rawat: no_rawat
+        no_rawat: no_rawat,
+        tgl_masuk: tgl_masuk,
+        jam_masuk: jam_masuk
       } ,function(data) {
         // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
         $("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);

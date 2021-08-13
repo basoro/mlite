@@ -333,7 +333,7 @@ class Admin extends AdminModule
 
     public function postHapus()
     {
-      $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('kamar_inap')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
 
