@@ -52,7 +52,8 @@ class Admin extends AdminModule
           'cek_rekap' => $cek_rekap,
           'jam_jaga' => $jam_jaga,
           'presensi' => $presensi,
-		      'nama' => $nama_pegawai
+		      'nama' => $nama_pegawai,
+          'notif_presensi' => $this->settings('settings', 'notif_presensi') 
         ]);
     }
 

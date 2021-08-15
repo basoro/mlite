@@ -134,27 +134,29 @@
         <i class="fa fa-plus"></i> Presensi Online
     </button>
 </div>
- {if: $cek_presensi}
-  <div class="alert alert-success coba" role="alert">
-    <div class="halo">
-      <b>Halo {$nama}</b>
+  {if: $notif_presensi == 'true'}
+    {if: $cek_presensi}
+    <div class="alert alert-success coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-thumbs-up"></i>  Anda Sudah Absen
     </div>
-    <i class="fa fa-thumbs-up"></i>  Anda Sudah Absen
-  </div>
-  {elseif: $cek_rekap}
-  <div class="alert alert-info coba" role="alert">
-    <div class="halo">
-      <b>Halo {$nama}</b>
+    {elseif: $cek_rekap}
+    <div class="alert alert-info coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-check-square"></i>  Anda Sudah Presensi Pulang Hari Ini
     </div>
-    <i class="fa fa-check-square"></i>  Anda Sudah Presensi Pulang Hari Ini
-  </div>
-  {else}
-  <div class="alert alert-warning coba" role="alert">
-    <div class="halo">
-      <b>Halo {$nama}</b>
+    {else}
+    <div class="alert alert-warning coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-exclamation-triangle"></i>  Anda Belum Absen
     </div>
-    <i class="fa fa-exclamation-triangle"></i>  Anda Belum Absen
-  </div>
+    {/if}
   {/if}
 {/if}
 <!-- The Modal -->
