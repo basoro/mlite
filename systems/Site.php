@@ -35,6 +35,11 @@ class Site extends Main
         $assign['powered']  = 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>';
         $assign['path']     = url();
         $assign['nama_instansi']    = $this->settings->get('settings.nama_instansi');
+        $assign['alamat']    = $this->settings->get('settings.alamat');
+        $assign['kota']    = $this->settings->get('settings.kota');
+        $assign['propinsi']    = $this->settings->get('settings.propinsi');
+        $assign['nomor_telepon']    = $this->settings->get('settings.nomor_telepon');
+        $assign['email']    = $this->settings->get('settings.email');
         $assign['theme']    = url(THEMES.'/'.$this->settings->get('settings.theme'));
         $assign['logo'] = $this->settings->get('settings.logo');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
