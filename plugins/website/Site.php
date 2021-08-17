@@ -15,10 +15,10 @@ class Site extends SiteModule
     public function getIndex()
     {
         $setting['nama_instansi'] = $this->settings->get('settings.nama_instansi');
-        $setting['alamat_instansi'] = $this->settings->get('settings.alamat');
+        $setting['alamat'] = $this->settings->get('settings.alamat');
         $setting['kabupaten'] = $this->settings->get('settings.kota');
         $setting['propinsi'] = $this->settings->get('settings.propinsi');
-        $setting['kontak'] = $this->settings->get('settings.nomor_telepon');
+        $setting['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
         $setting['email'] = $this->settings->get('settings.email');
         $poliklinik = $this->db('poliklinik')->where('status', '1')->toArray();
         $website = $this->settings('website');

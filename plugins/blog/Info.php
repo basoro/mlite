@@ -7,6 +7,7 @@ return [
     'version'       =>  '1.3',
     'compatibility' =>  '2021',
     'icon'          =>  'pencil-square',
+    'pages'         =>  ['Blog' => 'blog'],  
     'install'       =>  function () use ($core) {
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_blog` (

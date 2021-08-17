@@ -21,7 +21,7 @@
     <div class="container"><a class="navbar-brand" href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$website.logo)?}" alt="{$setting.nama_instansi}"></a>
       <div class="right-header">
         <div class="header-info">
-          <div class="info-inner"><span class="icontop"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$setting.kontak}</a></span></div>
+          <div class="info-inner"><span class="icontop"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$setting.nomor_telepon}</a></span></div>
           <div class="info-inner"><span class="icontop"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$setting.email}</a></span></div>
           {if: $website.login == 1}<div class="info-inner"><span class="icontop"><i class="fa fa-lock" aria-hidden="true"></i></span><span class="iconcont"><a href="{?=url(ADMIN)?}">Login</a></span></div>{/if}
         </div>
@@ -276,9 +276,9 @@
       <div class="col-md-4">
         <div class="footer-info padding">
           <h3>HUBUNGI KAMI</h3>
-          <p><i class="fa fa-map-marker" aria-hidden="true"></i> {$setting.alamat_instansi}, {$setting.kabupaten}, {$setting.propinsi}</p>
+          <p><i class="fa fa-map-marker" aria-hidden="true"></i> {$setting.alamat}, {$setting.kabupaten}, {$setting.propinsi}</p>
           <p><i class="fa fa-paper-plane" aria-hidden="true"></i> {$setting.email}</p>
-          <p><i class="fa fa-phone" aria-hidden="true"></i> {$setting.kontak}</p>
+          <p><i class="fa fa-phone" aria-hidden="true"></i> {$setting.nomor_telepon}</p>
         </div>
       </div>
       <div class="col-md-4">

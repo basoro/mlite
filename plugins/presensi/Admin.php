@@ -314,8 +314,8 @@ class Admin extends AdminModule
                                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                 ->where('stts_aktif','AKTIF')
                                 ->toArray();
-        }   
-        if($this->core->getUserInfo('role') == 'admin'){                                 
+        }
+        if($this->core->getUserInfo('role') == 'admin'){
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
         }else{
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
@@ -343,8 +343,8 @@ class Admin extends AdminModule
                                     ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                     ->where('stts_aktif','AKTIF')
                                     ->toArray();
-            }  
-            if($this->core->getUserInfo('role') == 'admin'){                                 
+            }
+            if($this->core->getUserInfo('role') == 'admin'){
             	$this->assign['h1'] = $this->db('jam_masuk')->toArray();
             }else{
                 $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
@@ -549,8 +549,8 @@ class Admin extends AdminModule
                                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                 ->where('stts_aktif','AKTIF')
                                 ->toArray();
-        }   
-        if($this->core->getUserInfo('role') == 'admin'){                                 
+        }
+        if($this->core->getUserInfo('role') == 'admin'){
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
         }else{
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
@@ -578,7 +578,7 @@ class Admin extends AdminModule
                                     ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                     ->where('stts_aktif','AKTIF')
                                     ->toArray();
-            }  
+            }
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
             $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
@@ -650,7 +650,7 @@ class Admin extends AdminModule
         if (isset($_GET['ruang'])){
             $ruang = $_GET['ruang'];
         }
-        
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('role') == 'admin'){
@@ -1467,8 +1467,8 @@ class Admin extends AdminModule
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-        $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+        $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kabupaten'));
+        $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
         $pdf->Line(10, 30, 200, 30);
         $pdf->Line(10, 31, 200, 31);
         $pdf->SetFont('Arial', 'B', 10);
@@ -1771,8 +1771,8 @@ class Admin extends AdminModule
       $pdf->SetFont('Arial', '', 24);
       $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-      $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+      $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kabupaten'));
+      $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
       $pdf->Line(10, 30, 350, 30);
       $pdf->Line(10, 31, 350, 31);
       $pdf->Text(10, 40, 'DATA REKAP PRESENSI PEGAWAI');
@@ -1897,7 +1897,7 @@ class Admin extends AdminModule
 
         return $this->draw('presensi.html', ['presensi' => $this->assign]);
     }
-  
+
   	public function getPresensiPulang($id){
         $cek = $this->db('temporary_presensi')->where('id', $id)->oneArray();
         $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $id)->where('jam_jaga.shift', $cek['shift'])->oneArray();
