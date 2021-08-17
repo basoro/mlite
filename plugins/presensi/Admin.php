@@ -1467,7 +1467,7 @@ class Admin extends AdminModule
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kabupaten'));
+        $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kota'));
         $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
         $pdf->Line(10, 30, 200, 30);
         $pdf->Line(10, 31, 200, 31);
@@ -1771,7 +1771,7 @@ class Admin extends AdminModule
       $pdf->SetFont('Arial', '', 24);
       $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kabupaten'));
+      $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kota'));
       $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
       $pdf->Line(10, 30, 350, 30);
       $pdf->Line(10, 31, 350, 31);

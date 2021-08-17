@@ -16,7 +16,7 @@ class Site extends SiteModule
     {
         $setting['nama_instansi'] = $this->settings->get('settings.nama_instansi');
         $setting['alamat'] = $this->settings->get('settings.alamat');
-        $setting['kabupaten'] = $this->settings->get('settings.kota');
+        $setting['kota'] = $this->settings->get('settings.kota');
         $setting['propinsi'] = $this->settings->get('settings.propinsi');
         $setting['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
         $setting['email'] = $this->settings->get('settings.email');

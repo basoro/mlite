@@ -299,7 +299,7 @@ class Admin extends AdminModule
       $instansi['logo'] = $this->settings->get('settings.logo');
       $instansi['nama_instansi'] = $this->settings->get('settings.nama_instansi');
       $instansi['alamat'] = $this->settings->get('settings.alamat');
-      $instansi['kabupaten'] = $this->settings->get('settings.kota');
+      $instansi['kota'] = $this->settings->get('settings.kota');
       $instansi['propinsi'] = $this->settings->get('settings.propinsi');
       $instansi['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
       $instansi['email'] = $this->settings->get('settings.email');
