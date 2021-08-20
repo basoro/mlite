@@ -128,6 +128,7 @@
         $.get("{?=url([ADMIN, 'vclaim', 'bynik', $_GET['nik'], $_GET['tgl_pelayanan']])?}", function(data){
           var data = JSON.parse(data);
           var data = JSON.stringify(data, null, '\t');
+          console.log(data);
           $("pre").text(data);
         });
     {/if}
