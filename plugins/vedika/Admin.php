@@ -164,6 +164,15 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getHapusURL($no_sep)
+    {
+      $query = $this->db('bridging_sep')->where('no_sep', $no_sep)->delete();
+      if($query) {
+        $this->db('bpjs_prb')->where('no_sep', $no_sep)->delete();
+      }
+      exit();
+    }
+
     public function postSaveSEP()
     {
       header('Content-type: text/html');
