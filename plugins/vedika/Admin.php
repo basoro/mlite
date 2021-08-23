@@ -164,7 +164,7 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getHapusURL($no_sep)
+    public function getHapus($no_sep)
     {
       $query = $this->db('bridging_sep')->where('no_sep', $no_sep)->delete();
       if($query) {
