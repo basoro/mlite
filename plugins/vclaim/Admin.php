@@ -13,7 +13,6 @@ class Admin extends AdminModule
       $this->consid = $this->settings->get('settings.BpjsConsID');
       $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
       $this->api_url = $this->settings->get('settings.BpjsApiUrl');
-      $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
     }
 
     public function navigation()
@@ -60,12 +59,6 @@ class Admin extends AdminModule
         return $this->draw('rujukan.html');
     }
 
-    public function getPRB()
-    {
-        $this->_addHeaderFiles();
-        return $this->draw('prb.html');
-    }
-
     public function getLPK()
     {
         return $this->draw('lpk.html');
@@ -74,12 +67,6 @@ class Admin extends AdminModule
     public function getMonitoring()
     {
         return $this->draw('monitoring.html');
-    }
-
-    public function getSPRI()
-    {
-        $this->_addHeaderFiles();
-        return $this->draw('spri.html');
     }
 
     public function postSaveSEP()
@@ -191,13 +178,8 @@ class Admin extends AdminModule
 
         } else if($data['metaData']['code'] == 200){
 
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $data['response']);
-          $decompress = decompress($stringDecrypt);
-          if($this->vclaim_version == 1) {
-              $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
-          } else {
-              $_POST['sep_no_sep'] = $decompress['response']['sep']['noSep'];
-          }
+          $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+          //$_POST['nama_pasien'] = 'Test pasien';
 
           $simpan_sep = $this->db('bridging_sep')->save([
             'no_sep' => $_POST['sep_no_sep'],
@@ -423,25 +405,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/diagnosa/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $code = $json['metaData']['code'];
-        $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        echo $code;
-        echo $message;
-        if($json['response'] == '') {
-          $decompress = '';
-        }
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": '.$code.',
-            		"message": '.$message.'
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
     public function getPoli($keyword)
@@ -449,18 +413,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/poli/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "2222",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
     public function getFaskes($kd_faskes = null, $jns_faskes = null)
@@ -468,18 +421,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/faskes/'.$kd_faskes.'/'.$jns_faskes;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -488,18 +430,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/dokter/pelayanan/'.$jnsPelayanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -508,18 +439,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/propinsi';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -528,18 +448,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/kabupaten/propinsi/'.$kdPropinsi;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -548,18 +457,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/kecamatan/kabupaten/'.$kdKabupaten;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -568,18 +466,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/procedure/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -588,18 +475,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/kelasrawat';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -608,18 +484,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/dokter/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -628,18 +493,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/spesialistik';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -648,18 +502,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/ruangrawat';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -668,18 +511,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/carakeluar';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -688,18 +520,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/pascapulang';
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
-        if($this->vclaim_version == 1) {
-            echo json_encode($json);
-        } else {
-            echo '{
-            	"metaData": {
-            		"code": "200",
-            		"message": "OK"
-            	},
-            	"response": '.$decompress.'}';
-        }
+        echo json_encode($json);
         exit();
     }
 
@@ -708,18 +529,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'Peserta/nokartu/'.$noKartu.'/tglSEP/'.$tglPelayananSEP;
       $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
       $json = json_decode($output, true);
-      $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-      $decompress = decompress($stringDecrypt);
-      if($this->vclaim_version == 1) {
-          echo json_encode($json);
-      } else {
-          echo '{
-          	"metaData": {
-          		"code": "200",
-          		"message": "OK"
-          	},
-          	"response": '.$decompress.'}';
-      }
+      echo json_encode($json);
       exit();
     }
 
@@ -728,18 +538,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'Peserta/nik/'.$nik.'/tglSEP/'.$tglPelayananSEP;
       $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
       $json = json_decode($output, true);
-      $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-      $decompress = decompress($stringDecrypt);
-      if($this->vclaim_version == 1) {
-          echo json_encode($json);
-      } else {
-          echo '{
-          	"metaData": {
-          		"code": "200",
-          		"message": "OK"
-          	},
-          	"response": '.$decompress.'}';
-      }
+      echo json_encode($json);
       exit();
     }
 

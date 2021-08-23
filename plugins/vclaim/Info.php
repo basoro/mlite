@@ -4,7 +4,7 @@ return [
     'name'          =>  'VClaim Request',
     'description'   =>  'Modul vclaim api untuk KhanzaLITE',
     'author'        =>  'Basoro',
-    'version'       =>  '1.0',
+    'version'       =>  '1.1',
     'compatibility' =>  '2021',
     'icon'          =>  'database',
     'install'       =>  function () use ($core) {
