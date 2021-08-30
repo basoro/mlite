@@ -272,7 +272,21 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if ($_POST['tgl_registrasi'] > date('Y-m-d')) {
+        $this->db('booking_registrasi')->save([
+          'tanggal_booking' => date('Y-m-d'),
+          'jam_booking' => date('H:i:s'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'tanggal_periksa' => $_POST['tgl_registrasi'],
+          'kd_dokter' => $_POST['kd_dokter'],
+          'kd_poli' => $_POST['kd_poli'],
+          'no_reg' => $this->core->setNoReg($_POST['kd_dokter'], $_POST['kd_poli']),
+          'kd_pj' => $_POST['kd_pj'],
+          'limit_reg' => '0',
+          'waktu_kunjungan' => $_POST['jam_reg'],
+          'status' => 'Belum'
+        ]);
+      } else if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
 
         $_POST['status_lanjut'] = 'Ralan';
         $_POST['stts'] = 'Belum';
