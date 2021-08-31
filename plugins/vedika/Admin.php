@@ -195,10 +195,10 @@ class Admin extends AdminModule
       }
 
       $this->_addHeaderFiles();
-      $start_date = date('Y-m-d');
+      $start_date = '1970-01-01';
       if(isset($_GET['start_date']) && $_GET['start_date'] !='')
         $start_date = $_GET['start_date'];
-      $end_date = date('Y-m-d');
+      $end_date = '2100-01-01';
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
       $perpage = '10';
@@ -324,10 +324,10 @@ class Admin extends AdminModule
       }
 
       $this->_addHeaderFiles();
-      $start_date = date('Y-m-d');
+      $start_date = '1970-01-01';
       if(isset($_GET['start_date']) && $_GET['start_date'] !='')
         $start_date = $_GET['start_date'];
-      $end_date = date('Y-m-d');
+      $end_date = '2100-01-01';
       if(isset($_GET['end_date']) && $_GET['end_date'] !='')
         $end_date = $_GET['end_date'];
       $perpage = '10';
