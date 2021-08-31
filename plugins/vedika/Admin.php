@@ -14,6 +14,8 @@ class Admin extends AdminModule
         return [
             'Manage' => 'manage',
             'Index' => 'index',
+            'Pengajuan' => 'pengajuan',
+            'Perbaikan' => 'perbaikan',
             'Pengaturan' => 'settings',
         ];
     }
@@ -22,6 +24,8 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'index']), 'icon' => 'code', 'desc' => 'Index Vedika'],
+        ['name' => 'Pengajuan', 'url' => url([ADMIN, 'vedika', 'pengajuan']), 'icon' => 'code', 'desc' => 'Index Pengajuan Vedika'],
+        ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -153,6 +157,264 @@ class Admin extends AdminModule
       $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'index', 'ralan', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
       $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'index', 'ranap', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('index.html', ['tab' => $type, 'vedika' => $this->assign]);
+
+    }
+
+    public function anyPengajuan($type = 'ralan', $page = 1)
+    {
+      if(isset($_POST['submit'])) {
+        $this->db('mlite_vedika')->save([
+          'id' => NULL,
+          'tanggal' => date('Y-m-d'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'no_rawat' => $_POST['no_rawat'],
+          'nosep' => $_POST['nosep'],
+          'catatan' => $_POST['catatan'],
+          'status' => $_POST['status'],
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+
+      if(isset($_POST['simpanberkas'])) {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+            $imgName = time().$cntr++;
+            $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $img->save($imgPath);
+            $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+            if($query) {
+              $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+            }
+        }
+      }
+
+      $this->_addHeaderFiles();
+      $start_date = date('Y-m-d');
+      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
+        $start_date = $_GET['start_date'];
+      $end_date = date('Y-m-d');
+      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
+        $end_date = $_GET['end_date'];
+      $perpage = '10';
+      $phrase = '';
+      if(isset($_GET['s']))
+        $phrase = $_GET['s'];
+
+      // pagination
+      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $totalRecords->fetchAll();
+
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+      $this->assign['pagination'] = $pagination->nav('pagination','5');
+      $this->assign['totalRecords'] = $totalRecords;
+
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $rows = $query->fetchAll();
+
+      if($type == 'ranap') {
+        // pagination
+        $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ranap'");
+        $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+        $totalRecords = $totalRecords->fetchAll();
+
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+        $this->assign['pagination'] = $pagination->nav('pagination','5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        $offset = $pagination->offset();
+        $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Pengajuan' AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ranap' LIMIT $perpage OFFSET $offset");
+        $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+        $rows = $query->fetchAll();
+      }
+      $this->assign['list'] = [];
+      if (count($rows)) {
+          foreach ($rows as $row) {
+              $berkas_digital = $this->db('berkas_digital_perawatan')
+                ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+                ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
+                ->asc('master_berkas_digital.nama')
+                ->toArray();
+              $galleri_pasien = $this->db('mlite_pasien_galleries_items')
+                ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+                ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
+                ->toArray();
+
+              $berkas_digital_pasien = array();
+              if (count($galleri_pasien)) {
+                  foreach ($galleri_pasien as $galleri) {
+                      $galleri['src'] = unserialize($galleri['src']);
+
+                      if (!isset($galleri['src']['sm'])) {
+                          $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
+                      }
+
+                      $berkas_digital_pasien[] = $galleri;
+                  }
+              }
+
+              $row = htmlspecialchars_array($row);
+              $row['no_sep'] = $this->_getSEPInfo('no_sep', $row['no_rawat']);
+              $row['no_peserta'] = $this->_getSEPInfo('no_kartu', $row['no_rawat']);
+              $row['no_rujukan'] = $this->_getSEPInfo('no_rujukan', $row['no_rawat']);
+              $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+              $row['nm_penyakit'] = $this->_getDiagnosa('nm_penyakit', $row['no_rawat'], $row['status_lanjut']);
+              $row['berkas_digital'] = $berkas_digital;
+              $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+              $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
+              $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+              $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
+              $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+              $this->assign['list'][] = $row;
+          }
+      }
+
+      $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+      $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+
+      $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'pengajuan', $type, $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'pengajuan', 'ralan', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'pengajuan', 'ranap', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      return $this->draw('pengajuan.html', ['tab' => $type, 'vedika' => $this->assign]);
+
+    }
+
+    public function anyPerbaikan($type = 'ralan', $page = 1)
+    {
+      if(isset($_POST['submit'])) {
+        $this->db('mlite_vedika')->save([
+          'id' => NULL,
+          'tanggal' => date('Y-m-d'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'no_rawat' => $_POST['no_rawat'],
+          'nosep' => $_POST['nosep'],
+          'catatan' => $_POST['catatan'],
+          'status' => $_POST['status'],
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+
+      if(isset($_POST['simpanberkas'])) {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+            $imgName = time().$cntr++;
+            $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+            $img->save($imgPath);
+            $query = $this->db('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+            if($query) {
+              $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+            }
+        }
+      }
+
+      $this->_addHeaderFiles();
+      $start_date = date('Y-m-d');
+      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
+        $start_date = $_GET['start_date'];
+      $end_date = date('Y-m-d');
+      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
+        $end_date = $_GET['end_date'];
+      $perpage = '10';
+      $phrase = '';
+      if(isset($_GET['s']))
+        $phrase = $_GET['s'];
+
+      // pagination
+      $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Perbaiki' AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+      $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $totalRecords = $totalRecords->fetchAll();
+
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+      $this->assign['pagination'] = $pagination->nav('pagination','5');
+      $this->assign['totalRecords'] = $totalRecords;
+
+      $offset = $pagination->offset();
+      $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Perbaiki' AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+      $rows = $query->fetchAll();
+
+      if($type == 'ranap') {
+        // pagination
+        $totalRecords = $this->db()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Perbaiki' AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ranap'");
+        $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+        $totalRecords = $totalRecords->fetchAll();
+
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+        $this->assign['pagination'] = $pagination->nav('pagination','5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        $offset = $pagination->offset();
+        $query = $this->db()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, penjab.png_jawab FROM reg_periksa, pasien, dokter, poliklinik, penjab, mlite_vedika WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_vedika.no_rawat AND mlite_vedika.status = 'Perbaiki' AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.kd_pj = penjab.kd_pj AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ranap' LIMIT $perpage OFFSET $offset");
+        $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
+        $rows = $query->fetchAll();
+      }
+      $this->assign['list'] = [];
+      if (count($rows)) {
+          foreach ($rows as $row) {
+              $berkas_digital = $this->db('berkas_digital_perawatan')
+                ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+                ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
+                ->asc('master_berkas_digital.nama')
+                ->toArray();
+              $galleri_pasien = $this->db('mlite_pasien_galleries_items')
+                ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+                ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
+                ->toArray();
+
+              $berkas_digital_pasien = array();
+              if (count($galleri_pasien)) {
+                  foreach ($galleri_pasien as $galleri) {
+                      $galleri['src'] = unserialize($galleri['src']);
+
+                      if (!isset($galleri['src']['sm'])) {
+                          $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
+                      }
+
+                      $berkas_digital_pasien[] = $galleri;
+                  }
+              }
+
+              $row = htmlspecialchars_array($row);
+              $row['no_sep'] = $this->_getSEPInfo('no_sep', $row['no_rawat']);
+              $row['no_peserta'] = $this->_getSEPInfo('no_kartu', $row['no_rawat']);
+              $row['no_rujukan'] = $this->_getSEPInfo('no_rujukan', $row['no_rawat']);
+              $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
+              $row['nm_penyakit'] = $this->_getDiagnosa('nm_penyakit', $row['no_rawat'], $row['status_lanjut']);
+              $row['berkas_digital'] = $berkas_digital;
+              $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+              $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat='.$row['no_rawat']]);
+              $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->db('mlite_vedika')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+              $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
+              $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
+              $this->assign['list'][] = $row;
+          }
+      }
+
+      $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+      $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
+
+      $this->assign['searchUrl'] =  url([ADMIN, 'vedika', 'perbaikan', $type, $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      $this->assign['ralanUrl'] =  url([ADMIN, 'vedika', 'perbaikan', 'ralan', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      $this->assign['ranapUrl'] =  url([ADMIN, 'vedika', 'perbaikan', 'ranap', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
+      return $this->draw('perbaikan.html', ['tab' => $type, 'vedika' => $this->assign]);
 
     }
 
