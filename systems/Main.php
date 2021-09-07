@@ -258,7 +258,19 @@ abstract class Main
 
     public function getDokterInfo($field, $kd_dokter)
     {
-        $row = $this->db('dokter')->where('nm_dokter', $kd_dokter)->oneArray();
+        $row = $this->db('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
+        return $row[$field];
+    }
+
+    public function getPoliklinikInfo($field, $kd_poli)
+    {
+        $row = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+        return $row[$field];
+    }
+
+    public function getPenjabInfo($field, $kd_pj)
+    {
+        $row = $this->db('penjab')->where('kd_pj', $kd_pj)->oneArray();
         return $row[$field];
     }
 

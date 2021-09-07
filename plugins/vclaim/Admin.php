@@ -13,7 +13,6 @@ class Admin extends AdminModule
       $this->consid = $this->settings->get('settings.BpjsConsID');
       $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
       $this->api_url = $this->settings->get('settings.BpjsApiUrl');
-      $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
     }
 
     public function navigation()
@@ -539,27 +538,7 @@ class Admin extends AdminModule
       $url = $this->api_url.'Peserta/nik/'.$nik.'/tglSEP/'.$tglPelayananSEP;
       $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
       $json = json_decode($output, true);
-      $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-      $decompress = decompress($stringDecrypt);
-      if($this->vclaim_version == 1) {
-          echo json_encode($json['response']);
-      } else {
-          if($json) {
-            echo '{
-            	"metaData": {
-            		"code": "'.$json['metaData']['code'].'",
-            		"message": "'.$json['metaData']['message'].'"
-            	},
-            	"response": '.$decompress.'}';
-          } else {
-            echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-          }
-      }
+      echo json_encode($json);
       exit();
     }
 
