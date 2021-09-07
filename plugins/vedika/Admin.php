@@ -503,7 +503,7 @@ class Admin extends AdminModule
             'nmppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['nama'],
             'kdppkpelayanan' => $this->settings->get('settings.ppk_bpjs'),
             'nmppkpelayanan' => $this->settings->get('settings.nama_instansi'),
-            'jnspelayanan' => $data_rujukan['response']['rujukan']['pelayanan']['kode'],
+            'jnspelayanan' => $jenis_pelayanan,
             'catatan' => $data['response']['catatan'],
             'diagawal' => $data_rujukan['response']['rujukan']['diagnosa']['kode'],
             'nmdiagnosaawal' => $data_rujukan['response']['rujukan']['diagnosa']['nama'],
