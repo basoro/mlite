@@ -69,38 +69,28 @@
 <br>
 <div class="container">
     <div class="row">
-    <div class="col-md-3">
-      <a href="{?=url('/veda/ralan')?}" role="tab">
-        <div class="card-counter primary">
-          <i class="fa fa-code-fork"></i>
-          <span class="count-numbers">{$stat.ralan}</span>
-          <span class="count-name">Rawat Jalan</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-3">
-      <a href="{?=url('/veda/ranap')?}" role="tab">
-        <div class="card-counter danger">
-          <i class="fa fa-ticket"></i>
-          <span class="count-numbers">{$stat.ranap}</span>
-          <span class="count-name">Rawat Inap</span>
-        </div>
-      </a>
-    </div>
-
-    <div class="col-md-3">
+    <div class="col-md-4">
+      <a href="{?=url('veda/pengajuan/ralan')?}">
       <div class="card-counter success">
-        <i class="fa fa-database"></i>
-        <span class="count-numbers">{$stat.disetujui}</span>
-        <span class="count-name">Disetujui</span>
+        <i class="fa fa-code-fork"></i>
+        <span class="count-numbers">{$stat.pengajuan_ralan}</span>
+        <span class="count-name">Rawat Jalan</span>
       </div>
+      </a>
     </div>
-
-    <div class="col-md-3">
+    <div class="col-md-4">
+      <a href="{?=url('veda/pengajuan/ranap')?}">
+      <div class="card-counter primary">
+        <i class="fa fa-ticket"></i>
+        <span class="count-numbers">{$stat.pengajuan_ranap}</span>
+        <span class="count-name">Rawat Inap</span>
+      </div>
+      </a>
+    </div>
+    <div class="col-md-4">
       <div class="card-counter info">
         <i class="fa fa-users"></i>
-        <span class="count-numbers">{$stat.catatan}</span>
+        <span class="count-numbers">{$stat.perbaiki}</span>
         <span class="count-name">Perbaikan</span>
       </div>
     </div>

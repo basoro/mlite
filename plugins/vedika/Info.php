@@ -15,7 +15,7 @@ return [
           `no_rkm_medis` varchar(6) NOT NULL,
           `no_rawat` varchar(100) NOT NULL,
           `nosep` varchar(100) NOT NULL,
-          `catatan` varchar(100) DEFAULT NULL,
+          `jenis` varchar(100) NOT NULL,
           `status` varchar(100) NOT NULL,
           `username` varchar(100) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
@@ -24,6 +24,19 @@ return [
           ADD PRIMARY KEY (`id`);");
 
         $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
+          `id` int(11) NOT NULL,
+          `nosep` varchar(100) NOT NULL,
+          `catatan` TEXT,
+          `username` varchar(100) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
+          ADD PRIMARY KEY (`id`);");
+
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'username', '')");

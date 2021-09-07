@@ -24,7 +24,6 @@
           <label>Catatan Dan Umpan Balik</label>
           <textarea class="form-control" name="catatan" placeholder="Catatan dan umpan balik Verifikator (optional)" rows="6"></textarea>
       </div>
-      <input type="submit" name="setuju" class="btn btn-success" value="Setuju"/>
       <input type="submit" name="perbaiki" class="btn btn-danger" value="Perbaiki"/>
   </form>
   <br><br>
@@ -32,7 +31,7 @@
     <div class="col-md-12">
       <h4>Feedback</h4>
       <div class="comments-list">
-        {loop: $vedika}
+        {loop: $vedika_feedback}
         <div class="media">
           <p class="pull-right"><small>{$value.tanggal}</small></p>
           <a class="media-left" href="#">
