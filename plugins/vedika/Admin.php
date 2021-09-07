@@ -449,6 +449,7 @@ class Admin extends AdminModule
       if($query) {
         $this->db('bpjs_prb')->where('no_sep', $no_sep)->delete();
       }
+      echo 'No SEP '.$no_sep.' telah dihapus.!!';
       exit();
     }
 
