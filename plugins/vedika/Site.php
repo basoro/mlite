@@ -130,7 +130,7 @@ class Site extends SiteModule
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ralan', '%d?s='.$phrase]));
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ralan', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination','5');
       $this->assign['totalRecords'] = $totalRecords;
 
@@ -258,7 +258,7 @@ class Site extends SiteModule
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ranap', '%d?s='.$phrase]));
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['veda', 'pengajuan', 'ranap', '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination','5');
       $this->assign['totalRecords'] = $totalRecords;
 
