@@ -14,6 +14,7 @@ return [
           `tanggal` date DEFAULT NULL,
           `no_rkm_medis` varchar(6) NOT NULL,
           `no_rawat` varchar(100) NOT NULL,
+          `tgl_registrasi` varchar(100) NOT NULL,
           `nosep` varchar(100) NOT NULL,
           `jenis` varchar(100) NOT NULL,
           `status` varchar(100) NOT NULL,

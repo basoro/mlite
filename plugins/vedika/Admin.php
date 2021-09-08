@@ -40,6 +40,7 @@ class Admin extends AdminModule
             'tanggal' => date('Y-m-d'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'no_rawat' => $_POST['no_rawat'],
+            'tgl_registrasi' => $_POST['tgl_registrasi'],
             'nosep' => $_POST['nosep'],
             'jenis' => $_POST['jnspelayanan'],
             'status' => $_POST['status'],

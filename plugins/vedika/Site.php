@@ -110,6 +110,12 @@ class Site extends SiteModule
     public function _getIndexPengajuanRalan($page = 1)
     {
       $this->_addHeaderFiles();
+      $start_date = date('Y-m-d');
+      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
+        $start_date = $_GET['start_date'];
+      $end_date = date('Y-m-d');
+      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
+        $end_date = $_GET['end_date'];
       $perpage = '10';
       $phrase = '';
       if(isset($_GET['s']))
@@ -120,7 +126,7 @@ class Site extends SiteModule
         $page = $slug[3];
       }
       // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?)");
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
@@ -129,7 +135,7 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) LIMIT $perpage OFFSET $offset");
+      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
@@ -232,6 +238,12 @@ class Site extends SiteModule
     public function _getIndexPengajuanRanap($page = 1)
     {
       $this->_addHeaderFiles();
+      $start_date = date('Y-m-d');
+      if(isset($_GET['start_date']) && $_GET['start_date'] !='')
+        $start_date = $_GET['start_date'];
+      $end_date = date('Y-m-d');
+      if(isset($_GET['end_date']) && $_GET['end_date'] !='')
+        $end_date = $_GET['end_date'];
       $perpage = '10';
       $phrase = '';
       if(isset($_GET['s']))
@@ -242,7 +254,7 @@ class Site extends SiteModule
         $page = $slug[3];
       }
       // pagination
-      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?)");
+      $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
@@ -251,7 +263,7 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) LIMIT $perpage OFFSET $offset");
+      $query = $this->db()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date' LIMIT $perpage OFFSET $offset");
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
@@ -1169,13 +1181,13 @@ class Site extends SiteModule
     private function _addHeaderFiles()
     {
         // CSS
-        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
-        //$this->core->addCSS(url('assets/css/jquery.timepicker.css'));
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
         //$this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
-        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
-        //$this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
         //$this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         //$this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 

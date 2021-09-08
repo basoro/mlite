@@ -26,12 +26,36 @@
       </div>
       <div class="col col-md-6">
         <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
-            <div class="input-group">
-                <input type="text" name="s" minlength="3" class="form-control" placeholder="Search" required>
-                <input type="hidden" name="t" value="{?=$_GET['t']?}">
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
-                </span>
+            <div class="col col-md-4">
+              <div class="row">
+                <div class="input-group">
+                    <input type="text" name="start_date" minlength="3" class="form-control tanggal" placeholder="Tanggal Awal">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
+                    </span>
+                </div>
+              </div>
+            </div>
+            <div class="col col-md-4">
+              <div class="row">
+                <div class="input-group">
+                    <input type="text" name="end_date" minlength="3" class="form-control tanggal" placeholder="Tanggal Akhir">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
+                    </span>
+                </div>
+              </div>
+            </div>
+            <div class="col col-md-4">
+              <div class="row">
+                <div class="input-group">
+                    <input type="text" name="s" minlength="3" class="form-control" placeholder="No.RM/SEP">
+                    <input type="hidden" name="t" value="{?=$_GET['t']?}">
+                    <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                </div>
+              </div>
             </div>
         </form>
       </div>
