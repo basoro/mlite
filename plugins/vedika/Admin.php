@@ -244,7 +244,7 @@ class Admin extends AdminModule
         $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
         $totalRecords = $totalRecords->fetchAll();
 
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'pengajuan', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
         $this->assign['pagination'] = $pagination->nav('pagination','5');
         $this->assign['totalRecords'] = $totalRecords;
 
@@ -369,7 +369,7 @@ class Admin extends AdminModule
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'index', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vedika', 'perbaikan', $type, '%d?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination','5');
       $this->assign['totalRecords'] = $totalRecords;
 
