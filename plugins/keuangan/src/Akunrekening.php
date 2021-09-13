@@ -15,7 +15,7 @@ class Akunrekening
     public function getIndex()
     {
 
-      $return['list'] = $this->db('rekening')
+      $return['list'] = $this->db('mlite_rekening')
         ->asc('kd_rek')
         ->toArray();
 
@@ -26,7 +26,7 @@ class Akunrekening
     public function anyForm()
     {
         if (isset($_POST['kd_rek'])){
-          $return['form'] = $this->db('rekening')->where('kd_rek', $_POST['kd_rek'])->oneArray();
+          $return['form'] = $this->db('mlite_rekening')->where('kd_rek', $_POST['kd_rek'])->oneArray();
         } else {
           $return['form'] = [
             'kd_rek' => '',
@@ -42,7 +42,7 @@ class Akunrekening
     public function anyDisplay()
     {
 
-        $return['list'] = $this->db('rekening')
+        $return['list'] = $this->db('mlite_rekening')
           ->asc('kd_rek')
           ->toArray();
 
@@ -51,17 +51,17 @@ class Akunrekening
 
     public function postSave()
     {
-      if (!$this->db('rekening')->where('kd_rek', $_POST['kd_rek'])->oneArray()) {
-        $query = $this->db('rekening')->save($_POST);
+      if (!$this->db('mlite_rekening')->where('kd_rek', $_POST['kd_rek'])->oneArray()) {
+        $query = $this->db('mlite_rekening')->save($_POST);
       } else {
-        $query = $this->db('rekening')->where('kd_rek', $_POST['kd_rek'])->save($_POST);
+        $query = $this->db('mlite_rekening')->where('kd_rek', $_POST['kd_rek'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('rekening')->where('kd_rek', $_POST['kd_rek'])->delete();
+      return $this->db('mlite_rekening')->where('kd_rek', $_POST['kd_rek'])->delete();
     }
 
 }
