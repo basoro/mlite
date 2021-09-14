@@ -295,7 +295,6 @@ function KirimWA() {
 	var message = document.getElementById("message").value;
 	var tipe = 'pdf';
 	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
-	//var file = "https://khanza.basoro.id/uploads/invoices/RJ.20.07.2021.20.33.10.pdf";
 	console.log(number + " - " + message);
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {
