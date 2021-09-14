@@ -1085,10 +1085,10 @@ class Admin extends AdminModule
         return $next_no_jurnal;
     }
 
-    public function getKirimEmail() {
-      $email = trim($_REQUEST['email']);
-      $nama_lengkap = trim($_REQUEST['receiver']);
-      $file = trim($_REQUEST['file']);
+    public function postKirimEmail() {
+      $email = $_POST['email'];
+      $nama_lengkap = $_POST['receiver'];
+      $file = $_POST['file'];
       $this->sendEmail($email, $nama_lengkap, $file);
       exit();
     }
