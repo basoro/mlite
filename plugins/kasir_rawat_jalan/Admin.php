@@ -5,6 +5,9 @@ use Systems\AdminModule;
 //use Systems\Lib\Fpdf\FPDF;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 use Systems\Lib\QRCode;
+use Systems\Lib\PHPMailer\PHPMailer;
+use Systems\Lib\PHPMailer\SMTP;
+use Systems\Lib\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
@@ -1080,6 +1083,53 @@ class Admin extends AdminModule
         $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
 
         return $next_no_jurnal;
+    }
+
+    public function getKirimEmail() {
+      $email = trim($_REQUEST['email']);
+      $nama_lengkap = trim($_REQUEST['receiver']);
+      $file = trim($_REQUEST['file']);
+      $this->sendEmail($email, $nama_lengkap, $file);
+      exit();
+    }
+
+    private function sendEmail($email, $receiver, $file)
+    {
+      $binary_content = file_get_contents($file);
+
+      if ($binary_content === false) {
+         throw new Exception("Could not fetch remote content from: '$url'");
+      }
+
+	    $mail = new PHPMailer(true);
+      $temp  = @file_get_contents(MODULES."/kasir_rawat_jalan/email/email.send.html");
+
+      $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+      $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
+      $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
+      //$temp  = str_replace("{NUMBER}", $number, $temp);
+
+	    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
+      $mail->isSMTP();
+      $mail->Host = $this->settings->get('api.apam_smtp_host');
+      $mail->SMTPAuth = true;
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = $this->settings->get('api.apam_smtp_port');
+
+      $mail->Username = $this->settings->get('api.apam_smtp_username');
+      $mail->Password = $this->settings->get('api.apam_smtp_password');
+
+      // Sender and recipient settings
+      $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
+      $mail->addAddress($email, $receiver);
+      $mail->AddStringAttachment($binary_content, "invoice.pdf", $encoding = 'base64', $type = 'application/pdf');
+
+      // Setting the email content
+      $mail->IsHTML(true);
+      $mail->Subject = "Detail pembayaran anda di ".$this->core->settings->get('settings.nama_instansi');
+      $mail->Body = $temp;
+
+      $mail->send();
     }
 
     public function getJavascript()

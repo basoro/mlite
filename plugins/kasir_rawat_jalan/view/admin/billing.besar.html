@@ -219,8 +219,7 @@
 		</div>
 		<br><br><br>
 		<center>
-			<button type="button" class="btn btn-warning"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
-			<button type="button" class="btn btn-success"><span class="glyphicon glyphicon-send"></span> Kirim SMS</button>
+			<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
 			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
 			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
 		</center>
@@ -251,8 +250,43 @@
 	    </div><!-- /.modal-dialog -->
 	  </div><!-- /.modal -->
 
+		<!-- Modal -->
+	  <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	          <h4 class="modal-title">Kirim Email</h4>
+	        </div>
+	        <div class="modal-body">
+		        <div class="form-floating number">
+							<label for="floatingPassword">Email</label>
+		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{$pasien.email}">
+		        </div>
+		        <div class="form-floating message">
+							<label for="floatingPassword">Nama Pasien</label>
+		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{$pasien.nm_pasien}">
+		        </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+	          <button type="button" class="btn btn-primary" onclick="KirimEmail()" data-dismiss="modal">Kirim</button>
+	        </div>
+	      </div><!-- /.modal-content -->
+	    </div><!-- /.modal-dialog -->
+	  </div><!-- /.modal -->
+
 </body>
 <script>
+function KirimEmail() {
+	var xhttp = new XMLHttpRequest();
+	var email = document.getElementById("email").value;
+	var receiver = document.getElementById("receiver").value;
+	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	xhttp.open("GET", "{?=url([ADMIN,'kasir_rawat_jalan','kirimemail'])?}", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
+}
 function KirimWA() {
 	var xhttp = new XMLHttpRequest();
 	var api_key = '{$settings.waapitoken}';

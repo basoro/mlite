@@ -1076,7 +1076,7 @@ class Site extends SiteModule
 
     private function sendRegisterEmail($email, $receiver, $number)
     {
-	  $mail = new PHPMailer(true);
+	    $mail = new PHPMailer(true);
       $temp  = @file_get_contents(MODULES."/api/email/apam.welcome.html");
 
       $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
