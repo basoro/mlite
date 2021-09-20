@@ -130,7 +130,7 @@
                     <div class="col-md-4 {if: $admin_mode == 'simple'}hidden{/if}">
                         <div class="form-group">
                             <label>Diagnosa (ICD-10)</label>
-                            <select name="kd_penyakit[]" class="form-control icd10" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                            <select name="kd_penyakit[]" class="form-control icd10_" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
                                 {loop: $dokter_ralan.diagnosa_pasien}
                                 <option value="{$value.kd_penyakit}" selected>{$value.nm_penyakit}</option>
                                 {/loop}
@@ -140,7 +140,7 @@
                     <div class="col-md-4 {if: $admin_mode == 'simple'}hidden{/if}">
                         <div class="form-group">
                             <label>Tindakan (ICD-9)</label>
-                            <select name="kode[]" class="form-control icd9" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
+                            <select name="kode[]" class="form-control icd9_" multiple data-keep-open="true" data-use-dimmer="false" data-options-height="126px">
                                 {loop: $dokter_ralan.prosedur_pasien}
                                 <option value="{$value.kode}" selected>{$value.deskripsi_pendek}</option>
                                 {/loop}

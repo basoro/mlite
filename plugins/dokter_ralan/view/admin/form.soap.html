@@ -104,7 +104,7 @@
           <span class="{if: $admin_mode == 'simple'}hidden{/if}">
             <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
           </span>
-          <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
+          <a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" class="btn btn-info" data-toggle="modal" data-target="#riwayatModal"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></a>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
         </div>
       </div>
@@ -115,7 +115,7 @@
           <div class="form-group">
             <div class="row">
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="form-group icd10">
                   <label for="">Diagnosa (ICD 10)</label>
                   <button id="filter" class="btn btn-default">
                       <span id="kode_icd10">kode</span>
@@ -149,7 +149,7 @@
                 </div>
               </div>
               <div class="col-sm-6">
-                <div class="form-group">
+                <div class="form-group icd9">
                   <label for="">Prosedur (ICD 9)</label>
                   <button id="filter" class="btn btn-default">
                       <span id="kode_icd9">kode</span>

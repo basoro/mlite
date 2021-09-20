@@ -126,9 +126,9 @@ class Admin extends AdminModule
             $this->notify('failure', 'Email salah');
         }
         // check if password is longer than 5 characters
-        if (isset($_POST['password']) && strlen($_POST['password']) < 5) {
+        if (isset($_POST['password']) && strlen($_POST['password']) < 9) {
             $errors++;
-            $this->notify('failure', 'Password terlalu pendek.');
+            $this->notify('failure', 'Password terlalu pendek. Minimal 8 karakter serta memuat kombinasi huruf besar, huruf kecil, angka, dan karakter khusus ');
         }
         // access to modules
         if ((count($_POST['access']) == count($this->_getModules())) || ($id == 1)) {

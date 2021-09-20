@@ -1144,7 +1144,7 @@ $(document).ready(function () {
     valueField: 'kd_jenis_prw',
     textField: 'nm_perawatan'
   });
-  $('.icd10').selectator({
+  $('.icd10_').selectator({
     labels: {
       search: 'Cari ICD-10...'
     },
@@ -1168,7 +1168,7 @@ $(document).ready(function () {
     valueField: 'kd_penyakit',
     textField: 'nm_penyakit'
   });
-  $('.icd9').selectator({
+  $('.icd9_').selectator({
     labels: {
       search: 'Cari ICD-9...'
     },
