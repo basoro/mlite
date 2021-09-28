@@ -88,6 +88,7 @@ class Site extends SiteModule
             $this->db('mlite_vedika_feedback')->save([
               'id' => NULL,
               'nosep' => $_POST['nosep'],
+              'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
               'username' => $this->core->getUserInfo('username', null, true)
             ]);
@@ -216,6 +217,7 @@ class Site extends SiteModule
             $this->db('mlite_vedika_feedback')->save([
               'id' => NULL,
               'nosep' => $_POST['nosep'],
+              'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
               'username' => $this->core->getUserInfo('username', null, true)
             ]);
@@ -344,6 +346,7 @@ class Site extends SiteModule
             $this->db('mlite_vedika_feedback')->save([
               'id' => NULL,
               'nosep' => $_POST['nosep'],
+              'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
               'username' => $this->core->getUserInfo('username', null, true)
             ]);

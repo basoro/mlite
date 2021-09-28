@@ -30,6 +30,7 @@ return [
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
           `id` int(11) NOT NULL,
           `nosep` varchar(100) NOT NULL,
+          `tanggal` date DEFAULT NULL,
           `catatan` TEXT,
           `username` varchar(100) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
