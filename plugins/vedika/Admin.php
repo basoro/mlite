@@ -283,7 +283,7 @@ class Admin extends AdminModule
               $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
               $row['almt_pj'] = $this->core->getPasienInfo('alamat', $row['no_rkm_medis']);
               $row['jk'] = $this->core->getPasienInfo('jk', $row['no_rkm_medis']);
-              $row['umurdaftar'] = $this->core->getRegPeriksaInfo('umurdaftar', $row['no_rawat']);
+              $row['umur'] = $this->core->getRegPeriksaInfo('umurdaftar', $row['no_rawat']);
               $row['sttsumur'] = $this->core->getRegPeriksaInfo('sttsumur', $row['no_rawat']);
               $row['tgl_registrasi'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
               $row['status_lanjut'] = $this->core->getRegPeriksaInfo('status_lanjut', $row['no_rawat']);
@@ -423,7 +423,7 @@ class Admin extends AdminModule
               $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
               $row['almt_pj'] = $this->core->getPasienInfo('alamat', $row['no_rkm_medis']);
               $row['jk'] = $this->core->getPasienInfo('jk', $row['no_rkm_medis']);
-              $row['umurdaftar'] = $this->core->getRegPeriksaInfo('umurdaftar', $row['no_rawat']);
+              $row['umur'] = $this->core->getRegPeriksaInfo('umurdaftar', $row['no_rawat']);
               $row['sttsumur'] = $this->core->getRegPeriksaInfo('sttsumur', $row['no_rawat']);
               $row['tgl_registrasi'] = $this->core->getRegPeriksaInfo('tgl_registrasi', $row['no_rawat']);
               $row['status_lanjut'] = $this->core->getRegPeriksaInfo('status_lanjut', $row['no_rawat']);
