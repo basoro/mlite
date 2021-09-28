@@ -49,7 +49,7 @@ class Site extends SiteModule
     {
         if ($this->_loginCheck()) {
             $page = [
-                'title' => 'Vedika LITE',
+                'title' => 'VEDA',
                 'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
                 'content' => $this->_getManage()
             ];
@@ -64,7 +64,7 @@ class Site extends SiteModule
                 redirect(url(['veda', '']));
             }
             $page = [
-                'title' => 'Vedika LITE',
+                'title' => 'VEDA',
                 'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
                 'content' => $this->draw('login.html', ['mlite' => $this->mlite])
             ];
@@ -95,13 +95,13 @@ class Site extends SiteModule
           }
         }
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getIndexPengajuanRalan($page = 1)
         ];
       } else {
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->draw('login.html', ['mlite' => $this->mlite])
         ];
@@ -224,13 +224,13 @@ class Site extends SiteModule
           }
         }
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getIndexPengajuanRanap($page = 1)
         ];
       } else {
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->draw('login.html', ['mlite' => $this->mlite])
         ];
@@ -353,13 +353,13 @@ class Site extends SiteModule
           }
         }
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getIndexPerbaikan($page = 1)
         ];
       } else {
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->draw('login.html', ['mlite' => $this->mlite])
         ];
@@ -491,13 +491,13 @@ class Site extends SiteModule
           ]);
         }
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getManageRalan($page = 1)
         ];
       } else {
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->draw('login.html', ['mlite' => $this->mlite])
         ];
@@ -535,13 +535,13 @@ class Site extends SiteModule
           ]);
         }
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->_getManageRanap($page = 1)
         ];
       } else {
         $page = [
-            'title' => 'Vedika LITE',
+            'title' => 'VEDA',
             'desc' => 'Dashboard Verifikasi Digital Klaim BPJS',
             'content' => $this->draw('login.html', ['mlite' => $this->mlite])
         ];
