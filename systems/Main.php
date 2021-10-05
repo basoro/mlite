@@ -292,6 +292,12 @@ abstract class Main
         return $row[$field];
     }
 
+    public function getKamarInapInfo($field, $no_rawat)
+    {
+        $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
+    }
+
     public function getDepartemenInfo($dep_id)
     {
         $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
