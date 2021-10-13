@@ -254,8 +254,8 @@ class Site extends SiteModule
         $phrase = $_GET['s'];
 
       $slug = parseURL();
-      if (count($slug) == 4 && $slug[0] == 'veda' && $slug[1] == 'pengajuan') {
-        $page = $slug[3];
+      if (count($slug) == 3 && $slug[0] == 'veda' && $slug[1] == 'pengajuan') {
+        $page = $slug[2];
       }
       // pagination
       $totalRecords = $this->db()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
