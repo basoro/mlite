@@ -388,7 +388,7 @@ class Site extends SiteModule
         $phrase = $_GET['s'];
 
       $slug = parseURL();
-      if (count($slug) == 4 && $slug[0] == 'veda' && $slug[1] == 'pengajuan') {
+      if (count($slug) == 4 && $slug[0] == 'veda' && $slug[1] == 'perbaikan') {
         $page = $slug[3];
       }
       // pagination
