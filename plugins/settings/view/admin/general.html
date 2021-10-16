@@ -182,6 +182,7 @@
                             </label>
                         </div>
                     </div>
+                    {if: $settings.presensi}
                     <div class="form-group">
                         <label>Aktifkan Notifikasi Presensi</label>
                         <div class="radio">
@@ -193,6 +194,7 @@
                             </label>
                         </div>
                     </div>
+                    {/if}
                     <div class="form-group">
                         <label>Token WhatsApp API</label> <span class="pull-right">[<a href="https://wa.basoro.id" target="_blank">Dapatkan Token Key Disini</a>]</span>
                         <input type="text" name="waapitoken" class="form-control" value="{$settings.waapitoken}" />

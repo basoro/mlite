@@ -644,7 +644,7 @@ $("#display").on("click",".panggil", function(event){
   var no_reg = $(this).attr("data-no_reg");
   function play (){
     responsiveVoice.speak(
-      nm_pasien + ",nomor antrian " + no_reg + ",ke" + nm_poli ,"Indonesian Male", {pitch: 1,rate: 0.8,volume: 2}
+      nm_pasien + ", nomor antrian " + no_reg + ", ke " + nm_poli ,"Indonesian Male", {pitch: 1,rate: 0.8,volume: 2}
     );
   }
   play();
