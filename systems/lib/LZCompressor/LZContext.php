@@ -1,5 +1,5 @@
 <?php
-namespace LZCompressor;
+namespace Systems\Lib\LZCompressor;
 
 class LZContext
 {

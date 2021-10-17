@@ -6,7 +6,7 @@
  * Time: 15:54
  */
 
-namespace LZCompressor;
+namespace Systems\Lib\LZCompressor;
 
 
 class LZUtil16
