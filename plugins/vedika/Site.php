@@ -16,8 +16,8 @@ class Site extends SiteModule
         $this->mlite['version']        = $this->core->settings->get('settings.version');
         $this->mlite['token']          = '  ';
         if ($this->_loginCheck()) {
-            $vedika = $this->db('mlite_users')->where('username', $_SESSION['vedika_user'])->oneArray();
-            $this->mlite['vedika_user']    = $vedika['username'];
+            //$vedika = $this->db('mlite_users')->where('username', $_SESSION['vedika_user'])->oneArray();
+            $this->mlite['vedika_user']    = $_SESSION['vedika_user'];
             $this->mlite['vedika_token']   = $_SESSION['vedika_token'];
         }
         $this->mlite['slug']           = parseURL();
@@ -91,7 +91,7 @@ class Site extends SiteModule
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
-              'username' => $this->core->getUserInfo('username', null, true)
+              'username' => $_SESSION['vedika_user']
             ]);
           }
         }
@@ -220,7 +220,7 @@ class Site extends SiteModule
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
-              'username' => $this->core->getUserInfo('username', null, true)
+              'username' => $_SESSION['vedika_user']
             ]);
           }
         }
@@ -354,7 +354,7 @@ class Site extends SiteModule
               'nosep' => $_POST['nosep'],
               'tanggal' => date('Y-m-d'),
               'catatan' => $_POST['catatan'],
-              'username' => $this->core->getUserInfo('username', null, true)
+              'username' => $_SESSION['vedika_user']
             ]);
           }
         }
@@ -1196,6 +1196,7 @@ class Site extends SiteModule
       $this->tpl->set('set_status', $set_status);
       $this->tpl->set('vedika', $vedika);
       $this->tpl->set('vedika_feedback', $vedika_feedback);
+      $this->tpl->set('username', $_SESSION['vedika_user']);
       echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
       exit();
     }
