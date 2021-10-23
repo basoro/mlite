@@ -373,7 +373,6 @@ function printContent(el){
       <pre>
       </pre>
     </div>
-    </div>
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script>
           var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
@@ -444,9 +443,47 @@ function printContent(el){
                       type: "POST",
                       url: "{?=url([ADMIN,'vclaim','syncsep'])?}",
                       data: {
-                        noSep: no_sep,
-                        noKartu: no_kartu,
-                        tglSep: tglsep
+                        no_sep: no_sep,
+                        tglsep: tglsep,
+                        tglrujukan: tglrujukan,
+                        no_rujukan: no_rujukan,
+                        kdppkrujukan: kdppkrujukan,
+                        nmppkrujukan: nmppkrujukan,
+                        jnspelayanan: jnspelayanan,
+                        catatan: catatan,
+                        diagawal: diagawal,
+                        nmdiagnosaawal: nmdiagnosaawal,
+                        kdpolitujuan: kdpolitujuan,
+                        nmpolitujuan: nmpolitujuan,
+                        klsrawa: klsrawat,
+                        lakalantas: lakalantas,
+                        user: user,
+                        nomr: nomr,
+                        nama_pasien: nama_pasien,
+                        tanggal_lahir: tanggal_lahir,
+                        peserta: peserta,
+                        jkel: jkel,
+                        no_kartu: no_kartu,
+                        tglpulang: tglpulang,
+                        asal_rujukan: asal_rujukan,
+                        eksekutif: eksekutif,
+                        cob: cob,
+                        penjamin: penjamin,
+                        notelep: notelep,
+                        katarak: katarak,
+                        tglkkl: tglkkl,
+                        keterangankkl: keterangankkl,
+                        suplesi: suplesi,
+                        no_sep_suplesi: no_sep_suplesi,
+                        kdprop: kdprop,
+                        nmprop: nmprop,
+                        kdkab: kdkab,
+                        nmkab: nmkab,
+                        kdkec: kdkec,
+                        nmkec: nmkec,
+                        noskdp: noskdp,
+                        kddpjp: kddpjp,
+                        nmdpdjp: nmdpdjp
                       },
                       success: function(result){
                         var messages = result.split(' ');

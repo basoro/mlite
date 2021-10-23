@@ -33,9 +33,11 @@ public function getByNoKartu($noKartu, $tglPelayananSEP)
 
 #### Supported Services (WIP)
 
-- [x] Referensi
-- [x] Peserta
-- [x] SEP
-- [x] Rujukan
-- [x] Lembar Pengajuan Klaim
-- [x] Monitoring
+- [√] Referensi
+- [√] Peserta
+- [√] SEP
+- [√] Rujukan
+- [x] Rencana Kontrol
+- [x] PRB
+- [√] Lembar Pengajuan Klaim
+- [√] Monitoring
