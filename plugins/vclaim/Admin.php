@@ -383,13 +383,12 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        //$decompress = \Systems\Lib\LZCompressor\LZString::decompressFromEncodedURIComponent($stringDecrypt);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          if($json != null) {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
+         if($json != null) {
             echo '{
             	"metaData": {
             		"code": "'.$code.'",
@@ -412,15 +411,15 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/poli/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          if($json != null) {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
+            if($json != null) {
             echo '{
             	"metaData": {
             		"code": "'.$code.'",
@@ -446,11 +445,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -478,11 +477,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -510,11 +509,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -542,11 +541,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -574,11 +573,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -606,11 +605,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -638,11 +637,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -702,11 +701,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -734,11 +733,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -766,11 +765,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -798,11 +797,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -830,11 +829,11 @@ class Admin extends AdminModule
       //echo json_encode($json);
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-      $decompress = decompress($stringDecrypt);
       if($this->vclaim_version == 1) {
         echo json_encode($json);
       } else {
+        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $decompress = decompress($stringDecrypt);
         if($json != null) {
           echo '{
             "metaData": {
@@ -862,11 +861,11 @@ class Admin extends AdminModule
       //echo json_encode($json);
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-      $decompress = decompress($stringDecrypt);
       if($this->vclaim_version == 1) {
         echo json_encode($json);
       } else {
+        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $decompress = decompress($stringDecrypt);
         if($json != null) {
           echo '{
           	"metaData": {
@@ -959,11 +958,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1002,11 +1001,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1034,11 +1033,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1066,11 +1065,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1097,11 +1096,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1128,11 +1127,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1159,11 +1158,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1191,11 +1190,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1223,11 +1222,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1255,11 +1254,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1287,11 +1286,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1325,11 +1324,11 @@ class Admin extends AdminModule
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         $jsonresponse = $json['response'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1363,11 +1362,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1463,11 +1462,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1495,11 +1494,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1527,11 +1526,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1559,11 +1558,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1591,11 +1590,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1623,11 +1622,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1655,11 +1654,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1687,11 +1686,11 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
+          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $decompress = decompress($stringDecrypt);
           if($json != null) {
             echo '{
             	"metaData": {
