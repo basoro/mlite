@@ -329,6 +329,42 @@ $("#rincian").on("click",".hapus_resep_obat", function(event){
   });
 });
 
+// ketika tombol validasi_resep_obat ditekan
+$("#rincian").on("click",".validasi_resep_obat", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/apotek_ralan/validasiresep?t=' + mlite.token;
+  var no_resep = $(this).attr("data-no_resep");
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+  var jam_peresepan = $(this).attr("data-jam_peresepan");
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data resep ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_resep: no_resep,
+        no_rawat: no_rawat,
+        tgl_peresepan: tgl_peresepan,
+        jam_peresepan: jam_peresepan
+      } ,function(data) {
+        var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian rawat jalan telah divalidasi!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
 // ketika tombol hapus ditekan
 $("#rincian").on("click",".hapus_resep_dokter", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
