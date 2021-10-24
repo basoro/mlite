@@ -411,7 +411,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/poli/'.$keyword;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         if($this->vclaim_version == 1) {
