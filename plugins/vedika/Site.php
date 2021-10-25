@@ -473,6 +473,12 @@ class Site extends SiteModule
       $start_date = $_GET['start_date'];
       $end_date = $_GET['end_date'];
       $rows = $this->db('mlite_vedika')->where('status', 'Perbaiki')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->toArray();
+      if(isset($_GET['jenis']) && $_GET['jenis'] == 1) {
+        $rows = $this->db('mlite_vedika')->where('status', 'Perbaiki')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 1)->toArray();
+      }
+      if(isset($_GET['jenis']) && $_GET['jenis'] == 2) {
+        $rows = $this->db('mlite_vedika')->where('status', 'Perbaiki')->where('tgl_registrasi','>=',$start_date)->where('tgl_registrasi','<=', $end_date)->where('jenis', 2)->toArray();
+      }
       $i = 1;
       foreach ($rows as $row) {
         $row['status_lanjut'] = 'Ralan';
