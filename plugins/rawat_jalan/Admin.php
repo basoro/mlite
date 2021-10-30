@@ -654,6 +654,12 @@ class Admin extends AdminModule
 
     public function getJadwalEdit($id, $hari_kerja)
     {
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
+
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');   
         $this->_addHeaderFiles();
         $row = $this->db('jadwal')->where('kd_dokter', $id)->where('hari_kerja', $hari_kerja)->oneArray();
         if (!empty($row)) {
