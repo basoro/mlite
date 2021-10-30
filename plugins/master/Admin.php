@@ -34,6 +34,7 @@
     use Plugins\Master\Src\Jabatan;
     use Plugins\Master\Src\JenjangJabatan;
     use Plugins\Master\Src\KelompokJabatan;
+    use Plugins\Master\Src\Pendidikan;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -73,6 +74,7 @@
             $this->jabatan = new Jabatan();
             $this->jenjangjabatan = new JenjangJabatan();
             $this->kelompokjabatan = new KelompokJabatan();
+            $this->pendidikan = new Pendidikan();
         }
 
         public function navigation()
@@ -1630,6 +1632,51 @@
             exit();
         }
         /* End KelompokJabatan Section */
+
+        /* Start Pendidikan Section */
+        public function getPendidikan()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'pendidikanjs']), 'footer');
+          $return = $this->pendidikan->getIndex();
+          return $this->draw('pendidikan.html', [
+            'pendidikan' => $return
+          ]);
+
+        }
+
+        public function anyPendidikanForm()
+        {
+            $return = $this->pendidikan->anyForm();
+            echo $this->draw('pendidikan.form.html', ['pendidikan' => $return]);
+            exit();
+        }
+
+        public function anyPendidikanDisplay()
+        {
+            $return = $this->pendidikan->anyDisplay();
+            echo $this->draw('pendidikan.display.html', ['pendidikan' => $return]);
+            exit();
+        }
+
+        public function postPendidikanSave()
+        {
+          $this->pendidikan->postSave();
+          exit();
+        }
+
+        public function postPendidikanHapus()
+        {
+          $this->pendidikan->postHapus();
+          exit();
+        }
+
+        public function getPendidikanJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/pendidikan.js');
+            exit();
+        }
+        /* End Pendidikan Section */
 
         public function getCSS()
         {

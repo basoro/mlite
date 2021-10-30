@@ -38,7 +38,7 @@
     <script src="{?=url()?}/assets/jscripts/html.sortable.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/tinynav.min.js"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js')?}"></script>
-    <script src="{?=url(THEMES.'/admin/js/selectator.min.js')?}"></script>
+    <script src="{?=url(THEMES.'/admin/js/selectator.js')?}"></script>
     <style>
       html {
         height: 0;
@@ -265,10 +265,10 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker
     .register("{?=url()?}/service-worker.js")
     .then((swReg) => {
-      console.log("Service Worker is registered", swReg);
+      //console.log("Service Worker is registered", swReg);
     })
     .catch((err) => {
-      console.error("Service Worker Error", err);
+      //console.error("Service Worker Error", err);
     });
   });
 }

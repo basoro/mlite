@@ -531,6 +531,69 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function anyKontrol()
+    {
+      $rows = $this->db('booking_registrasi')
+        ->join('poliklinik', 'poliklinik.kd_poli=booking_registrasi.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=booking_registrasi.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=booking_registrasi.kd_pj')
+        ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+        ->toArray();
+      $i = 1;
+      $result = [];
+      foreach ($rows as $row) {
+        $row['nomor'] = $i++;
+        $result[] = $row;
+      }
+      echo $this->draw('kontrol.html', ['booking_registrasi' => $result]);
+      exit();
+    }
+
+    public function postSaveKontrol()
+    {
+
+      $query = $this->db('skdp_bpjs')->save([
+        'tahun' => date('Y'),
+        'no_rkm_medis' => $_POST['no_rkm_medis'],
+        'diagnosa' => $_POST['diagnosa'],
+        'terapi' => $_POST['terapi'],
+        'alasan1' => $_POST['alasan1'],
+        'alasan2' => '',
+        'rtl1' => $_POST['rtl1'],
+        'rtl2' => '',
+        'tanggal_datang' => $_POST['tanggal_datang'],
+        'tanggal_rujukan' => $_POST['tanggal_rujukan'],
+        'no_antrian' => $this->core->setNoSKDP(),
+        'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+        'status' => 'Menunggu'
+      ]);
+
+      if ($query) {
+        $this->db('booking_registrasi')
+          ->save([
+            'tanggal_booking' => date('Y-m-d'),
+            'jam_booking' => date('H:i:s'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'tanggal_periksa' => $_POST['tanggal_datang'],
+            'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+            'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
+            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_rujukan']),
+            'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
+            'limit_reg' => 0,
+            'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
+            'status' => 'Belum'
+          ]);
+      }
+
+      exit();
+    }
+
+    public function postHapusKontrol()
+    {
+      //$this->db('booking_registrasi')->where('no_rawat', $_POST['no_rawat'])->delete();
+      exit();
+    }
+
     public function getJadwal()
     {
         // JS

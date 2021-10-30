@@ -1,0 +1,48 @@
+version: '3'
+ 
+services:
+ 
+    php:
+        build:
+            context: ./
+        ports:
+            - 9000:9000
+        volumes:
+            - ./:/var/www/html
+            - ./www.conf:/usr/local/etc/php-fpm.d/www.conf
+        environment:
+            MYSQL_USER: khanza_lite
+            MYSQL_PASSWORD: khanza_lite
+ 
+    nginx:
+        image: nginx:1.13.8
+        ports:
+            - 80:80
+        volumes:
+            - ./:/var/www/html
+            - ./nginx.conf:/etc/nginx/conf.d/default.conf
+        depends_on:
+            - php
+ 
+    mysql:
+        image: mysql:5.7
+        ports:
+            - 3306:3306
+        volumes:
+            - ./my.cnf:/etc/mysql/conf.d/mysql_alt.cnf     
+        depends_on:
+            - php
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: khanza_lite
+            MYSQL_USER: khanza_lite
+            MYSQL_PASSWORD: khanza_lite
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin:latest
+        environment:
+            PMA_HOST: mysql
+            PMA_USER: khanza_lite
+            PMA_PASSWORD: khanza_lite
+        ports:
+        - "8080:80"
