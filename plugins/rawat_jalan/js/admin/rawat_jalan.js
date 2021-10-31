@@ -618,6 +618,64 @@ $("#form_kontrol").on("click", "#selesai_kontrol", function(event){
   $("#kontrol").hide();
 });
 
+// ketika tombol hapus ditekan
+$("#kontrol").on("click",".hapus_kontrol", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/rawat_jalan/hapuskontrol?t=' + mlite.token;
+  var no_reg = $(this).attr("data-no_reg");
+  var tanggal_periksa = $(this).attr("data-tanggal_periksa");
+  var kd_dokter = $(this).attr("data-kd_dokter");
+  var kd_poli = $(this).attr("data-kd_poli");
+  var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_reg: no_reg,
+        tanggal_periksa: tanggal_periksa, 
+        kd_dokter: kd_dokter, 
+        kd_poli: kd_poli, 
+        no_rkm_medis: no_rkm_medis 
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
+        $.post(url, {no_rkm_medis : no_rkm_medis,
+        }, function(data) {
+          // tampilkan data
+          $("#kontrol").html(data).show();
+        });
+        /*
+        $('input:text[name=suhu_tubuh]').val("");
+        $('input:text[name=tensi]').val("");
+        $('input:text[name=nadi]').val("");
+        $('input:text[name=respirasi]').val("");
+        $('input:text[name=tinggi]').val("");
+        $('input:text[name=berat]').val("");
+        $('input:text[name=gcs]').val("");
+        $('input:text[name=kesadaran]').val("");
+        $('input:text[name=alergi]').val("");
+        $('input:text[name=imun_ke]').val("");
+        $('textarea[name=keluhan]').val("");
+        $('textarea[name=pemeriksaan]').val("");
+        $('textarea[name=penilaian]').val("");
+        $('textarea[name=rtl]').val("");
+        $('textarea[name=instruksi]').val("");
+        $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
+        $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
+        $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+        */
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian riwayat telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
 // ketika inputbox pencarian diisi
 $('input:text[name=layanan]').on('input',function(e){
   var baseURL = mlite.url + '/' + mlite.admin;

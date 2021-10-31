@@ -17,6 +17,7 @@
         <th>Dokter</th>
         <th>Cara Bayar</th>
         <th>Status Daftar</th>
+        <th>Aksi</th>
       </tr>
     </thead>
     <tbody>
@@ -30,6 +31,7 @@
         <td>{$value.nm_dokter}</td>
         <td>{$value.png_jawab}</td>
         <td>{$value.status}</td>
+        <td><a href="#" class="hapus_kontrol" data-tanggal_periksa="{$value.tanggal_periksa}" data-no_reg="{$value.no_reg}" data-kd_dokter="{$value.kd_dokter}" data-kd_poli="{$value.kd_dokter}">Hapus</a></td>
       </tr>
       {/loop}
       {else}

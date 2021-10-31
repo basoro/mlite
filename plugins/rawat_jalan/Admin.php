@@ -590,7 +590,8 @@ class Admin extends AdminModule
 
     public function postHapusKontrol()
     {
-      //$this->db('booking_registrasi')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('booking_registrasi')->where('kd_dokter', $_POST['kd_dokter'])->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tanggal_periksa', $_POST['tanggal_periksa'])->where('status', 'Belum')->delete();
+      $this->db('skdp_bpjs')->where('kd_dokter', $_POST['kd_dokter'])->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tanggal_datang', $_POST['tanggal_periksa'])->where('status', 'Menunggu')->delete();
       exit();
     }
 
