@@ -485,7 +485,7 @@ class Admin extends AdminModule
     public function getBookingPeriksa()
     {
         $date = date('Y-m-d');
-        $text = 'Booking Pendaftaran';
+        $text = 'Booking Periksa';
 
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
@@ -514,7 +514,7 @@ class Admin extends AdminModule
                 'tanggal_booking' => 'booking_periksa.tanggal_booking'
               ])
               ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
-              ->where('tambahan_pesan', 'jkn_mobile_v2')
+              //->where('tambahan_pesan', 'jkn_mobile_v2')
               ->toArray()
           ]
         );
