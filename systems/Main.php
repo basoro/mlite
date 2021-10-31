@@ -31,10 +31,6 @@ abstract class Main
         $check_db->execute();
         $check_db = $check_db->fetch();
 
-        if(empty($check_db)) {
-          $this->freshInstall();
-        }
-
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
         }
@@ -84,6 +80,10 @@ abstract class Main
         }
 
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+
+        if(empty($check_db)) {
+            $this->freshInstall();
+        }  
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
