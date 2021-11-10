@@ -3,27 +3,50 @@
 namespace Plugins\Anjungan;
 
 use Systems\SiteModule;
+use Systems\Lib\BpjsService;
+use Systems\Lib\QRCode;
 
 class Site extends SiteModule
 {
+
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+      $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
+    }
+
     public function routes()
     {
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/pasien', 'getDisplayAPM');
         $this->route('anjungan/loket', 'getDisplayAntrianLoket');
         $this->route('anjungan/poli', 'getDisplayAntrianPoli');
+        $this->route('anjungan/poli/(:str)', 'getDisplayAntrianPoliKode');
+        $this->route('anjungan/poli/(:str)/(:str)', 'getDisplayAntrianPoliKode');
+        $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliDisplay');
+        $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/presensi', 'getPresensi');
         $this->route('anjungan/presensi/upload', 'getUpload');
         $this->route('anjungan/bed', 'getDisplayBed');
+        $this->route('anjungan/sep', 'getSepMandiri');
+        $this->route('anjungan/sep/cek', 'getSepMandiriCek');
+        $this->route('anjungan/sep/(:int)/(:int)', 'getSepMandiriNokaNorm');
+        $this->route('anjungan/sep/bikin/(:str)/(:int)', 'getSepMandiriBikin');
+        $this->route('anjungan/sep/savesep', 'postSaveSep');
+        $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
     }
 
     public function getIndex()
     {
-        echo $this->draw('index.html');
+        echo $this->draw('index.html', ['test' => 'Opo iki']);
         exit();
     }
+
     public function getDisplayAPM()
     {
         $title = 'Display Antrian Poliklinik';
@@ -107,6 +130,174 @@ class Site extends SiteModule
 
         $poliklinik = str_replace(",","','", $this->settings->get('anjungan.display_poli'));
         $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Berkas Diterima')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->limit(1)
+                  ->oneArray();
+                $row['dalam_antrian'] = $this->db('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->db('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
+                $row['selanjutnya'] = $this->db('reg_periksa')
+                  ->select('reg_periksa.no_reg')
+                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  ->select('pasien.nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
+                  ->toArray();
+                $row['get_no_reg'] = $this->db('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
+                  ->where('tgl_registrasi', $date)
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = 0;
+                if($row['diff'] == 0) {
+                  $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                }
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  //$minutes = $value['no_reg'] * $interval;
+                  //$row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getDisplayAntrianPoliKode()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $slug = parseURL();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.poli.kode.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $this->settings->get('anjungan.vidio'),
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'slug' => $slug
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function getDisplayAntrianPoliDisplay()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $display = $this->_resultDisplayAntrianPoliKodeDisplay();
+        $slug = parseURL();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.poli.display.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $this->settings->get('anjungan.vidio'),
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'slug' => $slug,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayAntrianPoliKodeDisplay()
+    {
+        $slug = parseURL();
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $poliklinik = $slug[3];
+        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
+        if(!isset($slug[4]) && $slug[3] == 'all') {
+          $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'");
+        }
+        if(isset($slug[4]) && $slug[4] != '') {
+          $dokter = $slug[4];
+          $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik' AND a.kd_dokter = '$dokter'");
+        }
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -1070,6 +1261,342 @@ class Site extends SiteModule
         }
 
         return $result;
+    }
+
+    public function getSepMandiri()
+    {
+        $title = 'Display SEP Mandiri';
+        $logo  = $this->settings->get('settings.logo');
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('sep.mandiri.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'running_text' => $this->settings->get('anjungan.text_anjungan'),
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function getSepMandiriCek()
+    {
+      if(isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] !='') {
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+        redirect(url('anjungan/sep/'.$pasien['no_peserta'].'/'.$_POST['no_rkm_medis']));
+      } else {
+        redirect(url('anjungan/sep'));
+      }
+      exit();
+    }
+
+    public function getSepMandiriNokaNorm()
+    {
+      $slug = parseURL();
+      $sep_response = '';
+      if (count($slug) == 4 && $slug[0] == 'anjungan' && $slug[1] == 'sep') {
+
+          $url = "Rujukan/List/Peserta/".$slug[2];
+
+          $url = $this->api_url.''.$url;
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+          $json = json_decode($output, true);
+          //var_dump($json);
+          $code = $json['metaData']['code'];
+          $message = $json['metaData']['message'];
+          $stringDecrypt = stringDecrypt($this->settings->get('settings.BpjsConsID'), $this->settings->get('settings.BpjsSecretKey'), $json['response']);
+          $decompress = '""';
+
+          if(!empty($json)):
+            if ($code != "200") {
+              $sep_response = $message;
+            } else {
+              if(!empty($stringDecrypt)) {
+                $decompress = decompress($stringDecrypt);
+                $sep_response = json_decode($decompress, true);
+              } else {
+                $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi.";
+              }
+            }
+          else:
+            $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi.";
+          endif;
+      }
+
+      $title = 'Display SEP Mandiri';
+      $logo  = $this->settings->get('settings.logo');
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+      $content = $this->draw('sep.mandiri.noka.norm.html', [
+        'title' => $title,
+        'logo' => $logo,
+        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'username' => $username,
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_anjungan'),
+        'no_rkm_medis' => $slug[3],
+        'sep_response' => $sep_response
+      ]);
+
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+    }
+
+    public function getSepMandiriBikin()
+    {
+      $slug = parseURL();
+
+      $title = 'Display SEP Mandiri';
+      $logo  = $this->settings->get('settings.logo');
+      $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
+      $nama_ppk  = $this->settings->get('settings.nama_instansi');
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+      $date = date('Y-m-d');
+
+      //if ($searchBy == 'RS') {
+      //    $url = 'Rujukan/RS/'.$slug[3];
+      //} else {
+          $url = 'Rujukan/'.$slug[3];
+      //}
+      $url = $this->api_url.''.$url;
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+      $json = json_decode($output, true);
+      //var_dump($json);
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      $stringDecrypt = stringDecrypt($this->settings->get('settings.BpjsConsID'), $this->settings->get('settings.BpjsSecretKey'), $json['response']);
+      $decompress = '""';
+      //$rujukan = [];
+      if ($code == "200") {
+          $decompress = decompress($stringDecrypt);
+          $rujukan = json_decode($decompress, true);
+      }
+
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('reg_periksa.tgl_registrasi', $date)
+        ->where('reg_periksa.no_rkm_medis', $slug[4])
+        ->oneArray();
+
+      $skdp_bpjs = $this->db('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
+
+      $content = $this->draw('sep.mandiri.bikin.html', [
+        'title' => $title,
+        'logo' => $logo,
+        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'username' => $username,
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_anjungan'),
+        'kode_ppk' => $kode_ppk,
+        'nama_ppk' => $nama_ppk,
+        'reg_periksa' => $reg_periksa,
+        'skdp_bpjs' => $skdp_bpjs,
+        'rujukan' => $rujukan
+      ]);
+
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+    }
+
+    public function postSaveSEP()
+    {
+        $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
+        $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
+        $_POST['sep_user']	= 'SEP Mandiri';
+
+        $data = [
+            'request' => [
+               't_sep' => [
+                  'noKartu' => $_POST['no_kartu'],
+                  'tglSep' => $_POST['tglsep'],
+                  'ppkPelayanan' => $_POST['kdppkpelayanan'],
+                  'jnsPelayanan' => $_POST['jnspelayanan'],
+                  'klsRawat' => $_POST['klsrawat'],
+                  'noMR' => $_POST['nomr'],
+                  'rujukan' => [
+                     'asalRujukan' => $_POST['asal_rujukan'],
+                     'tglRujukan' => $_POST['tglrujukan'],
+                     'noRujukan' => $_POST['norujukan'],
+                     'ppkRujukan' => $_POST['kdppkrujukan']
+                  ],
+                  'catatan' => $_POST['catatan'],
+                  'diagAwal' => $_POST['diagawal'],
+                  'poli' => [
+                     'tujuan' => $_POST['kdpolitujuan'],
+                     'eksekutif' => $_POST['eksekutif']
+                  ],
+                  'cob' => [
+                     'cob' => $_POST['cob']
+                  ],
+                  'katarak' => [
+                     'katarak' => $_POST['katarak']
+                  ],
+                  'jaminan' => [
+                     'lakaLantas' => $_POST['lakalantas'],
+                     'penjamin' => [
+                         'penjamin' => $_POST['penjamin'],
+                         'tglKejadian' => $_POST['tglkkl'],
+                         'keterangan' => $_POST['keterangankkl'],
+                         'suplesi' => [
+                             'suplesi' => $_POST['suplesi'],
+                             'noSepSuplesi' => $_POST['no_sep_suplesi'],
+                             'lokasiLaka' => [
+                                 'kdPropinsi' => $_POST['kdprop'],
+                                 'kdKabupaten' => $_POST['kdkab'],
+                                 'kdKecamatan' => $_POST['kdkec']
+                             ]
+                         ]
+                     ]
+                  ],
+                  'skdp' => [
+                     'noSurat' => $_POST['noskdp'],
+                     'kodeDPJP' => $_POST['kddpjp']
+                  ],
+                  'noTelp' => $_POST['notelep'],
+                  'user' => $_POST['sep_user']
+               ]
+            ]
+        ];
+
+        $data = json_encode($data);
+
+        $url = $this->api_url.'SEP/1.1/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $data = json_decode($output, true);
+
+        if($data == NULL) {
+
+          echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+
+        } else if($data['metaData']['code'] == 200){
+
+          $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+
+          $simpan_sep = $this->db('bridging_sep')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'no_rawat' => $_POST['no_rawat'],
+            'tglsep' => $_POST['tglsep'],
+            'tglrujukan' => $_POST['tglrujukan'],
+            'no_rujukan' => $_POST['norujukan'],
+            'kdppkrujukan' => $_POST['kdppkrujukan'],
+            'nmppkrujukan' => $_POST['nmppkrujukan'],
+            'kdppkpelayanan' => $_POST['kdppkpelayanan'],
+            'nmppkpelayanan' => $_POST['nmppkpelayanan'],
+            'jnspelayanan' => $_POST['jnspelayanan'],
+            'catatan' => $_POST['catatan'],
+            'diagawal' => $_POST['diagawal'],
+            'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
+            'kdpolitujuan' => $_POST['kdpolitujuan'],
+            'nmpolitujuan' => $_POST['nmpolitujuan'],
+            'klsrawat' => $_POST['klsrawat'],
+            'lakalantas' => $_POST['lakalantas'],
+            'user' => $_POST['sep_user'],
+            'nomr' => $_POST['nomr'],
+            'nama_pasien' => $_POST['nama_pasien'],
+            'tanggal_lahir' => $_POST['tanggal_lahir'],
+            'peserta' => $_POST['peserta'],
+            'jkel' => $_POST['jenis_kelamin'],
+            'no_kartu' => $_POST['no_kartu'],
+            'tglpulang' => $_POST['tglpulang'],
+            'asal_rujukan' => $_POST['asal_rujukan'],
+            'eksekutif' => $_POST['eksekutif'],
+            'cob' => $_POST['cob'],
+            'penjamin' => $_POST['penjamin'],
+            'notelep' => $_POST['notelep'],
+            'katarak' => $_POST['katarak'],
+            'tglkkl' => $_POST['tglkkl'],
+            'keterangankkl' => $_POST['keterangankkl'],
+            'suplesi' => $_POST['suplesi'],
+            'no_sep_suplesi' => $_POST['no_sep_suplesi'],
+            'kdprop' => $_POST['kdprop'],
+            'nmprop' => $_POST['nmprop'],
+            'kdkab' => $_POST['kdkab'],
+            'nmkab' => $_POST['nmkab'],
+            'kdkec' => $_POST['kdkec'],
+            'nmkec' => $_POST['nmkec'],
+            'noskdp' => $_POST['noskdp'],
+            'kddpjp' => $_POST['kddpjp'],
+            'nmdpdjp' => $_POST['nmdpdjp']
+          ]);
+          $simpan_prb = $this->db('bpjs_prb')->save([
+            'no_sep' => $_POST['sep_no_sep'],
+            'prb' => $_POST['prolanis_prb']
+          ]);
+
+          if($simpan_sep) {
+            echo $_POST['sep_no_sep'];
+          }
+
+        } else {
+
+          echo $data['metaData']['message'];
+
+        }
+
+        exit();
+
+    }
+
+    public function getCetakSEP()
+    {
+        $slug = parseURL();
+        $no_sep = $slug[3];
+        $settings = $this->settings('settings');
+        $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+        $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+        $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
+
+        $qr=QRCode::getMinimumQRCode($data_sep['no_sep'],QR_ERROR_CORRECT_LEVEL_L);
+        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+        $im=$qr->createImage(4,4);
+        imagepng($im,BASE_DIR.'/tmp/qrcode.png');
+        imagedestroy($im);
+
+        $image = "/tmp/qrcode.png";
+
+        $data_sep['qrCode'] = url($image);
+        $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
+        $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+        $data_sep['potensi_prb'] = $potensi_prb['prb'];
+
+        echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
+        exit();
     }
 
 }

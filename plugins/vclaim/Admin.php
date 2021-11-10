@@ -12,6 +12,7 @@ class Admin extends AdminModule
     {
       $this->consid = $this->settings->get('settings.BpjsConsID');
       $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
       $this->api_url = $this->settings->get('settings.BpjsApiUrl');
       $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
     }
@@ -22,8 +23,10 @@ class Admin extends AdminModule
             'Kelola'   => 'manage',
             'Referensi' => 'referensi',
             'Peserta' => 'peserta',
+            'Rencana Kontrol' => 'rencanakontrol',
             'SEP' => 'sep',
             'Rujukan' => 'rujukan',
+            'PRB' => 'prb',
             'Lembar Pengajuan Klaim' => 'lpk',
             'Monitoring' => 'monitoring'
         ];
@@ -155,7 +158,6 @@ class Admin extends AdminModule
         } else if($data['metaData']['code'] == 200){
 
           $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
-          //$_POST['nama_pasien'] = 'Test pasien';
 
           $simpan_sep = $this->db('bridging_sep')->save([
             'no_sep' => $_POST['sep_no_sep'],
@@ -367,7 +369,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
@@ -378,7 +380,7 @@ class Admin extends AdminModule
     public function getDiagnosa($keyword)
     {
         $url = $this->api_url.'referensi/diagnosa/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -387,7 +389,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
          if($json != null) {
             echo '{
             	"metaData": {
@@ -409,7 +414,7 @@ class Admin extends AdminModule
     public function getPoli($keyword)
     {
         $url = $this->api_url.'referensi/poli/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -418,7 +423,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
             if($json != null) {
             echo '{
             	"metaData": {
@@ -440,7 +448,7 @@ class Admin extends AdminModule
     public function getFaskes($kd_faskes = null, $jns_faskes = null)
     {
         $url = $this->api_url.'referensi/faskes/'.$kd_faskes.'/'.$jns_faskes;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -449,7 +457,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -472,7 +483,7 @@ class Admin extends AdminModule
     public function getDokterDpjp($jnsPelayanan, $tglPelayanan, $spesialis)
     {
         $url = $this->api_url.'referensi/dokter/pelayanan/'.$jnsPelayanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -481,7 +492,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -504,7 +518,7 @@ class Admin extends AdminModule
     public function getPropinsi()
     {
         $url = $this->api_url.'referensi/propinsi';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -513,7 +527,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -536,7 +553,7 @@ class Admin extends AdminModule
     public function getKabupaten($kdPropinsi)
     {
         $url = $this->api_url.'referensi/kabupaten/propinsi/'.$kdPropinsi;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -545,7 +562,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -568,7 +588,7 @@ class Admin extends AdminModule
     public function getKecamatan($kdKabupaten)
     {
         $url = $this->api_url.'referensi/kecamatan/kabupaten/'.$kdKabupaten;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -577,7 +597,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -600,7 +623,7 @@ class Admin extends AdminModule
     public function getProcedure($keyword)
     {
         $url = $this->api_url.'referensi/procedure/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -609,7 +632,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -632,7 +658,7 @@ class Admin extends AdminModule
     public function getKelasRawat()
     {
         $url = $this->api_url.'referensi/kelasrawat';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -641,7 +667,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -664,13 +693,16 @@ class Admin extends AdminModule
     public function getDokter($keyword)
     {
         $url = $this->api_url.'referensi/dokter/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
+        $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
@@ -696,7 +728,7 @@ class Admin extends AdminModule
     public function getSpesialistik()
     {
         $url = $this->api_url.'referensi/spesialistik';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -705,7 +737,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -728,7 +763,7 @@ class Admin extends AdminModule
     public function getRuangRawat()
     {
         $url = $this->api_url.'referensi/ruangrawat';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -737,7 +772,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -760,7 +798,7 @@ class Admin extends AdminModule
     public function getCaraKeluar()
     {
         $url = $this->api_url.'referensi/carakeluar';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -769,7 +807,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -792,7 +833,7 @@ class Admin extends AdminModule
     public function getPascaPulang()
     {
         $url = $this->api_url.'referensi/pascapulang';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -801,7 +842,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -824,7 +868,7 @@ class Admin extends AdminModule
     public function getByNoKartu($noKartu, $tglPelayananSEP)
     {
       $url = $this->api_url.'Peserta/nokartu/'.$noKartu.'/tglSEP/'.$tglPelayananSEP;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
       $json = json_decode($output, true);
       //echo json_encode($json);
       $code = $json['metaData']['code'];
@@ -833,7 +877,10 @@ class Admin extends AdminModule
         echo json_encode($json);
       } else {
         $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
+        $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
         if($json != null) {
           echo '{
             "metaData": {
@@ -856,7 +903,7 @@ class Admin extends AdminModule
     public function getByNIK($nik, $tglPelayananSEP)
     {
       $url = $this->api_url.'Peserta/nik/'.$nik.'/tglSEP/'.$tglPelayananSEP;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
       $json = json_decode($output, true);
       //echo json_encode($json);
       $code = $json['metaData']['code'];
@@ -865,7 +912,10 @@ class Admin extends AdminModule
         echo json_encode($json);
       } else {
         $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-        $decompress = decompress($stringDecrypt);
+        $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
         if($json != null) {
           echo '{
           	"metaData": {
@@ -962,7 +1012,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1005,7 +1058,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1028,7 +1084,7 @@ class Admin extends AdminModule
     public function getCariSEP($keyword)
     {
         $url = $this->api_url.'SEP/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1037,7 +1093,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1060,7 +1119,7 @@ class Admin extends AdminModule
     public function getSuplesiJasaRaharja($noKartu, $tglPelayanan)
     {
         $url = $this->api_url.'sep/JasaRaharja/Suplesi/'.$noKartu.'/tglPelayanan/'.$tglPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1069,7 +1128,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1100,7 +1162,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1131,7 +1196,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1162,7 +1230,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1185,7 +1256,7 @@ class Admin extends AdminModule
     public function getInacbgSEP($keyword)
     {
         $url = $this->api_url.'sep/cbg/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1194,7 +1265,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1226,7 +1300,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1258,7 +1335,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1290,7 +1370,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1318,7 +1401,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1328,7 +1411,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1357,7 +1443,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/'.$record.'Peserta/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1366,7 +1452,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1394,7 +1483,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/List/TglRujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
 
@@ -1408,7 +1497,7 @@ class Admin extends AdminModule
               $url = 'Rujukan/'.$keyword;
           }
           $url = $this->api_url.''.$url;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
           $json = json_decode($output, true);
           echo json_encode($json);*/
           $row['Nomor'] = $i++;
@@ -1431,7 +1520,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/List/TglRujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         echo '<pre>'.json_encode($json, JSON_PRETTY_PRINT).'</pre>';
         /*$listRujukan = [];
@@ -1444,7 +1533,7 @@ class Admin extends AdminModule
               $url = 'Rujukan/'.$keyword;
           }
           $url = $this->api_url.''.$url;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
           $json = json_decode($output, true);
           //echo json_encode($json);
           $row['noRujukan'] = $value['noKunjungan'];
@@ -1466,7 +1555,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1498,7 +1590,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1530,7 +1625,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1553,7 +1651,7 @@ class Admin extends AdminModule
     public function getCariLPK($tglMasuk, $jnsPelayanan)
     {
         $url = $this->api_url.'LPK/TglMasuk/'.$tglMasuk.'/JnsPelayanan/'.$jnsPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1562,7 +1660,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1585,7 +1686,7 @@ class Admin extends AdminModule
     public function getDataKunjungan($tglSep, $jnsPelayanan)
     {
         $url = $this->api_url.'Monitoring/Kunjungan/Tanggal/'.$tglSep.'/JnsPelayanan/'.$jnsPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1594,7 +1695,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1617,7 +1721,7 @@ class Admin extends AdminModule
     public function getDataKlaim($tglPulang, $jnsPelayanan, $statusKlaim)
     {
         $url = $this->api_url.'Monitoring/Klaim/Tanggal/'.$tglPulang.'/JnsPelayanan/'.$jnsPelayanan.'/Status/'.$statusKlaim;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1626,7 +1730,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1649,7 +1756,7 @@ class Admin extends AdminModule
     public function getHistoriPelayanan($noKartu, $tglAwal, $tglAkhir)
     {
         $url = $this->api_url.'monitoring/HistoriPelayanan/NoKartu/'.$noKartu.'/tglAwal/'.$tglAwal.'/tglAkhir/'.$tglAkhir;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1658,7 +1765,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {
@@ -1681,7 +1791,7 @@ class Admin extends AdminModule
     public function getDataKlaimJasaRaharja($tglMulai, $tglAkhir)
     {
         $url = $this->api_url.'monitoring/JasaRaharja/tglMulai/'.$tglMulai.'/tglAkhir/'.$tglAkhir;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1690,7 +1800,10 @@ class Admin extends AdminModule
           echo json_encode($json);
         } else {
           $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-          $decompress = decompress($stringDecrypt);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
           if($json != null) {
             echo '{
             	"metaData": {

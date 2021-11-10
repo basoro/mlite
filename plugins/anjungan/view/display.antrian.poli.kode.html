@@ -3,7 +3,6 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="180">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -18,7 +17,7 @@
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
         color: #fff;
       	background: #0264d6;
-      	height:calc(100vh);
+      	height:calc(90vh);
       	width:100%;
       }
       footer {
@@ -35,40 +34,25 @@
       }
       tr:nth-child(even) {color: #ffffff;}
     </style>
+    <script>
+        var mlite = {url:"{?=url()?}", admin:"{?=ADMIN?}"};
+    </script>
 </head>
 <body>
 <div class="container-fluid">
   <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Poliklinik {$settings.nama_instansi}</h1>
-  <table class="table table-bordered table-striped lead text-primary" style="height: 75vh;">
-    <thead class="bg-primary">
-      <tr>
-        <th>Dokter/Klinik</th>
-        <th>Dalam Pemeriksaan</th>
-        <th>Nomor Urut Berikutnya</th>
-      </tr>
-    </thead>
-    <tbody>
-      {loop: $display}
-      <tr>
-        <th width="30%">{$value.nm_dokter}<br><small>{$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
-        <td width="20%">{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
-        <td>
-          <marquee scrollamount="3">
-            {if: !empty($value.selanjutnya)}
-              {loop: $value.selanjutnya as $data}
-                - {$data.nm_pasien} (<strong>{$data.no_reg}</strong>)
-                <!--- {$data.nm_pasien} (<strong>{$data.no_reg} - {$value.jam_mulai}</strong>)-->
-              {/loop}
-            {/if}
-          </marquee>
-        </td>
-      </tr>
-      {/loop}
-    </tbody>
-  </table>
-  <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+  <div class="col-md-8">
+    <div class="card bg-dark text-white">
+      <div class="embed-responsive embed-responsive-4by3">
+        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{$vidio}?rel=0&modestbranding=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1&playlist={$vidio}" allowfullscreen></iframe>
+      </div>
+    </div>
   </div>
+  <div class="col-md-4" id="antrian_perpoli">
+  </div>
+</div>
+<div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;margin-left:0;margin-right:0;">
+  <h3><marquee>{$running_text}</marquee></h3>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
   <div class="canvas">
@@ -79,5 +63,18 @@
     <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
+<script>
+function loadlink(){
+    {if: empty($slug[3])}
+    $("#antrian_perpoli").show().load(mlite.url + '/anjungan/display/poli/{$slug[2]}/');
+    {else}
+    $("#antrian_perpoli").show().load(mlite.url + '/anjungan/display/poli/{$slug[2]}/{$slug[3]}');
+    {/if}
+}
+loadlink(); // This will run on page load
+setInterval(function(){
+    loadlink() // this will run after every 5 seconds
+}, 120000);
+</script>
 </body>
 </html>

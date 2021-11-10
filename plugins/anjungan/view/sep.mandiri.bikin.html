@@ -1,0 +1,756 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=0.1">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url(MODULES)?}/anjungan/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <link href="{?=url(MODULES)?}/anjungan/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+    <link href="{?=url(MODULES)?}/anjungan/css/jquery-ui.min.css" rel="stylesheet">
+  	<link href="{?=url(MODULES)?}/anjungan/css/keyboard.css" rel="stylesheet">
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+      	background: #0264d6;
+        margin:0;
+      	height:calc(100vh);
+      	width:100%;
+      }
+      .modal-full {
+        min-width: 100%;
+        margin: 0;
+      }
+      .modal-full .modal-content {
+        min-height: 100vh;
+      }
+      .modal-fix {
+        min-width: 1024px;
+        margin: 0;
+      }
+      .modal-fix .modal-content {
+        min-height: 100vh;
+      }
+      .modal .tab-content {
+        min-height: 50vh;
+      }
+      .nav-pills.nav-wizard > li {
+        position: relative;
+        overflow: visible;
+        border-right: 8px solid transparent;
+        border-left: 8px solid transparent;
+      }
+
+      .nav-pills.nav-wizard > li + li {
+        margin-left: 0;
+      }
+
+      .nav-pills.nav-wizard > li:first-child {
+        border-left: 0;
+      }
+
+      .nav-pills.nav-wizard > li:first-child a {
+        border-radius: 5px 0 0 5px;
+      }
+
+      .nav-pills.nav-wizard > li:last-child {
+        border-right: 0;
+      }
+
+      .nav-pills.nav-wizard > li:last-child a {
+        border-radius: 0 5px 5px 0;
+      }
+
+      .nav-pills.nav-wizard > li a {
+        border-radius: 0;
+        background-color: #eee;
+      }
+
+      .nav-pills.nav-wizard > li:not(:last-child) a:after {
+        position: absolute;
+        content: "";
+        top: 0px;
+        right: -20px;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 20px 0 20px 20px;
+        border-color: transparent transparent transparent #eee;
+        z-index: 150;
+      }
+
+      .nav-pills.nav-wizard > li:not(:first-child) a:before {
+        position: absolute;
+        content: "";
+        top: 0px;
+        left: -20px;
+        width: 0px;
+        height: 0px;
+        border-style: solid;
+        border-width: 20px 0 20px 20px;
+        border-color: #eee #eee #eee transparent;
+        z-index: 150;
+      }
+
+      .nav-pills.nav-wizard > li:hover:not(:last-child) a:after {
+        border-color: transparent transparent transparent #aaa;
+      }
+
+      .nav-pills.nav-wizard > li:hover:not(:first-child) a:before {
+        border-color: #aaa #aaa #aaa transparent;
+      }
+
+      .nav-pills.nav-wizard > li:hover a {
+        background-color: #aaa;
+        color: #fff;
+      }
+
+      .nav-pills.nav-wizard > li:not(:last-child) a.active:after {
+        border-color: transparent transparent transparent #428bca;
+      }
+
+      .nav-pills.nav-wizard > li:not(:first-child) a.active:before {
+        border-color: #428bca #428bca #428bca transparent;
+      }
+
+      .nav-pills.nav-wizard > li a.active {
+        background-color: #428bca;
+      }
+      div.ui-keyboard {
+        z-index: 2000;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+    </style>
+    <script>
+        var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
+    </script>
+</head>
+<body>
+  <div class="mx-auto text-center text-white">
+    <img src="{?=url()?}/{$logo}" width="150"><br>
+    <h3 class="display-6">Anjungan Cetak Surat Eligibilitas Peserta BPJS</h3>
+    <h2 class="display-5">{$settings.nama_instansi}</h2>
+  </div>
+  <br><br><br><br>
+  <div class="container" id="form_sep">
+
+    <div class="row clearfix">
+      <div class="col-md-2">
+        <div class="form-group">
+          <div class="form-line">
+          <label for="norm" class="text-white">No Rekam Medis</label>
+            <input type="text" class="form-control" name="norm" value="{$reg_periksa.no_rkm_medis}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">Nama</label>
+            <input type="text" class="form-control" name="nmps" value="{$reg_periksa.nm_pasien}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-1">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">JK</label>
+            <input type="text" class="form-control" name="jk" value="{$reg_periksa.jk}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+    <div class="form-group">
+          <div class="form-line">
+        <label for="norm" class="text-white">Tanggal Lahir</label>
+        <input type="text" class="form-control" name="tgllhr" value="{$reg_periksa.tgl_lahir}" readonly>
+      </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <div class="form-line">
+          <label for="norm" class="text-white">No Telp</label>
+            <input type="number" class="form-control" name="notlp" required minlength=8 maxlength=13 value="{if: $reg_periksa.no_tlp == ''}00000000{else}{$reg_periksa.no_tlp}{/if}">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">No SKDP</label>
+            <input type="text" class="form-control" name="skdp" value="{if: $skdp_bpjs.no_antrian == ''}000000{else}{$skdp_bpjs.no_antrian}{/if}">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">No Peserta</label>
+            <input type="text" class="form-control" name="nops" value="{$reg_periksa.no_peserta}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+    <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Kode PPK</label>
+            <input type="text" class="form-control" name="ppk" value="{$kode_ppk}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3" style="display:none;">
+    <div class="form-group">
+          <div class="form-line">
+            <label for="norm">PPK Pelayanan</label>
+            <input type="text" class="form-control" name="nmrs" value="{$nama_ppk}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+    <div class="form-group">
+          <div class="form-line">
+        <label for="norm">No Rawat</label>
+        <input type="text" class="form-control" name="no_rawat" value="{$reg_periksa.no_rawat}" id="sep_no_rawat" readonly>
+          </div>
+    </div>
+      </div>
+      <div class="col-md-2">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">Status</label>
+            <input type="text" class="form-control" name="stts" value="{$rujukan.rujukan.peserta.statusPeserta.keterangan}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <div class="form-line">
+              <label for="norm" class="text-white">Nama Poli Tujuan</label>
+              <input type="text" class="form-control" name="nmpoli" value="{$reg_periksa.nm_poli}" readonly>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm" class="text-white">Nama Perujuk</label>
+            <input type="text" class="form-control" name="nmruj" value="{$rujukan.rujukan.provPerujuk.nama}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Tanggal SEP</label>
+            <input type="text" class="form-control" name="tglsep" value="{?=date('Y-m-d')?}" id="sep_tanggal_sep" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Tanggal Rujuk</label>
+            <input type="text" class="form-control" name="tglrjk" value="{$rujukan.rujukan.tglKunjungan}" readonly>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div class="row clearfix">
+      <div class="col-md-1" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label>Kode</label>
+            <input type="text" class="form-control" name="kkls" value="{$rujukan.rujukan.peserta.hakKelas.kode}" readonly>
+            </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label>Kelas</label>
+            <input type="text" class="form-control" name="kls" value="{$rujukan.rujukan.peserta.hakKelas.keterangan}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Peserta</label>
+            <input type="text" class="form-control" name="psrt" value="{$rujukan.rujukan.peserta.jenisPeserta.keterangan}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Jenis Pelayanan</label>
+            <input type="text" class="form-control" name="kdpl" value="{$rujukan.rujukan.pelayanan.kode}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Kode Diagnosa</label>
+            <input type="text" class="form-control" name="kddx" value="{$rujukan.rujukan.diagnosa.kode}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Nama Diagnosa</label>
+            <input type="text" class="form-control" name="nmdx" value="{$rujukan.rujukan.diagnosa.nama}" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Kode Poli Tujuan</label>
+            <input type="text" class="form-control" name="kdpoli" id="kdpoli" value="{$rujukan.rujukan.poliRujukan.kode}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">PPK Perujuk</label>
+            <input type="text" class="form-control" name="ppruj" value="{$rujukan.rujukan.provPerujuk.kode}" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Eksekutif</label>
+            <select class="form-control" id="eks" name="eks" readonly>
+              <option value="0" selected>0. Tidak</option>
+              <option value="1">1. Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">COB</label>
+            <select class="form-control" id="cob" name="cob" readonly>
+              <option value="0" selected>0. Tidak</option>
+              <option value="1">1. Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Katarak</label>
+            <select class="form-control" id="katara" name="ktrk" readonly>
+              <option value="0" selected>0. Tidak</option>
+              <option value="1">1. Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Suplesi</label>
+            <select class="form-control" id="suple" name="suplesi" readonly>
+              <option value="0" selected>0. Tidak</option>
+              <option value="1">1. Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-md-2 col-sm-2" style="display:none;">
+        <label for="norm">No Rujukan</label>
+        <input type="text" class="form-control" name="no_rujuk" value="{$rujukan.rujukan.noKunjungan}" readonly>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label>Faskes</label>
+            <select name="fsks" id="faskes" class="form-control" readonly>
+              <option value="1" selected>1. Faskes 1</option>
+              <option value="2">2. Faskes 2(RS)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Tgl Pulang</label>
+            <input type="text" class="tglplg form-control" name="tglplg" value="0000-00-00" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">SEP Suplesi</label>
+            <input type="text" class="form-control" name="sepsup" value="" placeholder="SEP Suplesi">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Laka Lantas</label>
+            <select class="form-control" name="lkln" readonly>
+              <option value="0" selected>0. Tidak</option>
+              <option value="1">1. Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Penjamin Laka</label>
+            <select class="form-control" name="pjlk" readonly>
+              <option value="" selected>Tidak Ada</option>
+              <option value="1">Jasa Raharja</option>
+              <option value="2">BPJS Ketenagakerjaan</option>
+              <option value="3">TASPEN PT</option>
+              <option value="4">ASABRI PT</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Tgl Kejadian</label>
+            <input type="text" class="tglkkl form-control" name="tglkkl" value="0000-00-00" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Keterangan</label>
+            <input type="text" class="form-control" name="ktrg" value="" placeholder="Keterangan" readonly>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row clearfix">
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Propinsi</label>
+            <input type="text" class="form-control" name="prop" value="" placeholder="Propinsi" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Kabupaten</label>
+            <input type="text" class="form-control" name="kbpt" value="" placeholder="Kabupaten" readonly>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-2" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Kecamatan</label>
+            <input type="text" class="form-control" name="kec" value="" placeholder="Kecamatan">
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4" style="display:none;">
+        <div class="form-group">
+          <div class="form-line">
+            <label for="norm">Catatan</label>
+            <input type="text" class="form-control" name="cttn" value="" placeholder="Catatan">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-row mt-5">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+      <div class="form-group">
+        <button class="btn btn-lg btn-success btn-block text-uppercase" id="simpan">SIMPAN SEP</button>
+      </div>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
+        <center>
+        <button class="btn btn-lg btn-primary" id="reload">REFRESH</button>
+        </center>
+      </div>
+    </div>
+
+  </div>
+  <br>
+  <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
+    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+  </div>
+
+  <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+    <div class="canvas">
+      <p class="pull-right">
+        Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+        {$powered}.
+      </p>
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+    </div>
+  </footer>
+
+  <!-- Optional JavaScript -->
+  <script src="{?=url(MODULES)?}/anjungan/js/jquery.min.js"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/popper.min.js"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/bootstrap.min.js"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/gijgo.min.js" type="text/javascript"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/jquery-ui-custom.min.js"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/jquery.keyboard.js"></script>
+  <script src="{?=url(MODULES)?}/anjungan/js/jquery.mousewheel.js"></script>
+  <script>
+  $( function() {
+    $( '#tanggal' ).datepicker({
+      format: 'yyyy-mm-dd'
+    });
+  } );
+  $(function() {
+      $('#norm')
+      .keyboard({
+        layout: 'custom',
+        customLayout: {
+          'normal' : [
+            '8 9 . {b}',
+            '4 5 6 7',
+            '0 1 2 3',
+            '{accept} {cancel}'
+          ]
+        },
+        maxLength : 6,
+        // Prevent keys not in the displayed keyboard from being typed in
+        restrictInput : true,
+        // include lower case characters (added v1.25.7)
+        restrictInclude : 'a b c d e f',
+        // don't use combos or A+E could become a ligature
+        useCombos : false,
+        // activate the "validate" callback function
+        acceptValid : true,
+        validate : function(keyboard, value, isClosing){
+          // only make valid if input is 6 characters in length
+          return value.length === 6;
+        }
+      })
+      //.addTyping();
+  });
+
+  $(function() {
+      $('.norm')
+      .keyboard({
+        layout: 'custom',
+        customLayout: {
+          'normal' : [
+            '8 9 . {b}',
+            '4 5 6 7',
+            '0 1 2 3',
+            '{accept} {cancel}'
+          ]
+        },
+        maxLength : 6,
+        // Prevent keys not in the displayed keyboard from being typed in
+        restrictInput : true,
+        // include lower case characters (added v1.25.7)
+        restrictInclude : 'a b c d e f',
+        // don't use combos or A+E could become a ligature
+        useCombos : false,
+        // activate the "validate" callback function
+        acceptValid : true,
+        validate : function(keyboard, value, isClosing){
+          // only make valid if input is 6 characters in length
+          return value.length === 6;
+        }
+      })
+      //.addTyping();
+  });
+
+  $(function() {
+      $('#cek_norm')
+      .keyboard({
+        layout: 'custom',
+        customLayout: {
+          'normal' : [
+            '8 9 . {b}',
+            '4 5 6 7',
+            '0 1 2 3',
+            '{accept} {cancel}'
+          ]
+        },
+        maxLength : 6,
+        // Prevent keys not in the displayed keyboard from being typed in
+        restrictInput : true,
+        // include lower case characters (added v1.25.7)
+        restrictInclude : 'a b c d e f',
+        // don't use combos or A+E could become a ligature
+        useCombos : false,
+        // activate the "validate" callback function
+        acceptValid : true,
+        validate : function(keyboard, value, isClosing){
+          // only make valid if input is 6 characters in length
+          return value.length === 6;
+        }
+      })
+      //.addTyping();
+  });
+
+  </script>
+  <script type="text/javascript">
+    $("#form_sep").on("click","#simpan", function(event){
+      //window.open(mlite.url + '/anjungan/sep/cetaksep/0186R0021220V005393');
+      window.location.replace(mlite.url + '/anjungan/sep/cetaksep/0186R0021220V005393');
+    });
+    // ketika tombol antrian ditekan
+    $("#form_sep").on("click","#simpan_bak", function(event){
+      var baseURL = mlite.url;
+      event.preventDefault();
+
+      //var url = baseURL + '/anjungan/sep/savesep?t=' + mlite.token;
+
+      var no_rawat = $('#sep_no_rawat').val();
+      var tglsep = $('#sep_tanggal_sep').val();
+      var tglrujukan = $('#sep_tanggal_rujukan').val();
+      var norujukan = $('#sep_nomor_rujukan').val();
+      var kdppkrujukan = $('#sep_asal_rujukan_kode').val();
+      var nmppkrujukan = $('#sep_asal_rujukan_nama').val();
+      var jnspelayanan = $('#sep_pelayanan_kode').val();
+      var catatan = $('#sep_catatan').val();
+      var diagawal = $('#sep_diagnosa_kode').val();
+      var nmdiagnosaawal = $('#sep_diagnosa_nama').val();
+      var kdpolitujuan = $('#sep_spesialis_kode').val();
+      var nmpolitujuan = $('#sep_spesialis_nama').val();
+      var klsrawat = $('#sep_kelas_kode').val();
+      var lakalantas = $('#sep_status_kecelakaan_kode').val();
+      var nama_peserta = $('.nama_peserta').text();
+      var nomr = $('#sep_norm').val();
+      var tanggal_lahir = $('#sep_tanggal_lahir').val();
+      var peserta = $('#sep_jenis_peserta').val();
+      var jenis_kelamin = $('#sep_jenis_kelamin_kode').val();
+      var no_kartu = $('#sep_no_kartu').val();
+      var tglpulang = $('#sep_tanggal_pulang').val();
+      var asal_rujukan = $('#sep_asal_faskes_kode').val();
+      var eksekutif = $('#sep_eksekutif_kode').val();
+      var cob = $('#sep_cob_kode').val();
+      var penjamin = $('#sep_penjamin_kecelakaan_kode').val();
+      var notelep = $('#sep_nomor_telepon').val();
+      var katarak = $('#sep_katarak_kode').val();
+      var tglkkl = $('#sep_tanggal_kecelakaan').val();
+      var keterangankkl = $('#sep_keterangan_kecelakaan').val();
+      var suplesi = $('#sep_suplesi_kode').val();
+      var no_sep_suplesi = $('#sep_nomor_suplesi').val();
+      var kdprop = $('#id_provinsi').val();
+      var nmprop = $('#provinsi').val();
+      var kdkab = $('#id_kabupaten').val();
+      var nmkab = $('#kabupaten').val();
+      var kdkec = $('#id_kecamatan').val();
+      var nmkec = $('#kecamatan').val();
+      var noskdp = $('#sep_nomor_skdp').val();
+      var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
+      var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
+      var prolanis_prb = $('.prolainis_peserta').text();
+
+      $.ajax({
+        type: "POST",
+        url: "{?=url('anjungan/sep/savesep')?}",
+        data: {
+          no_rawat : no_rawat,
+          tglsep: tglsep,
+          tglrujukan: tglrujukan,
+          norujukan: norujukan,
+          kdppkrujukan: kdppkrujukan,
+          nmppkrujukan: nmppkrujukan,
+          jnspelayanan: jnspelayanan,
+          catatan: catatan,
+          diagawal: diagawal,
+          nmdiagnosaawal: nmdiagnosaawal,
+          kdpolitujuan: kdpolitujuan,
+          nmpolitujuan: nmpolitujuan,
+          klsrawat: klsrawat,
+          lakalantas: lakalantas,
+          nama_pasien: nama_peserta,
+          nomr: nomr,
+          tanggal_lahir: tanggal_lahir,
+          peserta: peserta,
+          jenis_kelamin: jenis_kelamin,
+          no_kartu: no_kartu,
+          tglpulang: tglpulang,
+          asal_rujukan: asal_rujukan,
+          eksekutif: eksekutif,
+          cob: cob,
+          penjamin: penjamin,
+          notelep: notelep,
+          katarak: katarak,
+          tglkkl: tglkkl,
+          keterangankkl: keterangankkl,
+          suplesi: suplesi,
+          no_sep_suplesi: no_sep_suplesi,
+          kdprop : kdprop,
+          nmprop : nmprop,
+          kdkab : kdkab,
+          nmkab : nmkab,
+          kdkec : kdkec,
+          nmkec : nmkec,
+          noskdp: noskdp,
+          kddpjp: kddpjp,
+          nmdpdjp: nmdpdjp,
+          prolanis_prb: prolanis_prb
+        },
+        success: function(result){
+          var messages = result.split(' ');
+          if (messages.length == 1) {
+            //window.open(baseURL + '/anjungan/sep/cetaksep/' + result);
+            window.location.replace(baseURL + '/anjungan/sep/cetaksep/' + result);
+          } else if(messages.length > 1) {
+            alert(result)
+          } else {
+            alert('Gagal menyimpan data ke database SIMRS');
+          }
+        }
+      });
+    });
+  </script>
+  <script>
+  $('#reload').click(function() {
+      location.reload();
+  });
+  </script>
+
+</body>
+</html>

@@ -54,25 +54,53 @@
                           </div>
                           <div id="collapseOne" class="panel-collapse collapse">
                               <div class="panel-body">
-                                  <form class="" action="" method="">
-                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                                    <div class="form-group">
-                                      <label for="poli">Nomor Kartu</label>
-                                      <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
-                                    </div>
-                                    <div class="form-group">
-                                      <label for="poli">Tanggal Pelayanan/SEP</label>
-                                      <input type="text" id="tgl_pelayanan" name="tgl_pelayanan" class="form-control tanggal" value="">
-                                    </div>
-                                    <button type="submit" class="btn btn-danger">
-                                        Kirim Parameter
-                                    </button>
-                                  </form>
-                                  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
-                                  <h4 class="m-t-xl">Respons result</h4>
-                                  <pre>
-                                  </pre>
-                                  {/if}
+                                  <ul class="nav nav-pills">
+                                      <li class="active">
+                                          <a href="#pcare-pills" data-toggle="tab">Request</a>
+                                      </li>
+                                      <li>
+                                          <a href="#rs-pills" data-toggle="tab">Response</a>
+                                      </li>
+                                  </ul>
+                                  <!-- Tab panes -->
+                                  <div class="tab-content m-t-xl">
+                                      <div class="tab-pane fade in active" id="pcare-pills">
+                                        <form class="" action="" method="">
+                                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                          <input type="hidden" name="searchBy" value="PCare">
+                                          <div class="form-group">
+                                            <textarea name="name" class="form-control" rows="8" cols="80"></textarea>
+                                            <textarea type="text" id="no_rujukan" name="no_rujukan" class="form-control" value="">
+                                          </div>
+                                          <button type="submit" class="btn btn-danger">
+                                              Kirim Parameter
+                                          </button>
+                                        </form>
+                                        {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
+                                        <h4 class="m-t-xl">Respons result</h4>
+                                        <pre>
+                                        </pre>
+                                        {/if}
+                                      </div>
+                                      <div class="tab-pane fade" id="rs-pills">
+                                        <form class="" action="" method="">
+                                          <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                          <input type="hidden" name="searchBy" value="RS">
+                                          <div class="form-group">
+                                            <label for="poli">Nomor Rujukan RS</label>
+                                            <input type="text" id="no_rujukan" name="no_rujukan" class="form-control" value="">
+                                          </div>
+                                          <button type="submit" class="btn btn-danger">
+                                              Kirim Parameter
+                                          </button>
+                                        </form>
+                                        {if: isset($_GET['no_rujukan']) && $_GET['no_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+                                        <h4 class="m-t-xl">Respons result</h4>
+                                        <pre>
+                                        </pre>
+                                        {/if}
+                                      </div>
+                                  </div>
                               </div>
                           </div>
                       </div>
