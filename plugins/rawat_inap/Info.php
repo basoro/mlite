@@ -14,17 +14,20 @@
               `tgl_perawatan` date NOT NULL,
               `jam_rawat` time NOT NULL,
               `suhu_tubuh` char(5) DEFAULT NULL,
-              `tensi` char(7) NOT NULL,
+              `tensi` char(8) NOT NULL,
               `nadi` char(3) DEFAULT NULL,
               `respirasi` char(3) DEFAULT NULL,
               `tinggi` char(5) DEFAULT NULL,
               `berat` char(5) DEFAULT NULL,
               `gcs` varchar(10) DEFAULT NULL,
+              `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
               `keluhan` varchar(400) DEFAULT NULL,
               `pemeriksaan` varchar(400) DEFAULT NULL,
               `alergi` varchar(50) DEFAULT NULL,
               `penilaian` varchar(400) NOT NULL,
-              `rtl` varchar(400) NOT NULL
+              `rtl` varchar(400) NOT NULL,
+              `instruksi` varchar(400) NOT NULL,
+              `nip` varchar(20) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
             $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `rawat_inap_dr` (
@@ -73,10 +76,12 @@
 
             $core->db()->pdo()->exec("ALTER TABLE `pemeriksaan_ranap`
               ADD PRIMARY KEY (`no_rawat`,`tgl_perawatan`,`jam_rawat`),
-              ADD KEY `no_rawat` (`no_rawat`);");
+              ADD KEY `no_rawat` (`no_rawat`),
+              ADD KEY `nip` (`nip`);");
 
             $core->db()->pdo()->exec("ALTER TABLE `pemeriksaan_ranap`
-              ADD CONSTRAINT `pemeriksaan_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
+              ADD CONSTRAINT `pemeriksaan_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
+              ADD CONSTRAINT `pemeriksaan_ranap_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
             $core->db()->pdo()->exec("ALTER TABLE `rawat_inap_dr`
               ADD PRIMARY KEY (`no_rawat`,`kd_jenis_prw`,`kd_dokter`,`tgl_perawatan`,`jam_rawat`),
