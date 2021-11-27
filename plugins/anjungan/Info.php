@@ -30,7 +30,9 @@ return [
         `noantrian` varchar(50) NOT NULL,
         `postdate` date NOT NULL,
         `start_time` time NOT NULL,
-        `end_time` time NOT NULL DEFAULT '00:00:00'
+        `end_time` time NOT NULL DEFAULT '00:00:00',
+        `status` varchar(10) NOT NULL DEFAULT 0,
+        `loket` varchar(10) NOT NULL DEFAULT 0
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
     },

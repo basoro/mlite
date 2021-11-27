@@ -128,19 +128,19 @@
             <div class="panel-body text-success">
               <div class="date">
                 <script type='text/javascript'>
-            			<!--
-            			var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-            			var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
-            			var date = new Date();
-            			var day = date.getDate();
-            			var month = date.getMonth();
-            			var thisDay = date.getDay(),
-            			    thisDay = myDays[thisDay];
-            			var yy = date.getYear();
-            			var year = (yy < 1000) ? yy + 1900 : yy;
-            			document.write(thisDay + ', ' + day + ' ' + months[month] + ' ' + year);
-            			//-->
-            		</script>
+                  <!--
+                  var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                  var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+                  var date = new Date();
+                  var day = date.getDate();
+                  var month = date.getMonth();
+                  var thisDay = date.getDay(),
+                      thisDay = myDays[thisDay];
+                  var yy = date.getYear();
+                  var year = (yy < 1000) ? yy + 1900 : yy;
+                  document.write(thisDay + ', ' + day + ' ' + months[month] + ' ' + year);
+                  //-->
+                </script>
               </div>
             </div>
             <div class="panel-footer border-success" style="background-color:#ffcc00;">
@@ -148,80 +148,64 @@
             </div>
           </div>
       </div>
+  </div>
+  <div class="row">
+    <div class="panel-title marquee">
+      <marquee>{$running_text}</marquee>
     </div>
+  </div>
+  {/if}
+  {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
+  <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Pemanggil Antrian Loket</div>
+  <div class="container text-center">
     <div class="row">
-      <div class="panel-title marquee">
-        <marquee>{$running_text}</marquee>
-      </div>
-    </div>
-    {/if}
-    {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
-      <audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
-      <audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
-      <audio id="{$namaloket}" src="{?=url()?}/plugins/anjungan/suara/{$namaloket}.wav"></audio>
-      <audio id="counter" src="{?=url()?}/plugins/anjungan/suara/counter.wav"></audio>
-      <audio id="nol" src="{?=url()?}/plugins/anjungan/suara/nol.wav"></audio>
-      <audio id="belas" src="{?=url()?}/plugins/anjungan/suara/belas.wav"></audio>
-      <audio id="sebelas" src="{?=url()?}/plugins/anjungan/suara/sebelas.wav"></audio>
-      <audio id="puluh" src="{?=url()?}/plugins/anjungan/suara/puluh.wav"></audio>
-      <audio id="sepuluh" src="{?=url()?}/plugins/anjungan/suara/sepuluh.wav"></audio>
-      <audio id="ratus" src="{?=url()?}/plugins/anjungan/suara/ratus.wav"></audio>
-      <audio id="seratus" src="{?=url()?}/plugins/anjungan/suara/seratus.wav"></audio>
-      {loop: $loket}
-        <audio id="suarabelloket{$value}" src="{?=url()?}/plugins/anjungan/suara/{$value}.wav"></audio>
-      {/loop}
-      {loop: $xcounter}
-        {$value}
-      {/loop}
-      <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Pemanggil Antrian Loket</div>
-      <div class="container text-center">
-        <div class="row">
-      		<div class="card-deck">
-              {loop: $loket}
-      				<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 mb-5">
-      				  <div class="panel" style="color:#000;">
-      			      <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
-      				    <div class="panel-body">
-      							<h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
-      				    </div>
-      				    <div class="panel-footer">
-      							<div class="btn-group btn-group-justified">
-      							  <a href="#" class="btn btn-primary" style="font-size:32px;">{$noantrian}</a>
-      							  <a href="#" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-bullhorn" onclick="mulai{$value}()"></i></a>
-      							  <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
-      							</div>
-      				    </div>
-      				  </div>
-      				</div>
-              {/loop}
-      		</div>
-      	</div>
-      </div>
-      <div class="text-center" style="width: 300px;margin: 20px auto;">
-        <form action="">
-          <input type="hidden" name="show" value="{$panggil_loket}">
-          <input type="hidden" name="reset" value="{?=isset($_GET['loket'])?$_GET['loket']:'1'?}">
-          <div class="row">
-            <div class="col">
-                <div class="input-group input-group-lg">
-                    <input type="text" class="form-control form-control-lg" name="antrian" placeholder="Input Nomor Antrian">
-                    <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
-                        <button class="btn btn-danger" type="submit">Reset</button>
-                    </span>
+      <div class="card-deck">
+          {loop: $loket}
+          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 mb-5">
+            <div class="panel" style="color:#000;">
+              <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
+              <div class="panel-body">
+                <h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
+              </div>
+              <div class="panel-footer">
+                <div class="btn-group btn-group-justified">
+                  <a href="#" class="btn btn-primary" style="font-size:32px;">{$noantrian}</a>
+                  <a href="#" class="btn btn-primary" style="font-size:32px;" onclick="panggil({$antrian})"><i class="fa fa-bullhorn"></i></a>
+                  <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
                 </div>
+              </div>
             </div>
           </div>
-        </form>
+          {/loop}
       </div>
-
-      <div class="text-center text-white" style="font-size:20px;">
-        # Klik 1X Tombol <i class="fa fa-forward"></i> Untuk Antrian Nomor Urut Selanjutnya dan Klik Tombol <i class="fa fa-bullhorn"></i> Untuk Memanggil </br>
-        # Untuk Menyesuaikan Urutan, Masukan Nomor Urut Yang Akan dipanggil kemudian Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
-        # Untuk Reset Nomor Antrian, masukkan nomor antrian, Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
-        # Angka di Sebelah Kiri Tombol Pemanggil Menunjukan Jumlah Nomor Antrian Yang Telah diambil Pasien</br>
-      </div>
-    {/if}
+    </div>
   </div>
+  <div class="text-center" style="width: 300px;margin: 20px auto;">
+    <form action="">
+      <input type="hidden" name="show" value="{$panggil_loket}">
+      <input type="hidden" name="reset" value="{?=isset($_GET['loket'])?$_GET['loket']:'1'?}">
+      <div class="row">
+        <div class="col">
+            <div class="input-group input-group-lg">
+                <input type="text" class="form-control form-control-lg" name="antrian" placeholder="Input Nomor Antrian">
+                <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
+                    <button class="btn btn-danger" type="submit">Panggil</button>
+                </span>
+            </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="container">
+  	<ul class="text-white">
+  		<li>Klik tombol <i class="fa fa-forward"></i> 1x untuk memanggil antrian selanjutnya</li>
+  		<li>Klik tombol <i class="fa fa-bullhorn"></i> 1x untuk memanggil ulang antrian</li>
+  		<li>Untuk menyesuaikan urutan, masukkan nomor urut pada kolom lompat dan klik tombol panggil 1x</li>
+  		<li>Angka di Sebelah Kiri Tombol Pemanggil Menunjukan Jumlah Nomor Antrian Yang Telah diambil Pasien</li>
+  	</ul>
+  </div>
+  {/if}
   <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
     <div class="canvas">
       <p class="pull-right">
@@ -231,1207 +215,174 @@
       <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
     </div>
   </footer>
+
+  {if: !$show}
+  <script type="text/javascript">
+  function showTime() {
+      var a_p = "";
+      var today = new Date();
+      var curr_hour = today.getHours();
+      var curr_minute = today.getMinutes();
+      var curr_second = today.getSeconds();
+      if (curr_hour < 12) {
+          a_p = "AM";
+      } else {
+          a_p = "PM";
+      }
+      if (curr_hour == 0) {
+          curr_hour = 12;
+      }
+      if (curr_hour > 12) {
+          curr_hour = curr_hour - 12;
+      }
+      curr_hour = checkTime(curr_hour);
+      curr_minute = checkTime(curr_minute);
+      curr_second = checkTime(curr_second);
+      document.getElementById('clock').innerHTML = curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+      }
+
+  function checkTime(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+  }
+  setInterval(showTime, 500);
+  </script>
+  <script>
+  $(document).ready(function(){
+    setTimeout(function(){
+      getAntrian();
+    }, 4000);
+  });
+
+  function getAntrian() {
+    $.ajax({
+        url: '{?=url()?}/anjungan/panggilantrian',
+        dataType: 'json',
+        success: function(data) {
+            if(data.status == false) {
+                setTimeout(function(){
+                    getAntrian();
+                }, 3000);
+            } else {
+                updateLayar(data.type, data.noantrian, data.loket);
+                panggil(data.panggil);
+                setSelesai(data.id);
+            }
+        },
+        error: function(xhr) {
+            console.log('An error occured.');
+            console.log(xhr.status);
+            setTimeout(function(){
+                getAntrian();
+            }, 3000);
+        }
+    });
+  }
+
+  function updateLayar(type, nomor, loket) {
+    $('.antrian_' + type.toLowerCase()).html(nomor);
+    $('.get_' + type.toLowerCase()).html(loket);
+  }
+
+  function panggil(data) {
+    var ass = new Array();
+
+    $.each(data, function(key, value){
+        var filename = "{?=url()?}/plugins/anjungan/suara/" + value + ".wav";
+        var auau = new Audio(filename);
+        ass.push(auau);
+    });
+
+    console.log(ass);
+    play_sound_queue(ass);
+  }
+
+  function play(audio, callback) {
+    var akhir = true;
+
+    audio.playbackRate = 1.0;
+
+    const playPromise = audio.play();
+    //if (playPromise !== null){
+    //    playPromise.catch(() => { media.play(); })
+    //}
+
+    if (callback) {
+        //When the audio object completes it's playback, call the callback
+        //provided
+        audio.addEventListener('ended', callback);
+        var akhir = false;
+    }
+
+    if(akhir == true) {
+        audio.addEventListener('ended', function(){
+            getAntrian();
+        });
+    }
+  }
+
+  //Changed the name to better reflect the functionality
+  function play_sound_queue(sounds) {
+    var index = 0;
+    function recursive_play() {
+        //If the index is the last of the table, play the sound
+        //without running a callback after
+        if (index + 1 === sounds.length) {
+            play(sounds[index], null);
+        } else {
+            //Else, play the sound, and when the playing is complete
+            //increment index by one and play the sound in the
+            //indexth position of the array
+            play(sounds[index], function() {
+                index++;
+                recursive_play();
+            });
+        }
+    }
+    //Call the recursive_play for the first time
+    recursive_play();
+  }
+
+  function setSelesai(id) {
+    $.ajax({
+        url: '{?=url()?}/anjungan/panggilselesai',
+        dataType: 'json',
+        data: { id: id },
+        error: function(xhr) {
+            console.log(xhr.status);
+        }
+    });
+
+  }
+  </script>
+  {/if}
+  {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
+  <script>
+  function panggil(noantrian) {
+    var loket = '';
+    {if: isset($_GET['loket']) && $_GET['loket'] !=''}
+  	var loket = "{?=$_GET['loket']?}";
+    {/if}
+    //alert('Panggil ' + loket + ' - ' + noantrian);
+  	$.ajax({
+  		url: '{?=url()?}/anjungan/setpanggil',
+  		dataType: 'json',
+  		data: {
+  			noantrian: noantrian,
+  			type: '{?=str_replace("panggil_","",$_GET['show'])?}',
+  			loket: loket,
+  		},
+  		success: function(data) {
+  			console.log(data);
+  		},
+  		error: function(xhr) {
+  			console.log(xhr.status);
+  		}
+  	});
+  }
+  </script>
+  {/if}
 </body>
 </html>
-{if: $show == 'panggil_loket' || $show == 'panggil_cs'}
-  {loop: $loket}
-    <script>
-    function mulai{$value}(){
-      $("#antrian")[0].play()
-      totalwaktu=document.getElementById('antrian').duration*1200;
-      setTimeout(function() { $("#{$namaloket}")[0].play() }, totalwaktu);
-      totalwaktu=totalwaktu+1000;
-      {if: $antrian < 10}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 10}
-        setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 11}
-    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian < 20}
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 20}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 99}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+900;
-      {elseif: $antrian == 100}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 109}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 110}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 111}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 119}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 120}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 121}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 129}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 130}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 131}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 139}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 140}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 141}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 149}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 150}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 151}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 159}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 160}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 161}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 169}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 170}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 171}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 179}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 180}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 181}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 189}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 190}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 191}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 199}
-    		setTimeout(function() { $("#seratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 200}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 209}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 210}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 211}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 219}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 220}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 221}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 229}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 230}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 231}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 239}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 240}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 241}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 249}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 250}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 251}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 259}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 260}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 261}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 269}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 270}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 271}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 279}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 280}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 281}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 289}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	  {elseif: $antrian == 290}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 291}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 299}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 300}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 309}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 310}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 311}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 319}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 320}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 321}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 329}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-  	  {elseif: $antrian == 330}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 331}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 339}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 340}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 341}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 349}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 350}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 351}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 359}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 360}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 361}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 369}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 370}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 371}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 379}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 380}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 381}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 389}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-	    {elseif: $antrian == 390}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 391}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 399}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 400}
-    		setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-    		setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-    		totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 409}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 210}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#sepuluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 211}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#sebelas")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 419}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#belas")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 220}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 221}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 429}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 230}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 231}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 439}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 240}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 241}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 449}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 250}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 251}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 459}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 260}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 261}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 469}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 270}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 271}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 479}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 280}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 281}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 489}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 290}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 291}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian <= 499}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel1")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#puluh")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#suarabel2")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {elseif: $antrian == 500}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {else}
-        setTimeout(function() { $("#suarabel0")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-        setTimeout(function() { $("#ratus")[0].play() }, totalwaktu);
-        totalwaktu=totalwaktu+1000;
-      {/if}
-      totalwaktu=totalwaktu+1000;
-      setTimeout(function() { $("#counter")[0].play() }, totalwaktu);
-      totalwaktu=totalwaktu+1000;
-      setTimeout(function() { $("#suarabelloket{$value}")[0].play() }, totalwaktu);
-      totalwaktu=totalwaktu+1000;
-      setTimeout(function() { $("#notif")[0].play() }, totalwaktu);
-    }
-    </script>
-  {/loop}
-{/if}
-<script>
-
-setInterval(function(){ getAntrianLoket(); }, 2000);
-
-function getAntrianLoket() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=antriloket',
-    type: 'post',
-    success: function(data) {
-      $('.antrian_loket').html(data);
-    }
-  });
-};
-
-setInterval(function(){ getAntrianCS(); }, 2000);
-
-function getAntrianCS() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=antrics',
-    type: 'post',
-    success: function(data) {
-      $('.antrian_cs').html(data);
-    }
-  });
-};
-
-setInterval(function(){ getLoket(); }, 2000);
-
-function getLoket() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=loket',
-    type: 'post',
-    success: function(data) {
-      $('.get_loket').html(data);
-    }
-  });
-};
-
-setInterval(function(){ getCS(); }, 2000);
-
-function getCS() {
-  $.ajax({
-    url: '{?=url()?}/anjungan/ajax?show=cs',
-    type: 'post',
-    success: function(data) {
-      $('.get_cs').html(data);
-    }
-  });
-};
-
-function showTime() {
-    var a_p = "WIB";
-    var today = new Date();
-    var curr_hour = today.getHours();
-    var curr_minute = today.getMinutes();
-    var curr_second = today.getSeconds();
-    curr_hour = checkTime(curr_hour);
-    curr_minute = checkTime(curr_minute);
-    curr_second = checkTime(curr_second);
- document.getElementById('clock').innerHTML=curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
-    }
-
-function checkTime(i) {
-    if (i < 10) {
-        i = "0" + i;
-    }
-    return i;
-}
-{if: !$show}
-setInterval(showTime, 500);
-{/if}
-
-</script>

@@ -26,6 +26,9 @@ return [
         `kdpolitujuan` varchar(15) DEFAULT NULL,
         `nmpolitujuan` varchar(50) DEFAULT NULL,
         `klsrawat` enum('1','2','3') DEFAULT NULL,
+        `klsnaik` enum('','1','2') NOT NULL,
+        `pembiayaan` enum('','1','2','3') NOT NULL,
+        `pjnaikkelas` varchar(100) NOT NULL,
         `lakalantas` enum('0','1') DEFAULT NULL,
         `user` varchar(25) DEFAULT NULL,
         `nomr` varchar(15) DEFAULT NULL,
@@ -38,7 +41,6 @@ return [
         `asal_rujukan` enum('1. Faskes 1','2. Faskes 2(RS)') NOT NULL,
         `eksekutif` enum('0. Tidak','1.Ya') NOT NULL,
         `cob` enum('0. Tidak','1.Ya') NOT NULL,
-        `penjamin` varchar(15) NOT NULL,
         `notelep` varchar(40) NOT NULL,
         `katarak` enum('0. Tidak','1.Ya') NOT NULL,
         `tglkkl` date NOT NULL,
@@ -53,7 +55,13 @@ return [
         `nmkec` varchar(50) NOT NULL,
         `noskdp` varchar(40) NOT NULL,
         `kddpjp` varchar(10) NOT NULL,
-        `nmdpdjp` varchar(100) NOT NULL
+        `nmdpdjp` varchar(100) NOT NULL,
+        `tujuankunjungan` enum('0','1','2') NOT NULL,
+        `flagprosedur` enum('','0','1') NOT NULL,
+        `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
+        `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+        `kddpjplayanan` varchar(10) NOT NULL,
+        `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->db()->pdo()->exec("ALTER TABLE `bridging_sep`

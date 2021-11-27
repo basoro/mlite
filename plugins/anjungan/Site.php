@@ -30,6 +30,9 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
         $this->route('anjungan/ajax', 'getAjax');
+        $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
+        $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
+        $this->route('anjungan/setpanggil', 'getSetPanggil');
         $this->route('anjungan/presensi', 'getPresensi');
         $this->route('anjungan/presensi/upload', 'getUpload');
         $this->route('anjungan/bed', 'getDisplayBed');
@@ -612,6 +615,105 @@ class Site extends SiteModule
         return $rows;
     }
 
+    public function getPanggilAntrian()
+    {
+      $res = [];
+
+      $date = date('Y-m-d');
+      $sql = $this->db()->pdo()->prepare("SELECT * FROM mlite_antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
+
+      if($sql) {
+          //$data  = $query->fetch_object();
+          $sql->execute();
+          $data = $sql->fetchAll(\PDO::FETCH_OBJ);;
+          //print_r($data);
+          // code...
+          switch (strtolower($data[0]->type)) {
+              case 'loket':
+                  $kode = 'a';
+                  break;
+              case 'cs':
+                  $kode = 'b';
+                  break;
+              default:
+                  $kode = 'ahhay';
+                  break;
+          }
+
+          //$terbilang = Terbilang::convert($data->noantrian);
+          $terbilang = strtolower(terbilang($data[0]->noantrian));
+          $loket = strtolower(terbilang($data[0]->loket));
+          $text = "antrian $kode $terbilang counter $loket";
+
+          $res = [
+              'id' => $data[0]->kd,
+              'status' => true,
+              'type' => $data[0]->type,
+              'kode' => $kode,
+              'noantrian' => $data[0]->noantrian,
+              'loket' => $data[0]->loket,
+              'panggil' => explode(" ", $text)
+          ];
+
+      } else {
+          $res = [
+              'status' => false
+          ];
+      }
+
+      die(json_encode($res));
+
+      exit();
+    }
+
+    public function getPanggilSelesai()
+    {
+      if(!isset($_GET['id']) || $_GET['id'] == '') die(json_encode(array('status' => false)));
+      $kode  = $_GET['id'];
+      $query = $this->db('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
+      if($query) {
+          $res = [
+              'status' => true,
+              'message' => 'Berhasil update',
+          ];
+      } else {
+          $res = [
+              'status' => false,
+              'message' => 'Gagal update',
+          ];
+      }
+
+      die(json_encode($res));
+      exit();
+    }
+
+    public function getSetPanggil()
+    {
+      if(!isset($_GET['type']) || $_GET['type'] == '') die(json_encode(array('status' => false,'message' => 'Gagal Type')));
+      $type = 'CS';
+      if($_GET['type'] == 'loket') {
+        $type = 'Loket';
+      }
+      $noantrian  = $_GET['noantrian'];
+      $loket  = $_GET['loket'];
+      $date = date('Y-m-d');
+      $query = $this->db('mlite_antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
+      if($query) {
+          $res = [
+              'status' => true,
+              'message' => 'Berhasil update' .$date,
+          ];
+      } else {
+          $res = [
+              'status' => false,
+              'message' => 'Gagal update',
+          ];
+      }
+
+      die(json_encode($res));
+      exit();
+    }
+
     public function getAjax()
     {
       $show = isset($_GET['show']) ? $_GET['show'] : "";
@@ -653,7 +755,9 @@ class Site extends SiteModule
           <script>
         	$(document).ready(function(){
         		$("#btnKRM").on('click', function(){
-        			$("#formloket").submit(function(){
+        			$("#formloket").submit(function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
         				$.ajax({
         					url: "<?php echo url().'/anjungan/ajax?show=simpanloket&noantrian='.$next_antrian; ?>",
         					type:"POST",
@@ -717,14 +821,16 @@ class Site extends SiteModule
           <script>
         	$(document).ready(function(){
         		$("#btnKRMCS").on('click', function(){
-        			$("#formcs").submit(function(){
+        			$("#formcs").submit(function(e){
+                e.preventDefault();
+                e.stopImmediatePropagation();
         				$.ajax({
         					url: "<?php echo url().'/anjungan/ajax?show=simpancs&noantrian='.$next_antrian; ?>",
         					type:"POST",
         					data:$(this).serialize(),
         					success:function(data){
         						setTimeout('$("#loading").hide()',1000);
-        						window.location.href = "{?=url('anjungan/pasien')?}";
+        						//window.location.href = "{?=url('anjungan/pasien')?}";
         						}
         					});
         				return false;
@@ -744,7 +850,7 @@ class Site extends SiteModule
               'start_time' => date('H:i:s'),
               'end_time' => '00:00:00'
             ]);
-          redirect(url('anjungan/pasien'));
+          //redirect(url('anjungan/pasien'));
         break;
         case "loket":
           //$antrian = $this->db('antriloket')->oneArray();
