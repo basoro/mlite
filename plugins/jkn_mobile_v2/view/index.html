@@ -31,11 +31,23 @@
                     <li class="scroll-to-link" data-target="get-token">
                         <a>Get Token</a>
                     </li>
-                    <li class="scroll-to-link" data-target="get-antrian">
-                        <a>Get Antrian</a>
+                    <li class="scroll-to-link" data-target="get-ambilantrian">
+                        <a>Ambil Antrian</a>
                     </li>
-                    <li class="scroll-to-link" data-target="get-rekapantrian">
-                        <a>Get Rekap Antrian</a>
+                    <li class="scroll-to-link" data-target="get-statusantrian">
+                        <a>Status Antrian</a>
+                    </li>
+                    <li class="scroll-to-link" data-target="get-sisaantrian">
+                        <a>Sisa Antrian</a>
+                    </li>
+                    <li class="scroll-to-link" data-target="get-batalantrian">
+                        <a>Batal Antrian</a>
+                    </li>
+                    <li class="scroll-to-link" data-target="get-pasiencheckin">
+                        <a>Check In</a>
+                    </li>
+                    <li class="scroll-to-link" data-target="get-pasienbaru">
+                        <a>Info Pasien Baru</a>
                     </li>
                     <li class="scroll-to-link" data-target="get-operasi">
                         <a>Get Booking Operasi</a>
@@ -50,7 +62,10 @@
                         <a>Kode Pesan</a>
                     </li>
                     <li>
-                        <a href="{?=url('jknmobile/display')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
+                        <a href="{?=url('jknmobile_v2/display/antrian')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
+                    </li>
+                    <li>
+                        <a href="{?=url('jknmobile_v2/display/operasi')?}" target="_blank" style="text-decoration:none;">Display Jadwal Operasi</a>
                     </li>
                 </ul>
             </div>
@@ -67,7 +82,7 @@
                     <pre>
 API Endpoint
 
-{?= url('jknmobile') ?}
+{?= url('jknmobile_v2') ?}
                 </pre>
                     <p>
                         Untuk menggunakan API ini, dibutuhkan <code class="higlighted">username</code> dan <code class="higlighted">password</code> untuk generate API key dalam bentuk <code class="higlighted">token</code>. Silahkan hubungi kami untuk mendapatkan username dan password.
@@ -77,7 +92,7 @@ API Endpoint
                     <h2 id="get-token">get token</h2>
                     <p>
                         Untuk mendapatkan token, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile/token') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile_v2/token') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -99,7 +114,7 @@ API Endpoint
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile/token') ?}</td>
+                                <td>{?= url('jknmobile_v2/token') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -200,11 +215,11 @@ Response :
                         </tbody>
                     </table>
                 </div>
-                <div class="overflow-hidden content-section" id="content-get-antrian">
-                    <h2 id="get-antrian">get antrian</h2>
+                <div class="overflow-hidden content-section" id="content-get-ambilantrian">
+                    <h2 id="get-ambilantrian">ambil antrian</h2>
                     <p>
                         Untuk mendapatkan antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile/antrian') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile_v2/antrian') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -226,7 +241,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile/antrian') ?}</td>
+                                <td>{?= url('jknmobile_v2/antrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -397,11 +412,11 @@ Response :
                         </tbody>
                     </table>
                 </div>
-                <div class="overflow-hidden content-section" id="content-get-rekapantrian">
-                    <h2 id="get-rekapantrian">get rekap antrian</h2>
+                <div class="overflow-hidden content-section" id="content-get-statusantrian">
+                    <h2 id="get-statusantrian">status antrian</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile/rekapantrian') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile_v2/rekapantrian') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -423,7 +438,651 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                            </tr>
+                            <tr>
+                                <td>Contoh</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Method</td>
+                                <td>POST</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>TOKEN</td>
+                            </tr>
+                            <tr>
+                                <td>Header</td>
+                                <td>x-token : {token}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br/>
+                    <pre><code class="json">
+Request :
+
+{
+    "tanggalperiksa": "2019-12-11",
+    "kodepoli": "JAN",
+    "polieksekutif": 0
+}
+                </code></pre>
+                    <h4>REQUEST PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>tanggalperiksa</td>
+                                <td>String</td>
+                                <td>Tanggal periksa format (yyyy-mm-dd).</td>
+                            </tr>
+                            <tr>
+                                <td>kodepoli</td>
+                                <td>String</td>
+                                <td>Kode Poli BPJS sesuai referensi.</td>
+                            </tr>
+                            <tr>
+                                <td>polieksekutif</td>
+                                <td>String</td>
+                                <td>Poli Eksekutif [1] atau Poli Reguler [0].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <pre><code class="json">
+Response :
+
+{
+    "response": {
+        "namapoli" : "Poli Jantung"
+        "totalantrean" : 100,
+        "jumlahterlayani" : 46,
+        "lastupdate" : 1576040301000,
+        "lastupdatetanggal" : "2019-12-11 14:05:00"
+    },
+    "metadata": {
+        "message": "Ok",
+        "code": 200
+    }
+}
+                </code></pre>
+                    <h4>RESPONSE PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Response</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>namapoli</td>
+                                <td>String</td>
+                                <td>Nama poli tujuan.</td>
+                            </tr>
+                            <tr>
+                                <td>totalantrean</td>
+                                <td>String</td>
+                                <td>Total pasien dalam antrian.</td>
+                            </tr>
+                            <tr>
+                                <td>jumlahterlayani</td>
+                                <td>String</td>
+                                <td>Jumlah pasien yang sudah selesai diperiksa dokter.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdate</td>
+                                <td>String</td>
+                                <td>Timestamp GMT/UTC.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdatetanggal</td>
+                                <td>String</td>
+                                <td>Format (YYYY-DD-MM HH:ii:ss).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metadata</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>message</td>
+                                <td>String</td>
+                                <td>Status</td>
+                            </tr>
+                            <tr>
+                                <td>code</td>
+                                <td>String</td>
+                                <td>Kode status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overflow-hidden content-section" id="content-get-sisaantrian">
+                    <h2 id="get-sisaantrian">sisa antrian</h2>
+                    <p>
+                        Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
+                        <code class="higlighted">{?= url('jknmobile_v2/rekapantrian') ?}</code>
+                    </p>
+                    <br/>
+                    <h4>CATALOG</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nama Fitur</td>
+                                <td>Get Rekap Antrian</td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td>Mengambil rekap antrian harian</td>
+                            </tr>
+                            <tr>
+                                <td>URL</td>
+                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                            </tr>
+                            <tr>
+                                <td>Contoh</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Method</td>
+                                <td>POST</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>TOKEN</td>
+                            </tr>
+                            <tr>
+                                <td>Header</td>
+                                <td>x-token : {token}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br/>
+                    <pre><code class="json">
+Request :
+
+{
+    "tanggalperiksa": "2019-12-11",
+    "kodepoli": "JAN",
+    "polieksekutif": 0
+}
+                </code></pre>
+                    <h4>REQUEST PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>tanggalperiksa</td>
+                                <td>String</td>
+                                <td>Tanggal periksa format (yyyy-mm-dd).</td>
+                            </tr>
+                            <tr>
+                                <td>kodepoli</td>
+                                <td>String</td>
+                                <td>Kode Poli BPJS sesuai referensi.</td>
+                            </tr>
+                            <tr>
+                                <td>polieksekutif</td>
+                                <td>String</td>
+                                <td>Poli Eksekutif [1] atau Poli Reguler [0].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <pre><code class="json">
+Response :
+
+{
+    "response": {
+        "namapoli" : "Poli Jantung"
+        "totalantrean" : 100,
+        "jumlahterlayani" : 46,
+        "lastupdate" : 1576040301000,
+        "lastupdatetanggal" : "2019-12-11 14:05:00"
+    },
+    "metadata": {
+        "message": "Ok",
+        "code": 200
+    }
+}
+                </code></pre>
+                    <h4>RESPONSE PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Response</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>namapoli</td>
+                                <td>String</td>
+                                <td>Nama poli tujuan.</td>
+                            </tr>
+                            <tr>
+                                <td>totalantrean</td>
+                                <td>String</td>
+                                <td>Total pasien dalam antrian.</td>
+                            </tr>
+                            <tr>
+                                <td>jumlahterlayani</td>
+                                <td>String</td>
+                                <td>Jumlah pasien yang sudah selesai diperiksa dokter.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdate</td>
+                                <td>String</td>
+                                <td>Timestamp GMT/UTC.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdatetanggal</td>
+                                <td>String</td>
+                                <td>Format (YYYY-DD-MM HH:ii:ss).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metadata</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>message</td>
+                                <td>String</td>
+                                <td>Status</td>
+                            </tr>
+                            <tr>
+                                <td>code</td>
+                                <td>String</td>
+                                <td>Kode status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overflow-hidden content-section" id="content-get-batalantrian">
+                    <h2 id="get-batalantrian">batal antrian</h2>
+                    <p>
+                        Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
+                        <code class="higlighted">{?= url('jknmobile_v2/rekapantrian') ?}</code>
+                    </p>
+                    <br/>
+                    <h4>CATALOG</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nama Fitur</td>
+                                <td>Get Rekap Antrian</td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td>Mengambil rekap antrian harian</td>
+                            </tr>
+                            <tr>
+                                <td>URL</td>
+                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                            </tr>
+                            <tr>
+                                <td>Contoh</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Method</td>
+                                <td>POST</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>TOKEN</td>
+                            </tr>
+                            <tr>
+                                <td>Header</td>
+                                <td>x-token : {token}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br/>
+                    <pre><code class="json">
+Request :
+
+{
+    "tanggalperiksa": "2019-12-11",
+    "kodepoli": "JAN",
+    "polieksekutif": 0
+}
+                </code></pre>
+                    <h4>REQUEST PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>tanggalperiksa</td>
+                                <td>String</td>
+                                <td>Tanggal periksa format (yyyy-mm-dd).</td>
+                            </tr>
+                            <tr>
+                                <td>kodepoli</td>
+                                <td>String</td>
+                                <td>Kode Poli BPJS sesuai referensi.</td>
+                            </tr>
+                            <tr>
+                                <td>polieksekutif</td>
+                                <td>String</td>
+                                <td>Poli Eksekutif [1] atau Poli Reguler [0].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <pre><code class="json">
+Response :
+
+{
+    "response": {
+        "namapoli" : "Poli Jantung"
+        "totalantrean" : 100,
+        "jumlahterlayani" : 46,
+        "lastupdate" : 1576040301000,
+        "lastupdatetanggal" : "2019-12-11 14:05:00"
+    },
+    "metadata": {
+        "message": "Ok",
+        "code": 200
+    }
+}
+                </code></pre>
+                    <h4>RESPONSE PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Response</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>namapoli</td>
+                                <td>String</td>
+                                <td>Nama poli tujuan.</td>
+                            </tr>
+                            <tr>
+                                <td>totalantrean</td>
+                                <td>String</td>
+                                <td>Total pasien dalam antrian.</td>
+                            </tr>
+                            <tr>
+                                <td>jumlahterlayani</td>
+                                <td>String</td>
+                                <td>Jumlah pasien yang sudah selesai diperiksa dokter.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdate</td>
+                                <td>String</td>
+                                <td>Timestamp GMT/UTC.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdatetanggal</td>
+                                <td>String</td>
+                                <td>Format (YYYY-DD-MM HH:ii:ss).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metadata</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>message</td>
+                                <td>String</td>
+                                <td>Status</td>
+                            </tr>
+                            <tr>
+                                <td>code</td>
+                                <td>String</td>
+                                <td>Kode status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overflow-hidden content-section" id="content-get-pasiencheckin">
+                    <h2 id="get-pasiencheckin">pasien checkin</h2>
+                    <p>
+                        Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
+                        <code class="higlighted">{?= url('jknmobile_v2/rekapantrian') ?}</code>
+                    </p>
+                    <br/>
+                    <h4>CATALOG</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nama Fitur</td>
+                                <td>Get Rekap Antrian</td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td>Mengambil rekap antrian harian</td>
+                            </tr>
+                            <tr>
+                                <td>URL</td>
+                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                            </tr>
+                            <tr>
+                                <td>Contoh</td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Method</td>
+                                <td>POST</td>
+                            </tr>
+                            <tr>
+                                <td>Security</td>
+                                <td>TOKEN</td>
+                            </tr>
+                            <tr>
+                                <td>Header</td>
+                                <td>x-token : {token}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <br/>
+                    <pre><code class="json">
+Request :
+
+{
+    "tanggalperiksa": "2019-12-11",
+    "kodepoli": "JAN",
+    "polieksekutif": 0
+}
+                </code></pre>
+                    <h4>REQUEST PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>tanggalperiksa</td>
+                                <td>String</td>
+                                <td>Tanggal periksa format (yyyy-mm-dd).</td>
+                            </tr>
+                            <tr>
+                                <td>kodepoli</td>
+                                <td>String</td>
+                                <td>Kode Poli BPJS sesuai referensi.</td>
+                            </tr>
+                            <tr>
+                                <td>polieksekutif</td>
+                                <td>String</td>
+                                <td>Poli Eksekutif [1] atau Poli Reguler [0].</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <pre><code class="json">
+Response :
+
+{
+    "response": {
+        "namapoli" : "Poli Jantung"
+        "totalantrean" : 100,
+        "jumlahterlayani" : 46,
+        "lastupdate" : 1576040301000,
+        "lastupdatetanggal" : "2019-12-11 14:05:00"
+    },
+    "metadata": {
+        "message": "Ok",
+        "code": 200
+    }
+}
+                </code></pre>
+                    <h4>RESPONSE PARAMETERS</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Response</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>namapoli</td>
+                                <td>String</td>
+                                <td>Nama poli tujuan.</td>
+                            </tr>
+                            <tr>
+                                <td>totalantrean</td>
+                                <td>String</td>
+                                <td>Total pasien dalam antrian.</td>
+                            </tr>
+                            <tr>
+                                <td>jumlahterlayani</td>
+                                <td>String</td>
+                                <td>Jumlah pasien yang sudah selesai diperiksa dokter.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdate</td>
+                                <td>String</td>
+                                <td>Timestamp GMT/UTC.</td>
+                            </tr>
+                            <tr>
+                                <td>lastupdatetanggal</td>
+                                <td>String</td>
+                                <td>Format (YYYY-DD-MM HH:ii:ss).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Metadata</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>message</td>
+                                <td>String</td>
+                                <td>Status</td>
+                            </tr>
+                            <tr>
+                                <td>code</td>
+                                <td>String</td>
+                                <td>Kode status</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overflow-hidden content-section" id="content-get-pasienbaru">
+                    <h2 id="get-pasienbaru">pasien baru</h2>
+                    <p>
+                        Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
+                        <code class="higlighted">{?= url('jknmobile_v2/rekapantrian') ?}</code>
+                    </p>
+                    <br/>
+                    <h4>CATALOG</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Field</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Nama Fitur</td>
+                                <td>Get Rekap Antrian</td>
+                            </tr>
+                            <tr>
+                                <td>Keterangan</td>
+                                <td>Mengambil rekap antrian harian</td>
+                            </tr>
+                            <tr>
+                                <td>URL</td>
+                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -562,7 +1221,7 @@ Response :
                     <h2 id="get-operasi">get booking operasi</h2>
                     <p>
                         Untuk mendapatkan data booking operasi individual, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile/operasi') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile_v2/operasi') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -584,7 +1243,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile/operasi') ?}</td>
+                                <td>{?= url('jknmobile_v2/operasi') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -719,7 +1378,7 @@ Response :
                     <h2 id="get-jadwaloperasi">get daftar operasi</h2>
                     <p>
                         Untuk mendapatkan list jadwal operasi, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile/jadwaloperasi') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile_v2/jadwaloperasi') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -741,7 +1400,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile/jadwaloperasi') ?}</td>
+                                <td>{?= url('jknmobile_v2/jadwaloperasi') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -956,6 +1615,6 @@ Response :
             <div class="content-code"></div>
         </div>
         <script src="{?= url('/assets/jscripts/jquery.min.js')?}"></script>
-        <script src="{?= url(MODULES.'/jkn_mobile/js/scripts.js')?}"></script>
+        <script src="{?= url(MODULES.'/jkn_mobile_v2/js/scripts.js')?}"></script>
     </body>
 </html>

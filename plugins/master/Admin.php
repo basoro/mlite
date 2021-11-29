@@ -35,6 +35,7 @@
     use Plugins\Master\Src\JenjangJabatan;
     use Plugins\Master\Src\KelompokJabatan;
     use Plugins\Master\Src\Pendidikan;
+    use Plugins\Master\Src\MapingDpjpvclaim;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -75,6 +76,7 @@
             $this->jenjangjabatan = new JenjangJabatan();
             $this->kelompokjabatan = new KelompokJabatan();
             $this->pendidikan = new Pendidikan();
+            $this->mapingdpjpvclaim = new MapingDpjpvclaim();
         }
 
         public function navigation()
@@ -117,6 +119,7 @@
                 'Resiko Kerja' => 'resikokerja',
                 'Status Kerja' => 'statuskerja',
                 'Status WP' => 'statuswajibpajak',
+                'Maping DPJP Vclaim' => 'mapingdpjpvclaim',
             ];
         }
 
@@ -159,6 +162,7 @@
             ['name' => 'Resiko Kerja', 'url' => url([ADMIN, 'master', 'resikokerja']), 'icon' => 'cubes', 'desc' => 'Master resiko kerja'],
             ['name' => 'Status Kerja', 'url' => url([ADMIN, 'master', 'statuskerja']), 'icon' => 'cubes', 'desc' => 'Master status kerja'],
             ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswajibpajak']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
+            ['name' => 'Maping DPJP Vclaim', 'url' => url([ADMIN, 'master', 'mapingdpjpvclaim']), 'icon' => 'cubes', 'desc' => 'Master maping DPJP Vclaim'],
           ];
           return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
         }
@@ -1677,6 +1681,51 @@
             exit();
         }
         /* End Pendidikan Section */
+
+        /* Start Maping DPJP Section */
+        public function getMapingDpjpvclaim()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'mapingdpjpvclaimjs']), 'footer');
+          $return = $this->mapingdpjpvclaim->getIndex();
+          return $this->draw('maping.dpjpvclaim.html', [
+            'mapingdpjpvclaim' => $return
+          ]);
+
+        }
+
+        public function anyMapingDpjpvclaimForm()
+        {
+            $return = $this->mapingdpjpvclaim->anyForm();
+            echo $this->draw('maping.dpjpvclaim.form.html', ['mapingdpjpvclaim' => $return]);
+            exit();
+        }
+
+        public function anyMapingDpjpvclaimDisplay()
+        {
+            $return = $this->mapingdpjpvclaim->anyDisplay();
+            echo $this->draw('maping.dpjpvclaim.display.html', ['mapingdpjpvclaim' => $return]);
+            exit();
+        }
+
+        public function postMapingDpjpvclaimSave()
+        {
+          $this->mapingdpjpvclaim->postSave();
+          exit();
+        }
+
+        public function postMapingDpjpvclaimHapus()
+        {
+          $this->mapingdpjpvclaim->postHapus();
+          exit();
+        }
+
+        public function getMapingDpjpvclaimJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/maping.dpjpvclaim.js');
+            exit();
+        }
+        /* End Maping DPJP Vclaim Section */
 
         public function getCSS()
         {
