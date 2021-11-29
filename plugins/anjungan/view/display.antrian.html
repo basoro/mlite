@@ -201,9 +201,11 @@
           <div class="row justify-content-around">
           <div class="col-6 pt-3 pb-x3">
             <div id="printAntrianLoket" style="display: none;" class="cetak">
-              <div style="width: 200px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;">
+              <div style="width: 200px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;border: 0px solid #000;">
+                <p style="font-size:12px;" align="center">{$settings.nama_instansi}<br><span class="small">{$settings.alamat}<br>Telp: {$settings.nomor_telepon}</span></p>
+                <hr>
                 <div id="print_nomor_loket"></div>
-                Loket Pendaftaran
+                <p align="center">Loket Pendaftaran</p>
               </div>
             </div>
             <div id="display_nomor_loket"></div>
@@ -213,9 +215,11 @@
           </div>
           <div class="col-6 pt-3 pb-3">
             <div id="printAntrianCS" style="display: none;" class="cetak">
-              <div style="width: 200px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;">
+              <div style="width: 200px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;border: 0px solid #000;">
+                <p style="font-size:12px;" align="center">{$settings.nama_instansi}<br><span class="small">{$settings.alamat}<br>Telp: {$settings.nomor_telepon}</span></p>
+                <hr>
                 <div id="print_nomor_cs"></div>
-                Layanan Pelanggan
+                <p align="center">Layanan Pelanggan</p>
               </div>
             </div>
             <div id="display_nomor_cs"></div>
@@ -358,7 +362,7 @@
                 </div>
                 <br>
                 <div style="width: 50px; display: inline-block;">Tanggal </div>:<span id="tgl_registrasi_final"></span><br>
-                <div style="width: 50px; display: inline-block;">No. Antrian </div>: <span id="no_reg_final"></span><br>
+                <div style="width: 50px; display: inline-block;">Antrian </div>: <span id="no_reg_final"></span><br>
                 <div style="width: 50px; display: inline-block;">Nama </div>: <span id="nm_pasien_final"></span><br>
                 <div style="width: 50px; display: inline-block;">No. RM </div>: <span id="no_rkm_medis_final"></span><br>
                 <div style="width: 50px; display: inline-block;">Alamat </div>: <span id="alamat_final"></span><br>

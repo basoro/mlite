@@ -88,8 +88,10 @@
                 <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Anjungan
                 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  {if: $mlite.presensi}
                   <li><a href="{?=url()?}/anjungan/presensi" target="_blank">Presensi Pegawai</a></li>
                   <li role="separator" class="divider"></li>
+                  {/if}
                   <li><a href="#">Rawat Jalan</a></li>
                   <li><a href="#">Rawat Inap</a></li>
                   <li><a href="#">Laboratorium</a></li>
