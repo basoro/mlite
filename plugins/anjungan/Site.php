@@ -1084,7 +1084,7 @@ class Site extends SiteModule
               $_POST['status_lanjut']   = 'Ralan';
               $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
               $_POST['status_bayar']    = 'Belum Bayar';
-              $_POST['no_rawat'] = $this->core->setNoRawat();
+              $_POST['no_rawat'] = $this->core->setNoRawat($date);
               $_POST['jam_reg'] = date('H:i:s');
 
               $query = $this->db('reg_periksa')->save($_POST);

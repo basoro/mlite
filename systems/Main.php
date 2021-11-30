@@ -83,7 +83,7 @@ abstract class Main
 
         if(empty($check_db)) {
             $this->freshInstall();
-        }  
+        }
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -312,9 +312,8 @@ abstract class Main
         return $next_no_rm;
     }
 
-    public function setNoRawat()
+    public function setNoRawat($date)
     {
-        $date = date('Y-m-d');
         $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
         $last_no_rawat->execute();
         $last_no_rawat = $last_no_rawat->fetch();
@@ -322,7 +321,7 @@ abstract class Main
           $last_no_rawat[0] = '000000';
         }
         $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+        $next_no_rawat = str_replace("-","/",$date).'/'.$next_no_rawat;
 
         return $next_no_rawat;
     }

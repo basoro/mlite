@@ -49,7 +49,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $header = apache_request_headers();
         $response = array();
-        if ($header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username') && $header['X-Password'] == $this->settings->get('jkn_mobile_v2.x_password')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username') && $header[$this->settings->get('jkn_mobile_v2.header_password')] == $this->settings->get('jkn_mobile_v2.x_password')) {
             $response = array(
                 'response' => array(
                     'token' => $this->_getToken()
@@ -84,7 +84,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
 
             $tanggal=$decode['tanggalperiksa'];
             $tentukan_hari=date('D',strtotime($tanggal));
@@ -290,7 +290,10 @@ class Site extends SiteModule
                         $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
                         $no_reg_akhir->execute();
                         $no_reg_akhir = $no_reg_akhir->fetch();
-                        $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
+                        $no_reg_akhir['0'] = '000';
+                        if($no_reg_akhir['0'] !='') {
+                          $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
+                        }
                         $no_reg = sprintf('%03s', ($no_urut_reg + 1));
                         $jenisantrean = 2;
                         $minutes = $no_urut_reg * 10;
@@ -400,7 +403,7 @@ class Site extends SiteModule
         $kdpoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
         $kddokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(!$this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
                 $response = array(
                     'metadata' => array(
@@ -534,7 +537,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -659,7 +662,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -777,7 +780,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if (empty($decode['nomorkartu'])){
                 $response = array(
                     'metadata' => array(
@@ -1137,29 +1140,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            /*
-            if($decode['kodebooking'] == ''){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Kode booking todak boleh kosong',
-                        'code' => 201
-                    )
-                );
-            } else {
-                $response = array(
-                    'response' => array(
-                        'norm' => '123456',
-                    ),
-                    'metadata' => array(
-                        'message' => 'Harap datang ke admisi untuk melengkapi data rekam medis',
-                        'code' => 200
-                    )
-                );
-                http_response_code(200);
-            }
-            */
-
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             @$tanggal=date("Y-m-d", ($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
                 $response = array(
@@ -1243,9 +1224,71 @@ class Site extends SiteModule
                             );
                             http_response_code(201);
                         }else{
+                            $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->count();
+                            $_POST['stts_daftar'] = 'Baru';
+                            if($cek_stts_daftar > 0) {
+                              $_POST['stts_daftar'] = 'Lama';
+                            }
+
+                            $biaya_reg = $this->db('poliklinik')->where('kd_poli', $booking_registrasi['kd_poli'])->oneArray();
+                            $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+                            if($_POST['stts_daftar'] == 'Lama') {
+                              $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+                            }
+
+                            $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->where('kd_poli', $booking_registrasi['kd_poli'])->count();
+                            $_POST['status_poli'] = 'Baru';
+                            if($cek_status_poli > 0) {
+                              $_POST['status_poli'] = 'Lama';
+                            }
+
+                            // set umur
+                            $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $booking_registrasi['no_rkm_medis']));
+                            $today = new \DateTime(date('Y-m-d'));
+                            $y = $today->diff($tanggal)->y;
+                            $m = $today->diff($tanggal)->m;
+                            $d = $today->diff($tanggal)->d;
+
+                            $umur="0";
+                            $sttsumur="Th";
+                            if($y>0){
+                                $umur=$y;
+                                $sttsumur="Th";
+                            }else if($y==0){
+                                if($m>0){
+                                    $umur=$m;
+                                    $sttsumur="Bl";
+                                }else if($m==0){
+                                    $umur=$d;
+                                    $sttsumur="Hr";
+                                }
+                            }
+
                             $tanggalupdate=date("Y-m-d H:i:s", ($decode['waktu']/1000));
                             $update = $this->db('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->update(['status' => 'Terdaftar']);
-                            if($update){
+                            $insert = $this->db('reg_periksa')
+                              ->save([
+                                'no_reg' => $booking_registrasi['no_reg'],
+                                'no_rawat' => $this->core->setNoRawat($booking_registrasi['tanggal_periksa']),
+                                'tgl_registrasi' => $booking_registrasi['tanggal_periksa'],
+                                'jam_reg' => date('H:i:s'),
+                                'kd_dokter' => $booking_registrasi['kd_dokter'],
+                                'no_rkm_medis' => $booking_registrasi['no_rkm_medis'],
+                                'kd_poli' => $booking_registrasi['kd_poli'],
+                                'p_jawab' => $this->core->getPasienInfo('namakeluarga', $booking_registrasi['no_rkm_medis']),
+                                'almt_pj' => $this->core->getPasienInfo('alamatpj', $booking_registrasi['no_rkm_medis']),
+                                'hubunganpj' => $this->core->getPasienInfo('keluarga', $booking_registrasi['no_rkm_medis']),
+                                'biaya_reg' => $_POST['biaya_reg'],
+                                'stts' => 'Belum',
+                                'stts_daftar' => $_POST['stts_daftar'],
+                                'status_lanjut' => 'Ralan',
+                                'kd_pj' => $booking_registrasi['kd_pj'],
+                                'umurdaftar' => $umur,
+                                'sttsumur' => $sttsumur,
+                                'status_bayar' => 'Belum Bayar',
+                                'status_poli' => $_POST['status_poli']
+                              ]);
+                            if($insert){
                                 $response = array(
                                     'metadata' => array(
                                         'message' => 'Ok',
@@ -1292,7 +1335,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             $data = array();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan,  maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana, pasien.no_peserta AS nopeserta FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND booking_operasi.tanggal BETWEEN '$decode[tanggalawal]' AND '$decode[tanggalakhir]' GROUP BY booking_operasi.no_rawat");
             $sql->execute();
@@ -1384,7 +1427,7 @@ class Site extends SiteModule
         $decode = json_decode($konten, true);
         $response = array();
 
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header['X-Username'] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             $data = array();
             $cek_nopeserta = $this->db('pasien')->where('no_peserta', $decode['nopeserta'])->oneArray();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan, maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND pasien.no_peserta = '$decode[nopeserta]'  GROUP BY booking_operasi.no_rawat");
