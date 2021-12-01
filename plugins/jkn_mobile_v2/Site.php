@@ -591,7 +591,7 @@ class Site extends SiteModule
                         );
                         http_response_code(201);
                     }else if($booking_registrasi['status']=='Terdaftar'){
-                        $noreg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+                        $noreg = $this->db('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
 
                         $max_antrian = $this->db()->pdo()->prepare("SELECT reg_periksa.no_reg FROM reg_periksa WHERE reg_periksa.stts='Belum' AND reg_periksa.kd_dokter='$booking_registrasi[kd_dokter]' AND reg_periksa.kd_poli='$booking_registrasi[kd_poli]' AND reg_periksa.tgl_registrasi='$booking_registrasi[tanggal_periksa]' ORDER BY CONVERT(RIGHT(reg_periksa.no_reg,3),signed) LIMIT 1 ");
                         $max_antrian->execute();
@@ -602,8 +602,7 @@ class Site extends SiteModule
                             IFNULL(SUM(CASE WHEN reg_periksa.stts ='Belum' THEN 1 ELSE 0 END),0) as sisa_antrean
                             FROM reg_periksa INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
                             INNER JOIN dokter ON dokter.kd_dokter=reg_periksa.kd_dokter
-                            WHERE reg_periksa.kd_dokter='$booking_registrasi[kd_dokter]' and reg_periksa.kd_poli='$booking_registrasi[kd_poli]'and reg_periksa.tgl_registrasi='$booking_registrasi[tanggal_periksa]'
-                            and CONVERT(RIGHT(reg_periksa.no_reg,3),signed)<CONVERT(RIGHT($noreg,3),signed)");
+                            WHERE reg_periksa.kd_dokter='$booking_registrasi[kd_dokter]' and reg_periksa.kd_poli='$booking_registrasi[kd_poli]'and reg_periksa.tgl_registrasi='$booking_registrasi[tanggal_periksa]'");
                         $data->execute();
                         $data = $data->fetch();
 
