@@ -1101,6 +1101,63 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
+
+              $url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
+              $consid = $this->settings->get('settings.BpjsConsID');
+              $secretkey = $this->settings->get('settings.BpjsSecretKey');
+              $userkey = $this->settings->get('settings.BpjsUserKey');
+              $output = BpjsService::get($url, NULL, $consid, $secretkey, $userkey);
+              $json = json_decode($output, true);
+              $code = $json['metaData']['code'];
+              $message = $json['metaData']['message'];
+              $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+              $decompress = decompress($stringDecrypt);
+              $output = '{"response": '.$decompress.'}';
+              $output = json_decode($output, true);
+
+              $_POST['no_rkm_medis'] = $this->core->setNoRM();
+              $_POST['nm_pasien'] = $output['response']['peserta']['nama'];
+              $_POST['no_ktp'] = $output['response']['peserta']['nik'];
+              $_POST['jk'] = $output['response']['peserta']['sex'];
+              $_POST['tmp_lahir'] = '-';
+              $_POST['tgl_lahir'] = $output['response']['peserta']['tglLahir'];
+              $_POST['nm_ibu'] = '-';
+              $_POST['alamat'] = '-';
+              $_POST['gol_darah'] = '-';
+              $_POST['pekerjaan'] = $output['response']['peserta']['jenisPeserta']['keterangan'];
+              $_POST['stts_nikah'] = 'JOMBLO';
+              $_POST['agama'] = '-';
+              $_POST['tgl_daftar'] = $date;
+              $_POST['no_tlp'] = $output['response']['peserta']['mr']['noTelepon'];
+              $_POST['umur'] = $this->_setUmur($output['response']['peserta']['tglLahir']);;
+              $_POST['pnd'] = '-';
+              $_POST['keluarga'] = 'AYAH';
+              $_POST['namakeluarga'] = '-';
+              $_POST['kd_pj'] = 'BPJ';
+              $_POST['no_peserta'] = $output['response']['peserta']['noKartu'];
+              $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
+              $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
+              $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
+              $_POST['pekerjaanpj'] = '-';
+              $_POST['alamatpj'] = '-';
+              $_POST['kelurahanpj'] = '-';
+              $_POST['kecamatanpj'] = '-';
+              $_POST['kabupatenpj'] = '-';
+              $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_v2.perusahaan_pasien');
+              $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_v2.suku_bangsa');
+              $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_v2.bahasa_pasien');
+              $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_v2.cacat_fisik');
+              $_POST['email'] = '';
+              $_POST['nip'] = '';
+              $_POST['kd_prop'] = $this->settings->get('jkn_mobile_v2.kdprop');
+              $_POST['propinsipj'] = '-';
+
+              $query = $this->db('pasien')->save($_POST);
+
+              if($query) {
+                  $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+              }
+              
               $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
               $response = array(
                   'response' => array(
