@@ -4,7 +4,7 @@ return [
     'name'          =>  'Galeri Pasien',
     'description'   =>  'Kumpulan data digital pasien',
     'author'        =>  'Basoro',
-    'version'       =>  '1.0',
+    'version'       =>  '1.1',
     'compatibility' =>  '2021',
     'icon'          =>  'camera',
 

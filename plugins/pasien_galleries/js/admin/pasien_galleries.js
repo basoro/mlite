@@ -1,13 +1,38 @@
-$(document).ready(function(){
-  $('.display').DataTable({
-    "language": { "search": "", "searchPlaceholder": "Search..." },
-    "lengthChange": false,
-    "scrollX": true,
-    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
-  });
-  var t = $(".display").DataTable().rows().count();
-  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+
+// ketika inputbox pencarian diisi
+$('input:text[name=cari]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/pasien_galleries/display?t=' + mlite.token;
+  var cari = $('input:text[name=cari]').val();
+
+  if(cari!="") {
+      $.post(url, {cari: cari} ,function(data) {
+        // tampilkan data yang sudah di perbaharui dan sembunyikan notif
+        $("#notif").hide();
+        $("#display").html(data).show();
+      });
+  } else {
+      $("#notif").hide();
+      $("#display").load(baseURL + '/pasien_galleries/display?t=' + mlite.token);
+  }
+
 });
+
+// ketika tombol halaman ditekan
+$("#display").on("click", ".halaman",function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/pasien_galleries/display?t=' + mlite.token;
+  kd_hal  = $(this).attr("data-hal");
+
+  $.post(url, {halaman: kd_hal} ,function(data) {
+    // tampilkan data
+    $("#notif").hide();
+    $("#display").html(data).show();
+  });
+
+});
+
 $(document).ready(function () {
   var strip_tags = function(str) {
     return (str + '').replace(/<\/?[^>]+(>|$)/g, '')

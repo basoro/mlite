@@ -25,7 +25,7 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $assign = [];
-
+        /*
         // list
         $rows = $this->db('mlite_pasien_galleries')->toArray();
         if (count($rows)) {
@@ -39,6 +39,97 @@ class Admin extends AdminModule
         }
 
         return $this->draw('manage.html', ['galleries' => $assign]);
+        */
+
+        $perpage = '10';
+
+        $totalRecords = $this->db('mlite_pasien_galleries')
+          ->select('slug')
+          ->toArray();
+        $jumlah_data    = count($totalRecords);
+  			$offset         = 10;
+  			$jml_halaman    = ceil($jumlah_data / $offset);
+        $halaman    = 1;
+
+        $rows = $this->db('mlite_pasien_galleries')
+          ->desc('slug')
+          ->offset(0)
+          ->limit($perpage)
+          ->toArray();
+
+        foreach ($rows as $row) {
+          $row['tag']    = $this->tpl->noParse('{$gallery.'.$row['slug'].'}');
+          $row['editURL'] = url([ADMIN, 'pasien_galleries',  'edit', $row['id']]);
+          $row['delURL']  = url([ADMIN, 'pasien_galleries', 'delete', $row['id']]);
+
+          $assign[] = $row;
+
+        }
+
+        return $this->draw('manage.html', [
+          'galleries' => $assign,
+          'halaman' => $halaman,
+          'jumlah_data' => $jumlah_data,
+          'jml_halaman' => $jml_halaman
+        ]);
+
+    }
+
+    public function anyDisplay()
+    {
+        $this->_addHeaderFiles();
+
+        $perpage = '10';
+
+        $totalRecords = $this->db('mlite_pasien_galleries')->select('slug')->toArray();
+        $jumlah_data    = count($totalRecords);
+  			$offset         = 10;
+  			$jml_halaman    = ceil($jumlah_data / $offset);
+        $halaman    = 1;
+
+        if(isset($_POST['cari'])) {
+          $rows = $this->db('mlite_pasien_galleries')
+            ->like('slug', '%'.$_POST['cari'].'%')
+            ->orLike('name', '%'.$_POST['cari'].'%')
+            ->desc('slug')
+            ->offset(0)
+            ->limit($perpage)
+            ->toArray();
+          $jumlah_data = count($rows);
+    			$jml_halaman = ceil($jumlah_data / $offset);
+        }elseif(isset($_POST['halaman'])){
+    			$offset = (($_POST['halaman'] - 1) * $perpage);
+          $rows = $this->db('mlite_pasien_galleries')
+            ->desc('slug')
+            ->offset($offset)
+            ->limit($perpage)
+            ->toArray();
+          $halaman = $_POST['halaman'];
+        }else{
+          $rows = $this->db('mlite_pasien_galleries')
+            ->desc('slug')
+            ->offset(0)
+            ->limit($perpage)
+            ->toArray();
+        }
+
+        $assign = [];
+        foreach ($rows as $row) {
+          $row['tag']    = $this->tpl->noParse('{$gallery.'.$row['slug'].'}');
+          $row['editURL'] = url([ADMIN, 'pasien_galleries',  'edit', $row['id']]);
+          $row['delURL']  = url([ADMIN, 'pasien_galleries', 'delete', $row['id']]);
+
+          $assign[] = $row;
+        }
+
+        echo $this->draw('display.html', [
+          'galleries' => $assign,
+          'halaman' => $halaman,
+          'jumlah_data' => $jumlah_data,
+          'jml_halaman' => $jml_halaman
+        ]);
+
+        exit();
     }
 
     public function getAjax()
@@ -281,12 +372,12 @@ class Admin extends AdminModule
 
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
-        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        //$this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
 
         // JS
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
-        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
-        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
+        //$this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+        //$this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'pasien_galleries', 'javascript']), 'footer');
