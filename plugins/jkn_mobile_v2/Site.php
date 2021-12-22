@@ -83,8 +83,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
 
             $tanggal=$decode['tanggalperiksa'];
             $tentukan_hari=date('D',strtotime($tanggal));
@@ -155,11 +162,11 @@ class Site extends SiteModule
             if(empty($decode['tanggalperiksa'])) {
                $errors[] = 'Anda belum memilih tanggal periksa';
             }
-            if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
-               $errors[] = 'Format tanggal periksa tidak sesuai';
-            }
             if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] < $h1 || $decode['tanggalperiksa'] > $h7) {
                $errors[] = 'Tanggal periksa bisa dilakukan tanggal '.$_h1.' hingga tanggal '.$_h7;
+            }
+            if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
+               $errors[] = 'Format tanggal periksa tidak sesuai';
             }
             if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] == $cek_referensi['tanggal_periksa']) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$decode['tanggalperiksa'];
@@ -194,97 +201,13 @@ class Site extends SiteModule
 
                 if ($cek_kouta['sisa_kouta'] > 0) {
                     if(!$data_pasien) {
-
-                        $date = date('Y-m-d');
-                        $url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
-                        $consid = $this->settings->get('settings.BpjsConsID');
-                        $secretkey = $this->settings->get('settings.BpjsSecretKey');
-                        $userkey = $this->settings->get('settings.BpjsUserKey');
-                        $output = BpjsService::get($url, NULL, $consid, $secretkey, $userkey);
-                        $output = json_decode($output, true);
-
-                        $_POST['no_rkm_medis'] = $this->core->setNoRM();
-                        $_POST['nm_pasien'] = $output['response']['peserta']['nama'];
-                        $_POST['no_ktp'] = $output['response']['peserta']['nik'];
-                        $_POST['jk'] = $output['response']['peserta']['sex'];
-                        $_POST['tmp_lahir'] = '-';
-                        $_POST['tgl_lahir'] = $output['response']['peserta']['tglLahir'];
-                        $_POST['nm_ibu'] = '-';
-                        $_POST['alamat'] = '-';
-                        $_POST['gol_darah'] = '-';
-                        $_POST['pekerjaan'] = $output['response']['peserta']['jenisPeserta']['keterangan'];
-                        $_POST['stts_nikah'] = 'JOMBLO';
-                        $_POST['agama'] = '-';
-                        $_POST['tgl_daftar'] = $date;
-                        $_POST['no_tlp'] = $output['response']['peserta']['mr']['noTelepon'];
-                        $_POST['umur'] = $this->_setUmur($output['response']['peserta']['tglLahir']);;
-                        $_POST['pnd'] = '-';
-                        $_POST['keluarga'] = 'AYAH';
-                        $_POST['namakeluarga'] = '-';
-                        $_POST['kd_pj'] = 'BPJ';
-                        $_POST['no_peserta'] = $output['response']['peserta']['noKartu'];
-                        $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
-                        $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
-                        $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
-                        $_POST['pekerjaanpj'] = '-';
-                        $_POST['alamatpj'] = '-';
-                        $_POST['kelurahanpj'] = '-';
-                        $_POST['kecamatanpj'] = '-';
-                        $_POST['kabupatenpj'] = '-';
-                        $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_v2.perusahaan_pasien');
-                        $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_v2.suku_bangsa');
-                        $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_v2.bahasa_pasien');
-                        $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_v2.cacat_fisik');
-                        $_POST['email'] = '';
-                        $_POST['nip'] = '';
-                        $_POST['kd_prop'] = $this->settings->get('jkn_mobile_v2.kdprop');
-                        $_POST['propinsipj'] = '-';
-
-                        $query = $this->db('pasien')->save($_POST);
-
-                        if($query) {
-                            $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-                            // Get antrian poli
-                            $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
-                            $no_reg_akhir->execute();
-                            $no_reg_akhir = $no_reg_akhir->fetch();
-                            if(empty($no_reg_akhir['0'])) {
-                                $no_reg_akhir['0'] = '000';
-                            }
-                            $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
-                            $no_reg = sprintf('%03s', ($no_urut_reg + 1));
-                            $jenisantrean = 2;
-                            $minutes = $no_urut_reg * 10;
-                            $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
-                            $keterangan = 'Peserta harap datang 30 menit lebih awal guna pencatatan administrasi.';
-                            $message = 'Pasien Baru';
-                            $code = 202;
-
-                            $this->db('mlite_antrian_loket')->save([
-                              'kd' => NULL,
-                              'type' => 'Loket',
-                              'noantrian' => $no_reg,
-                              'postdate' => $decode['tanggalperiksa'],
-                              'start_time' => $cek_kouta['jam_mulai'],
-                              'end_time' => '00:00:01'
-                            ]);
-
-                            $data_pasien['no_rkm_medis'] = $_POST['no_rkm_medis'];
-
-                            $query = $this->db('booking_registrasi')->save([
-                                'tanggal_booking' => date('Y-m-d'),
-                                'jam_booking' => date('H:i:s'),
-                                'no_rkm_medis' => $data_pasien['no_rkm_medis'],
-                                'tanggal_periksa' => $decode['tanggalperiksa'],
-                                'kd_dokter' => $cek_kouta['kd_dokter'],
-                                'kd_poli' => $cek_kouta['kd_poli'],
-                                'no_reg' => $no_reg,
-                                'kd_pj' => 'BPJ',
-                                'limit_reg' => 1,
-                                'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
-                                'status' => 'Belum'
-                            ]);
-                        }
+                        $response = array(
+                            'metadata' => array(
+                                'message' =>  'Data pasien ini tidak ditemukan',
+                                'code' => 202
+                            )
+                        );
+                        http_response_code(202);
                     } else {
                         // Get antrian poli
                         $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
@@ -299,8 +222,6 @@ class Site extends SiteModule
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
                         $keterangan = 'Peserta harap datang 30 menit lebih awal.';
-                        $message = 'Sukses';
-                        $code = 201;
                         $query = $this->db('booking_registrasi')->save([
                             'tanggal_booking' => date('Y-m-d'),
                             'jam_booking' => date('H:i:s'),
@@ -318,9 +239,10 @@ class Site extends SiteModule
                     if ($query) {
                         $response = array(
                             'response' => array(
-                                'nomorantrean' => 'A-'.$no_reg,
+                                'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
                                 'angkaantrean' => $no_reg,
                                 'kodebooking' => $decode['nomorreferensi'],
+                                'pasienbaru'=>0,
                                 'norm' => $data_pasien['no_rkm_medis'],
                                 'namapoli' => $cek_kouta['nm_poli'],
                                 'namadokter' => $cek_kouta['nm_dokter'],
@@ -332,8 +254,8 @@ class Site extends SiteModule
                                 'keterangan' => $keterangan
                             ),
                             'metadata' => array(
-                                'message' => $message,
-                                'code' => $code
+                                'message' => 'Ok',
+                                'code' => 200
                             )
                         );
                         http_response_code(200);
@@ -402,8 +324,15 @@ class Site extends SiteModule
 
         $kdpoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
         $kddokter = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(!$this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
                 $response = array(
                     'metadata' => array(
@@ -536,8 +465,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -660,8 +596,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -778,8 +721,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             if (empty($decode['nomorkartu'])){
                 $response = array(
                     'metadata' => array(
@@ -1102,7 +1052,8 @@ class Site extends SiteModule
                 http_response_code(201);
             }else{
 
-              $url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
+              $date = date('Y-m-d');
+              /*$url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
               $consid = $this->settings->get('settings.BpjsConsID');
               $secretkey = $this->settings->get('settings.BpjsSecretKey');
               $userkey = $this->settings->get('settings.BpjsUserKey');
@@ -1113,7 +1064,7 @@ class Site extends SiteModule
               $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
               $decompress = decompress($stringDecrypt);
               $output = '{"response": '.$decompress.'}';
-              $output = json_decode($output, true);
+              $output = json_decode($output, true);*/
 
               $_POST['no_rkm_medis'] = $this->core->setNoRM();
               $_POST['nm_pasien'] = $output['response']['peserta']['nama'];
@@ -1157,11 +1108,11 @@ class Site extends SiteModule
               if($query) {
                   $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
               }
-              
+
               $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
               $response = array(
                   'response' => array(
-                      'norm' => $pasien['no_rkm_medis']
+                      'norm' => $_POST['no_rkm_medis']
                   ),
                   'metadata' => array(
                       'message' => 'Harap datang ke admisi untuk melengkapi data rekam medis',
@@ -1195,8 +1146,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             @$tanggal=date("Y-m-d", ($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
                 $response = array(
@@ -1390,8 +1348,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             $data = array();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan,  maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana, pasien.no_peserta AS nopeserta FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND booking_operasi.tanggal BETWEEN '$decode[tanggalawal]' AND '$decode[tanggalakhir]' GROUP BY booking_operasi.no_rawat");
             $sql->execute();
@@ -1482,8 +1447,15 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-
-        if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             $data = array();
             $cek_nopeserta = $this->db('pasien')->where('no_peserta', $decode['nopeserta'])->oneArray();
             $sql = $this->db()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan, maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND pasien.no_peserta = '$decode[nopeserta]'  GROUP BY booking_operasi.no_rawat");
