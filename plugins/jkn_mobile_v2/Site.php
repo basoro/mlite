@@ -1115,7 +1115,7 @@ class Site extends SiteModule
                       'norm' => $_POST['no_rkm_medis']
                   ),
                   'metadata' => array(
-                      'message' => 'Harap datang ke admisi untuk melengkapi data rekam medisPasien berhasil mendapatkann nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
+                      'message' => 'Pasien berhasil mendapatkann nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
                       'code' => 200
                   )
               );
