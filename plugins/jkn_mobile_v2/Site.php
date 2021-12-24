@@ -1085,7 +1085,7 @@ class Site extends SiteModule
               $_POST['keluarga'] = 'AYAH';
               $_POST['namakeluarga'] = '-';
               $_POST['kd_pj'] = 'BPJ';
-              $_POST['no_peserta'] = $decode[nomorkartu];
+              $_POST['no_peserta'] = $decode['nomorkartu'];
               $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
               $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
               $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
