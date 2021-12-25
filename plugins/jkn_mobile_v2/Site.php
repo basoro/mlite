@@ -349,6 +349,14 @@ class Site extends SiteModule
                     )
                 );
                 http_response_code(201);
+            }else if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
             }else if(!$this->db('jadwal')
                 ->join('maping_dokter_dpjpvclaim', 'maping_dokter_dpjpvclaim.kd_dokter=jadwal.kd_dokter')
                 ->where('maping_dokter_dpjpvclaim.kd_dokter_bpjs', $decode['kodedokter'])
@@ -359,14 +367,6 @@ class Site extends SiteModule
                 $response = array(
                     'metadata' => array(
                         'message' => 'Jadwal Praktek Tidak Ditemukan Pada Hari '.$hari.' Tanggal '.$decode['tanggalperiksa'],
-                        'code' => 201
-                    )
-                );
-                http_response_code(201);
-            }else if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])){
-                $response = array(
-                    'metadata' => array(
-                        'message' => 'Format Tanggal Tidak Sesuai, format yang benar adalah yyyy-mm-dd',
                         'code' => 201
                     )
                 );
