@@ -1480,6 +1480,7 @@ class Site extends SiteModule
                 }
             } else {
                 if ($decode['nopeserta'] != '') {
+                    $data_array = [];
                     foreach ($sql as $data) {
                         if($data['terlaksana'] == 'Menunggu') {
                           $data['terlaksana'] = 0;
