@@ -218,7 +218,6 @@ class Site extends SiteModule
                           $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
                         }
                         $no_reg = sprintf('%03s', ($no_urut_reg + 1));
-                        $jenisantrean = 2;
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
                         $keterangan = 'Peserta harap datang 30 menit lebih awal.';
