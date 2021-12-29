@@ -29,6 +29,7 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
+        $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
         $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
@@ -212,7 +213,27 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $slug = parseURL();
+        $vidio = $this->settings->get('anjungan.vidio');
+        $_GET['vid'] = '';
+        if(isset($_GET['vid']) && $_GET['vid'] !='') {
+          $vidio = $_GET['vid'];
+        }
 
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $running_text = $this->settings->get('anjungan.text_poli');
+        $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
         $_username = $this->core->getUserInfo('fullname', null, true);
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
@@ -223,8 +244,9 @@ class Site extends SiteModule
           'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
-          'vidio' => $this->settings->get('anjungan.vidio'),
-          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'vidio' => $vidio,
+          'running_text' => $running_text,
+          'jadwal' => $jadwal,
           'slug' => $slug
         ]);
 
@@ -611,6 +633,74 @@ class Site extends SiteModule
           ->where('kd_poli', $poliklinik)
           ->asc('no_reg')
           ->toArray();
+
+        return $rows;
+    }
+
+    public function getDisplayAntrianApotek()
+    {
+        $logo  = $this->settings->get('settings.logo');
+        $title = 'Display Antrian Laboratorium';
+        $display = $this->_resultDisplayAntrianApotek();
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+        $content = $this->draw('display.antrian.apotek.html', [
+          'logo' => $logo,
+          'title' => $title,
+          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'running_text' => $jadwal,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayAntrianApotek()
+    {
+        $query = $this->db('reg_periksa')
+          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+          ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
+          ->where('tgl_registrasi', date('Y-m-d'))
+          ->where('stts', 'Sudah')
+          ->asc('resep_obat.jam_peresepan')
+          ->toArray();
+        $rows=[];
+        foreach ($query as $row) {
+          $row['status_resep'] = 'Sudah';
+          if($row['jam'] == $row['jam_peresepan']) {
+            $row['status_resep'] = 'Belum';
+          }
+          $rows[] = $row;
+        }
 
         return $rows;
     }
