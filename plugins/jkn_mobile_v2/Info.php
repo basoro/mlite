@@ -41,6 +41,12 @@ return [
         `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
+        `tanggal_batal` date NOT NULL,
+        `nomor_referensi` varchar(50) NOT NULL,
+        `keterangan` varchar(250) NOT NULL PRIMARY KEY
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
         `kd_dokter` varchar(20) NOT NULL,
         `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
