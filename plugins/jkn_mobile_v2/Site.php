@@ -1647,8 +1647,8 @@ class Site extends SiteModule
 
     public function _getAntreanUpdateWaktu($data = [])
     {
-        $date = date('Y-m-d');
-        //$date = '2021-12-02';
+        //$date = date('Y-m-d');
+        $date = '2021-12-02';
         $query = $this->db('mlite_antrian_referensi')
           ->select('nomor_referensi')
           ->select('no_rkm_medis')
@@ -1679,7 +1679,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
@@ -1706,7 +1706,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
@@ -1733,7 +1733,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
@@ -1760,7 +1760,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
@@ -1787,7 +1787,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
@@ -1813,7 +1813,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($json);
 
-                echo '-------------------------------------<br><br>';
+                echo '<br>-------------------------------------<br><br>';
             }
         }
 
