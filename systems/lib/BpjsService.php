@@ -78,6 +78,7 @@ class BpjsService
          'X-cons-id: '.$consid.'',
          'X-timestamp: '.$tStamp.'' ,
          'X-signature: '.$encodedSignature.'',
+         'user_key: '.$user_key.'',
          'Content-Type:Application/x-www-form-urlencoded',
         );
 
