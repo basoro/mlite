@@ -30,6 +30,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
+        $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
     }
@@ -1864,6 +1865,16 @@ class Site extends SiteModule
     {
         $slug = parseURL();
         $url = $this->bpjsurl.'dashboard/waktutunggu/bulan/'.$slug[3].'/tahun/'.$slug[4].'/waktu/'.$slug[5];
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $json = json_decode($output, true);
+        echo json_encode($json);
+        exit();
+    }
+
+    public function _getAntreanWaktuTungguTanggal()
+    {
+        $slug = parseURL();
+        $url = $this->bpjsurl.'dashboard/waktutunggu/tanggal/'.$slug[3].'/waktu/'.$slug[4];
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         echo json_encode($json);
