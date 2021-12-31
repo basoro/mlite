@@ -1647,8 +1647,8 @@ class Site extends SiteModule
 
     public function _getAntreanUpdateWaktu($data = [])
     {
-        //$date = date('Y-m-d');
-        $date = '2021-12-02';
+        $date = date('Y-m-d');
+        //$date = '2021-12-30';
         $query = $this->db('mlite_antrian_referensi')
           ->select('nomor_referensi')
           ->select('no_rkm_medis')
@@ -1834,6 +1834,29 @@ class Site extends SiteModule
         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         echo json_encode($json);
+
+        $code = $json['metadata']['code'];
+        $message = $json['metadata']['message'];
+        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($json != null) {
+          echo '{
+            "metadata": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+        } else {
+          echo '{
+            "metadata": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        }
         exit();
     }
 
