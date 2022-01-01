@@ -264,14 +264,6 @@ class Site extends SiteModule
                             );
                             http_response_code(200);
 
-                            if(!empty($decode['nomorreferensi'])) {
-                              $this->db('mlite_antrian_referensi')->save([
-                                  'tanggal_periksa' => $decode['tanggalperiksa'],
-                                  'nomor_kartu' => $decode['nomorkartu'],
-                                  'nomor_referensi' => $decode['nomorreferensi']
-                              ]);
-                            }
-
                             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
                             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
 
@@ -300,14 +292,18 @@ class Site extends SiteModule
                                 'kuotanonjkn' => $cek_kouta['kuota'],
                                 'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
                             ];
-                            //$data = json_encode($data);
-                            echo 'Request:<br>';
-                            echo "<pre>".print_r($data,true)."</pre>";
-                            /*
+                            $data = json_encode($data);
                             $url = $this->bpjsurl.'antrean/add';
                             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
-                            $json = json_decode($output, true);
-                            */
+                            //$json = json_decode($output, true);
+
+                            if(!empty($decode['nomorreferensi'])) {
+                              $this->db('mlite_antrian_referensi')->save([
+                                  'tanggal_periksa' => $decode['tanggalperiksa'],
+                                  'nomor_kartu' => $decode['nomorkartu'],
+                                  'nomor_referensi' => $decode['nomorreferensi']
+                              ]);
+                            }
 
                         } else {
                             $response = array(
