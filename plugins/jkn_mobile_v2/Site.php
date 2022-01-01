@@ -28,6 +28,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/pasien/checkin', 'getPasienCheckIn');
         $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
+        $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
@@ -1060,75 +1061,72 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
+                if($this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray()) {
+                    $response = array(
+                        'metadata' => array(
+                            'message' => 'Data pasien ini sudah terdaftar',
+                            'code' => 201
+                        )
+                    );
+                    http_response_code(201);
+                } else {
+                    $date = date('Y-m-d');
+                    
+                    $_POST['no_rkm_medis'] = $this->core->setNoRM();
+                    $_POST['nm_pasien'] = $decode['nama'];
+                    $_POST['no_ktp'] = $decode['nik'];
+                    $_POST['jk'] = $decode['jeniskelamin'];
+                    $_POST['tmp_lahir'] = '-';
+                    $_POST['tgl_lahir'] = $decode['tanggallahir'];
+                    $_POST['nm_ibu'] = '-';
+                    $_POST['alamat'] = $decode['alamat'];
+                    $_POST['gol_darah'] = '-';
+                    $_POST['pekerjaan'] = '-';
+                    $_POST['stts_nikah'] = 'JOMBLO';
+                    $_POST['agama'] = '-';
+                    $_POST['tgl_daftar'] = $date;
+                    $_POST['no_tlp'] = $decode['nohp'];
+                    $_POST['umur'] = $this->_setUmur($decode['tanggallahir']);;
+                    $_POST['pnd'] = '-';
+                    $_POST['keluarga'] = 'AYAH';
+                    $_POST['namakeluarga'] = '-';
+                    $_POST['kd_pj'] = 'BPJ';
+                    $_POST['no_peserta'] = $decode['nomorkartu'];
+                    $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
+                    $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
+                    $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
+                    $_POST['pekerjaanpj'] = '-';
+                    $_POST['alamatpj'] = '-';
+                    $_POST['kelurahanpj'] = '-';
+                    $_POST['kecamatanpj'] = '-';
+                    $_POST['kabupatenpj'] = '-';
+                    $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_v2.perusahaan_pasien');
+                    $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_v2.suku_bangsa');
+                    $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_v2.bahasa_pasien');
+                    $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_v2.cacat_fisik');
+                    $_POST['email'] = '';
+                    $_POST['nip'] = '';
+                    $_POST['kd_prop'] = $this->settings->get('jkn_mobile_v2.kdprop');
+                    $_POST['propinsipj'] = '-';
 
-              $date = date('Y-m-d');
-              /*$url = $this->settings->get('settings.BpjsApiUrl').'Peserta/nokartu/'.$decode['nomorkartu'].'/tglSEP/'.$date;
-              $consid = $this->settings->get('settings.BpjsConsID');
-              $secretkey = $this->settings->get('settings.BpjsSecretKey');
-              $userkey = $this->settings->get('settings.BpjsUserKey');
-              $output = BpjsService::get($url, NULL, $consid, $secretkey, $userkey);
-              $json = json_decode($output, true);
-              $code = $json['metaData']['code'];
-              $message = $json['metaData']['message'];
-              $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
-              $decompress = decompress($stringDecrypt);
-              $output = '{"response": '.$decompress.'}';
-              $output = json_decode($output, true);*/
+                    $query = $this->db('pasien')->save($_POST);
 
-              $_POST['no_rkm_medis'] = $this->core->setNoRM();
-              $_POST['nm_pasien'] = $decode['nama'];
-              $_POST['no_ktp'] = $decode['nik'];
-              $_POST['jk'] = $decode['jeniskelamin'];
-              $_POST['tmp_lahir'] = '-';
-              $_POST['tgl_lahir'] = $decode['tanggallahir'];
-              $_POST['nm_ibu'] = '-';
-              $_POST['alamat'] = $decode['alamat'];
-              $_POST['gol_darah'] = '-';
-              $_POST['pekerjaan'] = '-';
-              $_POST['stts_nikah'] = 'JOMBLO';
-              $_POST['agama'] = '-';
-              $_POST['tgl_daftar'] = $date;
-              $_POST['no_tlp'] = $decode['nohp'];
-              $_POST['umur'] = $this->_setUmur($decode['tanggallahir']);;
-              $_POST['pnd'] = '-';
-              $_POST['keluarga'] = 'AYAH';
-              $_POST['namakeluarga'] = '-';
-              $_POST['kd_pj'] = 'BPJ';
-              $_POST['no_peserta'] = $decode['nomorkartu'];
-              $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
-              $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
-              $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
-              $_POST['pekerjaanpj'] = '-';
-              $_POST['alamatpj'] = '-';
-              $_POST['kelurahanpj'] = '-';
-              $_POST['kecamatanpj'] = '-';
-              $_POST['kabupatenpj'] = '-';
-              $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_v2.perusahaan_pasien');
-              $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_v2.suku_bangsa');
-              $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_v2.bahasa_pasien');
-              $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_v2.cacat_fisik');
-              $_POST['email'] = '';
-              $_POST['nip'] = '';
-              $_POST['kd_prop'] = $this->settings->get('jkn_mobile_v2.kdprop');
-              $_POST['propinsipj'] = '-';
+                    if($query) {
+                        $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+                    }
 
-              $query = $this->db('pasien')->save($_POST);
-
-              if($query) {
-                  $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
-              }
-
-              $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
-              $response = array(
-                  'response' => array(
-                      'norm' => $_POST['no_rkm_medis']
-                  ),
-                  'metadata' => array(
-                      'message' => 'Pasien berhasil mendapatkann nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
-                      'code' => 200
-                  )
-              );
-              http_response_code(200);
+                    $pasien = $this->db('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
+                    $response = array(
+                        'response' => array(
+                            'norm' => $_POST['no_rkm_medis']
+                        ),
+                        'metadata' => array(
+                            'message' => 'Pasien berhasil mendapatkann nomor RM, silahkan lanjutkan ke booking. Pasien tidak perlu ke admisi.',
+                            'code' => 200
+                        )
+                    );
+                    http_response_code(200);
+                }
             }
         } else {
             $response = array(
@@ -1596,57 +1594,105 @@ class Site extends SiteModule
         exit();
     }
 
-    public function _getAntreanAdd($data = [])
+    public function _getAntreanAdd()
     {
-        $data = [
-            'kodebooking' => '16032021A001',
-            'jenispasien' => 'JKN',
-            'nomorkartu' => '00012345678',
-            'nik' => '3212345678987654',
-            'nohp' => '085635228888',
-            'kodepoli' => 'ANA',
-            'namapoli' => 'Anak',
-            'norm' => '123345',
-            'tanggalperiksa' => '2021-03-28',
-            'kodedokter' => 12345,
-            'namadokter' => 'Dr. Hendra',
-            'jampraktek' => '08:00-16:00',
-            'jeniskunjungan' => 1,
-            'nomorreferensi' => '0001R0040116A000001',
-            'nomorantrean' => 'A-12',
-            'angkaantrean' => 12,
-            'estimasidilayani' => 1615869169000,
-            'sisakuotajkn' => 5,
-            'kuotajkn' => 30,
-            'sisakuotanonjkn' => 5,
-            'kuotanonjkn' => 30,
-            'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-        ];
+        //$date = date('Y-m-d');
+        $date = '2021-12-30';
+        $query = $this->db('mlite_antrian_referensi')
+          ->select('nomor_referensi')
+          ->select('no_rkm_medis')
+          ->join('pasien', 'pasien.no_peserta=mlite_antrian_referensi.nomor_kartu')
+          //->join('reg_periksa', 'reg_periksa.tgl_registrasi=mlite_antrian_referensi.tanggal_periksa')
+          ->where('tanggal_periksa', $date)
+          ->toArray();
 
-        $data = json_encode($data);
-        $url = $this->bpjsurl.'antrean/add';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
-        $json = json_decode($output, true);
-        echo json_encode($json);
+        echo 'Menjalankan WS tambah antrian Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+            $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+            $data = [
+                'kodebooking' => $q['nomor_referensi'],
+                'jenispasien' => 'JKN',
+                'nomorkartu' => $q['nomor_kartu'],
+                'nik' => $q['no_ktp'],
+                'nohp' => $q['no_tlp'],
+                'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+                'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+                'pasienbaru' => 0,
+                'norm' => $q['no_rkm_medis'],
+                'tanggalperiksa' => $q['tanggal_periksa'],
+                'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+                'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+                'jampraktek' => '08:00-16:00',
+                'jeniskunjungan' => 1,
+                'nomorreferensi' => $q['nomor_referensi'],
+                'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+                'angkaantrean' => 12,
+                'estimasidilayani' => 1615869169000,
+                'sisakuotajkn' => 5,
+                'kuotajkn' => 30,
+                'sisakuotanonjkn' => 5,
+                'kuotanonjkn' => 30,
+                'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+            ];
+            //$data = json_encode($data);
+            echo 'Request:<br>';
+            echo "<pre>".print_r($data,true)."</pre>";
+            /*
+            echo '<br>';
+            $url = $this->bpjsurl.'antrean/add';
+            $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+            $json = json_decode($output, true);
+            echo 'Response:<br>';
+            echo json_encode($json);
+            */
+            echo '<br>-------------------------------------<br><br>';
+        }
+
+        //echo json_encode($query);
+        echo "<pre>".print_r($query,true)."</pre>";
         exit();
     }
 
-    public function _getAntreanBatal($data = [])
+    public function _getAntreanBatal()
     {
-        $data = [
-            'kodebooking' => '16032021A001',
-            'keterangan' => 'Terjadi perubahan jadwal dokter, silahkan daftar kembali'
-        ];
+        $date = date('Y-m-d');
+        //$date = '2021-12-30';
+        $query = $this->db('mlite_antrian_referensi_batal')
+          ->where('tanggal_batal', $date)
+          ->toArray();
 
-        $data = json_encode($data);
-        $url = $this->bpjsurl.'antrean/batal';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
-        $json = json_decode($output, true);
-        echo json_encode($json);
+        echo 'Menjalankan WS batal antrian Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            if($mutasi_berkas){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'keterangan' => $q['keterangan']
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/batal';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
         exit();
     }
 
-    public function _getAntreanUpdateWaktu($data = [])
+    public function _getAntreanUpdateWaktu()
     {
         $date = date('Y-m-d');
         //$date = '2021-12-30';
@@ -1817,8 +1863,6 @@ class Site extends SiteModule
                 echo '<br>-------------------------------------<br><br>';
             }
         }
-
-        //echo json_encode($query);
 
         exit();
     }
