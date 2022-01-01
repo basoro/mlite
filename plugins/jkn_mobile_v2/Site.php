@@ -271,6 +271,44 @@ class Site extends SiteModule
                                   'nomor_referensi' => $decode['nomorreferensi']
                               ]);
                             }
+
+                            $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
+                            $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
+
+                            $data = [
+                                'kodebooking' => $decode['nomorreferensi'],
+                                'jenispasien' => 'JKN',
+                                'nomorkartu' => $decode['nomorkartu'],
+                                'nik' => $decode['nik'],
+                                'nohp' => $data_pasien['no_tlp'],
+                                'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+                                'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+                                'pasienbaru' => 0,
+                                'norm' => $data_pasien['no_rkm_medis'],
+                                'tanggalperiksa' => $decode['tanggalperiksa'],
+                                'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+                                'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+                                'jampraktek' => $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'],
+                                'jeniskunjungan' => 1,
+                                'nomorreferensi' => $decode['nomorreferensi'],
+                                'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
+                                'angkaantrean' => $no_reg,
+                                'estimasidilayani' => strtotime($decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai']) * 1000,
+                                'sisakuotajkn' => ($cek_kouta['sisa_kouta']-1),
+                                'kuotajkn' => $cek_kouta['kuota'],
+                                'sisakuotanonjkn' => ($cek_kouta['sisa_kouta']-1),
+                                'kuotanonjkn' => $cek_kouta['kuota'],
+                                'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+                            ];
+                            //$data = json_encode($data);
+                            echo 'Request:<br>';
+                            echo "<pre>".print_r($data,true)."</pre>";
+                            /*
+                            $url = $this->bpjsurl.'antrean/add';
+                            $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                            $json = json_decode($output, true);
+                            */
+
                         } else {
                             $response = array(
                                 'metadata' => array(
@@ -1071,7 +1109,7 @@ class Site extends SiteModule
                     http_response_code(201);
                 } else {
                     $date = date('Y-m-d');
-                    
+
                     $_POST['no_rkm_medis'] = $this->core->setNoRM();
                     $_POST['nm_pasien'] = $decode['nama'];
                     $_POST['no_ktp'] = $decode['nik'];
