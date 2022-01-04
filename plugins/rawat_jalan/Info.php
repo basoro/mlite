@@ -977,6 +977,23 @@
             ADD CONSTRAINT `booking_registrasi_ibfk_3` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `booking_registrasi_ibfk_4` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+
+          $core->db()->pdo()->exec("CREATE TABLE `mutasi_berkas` (
+            `no_rawat` varchar(17) NOT NULL,
+            `status` enum('Sudah Dikirim','Sudah Diterima','Sudah Kembali','Tidak Ada','Masuk Ranap') DEFAULT NULL,
+            `dikirim` datetime DEFAULT NULL,
+            `diterima` datetime DEFAULT NULL,
+            `kembali` datetime DEFAULT NULL,
+            `tidakada` datetime DEFAULT NULL,
+            `ranap` datetime NOT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `mutasi_berkas`
+            ADD PRIMARY KEY (`no_rawat`);");
+
+          $core->db()->pdo()->exec("ALTER TABLE `mutasi_berkas`
+            ADD CONSTRAINT `mutasi_berkas_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
         },
         'uninstall'     =>  function() use($core)
         {

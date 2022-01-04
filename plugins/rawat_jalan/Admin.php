@@ -715,7 +715,42 @@ class Admin extends AdminModule
 
     public function postStatusRawat()
     {
-      $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      $datetime = date('Y-m-d h:i:s');
+      $cek = $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      if($_POST['stts'] == 'Berkas Dikirim') {
+          if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+            $this->db('mutasi_berkas')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'status' => 'Sudah Dikirim',
+              'dikirim' => $datetime,
+              'diterima' => '0000-00-00 00:00:00',
+              'kembali' => '0000-00-00 00:00:00',
+              'tidakada' => '0000-00-00 00:00:00',
+              'ranap' => '0000-00-00 00:00:00'
+            ]);
+          }
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      } else if ($_POST['stts'] == 'Berkas Diterima') {
+          if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+            $this->db('mutasi_berkas')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'status' => 'Sudah Diterima',
+              'dikirim' => $datetime,
+              'diterima' => $datetime,
+              'kembali' => '0000-00-00 00:00:00',
+              'tidakada' => '0000-00-00 00:00:00',
+              'ranap' => '0000-00-00 00:00:00'
+            ]);
+          } else {
+            $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->save([
+              'status' => 'Sudah Diterima',
+              'diterima' => $datetime
+            ]);
+          }
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      } else {
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      }
       exit();
     }
 
