@@ -5,7 +5,7 @@
         'description'   =>  'Data master awal KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '2021',
+        'compatibility' =>  '2022',
         'icon'          =>  'cubes',
         'install'       =>  function () use ($core) {
 

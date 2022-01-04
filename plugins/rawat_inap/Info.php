@@ -5,7 +5,7 @@
         'description'   =>  'Modul rawat inap untuk KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '2021',
+        'compatibility' =>  '2022',
         'icon'          =>  'hotel',
         'install'       =>  function () use ($core) {
 

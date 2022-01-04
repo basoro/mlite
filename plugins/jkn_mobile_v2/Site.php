@@ -1630,8 +1630,7 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        //$date = date('Y-m-d');
-        $date = '2021-12-30';
+        $date = date('Y-m-d');
         $query = $this->db('mlite_antrian_referensi')
           ->select('nomor_referensi')
           ->select('no_rkm_medis')
@@ -1694,8 +1693,7 @@ class Site extends SiteModule
     public function _getAntreanBatal()
     {
         $date = date('Y-m-d');
-        //$date = '2021-12-30';
-        $query = $this->db('mlite_antrian_referensi_batal')
+\        $query = $this->db('mlite_antrian_referensi_batal')
           ->where('tanggal_batal', $date)
           ->toArray();
 
@@ -1729,7 +1727,6 @@ class Site extends SiteModule
     public function _getAntreanUpdateWaktu()
     {
         $date = date('Y-m-d');
-        //$date = '2021-12-30';
         $query = $this->db('mlite_antrian_referensi')
           ->select('nomor_referensi')
           ->select('no_rkm_medis')

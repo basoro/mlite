@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan modul',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.1',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'plug',
 
     'install'       =>  function () use ($core) {

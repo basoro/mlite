@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul data pasien untuk KhanzaLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
 

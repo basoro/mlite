@@ -160,7 +160,6 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
-      //$_POST['no_resep'] = '202110230001';
       $get_resep_obat = $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->oneArray();
       $get_resep_dokter = $this->db('resep_dokter')->where('no_resep', $_POST['no_resep'])->toArray();
       foreach ($get_resep_dokter as $item) {

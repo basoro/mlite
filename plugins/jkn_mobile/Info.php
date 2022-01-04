@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul Khanza JKN Mobile API',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile' => 'jknmobile'],
     'install'       =>  function () use ($core) {

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Membuat artikel pada blog.',
     'author'        =>  'Basoro',
     'version'       =>  '1.3',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'pencil-square',
     'pages'         =>  ['Blog' => 'blog'],  
     'install'       =>  function () use ($core) {

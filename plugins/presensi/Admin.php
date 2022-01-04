@@ -256,7 +256,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tahun'] = array('','2020', '2021');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
     }
 
@@ -491,7 +491,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tahun'] = array('','2020', '2021');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => $this->assign]);
     }
 
@@ -1400,7 +1400,7 @@ class Admin extends AdminModule
         // $this->assign['stts1'] = $stts1;
         // $this->assign['stts2'] = $stts2;
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = array('','2020', '2021','2022');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['tanggal'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30' ,'31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
