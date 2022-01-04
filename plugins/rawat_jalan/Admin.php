@@ -729,7 +729,6 @@ class Admin extends AdminModule
               'ranap' => '0000-00-00 00:00:00'
             ]);
           }
-          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
       } else if ($_POST['stts'] == 'Berkas Diterima') {
           if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
             $this->db('mutasi_berkas')->save([

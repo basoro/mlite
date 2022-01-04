@@ -977,8 +977,7 @@
             ADD CONSTRAINT `booking_registrasi_ibfk_3` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `booking_registrasi_ibfk_4` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-
-          $core->db()->pdo()->exec("CREATE TABLE `mutasi_berkas` (
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mutasi_berkas` (
             `no_rawat` varchar(17) NOT NULL,
             `status` enum('Sudah Dikirim','Sudah Diterima','Sudah Kembali','Tidak Ada','Masuk Ranap') DEFAULT NULL,
             `dikirim` datetime DEFAULT NULL,
