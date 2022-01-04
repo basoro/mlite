@@ -1693,7 +1693,7 @@ class Site extends SiteModule
     public function _getAntreanBatal()
     {
         $date = date('Y-m-d');
-\        $query = $this->db('mlite_antrian_referensi_batal')
+        $query = $this->db('mlite_antrian_referensi_batal')
           ->where('tanggal_batal', $date)
           ->toArray();
 
