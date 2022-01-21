@@ -204,12 +204,20 @@ $("#display").on("click", ".halaman",function(event){
   event.preventDefault();
   var url    = baseURL + '/pasien/display?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
-
-  $.post(url, {halaman: kd_hal} ,function(data) {
-    // tampilkan data
-    $("#notif").hide();
-    $("#display").html(data).show();
-  });
+  var cari = $('input:text[name=cari]').val();
+  if(cari !='') {
+    $.post(url, {halaman: kd_hal, cari: cari} ,function(data) {
+      // tampilkan data
+      $("#notif").hide();
+      $("#display").html(data).show();
+    });
+  } else {
+    $.post(url, {halaman: kd_hal} ,function(data) {
+      // tampilkan data
+      $("#notif").hide();
+      $("#display").html(data).show();
+    });
+  }
 
 });
 
