@@ -1632,8 +1632,8 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        //$date = date('Y-m-d');
-        $date = '2021-12-20';
+        $date = date('Y-m-d');
+        //$date = '2021-12-20';
         $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli !='IGDK'
         AND pasien.no_peserta NOT IN (SELECT mlite_antrian_referensi.nomor_kartu FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa='$date')
