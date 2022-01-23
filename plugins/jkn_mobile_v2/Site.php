@@ -220,6 +220,7 @@ class Site extends SiteModule
                         $no_reg_akhir->execute();
                         $no_reg_akhir = $no_reg_akhir->fetch();
                         $no_reg_akhir['0'] = '000';
+                        $no_urut_reg = '';
                         if($no_reg_akhir['0'] !='') {
                           $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
                         }
@@ -281,7 +282,7 @@ class Site extends SiteModule
                                 'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
                                 'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
                                 'jampraktek' => $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'],
-                                'jeniskunjungan' => 1,
+                                'jeniskunjungan' => $decode['jeniskunjungan'],
                                 'nomorreferensi' => $decode['nomorreferensi'],
                                 'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
                                 'angkaantrean' => $no_reg,
@@ -295,16 +296,17 @@ class Site extends SiteModule
                             $data = json_encode($data);
                             $url = $this->bpjsurl.'antrean/add';
                             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
-                            //$json = json_decode($output, true);
-
-                            if(!empty($decode['nomorreferensi'])) {
-                              $this->db('mlite_antrian_referensi')->save([
-                                  'tanggal_periksa' => $decode['tanggalperiksa'],
-                                  'nomor_kartu' => $decode['nomorkartu'],
-                                  'nomor_referensi' => $decode['nomorreferensi']
-                              ]);
+                            $data = json_decode($output, true);
+                            if($data['metadata']['code'] == 200){
+                              if(!empty($decode['nomorreferensi'])) {
+                                $this->db('mlite_antrian_referensi')->save([
+                                    'tanggal_periksa' => $decode['tanggalperiksa'],
+                                    'nomor_kartu' => $decode['nomorkartu'],
+                                    'nomor_referensi' => $decode['nomorreferensi'],
+                                    'status_kirim' => 'Sudah'
+                                ]);
+                              }
                             }
-
                         } else {
                             $response = array(
                                 'metadata' => array(
@@ -1630,63 +1632,93 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        $date = date('Y-m-d');
-        $query = $this->db('mlite_antrian_referensi')
-          ->select('nomor_referensi')
-          ->select('no_rkm_medis')
-          ->join('pasien', 'pasien.no_peserta=mlite_antrian_referensi.nomor_kartu')
-          //->join('reg_periksa', 'reg_periksa.tgl_registrasi=mlite_antrian_referensi.tanggal_periksa')
-          ->where('tanggal_periksa', $date)
-          ->toArray();
+        //$date = date('Y-m-d');
+        $date = '2021-12-20';
+        $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
+        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli !='IGDK'
+        AND pasien.no_peserta NOT IN (SELECT mlite_antrian_referensi.nomor_kartu FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa='$date')
+        AND pasien.no_rkm_medis NOT IN (SELECT mlite_antrian_referensi.nomor_kartu FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa='$date')
+        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT 10");
+        $query->execute();
+        $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
-        echo 'Menjalankan WS tambah antrian Mobile JKN BPJS<br>';
+        //echo "<pre>".print_r($query,true)."</pre>";
+
+        echo 'Menjalankan WS tambah antrian Non Mobile JKN BPJS<br>';
         echo '-------------------------------------<br>';
 
+        $tentukan_hari=date('D',strtotime($date));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
         foreach ($query as $q) {
+            $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
             $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+            $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+            $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+            $minutes = $no_urut_reg * 10;
+            $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+            $pasienbaru = '1';
+            if($q['stts_daftar'] == 'Lama') {
+              $pasienbaru = '0';
+            }
             $data = [
-                'kodebooking' => $q['nomor_referensi'],
-                'jenispasien' => 'JKN',
-                'nomorkartu' => $q['nomor_kartu'],
-                'nik' => $q['no_ktp'],
-                'nohp' => $q['no_tlp'],
+                'kodebooking' => convertNorawat($q['no_rawat']).'-'.$maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+                'jenispasien' => 'NON JKN',
+                'nomorkartu' => '-',
+                'nik' => '-',
+                'nohp' => '-',
                 'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
                 'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-                'pasienbaru' => 0,
+                'pasienbaru' => $pasienbaru,
                 'norm' => $q['no_rkm_medis'],
-                'tanggalperiksa' => $q['tanggal_periksa'],
+                'tanggalperiksa' => $q['tgl_registrasi'],
                 'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
                 'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-                'jampraktek' => '08:00-16:00',
-                'jeniskunjungan' => 1,
-                'nomorreferensi' => $q['nomor_referensi'],
+                'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+                'jeniskunjungan' => 3,
+                'nomorreferensi' => convertNorawat($q['no_rawat']).'-'.$maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
                 'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
                 'angkaantrean' => 12,
-                'estimasidilayani' => 1615869169000,
-                'sisakuotajkn' => 5,
-                'kuotajkn' => 30,
-                'sisakuotanonjkn' => 5,
-                'kuotanonjkn' => 30,
+                'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
+                'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                'kuotajkn' => $jadwaldokter['kuota'],
+                'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                'kuotanonjkn' => $jadwaldokter['kuota'],
                 'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
             ];
-            //$data = json_encode($data);
             echo 'Request:<br>';
             echo "<pre>".print_r($data,true)."</pre>";
-            /*
-            echo '<br>';
+            $data = json_encode($data);
             $url = $this->bpjsurl.'antrean/add';
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
-            $json = json_decode($output, true);
+            $data = json_decode($output, true);
             echo 'Response:<br>';
             echo json_encode($json);
-            */
+            //$data['metadata']['code'] = 200;
+            if($data['metadata']['code'] == 200){
+              if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+                $this->db('mlite_antrian_referensi')->save([
+                    'tanggal_periksa' => $q['tgl_registrasi'],
+                    'nomor_kartu' => $q['no_rkm_medis'],
+                    'nomor_referensi' => convertNorawat($q['no_rawat']).'-'.$maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+                    'status_kirim' => 'Sudah'
+                ]);
+              }
+            }
             echo '<br>-------------------------------------<br><br>';
         }
 
-        //echo json_encode($query);
-        echo "<pre>".print_r($query,true)."</pre>";
         exit();
     }
 

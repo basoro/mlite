@@ -39,7 +39,8 @@ return [
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
         `tanggal_periksa` date NOT NULL,
         `nomor_kartu` varchar(50) NOT NULL,
-        `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY
+        `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY,
+        `status_kirim` enum('Sudah','Belum') NOT NULL,
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
