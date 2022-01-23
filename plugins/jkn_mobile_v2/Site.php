@@ -1632,13 +1632,13 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        //$date = date('Y-m-d');
-        $date = '2022-01-22';
+        $date = date('Y-m-d');
+        //$date = '2022-01-21';
         $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli !='IGDK'
         AND pasien.no_peserta NOT IN (SELECT mlite_antrian_referensi.nomor_kartu FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa='$date')
         AND pasien.no_rkm_medis NOT IN (SELECT mlite_antrian_referensi.nomor_kartu FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa='$date')
-        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT 1");
+        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT 10");
         $query->execute();
         $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -1719,6 +1719,176 @@ class Site extends SiteModule
             echo '<br>-------------------------------------<br><br>';
         }
 
+        $date = date('Y-m-d');
+        //$date = '2022-01-21';
+        $query = $this->db('mlite_antrian_referensi')
+          ->select('nomor_referensi')
+          ->select('no_rkm_medis')
+          ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
+          ->where('tanggal_periksa', $date)
+          ->toArray();
+
+        echo 'Menjalankan WS taskid (3) mulai tunggu poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+            if($mutasi_berkas){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 3,
+                    'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (4) mulai pelayanan poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+            if($mutasi_berkas){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 4,
+                    'waktu' => strtotime($mutasi_berkas['diterima']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (5) selesai pelayanan poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+            if($pemeriksaan_ralan){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 5,
+                    'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (6) permintaan resep poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+            if($resep_obat){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 6,
+                    'waktu' => strtotime($resep_obat['datajam']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (7) validasi resep poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+            if($resep_obat){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 7,
+                    'waktu' => strtotime($resep_obat['datajam']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (99) batal pelayanan poli Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
+            if($reg_periksa){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 99,
+                    'waktu' => strtotime(date('Y-m-d h:i:s')) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
         exit();
     }
 
@@ -1759,6 +1929,7 @@ class Site extends SiteModule
     public function _getAntreanUpdateWaktu()
     {
         $date = date('Y-m-d');
+        //$date = '2022-01-21';
         $query = $this->db('mlite_antrian_referensi')
           ->select('nomor_referensi')
           ->select('no_rkm_medis')
