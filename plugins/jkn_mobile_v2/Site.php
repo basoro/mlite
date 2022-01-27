@@ -289,7 +289,7 @@ class Site extends SiteModule
                             $url = $this->bpjsurl.'antrean/add';
                             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
                             $data = json_decode($output, true);
-                            if($data['metadata']['code'] == 200){
+                            //if($data['metadata']['code'] == 200){
                               if(!empty($decode['nomorreferensi'])) {
                                 $this->db('mlite_antrian_referensi')->save([
                                     'tanggal_periksa' => $decode['tanggalperiksa'],
@@ -298,7 +298,7 @@ class Site extends SiteModule
                                     'status_kirim' => 'Sudah'
                                 ]);
                               }
-                            }
+                            //}
                         } else {
                             $response = array(
                                 'metadata' => array(
