@@ -257,6 +257,15 @@ class Site extends SiteModule
                             );
                             http_response_code(200);
 
+                            if(!empty($decode['nomorreferensi'])) {
+                              $this->db('mlite_antrian_referensi')->save([
+                                  'tanggal_periksa' => $decode['tanggalperiksa'],
+                                  'nomor_kartu' => $decode['nomorkartu'],
+                                  'nomor_referensi' => $decode['nomorreferensi'],
+                                  'status_kirim' => 'Belum'
+                              ]);
+                            }
+
                             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
                             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
 
@@ -289,7 +298,7 @@ class Site extends SiteModule
                             $url = $this->bpjsurl.'antrean/add';
                             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
                             $data = json_decode($output, true);
-                            //if($data['metadata']['code'] == 200){
+                            /*if($data['metadata']['code'] == 200){
                               if(!empty($decode['nomorreferensi'])) {
                                 $this->db('mlite_antrian_referensi')->save([
                                     'tanggal_periksa' => $decode['tanggalperiksa'],
@@ -298,7 +307,7 @@ class Site extends SiteModule
                                     'status_kirim' => 'Sudah'
                                 ]);
                               }
-                            //}
+                            }*/
                         } else {
                             $response = array(
                                 'metadata' => array(
