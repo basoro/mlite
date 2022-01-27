@@ -216,15 +216,7 @@ class Site extends SiteModule
                         http_response_code(202);
                     } else {
                         // Get antrian poli
-                        $no_reg_akhir = $this->db()->pdo()->prepare("SELECT max(no_reg) FROM booking_registrasi WHERE kd_poli='$poli[kd_poli_rs]' and tanggal_periksa='$decode[tanggalperiksa]'");
-                        $no_reg_akhir->execute();
-                        $no_reg_akhir = $no_reg_akhir->fetch();
-                        $no_reg_akhir['0'] = '000';
-                        $no_urut_reg = '';
-                        if($no_reg_akhir['0'] !='') {
-                          $no_urut_reg = substr($no_reg_akhir['0'], 0, 3);
-                        }
-                        $no_reg = sprintf('%03s', ($no_urut_reg + 1));
+                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode[tanggalperiksa]);
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
                         $keterangan = 'Peserta harap datang 30 menit lebih awal.';
@@ -1704,7 +1696,7 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
             $data = json_decode($output, true);
             echo 'Response:<br>';
-            echo json_encode($data);
+            //echo json_encode($data);
             echo $data['metadata']['code'];
             if($data['metadata']['code'] == 200){
               if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
