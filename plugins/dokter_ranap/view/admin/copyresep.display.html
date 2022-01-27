@@ -17,16 +17,16 @@
             <td{if: $value.jml > $value.stok} class="selisih"{/if}><input type="hidden" name="kode_brng_copyresep" value="{$value.kode_brng}">{$value.nama_brng}</td>
             <td><input type="text" name="jml_copyresep" value="{$value.jml}" size="5"></td>
             <td>{$value.stok}</td>
-            <td><input type="hidden" name="aturan_copyresep" value="{$value.aturan_pakai}">{$value.aturan_pakai}</td>
+            <td><input type="text" name="aturan_copyresep" value="{$value.aturan_pakai}"></td>
         </tr>
         {/loop}
         </form>
         <tr>
-          <td colspan="3" class="text-center" id="simpan_copy_resep"><button type="submit" class="btn btn-primary">Simpan Copy Resep</button></td>
+          <td colspan="43" class="text-center" id="simpan_copy_resep"><button type="submit" class="btn btn-primary">Simpan Copy Resep</button></td>
         </tr>
         {else}
         <tr>
-          <td colspan="3" class="text-center">Tidak ada data perawatan.</td>
+          <td colspan="4" class="text-center">Tidak ada data obat.</td>
         </tr>
         {/if}
       </tbody>

@@ -33,7 +33,7 @@
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
-              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}">Status Rawat</a></li>
+              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               {/if}
             </ul>
@@ -173,6 +173,7 @@
     event.preventDefault();
     var url = baseURL + '/igd/statusrawat?t=' + mlite.token;
     var no_rawat = $(this).attr("data-no_rawat");
+    var stts = $(this).attr("data-stts");
 
     // tampilkan dialog konfirmasi
 
@@ -180,7 +181,12 @@
         title: "Status lanjut pasien.",
         message: '',
         inputType: 'radio',
+        value: stts,
         inputOptions: [
+        {
+            text: 'Belum Periksa',
+            value: 'Belum',
+        },
         {
             text: 'Sudah Periksa',
             value: 'Sudah',

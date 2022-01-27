@@ -6,7 +6,7 @@
  * Time: 12:53
  */
 
-namespace Systems\Lib\LZCompressor;
+namespace LZCompressor;
 
 
 class LZReverseDictionary

@@ -1,5 +1,5 @@
 <?php
-namespace Systems\Lib\LZCompressor;
+namespace LZCompressor;
 
 class LZData
 {
@@ -22,12 +22,12 @@ class LZData
      * @var int - index of letters (may be multiple of characters)
      */
     public $index = 1;
-
+    
     /*
      * @var bool - set to true if theindex is out of str range
      */
     public $end = true;
-
+    
     /**
      * @param unknown $str
      */

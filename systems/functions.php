@@ -560,5 +560,5 @@ function stringDecrypt($consid, $secretkey, $string){
 }
 
 function decompress($string){
-    return \Systems\Lib\LZCompressor\LZString::decompressFromEncodedURIComponent($string);
+    return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
 }

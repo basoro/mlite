@@ -1,0 +1,33 @@
+{
+    "name": "nullpunkt/lz-string-php",
+    "authors": [
+        {
+            "name": "Tobias Seipke",
+            "email": "tobias.seipke@gmail.com",
+            "homepage": "https://github.com/nullpunkt"
+        },
+        {
+            "name": "Juhász Ádám",
+            "email": "juhasz.adam@virgo.hu",
+            "homepage": "https://github.com/JuhaszAdam"
+        }
+    ],
+    "description": "PHP Class implementation of LZ-String javascript.",
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "monolog/monolog": "^1.17",
+        "phpunit/phpunit": "~9.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "LZCompressor\\": "src/LZCompressor"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LZCompressor\\Test\\": "test/"
+        }
+    }
+}

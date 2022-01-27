@@ -1,0 +1,35 @@
+<article class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Dokter</h3>
+            </div>
+            <div class="panel-body">
+                <form name="jkn_mobile_v2" action="{?=url(ADMIN.'/jkn_mobile_v2/dokter_save/')?}" method="POST">
+        			     <fieldset>
+        	            <div class="form-group">
+        	                <label>Nama Dokter BPJS</label>
+                            <input type="text" name="dokter_nama" id="dokter_nama" class="form-control" value="">
+                            <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
+        	            </div>
+        	            <div class="form-group">
+        	                <label>Kode Dokter BPJS</label>
+                            <input type="text" name="dokter_kode" id="dokter_kode" class="form-control" value="">
+        	            </div>
+        	            <div class="form-group">
+        	                <label>Nama Dokter RS</label>
+                          	<select name="kd_dokter" class="form-control">
+                              {loop: $row.dokter}
+                              <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                              {/loop}
+                          	</select>
+        	            </div>
+        	            <div class="form-group">
+        	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+        	            </div>
+                   </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</article>
