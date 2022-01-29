@@ -1707,9 +1707,9 @@ class Site extends SiteModule
             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
             $data = json_decode($output, true);
             echo 'Response:<br>';
-            //echo json_encode($data);
+            echo json_encode($data);
             echo $data['metadata']['code'];
-            //if($data['metadata']['code'] == 200){
+            if($data['metadata']['code'] == 200){
               if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
                 $this->db('mlite_antrian_referensi')->save([
                     'tanggal_periksa' => $q['tgl_registrasi'],
@@ -1719,7 +1719,7 @@ class Site extends SiteModule
                     'status_kirim' => 'Sudah'
                 ]);
               }
-            //}
+            }
             echo '<br>-------------------------------------<br><br>';
         }
 
@@ -2053,10 +2053,15 @@ class Site extends SiteModule
           $url = $this->bpjsurl.'antrean/add';
           $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
           $data = json_decode($output, true);
+          echo 'Response:<br>';
+          echo json_encode($data);
+          echo $data['metadata']['code'];
           if($data['metadata']['code'] == 200){
-            $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
-                'status_kirim' => 'Sudah'
-            ]);
+            if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+              $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
+                  'status_kirim' => 'Sudah'
+              ]);
+            }
           }
         }
 
