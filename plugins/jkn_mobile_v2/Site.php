@@ -262,10 +262,11 @@ class Site extends SiteModule
                                   'tanggal_periksa' => $decode['tanggalperiksa'],
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
+                                  'jenis_kunjungan' => $decode['jeniskunjungan'],
                                   'status_kirim' => 'Belum'
                               ]);
                             }
-
+                            /*
                             $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
                             $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
 
@@ -298,7 +299,7 @@ class Site extends SiteModule
                             $url = $this->bpjsurl.'antrean/add';
                             $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
                             $data = json_decode($output, true);
-                            /*if($data['metadata']['code'] == 200){
+                            if($data['metadata']['code'] == 200){
                               if(!empty($decode['nomorreferensi'])) {
                                 $this->db('mlite_antrian_referensi')->save([
                                     'tanggal_periksa' => $decode['tanggalperiksa'],
@@ -307,7 +308,8 @@ class Site extends SiteModule
                                     'status_kirim' => 'Sudah'
                                 ]);
                               }
-                            }*/
+                            }
+                            */
                         } else {
                             $response = array(
                                 'metadata' => array(
@@ -1707,16 +1709,17 @@ class Site extends SiteModule
             echo 'Response:<br>';
             //echo json_encode($data);
             echo $data['metadata']['code'];
-            if($data['metadata']['code'] == 200){
+            //if($data['metadata']['code'] == 200){
               if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
                 $this->db('mlite_antrian_referensi')->save([
                     'tanggal_periksa' => $q['tgl_registrasi'],
                     'nomor_kartu' => $q['no_rkm_medis'],
                     'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+                    'jenis_kunjungan' => 3,
                     'status_kirim' => 'Sudah'
                 ]);
               }
-            }
+            //}
             echo '<br>-------------------------------------<br><br>';
         }
 
@@ -1728,6 +1731,60 @@ class Site extends SiteModule
           ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
           ->where('tanggal_periksa', $date)
           ->toArray();
+
+        echo 'Menjalankan WS taskid (1) mulai tunggu admisi Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('start_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            if($mlite_antrian_loket){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 1,
+                    'waktu' => strtotime($mlite_antrian_loket['start_time']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (2) mulai pelayanan admisi Non Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('end_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            if($mlite_antrian_loket){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 2,
+                    'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
 
         echo 'Menjalankan WS taskid (3) mulai tunggu poli Non Mobile JKN BPJS<br>';
         echo '-------------------------------------<br>';
@@ -1937,6 +1994,125 @@ class Site extends SiteModule
           ->join('pasien', 'pasien.no_peserta=mlite_antrian_referensi.nomor_kartu')
           ->where('tanggal_periksa', $date)
           ->toArray();
+
+        echo 'Menjalankan WS tambah antrian Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        $tentukan_hari=date('D',strtotime($date));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        foreach ($query as $q) {
+          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+          $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+          $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+          $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+          $minutes = $no_urut_reg * 10;
+          $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+          $pasienbaru = '1';
+          if($q['stts_daftar'] == 'Lama') {
+            $pasienbaru = '0';
+          }
+
+          $data = [
+              'kodebooking' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+              'jenispasien' => 'JKN',
+              'nomorkartu' => $q['nomor_kartu'],
+              'nik' => getPasienInfo('no_ktp', $q['no_rkm_medis']),
+              'nohp' => getPasienInfo('no_tlp', $q['no_rkm_medis']),
+              'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+              'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+              'pasienbaru' => $pasienbaru,
+              'norm' => $q['no_rkm_medis'],
+              'tanggalperiksa' => $d['tanggal_periksa'],
+              'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+              'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+              'jampraktek' => $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'],
+              'jeniskunjungan' => $q['jenis_kunjungan'],
+              'nomorreferensi' => $q['nomor_referensi'],
+              'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+              'angkaantrean' => $reg_periksa['no_reg'],
+              'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
+              'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+              'kuotajkn' => $jadwaldokter['kuota'],
+              'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+              'kuotanonjkn' => $jadwaldokter['kuota'],
+              'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+          ];
+
+          $data = json_encode($data);
+          $url = $this->bpjsurl.'antrean/add';
+          $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+          $data = json_decode($output, true);
+          if($data['metadata']['code'] == 200){
+            $this->db('mlite_antrian_referensi')->where('nomor_referensi', $q['nomor_referensi'])->save([
+                'status_kirim' => 'Sudah'
+            ]);
+          }
+        }
+
+        echo 'Menjalankan WS taskid (1) mulai tunggu admisi Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('start_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            if($mlite_antrian_loket){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 1,
+                    'waktu' => strtotime($mlite_antrian_loket['start_time']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
+
+        echo 'Menjalankan WS taskid (2) mulai pelayanan admisi Mobile JKN BPJS<br>';
+        echo '-------------------------------------<br>';
+
+        foreach ($query as $q) {
+            $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+            $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('end_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+            if($mlite_antrian_loket){
+                $data = [
+                    'kodebooking' => $q['nomor_referensi'],
+                    'taskid' => 2,
+                    'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000
+                ];
+                $data = json_encode($data);
+                echo 'Request:<br>';
+                echo $data;
+
+                echo '<br>';
+                $url = $this->bpjsurl.'antrean/updatewaktu';
+                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+                $json = json_decode($output, true);
+                echo 'Response:<br>';
+                echo json_encode($json);
+
+                echo '<br>-------------------------------------<br><br>';
+            }
+        }
 
         echo 'Menjalankan WS taskid (3) mulai tunggu poli Mobile JKN BPJS<br>';
         echo '-------------------------------------<br>';

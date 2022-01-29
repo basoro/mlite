@@ -173,6 +173,16 @@
                   <a href="#" class="btn btn-primary" style="font-size:32px;" onclick="panggil({$antrian})"><i class="fa fa-bullhorn"></i></a>
                   <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
                 </div>
+                <br>
+                <div class="col" id="form_simpan_no_rkm_medis">
+                    <input type="hidden" name="noantrian" value="{$antrian}">
+                    <div class="input-group input-group-lg">
+                        <input type="text" class="form-control form-control-lg" name="no_rkm_medis" placeholder="Input Nomor RM">
+                        <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
+                            <button class="btn btn-danger simpan_no_rkm_medis">Simpan</button>
+                        </span>
+                    </div>
+                </div>
               </div>
             </div>
           </div>
@@ -212,11 +222,12 @@
         Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
         {$powered}.
       </p>
+      {if: $show}
       <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+      {/if}
     </div>
   </footer>
 
-  {if: !$show}
   <script type="text/javascript">
   function showTime() {
       var a_p = "";
@@ -249,6 +260,7 @@
   }
   setInterval(showTime, 500);
   </script>
+  {if: !$show}
   <script>
   $(document).ready(function(){
     setTimeout(function(){
@@ -382,6 +394,27 @@
   		}
   	});
   }
+  $("#form_simpan_no_rkm_medis").on("click", ".simpan_no_rkm_medis", function(event){
+    var noantrian = $('input:hidden[name=noantrian]').val();
+    var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+    $.ajax({
+        url: '{?=url()?}/anjungan/simpannorm',
+        dataType: 'json',
+        data: { noantrian: noantrian, no_rkm_medis: no_rkm_medis },
+        success: function(xhr) {
+            console.log(xhr.status);
+            if(xhr.status == true) {
+              alert('Simpan nomor RM berhasil!!')
+            }
+        },
+        error: function(xhr) {
+            console.log(xhr.status);
+            if(xhr.status == false) {
+              alert('Simpan nomor RM gagal!!')
+            }
+        }
+    });
+  });
   </script>
   {/if}
 </body>

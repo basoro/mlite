@@ -29,6 +29,7 @@ return [
         `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `type` varchar(50) NOT NULL,
         `noantrian` varchar(50) NOT NULL,
+        `no_rkm_medis` varchar(50) DEFAULT NULL,
         `postdate` date NOT NULL,
         `start_time` time NOT NULL,
         `end_time` time NOT NULL DEFAULT '00:00:00',

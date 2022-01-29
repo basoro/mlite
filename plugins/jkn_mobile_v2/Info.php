@@ -27,19 +27,11 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'bahasa_pasien', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'cacat_fisik', '')");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
-        `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `type` varchar(50) NOT NULL,
-        `noantrian` varchar(50) NOT NULL,
-        `postdate` date NOT NULL,
-        `start_time` time NOT NULL,
-        `end_time` time NOT NULL DEFAULT '00:00:00'
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
         `tanggal_periksa` date NOT NULL,
         `nomor_kartu` varchar(50) NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY,
+        `jenis_kunjungan` varchar(10) NOT NULL,
         `status_kirim` varchar(20) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 

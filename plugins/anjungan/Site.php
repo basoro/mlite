@@ -33,6 +33,7 @@ class Site extends SiteModule
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
         $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
+        $this->route('anjungan/simpannorm', 'getSimpanNoRM');
         $this->route('anjungan/setpanggil', 'getSetPanggil');
         $this->route('anjungan/presensi', 'getPresensi');
         $this->route('anjungan/presensi/upload', 'getUpload');
@@ -438,8 +439,6 @@ class Site extends SiteModule
               $noantrian = $get_antrian['noantrian'];
             }
 
-            //$antriloket = $this->db('antriloket')->oneArray();
-            //$tcounter = $antriloket['antrian'];
             $antriloket = $this->settings->get('anjungan.panggil_loket_nomor');
             $tcounter = $antriloket;
             $_tcounter = 1;
@@ -452,22 +451,15 @@ class Site extends SiteModule
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              /*$this->db()->pdo()->exec("DELETE FROM `antriloket`");
-              $this->db('antriloket')->save([
-                'loket' => $_GET['loket'],
-                'antrian' => $_tcounter
-              ]);*/
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              /*$this->db()->pdo()->exec("DELETE FROM `antriloket`");
-              $this->db('antriloket')->save([
-                'loket' => $_GET['reset'],
-                'antrian' => $_GET['antrian']
-              ]);*/
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
+            }
+            if(isset($_GET['no_rkm_medis'])) {
+              $this->db('mlite_antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
             }
             $hitung_antrian = $this->db('mlite_antrian_loket')
               ->where('type', 'Loket')
@@ -505,8 +497,6 @@ class Site extends SiteModule
               $noantrian = $get_antrian['noantrian'];
             }
 
-            //$antriloket = $this->db('antrics')->oneArray();
-            //$tcounter = $antriloket['antrian'];
             $antriloket = $this->settings->get('anjungan.panggil_cs_nomor');
             $tcounter = $antriloket;
             $_tcounter = 1;
@@ -519,20 +509,10 @@ class Site extends SiteModule
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              /*$this->db()->pdo()->exec("DELETE FROM `antrics`");
-              $this->db('antrics')->save([
-                'loket' => $_GET['loket'],
-                'antrian' => $_tcounter
-              ]);*/
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              /*$this->db()->pdo()->exec("DELETE FROM `antrics`");
-              $this->db('antrics')->save([
-                'loket' => $_GET['reset'],
-                'antrian' => $_GET['antrian']
-              ]);*/
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
               $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
             }
@@ -797,6 +777,28 @@ class Site extends SiteModule
           $res = [
               'status' => false,
               'message' => 'Gagal update',
+          ];
+      }
+
+      die(json_encode($res));
+      exit();
+    }
+
+    public function getSimpanNoRM()
+    {
+      if(!isset($_GET['no_rkm_medis']) || $_GET['no_rkm_medis'] == '') die(json_encode(array('status' => false)));
+      $noantrian  = $_GET['noantrian'];
+      $no_rkm_medis = $_GET['no_rkm_medis'];
+      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      if($query) {
+          $res = [
+              'status' => true,
+              'message' => 'Berhasil',
+          ];
+      } else {
+          $res = [
+              'status' => false,
+              'message' => 'Gagal',
           ];
       }
 
