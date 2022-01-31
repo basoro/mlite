@@ -1645,7 +1645,12 @@ class Site extends SiteModule
                   'tglSep' => $_POST['tglsep'],
                   'ppkPelayanan' => $_POST['kdppkpelayanan'],
                   'jnsPelayanan' => $_POST['jnspelayanan'],
-                  'klsRawat' => $_POST['klsrawat'],
+                  'klsRawat' => [
+                      'klsRawatHak' => $_POST['klsrawat'],
+                      'klsRawatNaik' => '',
+                      'pembiayaan' => '',
+                      'penanggungJawab' => ''
+                  ],
                   'noMR' => $_POST['nomr'],
                   'rujukan' => [
                      'asalRujukan' => $_POST['asal_rujukan'],
@@ -1667,8 +1672,8 @@ class Site extends SiteModule
                   ],
                   'jaminan' => [
                      'lakaLantas' => $_POST['lakalantas'],
+                     'noLP' => $_POST['noLP'],
                      'penjamin' => [
-                         'penjamin' => $_POST['penjamin'],
                          'tglKejadian' => $_POST['tglkkl'],
                          'keterangan' => $_POST['keterangankkl'],
                          'suplesi' => [
@@ -1682,10 +1687,15 @@ class Site extends SiteModule
                          ]
                      ]
                   ],
+                  'tujuanKunj' => $_POST['tujuanKunj'],
+                  'flagProcedure' => $_POST['flagProcedure'],
+                  'kdPenunjang' => $_POST['kdPenunjang'],
+                  'assesmentPel' => $_POST['assesmentPel'],
                   'skdp' => [
                      'noSurat' => $_POST['noskdp'],
                      'kodeDPJP' => $_POST['kddpjp']
                   ],
+                  'dpjpLayan' => $_POST['kddpjp'],
                   'noTelp' => $_POST['notelep'],
                   'user' => $_POST['sep_user']
                ]
@@ -1694,8 +1704,8 @@ class Site extends SiteModule
 
         $data = json_encode($data);
 
-        $url = $this->api_url.'SEP/1.1/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $url = $this->api_url.'SEP/2.0/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
         $data = json_decode($output, true);
 
         if($data == NULL) {
@@ -1723,6 +1733,9 @@ class Site extends SiteModule
             'kdpolitujuan' => $_POST['kdpolitujuan'],
             'nmpolitujuan' => $_POST['nmpolitujuan'],
             'klsrawat' => $_POST['klsrawat'],
+            'klsnaik' => $_POST['klsnaik'],
+            'pembiayaan' => $_POST['pembiayaan'],
+            'pjnaikkelas' => $_POST['pjnaikkelas'],
             'lakalantas' => $_POST['lakalantas'],
             'user' => $_POST['sep_user'],
             'nomr' => $_POST['nomr'],
@@ -1735,7 +1748,6 @@ class Site extends SiteModule
             'asal_rujukan' => $_POST['asal_rujukan'],
             'eksekutif' => $_POST['eksekutif'],
             'cob' => $_POST['cob'],
-            'penjamin' => $_POST['penjamin'],
             'notelep' => $_POST['notelep'],
             'katarak' => $_POST['katarak'],
             'tglkkl' => $_POST['tglkkl'],
@@ -1750,7 +1762,13 @@ class Site extends SiteModule
             'nmkec' => $_POST['nmkec'],
             'noskdp' => $_POST['noskdp'],
             'kddpjp' => $_POST['kddpjp'],
-            'nmdpdjp' => $_POST['nmdpdjp']
+            'nmdpdjp' => $_POST['nmdpdjp'],
+            'tujuankunjungan' => $_POST['tujuankunjungan'],
+            'flagprosedur' => $_POST['flagprosedur'],
+            'penunjang' => $_POST['penunjang'],
+            'asesmenpelayanan' => $_POST['asesmenpelayanan'],
+            'kddpjplayanan' => $_POST['kddpjplayanan'],
+            'nmdpjplayanan' => $_POST['nmdpjplayanan']
           ]);
           $simpan_prb = $this->db('bpjs_prb')->save([
             'no_sep' => $_POST['sep_no_sep'],

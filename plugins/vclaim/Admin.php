@@ -98,7 +98,12 @@ class Admin extends AdminModule
                   'tglSep' => $_POST['tglsep'],
                   'ppkPelayanan' => $_POST['kdppkpelayanan'],
                   'jnsPelayanan' => $_POST['jnspelayanan'],
-                  'klsRawat' => $_POST['klsrawat'],
+                  'klsRawat' => [
+                     'klsRawatHak' => $_POST['klsrawat'],
+                     'klsRawatNaik' => '',
+                     'pembiayaan' => '',
+                     'penanggungJawab' => ''
+                  ],
                   'noMR' => $_POST['nomr'],
                   'rujukan' => [
                      'asalRujukan' => $_POST['asal_rujukan'],
@@ -120,8 +125,8 @@ class Admin extends AdminModule
                   ],
                   'jaminan' => [
                      'lakaLantas' => $_POST['lakalantas'],
+                     'noLP' => $_POST['noLP'],
                      'penjamin' => [
-                         'penjamin' => $_POST['penjamin'],
                          'tglKejadian' => $_POST['tglkkl'],
                          'keterangan' => $_POST['keterangankkl'],
                          'suplesi' => [
@@ -135,10 +140,15 @@ class Admin extends AdminModule
                          ]
                      ]
                   ],
+                  'tujuanKunj' => $_POST['tujuanKunj'],
+                  'flagProcedure' => $_POST['flagProcedure'],
+                  'kdPenunjang' => $_POST['kdPenunjang'],
+                  'assesmentPel' => $_POST['assesmentPel'],
                   'skdp' => [
                      'noSurat' => $_POST['noskdp'],
                      'kodeDPJP' => $_POST['kddpjp']
                   ],
+                  'dpjpLayan' => $_POST['kddpjp'],
                   'noTelp' => $_POST['notelep'],
                   'user' => $_POST['sep_user']
                ]
@@ -147,8 +157,8 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
-        $url = $this->api_url.'SEP/1.1/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $url = $this->api_url.'SEP/2.0/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->use_key);
         $data = json_decode($output, true);
 
         if($data == NULL) {
@@ -176,6 +186,9 @@ class Admin extends AdminModule
             'kdpolitujuan' => $_POST['kdpolitujuan'],
             'nmpolitujuan' => $_POST['nmpolitujuan'],
             'klsrawat' => $_POST['klsrawat'],
+            'klsnaik' => $_POST['klsnaik'],
+            'pembiayaan' => $_POST['pembiayaan'],
+            'pjnaikkelas' => $_POST['pjnaikkelas'],
             'lakalantas' => $_POST['lakalantas'],
             'user' => $_POST['sep_user'],
             'nomr' => $_POST['nomr'],
@@ -188,7 +201,6 @@ class Admin extends AdminModule
             'asal_rujukan' => $_POST['asal_rujukan'],
             'eksekutif' => $_POST['eksekutif'],
             'cob' => $_POST['cob'],
-            'penjamin' => $_POST['penjamin'],
             'notelep' => $_POST['notelep'],
             'katarak' => $_POST['katarak'],
             'tglkkl' => $_POST['tglkkl'],
@@ -203,7 +215,13 @@ class Admin extends AdminModule
             'nmkec' => $_POST['nmkec'],
             'noskdp' => $_POST['noskdp'],
             'kddpjp' => $_POST['kddpjp'],
-            'nmdpdjp' => $_POST['nmdpdjp']
+            'nmdpdjp' => $_POST['nmdpdjp'],
+            'tujuankunjungan' => $_POST['tujuankunjungan'],
+            'flagprosedur' => $_POST['flagprosedur'],
+            'penunjang' => $_POST['penunjang'],
+            'asesmenpelayanan' => $_POST['asesmenpelayanan'],
+            'kddpjplayanan' => $_POST['kddpjplayanan'],
+            'nmdpjplayanan' => $_POST['nmdpjplayanan']
           ]);
           $simpan_prb = $this->db('bpjs_prb')->save([
             'no_sep' => $_POST['sep_no_sep'],
@@ -239,7 +257,7 @@ class Admin extends AdminModule
         $data = json_encode($data);
 
         $url = $this->api_url.'SEP/Delete';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key);
         $data = json_decode($output, true);
 
         if($data == NULL) {
@@ -485,7 +503,7 @@ class Admin extends AdminModule
         $url = $this->api_url.'referensi/dokter/pelayanan/'.$jnsPelayanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
-        //echo json_encode($json);
+        echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         if($this->vclaim_version == 1) {
@@ -993,8 +1011,8 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
-        $url = $this->api_url.'SEP/1.1/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $url = $this->api_url.'SEP/2.0/insert';
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         echo json_encode($json);
         exit();
@@ -1002,8 +1020,8 @@ class Admin extends AdminModule
 
     public function postUpdateSEP($data = [])
     {
-        $url = $this->api_url.'SEP/1.1/Update';
-        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $url = $this->api_url.'SEP/2.0/Update';
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
