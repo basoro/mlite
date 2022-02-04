@@ -5,24 +5,24 @@ class BpjsService
 {
     protected static $lastStatus = null;
 
-    public static function get($url, $datafields = [], $consid, $secretkey, $user_key)
+    public static function get($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request('GET', $url, $datafields, $consid, $secretkey, $user_key);
+        return self::request('GET', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function post($url, $datafields = [], $consid, $secretkey, $user_key)
+    public static function post($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key);
+        return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function put($url, $datafields = [], $consid, $secretkey, $user_key)
+    public static function put($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('PUT', $url, $datafields, $consid, $secretkey, $user_key);
+        return self::request2('PUT', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function delete($url, $datafields = [],  $consid, $secretkey, $user_key)
+    public static function delete($url, $datafields = [],  $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('DELETE', $url, $datafields, $consid, $secretkey, $user_key);
+        return self::request2('DELETE', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
     public static function getStatus()
@@ -30,10 +30,14 @@ class BpjsService
         return self::$lastStatus;
     }
 
-    protected static function request($type, $url, $datafields, $consid, $secretkey, $user_key)
+    protected static function request($type, $url, $datafields, $consid, $secretkey, $user_key, $time_stamp)
     {
-        date_default_timezone_set('UTC');
-        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+        //date_default_timezone_set('UTC');
+        $tStamp = $time_stamp;
+        if($tStamp == NULL) {
+          date_default_timezone_set('UTC');
+          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        }
         $signature = hash_hmac('sha256', $consid."&".$tStamp, $secretkey, true);
         $encodedSignature = base64_encode($signature);
         $ch = curl_init();
@@ -67,10 +71,14 @@ class BpjsService
 
         return $output;
     }
-    protected static function request2($type, $url, $datafields, $consid, $secretkey, $user_key)
+    protected static function request2($type, $url, $datafields, $consid, $secretkey, $user_key, $time_stamp)
     {
-        date_default_timezone_set('UTC');
-        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+        //date_default_timezone_set('UTC');
+        $tStamp = $time_stamp;
+        if($tStamp == NULL) {
+          date_default_timezone_set('UTC');
+          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        }
         $signature = hash_hmac('sha256', $consid."&".$tStamp, $secretkey, true);
         $encodedSignature = base64_encode($signature);
         $ch = curl_init();

@@ -544,11 +544,11 @@ function formatDuit($duit){
     return "Rp. ".number_format($duit,0,",",".").",-";
 }
 
-function stringDecrypt($consid, $secretkey, $string){
-    date_default_timezone_set('UTC');
-    $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+function stringDecrypt($key, $string){
+    //date_default_timezone_set('UTC');
+    //$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
     //=====KEY====/
-    $key = $consid.$secretkey.$tStamp;
+    //$key = $consid.$secretkey.$tStamp;
 
     $encrypt_method = 'AES-256-CBC';
     $key_hash = hex2bin(hash('sha256', $key));

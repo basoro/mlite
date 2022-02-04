@@ -264,6 +264,7 @@ $("#display").on("click", ".sep", function(event){
   $("#form").hide();
   $("#notif").hide();
   $("#form_soap").hide();
+  $("#form_kontrol").hide();
   $("#form_sep").show();
   $("#bukaform").hide();
 });
@@ -294,6 +295,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
+    $("#form_kontrol").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
@@ -327,6 +329,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
+    $("#form_kontrol").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
@@ -360,6 +363,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
+    $("#form_kontrol").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
@@ -393,6 +397,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     $("#rincian").hide();
     $("#sep").hide();
     $("#soap").hide();
+    $("#form_kontrol").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
   });
 
@@ -595,6 +600,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#berkasdigital").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#form_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -610,6 +616,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#berkasdigital").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#form_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -720,6 +727,7 @@ $("#layanan").on("click", ".pilih_layanan", function(event){
   $("#layanan").hide();
   $('#provider').show();
   $('#aturan_pakai').hide();
+  $("#form_kontrol").hide();
 });
 
 // ketika tombol panggil ditekan

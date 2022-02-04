@@ -125,7 +125,7 @@ class Admin extends AdminModule
                   ],
                   'jaminan' => [
                      'lakaLantas' => $_POST['lakalantas'],
-                     'noLP' => $_POST['noLP'],
+                     'noLP' => $_POST['noLp'],
                      'penjamin' => [
                          'tglKejadian' => $_POST['tglkkl'],
                          'keterangan' => $_POST['keterangankkl'],
@@ -157,9 +157,14 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/2.0/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->use_key);
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $data = json_decode($output, true);
+
 
         if($data == NULL) {
 
@@ -167,71 +172,99 @@ class Admin extends AdminModule
 
         } else if($data['metaData']['code'] == 200){
 
-          $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+          $code = $data['metaData']['code'];
+          $message = $data['metaData']['message'];
+          if($this->vclaim_version == 1) {
+            echo json_encode($json);
+          } else {
+            $stringDecrypt = stringDecrypt($key, $data['response']);
+            $decompress = '""';
+            if(!empty($stringDecrypt)) {
+              $decompress = decompress($stringDecrypt);
+            }
+           if($data != null) {
+              $data = '{
+              	"metaData": {
+              		"code": "'.$code.'",
+              		"message": "'.$message.'"
+              	},
+              	"response": '.$decompress.'}';
 
-          $simpan_sep = $this->db('bridging_sep')->save([
-            'no_sep' => $_POST['sep_no_sep'],
-            'no_rawat' => $_POST['no_rawat'],
-            'tglsep' => $_POST['tglsep'],
-            'tglrujukan' => $_POST['tglrujukan'],
-            'no_rujukan' => $_POST['norujukan'],
-            'kdppkrujukan' => $_POST['kdppkrujukan'],
-            'nmppkrujukan' => $_POST['nmppkrujukan'],
-            'kdppkpelayanan' => $_POST['kdppkpelayanan'],
-            'nmppkpelayanan' => $_POST['nmppkpelayanan'],
-            'jnspelayanan' => $_POST['jnspelayanan'],
-            'catatan' => $_POST['catatan'],
-            'diagawal' => $_POST['diagawal'],
-            'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
-            'kdpolitujuan' => $_POST['kdpolitujuan'],
-            'nmpolitujuan' => $_POST['nmpolitujuan'],
-            'klsrawat' => $_POST['klsrawat'],
-            'klsnaik' => $_POST['klsnaik'],
-            'pembiayaan' => $_POST['pembiayaan'],
-            'pjnaikkelas' => $_POST['pjnaikkelas'],
-            'lakalantas' => $_POST['lakalantas'],
-            'user' => $_POST['sep_user'],
-            'nomr' => $_POST['nomr'],
-            'nama_pasien' => $_POST['nama_pasien'],
-            'tanggal_lahir' => $_POST['tanggal_lahir'],
-            'peserta' => $_POST['peserta'],
-            'jkel' => $_POST['jenis_kelamin'],
-            'no_kartu' => $_POST['no_kartu'],
-            'tglpulang' => $_POST['tglpulang'],
-            'asal_rujukan' => $_POST['asal_rujukan'],
-            'eksekutif' => $_POST['eksekutif'],
-            'cob' => $_POST['cob'],
-            'notelep' => $_POST['notelep'],
-            'katarak' => $_POST['katarak'],
-            'tglkkl' => $_POST['tglkkl'],
-            'keterangankkl' => $_POST['keterangankkl'],
-            'suplesi' => $_POST['suplesi'],
-            'no_sep_suplesi' => $_POST['no_sep_suplesi'],
-            'kdprop' => $_POST['kdprop'],
-            'nmprop' => $_POST['nmprop'],
-            'kdkab' => $_POST['kdkab'],
-            'nmkab' => $_POST['nmkab'],
-            'kdkec' => $_POST['kdkec'],
-            'nmkec' => $_POST['nmkec'],
-            'noskdp' => $_POST['noskdp'],
-            'kddpjp' => $_POST['kddpjp'],
-            'nmdpdjp' => $_POST['nmdpdjp'],
-            'tujuankunjungan' => $_POST['tujuankunjungan'],
-            'flagprosedur' => $_POST['flagprosedur'],
-            'penunjang' => $_POST['penunjang'],
-            'asesmenpelayanan' => $_POST['asesmenpelayanan'],
-            'kddpjplayanan' => $_POST['kddpjplayanan'],
-            'nmdpjplayanan' => $_POST['nmdpjplayanan']
-          ]);
-          $simpan_prb = $this->db('bpjs_prb')->save([
-            'no_sep' => $_POST['sep_no_sep'],
-            'prb' => $_POST['prolanis_prb']
-          ]);
+              $data = json_decode($data, true);
 
-          if($simpan_sep) {
-            echo $_POST['sep_no_sep'];
+              $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+
+              $simpan_sep = $this->db('bridging_sep')->save([
+                'no_sep' => $_POST['sep_no_sep'],
+                'no_rawat' => $_POST['no_rawat'],
+                'tglsep' => $_POST['tglsep'],
+                'tglrujukan' => $_POST['tglrujukan'],
+                'no_rujukan' => $_POST['norujukan'],
+                'kdppkrujukan' => $_POST['kdppkrujukan'],
+                'nmppkrujukan' => $_POST['nmppkrujukan'],
+                'kdppkpelayanan' => $_POST['kdppkpelayanan'],
+                'nmppkpelayanan' => $_POST['nmppkpelayanan'],
+                'jnspelayanan' => $_POST['jnspelayanan'],
+                'catatan' => $_POST['catatan'],
+                'diagawal' => $_POST['diagawal'],
+                'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
+                'kdpolitujuan' => $_POST['kdpolitujuan'],
+                'nmpolitujuan' => $_POST['nmpolitujuan'],
+                'klsrawat' => $_POST['klsrawat'],
+                'klsnaik' => $_POST['klsnaik'],
+                'pembiayaan' => $_POST['pembiayaan'],
+                'pjnaikkelas' => $_POST['pjnaikkelas'],
+                'lakalantas' => $_POST['lakalantas'],
+                'user' => $_POST['sep_user'],
+                'nomr' => $_POST['nomr'],
+                'nama_pasien' => $_POST['nama_pasien'],
+                'tanggal_lahir' => $_POST['tanggal_lahir'],
+                'peserta' => $_POST['peserta'],
+                'jkel' => $_POST['jenis_kelamin'],
+                'no_kartu' => $_POST['no_kartu'],
+                'tglpulang' => $_POST['tglpulang'],
+                'asal_rujukan' => $_POST['asal_rujukan'],
+                'eksekutif' => $_POST['eksekutif'],
+                'cob' => $_POST['cob'],
+                'notelep' => $_POST['notelep'],
+                'katarak' => $_POST['katarak'],
+                'tglkkl' => $_POST['tglkkl'],
+                'keterangankkl' => $_POST['keterangankkl'],
+                'suplesi' => $_POST['suplesi'],
+                'no_sep_suplesi' => $_POST['no_sep_suplesi'],
+                'kdprop' => $_POST['kdprop'],
+                'nmprop' => $_POST['nmprop'],
+                'kdkab' => $_POST['kdkab'],
+                'nmkab' => $_POST['nmkab'],
+                'kdkec' => $_POST['kdkec'],
+                'nmkec' => $_POST['nmkec'],
+                'noskdp' => $_POST['noskdp'],
+                'kddpjp' => $_POST['kddpjp'],
+                'nmdpdjp' => $_POST['nmdpdjp'],
+                'tujuankunjungan' => $_POST['tujuanKunj'],
+                'flagprosedur' => $_POST['prosedur'],
+                'penunjang' => $_POST['penunjang'],
+                'asesmenpelayanan' => $_POST['assesment'],
+                'kddpjplayanan' => $_POST['kddpjplayanan'],
+                'nmdpjplayanan' => $_POST['nmdpjplayanan']
+              ]);
+              $simpan_prb = $this->db('bpjs_prb')->save([
+                'no_sep' => $_POST['sep_no_sep'],
+                'prb' => $_POST['prolanis_prb']
+              ]);
+
+              if($simpan_sep) {
+                echo $_POST['sep_no_sep'];
+              }
+            } else {
+              echo '{
+              	"metaData": {
+              		"code": "5000",
+              		"message": "ERROR"
+              	},
+              	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+            }
           }
-
         } else {
 
           echo $data['metaData']['message'];
@@ -256,8 +289,12 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/Delete';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $data = json_decode($output, true);
 
         if($data == NULL) {
@@ -381,24 +418,17 @@ class Admin extends AdminModule
 
     public function getCariByNoRujukanModal($searchBy, $keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         if ($searchBy == 'RS') {
             $url = 'Rujukan/RS/'.$keyword;
         } else {
             $url = 'Rujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
-        $json = json_decode($output, true);
-        //echo json_encode($json);
-        $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
-        echo $this->tpl->draw(MODULES.'/vclaim/view/admin/rujukan.modal.html', true);
-        exit();
-    }
-
-    public function getDiagnosa($keyword)
-    {
-        $url = $this->api_url.'referensi/diagnosa/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -406,7 +436,48 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
+         if($json != null) {
+            $json = '{
+            	"metaData": {
+            		"code": "'.$code.'",
+            		"message": "'.$message.'"
+            	},
+            	"response": '.$decompress.'}';
+            $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
+            echo $this->tpl->draw(MODULES.'/vclaim/view/admin/rujukan.modal.html', true);
+          } else {
+            echo '{
+            	"metaData": {
+            		"code": "5000",
+            		"message": "ERROR"
+            	},
+            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          }
+        }
+        exit();
+    }
+
+    public function getDiagnosa($keyword)
+    {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
+        $url = $this->api_url.'referensi/diagnosa/'.$keyword;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        if($this->vclaim_version == 1) {
+          echo json_encode($json);
+        } else {
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -431,8 +502,12 @@ class Admin extends AdminModule
     }
     public function getPoli($keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/poli/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -440,7 +515,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -465,8 +540,12 @@ class Admin extends AdminModule
     }
     public function getFaskes($kd_faskes = null, $jns_faskes = null)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/faskes/'.$kd_faskes.'/'.$jns_faskes;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -474,7 +553,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -500,16 +579,19 @@ class Admin extends AdminModule
 
     public function getDokterDpjp($jnsPelayanan, $tglPelayanan, $spesialis)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
         $url = $this->api_url.'referensi/dokter/pelayanan/'.$jnsPelayanan.'/tglPelayanan/'.$tglPelayanan.'/Spesialis/'.$spesialis;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -535,8 +617,12 @@ class Admin extends AdminModule
 
     public function getPropinsi()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/propinsi';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -544,7 +630,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -570,8 +656,12 @@ class Admin extends AdminModule
 
     public function getKabupaten($kdPropinsi)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/kabupaten/propinsi/'.$kdPropinsi;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -579,7 +669,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -605,8 +695,12 @@ class Admin extends AdminModule
 
     public function getKecamatan($kdKabupaten)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/kecamatan/kabupaten/'.$kdKabupaten;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -614,7 +708,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -640,8 +734,12 @@ class Admin extends AdminModule
 
     public function getProcedure($keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/procedure/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -649,7 +747,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -675,8 +773,12 @@ class Admin extends AdminModule
 
     public function getKelasRawat()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/kelasrawat';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -684,7 +786,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -710,13 +812,17 @@ class Admin extends AdminModule
 
     public function getDokter($keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/dokter/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
         $message = $json['metaData']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -745,8 +851,12 @@ class Admin extends AdminModule
 
     public function getSpesialistik()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/spesialistik';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -754,7 +864,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -780,8 +890,12 @@ class Admin extends AdminModule
 
     public function getRuangRawat()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/ruangrawat';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -789,7 +903,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -815,8 +929,12 @@ class Admin extends AdminModule
 
     public function getCaraKeluar()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/carakeluar';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -824,7 +942,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -850,8 +968,12 @@ class Admin extends AdminModule
 
     public function getPascaPulang()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'referensi/pascapulang';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -859,7 +981,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -885,8 +1007,12 @@ class Admin extends AdminModule
 
     public function getByNoKartu($noKartu, $tglPelayananSEP)
     {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
       $url = $this->api_url.'Peserta/nokartu/'.$noKartu.'/tglSEP/'.$tglPelayananSEP;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $json = json_decode($output, true);
       //echo json_encode($json);
       $code = $json['metaData']['code'];
@@ -894,7 +1020,7 @@ class Admin extends AdminModule
       if($this->vclaim_version == 1) {
         echo json_encode($json);
       } else {
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -920,8 +1046,12 @@ class Admin extends AdminModule
 
     public function getByNIK($nik, $tglPelayananSEP)
     {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
       $url = $this->api_url.'Peserta/nik/'.$nik.'/tglSEP/'.$tglPelayananSEP;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $json = json_decode($output, true);
       //echo json_encode($json);
       $code = $json['metaData']['code'];
@@ -929,7 +1059,7 @@ class Admin extends AdminModule
       if($this->vclaim_version == 1) {
         echo json_encode($json);
       } else {
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1011,8 +1141,12 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/2.0/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         echo json_encode($json);
         exit();
@@ -1020,8 +1154,12 @@ class Admin extends AdminModule
 
     public function postUpdateSEP($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/2.0/Update';
-        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1029,7 +1167,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1066,8 +1204,12 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/Delete';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1075,7 +1217,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1101,8 +1243,12 @@ class Admin extends AdminModule
 
     public function getCariSEP($keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'SEP/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1110,7 +1256,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1136,8 +1282,12 @@ class Admin extends AdminModule
 
     public function getSuplesiJasaRaharja($noKartu, $tglPelayanan)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'sep/JasaRaharja/Suplesi/'.$noKartu.'/tglPelayanan/'.$tglPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1145,7 +1295,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1170,8 +1320,12 @@ class Admin extends AdminModule
     }
     public function postPengajuanPenjaminanSep($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Sep/pengajuanSEP';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1179,7 +1333,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1204,8 +1358,12 @@ class Admin extends AdminModule
     }
     public function postApprovalPenjaminanSep($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Sep/aprovalSEP';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1213,7 +1371,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1238,8 +1396,12 @@ class Admin extends AdminModule
     }
     public function postUpdateTglPlg($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Sep/updtglplg';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1247,7 +1409,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1273,8 +1435,12 @@ class Admin extends AdminModule
 
     public function getInacbgSEP($keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'sep/cbg/'.$keyword;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1282,7 +1448,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1308,8 +1474,12 @@ class Admin extends AdminModule
 
     public function postInsertRujukan($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Rujukan/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1317,7 +1487,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1343,8 +1513,12 @@ class Admin extends AdminModule
 
     public function postUpdateRujukan($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Rujukan/update';
-        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1352,7 +1526,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1378,8 +1552,12 @@ class Admin extends AdminModule
 
     public function postDeleteRujukan($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Rujukan/delete';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1387,7 +1565,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1413,13 +1591,17 @@ class Admin extends AdminModule
 
     public function getCariByNoRujukan($searchBy, $keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         if ($searchBy == 'RS') {
             $url = 'Rujukan/RS/'.$keyword;
         } else {
             $url = 'Rujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1428,7 +1610,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1454,6 +1636,10 @@ class Admin extends AdminModule
 
     public function getCariByNoKartu($searchBy, $keyword, $multi = false)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $record = $multi ? 'List/' : '';
         if ($searchBy == 'RS') {
             $url = 'Rujukan/RS/'.$record.'Peserta/'.$keyword;
@@ -1461,7 +1647,7 @@ class Admin extends AdminModule
             $url = 'Rujukan/'.$record.'Peserta/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1469,7 +1655,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1495,52 +1681,88 @@ class Admin extends AdminModule
 
     public function getCariByTglRujukan($searchBy, $keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         if ($searchBy == 'RS') {
             $url = 'Rujukan/RS/List/TglRujukan/'.$keyword;
         } else {
             $url = 'Rujukan/List/TglRujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
 
-        $noKunjungan = [];
-        $i = 1;
-        foreach ($json['response']['rujukan'] as $key=>$value) {
-          //$keyword = $value['noKunjungan'];
-          /*if ($searchBy == 'RS') {
-              $url = 'Rujukan/RS/'.$keyword;
-          } else {
-              $url = 'Rujukan/'.$keyword;
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        if($this->vclaim_version == 1) {
+          echo json_encode($json);
+        } else {
+          $stringDecrypt = stringDecrypt($key, $json['response']);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
           }
-          $url = $this->api_url.''.$url;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
-          $json = json_decode($output, true);
-          echo json_encode($json);*/
-          $row['Nomor'] = $i++;
-          $row['noKunjungan'] = '<a href="'.url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]).'" data-toggle="modal" data-target="#rujukanModal">'.$value['noKunjungan'].'</a>';
-          $row['Poliklinik'] = '['.$value['poliRujukan']['kode'].'] '.$value['poliRujukan']['nama'];
-          $row['Diagnosa'] = '['.$value['diagnosa']['kode'].'] '.$value['diagnosa']['nama'];
-          $row['Perujuk'] = '['.$value['provPerujuk']['kode'].'] '.$value['provPerujuk']['nama'];
-          $row['Tanggal'] = $value['tglKunjungan'];
-          $noKunjungan[] = $row;
+          if($json != null) {
+            echo '{
+            	"metaData": {
+            		"code": "'.$code.'",
+            		"message": "'.$message.'"
+            	},
+            	"response": '.$decompress.'}';
+
+            $noKunjungan = [];
+            $i = 1;
+            foreach ($json['response']['rujukan'] as $key=>$value) {
+              //$keyword = $value['noKunjungan'];
+              /*if ($searchBy == 'RS') {
+                  $url = 'Rujukan/RS/'.$keyword;
+              } else {
+                  $url = 'Rujukan/'.$keyword;
+              }
+              $url = $this->api_url.''.$url;
+              $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+              $json = json_decode($output, true);
+              echo json_encode($json);*/
+              $row['Nomor'] = $i++;
+              $row['noKunjungan'] = '<a href="'.url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]).'" data-toggle="modal" data-target="#rujukanModal">'.$value['noKunjungan'].'</a>';
+              $row['Poliklinik'] = '['.$value['poliRujukan']['kode'].'] '.$value['poliRujukan']['nama'];
+              $row['Diagnosa'] = '['.$value['diagnosa']['kode'].'] '.$value['diagnosa']['nama'];
+              $row['Perujuk'] = '['.$value['provPerujuk']['kode'].'] '.$value['provPerujuk']['nama'];
+              $row['Tanggal'] = $value['tglKunjungan'];
+              $noKunjungan[] = $row;
+            }
+            echo json_encode($noKunjungan);
+
+          } else {
+            echo '{
+            	"metaData": {
+            		"code": "5000",
+            		"message": "ERROR"
+            	},
+            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          }
         }
-        echo json_encode($noKunjungan);
         exit();
     }
 
     public function getCariByTglRujukan_BackUp($searchBy, $keyword)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         if ($searchBy == 'RS') {
             $url = 'Rujukan/RS/List/TglRujukan/'.$keyword;
         } else {
             $url = 'Rujukan/List/TglRujukan/'.$keyword;
         }
         $url = $this->api_url.''.$url;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
-        echo '<pre>'.json_encode($json, JSON_PRETTY_PRINT).'</pre>';
+        //echo '<pre>'.json_encode($json, JSON_PRETTY_PRINT).'</pre>';
         /*$listRujukan = [];
         $i = 1;
         foreach ($json['response']['rujukan'] as $key=>$value) {
@@ -1551,20 +1773,51 @@ class Admin extends AdminModule
               $url = 'Rujukan/'.$keyword;
           }
           $url = $this->api_url.''.$url;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
           $json = json_decode($output, true);
           //echo json_encode($json);
           $row['noRujukan'] = $value['noKunjungan'];
           $listRujukan[] = $row;
         }
         echo json_encode($listRujukan);*/
+
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        if($this->vclaim_version == 1) {
+          echo json_encode($json);
+        } else {
+          $stringDecrypt = stringDecrypt($key, $json['response']);
+          $decompress = '""';
+          if(!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
+          }
+          if($json != null) {
+            echo '{
+            	"metaData": {
+            		"code": "'.$code.'",
+            		"message": "'.$message.'"
+            	},
+            	"response": '.$decompress.'}';
+          } else {
+            echo '{
+            	"metaData": {
+            		"code": "5000",
+            		"message": "ERROR"
+            	},
+            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          }
+        }
         exit();
     }
 
     public function postInsertLPK($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'LPK/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1572,7 +1825,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1598,8 +1851,12 @@ class Admin extends AdminModule
 
     public function postUpdateLPK($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'LPK/update';
-        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::put($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1607,7 +1864,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1633,8 +1890,12 @@ class Admin extends AdminModule
 
     public function postDeleteLPK($data = [])
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'LPK/delete';
-        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey);
+        $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1642,7 +1903,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1668,8 +1929,12 @@ class Admin extends AdminModule
 
     public function getCariLPK($tglMasuk, $jnsPelayanan)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'LPK/TglMasuk/'.$tglMasuk.'/JnsPelayanan/'.$jnsPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1677,7 +1942,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1703,8 +1968,12 @@ class Admin extends AdminModule
 
     public function getDataKunjungan($tglSep, $jnsPelayanan)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Monitoring/Kunjungan/Tanggal/'.$tglSep.'/JnsPelayanan/'.$jnsPelayanan;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1712,7 +1981,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1738,8 +2007,12 @@ class Admin extends AdminModule
 
     public function getDataKlaim($tglPulang, $jnsPelayanan, $statusKlaim)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'Monitoring/Klaim/Tanggal/'.$tglPulang.'/JnsPelayanan/'.$jnsPelayanan.'/Status/'.$statusKlaim;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1747,7 +2020,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1773,8 +2046,12 @@ class Admin extends AdminModule
 
     public function getHistoriPelayanan($noKartu, $tglAwal, $tglAkhir)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'monitoring/HistoriPelayanan/NoKartu/'.$noKartu.'/tglAwal/'.$tglAwal.'/tglAkhir/'.$tglAkhir;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1782,7 +2059,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);
@@ -1808,8 +2085,12 @@ class Admin extends AdminModule
 
     public function getDataKlaimJasaRaharja($tglMulai, $tglAkhir)
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->api_url.'monitoring/JasaRaharja/tglMulai/'.$tglMulai.'/tglAkhir/'.$tglAkhir;
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metaData']['code'];
@@ -1817,7 +2098,7 @@ class Admin extends AdminModule
         if($this->vclaim_version == 1) {
           echo json_encode($json);
         } else {
-          $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
             $decompress = decompress($stringDecrypt);

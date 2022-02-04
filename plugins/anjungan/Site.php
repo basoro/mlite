@@ -60,8 +60,12 @@ class Site extends SiteModule
         $penjab = $this->db('penjab')->toArray();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.html', [
           'title' => $title,
@@ -93,8 +97,12 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianPoli();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.poli.html', [
           'title' => $title,
@@ -236,8 +244,12 @@ class Site extends SiteModule
         $running_text = $this->settings->get('anjungan.text_poli');
         $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.poli.kode.html', [
           'title' => $title,
@@ -271,8 +283,12 @@ class Site extends SiteModule
         $slug = parseURL();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.poli.display.html', [
           'title' => $title,
@@ -405,8 +421,12 @@ class Site extends SiteModule
         $display = '';
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $show = isset($_GET['show']) ? $_GET['show'] : "";
         switch($show){
@@ -428,8 +448,12 @@ class Site extends SiteModule
             $display = 'Panggil Loket';
 
             $_username = $this->core->getUserInfo('fullname', null, true);
+            $__username = $this->core->getUserInfo('username');
+            if($this->core->getUserInfo('username') !=='') {
+              $__username = 'Tamu';
+            }
             $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-            $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+            $username      = !empty($_username) ? $_username : $__username;
 
             $setting_antrian_loket = str_replace(",","','", $this->settings->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->settings->get('anjungan.antrian_loket'));
@@ -565,8 +589,12 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianLaboratorium();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.laboratorium.html', [
           'logo' => $logo,
@@ -639,8 +667,12 @@ class Site extends SiteModule
         $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.antrian.apotek.html', [
           'logo' => $logo,
@@ -1402,8 +1434,12 @@ class Site extends SiteModule
         $display = $this->_resultDisplayBed();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('display.bed.html', [
           'title' => $title,
@@ -1467,8 +1503,12 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
 
         $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+        $username      = !empty($_username) ? $_username : $__username;
 
         $content = $this->draw('sep.mandiri.html', [
           'title' => $title,
@@ -1504,6 +1544,11 @@ class Site extends SiteModule
 
     public function getSepMandiriNokaNorm()
     {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
+      date_default_timezone_set($this->settings->get('settings.timezone'));
       $slug = parseURL();
       $sep_response = '';
       if (count($slug) == 4 && $slug[0] == 'anjungan' && $slug[1] == 'sep') {
@@ -1511,12 +1556,12 @@ class Site extends SiteModule
           $url = "Rujukan/List/Peserta/".$slug[2];
 
           $url = $this->api_url.''.$url;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
           $json = json_decode($output, true);
           //var_dump($json);
           $code = $json['metaData']['code'];
           $message = $json['metaData']['message'];
-          $stringDecrypt = stringDecrypt($this->settings->get('settings.BpjsConsID'), $this->settings->get('settings.BpjsSecretKey'), $json['response']);
+          $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
 
           if(!empty($json)):
@@ -1539,8 +1584,12 @@ class Site extends SiteModule
       $logo  = $this->settings->get('settings.logo');
 
       $_username = $this->core->getUserInfo('fullname', null, true);
+      $__username = $this->core->getUserInfo('username');
+      if($this->core->getUserInfo('username') !=='') {
+        $__username = 'Tamu';
+      }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-      $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+      $username      = !empty($_username) ? $_username : $__username;
 
       $content = $this->draw('sep.mandiri.noka.norm.html', [
         'title' => $title,
@@ -1566,6 +1615,11 @@ class Site extends SiteModule
 
     public function getSepMandiriBikin()
     {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
+      date_default_timezone_set($this->settings->get('settings.timezone'));
       $slug = parseURL();
 
       $title = 'Display SEP Mandiri';
@@ -1574,8 +1628,12 @@ class Site extends SiteModule
       $nama_ppk  = $this->settings->get('settings.nama_instansi');
 
       $_username = $this->core->getUserInfo('fullname', null, true);
+      $__username = $this->core->getUserInfo('username');
+      if($this->core->getUserInfo('username') !=='') {
+        $__username = 'Tamu';
+      }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-      $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+      $username      = !empty($_username) ? $_username : $__username;
 
       $date = date('Y-m-d');
 
@@ -1585,12 +1643,12 @@ class Site extends SiteModule
           $url = 'Rujukan/'.$slug[3];
       //}
       $url = $this->api_url.''.$url;
-      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+      $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $json = json_decode($output, true);
       //var_dump($json);
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($this->settings->get('settings.BpjsConsID'), $this->settings->get('settings.BpjsSecretKey'), $json['response']);
+      $stringDecrypt = stringDecrypt($key, $json['response']);
       $decompress = '""';
       //$rujukan = [];
       if ($code == "200") {
@@ -1605,7 +1663,14 @@ class Site extends SiteModule
         ->where('reg_periksa.no_rkm_medis', $slug[4])
         ->oneArray();
 
-      $skdp_bpjs = $this->db('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
+      $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+      //$skdp_bpjs = $this->db('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
+      $surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
+        ->select('no_surat')
+        ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
+        ->where('bridging_sep.nomr', $slug[4])
+        ->where('tgl_rencana', $date)
+        ->oneArray();
 
       $content = $this->draw('sep.mandiri.bikin.html', [
         'title' => $title,
@@ -1617,8 +1682,9 @@ class Site extends SiteModule
         'kode_ppk' => $kode_ppk,
         'nama_ppk' => $nama_ppk,
         'reg_periksa' => $reg_periksa,
-        'skdp_bpjs' => $skdp_bpjs,
-        'rujukan' => $rujukan
+        'skdp_bpjs' => $surat_kontrol_bpjs,
+        'rujukan' => $rujukan,
+        'dpjp' => $dpjp
       ]);
 
       $assign = [
@@ -1634,6 +1700,10 @@ class Site extends SiteModule
 
     public function postSaveSEP()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
         $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
         $_POST['sep_user']	= 'SEP Mandiri';
@@ -1704,8 +1774,9 @@ class Site extends SiteModule
 
         $data = json_encode($data);
 
+        //echo $data;
         $url = $this->api_url.'SEP/2.0/insert';
-        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $data = json_decode($output, true);
 
         if($data == NULL) {

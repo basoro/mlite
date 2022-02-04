@@ -410,6 +410,12 @@
                   </div>
                 </div>
                 <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Nomor Laporan Polisi</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="sep_nomor_laporan_polisi" id="sep_nomor_laporan_polisi" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
                   <label for="" class="col-sm-3 control-label">Penjamin Kecelakaan</label>
                   <div class="col-sm-6">
                     <input type="text" name="sep_penjamin_kecelakaan_nama" id="sep_penjamin_kecelakaan_nama" class="form-control" value="" />
@@ -578,6 +584,11 @@
     var nmpolitujuan = $('#sep_spesialis_nama').val();
     var klsrawat = $('#sep_kelas_kode').val();
     var lakalantas = $('#sep_status_kecelakaan_kode').val();
+    var noLp = $('#sep_nomor_laporan_polisi').val();
+    var tujuanKunj = $('#sep_kunjungan_kode').val();
+    var prosedur = $('#sep_prosedur_kode').val();
+    var penunjang = $('#sep_penunjang_kode').val();
+    var assesment = $('#sep_assesment_kode').val();
     var nama_peserta = $('.nama_peserta').text();
     var nomr = $('#sep_norm').val();
     var tanggal_lahir = $('#sep_tanggal_lahir').val();
@@ -624,6 +635,11 @@
         nmpolitujuan: nmpolitujuan,
         klsrawat: klsrawat,
         lakalantas: lakalantas,
+        noLp: noLp,
+        tujuanKunj: tujuanKunj,
+        flagProcedure: prosedur,
+        kdPenunjang: penunjang,
+        assesmentPel: assesment, 
         nama_pasien: nama_peserta,
         nomr: nomr,
         tanggal_lahir: tanggal_lahir,

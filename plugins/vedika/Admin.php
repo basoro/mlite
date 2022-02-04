@@ -479,22 +479,88 @@ class Admin extends AdminModule
 
     public function postSaveSEP()
     {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
+      date_default_timezone_set($this->settings->get('settings.timezone'));
+
       header('Content-type: text/html');
       $date = date('Y-m-d');
       $url = $this->settings->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
       $consid = $this->settings->get('settings.BpjsConsID');
       $secretkey = $this->settings->get('settings.BpjsSecretKey');
-      $output = BpjsService::get($url, NULL, $consid, $secretkey);
+      $userkey = $this->settings->get('settings.BpjsUserKey');
+      $output = BpjsService::get($url, NULL, $consid, $secretkey, $userkey, $tStamp);
       $data = json_decode($output, true);
       //print_r($output);
+      $code = $data['metaData']['code'];
+      $message = $data['metaData']['message'];
+      if($this->vclaim_version == 1) {
+        //echo json_encode($data);
+        $data = $data;
+      } else {
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($data != null) {
+          $data = '{
+            "metaData": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+          $data = json_decode($data, true);
+        } else {
+          $data = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $data = json_decode($data, true);
+        }
+      }
 
       $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/'.$data['response']['noRujukan'];
       if($_POST['asal_rujukan'] == 2) {
         $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/RS/'.$data['response']['noRujukan'];
       }
-      $rujukan = BpjsService::get($url_rujukan, NULL, $consid, $secretkey);
+      $rujukan = BpjsService::get($url_rujukan, NULL, $consid, $secretkey, $userkey, $tStamp);
       $data_rujukan = json_decode($rujukan, true);
       //print_r($rujukan);
+
+      $code = $data_rujukan['metaData']['code'];
+      $message = $data_rujukan['metaData']['message'];
+      if($this->vclaim_version == 1) {
+        //echo json_encode($data);
+        $data_rujukan = $data_rujukan;
+      } else {
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($data_rujukan != null) {
+          $data_rujukan = '{
+            "metaData": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+          $data_rujukan = json_decode($data_rujukan, true);
+        } else {
+          $data_rujukan = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $data_rujukan = json_decode($data_rujukan, true);
+        }
+      }
 
       $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
       if(empty($data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'])){

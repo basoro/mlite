@@ -53,8 +53,12 @@ class Admin extends AdminModule
 
     public function getRefPoli()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->bpjsurl.'ref/poli';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metadata']['code'];
@@ -129,13 +133,17 @@ class Admin extends AdminModule
 
     public function getRefDokter()
     {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $url = $this->bpjsurl.'ref/dokter';
-        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key);
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $json = json_decode($output, true);
         //echo json_encode($json);
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
           $decompress = decompress($stringDecrypt);
@@ -226,6 +234,7 @@ class Admin extends AdminModule
               $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
           }
           $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
           $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
@@ -234,7 +243,7 @@ class Admin extends AdminModule
           $q['task1'] = '0';
           $q['task2'] = '0';
           $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;
-          $q['task4'] = strtotime($mutasi_berkas['diterima']) * 1000;
+          $q['task4'] = strtotime($mutasi_berkas2['diterima']) * 1000;
           $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
           $q['task6'] = strtotime($resep_obat['datajam']) * 1000;
           $q['task7'] = strtotime($resep_obat2['datajam']) * 1000;
@@ -259,6 +268,8 @@ class Admin extends AdminModule
         $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
         $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.display'));
+        $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.exclude_taskid'));
+        $this->assign['penjab'] = $this->db('penjab')->toArray();
 
         $this->assign['jkn_mobile_v2'] = htmlspecialchars_array($this->settings('jkn_mobile_v2'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
@@ -267,6 +278,7 @@ class Admin extends AdminModule
     public function postSaveSettings()
     {
         $_POST['jkn_mobile_v2']['display'] = implode(',', $_POST['jkn_mobile_v2']['display']);
+        $_POST['jkn_mobile_v2']['exclude_taskid'] = implode(',', $_POST['jkn_mobile_v2']['exclude_taskid']);
         foreach ($_POST['jkn_mobile_v2'] as $key => $val) {
             $this->settings('jkn_mobile_v2', $key, $val);
         }

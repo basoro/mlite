@@ -17,6 +17,8 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'BpjsSecretKey', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'BpjsUserKey', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'BpjsAntrianUrl', 'https://dvlp.bpjs-kesehatan.go.id:8887/arsws/rest/v1/')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'kd_pj_bpjs', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'exclude_taskid', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'display', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'kdprop', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'kdkab', '')");
@@ -39,6 +41,13 @@ return [
         `tanggal_batal` date NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL,
         `keterangan` varchar(250) NOT NULL PRIMARY KEY
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
+        `tanggal_periksa` date NOT NULL,
+        `nomor_referensi` varchar(50) NOT NULL,
+        `taskid` varchar(50) NOT NULL,
+        `waktu` varchar(50) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
