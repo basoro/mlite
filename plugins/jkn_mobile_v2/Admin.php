@@ -63,7 +63,7 @@ class Admin extends AdminModule
         //echo json_encode($json);
         $code = $json['metadata']['code'];
         $message = $json['metadata']['message'];
-        $stringDecrypt = stringDecrypt($this->consid, $this->secretkey, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
           $decompress = decompress($stringDecrypt);
