@@ -244,6 +244,7 @@ function printContent(el){
               <td width="450">
                 {$data_sep.nmpolitujuan}
               </td>
+              <!--
               <td width="90">
                 Penjamin
               </td>
@@ -251,8 +252,9 @@ function printContent(el){
                 :
               </td>
               <td>
-                {$data_sep.penjamin}
+                {*$data_sep.penjamin*}
               </td>
+              -->
             </tr>
           </table>
         </td>
@@ -342,7 +344,8 @@ function printContent(el){
               </td>
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <center>
-                <img src="{$data_sep.qrCode}" width="100px" style="margin: -10px;"/>
+                  <div id="qrcodeSEP" style="margin-top:10px;width:80px;"></div><br>
+                  {$data_sep.nama_pasien}<br>
                 </center>
                 -----------------------------------
               </td>
@@ -374,6 +377,8 @@ function printContent(el){
       </pre>
     </div>
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
     <script>
           var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
           $('#syncsep').on('click',function(e){
@@ -508,4 +513,9 @@ function printContent(el){
           });
     </script>
   {/if}
+  <script>
+  	jQuery('#qrcodeSEP').qrcode({
+  		text	: "No.SEP: {$data_sep.no_sep}"
+  	});
+  </script>
 </body>

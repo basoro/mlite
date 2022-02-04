@@ -272,6 +272,17 @@
                   </div>
                 </div>
                 <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">DPJP Pelayanan</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_dpjp_pelayanan_nama" id="sep_dpjp_pelayanan_nama" class="form-control" value="">
+                    <ul class="list-group" id="dokterdpjpList2" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_dpjp_pelayanan_kode" id="sep_dpjp_pelayanan_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
                   <label for="" class="col-sm-3 control-label">Tanggal SEP</label>
                   <div class="col-sm-6">
                     <input type="text" name="sep_tanggal_sep" id="sep_tanggal_sep" class="form-control tanggal" value="{?=date('Y-m-d')?}">
@@ -585,6 +596,9 @@
     var klsrawat = $('#sep_kelas_kode').val();
     var lakalantas = $('#sep_status_kecelakaan_kode').val();
     var noLp = $('#sep_nomor_laporan_polisi').val();
+    var pembiayaan = $('#sep_pembiayaan_kode').val();
+    var klsnaik = $('#sep_naik_kelas_kode').val();
+    var pjnaikkelas = $('#sep_penjamin_kecelakaan_kode').val();
     var tujuanKunj = $('#sep_kunjungan_kode').val();
     var prosedur = $('#sep_prosedur_kode').val();
     var penunjang = $('#sep_penunjang_kode').val();
@@ -615,6 +629,8 @@
     var noskdp = $('#sep_nomor_skdp').val();
     var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
     var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
+    var kddpjppelayanan = $('#sep_dpjp_pelayanan_kode').val();
+    var nmdpjppelayanan = $('#sep_dpjp_pelayanan_nama').val();
     var prolanis_prb = $('.prolainis_peserta').text();
 
     $.ajax({
@@ -634,12 +650,14 @@
         kdpolitujuan: kdpolitujuan,
         nmpolitujuan: nmpolitujuan,
         klsrawat: klsrawat,
+        klsnaik: klsnaik,
+        pjnaikkelas: pjnaikkelas,
         lakalantas: lakalantas,
         noLp: noLp,
         tujuanKunj: tujuanKunj,
         flagProcedure: prosedur,
         kdPenunjang: penunjang,
-        assesmentPel: assesment, 
+        assesmentPel: assesment,
         nama_pasien: nama_peserta,
         nomr: nomr,
         tanggal_lahir: tanggal_lahir,
@@ -650,7 +668,7 @@
         asal_rujukan: asal_rujukan,
         eksekutif: eksekutif,
         cob: cob,
-        penjamin: penjamin,
+        pembiayaan: pembiayaan,
         notelep: notelep,
         katarak: katarak,
         tglkkl: tglkkl,
@@ -666,6 +684,8 @@
         noskdp: noskdp,
         kddpjp: kddpjp,
         nmdpdjp: nmdpdjp,
+        kddpjppelayanan: kddpjppelayanan,
+        nmdpjppelayanan: nmdpjppelayanan,
         prolanis_prb: prolanis_prb
       },
       success: function(result){
@@ -1266,7 +1286,7 @@
 </script>
 <script type="text/javascript">
   $('#sep_asal_rujukan_nama').keyup(function(){
-      console.log('Spesialis Nama');
+       //console.log('Spesialis Nama');
        var query = $(this).val();
        var sep_asal_faskes_kode = $('input:text[name=sep_asal_faskes_kode]').val();
 
@@ -1378,7 +1398,50 @@
        $('#sep_dpjp_yang_melayani_nama').val($(this).text().split(': ')[1]);
        $('#sep_dpjp_yang_melayani_kode').val($(this).text().split(': ')[0]);
        var sep_dpjp_yang_melayani_kode = $('#sep_dpjp_yang_melayani_kode').val();
+       $('#sep_dpjp_pelayanan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_dpjp_pelayanan_kode').val($(this).text().split(': ')[0]);
+       var sep_dpjp_pelayanan_kode = $('#sep_dpjp_pelayanan_kode').val();
        $('#dokterdpjpList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_dpjp_pelayanan_nama').keyup(function(){
+       var query = $(this).val();
+       var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+       var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
+
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var dokterdpjp = json_obj[0].response.list;
+                       for (var i in dokterdpjp) {
+                         output+='<li class=\"list-group-item link-class\">' + dokterdpjp[i].kode + ': ' + dokterdpjp[i].nama + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#dokterdpjpList2').fadeIn();
+                     $('#dokterdpjpList2').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#dokterdpjpList2').on('click', 'li', function(){
+       $('#sep_dpjp_pelayanan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_dpjp_pelayanan_kode').val($(this).text().split(': ')[0]);
+       var sep_dpjp_pelayanan_kode = $('#sep_dpjp_pelayanan_kode').val();
+       $('#dokterdpjpList2').fadeOut();
   });
 </script>
 <script type="text/javascript">

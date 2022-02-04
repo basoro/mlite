@@ -242,18 +242,20 @@ class Admin extends AdminModule
                 'kddpjp' => $_POST['kddpjp'],
                 'nmdpdjp' => $_POST['nmdpdjp'],
                 'tujuankunjungan' => $_POST['tujuanKunj'],
-                'flagprosedur' => $_POST['prosedur'],
-                'penunjang' => $_POST['penunjang'],
-                'asesmenpelayanan' => $_POST['assesment'],
-                'kddpjplayanan' => $_POST['kddpjplayanan'],
-                'nmdpjplayanan' => $_POST['nmdpjplayanan']
-              ]);
-              $simpan_prb = $this->db('bpjs_prb')->save([
-                'no_sep' => $_POST['sep_no_sep'],
-                'prb' => $_POST['prolanis_prb']
+                'flagprosedur' => $_POST['flagProcedure'],
+                'penunjang' => $_POST['kdPenunjang'],
+                'asesmenpelayanan' => $_POST['assesmentPel'],
+                'kddpjplayanan' => $_POST['kddpjppelayanan'],
+                'nmdpjplayanan' => $_POST['nmdpjppelayanan']
               ]);
 
               if($simpan_sep) {
+                if($_POST['prolanis_prb'] !=='') {
+                  $simpan_prb = $this->db('bpjs_prb')->save([
+                    'no_sep' => $_POST['sep_no_sep'],
+                    'prb' => $_POST['prolanis_prb']
+                  ]);                  
+                }
                 echo $_POST['sep_no_sep'];
               }
             } else {
