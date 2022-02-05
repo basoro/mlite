@@ -44,6 +44,7 @@ class Site extends SiteModule
         $this->route('anjungan/sep/bikin/(:str)/(:int)', 'getSepMandiriBikin');
         $this->route('anjungan/sep/savesep', 'postSaveSep');
         $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
+        $this->route('anjungan/bikinkontrol', 'BikinKontrol');
     }
 
     public function getIndex()
@@ -1674,13 +1675,13 @@ class Site extends SiteModule
         ->oneArray();
 
       if(!$surat_kontrol_bpjs){
-        $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan',$slug[3])->where('kdpolitujuan',$rujukan['poliRujukan']['kode'])->asc('tglsep')->oneArray();
+        $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan',$slug[3])->where('kdpolitujuan',$rujukan['rujukan']['poliRujukan']['kode'])->asc('tglsep')->oneArray();
         if($cari_rujukan){
-          $skdp_bpjs = $this->createKontrol($slug[3],$rujukan['poliRujukan']['kode'],$dpjp['kd_dokter_bpjs']);
+          $skdp_bpjs = $this->createKontrol($slug[3],$rujukan['rujukan']['poliRujukan']['kode'],$dpjp['kd_dokter_bpjs']);
           $no_surat_kontrol_bpjs = $skdp_bpjs;
         }
       }else{
-        $no_surat_kontrol_bpjs = $skdp_bpjs['no_surat'];
+        $no_surat_kontrol_bpjs = $surat_kontrol_bpjs['no_surat'];
       }
 
       $content = $this->draw('sep.mandiri.bikin.html', [
@@ -1693,7 +1694,7 @@ class Site extends SiteModule
         'kode_ppk' => $kode_ppk,
         'nama_ppk' => $nama_ppk,
         'reg_periksa' => $reg_periksa,
-        'skdp_bpjs' => $surat_kontrol_bpjs,
+        'skdp_bpjs' => $no_surat_kontrol_bpjs,
         'rujukan' => $rujukan,
         'dpjp' => $dpjp
       ]);
@@ -1941,7 +1942,6 @@ class Site extends SiteModule
           echo $data['metaData']['message'];
 
         }
-
         exit();
 
     }
@@ -1975,11 +1975,13 @@ class Site extends SiteModule
         exit();
     }
 
-    public function createKontrol($rujukan,$poli,$dokter){
+    public function createKontrol($rujukan,$poli,$dokter)
+    {
       $date = date('Y-m-d');
       $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan',$rujukan)->where('kdpolitujuan',$poli)->asc('tglsep')->oneArray();
       $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $dokter)->oneArray();
       $nmPoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $poli)->oneArray();
+
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime('1970-01-01 00:00:00'));
       //=====KEY====/
@@ -2001,18 +2003,21 @@ class Site extends SiteModule
       $data = json_encode($data);
       // echo $data;
       $url = $this->api_url . 'RencanaKontrol/insert';
-      $output = BpjsService::post2($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $data = json_decode($output, true);
+
+      //$noKontrol = $data['metaData']['message'];
 
       if ($data == NULL) {
 
         echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
       } else if ($data['metaData']['code'] == 200) {
-        $stringDecrypt = stringDecrypt2($key, $data['response']);
+        $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
         //$rujukan = [];
         $decompress = decompress($stringDecrypt);
         $rujukan = json_decode($decompress, true);
+        //var_dump($rujukan);
         $noKontrol = $rujukan['noSuratKontrol'];
 
         $simpanKontrol = $this->db('bridging_surat_kontrol_bpjs')->save([
@@ -2026,10 +2031,11 @@ class Site extends SiteModule
           'nm_poli_bpjs' => $nmPoli['nm_poli_bpjs']
         ]);
         if($simpanKontrol){
-          echo $noKontrol;
+          $noKontrol = $noKontrol;
         }
       }
-      exit();
+      return $noKontrol;
+      //exit();
     }
 
 }

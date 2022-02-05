@@ -9,6 +9,15 @@ class Admin extends AdminModule
 {
     private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
 
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+      $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
+    }
+
     public function navigation()
     {
         return [
