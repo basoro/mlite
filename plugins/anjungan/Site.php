@@ -2007,7 +2007,7 @@ class Site extends SiteModule
       $data = json_decode($output, true);
 
       //$noKontrol = $data['metaData']['message'];
-
+      $noKontrol = '';
       if ($data == NULL) {
 
         echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
