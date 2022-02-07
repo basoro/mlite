@@ -251,9 +251,9 @@ class Site extends SiteModule
                                     'namadokter' => $cek_kouta['nm_dokter'],
                                     'estimasidilayani' => strtotime($decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai']) * 1000,
                                     'sisakuotajkn' => ($cek_kouta['sisa_kouta']-1),
-                                    'kuotajkn' => $cek_kouta['kuota'],
+                                    'kuotajkn' => intval($cek_kouta['kuota']),
                                     'sisakuotanonjkn' => ($cek_kouta['sisa_kouta']-1),
-                                    'kuotanonjkn' => $cek_kouta['kuota'],
+                                    'kuotanonjkn' => intval($cek_kouta['kuota']),
                                     'keterangan' => $keterangan
                                 ),
                                 'metadata' => array(
@@ -470,9 +470,9 @@ class Site extends SiteModule
                             'sisaantrean' => ($data['sisa_antrean']>0?$data['sisa_antrean']:0),
                             'antreanpanggil' => "A-".$max_antrian['no_reg'],
                             'sisakuotajkn' => ($kuota['kuota']-$data['total_antrean']),
-                            'kuotajkn' => $kuota['kuota'],
+                            'kuotajkn' => intval($kuota['kuota']),
                             'sisakuotanonjkn' => ($kuota['kuota']-$data['total_antrean']),
-                            'kuotanonjkn' => ($kuota['kuota']),
+                            'kuotanonjkn' => intval($kuota['kuota']),
                             'keterangan' => $data['keterangan']
                         ),
                         'metadata' => array(
@@ -1754,9 +1754,9 @@ class Site extends SiteModule
                   'angkaantrean' => $reg_periksa['no_reg'],
                   'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
                   'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                  'kuotajkn' => $jadwaldokter['kuota'],
+                  'kuotajkn' => intval($jadwaldokter['kuota']),
                   'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                  'kuotanonjkn' => $jadwaldokter['kuota'],
+                  'kuotanonjkn' => intval($jadwaldokter['kuota']),
                   'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
               ];
               echo 'Request:<br>';
