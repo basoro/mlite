@@ -36,7 +36,7 @@
               {/if}
             </ul>
           </td>
-          <td style="white-space: nowrap;">{$value.nm_pasien}</td>
+          <td style="white-space: nowrap;"><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.nm_pasien}</a></td>
           <td style="white-space: nowrap;"><a href="{$value.viewURL}">{$value.no_rawat}</a></td>
           <td style="white-space: nowrap;">
             <button type="button" name="button" class="btn btn-xs btn-warning antrian"
@@ -45,7 +45,7 @@
               disabled
               {/if}
             ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
-          <td style="white-space: nowrap;">{$value.nm_poli}</td>
+          <td style="white-space: nowrap;"><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">{$value.nm_poli}</a></td>
           <td style="white-space: nowrap;">{$value.nm_dokter}</td>
           <td style="white-space: nowrap;">{$value.png_jawab}</td>
           <td style="white-space: nowrap;">{$value.no_peserta}</td>
@@ -67,6 +67,13 @@
     </div>
 </div>
 <div class="modal fade" id="riwayatModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="resepModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-full" role="document">
         <div class="modal-content">
             ...

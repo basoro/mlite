@@ -1,65 +1,13 @@
 <ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active"><a href="#tindakan" aria-controls="home" role="tab" data-toggle="tab">Tindakan</a></li>
-    <li role="presentation"><a href="#resep" aria-controls="resep" role="tab" data-toggle="tab">Resep Dokter</a></li>
+    <li role="presentation" class="active"><a href="#resep" aria-controls="resep" role="tab" data-toggle="tab">Resep Dokter</a></li>
     <li role="presentation"><a href="#data_resep" aria-controls="resep" role="tab" data-toggle="tab">Data Resep</a></li>
+    <li role="presentation"><a href="#tindakan" aria-controls="home" role="tab" data-toggle="tab">Tindakan</a></li>
     <li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
     <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
 </ul>
 
 <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade in active" id="tindakan">
-      <h4>Rincian Tindakan</h4>
-      <div class="table-responsive no-margin">
-        <table class="table table-striped table-bordered no-padding" width="100%">
-          <thead>
-            <tr>
-              <th>Tanggal</th>
-              <th>Nama Item</th>
-              <th>Provider</th>
-              <th>Tarif</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {loop: $rawat_jl_dr}
-            <tr>
-              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-              <td>{$value.nm_perawatan}</td>
-              <td>Dokter</td>
-              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-            </tr>
-            {/loop}
-            {loop: $rawat_jl_pr}
-            <tr>
-              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-              <td>{$value.nm_perawatan}</td>
-              <td>Perawat</td>
-              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-            </tr>
-            {/loop}
-            {loop: $rawat_jl_drpr}
-            <tr>
-              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
-              <td>{$value.nm_perawatan}</td>
-              <td>Dokter & Perawat</td>
-              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
-              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
-            </tr>
-            {/loop}
-          </tbody>
-          <tfoot>
-            <tr>
-              <th colspan="3">Total Biaya Tindakan</th>
-              <th>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></th>
-              <th></th>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
-    </div>
-    <div role="tabpanel" class="tab-pane fade in" id="resep">
+    <div role="tabpanel" class="tab-pane fade in active" id="resep">
       <h4>Permintaan e-Resep</h4>
       <h5>Non Racikan</h5>
       <div class="table-responsive no-margin">
@@ -162,6 +110,58 @@
             <tr>
               <th colspan="3">Total Biaya Obat Racikan</th>
               <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep_racikan,2,',','.')?}</span></th>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+    <div role="tabpanel" class="tab-pane fade in" id="tindakan">
+      <h4>Rincian Tindakan</h4>
+      <div class="table-responsive no-margin">
+        <table class="table table-striped table-bordered no-padding" width="100%">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Nama Item</th>
+              <th>Provider</th>
+              <th>Tarif</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $rawat_jl_dr}
+            <tr>
+              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
+              <td>{$value.nm_perawatan}</td>
+              <td>Dokter</td>
+              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
+              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+            </tr>
+            {/loop}
+            {loop: $rawat_jl_pr}
+            <tr>
+              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
+              <td>{$value.nm_perawatan}</td>
+              <td>Perawat</td>
+              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
+              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+            </tr>
+            {/loop}
+            {loop: $rawat_jl_drpr}
+            <tr>
+              <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
+              <td>{$value.nm_perawatan}</td>
+              <td>Dokter & Perawat</td>
+              <td>Rp. <span class="pull-right">{?= number_format($value.biaya_rawat,2,',','.')?}</span></td>
+              <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
+            </tr>
+            {/loop}
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="3">Total Biaya Tindakan</th>
+              <th>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></th>
+              <th></th>
             </tr>
           </tfoot>
         </table>
