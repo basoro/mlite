@@ -44,7 +44,6 @@ class Site extends SiteModule
         $this->route('anjungan/sep/bikin/(:str)/(:int)', 'getSepMandiriBikin');
         $this->route('anjungan/sep/savesep', 'postSaveSep');
         $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
-        $this->route('anjungan/bikinkontrol', 'BikinKontrol');
     }
 
     public function getIndex()
@@ -1984,8 +1983,7 @@ class Site extends SiteModule
 
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime('1970-01-01 00:00:00'));
-      //=====KEY====/
-      $key = $this->settings->get('settings.BpjsConsID') . $this->settings->get('settings.BpjsSecretKey') . $tStamp;
+      $key = $this->consid.$this->secretkey.$tStamp;
       $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
       $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
       $_POST['sep_user']  = 'SEP Mandiri';

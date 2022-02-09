@@ -47,6 +47,26 @@
             </div>
             <div class="col-md-6">
                 <div class="form-group">
+                    <label>Dokter</label>
+                    <select class="form-control" name="dokter" data-use-search="true">
+                      {loop: $maping_dokter_dpjpvclaim}
+                      <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+                      {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Poli/Unit</label>
+                    <select class="form-control" name="poli" data-use-search="true">
+                      {loop: $maping_poli_bpjs}
+                      <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                      {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
                     <label>Tanggal Surat</label>
                     <input type="text" name="tanggal_rujukan" class="form-control tanggal" value="{?=date('Y-m-d')?}" />
                 </div>

@@ -852,6 +852,8 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   var terapi          = $('input:text[name=terapi]').val();
   var alasan1         = $('textarea[name=alasan1]').val();
   var rtl1            = $('textarea[name=rtl1]').val();
+  var poli            = $('select[name=poli]').val();
+  var dokter          = $('select[name=dokter]').val();
 
   var url = baseURL + '/rawat_jalan/savekontrol?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -861,7 +863,9 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   diagnosa : diagnosa,
   terapi  : terapi,
   alasan1      : alasan1,
-  rtl1          : rtl1
+  rtl1          : rtl1,
+  dokter : dokter,
+  poli : poli 
   }, function(data) {
     console.log(data);
     // tampilkan data

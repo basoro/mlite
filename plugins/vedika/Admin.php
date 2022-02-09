@@ -488,14 +488,12 @@ class Admin extends AdminModule
 
     public function postSaveSEP()
     {
+      $date = date('Y-m-d');
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
       $key = $this->consid.$this->secretkey.$tStamp;
 
-      date_default_timezone_set($this->settings->get('settings.timezone'));
-
       header('Content-type: text/html');
-      $date = date('Y-m-d');
       $url = $this->settings->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
       $consid = $this->settings->get('settings.BpjsConsID');
       $secretkey = $this->settings->get('settings.BpjsSecretKey');
@@ -509,7 +507,7 @@ class Admin extends AdminModule
         //echo json_encode($data);
         $data = $data;
       } else {
-        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
           $decompress = decompress($stringDecrypt);
@@ -547,7 +545,7 @@ class Admin extends AdminModule
         //echo json_encode($data);
         $data_rujukan = $data_rujukan;
       } else {
-        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
           $decompress = decompress($stringDecrypt);
@@ -609,7 +607,10 @@ class Admin extends AdminModule
             'nmdiagnosaawal' => $data_rujukan['response']['rujukan']['diagnosa']['nama'],
             'kdpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['kd_poli_bpjs'],
             'nmpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['nm_poli_bpjs'],
-            'klsrawat' =>  substr($data['response']['kelasRawat'], 6),
+            'klsrawat' =>  $data['response']['klsRawat']['klsRawatHak'],
+            'klsnaik' => $data['response']['klsRawat']['klsRawatNaik'],
+            'pembiayaan' => $data['response']['klsRawat']['pembiayaan'],
+            'pjnaikkelas' => $data['response']['klsRawat']['penanggungJawab'],
             'lakalantas' => '0',
             'user' => $this->core->getUserInfo('username', null, true),
             'nomr' => $this->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']),
@@ -622,7 +623,6 @@ class Admin extends AdminModule
             'asal_rujukan' => $_POST['asal_rujukan'],
             'eksekutif' => $data['response']['poliEksekutif'],
             'cob' => '0',
-            'penjamin' => '-',
             'notelep' => $no_telp,
             'katarak' => '0',
             'tglkkl' => '1900-01-01',
@@ -637,7 +637,13 @@ class Admin extends AdminModule
             'nmkec' => '-',
             'noskdp' => '0',
             'kddpjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['kd_dokter_bpjs'],
-            'nmdpdjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs']
+            'nmdpdjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'],
+            'tujuankunjungan' => '',
+            'flagprosedur' => '',
+            'penunjang' => '',
+            'asesmenpelayanan' => $_POST['assesmentPel'],
+            'kddpjplayanan' => $data['response']['dpjp']['kdDPJP'],
+            'nmdpjplayanan' => $data['response']['dpjp']['nmDPJP']
           ]);
       }
 
