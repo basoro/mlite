@@ -87,9 +87,44 @@ class Admin extends AdminModule
 
     public function postSaveSEP()
     {
+
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
         $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
         $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
         $_POST['sep_user']	= $this->core->getUserInfo('fullname', null, true);
+
+        if($_POST['jnspelayanan'] == 1) {
+
+          $data = [
+            'request' => [
+                'noKartu' => $_POST['no_kartu'],
+                'kodeDokter' => $_POST['kddpjp'],
+                'poliKontrol' => $_POST['kdpolitujuan'],
+                'tglRencanaKontrol' => $_POST['tglsep'],
+                'user' => $_POST['sep_user']
+            ]
+          ];
+
+          $data = json_encode($data);
+
+          $url = $this->api_url.'RencanaKontrol/InsertSPRI';
+          $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+          $data = json_decode($output, true);
+
+          if ($data == NULL) {
+            echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+          } else if ($data['metaData']['code'] == 200) {
+            $stringDecrypt = stringDecrypt($key, $data['response']);
+            $decompress = '""';
+            $decompress = decompress($stringDecrypt);
+            $spri = json_decode($decompress, true);
+            $_POST['noskdp'] = $spri['noSPRI'];
+            $_POST['kddpjp'] = '';
+          }
+        }
 
         $data = [
             'request' => [
@@ -157,10 +192,6 @@ class Admin extends AdminModule
 
         $data = json_encode($data);
 
-        date_default_timezone_set('UTC');
-        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-        $key = $this->consid.$this->secretkey.$tStamp;
-
         $url = $this->api_url.'SEP/2.0/insert';
         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
         $data = json_decode($output, true);
@@ -193,6 +224,22 @@ class Admin extends AdminModule
               $data = json_decode($data, true);
 
               $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+
+              if($_POST['jnspelayanan'] == 1) {
+                $this->db('bridging_surat_pri_bpjs')->save([
+                  'no_rawat' => $_POST['no_rawat'],
+                  'no_kartu' => $_POST['no_kartu'],
+                  'tgl_surat' => $_POST['tglrujukan'],
+                  'no_surat' => $_POST['noskdp'],
+                  'tgl_rencana' => $_POST['tglsep'],
+                  'kd_dokter_bpjs' => $_POST['kddpjp'],
+                  'nm_dokter_bpjs' => $_POST['nmdpdjp'],
+                  'kd_poli_bpjs' => $_POST['kdpolitujuan'],
+                  'nm_poli_bpjs' => $_POST['nmpolitujuan'],
+                  'diagnosa' => $_POST['diagawal'],
+                  'no_sep' => $_POST['sep_no_sep']
+                ]);
+              }
 
               $simpan_sep = $this->db('bridging_sep')->save([
                 'no_sep' => $_POST['sep_no_sep'],

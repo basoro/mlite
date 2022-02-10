@@ -145,6 +145,45 @@ return [
       $core->db()->pdo()->exec("ALTER TABLE `bpjs_prb`
         ADD CONSTRAINT `bpjs_prb_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_kontrol_bpjs` (
+        `no_sep` varchar(40) DEFAULT NULL,
+        `tgl_surat` date NOT NULL,
+        `no_surat` varchar(40) NOT NULL,
+        `tgl_rencana` date DEFAULT NULL,
+        `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
+        `nm_dokter_bpjs` varchar(50) DEFAULT NULL,
+        `kd_poli_bpjs` varchar(15) DEFAULT NULL,
+        `nm_poli_bpjs` varchar(40) DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
+        ADD PRIMARY KEY (`no_surat`),
+        ADD KEY `bridging_surat_kontrol_bpjs_ibfk_1` (`no_sep`);");
+
+      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
+        ADD CONSTRAINT `bridging_surat_kontrol_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_pri_bpjs` (
+        `no_rawat` varchar(17) DEFAULT NULL,
+        `no_kartu` varchar(25) DEFAULT NULL,
+        `tgl_surat` date NOT NULL,
+        `no_surat` varchar(40) NOT NULL,
+        `tgl_rencana` date DEFAULT NULL,
+        `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
+        `nm_dokter_bpjs` varchar(50) DEFAULT NULL,
+        `kd_poli_bpjs` varchar(15) DEFAULT NULL,
+        `nm_poli_bpjs` varchar(40) DEFAULT NULL,
+        `diagnosa` varchar(130) NOT NULL,
+        `no_sep` varchar(40) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
+        ADD PRIMARY KEY (`no_surat`),
+        ADD KEY `no_rawat` (`no_rawat`);");
+
+      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
+        ADD CONSTRAINT `bridging_surat_pri_bpjs_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
       if (!is_dir(UPLOADS."/qrcode")) {
           mkdir(UPLOADS."/qrcode", 0777);
       }
