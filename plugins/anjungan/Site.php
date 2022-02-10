@@ -1971,6 +1971,15 @@ class Site extends SiteModule
         $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
         echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
+        $this->db('mutasi_berkas')->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'status' => 'Sudah Dikirim',
+          'dikirim' => date('Y-m-d H:i:s'),
+          'diterima' => '0000-00-00 00:00:00',
+          'kembali' => '0000-00-00 00:00:00',
+          'tidakada' => '0000-00-00 00:00:00',
+          'ranap' => '0000-00-00 00:00:00'
+        ]);
         exit();
     }
 
