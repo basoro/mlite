@@ -641,7 +641,7 @@ class Admin extends AdminModule
             'tujuankunjungan' => '',
             'flagprosedur' => '',
             'penunjang' => '',
-            'asesmenpelayanan' => $_POST['assesmentPel'],
+            'asesmenpelayanan' => '',
             'kddpjplayanan' => $data['response']['dpjp']['kdDPJP'],
             'nmdpjplayanan' => $data['response']['dpjp']['nmDPJP']
           ]);
@@ -654,6 +654,7 @@ class Admin extends AdminModule
           $this->notify('failure', 'Simpan gagal');
       }
     }
+
     public function getPDF($id)
     {
       $berkas_digital = $this->db('berkas_digital_perawatan')
