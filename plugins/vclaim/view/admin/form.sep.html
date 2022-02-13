@@ -502,6 +502,7 @@
           </div>
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
+            <button type="button" name="button" class="btn btn-warning" id="kontrol">Kontrol</button>
             <button type="button" name="button" class="btn btn-warning" id="spri">SPRI</button>
             <input type="submit" id="selesai" class="btn btn-danger pull-right" name="" value="Selesai">
           </div>
@@ -511,6 +512,13 @@
   </div>
 </div>
 <div class="modal fade" id="spriModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="kontrolModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
@@ -528,6 +536,23 @@
 
     var modal = $('#spriModal');
     var modalContent = $('#spriModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#kontrol", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var loadURL =  baseURL + '/vclaim/kontrol/' + no_peserta + '?t=' + mlite.token;
+
+    var modal = $('#kontrolModal');
+    var modalContent = $('#kontrolModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
