@@ -2212,6 +2212,14 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getSPRIDisplay($no_kartu, $no_rawat)
+    {
+      $bridging_surat_pri_bpjs = $this->db('bridging_surat_pri_bpjs')->where('no_kartu', $no_kartu)->toArray();
+      $this->tpl->set('spri', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_pri_bpjs)));
+      echo $this->draw('spri.display.html');
+      exit();
+    }
+
     public function postSaveSPRI($no_kartu, $no_rawat)
     {
         date_default_timezone_set('UTC');

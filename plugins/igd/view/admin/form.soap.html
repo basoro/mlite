@@ -102,8 +102,7 @@
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
-          <a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" class="btn btn-info" data-toggle="modal" data-target="#riwayatModal"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></a>
-          <!--<button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>-->
+          <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
         </div>
       </div>
@@ -355,7 +354,7 @@
     modal.on('show.bs.modal', function () {
         modalContent.load(loadURL);
     }).modal();
-
+    return false;
   });
 </script>
 <script type="text/javascript">

@@ -502,7 +502,7 @@
           </div>
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
-            <a href="{?=url([ADMIN, 'vclaim', 'spri', $value.no_peserta, convertNorawat($value.no_rawat)])?}" class="btn btn-warning" data-toggle="modal" data-target="#spriModal">SPRI</a>
+            <button type="button" name="button" class="btn btn-warning" id="spri">SPRI</button>
             <input type="submit" id="selesai" class="btn btn-danger pull-right" name="" value="Selesai">
           </div>
         </div>
@@ -517,6 +517,25 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  $("#form_sep").on("click","#spri", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var loadURL =  baseURL + '/vclaim/spri/' + no_peserta + '/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#spriModal');
+    var modalContent = $('#spriModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
 <script type="text/javascript">
    $(function () {
        $('.tanggal').datetimepicker({

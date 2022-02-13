@@ -12,7 +12,7 @@
               <div class="col-md-6">
                   <div class="form-group">
                       <label>Dokter</label>
-                      <select class="form-control" name="dokter" data-use-search="true">
+                      <select class="form-control" name="dokter" id="dokter" data-use-search="true">
                         {loop: $maping_dokter_dpjpvclaim}
                         <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
                         {/loop}
@@ -22,7 +22,7 @@
               <div class="col-md-6">
                   <div class="form-group">
                       <label>Poli/Unit</label>
-                      <select class="form-control" name="poli" data-use-search="true">
+                      <select class="form-control" name="poli" id="poli" data-use-search="true">
                         {loop: $maping_poli_bpjs}
                         <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
                         {/loop}
@@ -32,19 +32,20 @@
               <div class="col-md-6">
                   <div class="form-group">
                       <label>Tanggal Surat</label>
-                      <input type="text" name="tanggal_rujukan" class="form-control tanggal" value="{?=date('Y-m-d')?}" />
+                      <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal" value="{?=date('Y-m-d')?}" />
                   </div>
               </div>
               <div class="col-md-6">
                   <div class="form-group">
                       <label>Tanggal Kontrol</label>
-                      <input type="text" name="tanggal_datang" class="form-control tanggal" />
+                      <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
                   </div>
               </div>
           </div>
           <div class="row clearfix">
               <div class="col-md-12">
                   <button type="button" class="btn btn-primary" id="simpan_spri">Simpan</button>
+                  <button type="button" class="btn btn-primary" id="load_spri">Load</button>
               </div>
           </div>
         </div>
@@ -53,32 +54,8 @@
   </div>
   <br><br>
 
-  <table class="table">
-    <thead>
-      <tr>
-        <th>No Rawat</th>
-        <th>No Kartu</th>
-        <th>No Surat</th>
-        <th>Tgl. Surat</th>
-        <th>Tgl. Periksa</th>
-        <th>Dokter</th>
-        <th>Poli</th>
-      </tr>
-    </thead>
-    <tbody>
-      {loop: $spri}
-      <tr>
-        <td>{$value.no_rawat}</td>
-        <td>{$value.no_kartu}</td>
-        <td>{$value.no_surat}</td>
-        <td>{$value.tgl_surat}</td>
-        <td>{$value.tgl_rencana}</td>
-        <td>{$value.nm_dokter_bpjs}</td>
-        <td>{$value.nm_poli_bpjs}</td>
-      </tr
-      {/loop}
-    </tbody>
-  </table>
+  <div id="spridisplay">
+  </div>
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
@@ -99,14 +76,26 @@
    });
 </script>
 <script type="text/javascript">
+  $("#form_spri").on("click","#load_spri", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
+  });
+
+  $(document).ready(function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
+  });
+
   $("#form_spri").on("click","#simpan_spri", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
 
-    var tanggal_surat   = $('input:text[name=tanggal_rujukan]').val();
-    var tanggal_periksa = $('input:text[name=tanggal_datang]').val();
-    var poli            = $('select[name=poli]').val();
-    var dokter          = $('select[name=dokter]').val();
+    var tanggal_surat   = $('#tanggal_rujukan').val();
+    var tanggal_periksa = $('#tanggal_datang').val();
+    var poli            = $('#poli').val();
+    var dokter          = $('#dokter').val();
 
     var url = baseURL + '/vclaim/savespri/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token;
 
@@ -116,8 +105,8 @@
       dokter : dokter,
       poli : poli
     } ,function(data) {
-        alert(data);
-        $("#display").show().load(baseURL + '/vclaim/spri/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
+        //alert(data);
+        $("#spridisplay").show().load(baseURL + '/vclaim/spridisplay/{$no_kartu}/{?=convertNorawat($no_rawat)?}?t=' + mlite.token);
         $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
         "Data SPRI telah disimpan!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
