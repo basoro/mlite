@@ -644,7 +644,7 @@ class Admin extends AdminModule
               'tanggal_periksa' => $_POST['tanggal_datang'],
               'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
               'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_rujukan']),
+              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_datang']),
               'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
               'limit_reg' => 0,
               'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
