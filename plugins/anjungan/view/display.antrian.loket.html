@@ -174,12 +174,12 @@
                   <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
                 </div>
                 <br>
-                <div class="col" id="form_simpan_no_rkm_medis">
+                <div class="col" id="form_simpan_no_rkm_medis_{$value}">
                     <input type="hidden" name="noantrian" value="{$antrian}">
                     <div class="input-group input-group-lg">
-                        <input type="text" class="form-control form-control-lg" name="no_rkm_medis" placeholder="Input Nomor RM">
+                        <input type="text" class="form-control form-control-lg" name="no_rkm_medis_{$value}" placeholder="Input Nomor RM">
                         <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
-                            <button class="btn btn-danger simpan_no_rkm_medis">Simpan</button>
+                            <button class="btn btn-danger simpan_no_rkm_medis_{$value}">Simpan</button>
                         </span>
                     </div>
                 </div>
@@ -394,9 +394,10 @@
   		}
   	});
   }
-  $("#form_simpan_no_rkm_medis").on("click", ".simpan_no_rkm_medis", function(event){
+  {loop: $loket}
+  $("#form_simpan_no_rkm_medis_{$value}").on("click", ".simpan_no_rkm_medis_{$value}", function(event){
     var noantrian = $('input:hidden[name=noantrian]').val();
-    var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+    var no_rkm_medis = $('input:text[name=no_rkm_medis_{$value}]').val();
     $.ajax({
         url: '{?=url()?}/anjungan/simpannorm',
         dataType: 'json',
@@ -415,6 +416,7 @@
         }
     });
   });
+  {/loop}
   </script>
   {/if}
 </body>
