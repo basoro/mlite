@@ -227,6 +227,7 @@ class Admin extends AdminModule
       $query->execute();
       $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
+      $rows = [];
       foreach ($query as $q) {
           $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
@@ -239,9 +240,16 @@ class Admin extends AdminModule
           $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
 
+          $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $task1 = '';
+          $task2 = '';
+          if($mlite_antrian_loket) {
+            $task1 = $mlite_antrian_loket['start_time'];
+            $task2 = $mlite_antrian_loket['end_time'];
+          }
           $q['nomor_referensi'] = $mlite_antrian_referensi['nomor_referensi'];
-          $q['task1'] = '0';
-          $q['task2'] = '0';
+          $q['task1'] = strtotime($task1) * 1000;
+          $q['task2'] = strtotime($task2) * 1000;
           $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;
           $q['task4'] = strtotime($mutasi_berkas2['diterima']) * 1000;
           $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
