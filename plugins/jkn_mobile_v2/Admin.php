@@ -229,7 +229,12 @@ class Admin extends AdminModule
 
       $rows = [];
       foreach ($query as $q) {
-          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
+          $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
+          $batal = '';
+          if($reg_periksa2) {
+            $batal = strtotime(date('h:i:s')) * 1000;
+          }
           $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
           if(!$mlite_antrian_referensi) {
               $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
@@ -255,7 +260,7 @@ class Admin extends AdminModule
           $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
           $q['task6'] = strtotime($resep_obat['datajam']) * 1000;
           $q['task7'] = strtotime($resep_obat2['datajam']) * 1000;
-          $q['task99'] = strtotime(date('Y-m-d h:i:s')) * 1000;
+          $q['task99'] = $batal;
           $rows[] = $q;
       }
 
