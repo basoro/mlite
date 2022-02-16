@@ -107,7 +107,7 @@
           <a href="{?=url()?}/anjungan/loket?show=panggil_loket" target="_blank">
             <div class="panel border-success">
               <div class="panel-body text-success">
-                <div class="no_antrian">A<span class="antrian_loket"><span></div>
+                <div class="no_antrian">A<span class="antrian_Loket"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
                 <div class="no_loket">Loket <span class="get_loket"><span></div>
@@ -117,7 +117,7 @@
           <a href="{?=url()?}/anjungan/loket?show=panggil_cs" target="_blank">
             <div class="panel border-success">
               <div class="panel-body text-success">
-                <div class="no_antrian">B<span class="antrian_cs"><span></div>
+                <div class="no_antrian">B<span class="antrian_CS"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
                 <div class="no_loket">Loket <span class="get_cs"><span></div>
@@ -294,8 +294,8 @@
   }
 
   function updateLayar(type, nomor, loket) {
-    $('.antrian_' + type.toLowerCase()).html(nomor);
-    $('.get_' + type.toLowerCase()).html(loket);
+    $('.antrian_' + type).html(nomor);
+    $('.get_' + type).html(loket);
   }
 
   function panggil(data) {
@@ -317,9 +317,9 @@
     audio.playbackRate = 1.0;
 
     const playPromise = audio.play();
-    //if (playPromise !== null){
-    //    playPromise.catch(() => { media.play(); })
-    //}
+    if (playPromise !== null){
+        playPromise.catch(() => { media.play(); })
+    }
 
     if (callback) {
         //When the audio object completes it's playback, call the callback
@@ -377,7 +377,7 @@
     {if: isset($_GET['loket']) && $_GET['loket'] !=''}
   	var loket = "{?=$_GET['loket']?}";
     {/if}
-    //alert('Panggil ' + loket + ' - ' + noantrian);
+    alert('Panggil ' + loket + ' - ' + noantrian);
   	$.ajax({
   		url: '{?=url()?}/anjungan/setpanggil',
   		dataType: 'json',

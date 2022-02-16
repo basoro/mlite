@@ -2273,6 +2273,212 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getSync_SEP($no_kartu, $no_rawat)
+    {
+      $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
+      $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+      $bridging_sep = $this->db('bridging_sep')
+        ->where('no_kartu', $no_kartu)
+        ->toArray();
+      $this->tpl->set('bridging_sep', $this->tpl->noParse_array(htmlspecialchars_array($bridging_sep)));
+      $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
+      $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
+      $this->tpl->set('no_kartu', $no_kartu);
+      $this->tpl->set('no_rawat', $no_rawat);
+      echo $this->draw('form.sepvclaim.html');
+      exit();
+    }
+
+    public function getSyncSepDisplay($no_kartu)
+    {
+      $bridging_sep = $this->db('bridging_sep')
+        ->where('no_kartu', $no_kartu)
+        ->toArray();
+      $this->tpl->set('bridging_sep', $this->tpl->noParse_array(htmlspecialchars_array($bridging_sep)));
+      $this->tpl->set('no_kartu', $no_kartu);
+      echo $this->draw('sync_sep.display.html');
+      exit();
+    }
+
+    public function postSaveSyncSEP()
+    {
+      $date = date('Y-m-d');
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid.$this->secretkey.$tStamp;
+
+      header('Content-type: text/html');
+      $url = $this->settings->get('settings.BpjsApiUrl').'SEP/'.$_POST['no_sep'];
+      $consid = $this->settings->get('settings.BpjsConsID');
+      $secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $userkey = $this->settings->get('settings.BpjsUserKey');
+      $output = BpjsService::get($url, NULL, $consid, $secretkey, $userkey, $tStamp);
+      $data = json_decode($output, true);
+      //print_r($output);
+      $code = $data['metaData']['code'];
+      $message = $data['metaData']['message'];
+      if($this->vclaim_version == 1) {
+        //echo json_encode($data);
+        $data = $data;
+      } else {
+        $stringDecrypt = stringDecrypt($key, $data['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($data != null) {
+          $data = '{
+            "metaData": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+          $data = json_decode($data, true);
+        } else {
+          $data = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $data = json_decode($data, true);
+        }
+      }
+
+      $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/'.$data['response']['noRujukan'];
+      if($_POST['asal_rujukan'] == 2) {
+        $url_rujukan = $this->settings->get('settings.BpjsApiUrl').'Rujukan/RS/'.$data['response']['noRujukan'];
+      }
+      $rujukan = BpjsService::get($url_rujukan, NULL, $consid, $secretkey, $userkey, $tStamp);
+      $data_rujukan = json_decode($rujukan, true);
+      //print_r($rujukan);
+
+      $code = $data_rujukan['metaData']['code'];
+      $message = $data_rujukan['metaData']['message'];
+      if($this->vclaim_version == 1) {
+        //echo json_encode($data);
+        $data_rujukan = $data_rujukan;
+      } else {
+        $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($data_rujukan != null) {
+          $data_rujukan = '{
+            "metaData": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+          $data_rujukan = json_decode($data_rujukan, true);
+        } else {
+          $data_rujukan = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          $data_rujukan = json_decode($data_rujukan, true);
+        }
+      }
+
+      $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
+      if(empty($data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'])){
+        $no_telp = '00000000';
+      }
+
+      $jenis_pelayanan = '2';
+      if($data['response']['jnsPelayanan'] == 'Rawat Inap') {
+        $jenis_pelayanan = '1';
+      }
+
+      if($data_rujukan['metaData']['code'] == 201) {
+        $data_rujukan['response']['rujukan']['tglKunjungan'] = $_POST['tgl_kunjungan'];
+        $data_rujukan['response']['rujukan']['provPerujuk']['kode'] = $this->settings->get('settings.ppk_bpjs');
+        $data_rujukan['response']['rujukan']['provPerujuk']['nama'] = $this->settings->get('settings.nama_instansi');
+        $data_rujukan['response']['rujukan']['diagnosa']['kode'] = $_POST['kd_diagnosa'];
+        $data_rujukan['response']['rujukan']['diagnosa']['nama'] = $data['response']['diagnosa'];
+        $data_rujukan['response']['rujukan']['pelayanan']['kode'] = $jenis_pelayanan;
+      }
+
+      if($data['metaData']['code'] == 200)
+      {
+        if($data['response']['klsRawat']['klsRawatNaik'] === NULL) {
+          $data['response']['klsRawat']['klsRawatNaik'] = '';
+        }
+        if($data['response']['klsRawat']['pembiayaan'] === NULL) {
+          $data['response']['klsRawat']['pembiayaan'] = '';
+        }
+        if($data['response']['klsRawat']['penanggungJawab'] === NULL) {
+          $data['response']['klsRawat']['penanggungJawab'] = '';
+        }
+        $insert = $this->db('bridging_sep')
+          ->save([
+            'no_sep' => $data['response']['noSep'],
+            'no_rawat' => $_POST['no_rawat'],
+            'tglsep' => $data['response']['tglSep'],
+            'tglrujukan' => $data_rujukan['response']['rujukan']['tglKunjungan'],
+            'no_rujukan' => $data['response']['noRujukan'],
+            'kdppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['kode'],
+            'nmppkrujukan' => $data_rujukan['response']['rujukan']['provPerujuk']['nama'],
+            'kdppkpelayanan' => $this->settings->get('settings.ppk_bpjs'),
+            'nmppkpelayanan' => $this->settings->get('settings.nama_instansi'),
+            'jnspelayanan' => $jenis_pelayanan,
+            'catatan' => $data['response']['catatan'],
+            'diagawal' => $data_rujukan['response']['rujukan']['diagnosa']['kode'],
+            'nmdiagnosaawal' => $data_rujukan['response']['rujukan']['diagnosa']['nama'],
+            'kdpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['kd_poli_bpjs'],
+            'nmpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['nm_poli_bpjs'],
+            'klsrawat' =>  $data['response']['klsRawat']['klsRawatHak'],
+            'klsnaik' => $data['response']['klsRawat']['klsRawatNaik'],
+            'pembiayaan' => $data['response']['klsRawat']['pembiayaan'],
+            'pjnaikkelas' => $data['response']['klsRawat']['penanggungJawab'],
+            'lakalantas' => '0',
+            'user' => $this->core->getUserInfo('username', null, true),
+            'nomr' => $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']),
+            'nama_pasien' => $data['response']['peserta']['nama'],
+            'tanggal_lahir' => $data['response']['peserta']['tglLahir'],
+            'peserta' => $data['response']['peserta']['jnsPeserta'],
+            'jkel' => $data['response']['peserta']['kelamin'],
+            'no_kartu' => $data['response']['peserta']['noKartu'],
+            'tglpulang' => '1900-01-01 00:00:00',
+            'asal_rujukan' => $_POST['asal_rujukan'],
+            'eksekutif' => $data['response']['poliEksekutif'],
+            'cob' => '0',
+            'notelep' => $no_telp,
+            'katarak' => '0',
+            'tglkkl' => '1900-01-01',
+            'keterangankkl' => '-',
+            'suplesi' => '0',
+            'no_sep_suplesi' => '-',
+            'kdprop' => '-',
+            'nmprop' => '-',
+            'kdkab' => '-',
+            'nmkab' => '-',
+            'kdkec' => '-',
+            'nmkec' => '-',
+            'noskdp' => '0',
+            'kddpjp' => $_POST['kd_dokter'],
+            'nmdpdjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'],
+            'tujuankunjungan' => '',
+            'flagprosedur' => '',
+            'penunjang' => '',
+            'asesmenpelayanan' => '',
+            'kddpjplayanan' => $data['response']['dpjp']['kdDPJP'],
+            'nmdpjplayanan' => $data['response']['dpjp']['nmDPJP']
+          ]);
+      }
+
+      if ($insert) {
+          $this->db('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']]);
+          $this->notify('success', 'Simpan sukes');
+      } else {
+          $this->notify('failure', 'Simpan gagal');
+      }
+      exit();
+    }
+
     public function getKontrol($no_kartu)
     {
       $this->_addHeaderFiles();
@@ -2346,6 +2552,40 @@ class Admin extends AdminModule
             'kd_poli_bpjs' => $_POST['poli'],
             'nm_poli_bpjs' => $maping_poli_bpjs['nm_poli_bpjs']
           ]);
+
+          $query = $this->db('skdp_bpjs')->save([
+            'tahun' => date('Y'),
+            'no_rkm_medis' => $_POST['no_rkm_medis'],
+            'diagnosa' => $_POST['diagnosa'],
+            'terapi' => $_POST['terapi'],
+            'alasan1' => $_POST['alasan1'],
+            'alasan2' => '',
+            'rtl1' => $_POST['rtl1'],
+            'rtl2' => '',
+            'tanggal_datang' => $_POST['tanggal_datang'],
+            'tanggal_rujukan' => $_POST['tanggal_rujukan'],
+            'no_antrian' => $this->core->setNoSKDP(),
+            'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+            'status' => 'Menunggu'
+          ]);
+
+          if ($query) {
+            $this->db('booking_registrasi')
+              ->save([
+                'tanggal_booking' => date('Y-m-d'),
+                'jam_booking' => date('H:i:s'),
+                'no_rkm_medis' => $_POST['no_rkm_medis'],
+                'tanggal_periksa' => $_POST['tanggal_datang'],
+                'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+                'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
+                'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_datang']),
+                'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
+                'limit_reg' => 0,
+                'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
+                'status' => 'Belum'
+              ]);
+          }
+
         } else {
           echo $data['metaData']['message'];
         }
