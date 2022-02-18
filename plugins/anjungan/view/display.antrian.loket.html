@@ -401,7 +401,7 @@
     $.ajax({
         url: '{?=url()?}/anjungan/simpannorm',
         dataType: 'json',
-        data: { noantrian: noantrian, no_rkm_medis: no_rkm_medis },
+        data: { noantrian: noantrian, type: '{?=str_replace("panggil_","",$_GET['show'])?}', no_rkm_medis: no_rkm_medis },
         success: function(xhr) {
             console.log(xhr.status);
             if(xhr.status == true) {

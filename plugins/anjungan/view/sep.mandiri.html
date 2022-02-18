@@ -197,7 +197,9 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">Tutup</button>
-          <input class="btn btn-lg btn-success shadow" name="cekrm" type="submit" value="Cek Kartu Berobat">
+          <button class="btn btn-lg btn-success shadow" id="cekrm" name="cekrm" onclick="this.value=\'cekrm\'" type="submit">
+            <span class="text">Cek Kartu Berobat</span>
+          </button>
         </div>
         </form>
       </div>
@@ -368,6 +370,11 @@
     alert('Terima kasih telah melakukan check in pendaftaran rawat jalan. Silahkan lakukan cetak mandiri Surat Eligibilitas Peserta (SEP) anda pada menu CETAK SEP.');
     $('#daftar').modal('hide');
   });
+  function loading(){
+      $(".text").html("<i class='fa fa-spinner'></i> Loading ...");
+  }
+  var btn = document.getElementById("cekrm");
+  btn.addEventListener("click", loading);
   </script>
 
 </body>

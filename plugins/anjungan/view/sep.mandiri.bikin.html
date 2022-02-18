@@ -734,6 +734,7 @@
             window.location.replace(baseURL + '/anjungan/sep/cetaksep/' + result);
           } else if (messages.length > 1) {
             alert(result)
+            location.reload();
           } else {
             alert('Gagal menyimpan data ke database SIMRS');
           }
@@ -754,6 +755,16 @@
         document.getElementById("simpan").style.background = "grey";
       }
     });
+    function loading(){
+        $("#simpan").html("<i class='fa fa-spinner'></i> Loading ...");
+    }
+    var btn = document.getElementById("simpan");
+    btn.addEventListener("click", loading);
+    function reload(){
+        $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
+    }
+    var btn_reload = document.getElementById("reload");
+    btn_reload.addEventListener("click", reload);
   </script>
 
 </body>

@@ -329,6 +329,11 @@
   $('#reload').click(function() {
       location.reload();
   });
+  function loading(){
+      $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
+  }
+  var btn_reload = document.getElementById("reload");
+  btn_reload.addEventListener("click", loading);
   </script>
 </body>
 </html>

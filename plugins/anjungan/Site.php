@@ -819,9 +819,16 @@ class Site extends SiteModule
     public function getSimpanNoRM()
     {
       if(!isset($_GET['no_rkm_medis']) || $_GET['no_rkm_medis'] == '') die(json_encode(array('status' => false)));
+      if(!isset($_GET['type']) || $_GET['type'] == '') die(json_encode(array('status' => false,'message' => 'Gagal Type')));
+      $type = 'CS';
+      if($_GET['type'] == 'loket') {
+        $type = 'Loket';
+      }
+      $loket  = $_GET['loket'];
+
       $noantrian  = $_GET['noantrian'];
       $no_rkm_medis = $_GET['no_rkm_medis'];
-      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('loket', $loket)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
       if($query) {
           $res = [
               'status' => true,
@@ -1572,11 +1579,11 @@ class Site extends SiteModule
                 $decompress = decompress($stringDecrypt);
                 $sep_response = json_decode($decompress, true);
               } else {
-                $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi.";
+                $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
               }
             }
           else:
-            $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi.";
+            $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
           endif;
       }
 
