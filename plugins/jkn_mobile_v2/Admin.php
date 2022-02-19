@@ -27,6 +27,7 @@ class Admin extends AdminModule
             'Add Mapping Dokter' => 'addmappingdokter',
             'Jadwal Dokter HFIS' => 'jadwaldokter',
             'Task ID' => 'taskid',
+            'Dashboard Antrol BPJS' => 'antrol',
             'Pengaturan' => 'settings',
         ];
     }
@@ -41,6 +42,7 @@ class Admin extends AdminModule
         ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
         ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
+        ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_v2', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -325,6 +327,38 @@ class Admin extends AdminModule
         return $result;
     }
 
+    public function anyAntrol()
+    {
+        $this->getCssCard();
+        $tgl_kunjungan = date('Y-m-d');
+        $depanUrl = $this->bpjsurl . 'dashboard/waktutunggu/tanggal/';
+        if (isset($_POST['periode'])) {
+            $tgl_kunjungan = "";
+            $tgl_kunjungan = $_POST['periode'];
+            $tgl_kunjungan = preg_replace('/\s+/', '', $tgl_kunjungan);
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $this->assign['list'] = $json['response'];
+
+            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+        } else {
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $this->assign['list'] = $json['response'];
+
+            return $this->draw('antrol.html', ['row' => $this->assign]);
+        }
+        exit();
+    }
+
     public function getAjax()
     {
         header('Content-type: text/html');
@@ -448,6 +482,14 @@ class Admin extends AdminModule
         header('Content-type: text/javascript');
         echo $this->draw(MODULES.'/jkn_mobile_v2/js/admin/jkn_mobile_v2.js');
         exit();
+    }
+
+    public function getCssCard()
+    {
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addCSS(url('plugins/jkn_mobile_v2/css/mineCss.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
     }
 
     private function _addHeaderFiles()
