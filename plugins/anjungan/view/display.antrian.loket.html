@@ -319,9 +319,9 @@
     audio.playbackRate = 1.0;
 
     const playPromise = audio.play();
-    if (playPromise !== null){
-        playPromise.catch(() => { media.play(); })
-    }
+    //if (playPromise !== null){
+    //    playPromise.catch(() => { audio.play(); })
+    //}
 
     if (callback) {
         //When the audio object completes it's playback, call the callback
