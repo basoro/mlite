@@ -236,10 +236,9 @@ class Admin extends AdminModule
       foreach ($query as $q) {
           $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
           $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
-          $batal = '';
+          $batal = '0000-00-00 00:00:00';
           if($reg_periksa2) {
-            //$batal = strtotime(date('H:i:s')) * 1000;
-            $batal = date('H:i:s');
+            $batal = $q['tgl_registrasi'].' '.date('H:i:s');
           }
           $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
           if(!$mlite_antrian_referensi) {

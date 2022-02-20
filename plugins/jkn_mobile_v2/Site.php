@@ -1942,7 +1942,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('start_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
@@ -1965,7 +1965,7 @@ class Site extends SiteModule
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 1,
-                        'waktu' => strtotime($mlite_antrian_loket['start_time']) * 1000
+                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -1984,7 +1984,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('end_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
@@ -2007,7 +2007,7 @@ class Site extends SiteModule
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 2,
-                        'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000
+                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
@@ -2152,7 +2152,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
@@ -2194,7 +2194,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
