@@ -238,7 +238,8 @@ class Admin extends AdminModule
           $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
           $batal = '';
           if($reg_periksa2) {
-            $batal = strtotime(date('h:i:s')) * 1000;
+            //$batal = strtotime(date('H:i:s')) * 1000;
+            $batal = date('H:i:s');
           }
           $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
           if(!$mlite_antrian_referensi) {
@@ -254,17 +255,25 @@ class Admin extends AdminModule
           $task1 = '';
           $task2 = '';
           if($mlite_antrian_loket) {
-            $task1 = $mlite_antrian_loket['start_time'];
-            $task2 = $mlite_antrian_loket['end_time'];
+            $task1 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time'];
+            $task2 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time'];
           }
           $q['nomor_referensi'] = $mlite_antrian_referensi['nomor_referensi'];
-          $q['task1'] = strtotime($task1) * 1000;
+          /*$q['task1'] = strtotime($task1) * 1000;
           $q['task2'] = strtotime($task2) * 1000;
           $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;
           $q['task4'] = strtotime($mutasi_berkas2['diterima']) * 1000;
           $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
           $q['task6'] = strtotime($resep_obat['datajam']) * 1000;
           $q['task7'] = strtotime($resep_obat2['datajam']) * 1000;
+          $q['task99'] = $batal;*/
+          $q['task1'] = $task1;
+          $q['task2'] = $task2;
+          $q['task3'] = $mutasi_berkas['dikirim'];
+          $q['task4'] = $mutasi_berkas2['diterima'];
+          $q['task5'] = $pemeriksaan_ralan['datajam'];
+          $q['task6'] = $resep_obat['datajam'];
+          $q['task7'] = $resep_obat2['datajam'];
           $q['task99'] = $batal;
           $rows[] = $q;
       }

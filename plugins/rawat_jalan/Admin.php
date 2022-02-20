@@ -784,7 +784,7 @@ class Admin extends AdminModule
 
     public function postStatusRawat()
     {
-      $datetime = date('Y-m-d h:i:s');
+      $datetime = date('Y-m-d H:i:s');
       $cek = $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray();
       if($_POST['stts'] == 'Berkas Dikirim') {
           if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {

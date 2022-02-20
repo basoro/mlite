@@ -762,7 +762,7 @@ class Admin extends AdminModule
 
                 $s = $row['jam_datang'];
                 $dt = new \DateTime($s);
-                $tm = $dt->format('h:i:s');
+                $tm = $dt->format('H:i:s');
 
                 $w = $row['jam_pulang'];
                 $dd = new \DateTime($w);

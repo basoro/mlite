@@ -2240,7 +2240,7 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 99,
-                        'waktu' => strtotime(date('Y-m-d h:i:s')) * 1000
+                        'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2258,7 +2258,7 @@ class Site extends SiteModule
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 99,
-                        'waktu' => strtotime(date('Y-m-d h:i:s')) * 1000
+                        'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
                       ]);
                     }
                     echo '<br>-------------------------------------<br><br>';
