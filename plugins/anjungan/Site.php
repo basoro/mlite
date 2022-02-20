@@ -818,17 +818,16 @@ class Site extends SiteModule
 
     public function getSimpanNoRM()
     {
-      if(!isset($_GET['no_rkm_medis']) || $_GET['no_rkm_medis'] == '') die(json_encode(array('status' => false)));
+      if(!isset($_GET['no_rkm_medis']) || $_GET['no_rkm_medis'] == '') die(json_encode(array('status' => false,'message' => 'Gagal Type')));
       if(!isset($_GET['type']) || $_GET['type'] == '') die(json_encode(array('status' => false,'message' => 'Gagal Type')));
       $type = 'CS';
       if($_GET['type'] == 'loket') {
         $type = 'Loket';
       }
-      $loket  = $_GET['loket'];
 
       $noantrian  = $_GET['noantrian'];
       $no_rkm_medis = $_GET['no_rkm_medis'];
-      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('loket', $loket)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
       if($query) {
           $res = [
               'status' => true,

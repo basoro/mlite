@@ -269,7 +269,7 @@ class Site extends SiteModule
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
                                   'jenis_kunjungan' => $decode['jeniskunjungan'],
-                                  'status_kirim' => 'Belum'
+                                  'status_kirim' => 'Sudah'
                               ]);
                             }
                             /*
@@ -1673,7 +1673,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         foreach ($query as $q) {
-            //if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+            if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
               $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
               $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
               $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
@@ -1801,7 +1801,7 @@ class Site extends SiteModule
                 }
               }
               echo '<br>-------------------------------------<br><br>';
-            //}
+            }
         }
         exit();
     }
@@ -1928,7 +1928,7 @@ class Site extends SiteModule
           //->select('no_rkm_medis')
           //->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
           ->where('tanggal_periksa', $date)
-          ->where('status_kirim', 'Belum')
+          ->where('status_kirim', 'Sudah')
           ->toArray();
 
         echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
@@ -1936,6 +1936,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('start_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
@@ -1973,6 +1978,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mlite_antrian_loket = $this->db('mlite_antrian_loket')->select('end_time')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
@@ -2010,6 +2020,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
                 if($mutasi_berkas){
@@ -2047,6 +2062,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mutasi_berkas = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
                 if($mutasi_berkas){
@@ -2084,6 +2104,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 if($pemeriksaan_ralan){
@@ -2121,6 +2146,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 if($resep_obat){
@@ -2158,6 +2188,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 if($resep_obat){
@@ -2195,6 +2230,11 @@ class Site extends SiteModule
 
         foreach ($query as $q) {
             if(!$this->db('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 99)->oneArray()) {
+                $pasien = $this->db('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
+                $q['no_rkm_medis'] = $q['nomor_kartu'];
+                if($pasien) {
+                  $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
+                }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
                 if($reg_periksa){
                     $data = [

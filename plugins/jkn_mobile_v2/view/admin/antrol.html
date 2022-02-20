@@ -12,7 +12,27 @@
                                 name="periode_rawat_jalan" required>
                         </li>
                         <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-                            <div id="submit_periode_rawat_jalan" class="btn btn-primary btn-block">Cek</div>
+                            <div id="submit_waktu_server" class="btn btn-primary btn-block">Waktu BPJS</div>
+                        </li>
+                        <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                            <div id="submit_waktu_rs" class="btn btn-primary btn-block">Waktu Rumah Sakit</div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="btn-group pull-right" style="margin-top:-8px;">
+                    <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+                        <i class="fa fa-calendar"></i><span class="hidden-xs">Bulan Antrian</span>
+                    </span>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                        <li style="padding-left:5px;padding-right:5px;">
+                            <input type="text" id="periode_rawat_jalan" class="form-control periode_rawat_jalan"
+                                name="periode_rawat_jalan" required>
+                        </li>
+                        <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                            <div id="submit_bulan_server" class="btn btn-primary btn-block">Perbulan BPJS</div>
+                        </li>
+                        <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                            <div id="submit_bulan_rs" class="btn btn-primary btn-block">Perbulan Rumah Sakit</div>
                         </li>
                     </ul>
                 </div>
@@ -23,10 +43,12 @@
                     <div id="notif"></div>
                 </div>
                 <div class="display" id="display">
-                    {loop: $row.list.list}
+                    {if: $row.list}
+                    {loop: $row.list}
                     <div class="col-md-3">
                         <div class="card bg-success text-center" style="width: 30rem;">
                             <div class="card-body">
+                                <p style="background-color: orange;padding: 0.5em;color: white;font-weight: 500;">{$value.tanggal}</p>
                                 <h2 class="card-title" id="{$value.namapoli}" data-value="{$value.namapoli}">
                                     {$value.namapoli}
                                 </h2>
@@ -38,24 +60,35 @@
                                     Layanan</p>
                                 <br>
                                 <div>
+                                    Rata - Rata Waktu Tunggu Loket : <br>
+                                    <span class="minetext" id="{$value.kodepoli}_1_{$value.tanggal}"
+                                        value="{$value.avg_waktu_task1}">{$value.avg_waktu_task1}
+                                    </span><br>
+                                </div>
+                                <div>
+                                    Rata - Rata Waktu Layanan Loket : <br>
+                                    <span class="minetext" id="{$value.kodepoli}_2_{$value.tanggal}"
+                                        value="{$value.avg_waktu_task2}">{$value.avg_waktu_task2}</span><br>
+                                </div>
+                                <div>
                                     Rata - Rata Waktu Tunggu Poli : <br>
-                                    <span class="minetext" id="{$value.kodepoli}_3"
+                                    <span class="minetext" id="{$value.kodepoli}_3_{$value.tanggal}"
                                         value="{$value.avg_waktu_task3}">{$value.avg_waktu_task3}
                                     </span><br>
                                 </div>
                                 <div>
                                     Rata - Rata Waktu Layanan Poli : <br>
-                                    <span class="minetext" id="{$value.kodepoli}_4"
+                                    <span class="minetext" id="{$value.kodepoli}_4_{$value.tanggal}"
                                         value="{$value.avg_waktu_task4}">{$value.avg_waktu_task4}</span><br>
                                 </div>
                                 <div>
                                     Rata - Rata Waktu Tunggu Farmasi : <br>
-                                    <span class="minetext" id="{$value.kodepoli}_5"
+                                    <span class="minetext" id="{$value.kodepoli}_5_{$value.tanggal}"
                                         value="{$value.avg_waktu_task5}">{$value.avg_waktu_task5}</span><br>
                                 </div>
                                 <div>
                                     Rata - Rata Waktu Layanan Farmasi : <br>
-                                    <span class="minetext" id="{$value.kodepoli}_6"
+                                    <span class="minetext" id="{$value.kodepoli}_6_{$value.tanggal}"
                                         value="{$value.avg_waktu_task6}">{$value.avg_waktu_task6}</span><br>
                                 </div>
                             </div>
@@ -63,9 +96,9 @@
                         <br>
                     </div>
                     <script>
-                        for (let index = 3; index < 7; index++) {
+                        for (let index = 1; index < 7; index++) {
                             const element = index;
-                            var cookieValue = document.getElementById('{$value.kodepoli}_' + element).getAttribute('value');
+                            var cookieValue = document.getElementById('{$value.kodepoli}_' + element + '_{$value.tanggal}').getAttribute('value');
                             // var date = new Date(0);
 
                             const sec = parseInt(cookieValue, 10); // convert value to number if it's string
@@ -80,11 +113,12 @@
 
                             // date.setSeconds(cookieValue); // specify value for SECONDS here
                             // var timeString = date.toISOString().substr(11, 8);
-                            var span = document.getElementById('{$value.kodepoli}_' + element);
+                            var span = document.getElementById('{$value.kodepoli}_' + element + '_{$value.tanggal}');
                             span.textContent = timeString;
                         }
                     </script>
                     {/loop}
+                    {/if}
                 </div>
             </div>
         </div>
@@ -101,21 +135,69 @@
 
 </script>
 <script>
-    $('#manage').on('click', '#submit_periode_rawat_jalan', function (event) {
+    $('#manage').on('click', '#submit_waktu_server', function (event) {
         var baseURL = mlite.url + '/' + mlite.admin;
         event.preventDefault();
         var periode_rawat_jalan = $('input:text[name=periode_rawat_jalan]').val();
+        var server = 'server';
+        var rute = 'tanggal';
         if (periode_rawat_jalan == '') {
             alert('Tanggal awal masih kosong!')
         }
         var url = baseURL + '/jkn_mobile_v2/antrol?t=' + mlite.token;
         // window.location = url;
-        $.post(url, { periode: periode_rawat_jalan }).done(function (data) {
+        $.post(url, { periode: periode_rawat_jalan, waktu: server, rute: rute }).done(function (data) {
             $("#display").html(data).show();
         });
-
         event.stopPropagation();
-
+    });
+    $('#manage').on('click', '#submit_waktu_rs', function (event) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        var periode_rawat_jalan = $('input:text[name=periode_rawat_jalan]').val();
+        var server = 'rs';
+        var rute = 'tanggal';
+        if (periode_rawat_jalan == '') {
+            alert('Tanggal awal masih kosong!')
+        }
+        var url = baseURL + '/jkn_mobile_v2/antrol?t=' + mlite.token;
+        // window.location = url;
+        $.post(url, { periode: periode_rawat_jalan, waktu: server, rute: rute }).done(function (data) {
+            $("#display").html(data).show();
+        });
+        event.stopPropagation();
+    });
+    $('#manage').on('click', '#submit_bulan_server', function (event) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        var periode_rawat_jalan = $('input:text[name=periode_rawat_jalan]').val();
+        var server = 'server';
+        var rute = 'bulan';
+        if (periode_rawat_jalan == '') {
+            alert('Tanggal awal masih kosong!')
+        }
+        var url = baseURL + '/jkn_mobile_v2/antrol?t=' + mlite.token;
+        // window.location = url;
+        $.post(url, { periode: periode_rawat_jalan, waktu: server, rute: rute }).done(function (data) {
+            $("#display").html(data).show();
+        });
+        event.stopPropagation();
+    });
+    $('#manage').on('click', '#submit_bulan_rs', function (event) {
+        var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        var periode_rawat_jalan = $('input:text[name=periode_rawat_jalan]').val();
+        var server = 'rs';
+        var rute = 'bulan';
+        if (periode_rawat_jalan == '') {
+            alert('Tanggal awal masih kosong!')
+        }
+        var url = baseURL + '/jkn_mobile_v2/antrol?t=' + mlite.token;
+        // window.location = url;
+        $.post(url, { periode: periode_rawat_jalan, waktu: server, rute: rute }).done(function (data) {
+            $("#display").html(data).show();
+        });
+        event.stopPropagation();
     });
 
 </script>

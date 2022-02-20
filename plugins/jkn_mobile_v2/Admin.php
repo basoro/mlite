@@ -219,9 +219,12 @@ class Admin extends AdminModule
         return $this->draw('jadwaldokter.html');
     }
 
-    public function getTaskID()
+    public function anyTaskID()
     {
+      $this->getCssCard();
       $date = date('Y-m-d');
+      if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
+        $date = $_POST['periode_antrol'];
       //$date = '2022-01-20';
       $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
       FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli !='IGDK'
@@ -327,13 +330,12 @@ class Admin extends AdminModule
         return $result;
     }
 
-    public function anyAntrol()
+    public function anyAntrol__()
     {
         $this->getCssCard();
         $tgl_kunjungan = date('Y-m-d');
         $depanUrl = $this->bpjsurl . 'dashboard/waktutunggu/tanggal/';
         if (isset($_POST['periode'])) {
-            $tgl_kunjungan = "";
             $tgl_kunjungan = $_POST['periode'];
             $tgl_kunjungan = preg_replace('/\s+/', '', $tgl_kunjungan);
             $bulan = substr($tgl_kunjungan, 5, 2);
@@ -342,7 +344,11 @@ class Admin extends AdminModule
             $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
-            $this->assign['list'] = $json['response'];
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response'];
+            }
+            $this->assign['list'] = $response;
 
             echo $this->draw('antrol.display.html', ['row' => $this->assign]);
         } else {
@@ -352,7 +358,56 @@ class Admin extends AdminModule
             $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
             $json = json_decode($output, true);
-            $this->assign['list'] = $json['response'];
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response'];
+            }
+            $this->assign['list'] = $response;
+
+            return $this->draw('antrol.html', ['row' => $this->assign]);
+        }
+        exit();
+    }
+
+    public function anyAntrol()
+    {
+        $this->getCssCard();
+        $tgl_kunjungan = date('Y-m-d');
+        $bulan = substr($tgl_kunjungan, 5, 2);
+        $tahun = substr($tgl_kunjungan, 0, 4);
+        $tanggal = substr($tgl_kunjungan, 8, 2);
+        $depanUrlTanggal = $this->bpjsurl . 'dashboard/waktutunggu/tanggal/';
+        $depanUrlBulan = $this->bpjsurl . 'dashboard/waktutunggu/bulan/';
+        if (isset($_POST['periode'])) {
+            $waktu = $_POST['waktu'];
+            $tgl_kunjungan = $_POST['periode'];
+            $tgl_kunjungan = preg_replace('/\s+/', '', $tgl_kunjungan);
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            if ($_POST['rute'] == 'tanggal') {
+                $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/' . $waktu;
+            } else {
+                $url = $depanUrlBulan . $bulan . '/tahun/' . $tahun . '/waktu/' . $waktu;
+            }
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response']['list'];
+            }
+            $this->assign['list'] = $response;
+
+            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+        } else {
+            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response']['list'];
+            }
+            $this->assign['list'] = $response;
 
             return $this->draw('antrol.html', ['row' => $this->assign]);
         }

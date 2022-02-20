@@ -398,10 +398,12 @@
   $("#form_simpan_no_rkm_medis_{$value}").on("click", ".simpan_no_rkm_medis_{$value}", function(event){
     var noantrian = $('input:hidden[name=noantrian]').val();
     var no_rkm_medis = $('input:text[name=no_rkm_medis_{$value}]').val();
+    var type = '{?=str_replace("panggil_","",$_GET['show'])?}';
+    alert(no_rkm_medis);
     $.ajax({
         url: '{?=url()?}/anjungan/simpannorm',
         dataType: 'json',
-        data: { noantrian: noantrian, type: '{?=str_replace("panggil_","",$_GET['show'])?}', no_rkm_medis: no_rkm_medis },
+        data: { noantrian: noantrian, type: type, no_rkm_medis: no_rkm_medis },
         success: function(xhr) {
             console.log(xhr.status);
             if(xhr.status == true) {
