@@ -1790,7 +1790,7 @@ class Site extends SiteModule
                 echo 'Response:<br>';
                 echo json_encode($data);
                 echo $data['metadata']['code'];
-                if($data['metadata']['code'] == 200){
+                if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
                   if($jenispasien == 'JKN') {
                     if(!$this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
                       $this->db('mlite_antrian_referensi')->save([
