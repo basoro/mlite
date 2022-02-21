@@ -52,6 +52,7 @@ class Admin extends AdminModule
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
           'cek_vclaim' => $cek_vclaim,
+          'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
 
@@ -70,27 +71,90 @@ class Admin extends AdminModule
         $halaman    = 1;
 
         if(isset($_POST['cari'])) {
-          $rows = $this->db('pasien')
-            ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
-            ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
-            ->orLike('alamat', '%'.$_POST['cari'].'%')
-            ->orLike('no_ktp', '%'.$_POST['cari'].'%')
-            ->orLike('no_peserta', '%'.$_POST['cari'].'%')
-            ->orLike('no_tlp', '%'.$_POST['cari'].'%')
-            ->desc('no_rkm_medis')
-            ->offset(0)
-            ->limit($perpage)
-            ->toArray();
-          $jumlah_data = count($rows);
-    			$jml_halaman = ceil($jumlah_data / $offset);
+          if(isset($_POST['halaman']) && $_POST['halaman'] !='') {
+            $_offset = (($_POST['halaman'] - 1) * $perpage);
+            $totalRecords = $this->db('pasien')
+              ->select('no_rkm_medis')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->toArray();
+            $rows = $this->db('pasien')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->desc('no_rkm_medis')
+              ->offset($_offset)
+              ->limit($perpage)
+              ->toArray();
+            $jumlah_data = count($totalRecords);
+            $jml_halaman = ceil($jumlah_data / $offset);
+            $halaman = $_POST['halaman'];
+          } else {
+            $totalRecords = $this->db('pasien')
+              ->select('no_rkm_medis')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->toArray();
+            $rows = $this->db('pasien')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->desc('no_rkm_medis')
+              ->offset(0)
+              ->limit($perpage)
+              ->toArray();
+            $jumlah_data = count($totalRecords);
+      			$jml_halaman = ceil($jumlah_data / $offset);
+          }
         }elseif(isset($_POST['halaman'])){
-    			$offset = (($_POST['halaman'] - 1) * $perpage);
-          $rows = $this->db('pasien')
-            ->desc('no_rkm_medis')
-            ->offset($offset)
-            ->limit($perpage)
-            ->toArray();
-          $halaman = $_POST['halaman'];
+          if(isset($_POST['cari']) && $_POST['cari'] !='') {
+            $_offset = (($_POST['halaman'] - 1) * $perpage);
+            $totalRecords = $this->db('pasien')
+              ->select('no_rkm_medis')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->toArray();
+            $rows = $this->db('pasien')
+              ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
+              ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
+              ->orLike('alamat', '%'.$_POST['cari'].'%')
+              ->orLike('no_ktp', '%'.$_POST['cari'].'%')
+              ->orLike('no_peserta', '%'.$_POST['cari'].'%')
+              ->orLike('no_tlp', '%'.$_POST['cari'].'%')
+              ->desc('no_rkm_medis')
+              ->offset($_offset)
+              ->limit($perpage)
+              ->toArray();
+            $jumlah_data = count($totalRecords);
+            $jml_halaman = ceil($jumlah_data / $offset);
+            $halaman = $_POST['halaman'];
+          } else {
+            $_offset = (($_POST['halaman'] - 1) * $perpage);
+            $rows = $this->db('pasien')
+              ->desc('no_rkm_medis')
+              ->offset($_offset)
+              ->limit($perpage)
+              ->toArray();
+              $halaman = $_POST['halaman'];
+          }
         }else{
           $rows = $this->db('pasien')
             ->desc('no_rkm_medis')
@@ -114,6 +178,7 @@ class Admin extends AdminModule
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
           'cek_vclaim' => $cek_vclaim,
+          'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
 
@@ -143,6 +208,7 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $this->core->setNoRM(),
           'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
         ]);
@@ -198,6 +264,7 @@ class Admin extends AdminModule
           'keluarga' => $keluarga,
           'no_rkm_medis_baru' => $this->core->setNoRM(),
           'waapitoken' => $this->settings->get('settings.waapitoken'),
+          'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
           'urlUploadPhoto' => ''
         ]);

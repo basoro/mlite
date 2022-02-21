@@ -1,0 +1,5 @@
+{
+    "require": {
+        "nullpunkt/lz-string-php": "^1.3"
+    }
+}

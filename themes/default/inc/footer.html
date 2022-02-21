@@ -47,10 +47,10 @@
         navigator.serviceWorker
         .register("{$mlite.path}/service-worker.js")
         .then((swReg) => {
-          console.log("Service Worker is registered", swReg);
+          //console.log("Service Worker is registered", swReg);
         })
         .catch((err) => {
-          console.error("Service Worker Error", err);
+          //console.error("Service Worker Error", err);
         });
       });
     }

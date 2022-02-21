@@ -19,7 +19,13 @@
                 <a href="{?=url([ADMIN,'vclaim', 'sep'])?}"><i class="fa fa-archive fa-fw"></i>SEP</a>
             </li>
             <li>
+                <a href="{?=url([ADMIN,'vclaim', 'rencanakontrol'])?}"><i class="fa fa-file-text fa-fw"></i>Rencana Kontrol</a>
+            </li>
+            <li>
                 <a href="{?=url([ADMIN,'vclaim', 'rujukan'])?}"><i class="fa fa-bullseye fa-fw"></i>Rujukan</a>
+            </li>
+            <li>
+                <a href="{?=url([ADMIN,'vclaim', 'prb'])?}"><i class="fa fa-flag-o fa-fw"></i>PRB</a>
             </li>
             <li>
                 <a href="{?=url([ADMIN,'vclaim', 'lpk'])?}"><i class="fa fa-clipboard fa-fw"></i>Lembar Pengajuan Klaim</a>
@@ -43,7 +49,7 @@
                       <div class="panel panel-default">
                           <div class="panel-heading">
                               <h4 class="panel-title">
-                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">No. Kartu BPJS</a>
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Insert LPK</a>
                               </h4>
                           </div>
                           <div id="collapseOne" class="panel-collapse collapse">
@@ -74,7 +80,7 @@
                       <div class="panel panel-default">
                           <div class="panel-heading">
                               <h4 class="panel-title">
-                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">NIK</a>
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Update LPK</a>
                               </h4>
                           </div>
                           <div id="collapseTwo" class="panel-collapse collapse">
@@ -101,6 +107,69 @@
                               </div>
                           </div>
                       </div>
+
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Delete LPK</a>
+                              </h4>
+                          </div>
+                          <div id="collapseThree" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                <form class="" action="" method="">
+                                  <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                  <div class="form-group">
+                                    <label for="poli">Nomor KTP</label>
+                                    <input type="text" id="nik" name="nik" class="form-control" value="">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="poli">Tanggal Pelayanan/SEP</label>
+                                    <input type="text" id="tgl_pelayanan" name="tgl_pelayanan" class="form-control" value="">
+                                  </div>
+                                  <button type="submit" class="btn btn-danger">
+                                      Kirim Parameter
+                                  </button>
+                                </form>
+                                {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                <h4 class="m-t-xl">Respons result</h4>
+                                <pre>
+                                </pre>
+                                {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Data LPK</a>
+                              </h4>
+                          </div>
+                          <div id="collapseFour" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                <form class="" action="" method="">
+                                  <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                  <div class="form-group">
+                                    <label for="poli">Nomor KTP</label>
+                                    <input type="text" id="nik" name="nik" class="form-control" value="">
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="poli">Tanggal Pelayanan/SEP</label>
+                                    <input type="text" id="tgl_pelayanan" name="tgl_pelayanan" class="form-control" value="">
+                                  </div>
+                                  <button type="submit" class="btn btn-danger">
+                                      Kirim Parameter
+                                  </button>
+                                </form>
+                                {if: isset($_GET['nik']) && $_GET['nik']!='' && isset($_GET['tgl_pelayanan']) && $_GET['tgl_pelayanan']!=''}
+                                <h4 class="m-t-xl">Respons result</h4>
+                                <pre>
+                                </pre>
+                                {/if}
+                              </div>
+                          </div>
+                      </div>
+
                   </div>
               </div>
           </div>

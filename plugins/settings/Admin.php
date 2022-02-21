@@ -59,6 +59,7 @@ class Admin extends AdminModule
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
+        $settings['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
@@ -242,7 +243,7 @@ class Admin extends AdminModule
                 $this->tpl->set('error', $obj);
             } else {
                 if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2021-01-01 00:00:00');
+                  $this->settings('settings', 'version', '2022-01-01 00:00:00');
                 }
                 $this->settings('settings', 'update_version', $new_date_format);
                 $this->settings('settings', 'update_changelog', $obj['commit']['message']);
@@ -278,7 +279,13 @@ class Admin extends AdminModule
             define("UPGRADABLE", true);
             // Making backup
             $backup_date = date('YmdHis');
-            $this->rcopy(BASE_DIR, BASE_DIR.'/backup/'.$backup_date.'/', 0755, [BASE_DIR.'/backup', BASE_DIR.'/tmp/latest.zip', (isset($package) ? BASE_DIR.'/'.basename($package) : '')]);
+            //$this->rcopy(BASE_DIR, BASE_DIR.'/backup/'.$backup_date.'/', 0755, [BASE_DIR.'/backup', BASE_DIR.'/tmp/latest.zip', (isset($package) ? BASE_DIR.'/'.basename($package) : '')]);
+            $this->rcopy(BASE_DIR.'/systems', BASE_DIR.'/backup/'.$backup_date.'/systems');
+            $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
+            $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
+            $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
+            $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
+            $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
             // Unzip latest update
             $zip = new ZipArchive;

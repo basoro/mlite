@@ -256,7 +256,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tahun'] = array('','2020', '2021');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign]);
     }
 
@@ -314,8 +314,8 @@ class Admin extends AdminModule
                                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                 ->where('stts_aktif','AKTIF')
                                 ->toArray();
-        }   
-        if($this->core->getUserInfo('role') == 'admin'){                                 
+        }
+        if($this->core->getUserInfo('role') == 'admin'){
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
         }else{
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
@@ -343,9 +343,9 @@ class Admin extends AdminModule
                                     ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                     ->where('stts_aktif','AKTIF')
                                     ->toArray();
-            }  
-            if($this->core->getUserInfo('role') == 'admin'){                                 
-                $this->assign['h1'] = $this->db('jam_masuk')->toArray();
+            }
+            if($this->core->getUserInfo('role') == 'admin'){
+            	$this->assign['h1'] = $this->db('jam_masuk')->toArray();
             }else{
                 $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
             }
@@ -450,7 +450,7 @@ class Admin extends AdminModule
             ->toArray();
         }else{
         $rows = $this->db('jadwal_tambahan')
-            ->join('pegawai','pegawai.id=jadwal_pegawai.id')
+            ->join('pegawai','pegawai.id=jadwal_tambahan.id')
             ->where('jadwal_tambahan.tahun',$tahun)
             ->where('jadwal_tambahan.bulan',$bulan)
             ->where('departemen', $this->core->getPegawaiInfo('departemen',$username))
@@ -491,7 +491,7 @@ class Admin extends AdminModule
         $this->assign['showBulan'] = $month[$bulan];
         // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tahun'] = array('','2020', '2021');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => $this->assign]);
     }
 
@@ -549,8 +549,8 @@ class Admin extends AdminModule
                                 ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                 ->where('stts_aktif','AKTIF')
                                 ->toArray();
-        }   
-        if($this->core->getUserInfo('role') == 'admin'){                                 
+        }
+        if($this->core->getUserInfo('role') == 'admin'){
             $this->assign['h1'] = $this->db('jam_masuk')->toArray();
         }else{
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
@@ -578,7 +578,7 @@ class Admin extends AdminModule
                                     ->where('bidang', $this->core->getPegawaiInfo('bidang',$username))
                                     ->where('stts_aktif','AKTIF')
                                     ->toArray();
-            }  
+            }
             $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen',$username))->toArray();
             $this->assign['tahun'] = $tahun;
             $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
@@ -650,7 +650,7 @@ class Admin extends AdminModule
         if (isset($_GET['ruang'])){
             $ruang = $_GET['ruang'];
         }
-        
+
         $username = $this->core->getUserInfo('username', null, true);
 
         if($this->core->getUserInfo('role') == 'admin'){
@@ -762,7 +762,7 @@ class Admin extends AdminModule
 
                 $s = $row['jam_datang'];
                 $dt = new \DateTime($s);
-                $tm = $dt->format('h:i:s');
+                $tm = $dt->format('H:i:s');
 
                 $w = $row['jam_pulang'];
                 $dd = new \DateTime($w);
@@ -1400,11 +1400,11 @@ class Admin extends AdminModule
         // $this->assign['stts1'] = $stts1;
         // $this->assign['stts2'] = $stts2;
         $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['tahun'] = array('','2020', '2021','2022');
+        $this->assign['tahun'] = array('','2020', '2021', '2022');
         $this->assign['bulan'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
         $this->assign['tanggal'] = array('','01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30' ,'31');
         $this->assign['bidang'] = $this->db('bidang')->toArray();
-        $this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
+        //$this->assign['printURL'] = url([ADMIN, 'presensi', 'cetakrekap','?b='.$bulan.'&y='.$tahun.'&s='.$phrase]);
         return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
     }
 
@@ -1467,8 +1467,8 @@ class Admin extends AdminModule
         $pdf->SetFont('Arial', '', 24);
         $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-        $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+        $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kota'));
+        $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
         $pdf->Line(10, 30, 200, 30);
         $pdf->Line(10, 31, 200, 31);
         $pdf->SetFont('Arial', 'B', 10);
@@ -1771,8 +1771,8 @@ class Admin extends AdminModule
       $pdf->SetFont('Arial', '', 24);
       $pdf->Text(30, 16, $this->core->getSettings('nama_instansi'));
       $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->core->getSettings('alamat_instansi').' - '.$this->core->getSettings('kabupaten'));
-      $pdf->Text(30, 25, $this->core->getSettings('kontak').' - '.$this->core->getSettings('email'));
+      $pdf->Text(30, 21, $this->core->getSettings('alamat').' - '.$this->core->getSettings('kota'));
+      $pdf->Text(30, 25, $this->core->getSettings('nomor_telepon').' - '.$this->core->getSettings('email'));
       $pdf->Line(10, 30, 350, 30);
       $pdf->Line(10, 31, 350, 31);
       $pdf->Text(10, 40, 'DATA REKAP PRESENSI PEGAWAI');
@@ -1898,7 +1898,7 @@ class Admin extends AdminModule
         return $this->draw('presensi.html', ['presensi' => $this->assign]);
     }
 
-    public function getPresensiPulang($id){
+  	public function getPresensiPulang($id){
         $cek = $this->db('temporary_presensi')->where('id', $id)->oneArray();
         $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $id)->where('jam_jaga.shift', $cek['shift'])->oneArray();
         $location = url([ADMIN, 'presensi', 'presensi']);
@@ -1944,7 +1944,6 @@ class Admin extends AdminModule
             }
         }
     }
-    
     /* Master Barcode Section */
     public function getBarcode($page = 1)
     {

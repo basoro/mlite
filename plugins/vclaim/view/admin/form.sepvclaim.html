@@ -1,0 +1,125 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Ambil Data SEP dari VClaim</h4>
+</div>
+<div class="modal-body">
+  <div class="row" id="form_sync_sep">
+      <input type="hidden" name="sync_no_rawat" id="sync_no_rawat" class="form-control" value="" />
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Nomor SEP</label>
+            <input type="text" name="no_sep" id="sync_no_sep" class="form-control" placeholder="Nomor SEP" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Asal Rujukan</label>
+            <select name="asal_rujukan" id="sync_asal_rujukan" class="form-control">
+                <option value="1">Faskes 1</option>
+                <option value="2">Faskes 2</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Tanggal Rujukan</label>
+            <input type="text" name="tgl_kunjungan" id="sync_tgl_kunjungan" class="form-control tanggal" placeholder="Tanggal Rujukan" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Kode Diagnosa</label>
+            <input type="text" name="kd_diagnosa" id="sync_kd_diagnosa" class="form-control" placeholder="Kode ICD-X" required value="" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Poli Tujuan</label>
+            <select name="kd_poli" id="sync_kd_poli" class="form-control" data-use-search="true">
+                {loop: $maping_poli_bpjs}
+                <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                {/loop}
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Dokter Penanggung Jawab</label>
+            <select name="kd_dokter" id="sync_kd_dokter" class="form-control">
+                {loop: $maping_dokter_dpjpvclaim}
+                <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+                {/loop}
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary" id="simpan_sync_sep" value="Sync SEP Ke SIMRS" />
+          <button type="button" class="btn btn-primary" id="load_sync_sep">Load</button>
+        </div>
+      </div>
+  </div>
+  <br><br>
+  <div id="sync_sep_display">
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+  $('.tanggal').datetimepicker({
+    format: 'YYYY-MM-DD',
+    locale: 'id'
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sync_sep").on("click","#load_sync_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+  });
+
+  $(document).ready(function() {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $('input:text[name=sep_no_rawat]').val();
+    $('input:text[name=sync_no_rawat]').val(no_rawat);
+
+    $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+  });
+
+  $("#form_sync_sep").on("click","#simpan_sync_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat         = $('#sync_no_rawat').val();
+    var no_sep           = $('#sync_no_sep').val();
+    var asal_rujukan     = $('#sync_asal_rujukan').val();
+    var tgl_kunjungan    = $('#sync_tgl_kunjungan').val();
+    var kd_diagnosa      = $('#sync_kd_diagnosa').val();
+    var kd_dokter        = $('#sync_kd_dokter').val();
+    var kd_poli          = $('#sync_kd_poli').val();
+
+    var url = baseURL + '/vclaim/savesyncsep?t=' + mlite.token;
+
+    $.post(url,{
+      no_rawat: no_rawat,
+      no_sep: no_sep,
+      asal_rujukan : asal_rujukan,
+      tgl_kunjungan : tgl_kunjungan,
+      kd_diagnosa : kd_diagnosa,
+      kd_dokter : kd_dokter,
+      kd_poli: kd_poli
+    } ,function(data) {
+        alert(data);
+        $("#sync_sep_display").show().load(baseURL + '/vclaim/syncsepdisplay/{$no_kartu}?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data SEP telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+
+  });
+
+</script>

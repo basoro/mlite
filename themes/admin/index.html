@@ -70,23 +70,33 @@
             <ul class="nav navbar-nav">
               <li><a href="#" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
-              {if: $mlite.module_igd}
-              <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> IGD</a></li>
-              {/if}
-              <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Rawat Jalan</a></li>
-              {if: $mlite.module_rawat_inap}
-              <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
+              {if: $this->core->getUserInfo('role') == 'medis'}
+                <li><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> Dokter IGD</a></li>
+                <li><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Dokter Ralan</a></li>
+                <li><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Dokter Ranap</a></li>
+              {else}
+                {if: $mlite.module_igd}
+                <li><a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access || !$mlite.module_igd} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> IGD</a></li>
+                {/if}
+                <li><a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access || !$mlite.module_rawat_jalan} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Rawat Jalan</a></li>
+                {if: $mlite.module_rawat_inap}
+                <li><a href="{?=url([ADMIN, 'rawat_inap', 'manage'])?}"{if: !$mlite.rawat_inap_access || !$mlite.module_rawat_inap} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
+                {/if}
               {/if}
               {if: $mlite.cek_anjungan}
               <li class="dropdown">
-                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Informasi
+                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><img class="menu_icon" src="{?= url('/assets/img/icon-informasi.png') ?}" alt=""> Anjungan
                 <span class="caret"></span></a>
                 <ul class="dropdown-menu">
+                  {if: $mlite.presensi}
+                  <li><a href="{?=url()?}/anjungan/presensi" target="_blank">Presensi Pegawai</a></li>
+                  <li role="separator" class="divider"></li>
+                  {/if}
                   <li><a href="#">Rawat Jalan</a></li>
                   <li><a href="#">Rawat Inap</a></li>
                   <li><a href="#">Laboratorium</a></li>
                   <li><a href="#">Radiologi</a></li>
-                  <li><a href="#">Ketersediaan Kamar</a></li>
+                  <li><a href="{?=url()?}/anjungan/bed" target="_blank">Ketersediaan Kamar</a></li>
                   <li role="separator" class="divider"></li>
                   <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
                   <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
@@ -139,7 +149,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12" style="margin-bottom:50px !important;">
-                        <h2 class="content-title">{if: $module.name !== 'Dashboard'}{$module.name} <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a>{/if}</h2>
+                        <h2 class="content-title">{if: $module.name !== 'Dashboard'}<a href="{?=url([ADMIN,$module.dir,'manage'])?}">{$module.name}</a> <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a>{/if}</h2>
                         {$module.content}
                     </div>
                 </div>
@@ -276,10 +286,10 @@
         navigator.serviceWorker
         .register("{$mlite.path}/service-worker.js")
         .then((swReg) => {
-          console.log("Service Worker is registered", swReg);
+          //console.log("Service Worker is registered", swReg);
         })
         .catch((err) => {
-          console.error("Service Worker Error", err);
+          //console.error("Service Worker Error", err);
         });
       });
     }

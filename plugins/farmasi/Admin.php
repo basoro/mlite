@@ -10,30 +10,30 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
-            'Obat & BHP' => 'manage',
+            'Kelola' => 'manage',
+            'Obat & BHP' => 'index',
             'Stok Opname' => 'opname',
             'Pengaturan' => 'settings',
         ];
     }
 
-    public function getIndex()
+    public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'manage']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
+        ['name' => 'Obat & BHP', 'url' => url([ADMIN, 'farmasi', 'index']), 'icon' => 'medkit', 'desc' => 'Data obat dan barang habis pakai'],
         ['name' => 'Stok Opname', 'url' => url([ADMIN, 'farmasi', 'opname']), 'icon' => 'medkit', 'desc' => 'Tambah stok opname'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'farmasi', 'settings']), 'icon' => 'medkit', 'desc' => 'Pengaturan farmasi dan depo'],
       ];
-      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
-    public function getManage($status = '1')
+    public function getIndex($status = '1')
     {
         $this->_addHeaderFiles();
         $databarang['title'] = 'Kelola Databarang';
         $databarang['bangsal']  = $this->db('bangsal')->toArray();
         $databarang['list'] = $this->_databarangList($status);
-        return $this->draw('manage.html', ['databarang' => $databarang, 'tab' => $status]);
+        return $this->draw('index.html', ['databarang' => $databarang, 'tab' => $status]);
     }
 
     private function _databarangList($status)
@@ -56,7 +56,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Hapus gagal');
         }
-        redirect(url([ADMIN, 'farmasi', 'manage']));
+        redirect(url([ADMIN, 'farmasi', 'index']));
     }
 
     public function getRestore($id)
@@ -66,7 +66,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Restore gagal');
         }
-        redirect(url([ADMIN, 'farmasi', 'manage']));
+        redirect(url([ADMIN, 'farmasi', 'index']));
     }
 
     public function postSetStok()

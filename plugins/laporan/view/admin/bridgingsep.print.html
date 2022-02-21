@@ -46,7 +46,7 @@
             {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
             Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
             {else}
-            Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}            
+            Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}
             {/if}
           </p>
 				</header>
@@ -79,7 +79,6 @@
                 <th>Asal Rujukan</th>
                 <th>Eksekutif</th>
                 <th>COB</th>
-                <th>Penjamin</th>
                 <th>No. Telepon</th>
                 <th>Katarak</th>
                 <th>Tanggal KLL</th>
@@ -122,7 +121,6 @@
                 <td>{$value.asal_rujukan}</td>
                 <td>{$value.eksekutif}</td>
                 <td>{$value.cob}</td>
-                <td>{$value.penjamin}</td>
                 <td>{$value.notelep}</td>
                 <td>{$value.katarak}</td>
                 <td>{$value.tglkkl}</td>

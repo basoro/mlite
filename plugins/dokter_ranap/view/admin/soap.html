@@ -4,6 +4,9 @@
     padding: 5px;
   }
 </style>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+<script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
 <div id="display_icd">
   {include: ../plugins/icd/view/admin/display.html}
 </div>
@@ -22,6 +25,7 @@
         <th>Berat(Kg)</th>
         <th>GCS(E,V,M)</th>
         <th>Alergi</th>
+        <th>Instruksi</th>
       </tr>
     </thead>
     <tbody>
@@ -31,7 +35,8 @@
         <td rowspan="7" style="vertical-align:top;">{$value.nomor}</td>
         <td rowspan="6" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Jalan</b><br>
-          {$value.tgl_perawatan} {$value.jam_rawat}
+          {$value.tgl_perawatan} {$value.jam_rawat}<br>
+          {$value.departemen_petugas}
         </td>
         <td>{$value.suhu_tubuh}</td>
         <td>{$value.tensi}</td>
@@ -41,6 +46,18 @@
         <td>{$value.berat}</td>
         <td>{$value.gcs}</td>
         <td>{$value.alergi}</td>
+        <td rowspan="7" style="vertical-align:top;">
+          {$value.instruksi}<br><br>
+          <div class="qrcodePetugas{$value.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
+          {$value.nama_petugas}
+          <script>
+          	jQuery('.qrcodePetugas{$value.nomor}').qrcode({
+              width: 64,
+              height: 64,
+          		text	: "Petugas: {$value.nama_petugas}"
+          	});
+          </script>
+        </td>
       </tr>
       <tr>
         <th colspan="2">Kesadaran</th>
@@ -83,6 +100,7 @@
               data-pemeriksaan="{$value.pemeriksaan}"
               data-penilaian="{$value.penilaian}"
               data-rtl="{$value.rtl}"
+              data-instruksi="{$value.instruksi}"
               disabled
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
@@ -101,10 +119,11 @@
       {if: $pemeriksaan_ranap}
       {loop: $pemeriksaan_ranap as $data}
       <tr>
-        <td rowspan="5" style="vertical-align:top;">{$data.nomor}</td>
-        <td rowspan="4" style="vertical-align:top;white-space: nowrap;">
+        <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>
+        <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
           <b>Rawat Inap</b><br>
-          {$data.tgl_perawatan} {$data.jam_rawat}
+          {$data.tgl_perawatan} {$data.jam_rawat}<br>
+          {$data.departemen_petugas}
         </td>
         <td>{$data.suhu_tubuh}</td>
         <td>{$data.tensi}</td>
@@ -114,6 +133,22 @@
         <td>{$data.berat}</td>
         <td>{$data.gcs}</td>
         <td>{$data.alergi}</td>
+        <td rowspan="6" style="vertical-align:top;">
+          {$data.instruksi}<br><br>
+          <div class="qrcodePetugas{$data.nomor}" style="margin-top:10px;width:40px;margin-right: 120px;"></div>
+          {$data.nama_petugas}
+          <script>
+          	jQuery('.qrcodePetugas{$data.nomor}').qrcode({
+              width: 64,
+              height: 64,
+          		text	: "Petugas: {$data.nama_petugas}"
+          	});
+          </script>
+        </td>
+      </tr>
+      <tr>
+        <th colspan="2">Kesadaran</th>
+        <td colspan="6">{$data.kesadaran}</td>
       </tr>
       <tr>
         <th colspan="2">Subyektif</th>
@@ -141,11 +176,13 @@
               data-tinggi="{$data.tinggi}"
               data-berat="{$data.berat}"
               data-gcs="{$data.gcs}"
+              data-kesadaran="{$data.kesadaran}"
               data-alergi="{$data.alergi}"
               data-keluhan="{$data.keluhan}"
               data-pemeriksaan="{$data.pemeriksaan}"
               data-penilaian="{$data.penilaian}"
               data-rtl="{$data.rtl}"
+              data-instruksi="{$data.instruksi}"
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
               data-no_rawat="{$data.no_rawat}"

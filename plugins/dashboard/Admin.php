@@ -33,16 +33,27 @@ class Admin extends AdminModule
         $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $cek_presensi = [];
         $jam_jaga = [];
+        $cek_rekap = [];
+        $nama_pegawai = '';
+
         if($presensi) {
+          $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
+          if($this->core->getUserInfo('username', null, true) == 'admin') {
+            $nama_pegawai = 'Administrator';
+          }
           $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
           $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+          $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
           $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
         }
         return $this->draw('main.html', [
           'settings' => $settings,
           'cek_presensi' => $cek_presensi,
+          'cek_rekap' => $cek_rekap,
           'jam_jaga' => $jam_jaga,
-          'presensi' => $presensi
+          'presensi' => $presensi,
+		      'nama' => $nama_pegawai,
+          'notif_presensi' => $this->settings('settings', 'notif_presensi')
         ]);
     }
 
@@ -129,7 +140,7 @@ class Admin extends AdminModule
               $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
               $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
               $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-              
+
               if(!$jadwal_pegawai){
                 $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
               }
@@ -139,7 +150,21 @@ class Admin extends AdminModule
               if(!$jadwal_pegawai && $bulan == '01'){
                 $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
               }
-              
+
+              $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
+              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
+              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+
+              if(!$jadwal_pegawai){
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+              }
+              if(!$jadwal_pegawai && $hari == '1'){
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun)->oneArray();
+              }
+              if(!$jadwal_pegawai && $bulan == '01'){
+                $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
+              }
+
               $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
               $terlambat1     = $set_keterlambatan['terlambat1'];
@@ -149,8 +174,19 @@ class Admin extends AdminModule
 
               $valid_2 = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
 
-              if($valid_2){
+			  if(($valid_2) || (!$jadwal_pegawai)){
                 $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$hari, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+
+                if(!$jadwal_tambahan){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$hari_kurang, $shift)->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+                }
+                if(!$jadwal_tambahan && $hari == '1'){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun)->oneArray();
+                }
+                if(!$jadwal_tambahan && $bulan == '01'){
+                  $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h'.$bulan_kurang, $shift)->where('bulan', $bulan_lalu)->where('tahun', $tahun_lalu)->oneArray();
+                }
+
                 if((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_tambahan)&&(!$valid)){
                   $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 

@@ -4,8 +4,8 @@ return [
     'name'          =>  'Galeri Pasien',
     'description'   =>  'Kumpulan data digital pasien',
     'author'        =>  'Basoro',
-    'version'       =>  '1.0',
-    'compatibility' =>  '2021',
+    'version'       =>  '1.1',
+    'compatibility' =>  '2022',
     'icon'          =>  'camera',
 
     'install'       =>  function () use ($core) {

@@ -4,7 +4,7 @@ return [
     'description'   =>  'Katalog API KhanzaLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'database',
     'pages'         =>  ['API KhanzaLITE' => 'api'],
     'install'       =>  function () use ($core) {

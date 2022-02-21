@@ -88,7 +88,7 @@ $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/master/dokterhapus?t=' + mlite.token;
-  var kd_dokter = $('input:text[name=kd_dokter]').val();
+  var kd_dokter = $('select[name=kd_dokter]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){

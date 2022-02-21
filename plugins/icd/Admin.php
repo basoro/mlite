@@ -16,7 +16,27 @@ class Admin extends AdminModule
 
   public function getManage()
   {
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      // JS
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
       return $this->draw('manage.html');
+  }
+
+  public function getICD10()
+  {
+    $rows_icd10 = $this->data_icd('icd10')->toArray();
+    $return_array = array('data'=> $rows_icd10);
+    echo json_encode($return_array);
+    exit();
+  }
+
+  public function getICD9()
+  {
+    $rows_icd9 = $this->data_icd('icd9')->toArray();
+    $return_array = array('data'=> $rows_icd9);
+    echo json_encode($return_array);
+    exit();
   }
 
   public function postICD9()

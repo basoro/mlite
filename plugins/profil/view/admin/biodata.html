@@ -1,5 +1,5 @@
 <article class="row">
-    <form name="petugas" action="{?=url(ADMIN.'/profil/biodatasave/'.@$biodata.form.id)?}" method="POST">
+    <form name="petugas" action="{?=url(ADMIN.'/profil/biodatasave/'.@$biodata.form.id)?}" method="POST" enctype="multipart/form-data">
         <div class="col-md-8">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -67,6 +67,24 @@
                                 <select name="bidang" id="bidang" class="form-control">
                                   {loop: $biodata.bidang}
                                     <option value="{$value.nama}"{if: $value.nama == $biodata.form.bidang} selected{/if}>{$value.nama}</option>
+                                  {/loop}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                  <div class="row clearfix">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Jabatan</label>
+                                <input type="text" name="jbtn" class="form-control" value="{$biodata.form.jbtn}"/>
+                            </div>
+						</div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Pangkat / Golongan</label>
+                                <select name="jnj_jabatan" id="jnj_jabatan" class="form-control">
+                                  {loop: $biodata.jnj_jabatan}
+                                    <option value="{$value.kode}"{if: $value.kode == $biodata.form.jnj_jabatan} selected{/if}>{$value.nama}</option>
                                   {/loop}
                                 </select>
                             </div>

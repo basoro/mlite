@@ -5,8 +5,9 @@ return [
     'description'   =>  'Membuat artikel pada blog.',
     'author'        =>  'Basoro',
     'version'       =>  '1.3',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'pencil-square',
+    'pages'         =>  ['Blog' => 'blog'],  
     'install'       =>  function () use ($core) {
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_blog` (
@@ -75,9 +76,9 @@ return [
         copy(MODULES.'/blog/img/default.jpg', UPLOADS.'/blog/default2.jpg');
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags_relationship`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_blog`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags_relationship`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog_tags`");
+        //$core->db()->pdo()->exec("DROP TABLE `mlite_blog`");
         $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'blog'");
         deleteDir(UPLOADS."/blog");
     }

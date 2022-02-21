@@ -1,0 +1,84 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Set Status Pengajuan Klaim Vedika</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+  	<form name="vedika" action="" method="POST">
+      <input type="hidden" name="tgl_registrasi" class="form-control" required value="{$set_status.tglsep}" />
+      <input type="hidden" name="jnspelayanan" class="form-control" required value="{$set_status.jnspelayanan}" />
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>No. Rekam Medis</label>
+            <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor RM" required value="{$set_status.nomr}" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Nomor Rawat</label>
+            <input type="text" name="no_rawat" class="form-control" placeholder="Nomro Rawat" required value="{$set_status.no_rawat}" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Nomor SEP</label>
+            <input type="text" name="nosep" class="form-control" placeholder="Nomor SEP" required value="{$set_status.no_sep}" />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Status Klaim</label>
+            <select name="status" class="form-control">
+                <option value="Pengajuan">Pengajuan</option>
+                <option value="Perbaiki">Perbaiki</option>
+                <option value="Setuju">Disetujui</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="form-group">
+          <label>Catatan dan Umpan Balik</label>
+          <textarea name="catatan" rows="8" cols="80" class="form-control"></textarea>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="form-group">
+          <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
+        </div>
+      </div>
+  	</form>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h4>Feedback</h4>
+      <div class="comments-list">
+        {loop: $vedika}
+        <div class="media">
+          <p class="pull-right"><small>{$value.tanggal}</small></p>
+          <a class="media-left" href="#">
+            {if: $value.username == 'bpjs'}
+              <img src="{?=url()?}/assets/img/avatar-bpjs.png" width="30px">
+            {else}
+              <img src="{?=url()?}/{$logo}" width="30px">
+            {/if}
+          </a>
+          <div class="media-body">
+            {if: $value.username == 'bpjs'}
+              <h5 class="media-heading user_name">Verifikator BPJS</h5>
+            {else}
+              <h5 class="media-heading user_name">{$nama_instansi}</h5>
+            {/if}
+            {$value.catatan}
+          </div>
+        </div>
+        {/loop}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul data pasien untuk KhanzaLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
 
@@ -82,9 +82,7 @@ return [
           `no_rkm_medis` varchar(15) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-        /*
-        $core->db()->pdo()->exec("INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES ('000001');");
-        */
+        $core->db()->pdo()->exec("INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES ('000000');");
 
         $core->db()->pdo()->exec("ALTER TABLE `pasien`
           ADD CONSTRAINT `pasien_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,

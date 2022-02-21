@@ -25,32 +25,32 @@
                 <tr>
                   <td>1.</td>
                   <td>Pendaftaran</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($poliklinik.registrasi,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_pendaftaran">{?= number_format($poliklinik.registrasi,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>2.</td>
                   <td>Tindakan</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_tindakan_ralan">{?= number_format($jumlah_total,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>3.</td>
                   <td>Obat dan BHP</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_obat,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_obat_bhp">{?= number_format($jumlah_total_obat,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>4.</td>
                   <td>Laboratorium</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_lab,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_laboratorium">{?= number_format($jumlah_total_lab,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>5.</td>
                   <td>Radiologi</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_radiologi,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_radiologi">{?= number_format($jumlah_total_radiologi,2,',','.')?}</span></td>
                 </tr>
                 <tr>
                   <td>6.</td>
                   <td>Tambahan Biaya</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></td>
+                  <td>Rp. <span class="pull-right" id="jurnal_tambahan_biaya">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></td>
                 </tr>
               </tbody>
             </table>

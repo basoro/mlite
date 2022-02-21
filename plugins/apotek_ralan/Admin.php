@@ -158,6 +158,72 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postValidasiResep()
+    {
+      $get_resep_obat = $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->oneArray();
+      $get_resep_dokter = $this->db('resep_dokter')->where('no_resep', $_POST['no_resep'])->toArray();
+      foreach ($get_resep_dokter as $item) {
+
+        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+        $get_databarang = $this->db('databarang')->where('kode_brng', $item['kode_brng'])->oneArray();
+
+        $this->db('gudangbarang')
+          ->where('kode_brng', $item['kode_brng'])
+          ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+          ->update([
+            'stok' => $get_gudangbarang['stok'] - $item['jml']
+          ]);
+
+        $this->db('riwayat_barang_medis')
+          ->save([
+            'kode_brng' => $item['kode_brng'],
+            'stok_awal' => $get_gudangbarang['stok'],
+            'masuk' => '0',
+            'keluar' => $item['jml'],
+            'stok_akhir' => $get_gudangbarang['stok'] - $item['jml'],
+            'posisi' => 'Pemberian Obat',
+            'tanggal' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
+            'petugas' => $this->core->getUserInfo('fullname', null, true),
+            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'status' => 'Simpan',
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur']
+          ]);
+
+        $this->db('detail_pemberian_obat')
+          ->save([
+            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
+            'no_rawat' => $get_resep_obat['no_rawat'],
+            'kode_brng' => $item['kode_brng'],
+            'h_beli' => $get_databarang['h_beli'],
+            'biaya_obat' => $get_databarang['h_beli'],
+            'jml' => $item['jml'],
+            'embalase' => '0',
+            'tuslah' => '0',
+            'total' => $get_databarang['h_beli'] * $item['jml'],
+            'status' => 'Ralan',
+            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'no_batch' => $get_gudangbarang['no_batch'],
+            'no_faktur' => $get_gudangbarang['no_faktur']
+          ]);
+
+        $this->db('aturan_pakai')
+          ->save([
+            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
+            'no_rawat' => $get_resep_obat['no_rawat'],
+            'kode_brng' => $item['kode_brng'],
+            'aturan' => $item['aturan_pakai']
+          ]);
+      }
+
+      $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_peresepan' => date('Y-m-d'), 'jam_peresepan' => date('H:i:s')]);
+
+      //var_dump($get_resep);
+      exit();
+    }
 
     public function postHapusResep()
     {

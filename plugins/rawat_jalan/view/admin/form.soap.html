@@ -76,7 +76,7 @@
             </div>
             <div class="col-sm-4">
               <label for="imun_ke">Imunisasi</label>
-              <input type="text" name="imun_ke" class="form-control" placeholder="" value="">
+              <input type="text" name="imun_ke" class="form-control" placeholder="" value="-">
             </div>
           </div>
         </div>
@@ -98,6 +98,10 @@
         <div class="form-group">
           <label for="jenis">Plan</label>
           <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
+          <label for="jenis">Instruksi</label>
+          <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
         </div>
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
@@ -356,7 +360,7 @@
     modal.on('show.bs.modal', function () {
         modalContent.load(loadURL);
     }).modal();
-
+    return false;
   });
 </script>
 <script type="text/javascript">

@@ -3,21 +3,282 @@
 namespace Plugins\JKN_Mobile_V2;
 
 use Systems\AdminModule;
+use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
 
+    public function init()
+    {
+        $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
+        $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
+        $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
+        $this->user_key = $this->settings->get('jkn_mobile_v2.BpjsUserKey');
+    }
+
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
+            'Kelola' => 'manage',
+            'Index' => 'index',
+            'Mapping Poliklinik' => 'mappingpoli',
+            'Add Mapping Poliklinik' => 'addmappingpoli',
+            'Mapping Dokter' => 'mappingdokter',
+            'Add Mapping Dokter' => 'addmappingdokter',
+            'Jadwal Dokter HFIS' => 'jadwaldokter',
+            'Task ID' => 'taskid',
+            'Dashboard Antrol BPJS' => 'antrol',
             'Pengaturan' => 'settings',
         ];
+    }
+
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Index', 'url' => url([ADMIN, 'jkn_mobile_v2', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile V2'],
+        ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile V2'],
+        ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile V2'],
+        ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile V2'],
+        ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
+        ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
+        ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
+        ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_v2', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getIndex()
     {
         return $this->draw('index.html');
+    }
+
+    public function getRefPoli()
+    {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
+        $url = $this->bpjsurl.'ref/poli';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+        $code = $json['metadata']['code'];
+        $message = $json['metadata']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($json != null) {
+          echo '{
+                  "metaData": {
+                      "code": "'.$code.'",
+                      "message": "'.$message.'"
+                  },
+                  "response": '.$decompress.'}';
+        } else {
+          echo '{
+                  "metaData": {
+                      "code": "5000",
+                      "message": "ERROR"
+                  },
+                  "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        }
+        exit();
+    }
+
+    public function getMappingPoli()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('mappingpoli.html', ['row' => $this->db('maping_poli_bpjs')->toArray()]);
+    }
+
+    public function getAddMappingPoli()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['poliklinik'] = $this->db('poliklinik')->where('status','1')->toArray();
+        return $this->draw('form.mappingpoli.html', ['row' => $this->assign]);
+    }
+
+    public function postPoliklinik_Save()
+    {
+
+        $location = url([ADMIN, 'jkn_mobile_v2', 'addmappingpoli']);
+
+        unset($_POST['save']);
+
+        $query = $this->db('maping_poli_bpjs')->save([
+            'kd_poli_rs' => $_POST['kd_poli_rs'],
+            'kd_poli_bpjs' => $_POST['poli_kode'],
+            'nm_poli_bpjs' => $_POST['poli_nama']
+        ]);
+
+        if ($query) {
+            $this->notify('success', 'Simpan maping poli bpjs sukes');
+        } else {
+            $this->notify('failure', 'Simpan maping poli bpjs gagal');
+        }
+
+        redirect($location, $_POST);
+    }
+
+    public function getPoliklinik_Delete($id)
+    {
+        if ($this->db('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
+            $this->notify('success', 'Hapus maping poli bpjs sukses');
+        } else {
+            $this->notify('failure', 'Hapus maping poli bpjs gagal');
+        }
+        redirect(url([ADMIN, 'jkn_mobile_v2', 'mappingpoli']));
+    }
+
+    public function getRefDokter()
+    {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+
+        $url = $this->bpjsurl.'ref/dokter';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+        $code = $json['metadata']['code'];
+        $message = $json['metadata']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if($json != null) {
+          echo '{
+                  "metaData": {
+                      "code": "'.$code.'",
+                      "message": "'.$message.'"
+                  },
+                  "response": '.$decompress.'}';
+        } else {
+          echo '{
+                  "metaData": {
+                      "code": "5000",
+                      "message": "ERROR"
+                  },
+                  "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        }
+        exit();
+    }
+
+    public function getMappingDokter()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('mappingdokter.html', ['row' => $this->db('maping_dokter_dpjpvclaim')->toArray()]);
+    }
+
+
+    public function getAddMappingDokter()
+    {
+        $this->_addHeaderFiles();
+        $this->assign['dokter'] = $this->db('dokter')->where('status','1')->toArray();
+        return $this->draw('form.mappingdokter.html', ['row' => $this->assign]);
+    }
+
+    public function postDokter_Save()
+    {
+
+        $location = url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']);
+
+        unset($_POST['save']);
+
+        $query = $this->db('maping_dokter_dpjpvclaim')->save([
+            'kd_dokter' => $_POST['kd_dokter'],
+            'kd_dokter_bpjs' => $_POST['dokter_kode'],
+            'nm_dokter_bpjs' => $_POST['dokter_nama']
+        ]);
+
+        if ($query) {
+            $this->notify('success', 'Simpan maping poli bpjs sukes');
+        } else {
+            $this->notify('failure', 'Simpan maping poli bpjs gagal');
+        }
+
+        redirect($location, $_POST);
+    }
+
+    public function getDokter_Delete($id)
+    {
+        if ($this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
+            $this->notify('success', 'Hapus maping poli bpjs sukses');
+        } else {
+            $this->notify('failure', 'Hapus maping poli bpjs gagal');
+        }
+        redirect(url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']));
+    }
+
+    public function getJadwalDokter()
+    {
+        return $this->draw('jadwaldokter.html');
+    }
+
+    public function anyTaskID()
+    {
+      $this->getCssCard();
+      $date = date('Y-m-d');
+      if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
+        $date = $_POST['periode_antrol'];
+      //$date = '2022-01-20';
+      $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
+      FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli !='IGDK'
+      ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
+      $query->execute();
+      $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+      $rows = [];
+      foreach ($query as $q) {
+          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
+          $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
+          $batal = '0000-00-00 00:00:00';
+          if($reg_periksa2) {
+            $batal = $q['tgl_registrasi'].' '.date('H:i:s');
+          }
+          $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
+          if(!$mlite_antrian_referensi) {
+              $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+          }
+          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+          $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+          $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+          $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+
+          $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $task1 = '';
+          $task2 = '';
+          if($mlite_antrian_loket) {
+            $task1 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time'];
+            $task2 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time'];
+          }
+          $q['nomor_referensi'] = $mlite_antrian_referensi['nomor_referensi'];
+          /*$q['task1'] = strtotime($task1) * 1000;
+          $q['task2'] = strtotime($task2) * 1000;
+          $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;
+          $q['task4'] = strtotime($mutasi_berkas2['diterima']) * 1000;
+          $q['task5'] = strtotime($pemeriksaan_ralan['datajam']) * 1000;
+          $q['task6'] = strtotime($resep_obat['datajam']) * 1000;
+          $q['task7'] = strtotime($resep_obat2['datajam']) * 1000;
+          $q['task99'] = $batal;*/
+          $q['task1'] = $task1;
+          $q['task2'] = $task2;
+          $q['task3'] = $mutasi_berkas['dikirim'];
+          $q['task4'] = $mutasi_berkas2['diterima'];
+          $q['task5'] = $pemeriksaan_ralan['datajam'];
+          $q['task6'] = $resep_obat['datajam'];
+          $q['task7'] = $resep_obat2['datajam'];
+          $q['task99'] = $batal;
+          $rows[] = $q;
+      }
+
+      $taskid = $rows;
+      return $this->draw('taskid.html', ['taskid' => $taskid]);
     }
 
     public function getSettings()
@@ -33,6 +294,8 @@ class Admin extends AdminModule
         $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
         $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.display'));
+        $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.exclude_taskid'));
+        $this->assign['penjab'] = $this->db('penjab')->toArray();
 
         $this->assign['jkn_mobile_v2'] = htmlspecialchars_array($this->settings('jkn_mobile_v2'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
@@ -41,6 +304,7 @@ class Admin extends AdminModule
     public function postSaveSettings()
     {
         $_POST['jkn_mobile_v2']['display'] = implode(',', $_POST['jkn_mobile_v2']['display']);
+        $_POST['jkn_mobile_v2']['exclude_taskid'] = implode(',', $_POST['jkn_mobile_v2']['exclude_taskid']);
         foreach ($_POST['jkn_mobile_v2'] as $key => $val) {
             $this->settings('jkn_mobile_v2', $key, $val);
         }
@@ -72,6 +336,90 @@ class Admin extends AdminModule
             $result[] = ['kd_poli' => $row['kd_poli'], 'nm_poli' => $row['nm_poli'], 'attr' => $attr];
         }
         return $result;
+    }
+
+    public function anyAntrol__()
+    {
+        $this->getCssCard();
+        $tgl_kunjungan = date('Y-m-d');
+        $depanUrl = $this->bpjsurl . 'dashboard/waktutunggu/tanggal/';
+        if (isset($_POST['periode'])) {
+            $tgl_kunjungan = $_POST['periode'];
+            $tgl_kunjungan = preg_replace('/\s+/', '', $tgl_kunjungan);
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response'];
+            }
+            $this->assign['list'] = $response;
+
+            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+        } else {
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            $url = $depanUrl . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response'];
+            }
+            $this->assign['list'] = $response;
+
+            return $this->draw('antrol.html', ['row' => $this->assign]);
+        }
+        exit();
+    }
+
+    public function anyAntrol()
+    {
+        $this->getCssCard();
+        $tgl_kunjungan = date('Y-m-d');
+        $bulan = substr($tgl_kunjungan, 5, 2);
+        $tahun = substr($tgl_kunjungan, 0, 4);
+        $tanggal = substr($tgl_kunjungan, 8, 2);
+        $depanUrlTanggal = $this->bpjsurl . 'dashboard/waktutunggu/tanggal/';
+        $depanUrlBulan = $this->bpjsurl . 'dashboard/waktutunggu/bulan/';
+        if (isset($_POST['periode'])) {
+            $waktu = $_POST['waktu'];
+            $tgl_kunjungan = $_POST['periode'];
+            $tgl_kunjungan = preg_replace('/\s+/', '', $tgl_kunjungan);
+            $bulan = substr($tgl_kunjungan, 5, 2);
+            $tahun = substr($tgl_kunjungan, 0, 4);
+            $tanggal = substr($tgl_kunjungan, 8, 2);
+            if ($_POST['rute'] == 'tanggal') {
+                $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/' . $waktu;
+            } else {
+                $url = $depanUrlBulan . $bulan . '/tahun/' . $tahun . '/waktu/' . $waktu;
+            }
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response']['list'];
+            }
+            $this->assign['list'] = $response;
+
+            echo $this->draw('antrol.display.html', ['row' => $this->assign]);
+        } else {
+            $url = $depanUrlTanggal . $tahun . '-' . $bulan . '-' . $tanggal . '/waktu/server';
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            $response = [];
+            if($json['metadata']['code'] == '200') {
+              $response = $json['response']['list'];
+            }
+            $this->assign['list'] = $response;
+
+            return $this->draw('antrol.html', ['row' => $this->assign]);
+        }
+        exit();
     }
 
     public function getAjax()
@@ -192,6 +540,21 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getJavascript()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/jkn_mobile_v2/js/admin/jkn_mobile_v2.js');
+        exit();
+    }
+
+    public function getCssCard()
+    {
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addCSS(url('plugins/jkn_mobile_v2/css/mineCss.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+    }
+
     private function _addHeaderFiles()
     {
         // CSS
@@ -203,6 +566,8 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
+        // MODULE SCRIPTS
+        $this->core->addJS(url([ADMIN, 'jkn_mobile_v2', 'javascript']), 'footer');
     }
 
 }

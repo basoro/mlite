@@ -5,7 +5,7 @@
         'description'   =>  'Data master awal KhanzaLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '2021',
+        'compatibility' =>  '2022',
         'icon'          =>  'cubes',
         'install'       =>  function () use ($core) {
 
@@ -450,6 +450,9 @@
             `kd_racik` varchar(3) NOT NULL,
             `nm_racik` varchar(30) NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+          $core->db()->pdo()->exec("ALTER TABLE `metode_racik`
+            ADD PRIMARY KEY (`kd_racik`) USING BTREE;");
 
           $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `master_berkas_digital` (
             `kode` varchar(10) NOT NULL,

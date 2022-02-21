@@ -143,73 +143,82 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
 
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
+  {if: !$this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))}
+    bootbox.alert({
+        title: "Pemberitahuan penggunaan!",
+        message: "Silahkan login dengan akun non administrator (akun yang berelasi dengan modul kepegawaian)!"
+    });
+  {else}
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
 
-  var no_rawat        = $('input:text[name=no_rawat]').val();
-  var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_rawat]').val();
-  var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
-  var tensi           = $('input:text[name=tensi]').val();
-  var nadi            = $('input:text[name=nadi]').val();
-  var respirasi       = $('input:text[name=respirasi]').val();
-  var tinggi          = $('input:text[name=tinggi]').val();
-  var berat           = $('input:text[name=berat]').val();
-  var gcs             = $('input:text[name=gcs]').val();
-  var alergi          = $('input:text[name=alergi]').val();
-  var alergi          = $('input:text[name=alergi]').val();
-  var keluhan         = $('textarea[name=keluhan]').val();
-  var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
-  var penilaian       = $('textarea[name=penilaian]').val();
-  var rtl             = $('textarea[name=rtl]').val();
+    var no_rawat        = $('input:text[name=no_rawat]').val();
+    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
+    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
+    var tensi           = $('input:text[name=tensi]').val();
+    var nadi            = $('input:text[name=nadi]').val();
+    var respirasi       = $('input:text[name=respirasi]').val();
+    var tinggi          = $('input:text[name=tinggi]').val();
+    var berat           = $('input:text[name=berat]').val();
+    var gcs             = $('input:text[name=gcs]').val();
+    var kesadaran       = $('input:text[name=kesadaran]').val();
+    var alergi          = $('input:text[name=alergi]').val();
+    var alergi          = $('input:text[name=alergi]').val();
+    var keluhan         = $('textarea[name=keluhan]').val();
+    var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
+    var penilaian       = $('textarea[name=penilaian]').val();
+    var rtl             = $('textarea[name=rtl]').val();
 
-  var url = baseURL + '/dokter_ranap/savesoap?t=' + mlite.token;
-  $.post(url, {no_rawat : no_rawat,
-  tgl_perawatan: tgl_perawatan,
-  jam_rawat: jam_rawat,
-  suhu_tubuh : suhu_tubuh,
-  tensi : tensi,
-  nadi : nadi,
-  respirasi : respirasi,
-  tinggi : tinggi,
-  berat : berat,
-  gcs : gcs,
-  alergi : alergi,
-  keluhan : keluhan,
-  pemeriksaan : pemeriksaan,
-  penilaian : penilaian,
-  rtl : rtl
-  }, function(data) {
-    // tampilkan data
-    $("#display").hide();
-    var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
+    var url = baseURL + '/dokter_ranap/savesoap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
+    tgl_perawatan: tgl_perawatan,
+    jam_rawat: jam_rawat,
+    suhu_tubuh : suhu_tubuh,
+    tensi : tensi,
+    nadi : nadi,
+    respirasi : respirasi,
+    tinggi : tinggi,
+    berat : berat,
+    gcs : gcs,
+    kesadaran : kesadaran,
+    alergi : alergi,
+    keluhan : keluhan,
+    pemeriksaan : pemeriksaan,
+    penilaian : penilaian,
+    rtl : rtl
     }, function(data) {
       // tampilkan data
-      $("#soap").html(data).show();
+      $("#display").hide();
+      var url = baseURL + '/dokter_ranap/soap?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#soap").html(data).show();
+      });
+      $('input:text[name=suhu_tubuh]').val("");
+      $('input:text[name=tensi]').val("");
+      $('input:text[name=nadi]').val("");
+      $('input:text[name=respirasi]').val("");
+      $('input:text[name=tinggi]').val("");
+      $('input:text[name=berat]').val("");
+      $('input:text[name=gcs]').val("");
+      $('input:text[name=kesadaran]').val("");
+      $('input:text[name=alergi]').val("");
+      $('input:text[name=imun_ke]').val("");
+      $('textarea[name=keluhan]').val("");
+      $('textarea[name=pemeriksaan]').val("");
+      $('textarea[name=penilaian]').val("");
+      $('textarea[name=rtl]').val("");
+      $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
+      $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
+      $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data soap telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
     });
-    $('input:text[name=suhu_tubuh]').val("");
-    $('input:text[name=tensi]').val("");
-    $('input:text[name=nadi]').val("");
-    $('input:text[name=respirasi]').val("");
-    $('input:text[name=tinggi]').val("");
-    $('input:text[name=berat]').val("");
-    $('input:text[name=gcs]').val("");
-    $('input:text[name=kesadaran]').val("");
-    $('input:text[name=alergi]').val("");
-    $('input:text[name=imun_ke]').val("");
-    $('textarea[name=keluhan]').val("");
-    $('textarea[name=pemeriksaan]').val("");
-    $('textarea[name=penilaian]').val("");
-    $('textarea[name=rtl]').val("");
-    $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
-    $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
-    $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
-    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-    "Data soap telah disimpan!"+
-    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-    "</div>").show();
-  });
+  {/if}
 });
 
 // ketika tombol hapus ditekan

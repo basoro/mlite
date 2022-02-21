@@ -11,10 +11,21 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
+            'Index'    => 'index',
             'Kelola'    => 'manage',
             'Tambah baru'              => 'add',
             'Pengaturan'                => 'settings'
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Kelola', 'url' => url([ADMIN, 'blog', 'manage']), 'icon' => 'pencil-square', 'desc' => 'Kelola postingan blog'],
+        ['name' => 'Tambah Baru', 'url' => url([ADMIN, 'blog', 'add']), 'icon' => 'pencil-square', 'desc' => 'Tambah postingan baru'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'blog', 'settings']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan blog'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     public function anyManage($page = 1)

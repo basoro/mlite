@@ -49,6 +49,8 @@ class Admin extends Main
         $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
         $this->assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
+        $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
+
         $this->tpl->set('mlite', $this->assign);
         echo $this->tpl->draw(THEMES.'/admin/'.$file, true);
     }

@@ -204,12 +204,20 @@ $("#display").on("click", ".halaman",function(event){
   event.preventDefault();
   var url    = baseURL + '/pasien/display?t=' + mlite.token;
   kd_hal  = $(this).attr("data-hal");
-
-  $.post(url, {halaman: kd_hal} ,function(data) {
-    // tampilkan data
-    $("#notif").hide();
-    $("#display").html(data).show();
-  });
+  var cari = $('input:text[name=cari]').val();
+  if(cari !='') {
+    $.post(url, {halaman: kd_hal, cari: cari} ,function(data) {
+      // tampilkan data
+      $("#notif").hide();
+      $("#display").html(data).show();
+    });
+  } else {
+    $.post(url, {halaman: kd_hal} ,function(data) {
+      // tampilkan data
+      $("#notif").hide();
+      $("#display").html(data).show();
+    });
+  }
 
 });
 
@@ -236,6 +244,7 @@ function bersih(){
   $('input:radio[name=jk]').val("").removeAttr('checked');
   $('input:text[name=no_rkm_medis]').val("");
   $('input:text[name=pekerjaan]').val("");
+  $('input:text[name=no_ktp]').val("");
   $('textarea[name=alamat]').val("");
   $('input:text[name=telepon]').val("");
   $('#tgl_daftar').val("");

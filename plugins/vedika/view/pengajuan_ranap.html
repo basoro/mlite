@@ -1,0 +1,209 @@
+<br><br>
+<div class="row">
+  <div class="col-md-12">
+    <ul class="nav nav-tabs">
+      <li>
+        <a href="{?=url('/veda/')?}?t={?=$_SESSION['vedika_token']?}" role="tab">Dashboard</a>
+      </li>
+      <li>
+        <a href="{?=url('/veda/pengajuan/ralan')?}" role="tab">Pengajuan Rawat Jalan</a>
+      </li>
+      <li class="active">
+        <a href="{?=url('/veda/pengajuan/ranap')?}" role="tab">Pengajuan Rawat Inap</a>
+      </li>
+      <li>
+        <a href="{?=url('/veda/perbaikan')?}" role="tab">Perbaikan</a>
+      </li>
+      <li class="pull-right">
+        <a href="{?=url('/veda/logout')?}"><i class="fa fa-key"></i> Logout</a>
+      </li>
+    </ul>
+  </div>
+</div>
+<br>
+<div class="row">
+  <div class="col-md-12">
+    <div class="row clearfix">
+      <div class="col col-md-6">
+        <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}</h3>
+      </div>
+      <div class="col col-md-6">
+        <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+          <div class="col col-md-4">
+            <div class="row">
+              <div class="input-group">
+                  <input type="text" name="start_date" value="{if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Awal">
+                  <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
+                  </span>
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-4">
+            <div class="row">
+              <div class="input-group">
+                  <input type="text" name="end_date" value="{if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}" minlength="3" class="form-control tanggal" placeholder="Tanggal Akhir">
+                  <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-calendar"></span></button>
+                  </span>
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-4">
+            <div class="row">
+              <div class="input-group">
+                  <input type="text" name="s" minlength="3" class="form-control" placeholder="No.RM/SEP">
+                  <input type="hidden" name="t" value="{?=$_GET['t']?}">
+                  <span class="input-group-btn">
+                      <button class="btn btn-default" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                  </span>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+		<div class="table-responsive no-margin">
+      <div class="table-responsive no-margin">
+				<table class="table table-striped no-margin display" width="100%">
+					<thead>
+						<tr>
+              <th>Aksi dan Proses</th>
+              <th>Data Pasien</th>
+              <th>Data Registrasi</th>
+              <th>Data Kunjungan</th>
+              <th>Berkas Digital</th>
+						</tr>
+					</thead>
+					<tbody>
+    			{if: !empty($vedika.list)}
+						{loop: $vedika.list}
+						<tr>
+              <td>
+                <span class="btn btn-primary btn-xs">
+                  <a href="{$value.downloadURL}" target="_blank"><i class="fa fa-download"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.no_sep}</a>
+								</span><br>
+                <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
+                  <i class="fa fa-folder-open"></i> Feedback
+								</a>
+                {loop: $value.status_pengajuan as $data}
+                  {if: $data.status == 'Setuju'}
+                    <span class="label label-success"><i class="fa fa-check"></i></span>
+                  {elseif: $data.status == 'Perbaiki'}
+                    <span class="label label-danger"><i class="fa fa-edit"></i></span>
+                  {else}
+                    <span class="label label-info"><i class="fa fa-warning"></i></span>
+                  {/if}
+                {/loop}
+              </td>
+							<td>
+                <table>
+                  <tr>
+                    <td width='120px'>No.Rawat</td><td>: {$value.no_rawat}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>No.RM</td><td>: {$value.no_rkm_medis}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Nama Pasien</td><td>: {$value.nm_pasien}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Umur</td><td>: {$value.umurdaftar} {$value.sttsumur}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Jenis Kelamin</td><td>: {if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Alamat Pasien</td><td>: {?=substr($value.almt_pj, 0, strrpos(substr($value.almt_pj, 0, 20), ' '))?}</td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td width='120px'>Tgl.Masuk</td><td>: {$value.tgl_masuk} {$value.jam_masuk}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Tgl.Keluar</td><td>: {$value.tgl_keluar} {$value.jam_keluar}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Kamar</td><td>: {$value.kd_kamar}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <table>
+                  <tr>
+                    <td width='120px'>No. Kunjungan</td><td>: {$value.no_rujukan}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
+                  </tr>
+                  <tr>
+                    <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                  </tr>
+                </table>
+              </td>
+              <td>
+                <table>
+                  {if: !empty($value.berkas_digital_pasien)}
+                  {loop: $value.berkas_digital_pasien as $data}
+                  <tr>
+                    <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
+                  </tr>
+                  {/loop}
+                  {/if}
+                  {loop: $value.berkas_digital as $data}
+                  <tr>
+                    <td>- <a href="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
+                  </tr>
+                  {/loop}
+                </table>
+              </td>
+						</tr>
+						{/loop}
+						{else}
+						<tr><td colspan="4" class="text-center">Data pasien tidak ditemukan</td></tr>
+					{/if}
+					</tbody>
+				</table>
+		  </div>
+      {$vedika.pagination}
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="moduleModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          ...
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $( function() {
+    $('.tanggal').datepicker({
+      dateFormat: 'yy-mm-dd'
+    });
+  } );
+  $(document).ready(function(){
+    $('.display').DataTable({
+      "language": { "search": "", "searchPlaceholder": "Search..." },
+      "lengthChange": false,
+      "scrollX": true,
+      dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+    var t = $(".display").DataTable().rows().count();
+    $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  });
+  $('#moduleModal').on('hidden.bs.modal', function () {
+      $(this).removeData();
+  })
+</script>

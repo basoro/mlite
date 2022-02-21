@@ -38,7 +38,7 @@ class Petugas
         $return['pegawai'] = $this->db('pegawai')->toArray();
         $return['gol_darah'] = ['-','A','B','O','AB'];
         $return['agama'] = ['ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN'];
-        $return['stts_nikah'] = ['SINGLE','MENIKAH','JANDA','DUDHA','JOMBLO'];
+        $return['stts_nikah'] = ['BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO'];
         $return['jabatan'] = $this->db('jabatan')->toArray();
         if (isset($_POST['nip'])){
           $return['form'] = $this->db('petugas')->where('nip', $_POST['nip'])->oneArray();

@@ -39,6 +39,8 @@ class Admin extends AdminModule
             $row['editURL'] = url([ADMIN, 'users', 'edit', $row['id']]);
             $row['delURL']  = url([ADMIN, 'users', 'delete', $row['id']]);
         }
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addCSS(url([ADMIN, 'users', 'css']));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
         return $this->draw('manage.html', ['myId' => $this->core->getUserInfo('id'), 'users' => $rows]);
@@ -124,9 +126,9 @@ class Admin extends AdminModule
             $this->notify('failure', 'Email salah');
         }
         // check if password is longer than 5 characters
-        if (isset($_POST['password']) && strlen($_POST['password']) < 5) {
+        if (isset($_POST['password']) && strlen($_POST['password']) < 8) {
             $errors++;
-            $this->notify('failure', 'Password terlalu pendek.');
+            $this->notify('failure', 'Password terlalu pendek. Minimal 8 karakter serta memuat kombinasi huruf besar, huruf kecil, angka, dan karakter khusus ');
         }
         // access to modules
         if ((count($_POST['access']) == count($this->_getModules())) || ($id == 1)) {
@@ -322,4 +324,12 @@ class Admin extends AdminModule
             return false;
         }
     }
+
+    public function getCss()
+    {
+        header('Content-type: text/css');
+        echo $this->draw(MODULES.'/users/css/admin/users.css');
+        exit();
+    }
+
 }

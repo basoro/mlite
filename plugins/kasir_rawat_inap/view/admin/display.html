@@ -12,7 +12,8 @@
           <th style="white-space: nowrap;">No. Asuransi</th>
           <th style="white-space: nowrap;">Tgl. Masuk</th>
           <th style="white-space: nowrap;">Tgl. Keluar</th>
-          <th style="white-space: nowrap;">Status</th>
+          <th style="white-space: nowrap;">Status Bayar</th>
+          <th style="white-space: nowrap;">Status Pulang</th>
         </tr>
       </thead>
       <tbody>
@@ -27,6 +28,7 @@
           <td style="white-space: nowrap;">{$value.no_peserta}</td>
           <td style="white-space: nowrap;">{$value.tgl_masuk} {$value.jam_masuk}</td>
           <td style="white-space: nowrap;">{$value.tgl_keluar} {$value.jam_keluar}</td>
+          <td style="white-space: nowrap;">{$value.status_bayar}</td>
           <td style="white-space: nowrap;">{$value.stts_pulang}</td>
         </tr>
         {/loop}

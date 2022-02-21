@@ -28,6 +28,7 @@ class Site extends SiteModule
         $assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
         $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
+        $assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         echo $this->draw('main.html', ['mlite' => $assign]);
         exit();
     }

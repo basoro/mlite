@@ -32,12 +32,12 @@
         <div class="form-group">
           <div class="row">
             <div class="col-sm-2">
-              <label for="nama_pasien">Suhu(C)</label>
-              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
+              <label for="nama_pasien">Tensi(mmHg)</label>
+              <input type="text" name="tensi" class="form-control" placeholder="" value="-">
             </div>
             <div class="col-sm-2">
-              <label for="nama_pasien">Tensi(mmHg)</label>
-              <input type="text" name="tensi" class="form-control" placeholder="" value="">
+              <label for="nama_pasien">Suhu(C)</label>
+              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
             </div>
             <div class="col-sm-2">
               <label for="nama_pasien">Nadi(/mnt)</label>
@@ -59,11 +59,16 @@
         </div>
         <div class="form-group">
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
+              <label for="nama_pasien">Kesadaran</label>
+              <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
+              <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <div class="col-sm-4">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <label for="nama_pasien">Alergi</label>
               <input type="text" name="alergi" class="form-control" placeholder="" value="">
             </div>
@@ -85,6 +90,10 @@
         <div class="form-group">
           <label for="jenis">Plan</label>
           <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
+          <label for="jenis">Instruksi</label>
+          <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
         </div>
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
@@ -174,6 +183,23 @@
     </div>
   </div>
 </div>
+<script type="text/javascript">
+  $('input:text[name=kesadaran]').focus(function(){
+  //$('input:text[name=kesadaran]').on('input',function(e){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">Compos Mentis</li>';
+       output+='<li class=\"list-group-item link-class\">Somnolence</li>';
+       output+='<li class=\"list-group-item link-class\">Sopor</li>';
+       output+='<li class=\"list-group-item link-class\">Coma</li>';
+       output+='';
+       $('#kesadaranList').fadeIn();
+       $('#kesadaranList').html(output).show();
+  });
+  $('#kesadaranList').on('click', 'li', function(){
+    $('input:text[name=kesadaran]').val($(this).text());
+    $('#kesadaranList').fadeOut();
+  });
+</script>
 <script type="text/javascript">
   $(document).ready(function () {
     $("#icd10dan9").hide();

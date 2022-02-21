@@ -4,6 +4,7 @@ namespace Plugins\Rawat_Jalan;
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
 use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
@@ -23,7 +24,8 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Rawat Jalan', 'url' => url([ADMIN, 'rawat_jalan', 'manage']), 'icon' => 'wheelchair', 'desc' => 'Pendaftaran pasien rawat jalan'],
-        ['name' => 'Booking', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
+        ['name' => 'Booking Registrasi', 'url' => url([ADMIN, 'rawat_jalan', 'booking']), 'icon' => 'file-o', 'desc' => 'Pendaftaran pasien booking rawat jalan'],
+        ['name' => 'Booking Periksa', 'url' => url([ADMIN, 'rawat_jalan', 'bookingperiksa']), 'icon' => 'file-o', 'desc' => 'Booking periksa pasien rawat jalan via Online'],
         ['name' => 'Jadwal Dokter', 'url' => url([ADMIN, 'rawat_jalan', 'jadwal']), 'icon' => 'user-md', 'desc' => 'Jadwal dokter rawat jalan'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
@@ -50,9 +52,21 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
+        $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
+        $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        return $this->draw('manage.html',
+          [
+            'rawat_jalan' => $this->assign,
+            'cek_vclaim' => $cek_vclaim,
+            'master_berkas_digital' => $master_berkas_digital,
+            'maping_dokter_dpjpvclaim' => $maping_dokter_dpjpvclaim,
+            'maping_poli_bpjs' => $maping_poli_bpjs,
+            'responsivevoice' => $responsivevoice,
+            'admin_mode' => $this->settings->get('settings.admin_mode')
+          ]
+        );
     }
 
     public function anyDisplay()
@@ -272,7 +286,21 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if ($_POST['tgl_registrasi'] > date('Y-m-d')) {
+        $this->db('booking_registrasi')->save([
+          'tanggal_booking' => date('Y-m-d'),
+          'jam_booking' => date('H:i:s'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'tanggal_periksa' => $_POST['tgl_registrasi'],
+          'kd_dokter' => $_POST['kd_dokter'],
+          'kd_poli' => $_POST['kd_poli'],
+          'no_reg' => $this->core->setNoReg($_POST['kd_dokter'], $_POST['kd_poli']),
+          'kd_pj' => $_POST['kd_pj'],
+          'limit_reg' => '0',
+          'waktu_kunjungan' => $_POST['jam_reg'],
+          'status' => 'Belum'
+        ]);
+      } else if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
 
         $_POST['status_lanjut'] = 'Ralan';
         $_POST['stts'] = 'Belum';
@@ -342,6 +370,7 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
 
       $waapitoken =  $this->settings->get('settings.waapitoken');
+      $waapiphonenumber =  $this->settings->get('settings.waapiphonenumber');
       $nama_instansi =  $this->settings->get('settings.nama_instansi');
 
       if (isset($_POST['valid'])) {
@@ -462,14 +491,14 @@ class Admin extends AdminModule
       }
 
       $this->assign['searchUrl'] =  url([ADMIN, 'rawat_jalan', 'booking', $page.'?s='.$phrase.'&start_date='.$start_date.'&end_date='.$end_date]);
-      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'nama_instansi' => $nama_instansi]);
+      return $this->draw('booking.html', ['booking' => $this->assign, 'waapitoken' => $waapitoken, 'waapiphonenumber' => $waapiphonenumber, 'nama_instansi' => $nama_instansi]);
 
     }
 
     public function getBookingPeriksa()
     {
         $date = date('Y-m-d');
-        $text = 'Booking Pendaftaran';
+        $text = 'Booking Periksa';
 
         // CSS
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
@@ -483,6 +512,7 @@ class Admin extends AdminModule
           [
             'text' => $text,
             'waapitoken' => $this->settings->get('settings.waapitoken'),
+            'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
             'nama_instansi' => $this->settings->get('settings.nama_instansi'),
             'booking' => $this->db('booking_periksa')
               ->select([
@@ -497,7 +527,7 @@ class Admin extends AdminModule
                 'tanggal_booking' => 'booking_periksa.tanggal_booking'
               ])
               ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
-              ->where('tambahan_pesan', 'jkn_mobile_v2')
+              //->where('tambahan_pesan', 'jkn_mobile_v2')
               ->toArray()
           ]
         );
@@ -511,6 +541,126 @@ class Admin extends AdminModule
         'no_booking' => $_POST['no_booking'],
         'balasan' => $_POST['message']
       ]);
+      exit();
+    }
+
+    public function anyKontrol()
+    {
+      $rows = $this->db('booking_registrasi')
+        ->join('poliklinik', 'poliklinik.kd_poli=booking_registrasi.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=booking_registrasi.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=booking_registrasi.kd_pj')
+        ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+        ->toArray();
+      $i = 1;
+      $result = [];
+      foreach ($rows as $row) {
+        $row['nomor'] = $i++;
+        $result[] = $row;
+      }
+      echo $this->draw('kontrol.html', ['booking_registrasi' => $result]);
+      exit();
+    }
+
+    public function postSaveKontrol()
+    {
+
+      $cari_sep = $this->db('bridging_sep')->where('no_rawat',$_POST['no_rawat'])->oneArray();
+      if(!$cari_sep) {
+        $cari_sep = $this->db('bridging_sep_internal')->where('no_rawat',$_POST['no_rawat'])->oneArray();
+      }
+      $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['dokter'])->oneArray();
+      $nmPoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['poli'])->oneArray();
+
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime('1970-01-01 00:00:00'));
+      $key = $this->settings->get('settings.BpjsConsID') . $this->settings->get('settings.BpjsSecretKey') . $tStamp;
+      $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
+      $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
+      $_POST['sep_user'] = $this->core->getPegawaiInfo('nama',$this->core->getUserInfo('username', null, true));
+
+      $data = [
+        'request' => [
+            'noSEP' => $cari_sep['no_sep'],
+            'kodeDokter' => $_POST['dokter'],
+            'poliKontrol' => $_POST['poli'],
+            'tglRencanaKontrol' => $_POST['tanggal_datang'],
+            'user' => $_POST['sep_user']
+        ]
+      ];
+
+      $data = json_encode($data);
+      echo $data;
+      $url = $this->settings->get('settings.BpjsApiUrl') . 'RencanaKontrol/insert';
+      $output = BpjsService::post($url, $data, $this->settings->get('settings.BpjsConsID'), $this->settings->get('settings.BpjsSecretKey'), $this->settings->get('settings.BpjsUserKey'), $tStamp);
+      $data = json_decode($output, true);
+      print_r($data);
+      //$noKontrol = $data['metaData']['message'];
+      $noKontrol = '';
+      if ($data == NULL) {
+        echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+      } else if ($data['metaData']['code'] == 200) {
+        $stringDecrypt = stringDecrypt($key, $data['response']);
+        $decompress = '""';
+        //$rujukan = [];
+        $decompress = decompress($stringDecrypt);
+        $rujukan = json_decode($decompress, true);
+        //var_dump($rujukan);
+        $noKontrol = $rujukan['noSuratKontrol'];
+
+        $simpanKontrol = $this->db('bridging_surat_kontrol_bpjs')->save([
+          'no_sep' => $cari_sep['no_sep'],
+          'tgl_surat' => $cari_sep['tglsep'],
+          'no_surat' => $noKontrol,
+          'tgl_rencana' => $_POST['tanggal_datang'],
+          'kd_dokter_bpjs' => $_POST['dokter'],
+          'nm_dokter_bpjs' => $dpjp['nm_dokter_bpjs'],
+          'kd_poli_bpjs' => $_POST['poli'],
+          'nm_poli_bpjs' => $nmPoli['nm_poli_bpjs']
+        ]);
+
+        $query = $this->db('skdp_bpjs')->save([
+          'tahun' => date('Y'),
+          'no_rkm_medis' => $_POST['no_rkm_medis'],
+          'diagnosa' => $_POST['diagnosa'],
+          'terapi' => $_POST['terapi'],
+          'alasan1' => $_POST['alasan1'],
+          'alasan2' => '',
+          'rtl1' => $_POST['rtl1'],
+          'rtl2' => '',
+          'tanggal_datang' => $_POST['tanggal_datang'],
+          'tanggal_rujukan' => $_POST['tanggal_rujukan'],
+          'no_antrian' => $this->core->setNoSKDP(),
+          'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+          'status' => 'Menunggu'
+        ]);
+
+        if ($query) {
+          $this->db('booking_registrasi')
+            ->save([
+              'tanggal_booking' => date('Y-m-d'),
+              'jam_booking' => date('H:i:s'),
+              'no_rkm_medis' => $_POST['no_rkm_medis'],
+              'tanggal_periksa' => $_POST['tanggal_datang'],
+              'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+              'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
+              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_datang']),
+              'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
+              'limit_reg' => 0,
+              'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
+              'status' => 'Belum'
+            ]);
+        }
+
+      }
+
+      exit();
+    }
+
+    public function postHapusKontrol()
+    {
+      $this->db('booking_registrasi')->where('kd_dokter', $_POST['kd_dokter'])->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tanggal_periksa', $_POST['tanggal_periksa'])->where('status', 'Belum')->delete();
+      $this->db('skdp_bpjs')->where('kd_dokter', $_POST['kd_dokter'])->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tanggal_datang', $_POST['tanggal_periksa'])->where('status', 'Menunggu')->delete();
       exit();
     }
 
@@ -574,6 +724,12 @@ class Admin extends AdminModule
 
     public function getJadwalEdit($id, $hari_kerja)
     {
+        $this->core->addCSS(url('assets/css/jquery-ui.css'));
+        $this->core->addCSS(url('assets/css/jquery.timepicker.css'));
+
+        // JS
+        $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
         $this->_addHeaderFiles();
         $row = $this->db('jadwal')->where('kd_dokter', $id)->where('hari_kerja', $hari_kerja)->oneArray();
         if (!empty($row)) {
@@ -628,7 +784,41 @@ class Admin extends AdminModule
 
     public function postStatusRawat()
     {
-      $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      $datetime = date('Y-m-d H:i:s');
+      $cek = $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      if($_POST['stts'] == 'Berkas Dikirim') {
+          if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+            $this->db('mutasi_berkas')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'status' => 'Sudah Dikirim',
+              'dikirim' => $datetime,
+              'diterima' => '0000-00-00 00:00:00',
+              'kembali' => '0000-00-00 00:00:00',
+              'tidakada' => '0000-00-00 00:00:00',
+              'ranap' => '0000-00-00 00:00:00'
+            ]);
+          }
+      } else if ($_POST['stts'] == 'Berkas Diterima') {
+          if(!$this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+            $this->db('mutasi_berkas')->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'status' => 'Sudah Diterima',
+              'dikirim' => $datetime,
+              'diterima' => $datetime,
+              'kembali' => '0000-00-00 00:00:00',
+              'tidakada' => '0000-00-00 00:00:00',
+              'ranap' => '0000-00-00 00:00:00'
+            ]);
+          } else {
+            $this->db('mutasi_berkas')->where('no_rawat', $_POST['no_rawat'])->save([
+              'status' => 'Sudah Diterima',
+              'diterima' => $datetime
+            ]);
+          }
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      } else {
+          $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+      }
       exit();
     }
 
@@ -836,9 +1026,13 @@ class Admin extends AdminModule
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $i = 1;
+      $row['nama_petugas'] = '';
+      $row['departemen_petugas'] = '';
       $result = [];
       foreach ($rows as $row) {
         $row['nomor'] = $i++;
+        $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+        $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
         $result[] = $row;
       }
 
@@ -853,6 +1047,8 @@ class Admin extends AdminModule
           ->toArray();
         foreach ($rows_ranap as $row) {
           $row['nomor'] = $i++;
+          $row['nama_petugas'] = $this->core->getPegawaiInfo('nama',$row['nip']);
+          $row['departemen_petugas'] = $this->core->getDepartemenInfo($this->core->getPegawaiInfo('departemen',$row['nip']));
           $result_ranap[] = $row;
         }
       }
@@ -863,17 +1059,27 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
+      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+      $check_db->execute();
+      $check_db = $check_db->fetch();
+
+      if($check_db) {
+        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+      } else {
+        unset($_POST['instruksi']);
+      }
+
       if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->save($_POST);
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
       }
       exit();
     }
 
     public function postHapusSOAP()
     {
-      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->delete();
       exit();
     }
 

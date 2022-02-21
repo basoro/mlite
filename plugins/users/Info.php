@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan pengguna',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.1',
-    'compatibility' =>    '2021',
+    'compatibility' =>  '2022',
     'icon'          =>  'user',
     'pages'         =>  ['Login' => 'login'],
 
@@ -51,7 +51,7 @@ return [
         copy(MODULES.'/users/img/default.png', UPLOADS.'/users/'.$avatar);
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABTABLE IF EXISTSLE `mlite_users`");
+        $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_users`");
         $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_login_attempts`");
         $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_remember_me`");
         deleteDir(UPLOADS."/users");

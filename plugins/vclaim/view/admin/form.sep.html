@@ -218,7 +218,7 @@
                   </div>
                 </div>
                 <div class="form-group clearfix">
-                  <label for="" class="col-sm-3 control-label">Kelas Rawat</label>
+                  <label for="" class="col-sm-3 control-label">Hak Kelas Rawat</label>
                   <div class="col-sm-6">
                     <input type="text" name="sep_kelas_nama" id="sep_kelas_nama" class="form-control" value="">
                     <ul class="list-group" id="kelasList" style="z-index:1000;position:absolute;width:100%;"></ul>
@@ -246,7 +246,7 @@
                   </div>
                   <label for="" class="col-sm-1 control-label">Tanggal</label>
                   <div class="col-sm-2">
-                    <input type="text" name="sep_tanggal_rujukan" id="sep_tanggal_rujukan" class="form-control" value="">
+                    <input type="text" name="sep_tanggal_rujukan" id="sep_tanggal_rujukan" class="form-control tanggal" value="">
                   </div>
                 </div>
                 <div class="form-group clearfix">
@@ -269,6 +269,17 @@
                   <label for="" class="col-sm-1 control-label">Kode</label>
                   <div class="col-sm-2">
                     <input type="text" name="sep_dpjp_yang_melayani_kode" id="sep_dpjp_yang_melayani_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">DPJP Pelayanan</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_dpjp_pelayanan_nama" id="sep_dpjp_pelayanan_nama" class="form-control" value="">
+                    <ul class="list-group" id="dokterdpjpList2" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_dpjp_pelayanan_kode" id="sep_dpjp_pelayanan_kode" class="form-control" value="">
                   </div>
                 </div>
                 <div class="form-group clearfix">
@@ -311,6 +322,72 @@
               </div>
               <div role="tabpanel" class="tab-pane fade in" id="dua">
                 <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Naik Kelas Rawat</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_naik_kelas_nama" id="sep_naik_kelas_nama" class="form-control" value="">
+                    <ul class="list-group" id="naikkelasList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_naik_kelas_kode" id="sep_naik_kelas_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">PJ Pembiayaan</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_pembiayaan_nama" id="sep_pembiayaan_nama" class="form-control" value="">
+                    <ul class="list-group" id="pembiayaanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_pembiayaan_kode" id="sep_pembiayaan_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Tujuan Kunjungan</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_kunjungan_nama" id="sep_kunjungan_nama" class="form-control" value="">
+                    <ul class="list-group" id="kunjunganList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_kunjungan_kode" id="sep_kunjungan_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Flag Prosedur</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_prosedur_nama" id="sep_prosedur_nama" class="form-control" value="">
+                    <ul class="list-group" id="prosedurList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_prosedur_kode" id="sep_prosedur_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Pelayanan Penunjang</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_penunjang_nama" id="sep_penunjang_nama" class="form-control" value="">
+                    <ul class="list-group" id="penunjangList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_penunjang_kode" id="sep_penunjang_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Assesment Pelayanan</label>
+                  <div class="col-sm-6">
+                    <input type="text" name="sep_assesment_nama" id="sep_assesment_nama" class="form-control" value="">
+                    <ul class="list-group" id="assesmentList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Kode</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="sep_assesment_kode" id="sep_assesment_kode" class="form-control" value="">
+                  </div>
+                </div>
+                <div class="form-group clearfix">
                   <label for="" class="col-sm-3 control-label">COB</label>
                   <div class="col-sm-6">
                     <input type="text" name="sep_cob_nama" id="sep_cob_nama" class="form-control" value="" />
@@ -341,6 +418,12 @@
                   <label for="" class="col-sm-1 control-label">Kode</label>
                   <div class="col-sm-2">
                     <input type="text" name="sep_status_kecelakaan_kode" id="sep_status_kecelakaan_kode" class="form-control" value="" />
+                  </div>
+                </div>
+                <div class="form-group clearfix">
+                  <label for="" class="col-sm-3 control-label">Nomor Laporan Polisi</label>
+                  <div class="col-sm-9">
+                    <input type="text" name="sep_nomor_laporan_polisi" id="sep_nomor_laporan_polisi" class="form-control" value="">
                   </div>
                 </div>
                 <div class="form-group clearfix">
@@ -419,6 +502,9 @@
           </div>
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
+            <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
+            <button type="button" name="button" class="btn btn-warning" id="kontrol">Kontrol</button>
+            <button type="button" name="button" class="btn btn-warning" id="spri">SPRI</button>
             <input type="submit" id="selesai" class="btn btn-danger pull-right" name="" value="Selesai">
           </div>
         </div>
@@ -426,6 +512,82 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="syncsepModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="spriModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="kontrolModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sync_sep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var loadURL =  baseURL + '/vclaim/sync_sep/' + no_peserta + '/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#syncsepModal');
+    var modalContent = $('#syncsepModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#spri", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var loadURL =  baseURL + '/vclaim/spri/' + no_peserta + '/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#spriModal');
+    var modalContent = $('#spriModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#kontrol", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_peserta = $('input:text[name=sep_no_kartu]').val();
+    var loadURL =  baseURL + '/vclaim/kontrol/' + no_peserta + '?t=' + mlite.token;
+
+    var modal = $('#kontrolModal');
+    var modalContent = $('#kontrolModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
 <script type="text/javascript">
    $(function () {
        $('.tanggal').datetimepicker({
@@ -512,6 +674,14 @@
     var nmpolitujuan = $('#sep_spesialis_nama').val();
     var klsrawat = $('#sep_kelas_kode').val();
     var lakalantas = $('#sep_status_kecelakaan_kode').val();
+    var noLp = $('#sep_nomor_laporan_polisi').val();
+    var pembiayaan = $('#sep_pembiayaan_kode').val();
+    var klsnaik = $('#sep_naik_kelas_kode').val();
+    var pjnaikkelas = $('#sep_penjamin_kecelakaan_kode').val();
+    var tujuanKunj = $('#sep_kunjungan_kode').val();
+    var prosedur = $('#sep_prosedur_kode').val();
+    var penunjang = $('#sep_penunjang_kode').val();
+    var assesment = $('#sep_assesment_kode').val();
     var nama_peserta = $('.nama_peserta').text();
     var nomr = $('#sep_norm').val();
     var tanggal_lahir = $('#sep_tanggal_lahir').val();
@@ -538,6 +708,8 @@
     var noskdp = $('#sep_nomor_skdp').val();
     var kddpjp = $('#sep_dpjp_yang_melayani_kode').val();
     var nmdpdjp = $('#sep_dpjp_yang_melayani_nama').val();
+    var kddpjppelayanan = $('#sep_dpjp_pelayanan_kode').val();
+    var nmdpjppelayanan = $('#sep_dpjp_pelayanan_nama').val();
     var prolanis_prb = $('.prolainis_peserta').text();
 
     $.ajax({
@@ -557,7 +729,14 @@
         kdpolitujuan: kdpolitujuan,
         nmpolitujuan: nmpolitujuan,
         klsrawat: klsrawat,
+        klsnaik: klsnaik,
+        pjnaikkelas: pjnaikkelas,
         lakalantas: lakalantas,
+        noLp: noLp,
+        tujuanKunj: tujuanKunj,
+        flagProcedure: prosedur,
+        kdPenunjang: penunjang,
+        assesmentPel: assesment,
         nama_pasien: nama_peserta,
         nomr: nomr,
         tanggal_lahir: tanggal_lahir,
@@ -568,7 +747,7 @@
         asal_rujukan: asal_rujukan,
         eksekutif: eksekutif,
         cob: cob,
-        penjamin: penjamin,
+        pembiayaan: pembiayaan,
         notelep: notelep,
         katarak: katarak,
         tglkkl: tglkkl,
@@ -584,6 +763,8 @@
         noskdp: noskdp,
         kddpjp: kddpjp,
         nmdpdjp: nmdpdjp,
+        kddpjppelayanan: kddpjppelayanan,
+        nmdpjppelayanan: nmdpjppelayanan,
         prolanis_prb: prolanis_prb
       },
       success: function(result){
@@ -630,6 +811,8 @@
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('input:text[name=sep_eksekutif_kode]').val("0");
             $('input:text[name=sep_eksekutif_nama]').val("Tidak");
+            $('input:text[name=sep_kunjungan_kode]').val("0");
+            $('input:text[name=sep_kunjungan_nama]').val("Normal");
             $('input:text[name=sep_cob_kode]').val("0");
             $('input:text[name=sep_cob_nama]').val("Tidak");
             $('input:text[name=sep_katarak_kode]').val("0");
@@ -694,6 +877,8 @@
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('input:text[name=sep_eksekutif_kode]').val("0");
             $('input:text[name=sep_eksekutif_nama]').val("Tidak");
+            $('input:text[name=sep_kunjungan_kode]').val("0");
+            $('input:text[name=sep_kunjungan_nama]').val("Normal");
             $('input:text[name=sep_cob_kode]').val("0");
             $('input:text[name=sep_cob_nama]').val("Tidak");
             $('input:text[name=sep_katarak_kode]').val("0");
@@ -759,6 +944,8 @@
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('input:text[name=sep_eksekutif_kode]').val("0");
             $('input:text[name=sep_eksekutif_nama]').val("Tidak");
+            $('input:text[name=sep_kunjungan_kode]').val("0");
+            $('input:text[name=sep_kunjungan_nama]').val("Normal");
             $('input:text[name=sep_cob_kode]').val("0");
             $('input:text[name=sep_cob_nama]').val("Tidak");
             $('input:text[name=sep_katarak_kode]').val("0");
@@ -824,6 +1011,8 @@
             $('input:text[name=sep_norm]').val(json_obj[0].response.rujukan.peserta.mr.noMR);
             $('input:text[name=sep_eksekutif_kode]').val("0");
             $('input:text[name=sep_eksekutif_nama]').val("Tidak");
+            $('input:text[name=sep_kunjungan_kode]').val("0");
+            $('input:text[name=sep_kunjungan_nama]').val("Normal");
             $('input:text[name=sep_cob_kode]').val("0");
             $('input:text[name=sep_cob_nama]').val("Tidak");
             $('input:text[name=sep_katarak_kode]').val("0");
@@ -1043,7 +1232,6 @@
 </script>
 <script type="text/javascript">
   $("#form_sep").on("click","#sep_kelas_nama", function(event){
-  //$('#sep_pelayanan_nama').focus(function(){
        var output='';
        output+='<li class=\"list-group-item link-class\">1: KELAS 1</li>';
        output+='<li class=\"list-group-item link-class\">2: KELAS 2</li>';
@@ -1060,8 +1248,124 @@
   });
 </script>
 <script type="text/javascript">
+  $("#form_sep").on("click","#sep_naik_kelas_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">1: VVIP</li>';
+       output+='<li class=\"list-group-item link-class\">2: VIP</li>';
+       output+='<li class=\"list-group-item link-class\">3: KELAS 1</li>';
+       output+='<li class=\"list-group-item link-class\">4: KELAS 2</li>';
+       output+='<li class=\"list-group-item link-class\">5: KELAS 3</li>';
+       output+='<li class=\"list-group-item link-class\">6: ICCU</li>';
+       output+='<li class=\"list-group-item link-class\">7: ICU</li>';
+       output+='';
+       $('#naikkelasList').fadeIn();
+       $('#naikkelasList').html(output).show();
+  });
+  $('#naikkelasList').on('click', 'li', function(){
+       $('#sep_naik_kelas_nama').val($(this).text().split(': ')[1]);
+       $('#sep_naik_kelas_kode').val($(this).text().split(': ')[0]);
+       var sep_naik_kelas_kode = $('#sep_naik_kelas_kode').val();
+       $('#naikkelasList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sep_pembiayaan_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">1: Pribadi</li>';
+       output+='<li class=\"list-group-item link-class\">2: Pemberi Kerja</li>';
+       output+='<li class=\"list-group-item link-class\">3: Asuransi Tambahan</li>';
+       output+='';
+       $('#pembiayaanList').fadeIn();
+       $('#pembiayaanList').html(output).show();
+  });
+  $('#pembiayaanList').on('click', 'li', function(){
+       $('#sep_pembiayaan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_pembiayaan_kode').val($(this).text().split(': ')[0]);
+       var sep_pembiayaan_kode = $('#sep_pembiayaan_kode').val();
+       $('#pembiayaanList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sep_kunjungan_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">0: Normal</li>';
+       output+='<li class=\"list-group-item link-class\">1: Prosedur</li>';
+       output+='<li class=\"list-group-item link-class\">2: Konsul Dokter</li>';
+       output+='';
+       $('#kunjunganList').fadeIn();
+       $('#kunjunganList').html(output).show();
+  });
+  $('#kunjunganList').on('click', 'li', function(){
+       $('#sep_kunjungan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_kunjungan_kode').val($(this).text().split(': ')[0]);
+       var sep_kunjungan_kode = $('#sep_kunjungan_kode').val();
+       $('#kunjunganList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sep_prosedur_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">0: Prosedur Tidak Berkelanjutan</li>';
+       output+='<li class=\"list-group-item link-class\">1: Prosedur dan Terapi Berkelanjutan</li>';
+       output+='';
+       $('#prosedurList').fadeIn();
+       $('#prosedurList').html(output).show();
+  });
+  $('#prosedurList').on('click', 'li', function(){
+       $('#sep_prosedur_nama').val($(this).text().split(': ')[1]);
+       $('#sep_prosedur_kode').val($(this).text().split(': ')[0]);
+       var sep_prosedur_kode = $('#sep_prosedur_kode').val();
+       $('#prosedurList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sep_penunjang_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">1: Radioterapi</li>';
+       output+='<li class=\"list-group-item link-class\">2: Kemoterapi</li>';
+       output+='<li class=\"list-group-item link-class\">3: Rehabilitasi Medik</li>';
+       output+='<li class=\"list-group-item link-class\">4: Rehabilitasi Psikososial</li>';
+       output+='<li class=\"list-group-item link-class\">5: Transfusi Darah</li>';
+       output+='<li class=\"list-group-item link-class\">6: Pelayanan Gigi</li>';
+       output+='<li class=\"list-group-item link-class\">7: Laboratorium</li>';
+       output+='<li class=\"list-group-item link-class\">8: USG</li>';
+       output+='<li class=\"list-group-item link-class\">9: Kemoterapi</li>';
+       output+='<li class=\"list-group-item link-class\">10: Lain-Lain</li>';
+       output+='<li class=\"list-group-item link-class\">11: MRI</li>';
+       output+='<li class=\"list-group-item link-class\">12: HEMODIALISA</li>';
+       output+='';
+       $('#penunjangList').fadeIn();
+       $('#penunjangList').html(output).show();
+  });
+  $('#penunjangList').on('click', 'li', function(){
+       $('#sep_penunjang_nama').val($(this).text().split(': ')[1]);
+       $('#sep_penunjang_kode').val($(this).text().split(': ')[0]);
+       var sep_penunjang_kode = $('#sep_penunjang_kode').val();
+       $('#penunjangList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#sep_assesment_nama", function(event){
+       var output='';
+       output+='<li class=\"list-group-item link-class\">1: Poli spesialis tidak tersedia pada hari sebelumnya</li>';
+       output+='<li class=\"list-group-item link-class\">2: Jam Poli telah berakhir pada hari sebelumnya</li>';
+       output+='<li class=\"list-group-item link-class\">3: Dokter Spesialis yang dimaksud tidak praktek pada hari sebelumnya</li>';
+       output+='<li class=\"list-group-item link-class\">4: Atas Instruksi RS</li>';
+       output+='<li class=\"list-group-item link-class\">5: Tujuan Kontrol</li>';
+       output+='';
+       $('#assesmentList').fadeIn();
+       $('#assesmentList').html(output).show();
+  });
+  $('#assesmentList').on('click', 'li', function(){
+       $('#sep_assesment_nama').val($(this).text().split(': ')[1]);
+       $('#sep_assesment_kode').val($(this).text().split(': ')[0]);
+       var sep_assesment_kode = $('#sep_assesment_kode').val();
+       $('#assesmentList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
   $('#sep_asal_rujukan_nama').keyup(function(){
-      console.log('Spesialis Nama');
+       //console.log('Spesialis Nama');
        var query = $(this).val();
        var sep_asal_faskes_kode = $('input:text[name=sep_asal_faskes_kode]').val();
 
@@ -1173,7 +1477,50 @@
        $('#sep_dpjp_yang_melayani_nama').val($(this).text().split(': ')[1]);
        $('#sep_dpjp_yang_melayani_kode').val($(this).text().split(': ')[0]);
        var sep_dpjp_yang_melayani_kode = $('#sep_dpjp_yang_melayani_kode').val();
+       $('#sep_dpjp_pelayanan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_dpjp_pelayanan_kode').val($(this).text().split(': ')[0]);
+       var sep_dpjp_pelayanan_kode = $('#sep_dpjp_pelayanan_kode').val();
        $('#dokterdpjpList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_dpjp_pelayanan_nama').keyup(function(){
+       var query = $(this).val();
+       var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+       var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
+
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var dokterdpjp = json_obj[0].response.list;
+                       for (var i in dokterdpjp) {
+                         output+='<li class=\"list-group-item link-class\">' + dokterdpjp[i].kode + ': ' + dokterdpjp[i].nama + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#dokterdpjpList2').fadeIn();
+                     $('#dokterdpjpList2').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#dokterdpjpList2').on('click', 'li', function(){
+       $('#sep_dpjp_pelayanan_nama').val($(this).text().split(': ')[1]);
+       $('#sep_dpjp_pelayanan_kode').val($(this).text().split(': ')[0]);
+       var sep_dpjp_pelayanan_kode = $('#sep_dpjp_pelayanan_kode').val();
+       $('#dokterdpjpList2').fadeOut();
   });
 </script>
 <script type="text/javascript">

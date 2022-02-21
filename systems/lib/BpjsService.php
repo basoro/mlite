@@ -5,24 +5,24 @@ class BpjsService
 {
     protected static $lastStatus = null;
 
-    public static function get($url, $datafields = [], $consid, $secretkey)
+    public static function get($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request('GET', $url, $datafields, $consid, $secretkey);
+        return self::request('GET', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function post($url, $datafields = [], $consid, $secretkey)
+    public static function post($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('POST', $url, $datafields, $consid, $secretkey);
+        return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function put($url, $datafields = [], $consid, $secretkey)
+    public static function put($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('PUT', $url, $datafields, $consid, $secretkey);
+        return self::request2('PUT', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function delete($url, $datafields = [],  $consid, $secretkey)
+    public static function delete($url, $datafields = [],  $consid, $secretkey, $user_key, $time_stamp)
     {
-        return self::request2('DELETE', $url, $datafields, $consid, $secretkey);
+        return self::request2('DELETE', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
     public static function getStatus()
@@ -30,10 +30,14 @@ class BpjsService
         return self::$lastStatus;
     }
 
-    protected static function request($type, $url, $datafields, $consid, $secretkey)
+    protected static function request($type, $url, $datafields, $consid, $secretkey, $user_key, $time_stamp)
     {
-        date_default_timezone_set('UTC');
-        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+        //date_default_timezone_set('UTC');
+        $tStamp = $time_stamp;
+        if($tStamp == NULL) {
+          date_default_timezone_set('UTC');
+          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        }
         $signature = hash_hmac('sha256', $consid."&".$tStamp, $secretkey, true);
         $encodedSignature = base64_encode($signature);
         $ch = curl_init();
@@ -41,6 +45,7 @@ class BpjsService
          'X-cons-id: '.$consid.'',
          'X-timestamp: '.$tStamp.'' ,
          'X-signature: '.$encodedSignature.'',
+         'user_key: '.$user_key.'',
          'Content-Type:application/json',
         );
 
@@ -57,7 +62,7 @@ class BpjsService
         }
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);
@@ -66,10 +71,14 @@ class BpjsService
 
         return $output;
     }
-    protected static function request2($type, $url, $datafields, $consid, $secretkey)
+    protected static function request2($type, $url, $datafields, $consid, $secretkey, $user_key, $time_stamp)
     {
-        date_default_timezone_set('UTC');
-        $tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+        //date_default_timezone_set('UTC');
+        $tStamp = $time_stamp;
+        if($tStamp == NULL) {
+          date_default_timezone_set('UTC');
+          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        }
         $signature = hash_hmac('sha256', $consid."&".$tStamp, $secretkey, true);
         $encodedSignature = base64_encode($signature);
         $ch = curl_init();
@@ -77,6 +86,7 @@ class BpjsService
          'X-cons-id: '.$consid.'',
          'X-timestamp: '.$tStamp.'' ,
          'X-signature: '.$encodedSignature.'',
+         'user_key: '.$user_key.'',
          'Content-Type:Application/x-www-form-urlencoded',
         );
 
@@ -93,7 +103,7 @@ class BpjsService
         }
 
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 0);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $output = curl_exec($ch);

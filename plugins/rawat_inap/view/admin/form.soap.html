@@ -32,12 +32,12 @@
         <div class="form-group">
           <div class="row">
             <div class="col-sm-2">
-              <label for="nama_pasien">Suhu(C)</label>
-              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
+              <label for="nama_pasien">Tensi(mmHg)</label>
+              <input type="text" name="tensi" class="form-control" placeholder="" value="-">
             </div>
             <div class="col-sm-2">
-              <label for="nama_pasien">Tensi(mmHg)</label>
-              <input type="text" name="tensi" class="form-control" placeholder="" value="">
+              <label for="nama_pasien">Suhu(C)</label>
+              <input type="text" name="suhu_tubuh" class="form-control" placeholder="" value="">
             </div>
             <div class="col-sm-2">
               <label for="nama_pasien">Nadi(/mnt)</label>
@@ -59,11 +59,16 @@
         </div>
         <div class="form-group">
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
+              <label for="nama_pasien">Kesadaran</label>
+              <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
+              <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+            <div class="col-sm-4">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <label for="nama_pasien">Alergi</label>
               <input type="text" name="alergi" class="form-control" placeholder="" value="">
             </div>
@@ -87,7 +92,14 @@
           <label for="jenis">Plan</label>
           <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>
         </div>
+<<<<<<< HEAD
 		-->
+=======
+        <div class="form-group">
+          <label for="jenis">Instruksi</label>
+          <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
+        </div>
+>>>>>>> e559a1d1b92cc6fa0e42bcbbc11a6e1194822ba3
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
@@ -343,7 +355,7 @@
     modal.on('show.bs.modal', function () {
         modalContent.load(loadURL);
     }).modal();
-
+    return false;
   });
 </script>
 <script type="text/javascript">

@@ -38,6 +38,7 @@ $("#form").on("click", "#simpan", function(event){
   var total_byr = $('input:text[name=total_byr]').val();
   var kd_pj = $('select[name=kd_pj]').val();
   var kelas = $('select[name=kelas]').val();
+  var kategori = $('select[name=kategori]').val();
   var status = $('select[name=status]').val();
 
   var url = baseURL + '/master/jnsperawatanlabsave?t=' + mlite.token;
@@ -55,6 +56,7 @@ $("#form").on("click", "#simpan", function(event){
     total_byr: total_byr,
     kd_pj: kd_pj,
     kelas: kelas,
+    kategori: kategori, 
     status: status
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/jnsperawatanlabdisplay?t=' + mlite.token);

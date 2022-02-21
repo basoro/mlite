@@ -1,0 +1,84 @@
+<style media="screen">
+  th, td {
+    white-space: nowrap;
+    vertical-align: top !important;
+  }
+</style>
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+              <div class="panel-heading">
+                  <div class="btn-group pull-right" style="margin-top:-8px;">
+                    <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+                      <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Antrol</span>
+                    </span>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <form class="" action="{?=url([ADMIN,'jkn_mobile_v2','taskid'])?}" method="POST">
+                      <li style="padding-left:5px;padding-right:5px;">
+                        <input type="text" id="periode_antrol" class="form-control periode_antrol" name="periode_antrol" required>
+                      </li>
+                      <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <input type="submit" name="" class="btn btn-primary btn-block" value="Submit">
+                      </li>
+                      </form>
+                    </ul>
+                  </div>
+                  <h3 class="panel-title">Task ID JKN Mobile V2</h3>
+              </div>
+              <div class="panel-body">
+                <div class="table-responsive no-margin">
+                  <table class="table table-condensed">
+                    <thead>
+                      <tr>
+                        <th>No RM</th>
+                        <th>Tanggal</th>
+                        <th>No Rawat</th>
+                        <th>Poliklinik</th>
+                        <th>Dokter</th>
+                        <th>Nomor Referensi</th>
+                        <th>Task 1</th>
+                        <th>Task 2</th>
+                        <th>Task 3</th>
+                        <th>Task 4</th>
+                        <th>Task 5</th>
+                        <th>Task 6</th>
+                        <th>Task 7</th>
+                        <th>Task 99</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loop: $taskid}
+                      <tr>
+                        <td>{$value.no_rkm_medis}</td>
+                        <td>{$value.tgl_registrasi}</td>
+                        <td>{$value.no_rawat}</td>
+                        <td>{$value.nm_poli}</td>
+                        <td>{$value.nm_dokter}</td>
+                        <td>{$value.nomor_referensi}</td>
+                        <td>{$value.task1}</td>
+                        <td>{$value.task2}</td>
+                        <td>{$value.task3}</td>
+                        <td>{$value.task4}</td>
+                        <td>{$value.task5}</td>
+                        <td>{$value.task6}</td>
+                        <td>{$value.task7}</td>
+                        <td>{$value.task99}</td>
+                      </tr>
+                      {/loop}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.periode_antrol').datetimepicker({
+            defaultDate: "{?=date('Y-m-d')?}",
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+    });
+</script>

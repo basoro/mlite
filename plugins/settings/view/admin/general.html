@@ -182,9 +182,26 @@
                             </label>
                         </div>
                     </div>
+                    {if: $settings.presensi}
                     <div class="form-group">
-                        <label>Token WhatsApp API</label>
+                        <label>Aktifkan Notifikasi Presensi</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="true" {if: $settings.notif_presensi == 'true'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    {/if}
+                    <div class="form-group">
+                        <label>Token WhatsApp API</label> <span class="pull-right">[<a href="https://wa.basoro.id" target="_blank">Dapatkan Token Key Disini</a>]</span>
                         <input type="text" name="waapitoken" class="form-control" value="{$settings.waapitoken}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor HP WhatsApp</label>
+                        <input type="text" name="waapiphonenumber" class="form-control" value="{$settings.waapiphonenumber}" placeholder="62xxxxxxxxxx"/>
                     </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
@@ -202,6 +219,21 @@
                     <div class="form-group">
                         <label>Secret Key BPJS</label>
                         <input type="text" name="BpjsSecretKey" class="form-control" value="{$settings.BpjsSecretKey}" />
+                    </div>
+                    <div class="form-group">
+                        <label>User Key BPJS</label>
+                        <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" />
+                    </div>
+                    <div class="form-group">
+                         <label>Versi WS vClaim</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="vClaimVersion" value="1" {if: $settings.vClaimVersion == '1'}checked{/if} /> Versi 1.0
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="vClaimVersion" value="2" {if: $settings.vClaimVersion == '2'}checked{/if} /> Versi 1.1
+                             </label>
+                         </div>
                     </div>
                     {/if}
                     <div class="form-group">

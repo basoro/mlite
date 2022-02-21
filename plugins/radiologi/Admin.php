@@ -341,7 +341,15 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_radiologi'),
-            'status' => 'Ralan'
+            'status' => 'Ralan',
+            'proyeksi' => '',
+            'kV' => '',
+            'mAS' => '',
+            'FFD' => '',
+            'BSF' => '',
+            'inak' => '',
+            'jml_penyinaran' => '',
+            'dosis' => ''
           ]);
       }
 
@@ -469,10 +477,12 @@ class Admin extends AdminModule
     public function postUploadHasil()
     {
         header('Content-type: application/json');
-        $dir    = UPLOADS.'/pages';
+        $dir    = WEBAPPS_PATH.'/radiologi/pages/upload';
         $error    = null;
 
         if (!file_exists($dir)) {
+            mkdir(WEBAPPS_PATH."/radiologi", 0777);
+            mkdir(WEBAPPS_PATH."/radiologi/pages", 0777);
             mkdir($dir, 0777, true);
         }
 

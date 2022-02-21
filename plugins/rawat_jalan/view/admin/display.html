@@ -33,8 +33,9 @@
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
-              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}">Status Rawat</a></li>
+              <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
+              <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
               {/if}
             </ul>
           </td>
@@ -46,7 +47,7 @@
               {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               disabled
               {/if}
-            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{$value.nm_pasien}" data-nm_poli="{$value.nm_poli}" data-no_reg="{$value.no_reg}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
+            ><span class="fa fa-print"></span> {$value.no_reg}</button> {if: $responsivevoice == 'true'}<button type="button" name="button" class="btn btn-xs btn-primary panggil" data-nm_pasien="{?=strtolower($value.nm_pasien)?}" data-nm_poli="{?=strtolower($value.nm_poli)?}" data-no_reg="{?=strtolower($value.no_reg)?}"><i class="fa fa-bullhorn"></i><span class="hidden-xs hidden-sm"> Panggil</span></button>{/if}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_poli}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_dokter}</td>
           <td style="white-space: nowrap;">
@@ -180,6 +181,7 @@
     event.preventDefault();
     var url = baseURL + '/rawat_jalan/statusrawat?t=' + mlite.token;
     var no_rawat = $(this).attr("data-no_rawat");
+    var stts = $(this).attr("data-stts");
 
     // tampilkan dialog konfirmasi
 
@@ -187,7 +189,20 @@
         title: "Status lanjut pasien.",
         message: '',
         inputType: 'radio',
+        value: stts,
         inputOptions: [
+        {
+            text: 'Berkas Dikirim',
+            value: 'Berkas Dikirim',
+        },
+        {
+            text: 'Berkas Diterima',
+            value: 'Berkas Diterima',
+        },
+        {
+            text: 'Belum Periksa',
+            value: 'Belum',
+        },
         {
             text: 'Sudah Periksa',
             value: 'Sudah',
@@ -195,10 +210,6 @@
         {
             text: 'Batal Periksa',
             value: 'Batal',
-        },
-        {
-            text: 'Berkas Diterima',
-            value: 'Berkas Diterima',
         },
         {
             text: 'Pasien Dirujuk',
@@ -315,5 +326,34 @@
     });
 
 		return false;
+  });
+</script>
+<script>
+  $('a[href="#surat_kontrol"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rawat = $(this).attr("data-no_rawat");
+    var no_rkm_medis = $(this).attr("data-no_rkm_medis");
+    var nm_pasien = $(this).attr("data-nm_pasien");
+    var tgl_registrasi = $(this).attr("data-tgl_registrasi");
+
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
+    $("#display").hide();
+
+    var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
+    $.post(url, {no_rkm_medis : no_rkm_medis,
+    }, function(data) {
+      // tampilkan data
+      $("#form_rincian").hide();
+      $("#form").hide();
+      $("#notif").hide();
+      $("#form_soap").hide();
+      $("#form_kontrol").show();
+      $("#kontrol").html(data).show();
+    });
   });
 </script>

@@ -149,6 +149,18 @@ function addToken($url)
     return $url;
 }
 
+function addTokenVedika($url)
+{
+    if (isset($_SESSION['vedika_token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['vedika_token'];
+        } else {
+            return $url.'?t='.$_SESSION['vedika_token'];
+        }
+    }
+
+    return $url;
+}
 
 function url($data = null)
 {
@@ -181,6 +193,10 @@ function url($data = null)
 
     if (strpos($url, '/'.ADMIN.'/') !== false) {
         $url = addToken($url);
+    }
+
+    if (strpos($url, '/veda/') !== false) {
+        $url = addTokenVedika($url);
     }
 
     return $url;
@@ -474,4 +490,75 @@ if (!function_exists('apache_request_headers')) {
         }
         return $return;
     }
+}
+
+function sendMSG($number, $msg, $sender)
+{
+    $url = "https://waapi.basoro.id/send-message";
+    $data = [
+        "sender" => $sender,
+        "number" => $number,
+        "message" => $msg
+    ];
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_URL, $url);
+    //  curl_setopt($ch, CURLOPT_TIMEOUT_MS, 10000);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($result, true);
+}
+
+function sendMedia($number, $message, $sender, $filetype, $filename, $urll)
+{
+    $url = "https://waapi.basoro.id/send-media";
+    $data = [
+        'sender' => $sender,
+        'number' => $number,
+        'caption' => $message,
+        'url' => $urll,
+        'filename' => $filename,
+        'filetype' => $filetype,
+    ];
+    //var_dump($data); die;
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+    $result = curl_exec($ch);
+    curl_close($ch);
+    return json_decode($result, true);
+}
+
+function formatDuit($duit){
+    return "Rp. ".number_format($duit,0,",",".").",-";
+}
+
+function stringDecrypt($key, $string){
+    //date_default_timezone_set('UTC');
+    //$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
+    //=====KEY====/
+    //$key = $consid.$secretkey.$tStamp;
+
+    $encrypt_method = 'AES-256-CBC';
+    $key_hash = hex2bin(hash('sha256', $key));
+    $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
+
+    $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
+
+    return $output;
+}
+
+function decompress($string){
+    return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
 }

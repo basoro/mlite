@@ -38,7 +38,7 @@ class Dokter
         $return['pegawai'] = $this->db('pegawai')->toArray();
         $return['gol_drh'] = ['-','A','B','O','AB'];
         $return['agama'] = ['ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN'];
-        $return['stts_nikah'] = ['SINGLE','MENIKAH','JANDA','DUDHA','JOMBLO'];
+        $return['stts_nikah'] = ['BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO'];
         $return['spesialis'] = $this->db('spesialis')->toArray();
         if (isset($_POST['kd_dokter'])){
           $return['form'] = $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();

@@ -10,9 +10,19 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
+            'Kelola' => 'manage',
+            'Index' => 'index',
             'Pengaturan' => 'settings',
         ];
+    }
+
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Index', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getIndex()

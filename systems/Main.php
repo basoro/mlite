@@ -31,10 +31,6 @@ abstract class Main
         $check_db->execute();
         $check_db = $check_db->fetch();
 
-        if(empty($check_db)) {
-          $this->freshInstall();
-        }
-
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
         }
@@ -84,6 +80,10 @@ abstract class Main
         }
 
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
+
+        if(empty($check_db)) {
+            $this->freshInstall();
+        }
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -256,6 +256,24 @@ abstract class Main
       return $result;
     }
 
+    public function getDokterInfo($field, $kd_dokter)
+    {
+        $row = $this->db('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
+        return $row[$field];
+    }
+
+    public function getPoliklinikInfo($field, $kd_poli)
+    {
+        $row = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+        return $row[$field];
+    }
+
+    public function getPenjabInfo($field, $kd_pj)
+    {
+        $row = $this->db('penjab')->where('kd_pj', $kd_pj)->oneArray();
+        return $row[$field];
+    }
+
     public function getPegawaiInfo($field, $nik)
     {
         $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
@@ -274,6 +292,18 @@ abstract class Main
         return $row[$field];
     }
 
+    public function getKamarInapInfo($field, $no_rawat)
+    {
+        $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
+        return $row[$field];
+    }
+
+    public function getDepartemenInfo($dep_id)
+    {
+        $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
+        return $row['nama'];
+    }
+
     public function setNoRM()
     {
         $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
@@ -282,9 +312,8 @@ abstract class Main
         return $next_no_rm;
     }
 
-    public function setNoRawat()
+    public function setNoRawat($date)
     {
-        $date = date('Y-m-d');
         $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
         $last_no_rawat->execute();
         $last_no_rawat = $last_no_rawat->fetch();
@@ -292,7 +321,7 @@ abstract class Main
           $last_no_rawat[0] = '000000';
         }
         $next_no_rawat = sprintf('%06s', ($last_no_rawat[0] + 1));
-        $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
+        $next_no_rawat = str_replace("-","/",$date).'/'.$next_no_rawat;
 
         return $next_no_rawat;
     }
