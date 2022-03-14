@@ -284,6 +284,7 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
             $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
             $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
+            $this->rcopy(BASE_DIR.'/vendor', BASE_DIR.'/backup/'.$backup_date.'/vendor');
             $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
             $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
@@ -297,9 +298,11 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/plugins', BASE_DIR.'/plugins');
             $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/assets', BASE_DIR.'/assets');
             $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/vendor', BASE_DIR.'/vendor');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
+            $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/manifest.json', BASE_DIR.'/manifest.json');
 
             // Close archive and delete all unnecessary files
             $zip->close();
