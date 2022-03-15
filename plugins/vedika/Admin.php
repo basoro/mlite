@@ -869,7 +869,7 @@ class Admin extends AdminModule
 
       $this->tpl->set('berkas_digital', $berkas_digital);
       $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
-      $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
+      $this->tpl->set('hasil_radiologi', $this->db('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
       $this->tpl->set('gambar_radiologi', $this->db('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
       $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
       echo $this->tpl->draw(MODULES.'/vedika/view/admin/pdf.html', true);
