@@ -29,6 +29,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
+        $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
@@ -1667,12 +1668,20 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
+        $slug = parseURL();
         $date = date('Y-m-d');
+        $page = '';
+        $offset = 1;
+      	$perpage = 10;
+        if(!empty($slug['3'])) {
+          $page = $slug['3'];
+          $offset = ($page - 1) * $perpage;
+        }
         //$date = '2022-01-21';
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
         $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT 10");
+        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $offset, $perpage");
         $query->execute();
         $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -1727,6 +1736,9 @@ class Site extends SiteModule
               }
 
               $nohp = $q['no_tlp'];
+              if(empty($q['no_tlp'])) {
+                $nohp = '0000000000';
+              }
               if($jenispasien == 'NON JKN') {
                 $nohp = '';
               }
@@ -1826,6 +1838,12 @@ class Site extends SiteModule
               }
             }
         }
+      	//echo print_r($slug);
+      	//echo $slug[3];
+      	$_page = $page + 1;
+      	$page_ = $page - 1;
+      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
         exit();
     }
 
