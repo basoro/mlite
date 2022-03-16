@@ -1881,7 +1881,7 @@ class Site extends SiteModule
         exit();
     }
 
-    public function _getAntreanUpdateWaktu()
+    public function _getAntreanUpdateWaktu($page = 1)
     {
         $date = date('Y-m-d');
         //$date = '2022-01-21';
@@ -1963,6 +1963,17 @@ class Site extends SiteModule
           }
         }
         */
+        //$page = max($page, 1);
+        //$perpage = 10;
+
+        $slug = parseURL();
+        $page = '';
+        $offset = 1;
+      	$perpage = 10;
+        if(!empty($slug['3'])) {
+          $page = $slug['3'];
+          $offset = ($page - 1) * $perpage;
+        }
 
         $query = $this->db('mlite_antrian_referensi')
           //->select('nomor_referensi')
@@ -1970,6 +1981,8 @@ class Site extends SiteModule
           //->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
           ->where('tanggal_periksa', $date)
           ->where('status_kirim', 'Sudah')
+          ->limit($perpage)
+          ->offset(($page-1)*$perpage)
           ->toArray();
 
         echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
@@ -2193,13 +2206,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-                $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `resep_obat` LIKE 'tgl_penyerahan'");
-                $check_db->execute();
-                $check_db = $check_db->fetch();
-                if($check_db) {
-                  $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-                }
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
 
                 if($resep_obat){
                     $data = [
@@ -2242,13 +2249,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
-                $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `resep_obat` LIKE 'tgl_penyerahan'");
-                $check_db->execute();
-                $check_db = $check_db->fetch();
-                if($check_db) {
-                  $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_penyerahan," ",jam_penyerahan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
-                }
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
