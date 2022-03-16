@@ -1721,10 +1721,10 @@ class Site extends SiteModule
                 $pasienbaru = '0';
               }
 
-              $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
-              if($jenispasien == 'NON JKN') {
-                $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
-              }
+              //$referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
+              //if($jenispasien == 'NON JKN') {
+              //  $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+              //}
 
               $nomorkartu = $q['no_peserta'];
               if($jenispasien == 'NON JKN') {
@@ -1768,9 +1768,13 @@ class Site extends SiteModule
                 $jeniskunjungan = $referensi['jenis_kunjungan'];
               }
 
+              $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+              if($jenispasien == 'JKN') {
+                $kodebooking = $nomorreferensi;
+              }
               //if(!$referensi) {
                 $data = [
-                    'kodebooking' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+                    'kodebooking' => $kodebooking,
                     'jenispasien' => $jenispasien,
                     'nomorkartu' => $nomorkartu,
                     'nik' => $nik,
