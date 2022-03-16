@@ -31,7 +31,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
-        $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile_v2/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
