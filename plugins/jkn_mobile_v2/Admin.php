@@ -303,6 +303,15 @@ class Admin extends AdminModule
           $q['task5'] = $pemeriksaan_ralan['datajam'];
           $q['task6'] = $resep_obat['datajam'];
           $q['task7'] = $resep_obat2['datajam'];
+
+          $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `resep_obat` LIKE 'tgl_penyerahan'");
+          $check_db->execute();
+          $check_db = $check_db->fetch();
+          if($check_db) {
+            $q['task6'] = $resep_obat2['datajam'];
+            $q['task7'] = $resep_obat['datajam'];
+          }
+
           $q['task99'] = $batal;
           $rows[] = $q;
       }
