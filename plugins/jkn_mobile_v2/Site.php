@@ -31,6 +31,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
@@ -2320,6 +2321,10 @@ class Site extends SiteModule
                 }
             }
         }
+        $_page = $page + 1;
+      	$page_ = $page - 1;
+      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
+      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
 
         exit();
     }
