@@ -250,6 +250,7 @@ class Admin extends AdminModule
 
     public function anyTaskID()
     {
+      $this->_addHeaderFiles();
       $this->getCssCard();
       $date = date('Y-m-d');
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
