@@ -2247,7 +2247,7 @@ class Site extends SiteModule
                 $check_db->execute();
                 $check_db = $check_db->fetch();
                 if($check_db) {
-                  $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                  $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_penyerahan," ",jam_penyerahan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 }
                 if($resep_obat){
                     $data = [
