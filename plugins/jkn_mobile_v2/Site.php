@@ -1768,7 +1768,7 @@ class Site extends SiteModule
                 $jeniskunjungan = $referensi['jenis_kunjungan'];
               }
 
-              if(!$referensi) {
+              //if(!$referensi) {
                 $data = [
                     'kodebooking' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
                     'jenispasien' => $jenispasien,
@@ -1836,7 +1836,7 @@ class Site extends SiteModule
                   }
                 }
                 echo '<br>-------------------------------------<br><br>';
-              }
+              //}
             }
         }
       	//echo print_r($slug);
