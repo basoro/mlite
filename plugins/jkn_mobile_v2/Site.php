@@ -1671,7 +1671,7 @@ class Site extends SiteModule
     {
         $slug = parseURL();
         $date = date('Y-m-d');
-        $page = '';
+        $page = 0;
         $offset = 1;
       	$perpage = 10;
         if(!empty($slug['3'])) {
@@ -1764,9 +1764,9 @@ class Site extends SiteModule
               }
 
               $jeniskunjungan = 3;
-              if($referensi['jenis_kunjungan'] !='') {
-                $jeniskunjungan = $referensi['jenis_kunjungan'];
-              }
+              //if($referensi['jenis_kunjungan'] !='') {
+              //  $jeniskunjungan = $referensi['jenis_kunjungan'];
+              //}
 
               $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
               if($jenispasien == 'JKN') {
@@ -1847,7 +1847,13 @@ class Site extends SiteModule
       	//echo $slug[3];
       	$_page = $page + 1;
       	$page_ = $page - 1;
-      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+        if(isset($slug[3]) && $slug[3] == 1) {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+        } else if(!isset($slug[3])){
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+        } else {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+        }
       	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
         exit();
     }
