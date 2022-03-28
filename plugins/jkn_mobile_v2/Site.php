@@ -1209,7 +1209,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            @$tanggal=date("Y-m-d", ($decode['waktu']/1000));
+            $tanggal=date("Y-m-d", ($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
