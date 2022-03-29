@@ -1721,10 +1721,10 @@ class Site extends SiteModule
                 $pasienbaru = '0';
               }
 
-              //$referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
-              //if($jenispasien == 'NON JKN') {
-              //  $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
-              //}
+              $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
+              if($jenispasien == 'NON JKN') {
+                $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+              }
 
               $nomorkartu = $q['no_peserta'];
               if($jenispasien == 'NON JKN') {
