@@ -858,16 +858,18 @@ Ralan :
            </tr>
            {loop: $pemeriksaan_laboratorium}
            <tr>
-             <th valign="top" width="20%">{$value.tgl_periksa}</th>
+             <th valign="top" width="20%">{$value.tgl_periksa} {$value.jam}</th>
              <th colspan="4" valign="top" width="80%">{$value.nm_perawatan}</th>
            </tr>
              {loop: $value.detail_periksa_lab as $data}
              <tr>
+               {if: $data.tgl_periksa == $value.tgl_periksa && $data.jam == $value.jam}
                <td></td>
                <td>{$data.Pemeriksaan}</td>
                <td>{$data.nilai} {$data.satuan}</td>
                <td>{$data.nilai_rujukan}</td>
                <td>{?=nl2br($data.keterangan)?}</td>
+               {/if}
              </tr>
              {/loop}
            {/loop}

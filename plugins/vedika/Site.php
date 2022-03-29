@@ -920,6 +920,8 @@ class Site extends SiteModule
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->where('detail_periksa_lab.tgl_periksa', $value['tgl_periksa'])
+            ->where('detail_periksa_lab.jam', $value['jam'])
             ->toArray();
           $pemeriksaan_laboratorium[] = $value;
         }
