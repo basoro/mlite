@@ -1,0 +1,104 @@
+<article class="row">
+  <div class="col-md-12" id='manage'>
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{$rekap.title}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row clearfix">
+          <div class="col col-md-8">
+            <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($rekap.totalRecords)?}</h3>
+          </div>
+          <div class="col col-md-2">
+            <div class="input-group">
+              <!-- <label for="bidang">Ruang</label> -->
+              <select name="bidang" id="bidang" data-use-search="true" data-options-height="10px"
+                class="form-control bidang" style="margin-top:5px;margin-bottom:15px;">
+                <option value="">---Pilih Ruangan---</option>
+                {loop: $rekap.bidang}
+                <option value="{$value.nama}" class="dropdown-item">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-2">
+            <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg"
+              style="margin-top:5px;margin-bottom:15px;">
+              <div class="input-group">
+                <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                <input type="hidden" name="tanggal">
+                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" id="cari" type="submit"><span
+                      class="glyphicon glyphicon-search"></span></button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="table-responsive no-margin" id="display">
+          <table class="table table-striped no-margin">
+            <thead>
+              <tr>
+                <th>Nama</th>
+                <th>Jabatan</th>
+                <th>Ruangan</th>
+                <th>Validasi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {if: !empty($rekap.list)}
+              {loop: $rekap.list}
+              <tr>
+                <td>{$value.nama}</td>
+                <td>{$value.jbtn}</td>
+                <td>{$value.bidang}</td>
+                <td>TODO:</td>
+              </tr>
+              {/loop}
+              {else}
+              <tr>
+                <td colspan="4" class="text-center">Kosong</td>
+              </tr>
+              {/if}
+            </tbody>
+          </table>
+        </div>
+        {$rekap.pagination}
+      </div>
+    </div>
+  </div>
+</article>
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Lokasi Presensi</h4>
+      </div>
+      <div class="modal-body">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.gallery').lightbox();
+  });
+/*
+        $('#myModal').on('shown.bs.modal', (function() {
+        var mapIsAdded = false;
+
+        return function() {
+          if (!mapIsAdded) {
+            $('.modal-body').html('<iframe src="https://maps.google.com/maps?q=-3.4497701,114.8532037&z=17&output=embed" width="100%" height="100%" frameborder="0" style="border:0"></iframe>');
+
+            mapIsAdded = true;
+          }
+        };
+        })());
+        */
+</script>

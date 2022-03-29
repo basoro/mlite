@@ -1,0 +1,83 @@
+<div id="display">
+    <div class="table-responsive no-margin">
+        <table class="table table-striped no-padding dataTablesku" width="100%">
+            <thead>
+                <tr>
+                    <th style="white-space: nowrap;">Nama Bangsal</th>
+                    <th style="white-space: nowrap;">Kelas Bangsal</th>
+                    <th style="white-space: nowrap;">Jumlah Ruang</th>
+                    <th style="white-space: nowrap;">Jumlah Kamar</th>
+                    <th style="white-space: nowrap;">Terpakai</th>
+                    <th style="white-space: nowrap;">Terpakai Suspek</th>
+                    <th style="white-space: nowrap;">Terpakai Konfirmasi</th>
+                    <th style="white-space: nowrap;">Antrian</th>
+                    <th style="white-space: nowrap;">Prepare</th>
+                    <th style="white-space: nowrap;">Prepare Plan</th>
+                    <th style="white-space: nowrap;">Kosong</th>
+                    <th style="white-space: nowrap;">Covid</th>
+                    <th style="white-space: nowrap;">Tanggal Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {loop: $rawat_inap}
+                {if: $value.id_tt == "28"}
+                <tr>
+                    <td>{$value.ruang}</td>
+                    <td>{$value.tt}</td>
+                    <td>{$value.jumlah_ruang}</td>
+                    <td>{$value.jumlah}</td>
+                    <td>{$value.terpakai}</td>
+                    <td>{$value.terpakai_suspek}</td>
+                    <td>{$value.terpakai_konfirmasi}</td>
+                    <td>{$value.antrian}</td>
+                    <td>{$value.prepare}</td>
+                    <td>{$value.prepare_plan}</td>
+                    <td>{$value.kosong}</td>
+                    <td>{if: $value.covid == "1"}Ya{/if}</td>
+                    <td>{$value.tglupdate}</td>
+                </tr>
+                {/if}
+                {/loop}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+    $('.dataTablesku').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": "",
+            "searchPlaceholder": "Search..."
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('.tanggal').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+    });
+    $(function () {
+        $('.jam').datetimepicker({
+            format: 'HH:mm:ss',
+            locale: 'id'
+        });
+    });
+</script>
+<script>
+    $('body').on('hidden.bs.modal', '.modal', function () {
+        $(this).removeData('bs.modal');
+    });
+</script>

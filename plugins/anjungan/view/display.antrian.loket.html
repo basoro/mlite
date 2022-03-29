@@ -124,6 +124,16 @@
                 </div>
             </div>
           </a>
+          <a href="{?=url()?}/anjungan/loket?show=panggil_igd" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body text-success">
+                <div class="no_antrian">C<span class="antrian_IGD"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_igd"><span></div>
+                </div>
+            </div>
+          </a>
           <div class="panel border-success">
             <div class="panel-body text-success">
               <div class="date">
@@ -155,7 +165,7 @@
     </div>
   </div>
   {/if}
-  {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
+  {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_igd'}
   <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Pemanggil Antrian Loket</div>
   <div class="container text-center">
     <div class="row">

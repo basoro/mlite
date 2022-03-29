@@ -1,4 +1,9 @@
 <?php
+    // require_once '../vendor/autoload.php';
+    // use Endroid\QrCode\ErrorCorrectionLevel;
+    // use Endroid\QrCode\LabelAlignment;
+    // use Endroid\QrCode\QrCode;
+    // use Endroid\QrCode\Response\QrCodeResponse;
 
 function checkEmptyFields(array $keys, array $array)
 {

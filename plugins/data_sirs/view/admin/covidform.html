@@ -1,0 +1,637 @@
+<div id="form_soap">
+    <div class="col-md-3">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="form-group">
+                    <label for="tanggal">Tanggal Masuk</label>
+                    <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal"
+                        value="{$pasien.tgl_inap_masuk.tgl_masuk}">
+                </div>
+                <div class="form-group">
+                    <label for="tanggal">Tanggal Gejala</label>
+                    <input type="text" id="tgl_gejala" name="tgl_gejala" class="form-control tanggal"
+                        value="{?=date('Y-m-d')?}">
+                </div>
+                <div class="form-group">
+                    <!-- <label for="id_pendaftaran">Id Rawat</label> -->
+                    <input type="hidden" name="no_rawat" placeholder="ID Pendaftaran" id="no_rawat" class="form-control"
+                        value="{$pasien.no_rawat}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="id_pasien">Nomor RM</label>
+                    <input type="text" name="no_rkm_medis" class="form-control" id="no_rkm_medis"
+                        placeholder="Nomor Rekam Medik" value="{$pasien.no_rkm_medis}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nama_pasien">Nama Pasien</label>
+                    <input type="text" name="nm_pasien" class="form-control" id="nm_pasien" placeholder="Nama pasien"
+                        value="{$pasien.nm_pasien}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nama_pasien">Tanggal Lahir</label>
+                    <input type="text" name="tgl_lahir" class="form-control" id="tgl_lahir" placeholder="Nama pasien"
+                        value="{$pasien.tgl_lahir}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="nama_pasien">No Telepon</label>
+                    <input type="text" name="no_telp" class="form-control" id="no_telp" placeholder="No Telp pasien"
+                        value="{$pasien.no_tlp}">
+                </div>
+                <div class="form-group">
+                    <!-- <label for="nama_pasien">Inisial</label> -->
+                    <input type="hidden" name="inisial" class="form-control" id="inisial" placeholder="Nama pasien"
+                        value="{$pasien.inisial}">
+                </div>
+                <div class="form-group">
+                    <!-- <label for="nama_pasien">Nama Pasien</label> -->
+                    <input type="hidden" name="nik" class="form-control" id="nik" placeholder="Nama pasien"
+                        value="{$pasien.no_ktp}" readonly>
+                </div>
+                <div class="form-group">
+                    <!-- <label for="jk">Jenis Kelamin Pasien</label> -->
+                    <input type="hidden" name="jk" class="form-control" id="jk" placeholder="Jenis Kelamin pasien"
+                        value="{$pasien.jk}" readonly>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <ul class="nav nav-tabs m-b-xl" role="tablist">
+                    <li role="presentation" class="active"><a href="#satu" aria-controls="satu" role="tab"
+                            data-toggle="tab">Bridging</a></li>
+                    <li role="presentation"><a href="#dua" aria-controls="dua" role="tab" data-toggle="tab">Informasi
+                            Tambahan</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane fade in active" id="satu">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Jenis Perawatan</label>
+                                    <input type="text" name="jenis_rawat" id="jenis_rawat" class="form-control"
+                                        placeholder="" value="3. Rawat Inap">
+                                    <ul class="list-group" id="jenisRawatList"
+                                        style="z-index:1000;position:absolute;width:100%;"></ul>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Status Gejala</label>
+                                    <input type="text" name="status_gejala" id="status_gejala"
+                                        class="form-control status_gejala" placeholder="" autocomplete="off"
+                                        onchange="check();" value="1. Tanpa Gejala">
+                                    <ul class="list-group" id="statusGejalaList"
+                                        style="z-index:1000;position:absolute;width:100%;"></ul>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Status Rawat Pasien</label>
+                                    <input type="text" name="status_rawat" id="status_rawat" class="form-control"
+                                        placeholder="" value="28. Isolasi Tekanan Negatif">
+                                    <ul class="list-group" id="statusRawatList"
+                                        style="z-index:1000;position:absolute;width:100%;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Asal Pasien</label>
+                                    <input type="text" name="asal_pasien" id="asal_pasien" class="form-control"
+                                        placeholder="" value="0. Non PPLN/PMI">
+                                    <ul class="list-group" id="kesadaranList"
+                                        style="z-index:1000;position:absolute;width:100%;"></ul>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Status Pasien</label>
+                                    <input type="text" name="status_pasien" id="status_pasien" class="form-control"
+                                        placeholder="" value="3. Konfirmasi">
+                                    <ul class="list-group" id="statusList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Pekerjaan Pasien</label>
+                                    <input type="text" name="pekerjaan_pasien" id="pekerjaan_pasien"
+                                        class="form-control" placeholder="" value="1. Non Kesehatan">
+                                    <ul class="list-group" id="pekerjaanList"
+                                        style="z-index:1000;position:absolute;width:100%;"></ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Varian Covid</label>
+                                    <input type="text" name="varian_covid" id="varian_covid" class="form-control"
+                                        value="">
+                                    <ul class="list-group" id="varianList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                                <div class="col-sm-4">
+                                    <label for="nama_pasien">Alat Oksigen</label>
+                                    <input type="text" name="oksigen" id="oksigen" class="form-control" placeholder=""
+                                        value="">
+                                    <ul class="list-group" id="oksigenList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <h4>Lain - Lain</h4>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="nama_pasien">Warga Negara</label>
+                                    <input type="text" name="warga" id="warga" class="form-control"
+                                        value="{$pasien.kode.warganegara}">
+                                    <ul class="list-group" id="wargaList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="nama_pasien">Provinsi</label>
+                                    <input type="text" name="prov" id="prov" class="form-control" placeholder=""
+                                        value="{$pasien.kode.provinsi}">
+                                    <ul class="list-group" id="provList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <label for="nama_pasien">Kabupaten</label>
+                                    <input type="text" name="kab" id="kab" class="form-control" placeholder=""
+                                        value="{$pasien.kode.kabupaten}">
+                                    <ul class="list-group" id="kabList"
+                                        style="z-index:1000;position:absolute;width:100%;">
+                                    </ul>
+                                </div>
+                                <div class="col-sm-6">
+                                    <label for="nama_pasien">Kecamatan</label>
+                                    <input type="text" name="kec" id="kec" class="form-control" placeholder=""
+                                        value="{$pasien.kode.kecamatan}">
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane fade in" id="dua">
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label for="">Penyintas</label>
+                                    <select name="penyintas" id="penyintas" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Status Co Insiden</label>
+                                    <select name="coinsiden" id="coinsiden" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Distress Pernafasan Berat</label>
+                                    <select name="nafas_berat" id="nafas_berat" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Frekuensi Nafas 30x / Menit</label>
+                                    <select name="frek" id="frek" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label for="">Demam</label>
+                                    <select name="demam" id="demam" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Batuk</label>
+                                    <select name="batuk" id="batuk" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Pilek</label>
+                                    <select name="pilek" id="pilek" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Sakit Tenggorokan</label>
+                                    <select name="tenggorokan" id="tenggorokan" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label for="">Sesak Nafas</label>
+                                    <select name="sesak_nafas" id="sesak_nafas" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Lemas</label>
+                                    <select name="lemas" id="lemas" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Nyeri Otot</label>
+                                    <select name="nyeri" id="nyeri" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Mual Muntah</label>
+                                    <select name="mual" id="mual" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <label for="">Diare</label>
+                                    <select name="diare" id="diare" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Anosmia</label>
+                                    <select name="anosmia" id="anosmia" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Nafas Cepat</label>
+                                    <select name="nafas_cepat" id="nafas_cepat" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Lainnya</label>
+                                    <select name="lainnya" id="lainnya" class="form-control">
+                                        <option value="0">Tidak</option>
+                                        <option value="1">Ya</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-t-xl">
+                    <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i
+                            class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+                    <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i
+                            class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $('input:text[name=asal_pasien]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">0. Non PPLN/PMI</li>';
+        output += '<li class=\"list-group-item link-class\">1. PPLN (Pelaku Perjalanan Luar Negeri)</li>';
+        output += '<li class=\"list-group-item link-class\">2. PMI (Pekerja Migran Indonesia)</li>';
+        output += '';
+        $('#kesadaranList').fadeIn();
+        $('#kesadaranList').html(output).show();
+    });
+    $('#kesadaranList').on('click', 'li', function () {
+        $('input:text[name=asal_pasien]').val($(this).text());
+        $('#kesadaranList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $('input:text[name=status_pasien]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">1. Suspek</li>';
+        output += '<li class=\"list-group-item link-class\">3. Konfirmasi</li>';
+        output += '';
+        $('#statusList').fadeIn();
+        $('#statusList').html(output).show();
+    });
+    $('#statusList').on('click', 'li', function () {
+        $('input:text[name=status_pasien]').val($(this).text());
+        $('#statusList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $('input:text[name=pekerjaan_pasien]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">1. Non Kesehatan</li>';
+        output += '<li class=\"list-group-item link-class\">2. Dokter</li>';
+        output += '<li class=\"list-group-item link-class\">3. Perawat</li>';
+        output += '<li class=\"list-group-item link-class\">4. Petugas Kesehatan Lainnya</li>';
+        output += '';
+        $('#pekerjaanList').fadeIn();
+        $('#pekerjaanList').html(output).show();
+    });
+    $('#pekerjaanList').on('click', 'li', function () {
+        $('input:text[name=pekerjaan_pasien]').val($(this).text());
+        $('#pekerjaanList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $('input:text[name=jenis_rawat]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">1. Rawat Jalan</li>';
+        output += '<li class=\"list-group-item link-class\">2. IGD</li>';
+        output += '<li class=\"list-group-item link-class\">3. Rawat Inap</li>';
+        output += '';
+        $('#jenisRawatList').fadeIn();
+        $('#jenisRawatList').html(output).show();
+    });
+    $('#jenisRawatList').on('click', 'li', function () {
+        $('input:text[name=jenis_rawat]').val($(this).text());
+        $('#jenisRawatList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $('input:text[name=status_gejala]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">1. Tanpa Gejala</li>';
+        output += '<li class=\"list-group-item link-class\">2. Bergejala, tanpa klinis pneumonia</li>';
+        output += '<li class=\"list-group-item link-class\">3. Bergejala, dengan tanda klinis pneumonia</li>';
+        output += '<li class=\"list-group-item link-class\">4. Bergejala, dengan tanda klinis pneumonia berat</li>';
+        output += '';
+        $('#statusGejalaList').fadeIn();
+        $('#statusGejalaList').html(output).show();
+    });
+    $('#statusGejalaList').on('click', 'li', function () {
+        $('input:text[name=status_gejala]').val($(this).text());
+        var inputan = document.getElementById('status_gejala').value;
+        if (inputan == '2. Bergejala, tanpa klinis pneumonia') {
+            document.getElementById('batuk').value = '1';
+            document.getElementById('pilek').value = '1';
+            document.getElementById('demam').value = '1';
+            document.getElementById('nafas_cepat').value = '1';
+            document.getElementById('sesak_nafas').value = '0';
+            document.getElementById('frek').value = '0';
+            document.getElementById('nafas_berat').value = '0';
+            document.getElementById('oksigen').value = '';
+        } else if (inputan == '3. Bergejala, dengan tanda klinis pneumonia') {
+            document.getElementById('batuk').value = '1';
+            document.getElementById('pilek').value = '1';
+            document.getElementById('demam').value = '1';
+            document.getElementById('sesak_nafas').value = '1';
+            document.getElementById('nafas_cepat').value = '0';
+            document.getElementById('frek').value = '0';
+            document.getElementById('nafas_berat').value = '0';
+            document.getElementById('oksigen').value = '1. Nasal Kanul';
+        } else if (inputan == '4. Bergejala, dengan tanda klinis pneumonia berat') {
+            document.getElementById('batuk').value = '1';
+            document.getElementById('pilek').value = '1';
+            document.getElementById('demam').value = '1';
+            document.getElementById('sesak_nafas').value = '1';
+            document.getElementById('nafas_cepat').value = '0';
+            document.getElementById('frek').value = '1';
+            document.getElementById('nafas_berat').value = '1';
+            document.getElementById('oksigen').value = '2. Simple Mask';
+        } else {
+            document.getElementById('batuk').value = '0';
+            document.getElementById('pilek').value = '0';
+            document.getElementById('demam').value = '0';
+            document.getElementById('sesak_nafas').value = '0';
+            document.getElementById('nafas_cepat').value = '0';
+            document.getElementById('oksigen').value = '';
+            document.getElementById('frek').value = '0';
+            document.getElementById('nafas_berat').value = '0';
+        }
+        $('#statusGejalaList').fadeOut();
+    });
+</script>
+
+
+<script type="text/javascript">
+    $('input:text[name=status_rawat]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\">24. ICU Tekanan Negatif dengan Ventilator</li>';
+        output += '<li class=\"list-group-item link-class\">25. ICU Tekanan Negatif tanpa Ventilator</li>';
+        output += '<li class=\"list-group-item link-class\">26. ICU Tanpa Tekanan Negatif Dengan Ventilator</li>';
+        output += '<li class=\"list-group-item link-class\">27. ICU Tanpa Tekanan Negatif Tanpa Ventilator</li>';
+        output += '<li class=\"list-group-item link-class\">28. Isolasi Tekanan Negatif</li>';
+        output += '<li class=\"list-group-item link-class\">29. Isolasi Tanpa Tekanan Negatif</li>';
+        output += '<li class=\"list-group-item link-class\">30. NICU Khusus Covid</li>';
+        output += '<li class=\"list-group-item link-class\">31. PICU Khusus Covid</li>';
+        output += '<li class=\"list-group-item link-class\">32. IGD Khusus Covid</li>';
+        output += '<li class=\"list-group-item link-class\">33. VK (Ibu Melahirkan) Khusus Covid</li>';
+        output += '';
+        $('#statusRawatList').fadeIn();
+        $('#statusRawatList').html(output).show();
+    });
+    $('#statusRawatList').on('click', 'li', function () {
+        $('input:text[name=status_rawat]').val($(this).text());
+        $('#statusRawatList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    $('input:text[name=varian_covid]').focus(function () {
+        $.ajax({
+            url: '{?=url()?}/admin/data_sirs/variancovid?t={?=$_SESSION['token']?}',
+            method: "GET",
+            success: function (data) {
+                var data = JSON.parse(data);
+                var json_obj = [data];
+                var output = '';
+                // console.log(json_obj);
+                if (json_obj[0].metaData.code == 1) {
+                    var poli = json_obj[0].response;
+                    output += '<li class=\"list-group-item link-class\"></li>';
+                    for (var i in poli) {
+                        output += '<li class=\"list-group-item link-class\">' + poli[i].id + '. ' + poli[i].nama + '</li>';
+                    }
+                } else {
+                    output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                }
+                output += '';
+                //console.log(output);
+                $('#varianList').fadeIn();
+                $('#varianList').html(output).show();
+            }
+        });
+    });
+    $('#varianList').on('click', 'li', function () {
+        $('#varian_covid').val($(this).text());
+        // $('#sep_spesialis_kode').val($(this).text().split(': ')[0]);
+        // var sep_spesialis_kode = $('#sep_spesialis_kode').val();
+        $('#varianList').fadeOut();
+    });
+</script>
+
+<script type="text/javascript">
+    $('input:text[name=oksigen]').focus(function () {
+        //$('input:text[name=kesadaran]').on('input',function(e){
+        var output = '';
+        output += '<li class=\"list-group-item link-class\"></li>';
+        output += '<li class=\"list-group-item link-class\">1. Nasal Kanul</li>';
+        output += '<li class=\"list-group-item link-class\">2. Simple Mask</li>';
+        output += '<li class=\"list-group-item link-class\">3. HFNC</li>';
+        output += '<li class=\"list-group-item link-class\">4. Ventilator</li>';
+        output += '';
+        $('#oksigenList').fadeIn();
+        $('#oksigenList').html(output).show();
+    });
+    $('#oksigenList').on('click', 'li', function () {
+        $('input:text[name=oksigen]').val($(this).text());
+        $('#oksigenList').fadeOut();
+    });
+</script>
+<script type="text/javascript">
+    // ketika tombol antrian ditekan
+
+    $("#simpan_soap").on("click", function (event) {
+        // var baseURL = mlite.url + '/' + mlite.admin;
+        event.preventDefault();
+        const isEmpty = str => !str.trim().length;
+        // var url = baseURL + '/data_sirs/savecovid?t=' + mlite.token;
+        if (isEmpty($('#varian_covid').val()) || isEmpty($('#no_telp').val())) {
+            alert('Varian / No Telepon Tidak Boleh Kosong')
+        } else {
+            var no_rawat = $('#no_rawat').val();
+            var tgl_perawatan = $('#tgl_perawatan').val();
+            var tgl_gejala = $('#tgl_gejala').val();
+            var jenis_rawat = $('#jenis_rawat').val();
+            var status_gejala = $('#status_gejala').val();
+            var status_rawat = $('#status_rawat').val();
+            var asal_pasien = $('#asal_pasien').val();
+            var status_pasien = $('#status_pasien').val();
+            var pekerjaan_pasien = $('#pekerjaan_pasien').val();
+            var varian_covid = $('#varian_covid').val();
+            var oksigen = $('#oksigen').val();
+            var warga = $('#warga').val();
+            var prov = $('#prov').val();
+            var kec = $('#kec').val();
+            var kab = $('#kab').val();
+            var penyintas = $('#penyintas').val();
+            var demam = $('#demam').val();
+            var batuk = $('#batuk').val();
+            var pilek = $('#pilek').val();
+            var coinsiden = $('#coinsiden').val();
+            var nafas_berat = $('#nafas_berat').val();
+            var frek = $('#frek').val();
+            var nm_pasien = $('#nm_pasien').val();
+            var no_rkm_medis = $('#no_rkm_medis').val();
+            var tgl_lahir = $('#tgl_lahir').val();
+            var peserta = $('#sep_jenis_peserta').val();
+            var jk = $('#jk').val();
+            var nik = $('#nik').val();
+            var inisial = $('#inisial').val();
+            var tenggorokan = $('#tenggorokan').val();
+            var sesak_nafas = $('#sesak_nafas').val();
+            var lemas = $('#lemas').val();
+            var nyeri = $('#nyeri').val();
+            var no_telp = $('#no_telp').val();
+            var mual = $('#mual').val();
+            var diare = $('#diare').val();
+            var anosmia = $('#anosmia').val();
+            var nafas_cepat = $('#nafas_cepat').val();
+            var lainnya = $('#lainnya').val();
+
+            $.ajax({
+                type: "POST",
+                url: "{?=url([ADMIN,'data_sirs','savecovid'])?}",
+                data: {
+                    no_rawat: no_rawat,
+                    tgl_perawatan: tgl_perawatan,
+                    tgl_gejala: tgl_gejala,
+                    jenis_rawat: jenis_rawat,
+                    status_gejala: status_gejala,
+                    status_rawat: status_rawat,
+                    asal_pasien: asal_pasien,
+                    status_pasien: status_pasien,
+                    pekerjaan_pasien: pekerjaan_pasien,
+                    varian_covid: varian_covid,
+                    oksigen: oksigen,
+                    warga: warga,
+                    prov: prov,
+                    kec: kec,
+                    kab: kab,
+                    penyintas: penyintas,
+                    demam: demam,
+                    batuk: batuk,
+                    pilek: pilek,
+                    coinsiden: coinsiden,
+                    nafas_berat: nafas_berat,
+                    frek: frek,
+                    nm_pasien: nm_pasien,
+                    no_rkm_medis: no_rkm_medis,
+                    tgl_lahir: tgl_lahir,
+                    peserta: peserta,
+                    jk: jk,
+                    nik: nik,
+                    inisial: inisial,
+                    tenggorokan: tenggorokan,
+                    sesak_nafas: sesak_nafas,
+                    lemas: lemas,
+                    nyeri: nyeri,
+                    no_telp: no_telp,
+                    mual: mual,
+                    diare: diare,
+                    anosmia: anosmia,
+                    nafas_cepat: nafas_cepat,
+                    lainnya: lainnya
+                },
+                success: function (result) {
+                    var json = JSON.parse(result);
+                    var data = [json];
+                    console.log(data);
+                    if (data[0].status == false) {
+                        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                            data[0].message +
+                            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                            "</div>").show();
+                    } else {
+                        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+                            data[0].message +
+                            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+                            "</div>").show();
+                    }
+
+                }
+            });
+        }
+    });
+</script>
