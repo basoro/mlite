@@ -25,7 +25,12 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label>Tahun</label>
-                            <input type="text" name="tahun" class="form-control" value="{$jadwal.tahun}"/>
+                            <!-- <input type="text" name="tahun" class="form-control" value="{$jadwal.tahun}"/> -->
+                            <select name="tahun" id="tahun" data-use-search="true" class="form-control">
+                              {loop: $jadwal.tahun}
+                                <option value="{$value}"{if: $value == $jadwal.form.tahun} selected{/if}>{$value}</option>
+                              {/loop}
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-4">
@@ -395,10 +400,9 @@
                 </div>
                 <div class="form-group">
                   <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
-                </div>                
+                </div>
               </form>
             </div>
         </div>
     </div>
 </article>
-  

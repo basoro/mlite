@@ -59,20 +59,22 @@
         </div>
         <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
           <div class="row">
+            <!--
             <div class="col-sm-3">
               <label for="nama_pasien">Kesadaran</label>
               <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
               <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
             </div>
-            <div class="col-sm-3">
+			-->
+            <div class="col-sm-4">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
               <label for="nama_pasien">Alergi</label>
               <input type="text" name="alergi" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-4">
               <label for="imun_ke">Imunisasi</label>
               <input type="text" name="imun_ke" class="form-control" placeholder="" value="-">
             </div>
@@ -87,10 +89,12 @@
           <label for="jenis">Obyektif</label>
           <textarea name="pemeriksaan" id="pemeriksaan" rows="2" class="form-control"></textarea>
         </div>
+        <!--
         <div class="form-group">
           <label for="jenis">Assesment</label>
           <textarea name="penilaian" id="penilaian" rows="2" class="form-control"></textarea>
         </div>
+		-->
         <div class="form-group">
           <label for="jenis">Plan</label>
           <textarea name="rtl" id="rtl" rows="2" class="form-control"></textarea>

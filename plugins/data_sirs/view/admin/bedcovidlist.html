@@ -1,0 +1,26 @@
+<div class="row" id="manage" style="margin-bottom:100px;">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Bed Covid 19</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display">
+                    {include: ../plugins/data_sirs/view/admin/bedcoviddisplay.html}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.periode_rawat_inap').datetimepicker({
+            defaultDate: '{?=date('Y- m - d')?}',
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+         });
+     });
+</script>

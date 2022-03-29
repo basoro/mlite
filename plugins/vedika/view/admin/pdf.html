@@ -208,7 +208,7 @@ Ralan :
                 :
               </td>
               <td>
-                {if: $print_sep.bridging_sep.klsrawat == 1}Kelas 1{elseif: $print_sep.bridging_sep.klsrawat == 2}Kelas 2{elseif: $print_sep.bridging_sep.klsrawat == 3}Kelas 3{else}{/if}
+                {$print_sep.kelas_naik}
               </td>
             </tr>
           </table>
@@ -228,13 +228,13 @@ Ralan :
                 {$print_sep.bridging_sep.nmpolitujuan}
               </td>
               <td width="90">
-                Penjamin
+                Kls. Hak
               </td>
               <td>
                 :
               </td>
               <td>
-                {$print_sep.bridging_sep.penjamin}
+                Kelas {$print_sep.bridging_sep.klsrawat}
               </td>
             </tr>
           </table>
@@ -835,7 +835,7 @@ Ralan :
             {loop: $hasil_radiologi}
             <tr>
               <td valign='top'>{$value.tgl_periksa} {$value.jam}</td>
-              <td valign='top'>{$value.hasil}</td>
+              <td valign='top'>{?=nl2br($value.hasil)?}</td>
             </tr>
             {/loop}
           </table>

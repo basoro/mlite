@@ -378,6 +378,51 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
+<<<<<<< HEAD
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rawat        = $('input:text[name=no_rawat]').val();
+  var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
+  var jam_rawat       = $('input:text[name=jam_rawat]').val();
+  var suhu_tubuh      = $('input:text[name=suhu_tubuh]').val();
+  var tensi           = $('input:text[name=tensi]').val();
+  var nadi            = $('input:text[name=nadi]').val();
+  var respirasi       = $('input:text[name=respirasi]').val();
+  var tinggi          = $('input:text[name=tinggi]').val();
+  var berat           = $('input:text[name=berat]').val();
+  var gcs             = $('input:text[name=gcs]').val();
+  var kesadaran       = $('input:text[name=kesadaran]').val();
+  var alergi          = $('input:text[name=alergi]').val();
+  var alergi          = $('input:text[name=alergi]').val();
+  var imun_ke         = $('input:text[name=imun_ke]').val();
+  var keluhan         = $('textarea[name=keluhan]').val();
+  var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
+  var penilaian       = $('textarea[name=penilaian]').val();
+  var rtl             = $('textarea[name=rtl]').val();
+
+  var url = baseURL + '/igd/savesoap?t=' + mlite.token;
+  $.post(url, {no_rawat : no_rawat,
+  tgl_perawatan: tgl_perawatan,
+  jam_rawat: jam_rawat,
+  suhu_tubuh : suhu_tubuh,
+  tensi : tensi,
+  nadi : nadi,
+  respirasi : respirasi,
+  tinggi : tinggi,
+  berat : berat,
+  gcs : gcs,
+  alergi : alergi,
+  imun_ke: imun_ke,
+  keluhan : keluhan,
+  pemeriksaan : pemeriksaan,
+  rtl : rtl
+  }, function(data) {
+    console.log(data);
+    // tampilkan data
+    $("#display").hide();
+    var url = baseURL + '/igd/soap?t=' + mlite.token;
+=======
   {if: !$this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))}
     bootbox.alert({
         title: "Pemberitahuan penggunaan!",
@@ -408,6 +453,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var instruksi       = $('textarea[name=instruksi]').val();
 
     var url = baseURL + '/igd/savesoap?t=' + mlite.token;
+>>>>>>> e559a1d1b92cc6fa0e42bcbbc11a6e1194822ba3
     $.post(url, {no_rawat : no_rawat,
     tgl_perawatan: tgl_perawatan,
     jam_rawat: jam_rawat,
