@@ -29,7 +29,9 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
+        $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile_v2/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
@@ -1207,7 +1209,7 @@ class Site extends SiteModule
             );
             http_response_code(201);
         } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
-            @$tanggal=date("Y-m-d", ($decode['waktu']/1000));
+            $tanggal=date("Y-m-d", ($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -1667,12 +1669,20 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
+        $slug = parseURL();
         $date = date('Y-m-d');
+        $page = 0;
+        $offset = 1;
+      	$perpage = 10;
+        if(!empty($slug['3'])) {
+          $page = $slug['3'];
+          $offset = ($page - 1) * $perpage;
+        }
         //$date = '2022-01-21';
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
         $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT 10");
+        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $offset, $perpage");
         $query->execute();
         $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -1711,10 +1721,10 @@ class Site extends SiteModule
                 $pasienbaru = '0';
               }
 
-              $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
-              if($jenispasien == 'NON JKN') {
-                $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
-              }
+              //$referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
+              //if($jenispasien == 'NON JKN') {
+              //  $referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+              //}
 
               $nomorkartu = $q['no_peserta'];
               if($jenispasien == 'NON JKN') {
@@ -1727,6 +1737,9 @@ class Site extends SiteModule
               }
 
               $nohp = $q['no_tlp'];
+              if(empty($q['no_tlp'])) {
+                $nohp = '0000000000';
+              }
               if($jenispasien == 'NON JKN') {
                 $nohp = '';
               }
@@ -1751,13 +1764,17 @@ class Site extends SiteModule
               }
 
               $jeniskunjungan = 3;
-              if($referensi['jenis_kunjungan'] !='') {
-                $jeniskunjungan = $referensi['jenis_kunjungan'];
-              }
+              //if($referensi['jenis_kunjungan'] !='') {
+              //  $jeniskunjungan = $referensi['jenis_kunjungan'];
+              //}
 
-              if(!$referensi) {
+              $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+              if($jenispasien == 'JKN') {
+                $kodebooking = $nomorreferensi;
+              }
+              //if(!$referensi) {
                 $data = [
-                    'kodebooking' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+                    'kodebooking' => $kodebooking,
                     'jenispasien' => $jenispasien,
                     'nomorkartu' => $nomorkartu,
                     'nik' => $nik,
@@ -1823,9 +1840,21 @@ class Site extends SiteModule
                   }
                 }
                 echo '<br>-------------------------------------<br><br>';
-              }
+              //}
             }
         }
+      	//echo print_r($slug);
+      	//echo $slug[3];
+      	$_page = $page + 1;
+      	$page_ = $page - 1;
+        if(isset($slug[3]) && $slug[3] == 1) {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+        } else if(!isset($slug[3])){
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+        } else {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+        }
+      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
         exit();
     }
 
@@ -1863,7 +1892,7 @@ class Site extends SiteModule
         exit();
     }
 
-    public function _getAntreanUpdateWaktu()
+    public function _getAntreanUpdateWaktu($page = 1)
     {
         $date = date('Y-m-d');
         //$date = '2022-01-21';
@@ -1945,6 +1974,17 @@ class Site extends SiteModule
           }
         }
         */
+        //$page = max($page, 1);
+        //$perpage = 10;
+
+        $slug = parseURL();
+        $page = '';
+        $offset = 1;
+      	$perpage = 10;
+        if(!empty($slug['3'])) {
+          $page = $slug['3'];
+          $offset = ($page - 1) * $perpage;
+        }
 
         $query = $this->db('mlite_antrian_referensi')
           //->select('nomor_referensi')
@@ -1952,6 +1992,8 @@ class Site extends SiteModule
           //->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_referensi.nomor_kartu')
           ->where('tanggal_periksa', $date)
           ->where('status_kirim', 'Sudah')
+          ->limit($perpage)
+          ->offset(($page-1)*$perpage)
           ->toArray();
 
         echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
@@ -2175,7 +2217,8 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
@@ -2217,7 +2260,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 if($resep_obat){
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
@@ -2288,6 +2331,10 @@ class Site extends SiteModule
                 }
             }
         }
+        $_page = $page + 1;
+      	$page_ = $page - 1;
+      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
+      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
 
         exit();
     }

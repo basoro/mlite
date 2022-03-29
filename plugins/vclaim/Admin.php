@@ -396,7 +396,6 @@ class Admin extends AdminModule
     $im = $qr->createImage(4, 4);
     imagepng($im, '../../tmp/qrcode.png');
     imagedestroy($im);
-
     $image = "../../tmp/qrcode.png";
 
     $data_sep['qrCode'] = $image;

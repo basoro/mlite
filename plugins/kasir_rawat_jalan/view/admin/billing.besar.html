@@ -310,7 +310,7 @@ function KirimWA() {
 	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
-	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwamedia'])?}", true);
+	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwadocument'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message + "&tipe=" + tipe + "&file=" + file);
 }

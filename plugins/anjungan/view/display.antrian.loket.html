@@ -110,7 +110,7 @@
                 <div class="no_antrian">A<span class="antrian_Loket"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Loket <span class="get_loket"><span></div>
+                <div class="no_loket">Konter <span class="get_Loket"><span></div>
               </div>
             </div>
           </a>
@@ -120,7 +120,7 @@
                 <div class="no_antrian">B<span class="antrian_CS"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Loket <span class="get_cs"><span></div>
+                <div class="no_loket">Konter <span class="get_CS"><span></div>
                 </div>
             </div>
           </a>
@@ -285,14 +285,15 @@
         url: '{?=url()?}/anjungan/panggilantrian',
         dataType: 'json',
         success: function(data) {
-            if(data.status == false) {
-                setTimeout(function(){
-                    getAntrian();
-                }, 3000);
-            } else {
+            if(data.status == true && data.type !== null) {
+                //console.log(data.type);
                 updateLayar(data.type, data.noantrian, data.loket);
                 panggil(data.panggil);
                 setSelesai(data.id);
+            } else {
+                setTimeout(function(){
+                    getAntrian();
+                }, 3000);
             }
         },
         error: function(xhr) {

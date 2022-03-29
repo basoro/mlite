@@ -250,6 +250,7 @@ class Admin extends AdminModule
 
     public function anyTaskID()
     {
+      $this->_addHeaderFiles();
       $this->getCssCard();
       $date = date('Y-m-d');
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
@@ -301,8 +302,8 @@ class Admin extends AdminModule
           $q['task3'] = $mutasi_berkas['dikirim'];
           $q['task4'] = $mutasi_berkas2['diterima'];
           $q['task5'] = $pemeriksaan_ralan['datajam'];
-          $q['task6'] = $resep_obat['datajam'];
-          $q['task7'] = $resep_obat2['datajam'];
+          $q['task6'] = $resep_obat2['datajam'];
+          $q['task7'] = $resep_obat['datajam'];
           $q['task99'] = $batal;
           $rows[] = $q;
       }
