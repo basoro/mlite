@@ -1851,13 +1851,29 @@ class Site extends SiteModule
       	$_page = $page + 1;
       	$page_ = $page - 1;
         if(isset($slug[3]) && $slug[3] == 1) {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+          }
         } else if(!isset($slug[3])){
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+          }
         } else {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+          }
         }
-      	echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'/?tgl='.$date.'>Next</a>';
+        } else {
+          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
+        }
         exit();
     }
 
@@ -2337,11 +2353,33 @@ class Site extends SiteModule
                 }
             }
         }
+
         $_page = $page + 1;
       	$page_ = $page - 1;
-      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
-      	echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
-
+        if(isset($slug[3]) && $slug[3] == 1) {
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/>Prev</a> -- ';
+          }
+        } else if(!isset($slug[3])){
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/>Prev</a> -- ';
+          }
+        } else {
+          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
+          } else {
+            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
+          }
+        }
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'/?tgl='.$date.'>Next</a>';
+        } else {
+          echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
+        }
         exit();
     }
 
