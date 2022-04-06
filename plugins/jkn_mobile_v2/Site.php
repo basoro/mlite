@@ -1679,6 +1679,9 @@ class Site extends SiteModule
           $offset = ($page - 1) * $perpage;
         }
         //$date = '2022-01-21';
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          $date = $_GET['tgl'];
+        }
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
         $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
@@ -1895,6 +1898,9 @@ class Site extends SiteModule
     public function _getAntreanUpdateWaktu($page = 1)
     {
         $date = date('Y-m-d');
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          $date = $_GET['tgl'];
+        }
         //$date = '2022-01-21';
         /*
         $query = $this->db('mlite_antrian_referensi')
