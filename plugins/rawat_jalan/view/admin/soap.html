@@ -133,13 +133,8 @@
       {if: $admin_mode == 'complex'}
       {loop: $pemeriksaan_ranap as $data}
       <tr>
-<<<<<<< HEAD
-        <td rowspan="3" style="vertical-align:top;">{$data.nomor}</td>
-        <td rowspan="2" style="vertical-align:top;white-space: nowrap;">
-=======
         <td rowspan="6" style="vertical-align:top;">{$data.nomor}</td>
         <td rowspan="5" style="vertical-align:top;white-space: nowrap;">
->>>>>>> e559a1d1b92cc6fa0e42bcbbc11a6e1194822ba3
           <b>Rawat Inap</b><br>
           {$data.tgl_perawatan} {$data.jam_rawat}<br>
           {$data.departemen_petugas}
@@ -200,12 +195,9 @@
               data-alergi="{$data.alergi}"
               data-keluhan="{$data.keluhan}"
               data-pemeriksaan="{$data.pemeriksaan}"
-<<<<<<< HEAD
-=======
               data-penilaian="{$data.penilaian}"
               data-rtl="{$data.rtl}"
               data-instruksi="{$data.instruksi}"
->>>>>>> e559a1d1b92cc6fa0e42bcbbc11a6e1194822ba3
               disabled
               ><span class="fa fa-edit"></span><span class="hidden-xs"> Edit</span></button>
             <button type="button" name="button" class="btn btn-danger btn-xs hapus_soap"
