@@ -740,6 +740,12 @@ class Admin extends AdminModule
 
     }
 
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
+    }
+
     public function postMaxid()
     {
       $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();

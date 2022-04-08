@@ -1540,6 +1540,12 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
+    }
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');

@@ -195,10 +195,8 @@ class Admin extends AdminModule
       $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
       $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
       $this->assign['penjab'] = $this->db('penjab')->toArray();
-      $this->assign['no_rawat'] = '';
-      $this->assign['no_reg']     = '';
-      $this->assign['tgl_registrasi']= date('Y-m-d');
-      $this->assign['jam_reg']= date('H:i:s');
+      $date = date('Y-m-d');
+      $jam = date('H:i:s');
       if (isset($_POST['no_rawat'])){
         $this->assign['reg_periksa'] = $this->db('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -1107,6 +1105,12 @@ class Admin extends AdminModule
 
       exit();
 
+    }
+
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
     }
 
     public function postMaxid()

@@ -1031,3 +1031,12 @@ $(document).ready(function () {
     textField: 'nama_brng'
   });  $('select').selectator();
 });
+
+$("#form_soap").on("click","#jam_rawat", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_ranap/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#jam_rawat").val(data);
+    });
+});

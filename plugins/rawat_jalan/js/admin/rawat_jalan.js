@@ -865,7 +865,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   alasan1      : alasan1,
   rtl1          : rtl1,
   dokter : dokter,
-  poli : poli 
+  poli : poli
   }, function(data) {
     console.log(data);
     // tampilkan data
@@ -954,4 +954,21 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
+});
+
+$("#form").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#jam_reg").val(data);
+    });
+});
+$("#form_soap").on("click","#jam_rawat", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#jam_rawat").val(data);
+    });
 });

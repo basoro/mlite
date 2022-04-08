@@ -6,11 +6,11 @@
           <div class="form-group">
             <label for="" class="col-sm-3 control-label">Tanggal</label>
             <div class="col-sm-4">
-              <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control tanggal" value="{$rawat_jalan.tgl_registrasi}">
+              <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control tanggal" value="{if: $rawat_jalan.reg_periksa.tgl_registrasi == ''}{?=date('Y-m-d')?}{else}{$rawat_jalan.reg_periksa.tgl_registrasi}{/if}">
             </div>
             <label for="" class="col-sm-2 control-label">Jam</label>
             <div class="col-sm-3">
-              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{$rawat_jalan.jam_reg}">
+              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{if: $rawat_jalan.reg_periksa.jam_reg == ''}{?=date('H:i:s')?}{else}{$rawat_jalan.reg_periksa.jam_reg}{/if}">
             </div>
           </div>
           <div class="form-group">
