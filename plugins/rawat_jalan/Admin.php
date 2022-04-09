@@ -52,8 +52,6 @@ class Admin extends AdminModule
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
-        $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
-        $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
         return $this->draw('manage.html',
@@ -61,8 +59,6 @@ class Admin extends AdminModule
             'rawat_jalan' => $this->assign,
             'cek_vclaim' => $cek_vclaim,
             'master_berkas_digital' => $master_berkas_digital,
-            'maping_dokter_dpjpvclaim' => $maping_dokter_dpjpvclaim,
-            'maping_poli_bpjs' => $maping_poli_bpjs,
             'responsivevoice' => $responsivevoice,
             'admin_mode' => $this->settings->get('settings.admin_mode')
           ]
@@ -575,7 +571,7 @@ class Admin extends AdminModule
         'tanggal_datang' => $_POST['tanggal_datang'],
         'tanggal_rujukan' => $_POST['tanggal_rujukan'],
         'no_antrian' => $this->core->setNoSKDP(),
-        'kd_dokter' => $_POST['dokter'],
+        'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
         'status' => 'Menunggu'
       ]);
 
@@ -586,8 +582,8 @@ class Admin extends AdminModule
             'jam_booking' => date('H:i:s'),
             'no_rkm_medis' => $_POST['no_rkm_medis'],
             'tanggal_periksa' => $_POST['tanggal_datang'],
-            'kd_dokter' => $_POST['dokter'],
-            'kd_poli' => $_POST['poli'],
+            'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+            'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
             'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_datang']),
             'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
             'limit_reg' => 0,
