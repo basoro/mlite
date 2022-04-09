@@ -542,7 +542,6 @@ class Admin extends AdminModule
     public function getCssCard()
     {
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
-        $this->core->addCSS(url('plugins/jkn_mobile_v2/css/mineCss.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
     }
