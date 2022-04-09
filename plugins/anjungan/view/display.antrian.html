@@ -227,20 +227,6 @@
               <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRMCS" value="Submit" name="btnKRMCS" onclick="printDiv('printAntrianCS');">ANTRIAN CS</button>
             </form>
           </div>
-          <div class="col-6 pt-3 pb-3">
-            <div id="printAntrianIgd" style="display: none;" class="cetak">
-              <div style="width: 200px; font-family: Tahoma; margin-top: 10px; margin-right: 5px; margin-bottom: 100px; margin-left: 15px; font-size: 21px !important;border: 0px solid #000;">
-                <p style="font-size:12px;" align="center">{$settings.nama_instansi}<br><span class="small">{$settings.alamat}<br>Telp: {$settings.nomor_telepon}</span></p>
-                <hr>
-                <div id="print_nomor_igd"></div>
-                <p align="center">Layanan IGD</p>
-              </div>
-            </div>
-            <div id="display_nomor_igd"></div>
-            <form role="form" id="formigd" name="formigd">
-              <button type="submit" class="btn btn-lg btn-danger btn-block" style="padding: 30px;font-size:42px;" id="btnKRMIGD" value="Submit" name="btnKRMIGD" onclick="printDiv('printAntrianCS');">ANTRIAN IGD</button>
-            </form>
-          </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -559,8 +545,6 @@
       $("#print_nomor_loket").load("{?=url()?}/anjungan/ajax?show=printloket");
       $("#display_nomor_cs").load("{?=url()?}/anjungan/ajax?show=tampilcs");
       $("#print_nomor_cs").load("{?=url()?}/anjungan/ajax?show=printcs");
-      $("#display_nomor_igd").load("{?=url()?}/anjungan/ajax?show=tampiligd");
-      $("#print_nomor_igd").load("{?=url()?}/anjungan/ajax?show=printigd");
     }, 1000);
   })
   function printDiv(eleId){
