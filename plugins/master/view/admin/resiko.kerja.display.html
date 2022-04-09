@@ -1,0 +1,82 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode Resiko</th>
+          <th>Nama Resiko</th>
+          <th>Indek</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $resikokerja.list}
+        {loop: $resikokerja.list}
+        <tr class="edit" data-kode_resiko="{$value.kode_resiko}">
+          <td>{$value.kode_resiko}</td>
+          <td>{$value.nama_resiko}</td>
+          <td>{$value.indek}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="3" class="text-center">Tidak ada data resiko kerja.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($resikokerja.halaman)}
+        {if: $resikokerja.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $resikokerja.halaman > 1}
+        <li class="halaman" data-hal="{?=$resikokerja.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$resikokerja.halaman} dari {$resikokerja.jml_halaman} Hal</a></li>
+        {if: $resikokerja.halaman < $resikokerja.jml_halaman}
+        <li class="halaman" data-hal="{?=$resikokerja.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $resikokerja.halaman == $resikokerja.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$resikokerja.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $resikokerja.halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $resikokerja.halaman > 1}
+        <li class="halaman" data-hal="{?=$resikokerja.halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$resikokerja.halaman} dari {$resikokerja.jml_halaman} Hal</a></li>
+        {if: $resikokerja.halaman < $resikokerja.jml_halaman}
+        <li class="halaman" data-hal="{?=$resikokerja.halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $resikokerja.halaman == $resikokerja.jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$resikokerja.jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>

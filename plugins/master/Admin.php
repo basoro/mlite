@@ -35,6 +35,9 @@
     use Plugins\Master\Src\JenjangJabatan;
     use Plugins\Master\Src\KelompokJabatan;
     use Plugins\Master\Src\Pendidikan;
+    use Plugins\Master\Src\ResikoKerja;
+    use Plugins\Master\Src\StatusKerja;
+    use Plugins\Master\Src\StatusWP;
     use Systems\Lib\Fpdf\PDF_MC_Table;
 
     class Admin extends AdminModule
@@ -75,6 +78,9 @@
             $this->jenjangjabatan = new JenjangJabatan();
             $this->kelompokjabatan = new KelompokJabatan();
             $this->pendidikan = new Pendidikan();
+            $this->resikokerja = new ResikoKerja();
+            $this->statuskerja = new StatusKerja();
+            $this->statuswp = new StatusWP();
         }
 
         public function navigation()
@@ -116,7 +122,7 @@
                 'Pendidikan' => 'pendidikan',
                 'Resiko Kerja' => 'resikokerja',
                 'Status Kerja' => 'statuskerja',
-                'Status WP' => 'statuswajibpajak',
+                'Status WP' => 'statuswp',
             ];
         }
 
@@ -158,7 +164,7 @@
             ['name' => 'Pendidikan', 'url' => url([ADMIN, 'master', 'pendidikan']), 'icon' => 'cubes', 'desc' => 'Master pendidikan'],
             ['name' => 'Resiko Kerja', 'url' => url([ADMIN, 'master', 'resikokerja']), 'icon' => 'cubes', 'desc' => 'Master resiko kerja'],
             ['name' => 'Status Kerja', 'url' => url([ADMIN, 'master', 'statuskerja']), 'icon' => 'cubes', 'desc' => 'Master status kerja'],
-            ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswajibpajak']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
+            ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
           ];
           return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
         }
@@ -1677,6 +1683,142 @@
             exit();
         }
         /* End Pendidikan Section */
+
+        /* Start Resiko Kerja Section */
+        public function getResikoKerja()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'resikokerjajs']), 'footer');
+          $return = $this->resikokerja->getIndex();
+          return $this->draw('resiko.kerja.html', [
+            'resikokerja' => $return
+          ]);
+
+        }
+
+        public function anyResikoKerjaForm()
+        {
+            $return = $this->resikokerja->anyForm();
+            echo $this->draw('resiko.kerja.form.html', ['resikokerja' => $return]);
+            exit();
+        }
+
+        public function anyResikoKerjaDisplay()
+        {
+            $return = $this->resikokerja->anyDisplay();
+            echo $this->draw('resiko.kerja.display.html', ['resikokerja' => $return]);
+            exit();
+        }
+
+        public function postResikoKerjaSave()
+        {
+          $this->resikokerja->postSave();
+          exit();
+        }
+
+        public function postResikoKerjaHapus()
+        {
+          $this->resikokerja->postHapus();
+          exit();
+        }
+
+        public function getResikoKerjaJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/resikokerja.js');
+            exit();
+        }
+        /* End Pendidikan Section */
+
+        /* Start Status Kerja Section */
+        public function getStatusKerja()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'statuskerjajs']), 'footer');
+          $return = $this->statuskerja->getIndex();
+          return $this->draw('status.kerja.html', [
+            'statuskerja' => $return
+          ]);
+
+        }
+
+        public function anyStatusKerjaForm()
+        {
+            $return = $this->statuskerja->anyForm();
+            echo $this->draw('status.kerja.form.html', ['statuskerja' => $return]);
+            exit();
+        }
+
+        public function anyStatusKerjaDisplay()
+        {
+            $return = $this->statuskerja->anyDisplay();
+            echo $this->draw('status.kerja.display.html', ['statuskerja' => $return]);
+            exit();
+        }
+
+        public function postStatusKerjaSave()
+        {
+          $this->statuskerja->postSave();
+          exit();
+        }
+
+        public function postStatusKerjaHapus()
+        {
+          $this->statuskerja->postHapus();
+          exit();
+        }
+
+        public function getStatusKerjaJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/statuskerja.js');
+            exit();
+        }
+        /* End Pendidikan Section */
+
+        /* Start Status WP Section */
+        public function getStatusWP()
+        {
+          $this->core->addJS(url([ADMIN, 'master', 'statuswpjs']), 'footer');
+          $return = $this->statuswp->getIndex();
+          return $this->draw('status.wp.html', [
+            'statuswp' => $return
+          ]);
+
+        }
+
+        public function anyStatusWPForm()
+        {
+            $return = $this->statuswp->anyForm();
+            echo $this->draw('status.wp.form.html', ['statuswp' => $return]);
+            exit();
+        }
+
+        public function anyStatusWPDisplay()
+        {
+            $return = $this->statuswp->anyDisplay();
+            echo $this->draw('status.wp.display.html', ['statuswp' => $return]);
+            exit();
+        }
+
+        public function postStatusWPSave()
+        {
+          $this->statuswp->postSave();
+          exit();
+        }
+
+        public function postStatusWPHapus()
+        {
+          $this->statuswp->postHapus();
+          exit();
+        }
+
+        public function getStatusWPJS()
+        {
+            header('Content-type: text/javascript');
+            echo $this->draw(MODULES.'/master/js/admin/statuswp.js');
+            exit();
+        }
+        /* End Pendidikan Section */
+
 
         public function getCSS()
         {
