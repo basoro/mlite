@@ -8,12 +8,10 @@
           </span>
           <ul class="dropdown-menu dropdown-menu-right">
             <li style="padding-left:5px;padding-right:5px;">
-              <input type="text" id="periode_rawat_inap" class="form-control periode_rawat_inap"
-                name="periode_rawat_inap" required>
+              <input type="text" id="periode_rawat_inap" class="form-control periode_rawat_inap" name="periode_rawat_inap" required>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
-              <input type="text" id="periode_rawat_inap_akhir" class="form-control periode_rawat_inap"
-                name="periode_rawat_inap_akhir" required>
+              <input type="text" id="periode_rawat_inap_akhir" class="form-control periode_rawat_inap" name="periode_rawat_inap_akhir" required>
             </li>
             <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
               <div id="submit_periode_rawat_inap" class="btn btn-primary btn-block">Semua</div>
@@ -50,7 +48,7 @@
           {include: ../plugins/rawat_inap/view/admin/form.soap.html}
           {include: ../plugins/rawat_inap/view/admin/form.berkasdigital.html}
           {if: $cek_vclaim}
-          {include: ../plugins/vclaim/view/admin/form.sep.html}
+            {include: ../plugins/vclaim/view/admin/form.sep.html}
           {/if}
         </div>
         <div>
@@ -64,11 +62,11 @@
   </div>
 </div>
 <script type="text/javascript">
-  $(function () {
-    $('.periode_rawat_inap').datetimepicker({
-      defaultDate: '{?=date('Y- m - d')?}',
-      format: 'YYYY-MM-DD',
-      locale: 'id'
+   $(function () {
+       $('.periode_rawat_inap').datetimepicker({
+         defaultDate: '{?=date('Y-m-d')?}',
+         format: 'YYYY-MM-DD',
+         locale: 'id'
        });
    });
 </script>

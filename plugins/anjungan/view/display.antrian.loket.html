@@ -110,7 +110,7 @@
                 <div class="no_antrian">A<span class="antrian_Loket"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Loket <span class="get_loket"><span></div>
+                <div class="no_loket">Konter <span class="get_Loket"><span></div>
               </div>
             </div>
           </a>
@@ -120,7 +120,7 @@
                 <div class="no_antrian">B<span class="antrian_CS"><span></div>
               </div>
               <div class="panel-footer bg-transparent border-success">
-                <div class="no_loket">Loket <span class="get_cs"><span></div>
+                <div class="no_loket">Konter <span class="get_CS"><span></div>
                 </div>
             </div>
           </a>
@@ -161,27 +161,29 @@
     <div class="row">
       <div class="card-deck">
           {loop: $loket}
-          <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 mb-5">
-            <div class="panel" style="color:#000;">
-              <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
-              <div class="panel-body">
-                <h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
-              </div>
-              <div class="panel-footer">
-                <div class="btn-group btn-group-justified">
-                  <a href="#" class="btn btn-primary" style="font-size:32px;">{$noantrian}</a>
-                  <a href="#" class="btn btn-primary" style="font-size:32px;" onclick="panggil({$antrian})"><i class="fa fa-bullhorn"></i></a>
-                  <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
+          <div class="{if: isset($_GET['loket']) && $_GET['loket'] != $value}hidden{/if}">
+            <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 mb-5">
+              <div class="panel" style="color:#000;">
+                <div class="panel-heading" style="font-size:32px;">Loket {$value}</div>
+                <div class="panel-body">
+                  <h5 class="panel-title" style="font-size:72px;">{?=strtoupper($namaloket)?}{$antrian}</h5>
                 </div>
-                <br>
-                <div class="col" id="form_simpan_no_rkm_medis_{$value}">
-                    <input type="hidden" name="noantrian" value="{$antrian}">
-                    <div class="input-group input-group-lg">
-                        <input type="text" class="form-control form-control-lg" name="no_rkm_medis_{$value}" placeholder="Input Nomor RM">
-                        <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
-                            <button class="btn btn-danger simpan_no_rkm_medis_{$value}">Simpan</button>
-                        </span>
-                    </div>
+                <div class="panel-footer">
+                  <div class="btn-group btn-group-justified">
+                    <a href="#" class="btn btn-primary" style="font-size:32px;">{$noantrian}</a>
+                    <a href="#" class="btn btn-primary" style="font-size:32px;" onclick="panggil({$antrian})"><i class="fa fa-bullhorn"></i></a>
+                    <a href="{?=url()?}/anjungan/loket?show={$panggil_loket}&loket={$value}" class="btn btn-primary" style="font-size:32px;"><i class="fa fa-forward"></i></a>
+                  </div>
+                  <br>
+                  <div class="col" id="form_simpan_no_rkm_medis_{$value}">
+                      <input type="hidden" name="noantrian" value="{$antrian}">
+                      <div class="input-group input-group-lg">
+                          <input type="text" class="form-control form-control-lg" name="no_rkm_medis_{$value}" placeholder="Input Nomor RM">
+                          <span class="input-group-btn"><!-- Append button addon using class input-group-lg -->
+                              <button class="btn btn-danger simpan_no_rkm_medis_{$value}">Simpan</button>
+                          </span>
+                      </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -273,14 +275,15 @@
         url: '{?=url()?}/anjungan/panggilantrian',
         dataType: 'json',
         success: function(data) {
-            if(data.status == false) {
-                setTimeout(function(){
-                    getAntrian();
-                }, 3000);
-            } else {
+            if(data.status == true && data.type !== null) {
+                //console.log(data.type);
                 updateLayar(data.type, data.noantrian, data.loket);
                 panggil(data.panggil);
                 setSelesai(data.id);
+            } else {
+                setTimeout(function(){
+                    getAntrian();
+                }, 3000);
             }
         },
         error: function(xhr) {
@@ -317,9 +320,9 @@
     audio.playbackRate = 1.0;
 
     const playPromise = audio.play();
-    if (playPromise !== null){
-        playPromise.catch(() => { media.play(); })
-    }
+    //if (playPromise !== null){
+    //    playPromise.catch(() => { audio.play(); })
+    //}
 
     if (callback) {
         //When the audio object completes it's playback, call the callback
