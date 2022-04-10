@@ -17,16 +17,14 @@ class Admin extends AdminModule
                 'Rekap Presensi' => 'rekap_presensi',
                 'Barcode Presensi' => 'barcode',
                 'Jam Jaga' => 'jamjaga',
-                'Jadwal Pegawai' => 'jadwal',
-                'Jadwal Tambahan' => 'jadwal_tambahan'
+                'Jadwal Pegawai' => 'jadwal'
             ];
         } else {
             return [
                 'Kelola' => 'manage',
                 'Presensi Masuk' => 'presensi',
                 'Rekap Presensi' => 'rekap_presensi',
-                'Jadwal Pegawai' => 'jadwal',
-                'Jadwal Tambahan' => 'jadwal_tambahan'
+                'Jadwal Pegawai' => 'jadwal'
             ];
         }
     }
@@ -39,15 +37,13 @@ class Admin extends AdminModule
                 ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
                 ['name' => 'Barcode Presensi', 'url' => url([ADMIN, 'presensi', 'barcode']), 'icon' => 'cubes', 'desc' => 'Barcode Presensi Pegawai'],
                 ['name' => 'Jam Jaga', 'url' => url([ADMIN, 'presensi', 'jamjaga']), 'icon' => 'cubes', 'desc' => 'Jam Jaga Pegawai'],
-                ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
-                ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai']
+                ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai']
             ];
         } else {
             $sub_modules = [
                 ['name' => 'Presensi', 'url' => url([ADMIN, 'presensi', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
                 ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'presensi', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
-                ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
-                ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai'],
+                ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai']
             ];
         }
         return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -391,238 +387,6 @@ class Admin extends AdminModule
                 $query = $this->db('jadwal_pegawai')->save($_POST);
             } else {
                 $query = $this->db('jadwal_pegawai')->where('id', $id)->where('tahun', $_POST['tahun'])->where('bulan', $_POST['bulan'])->save($_POST);
-            }
-
-            if ($query) {
-                $this->notify('success', 'Simpan sukses');
-            } else {
-                $this->notify('failure', 'Simpan gagal');
-            }
-
-            redirect($location);
-        }
-
-        redirect($location, $_POST);
-    }
-
-    public function getJadwal_Tambahan($page = 1)
-    {
-        $this->_addHeaderFiles();
-        $perpage = '10';
-        $phrase = '';
-        if (isset($_GET['s']))
-            $phrase = $_GET['s'];
-
-        $bulan = date('m');
-        if (isset($_GET['b'])) {
-            $bulan = $_GET['b'];
-        }
-
-        $tahun = date('Y');
-        if (isset($_GET['y'])) {
-            $tahun = $_GET['y'];
-        }
-
-        $username = $this->core->getUserInfo('username', null, true);
-
-        // pagination
-        if ($this->core->getUserInfo('role') == 'admin') {
-            $totalRecords = $this->db('jadwal_tambahan')
-                ->join('pegawai', 'pegawai.id=jadwal_tambahan.id')
-                ->where('jadwal_tambahan.tahun', $tahun)
-                ->like('jadwal_tambahan.bulan', $bulan . '%')
-                ->like('pegawai.nama', '%' . $phrase . '%')
-                ->toArray();
-        } else {
-            $totalRecords = $this->db('jadwal_tambahan')
-                ->join('pegawai', 'pegawai.id=jadwal_tambahan.id')
-                ->where('jadwal_tambahan.tahun', $tahun)
-                ->where('jadwal_tambahan.bulan', $bulan)
-                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
-                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
-                ->like('pegawai.nama', '%' . $phrase . '%')
-                ->toArray();
-        }
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'jadwal_tambahan', '%d?b=' . $bulan . '&s=' . $phrase]));
-        $this->assign['pagination'] = $pagination->nav('pagination', '5');
-        $this->assign['totalRecords'] = $totalRecords;
-
-        // list
-        $offset = $pagination->offset();
-        if ($this->core->getUserInfo('role') == 'admin') {
-            $rows = $this->db('jadwal_tambahan')
-                ->join('pegawai', 'pegawai.id=jadwal_tambahan.id')
-                ->where('jadwal_tambahan.tahun', $tahun)
-                ->like('jadwal_tambahan.bulan', $bulan . '%')
-                ->like('pegawai.nama', '%' . $phrase . '%')
-                ->offset($offset)
-                ->limit($perpage)
-                ->toArray();
-        } else {
-            $rows = $this->db('jadwal_tambahan')
-                ->join('pegawai', 'pegawai.id=jadwal_tambahan.id')
-                ->where('jadwal_tambahan.tahun', $tahun)
-                ->where('jadwal_tambahan.bulan', $bulan)
-                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
-                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
-                ->like('pegawai.nama', '%' . $phrase . '%')
-                ->offset($offset)
-                ->limit($perpage)
-                ->toArray();
-        }
-        $this->assign['list'] = [];
-        if (count($rows)) {
-            foreach ($rows as $row) {
-                $row = htmlspecialchars_array($row);
-                $row['editURL'] = url([ADMIN, 'presensi', 'jadwaltambahedit', $row['id'], $bulan, $tahun]);
-                // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
-                // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
-                // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
-                $this->assign['list'][] = $row;
-            }
-        }
-
-        $this->assign['getStatus'] = isset($_GET['status']);
-        $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaltambahadd']);
-        $month = array(
-            '01' => 'JAN',
-            '02' => 'FEB',
-            '03' => 'MAR',
-            '04' => 'APR',
-            '05' => 'MEI',
-            '06' => 'JUN',
-            '07' => 'JUL',
-            '08' => 'AGU',
-            '09' => 'SEP',
-            '10' => 'OKT',
-            '11' => 'NOV',
-            '12' => 'DES',
-        );
-        $this->assign['showBulan'] = $month[$bulan];
-        // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
-        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-        $this->assign['tahun'] = array('', '2020', '2021', '2022', '2023');
-        return $this->draw('jadwal_tambah.manage.html', ['jadwal_tambah' => $this->assign]);
-    }
-
-    public function getJadwalTambahAdd()
-    {
-        $this->_addHeaderFiles();
-        if (!empty($redirectData = getRedirectData())) {
-            $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
-        } else {
-            $this->assign['form'] = [
-                'id' => '',
-                'tahun' => '',
-                'bulan' => '',
-                'h1' => '',
-                'h2' => '',
-                'h3' => '',
-                'h4' => '',
-                'h5' => '',
-                'h6' => '',
-                'h7' => '',
-                'h8' => '',
-                'h9' => '',
-                'h10' => '',
-                'h11' => '',
-                'h12' => '',
-                'h13' => '',
-                'h14' => '',
-                'h15' => '',
-                'h16' => '',
-                'h17' => '',
-                'h18' => '',
-                'h19' => '',
-                'h20' => '',
-                'h21' => '',
-                'h22' => '',
-                'h23' => '',
-                'h24' => '',
-                'h25' => '',
-                'h26' => '',
-                'h27' => '',
-                'h28' => '',
-                'h29' => '',
-                'h30' => '',
-                'h31' => '',
-            ];
-        }
-        $username = $this->core->getUserInfo('username', null, true);
-        if ($this->core->getUserInfo('role') == 'admin') {
-            $this->assign['id'] = $this->db('pegawai')
-                ->where('stts_aktif', 'AKTIF')
-                ->toArray();
-        } else {
-            $this->assign['id'] = $this->db('pegawai')
-                ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
-                ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
-                ->where('stts_aktif', 'AKTIF')
-                ->toArray();
-        }
-        if ($this->core->getUserInfo('role') == 'admin') {
-            $this->assign['h1'] = $this->db('jam_masuk')->toArray();
-        } else {
-            $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen', $username))->toArray();
-        }
-        //$this->assign['tahun'] = date('Y');
-        $this->assign['tahun'] = array('', '2020', '2021', '2022', '2023');
-        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-
-        return $this->draw('jadwal_tambah.form.html', ['jadwal' => $this->assign]);
-    }
-
-    public function getJadwalTambahEdit($id, $bulan, $tahun)
-    {
-        $this->_addHeaderFiles();
-        $row = $this->db('jadwal_tambahan')->where('id', $id)->where('tahun', $tahun)->where('bulan', $bulan)->oneArray();
-        if (!empty($row)) {
-            $username = $this->core->getUserInfo('username', null, true);
-            $this->assign['form'] = $row;
-            if ($this->core->getUserInfo('role') == 'admin') {
-                $this->assign['id'] = $this->db('pegawai')
-                    ->where('stts_aktif', 'AKTIF')
-                    ->toArray();
-            } else {
-                $this->assign['id'] = $this->db('pegawai')
-                    ->where('departemen', $this->core->getPegawaiInfo('departemen', $username))
-                    ->where('bidang', $this->core->getPegawaiInfo('bidang', $username))
-                    ->where('stts_aktif', 'AKTIF')
-                    ->toArray();
-            }
-            $this->assign['h1'] = $this->db('jam_jaga')->where('dep_id', $this->core->getPegawaiInfo('departemen', $username))->toArray();
-            //$this->assign['tahun'] = $tahun;
-            $this->assign['tahun'] = array('', '2020', '2021', '2022', '2023');
-            $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
-
-            return $this->draw('jadwal_tambah.form.html', ['jadwal' => $this->assign]);
-        } else {
-            redirect(url([ADMIN, 'presensi', 'jadwal_tambahan']));
-        }
-    }
-
-    public function postJadwalTambahSave($id = null)
-    {
-        $errors = 0;
-
-        if (!$id) {
-            $location = url([ADMIN, 'presensi', 'jadwal_tambahan']);
-        } else {
-            $location = url([ADMIN, 'presensi', 'jadwaltambahedit', $id]);
-        }
-
-        //if (checkEmptyFields(['id'], $_POST)){
-        //    $this->notify('failure', 'Isian kosong');
-        //    redirect($location, $_POST);
-        // }
-
-        if (!$errors) {
-            unset($_POST['save']);
-
-            if (!$id) {
-                $query = $this->db('jadwal_tambahan')->save($_POST);
-            } else {
-                $query = $this->db('jadwal_tambahan')->where('id', $id)->where('tahun', $_POST['tahun'])->where('bulan', $_POST['bulan'])->save($_POST);
             }
 
             if ($query) {
