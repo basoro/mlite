@@ -65,11 +65,11 @@
 		</tr>
 		<tr >
 			<td align = "right">Jumlah Bayar
-				Rp. {?= number_format($billing.jumlah_bayar,2,',','.')?}</td>
+				Rp. {?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</td>
 		</tr>
 		<tr >
 
-			<td style="font-size: 9pt;" ><i>Terbilang : # {?=terbilang($billing.jumlah_bayar,3,"")?} Rupiah # </i></td>
+			<td style="font-size: 9pt;" ><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
 		</tr>
 			<td >
 			<p align="center" >{$settings.kota},  {?=date('d-m-Y')?}<br>
