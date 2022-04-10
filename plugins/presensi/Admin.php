@@ -18,9 +18,7 @@ class Admin extends AdminModule
                 'Barcode Presensi' => 'barcode',
                 'Jam Jaga' => 'jamjaga',
                 'Jadwal Pegawai' => 'jadwal',
-                'Jadwal Tambahan' => 'jadwal_tambahan',
-                'Validasi Presensi' => 'validasi',
-                'Pengaturan' => 'pengaturan_api'
+                'Jadwal Tambahan' => 'jadwal_tambahan'
             ];
         } else {
             return [
@@ -42,9 +40,7 @@ class Admin extends AdminModule
                 ['name' => 'Barcode Presensi', 'url' => url([ADMIN, 'presensi', 'barcode']), 'icon' => 'cubes', 'desc' => 'Barcode Presensi Pegawai'],
                 ['name' => 'Jam Jaga', 'url' => url([ADMIN, 'presensi', 'jamjaga']), 'icon' => 'cubes', 'desc' => 'Jam Jaga Pegawai'],
                 ['name' => 'Jadwal', 'url' => url([ADMIN, 'presensi', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
-                ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai'],
-                ['name' => 'Validasi Presensi', 'url' => url([ADMIN, 'presensi', 'validasi_presensi']), 'icon' => 'check-square', 'desc' => 'Validasi Rekap Presensi'],
-                ['name' => 'Pengaturan API', 'url' => url([ADMIN, 'presensi', 'pengaturan_api']), 'icon' => 'gear', 'desc' => 'Pengaturan API Presensi'],
+                ['name' => 'Jadwal Tambahan', 'url' => url([ADMIN, 'presensi', 'jadwal_tambahan']), 'icon' => 'cubes', 'desc' => 'Jadwal Tambahan Pegawai']
             ];
         } else {
             $sub_modules = [
@@ -2095,101 +2091,6 @@ class Admin extends AdminModule
         }
 
         redirect($location, $_POST);
-    }
-
-    public function getPengaturan_Api()
-    {
-        $this->_addHeaderFiles();
-        $this->assign['title'] = 'Pengaturan Presensi API';
-
-        $this->assign['presensi'] = htmlspecialchars_array($this->settings('presensi'));
-        return $this->draw('settings.html', ['settings' => $this->assign]);
-    }
-
-    public function postSaveSettings()
-    {
-        foreach ($_POST['presensi'] as $key => $val) {
-            $this->settings('presensi', $key, $val);
-        }
-        $this->notify('success', 'Pengaturan telah disimpan');
-        redirect(url([ADMIN, 'presensi', 'pengaturan_api']));
-    }
-
-    public function getValidasi_Presensi($page = 1)
-    {
-        $this->_addHeaderFiles();
-
-        $perpage = '10';
-        $phrase = '';
-        if (isset($_GET['s']))
-            $phrase = $_GET['s'];
-
-        // $tgl_kunjungan = date('Y-m-d');
-        // $tgl_kunjungan_akhir = date('Y-m-d');
-        $tgl_kunjungan = '2021-01';
-        $tgl_kunjungan_akhir = date('Y-m-d');
-        // $status_periksa = '';
-        // $status_bayar = '';
-
-        if (isset($_GET['awal'])) {
-            $tgl_kunjungan = $_GET['awal'];
-        }
-        if (isset($_GET['akhir'])) {
-            $tgl_kunjungan_akhir = $_GET['akhir'];
-        }
-
-        $ruang = '';
-        if (isset($_GET['ruang'])) {
-            $ruang = $_GET['ruang'];
-        }
-
-        $username = $this->core->getUserInfo('username', null, true);
-
-        // pagination
-        $totalRecords = $this->db('rekap_presensi')
-            ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-            ->like('jam_datang', '%' . $tgl_kunjungan . '%')
-            ->like('bidang', '%' . $ruang . '%')
-            ->like('nama', '%' . $phrase . '%')
-            ->group('rekap_presensi.id')
-            ->asc('jam_datang')
-            ->toArray();
-
-        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'validasi_presensi', '%d?awal=' . $tgl_kunjungan . '&akhir=' . $tgl_kunjungan_akhir . '&ruang=' . $ruang . '&s=' . $phrase]));
-        $this->assign['pagination'] = $pagination->nav('pagination', '5');
-        $this->assign['totalRecords'] = $totalRecords;
-
-        // list
-        $offset = $pagination->offset();
-
-        $rows = $this->db('rekap_presensi')
-            ->select([
-                'nama' => 'pegawai.nama',
-                'departemen' => 'pegawai.departemen',
-                'jbtn' => 'pegawai.jbtn',
-                'bidang' => 'pegawai.bidang',
-                'id' => 'rekap_presensi.id',
-            ])
-            ->join('pegawai', 'pegawai.id = rekap_presensi.id')
-            ->like('bidang', '%' . $ruang . '%')
-            ->like('bidang', '%' . $ruang . '%')
-            ->like('nama', '%' . $phrase . '%')
-            ->group('rekap_presensi.id')
-            ->asc('jam_datang')
-            ->offset($offset)
-            ->limit($perpage)
-            ->toArray();
-        $this->assign['list'] = [];
-        if (count($rows)) {
-            foreach ($rows as $row) {
-                $row = htmlspecialchars_array($row);
-                $this->assign['list'][] = $row;
-            }
-        }
-        $this->assign['bidang'] = $this->db('bidang')->toArray();
-        $this->assign['title'] = 'Validasi Presensi';
-
-        return $this->draw('validasi.html', ['rekap' => $this->assign]);
     }
 
     public function getJavascript()
