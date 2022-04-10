@@ -184,6 +184,30 @@ return [
       $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
         ADD CONSTRAINT `bridging_surat_pri_bpjs_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
+        `kd_dokter` varchar(20) NOT NULL,
+        `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
+        `nm_dokter_bpjs` varchar(50) DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+        ADD PRIMARY KEY (`kd_dokter`) USING BTREE;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+        ADD CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
+        `kd_poli_rs` varchar(5) NOT NULL,
+        `kd_poli_bpjs` varchar(15) NOT NULL,
+        `nm_poli_bpjs` varchar(40) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+        ADD PRIMARY KEY (`kd_poli_rs`);");
+
+      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+        ADD CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
       if (!is_dir(UPLOADS."/qrcode")) {
           mkdir(UPLOADS."/qrcode", 0777);
       }
