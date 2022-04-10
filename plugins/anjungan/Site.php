@@ -57,7 +57,10 @@ class Site extends SiteModule
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->toArray();
-        $penjab = $this->db('penjab')->toArray();
+        $carabayar = str_replace(",","','", $this->settings->get('anjungan.carabayar'));
+        $penjab = $this->db()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
+        $penjab->execute();
+        $penjab = $penjab->fetchAll(\PDO::FETCH_ASSOC);;
 
         $_username = $this->core->getUserInfo('fullname', null, true);
         $__username = $this->core->getUserInfo('username');
@@ -88,6 +91,32 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
+    }
+
+    private function _getPenjab($kd_pj = null)
+    {
+        $result = [];
+        $rows = $this->db('penjab')->toArray();
+
+        if (!$kd_pj) {
+            $kd_pjArray = [];
+        } else {
+            $kd_pjArray = explode(',', $kd_pj);
+        }
+
+        foreach ($rows as $row) {
+            if (empty($kd_pjArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['kd_pj'], $kd_pjArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['kd_pj' => $row['kd_pj'], 'png_jawab' => $row['png_jawab'], 'attr' => $attr];
+        }
+        return $result;
     }
 
     public function getDisplayAntrianPoli()
@@ -1212,7 +1241,7 @@ class Site extends SiteModule
               $_POST['umurdaftar'] = $umur;
               $_POST['sttsumur'] = $sttsumur;
               $_POST['status_lanjut']   = 'Ralan';
-              $_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
+              //$_POST['kd_pj']           = $this->settings->get('anjungan.carabayar_umum');
               $_POST['status_bayar']    = 'Belum Bayar';
               $_POST['no_rawat'] = $this->core->setNoRawat($date);
               $_POST['jam_reg'] = date('H:i:s');

@@ -615,12 +615,14 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'evaluasi'");
       $check_db->execute();
       $check_db = $check_db->fetch();
 
       if($check_db) {
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        $_POST['spo2'] = '-';
+        $_POST['evaluasi'] = '-';
       } else {
         unset($_POST['instruksi']);
       }

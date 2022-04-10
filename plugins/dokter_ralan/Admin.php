@@ -632,12 +632,14 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+      $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'evaluasi'");
       $check_db->execute();
       $check_db = $check_db->fetch();
 
       if($check_db) {
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        $_POST['spo2'] = '-';
+        $_POST['evaluasi'] = '-';
       } else {
         unset($_POST['instruksi']);
       }
@@ -1023,13 +1025,15 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
 
-            $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
+            $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'evaluasi'");
             $check_db->execute();
             $check_db = $check_db->fetch();
 
             if($check_db) {
-              $_POST['instruksi'] = '';
+              $_POST['instruksi'] = '-';
               $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+              $_POST['spo2'] = '-';
+              $_POST['evaluasi'] = '-';
             }
             $cek_no_rawat = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNorawat($id))->oneArray();
             if(empty($cek_no_rawat['no_rawat'])) {

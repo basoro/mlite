@@ -15,10 +15,10 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Cara Bayar Umum</label>
-                        <select name="anjungan[carabayar_umum]" class="form-control">
+                        <label>Cara Bayar</label>
+                        <select name="anjungan[carabayar][]" class="form-control" multiple>
                           {loop: $settings.penjab}
-                            <option value="{$value.kd_pj}"{if: $value.kd_pj == $settings.anjungan.carabayar_umum} selected{/if}>{$value.png_jawab}</option>
+                            <option value="{$value.kd_pj}" {$value.attr}>{$value.png_jawab}</option>
                           {/loop}
                         </select>
                     </div>

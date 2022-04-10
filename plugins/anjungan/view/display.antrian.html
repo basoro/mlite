@@ -662,6 +662,7 @@
       var tgl_registrasi_daftar = $('#tgl_registrasi_daftar').val();
       var kd_poli_daftar = $('#pilih_poli_daftar').val();
       var kd_dokter_daftar = $('#pilih_dokter_daftar').val();
+      var kd_pj = $('#kdpj').val();
 
       $('#no_rkm_medis_cetak').text(no_rkm_medis_daftar);
       $('#nm_pasien_cetak').text(nm_pasien_daftar);
@@ -710,7 +711,8 @@
               no_rkm_medis:no_rkm_medis_daftar,
               tgl_registrasi:tgl_registrasi_daftar,
               kd_poli:kd_poli_daftar,
-              kd_dokter:kd_dokter_daftar
+              kd_dokter:kd_dokter_daftar,
+              kd_pj: kd_pj
           },
          success:function(data){
            if(data.status == 'ok'){
