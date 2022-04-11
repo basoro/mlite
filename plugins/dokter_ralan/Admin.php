@@ -992,6 +992,7 @@ class Admin extends AdminModule
                 $row['tinggi'] = $pemeriksaan_ralan['tinggi'];
                 $row['berat'] = $pemeriksaan_ralan['berat'];
                 $row['gcs'] = $pemeriksaan_ralan['gcs'];
+                $row['alergi'] = $pemeriksaan_ralan['alergi'];
                 $row['pemeriksaan'] = $pemeriksaan_ralan['pemeriksaan'];
                 $row['rtl'] = $pemeriksaan_ralan['rtl'];
                 $row['catatan_perawatan'] = $catatan_perawatan['catatan'];
@@ -1037,13 +1038,8 @@ class Admin extends AdminModule
             }
             $cek_no_rawat = $this->db('pemeriksaan_ralan')->where('no_rawat', revertNorawat($id))->oneArray();
             if(empty($cek_no_rawat['no_rawat'])) {
-              $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-              $check_db->execute();
-              $check_db = $check_db->fetch();
 
               if($check_db) {
-                $_POST['instruksi'] = '';
-                $_POST['nip'] = $this->core->getUserInfo('username', null, true);
                 $query = $this->db('pemeriksaan_ralan')
                   ->save([
                     'no_rawat' => revertNorawat($id),
@@ -1055,6 +1051,7 @@ class Admin extends AdminModule
                     'respirasi' => $_POST['respirasi'],
                     'tinggi' => $_POST['tinggi'],
                     'berat' => $_POST['berat'],
+                    'spo2' => $_POST['spo2'],
                     'gcs' => $_POST['gcs'],
                     'kesadaran' => $_POST['kesadaran'],
                     'keluhan' => $_POST['keluhan'],
@@ -1064,6 +1061,7 @@ class Admin extends AdminModule
                     'rtl' => $_POST['rtl'],
                     'penilaian' => $_POST['penilaian'],
                     'instruksi' => $_POST['instruksi'],
+                    'evaluasi' => $_POST['evaluasi'],
                     'nip' => $_POST['nip']
                 ]);
               } else {
@@ -1088,8 +1086,6 @@ class Admin extends AdminModule
                     'penilaian' => $_POST['penilaian']
                 ]);
               }
-
-
 
               $get_kd_penyakit = $_POST['kd_penyakit'];
               for ($i = 0; $i < count($get_kd_penyakit); $i++) {
@@ -1148,13 +1144,7 @@ class Admin extends AdminModule
 
             } else {
 
-              $check_db = $this->db()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-              $check_db->execute();
-              $check_db = $check_db->fetch();
-
               if($check_db) {
-                $_POST['instruksi'] = '';
-                $_POST['nip'] = $this->core->getUserInfo('username', null, true);
                 $query = $this->db('pemeriksaan_ralan')
                   ->where('no_rawat', revertNorawat($id))
                   ->update([
@@ -1164,6 +1154,7 @@ class Admin extends AdminModule
                     'respirasi' => $_POST['respirasi'],
                     'tinggi' => $_POST['tinggi'],
                     'berat' => $_POST['berat'],
+                    'spo2' => $_POST['spo2'],
                     'gcs' => $_POST['gcs'],
                     'kesadaran' => $_POST['kesadaran'],
                     'keluhan' => $_POST['keluhan'],
@@ -1173,6 +1164,7 @@ class Admin extends AdminModule
                     'rtl' => $_POST['rtl'],
                     'penilaian' => $_POST['penilaian'],
                     'instruksi' => $_POST['instruksi'],
+                    'evaluasi' => $_POST['evaluasi'],
                     'nip' => $_POST['nip']
                 ]);
               } else {
