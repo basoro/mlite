@@ -174,12 +174,13 @@ class QueryWrapper
             $value = '(' . implode(',', array_fill(0, count($value), '?')) . ')';
         } else {
             array_push($this->condition_binds, $value);
+            $value = "?";
         }
 
         if (empty($this->conditions) || strpos(end($this->conditions), '(') !== false) {
-            array_push($this->conditions, "$column $operator ?");
+            array_push($this->conditions, "$column $operator $value");
         } else {
-            array_push($this->conditions, "$ao $column $operator ?");
+            array_push($this->conditions, "$ao $column $operator $value");
         }
 
         return $this;
