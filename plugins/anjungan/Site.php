@@ -2087,7 +2087,7 @@ class Site extends SiteModule
       $localIP = substr($localIP,0,4);
       if(!isset($_SERVER['REMOTE_ADDR']) ||
         (isset($_SERVER['REMOTE_ADDR']) && strpos($_SERVER['REMOTE_ADDR'], $localIP) !== 0)) {
-        header('Location: /notallowed.php');
+        header('Location: '.url('login'));
       }
     }
 
