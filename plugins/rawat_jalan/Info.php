@@ -243,6 +243,7 @@
             `respirasi` char(3) DEFAULT NULL,
             `tinggi` char(5) DEFAULT NULL,
             `berat` char(5) DEFAULT NULL,
+            `spo2` char(3) DEFAULT NOT NULL,
             `gcs` varchar(10) DEFAULT NULL,
             `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
             `keluhan` varchar(400) DEFAULT NULL,
@@ -252,6 +253,7 @@
             `rtl` varchar(400) NOT NULL,
             `penilaian` varchar(400) NOT NULL,
             `instruksi` varchar(400) NOT NULL,
+            `evaluasi` varchar(400) NOT NULL,
             `nip` varchar(20) NOT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
