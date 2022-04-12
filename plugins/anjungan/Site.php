@@ -54,7 +54,6 @@ class Site extends SiteModule
 
     public function getDisplayAPM()
     {
-        $this->_isLocal();
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
         $poliklinik = $this->db('poliklinik')->toArray();
@@ -2079,16 +2078,6 @@ class Site extends SiteModule
       }
       return $noKontrol;
       //exit();
-    }
-
-    private function _isLocal()
-    {
-      $localIP = getHostByName(getHostName());
-      $localIP = substr($localIP,0,4);
-      if(!isset($_SERVER['REMOTE_ADDR']) ||
-        (isset($_SERVER['REMOTE_ADDR']) && strpos($_SERVER['REMOTE_ADDR'], $localIP) !== 0)) {
-        header('Location: '.url('login'));
-      }
     }
 
 }
