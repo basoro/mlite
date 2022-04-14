@@ -921,7 +921,7 @@ $("#rincian").on("click","#simpan_copy_resep", function(event){
   var jam_rawat       = $('input:text[name=jam_reg]').val();
   var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
   var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
-  var aturan_pakai       = JSON.stringify($('input:hidden[name=aturan_copyresep]').serializeArray());
+  var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
 
   $.post(url_save, {no_rawat : no_rawat,
     tgl_perawatan : tgl_perawatan,
