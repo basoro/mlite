@@ -1,5 +1,5 @@
 <div class="row">
-    <form action="{?=url(ADMIN.'/website/saveSettings')?}" method="POST" enctype="multipart/form-data">
+    <form action="{?=url(ADMIN.'/blog/saveSettingsWebsite')?}" method="POST" enctype="multipart/form-data">
         <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
@@ -12,17 +12,17 @@
                                 <label>Tampilkan Login</label>
                                 <div class="radio">
                                     <label class="radio-inline">
-                                       <input type="radio" name="website[login]" value="0" {if: $settings.website.login == '0'}checked{/if} /> Tidak
+                                       <input type="radio" name="website[homepage_login]" value="0" {if: $settings.website.homepage_login == '0'}checked{/if} /> Tidak
                                     </label>
                                     <label class="radio-inline">
-                                       <input type="radio" name="website[login]" value="1" {if: $settings.website.login == '1'}checked{/if} /> Ya
+                                       <input type="radio" name="website[homepage_login]" value="1" {if: $settings.website.homepage_login == '1'}checked{/if} /> Ya
                                     </label>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label>Logo Website</label>
                                 <div class="input-group">
-                                    <input type="text" name="website[logo]" class="form-control" value="{$settings.website.logo}" disabled/>
+                                    <input type="text" name="website[homepage_logo]" class="form-control" value="{$settings.website.homepage_logo}" disabled/>
                                     <span class="input-group-addon">
                 	                      <input type="file" name="logo" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </span>
@@ -31,7 +31,7 @@
                             <div class="form-group">
                                 <label>Logo Icon</label>
                                 <div class="input-group">
-                                    <input type="text" name="website[logo_icon]" class="form-control" value="{$settings.website.logo_icon}" disabled/>
+                                    <input type="text" name="website[homepage_logo_icon]" class="form-control" value="{$settings.website.homepage_logo_icon}" disabled/>
                                     <span class="input-group-addon">
                                         <input type="file" name="logo_icon" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </span>
@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label>Slider Background</label>
                                 <div class="input-group">
-                                    <input type="text" name="website[slider_bg]" class="form-control" value="{$settings.website.slider_bg}" disabled/>
+                                    <input type="text" name="website[homepage_slider_bg]" class="form-control" value="{$settings.website.homepage_slider_bg}" disabled/>
                                     <span class="input-group-addon">
                                         <input type="file" name="slider_bg" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </span>
@@ -52,24 +52,24 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[typewriter_1]" class="form-control" value="{$settings.website.typewriter_1}" /><br>
+                                    <input type="text" name="website[homepage_typewriter_1]" class="form-control" value="{$settings.website.homepage_typewriter_1}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[typewriter_2]" class="form-control" value="{$settings.website.typewriter_2}" /><br>
+                                    <input type="text" name="website[homepage_typewriter_2]" class="form-control" value="{$settings.website.homepage_typewriter_2}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[typewriter_3]" class="form-control" value="{$settings.website.typewriter_3}" /><br>
+                                    <input type="text" name="website[homepage_typewriter_3]" class="form-control" value="{$settings.website.homepage_typewriter_3}" /><br>
 																</div>
                             </div>
                             <div class="form-group">
                                 <label>Gawat Darurat</label>
-                                <textarea rows="4" name="website[gawat_darurat]"  class="form-control" placeholder="Detail...">{$settings.website.gawat_darurat}</textarea>
+                                <textarea rows="4" name="website[homepage_gawat_darurat]"  class="form-control" placeholder="Detail...">{$settings.website.homepage_gawat_darurat}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>Rawat Jalan</label>
@@ -77,36 +77,36 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-clock-o"></i>
                                     </span>
-                                    <input type="text" name="website[rawat_jalan_1]" class="form-control" value="{$settings.website.rawat_jalan_1}" /><br>
+                                    <input type="text" name="website[homepage_rawat_jalan_1]" class="form-control" value="{$settings.website.homepage_rawat_jalan_1}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-clock-o"></i>
                                     </span>
-                                    <input type="text" name="website[rawat_jalan_2]" class="form-control" value="{$settings.website.rawat_jalan_2}" /><br>
+                                    <input type="text" name="website[homepage_rawat_jalan_2]" class="form-control" value="{$settings.website.homepage_rawat_jalan_2}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-clock-o"></i>
                                     </span>
-                                    <input type="text" name="website[rawat_jalan_3]" class="form-control" value="{$settings.website.rawat_jalan_3}" /><br>
+                                    <input type="text" name="website[homepage_rawat_jalan_3]" class="form-control" value="{$settings.website.homepage_rawat_jalan_3}" /><br>
 																</div>
                             </div>
                             <div class="form-group">
                                 <label>Rawat Inap</label>
-                                <textarea rows="4" name="website[rawat_inap]"  class="form-control" placeholder="Detail...">{$settings.website.rawat_inap}</textarea>
+                                <textarea rows="4" name="website[homepage_rawat_inap]"  class="form-control" placeholder="Detail...">{$settings.website.homepage_rawat_inap}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>Motto</label>
-                                <input type="text" name="website[motto]" class="form-control" value="{$settings.website.motto}" />
+                                <input type="text" name="website[homepage_motto]" class="form-control" value="{$settings.website.homepage_motto}" />
                             </div>
                             <div class="form-group">
                                 <label>Title About</label>
-                                <input type="text" name="website[about_title]" class="form-control" value="{$settings.website.about_title}" />
+                                <input type="text" name="website[homepage_about_title]" class="form-control" value="{$settings.website.homepage_about_title}" />
                             </div>
                             <div class="form-group">
                                 <label>Content About</label>
-                                <textarea rows="8" name="website[about_content]"  class="form-control" placeholder="Detail...">{$settings.website.about_content}</textarea>
+                                <textarea rows="8" name="website[homepage_about_content]"  class="form-control" placeholder="Detail...">{$settings.website.homepage_about_content}</textarea>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -116,26 +116,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_11]" class="form-control" value="{$settings.website.services_11}" /><br>
+                                    <input type="text" name="website[homepage_services_11]" class="form-control" value="{$settings.website.homepage_services_11}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_14]" class="form-control" value="{$settings.website.services_14}" /><br>
+                                    <input type="text" name="website[homepage_services_14]" class="form-control" value="{$settings.website.homepage_services_14}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_12]" class="form-control" value="{$settings.website.services_12}" /><br>
+                                    <input type="text" name="website[homepage_services_12]" class="form-control" value="{$settings.website.homepage_services_12}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_13]" class="form-control" placeholder="Link service" required value="{$settings.website.services_13}" disabled />
+                                    <input type="text" name="website[homepage_services_13]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_13}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_13" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -147,26 +147,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_21]" class="form-control" value="{$settings.website.services_21}" /><br>
+                                    <input type="text" name="website[homepage_services_21]" class="form-control" value="{$settings.website.homepage_services_21}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_24]" class="form-control" value="{$settings.website.services_24}" /><br>
+                                    <input type="text" name="website[homepage_services_24]" class="form-control" value="{$settings.website.homepage_services_24}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_22]" class="form-control" value="{$settings.website.services_22}" /><br>
+                                    <input type="text" name="website[homepage_services_22]" class="form-control" value="{$settings.website.homepage_services_22}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_23]" class="form-control" placeholder="Link service" required value="{$settings.website.services_23}" disabled />
+                                    <input type="text" name="website[homepage_services_23]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_23}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_23" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -178,26 +178,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_31]" class="form-control" value="{$settings.website.services_31}" /><br>
+                                    <input type="text" name="website[homepage_services_31]" class="form-control" value="{$settings.website.homepage_services_31}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_34]" class="form-control" value="{$settings.website.services_34}" /><br>
+                                    <input type="text" name="website[homepage_services_34]" class="form-control" value="{$settings.website.homepage_services_34}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_32]" class="form-control" value="{$settings.website.services_32}" /><br>
+                                    <input type="text" name="website[homepage_services_32]" class="form-control" value="{$settings.website.homepage_services_32}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_33]" class="form-control" placeholder="Link service" required value="{$settings.website.services_33}" disabled />
+                                    <input type="text" name="website[homepage_services_33]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_33}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_33" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -209,26 +209,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_41]" class="form-control" value="{$settings.website.services_41}" /><br>
+                                    <input type="text" name="website[homepage_services_41]" class="form-control" value="{$settings.website.homepage_services_41}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_44]" class="form-control" value="{$settings.website.services_44}" /><br>
+                                    <input type="text" name="website[homepage_services_44]" class="form-control" value="{$settings.website.homepage_services_44}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_42]" class="form-control" value="{$settings.website.services_42}" /><br>
+                                    <input type="text" name="website[homepage_services_42]" class="form-control" value="{$settings.website.homepage_services_42}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_43]" class="form-control" placeholder="Link service" required value="{$settings.website.services_43}" disabled />
+                                    <input type="text" name="website[homepage_services_43]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_43}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_43" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -240,26 +240,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_51]" class="form-control" value="{$settings.website.services_51}" /><br>
+                                    <input type="text" name="website[homepage_services_51]" class="form-control" value="{$settings.website.homepage_services_51}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_54]" class="form-control" value="{$settings.website.services_54}" /><br>
+                                    <input type="text" name="website[homepage_services_54]" class="form-control" value="{$settings.website.homepage_services_54}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_52]" class="form-control" value="{$settings.website.services_52}" /><br>
+                                    <input type="text" name="website[homepage_services_52]" class="form-control" value="{$settings.website.homepage_services_52}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_53]" class="form-control" placeholder="Link service" required value="{$settings.website.services_53}" disabled />
+                                    <input type="text" name="website[homepage_services_53]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_53}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_53" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -271,26 +271,26 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_61]" class="form-control" value="{$settings.website.services_61}" /><br>
+                                    <input type="text" name="website[homepage_services_61]" class="form-control" value="{$settings.website.homepage_services_61}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_64]" class="form-control" value="{$settings.website.services_64}" /><br>
+                                    <input type="text" name="website[homepage_services_64]" class="form-control" value="{$settings.website.homepage_services_64}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
-                                    <input type="text" name="website[services_62]" class="form-control" value="{$settings.website.services_62}" /><br>
+                                    <input type="text" name="website[homepage_services_62]" class="form-control" value="{$settings.website.homepage_services_62}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </span>
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[services_63]" class="form-control" placeholder="Link service" required value="{$settings.website.services_63}" disabled />
+                                    <input type="text" name="website[homepage_services_63]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_services_63}" disabled />
                                     <div class="input-group-addon">
                                         <input type="file" name="services_63" class="custom-file-input" style="width:200px;font-size:12px;"/>
                                     </div>
@@ -298,7 +298,7 @@
                             </div>
                             <div class="form-group">
                                 <label>Footer About</label>
-                                <textarea rows="4" name="website[footer_about]"  class="form-control" placeholder="Detail...">{$settings.website.footer_about}</textarea>
+                                <textarea rows="4" name="website[homepage_footer_about]"  class="form-control" placeholder="Detail...">{$settings.website.homepage_footer_about}</textarea>
                             </div>
                             <div class="form-group">
                                 <label>Footer Informasi</label>
@@ -306,25 +306,25 @@
                                     <div class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </div>
-                                    <input type="text" name="website[footer_informasi_11]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.footer_informasi_11}" />
+                                    <input type="text" name="website[homepage_footer_informasi_11]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.homepage_footer_informasi_11}" />
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[footer_informasi_12]" class="form-control" placeholder="Link informasi" required value="{$settings.website.footer_informasi_12}" />
+                                    <input type="text" name="website[homepage_footer_informasi_12]" class="form-control" placeholder="Link informasi" required value="{$settings.website.homepage_footer_informasi_12}" />
                                 </div>
                                 <div class="input-group">
                                     <div class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </div>
-                                    <input type="text" name="website[footer_informasi_21]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.footer_informasi_21}" />
+                                    <input type="text" name="website[homepage_footer_informasi_21]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.homepage_footer_informasi_21}" />
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[footer_informasi_22]" class="form-control" placeholder="Link informasi" required value="{$settings.website.footer_informasi_22}" />
+                                    <input type="text" name="website[homepage_footer_informasi_22]" class="form-control" placeholder="Link informasi" required value="{$settings.website.homepage_footer_informasi_22}" />
                                 </div>
                                 <div class="input-group">
                                     <div class="input-group-addon">
                                         <i class="fa fa-angle-double-right"></i>
                                     </div>
-                                    <input type="text" name="website[footer_informasi_31]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.footer_informasi_31}" />
+                                    <input type="text" name="website[homepage_footer_informasi_31]" class="form-control" placeholder="Nama Informasi" required value="{$settings.website.homepage_footer_informasi_31}" />
                                     <span class="input-group-btn" style="width:0px;"></span>
-                                    <input type="text" name="website[footer_informasi_32]" class="form-control" placeholder="Link informasi" required value="{$settings.website.footer_informasi_32}" />
+                                    <input type="text" name="website[homepage_footer_informasi_32]" class="form-control" placeholder="Link informasi" required value="{$settings.website.homepage_footer_informasi_32}" />
                                 </div>
                             </div>
                             <div class="form-group">
@@ -333,19 +333,19 @@
                                     <span class="input-group-addon">
                                         <i class="fa fa-youtube"></i>
                                     </span>
-                                    <input type="text" name="website[sosmed_youtube]" class="form-control" value="{$settings.website.sosmed_youtube}" /><br>
+                                    <input type="text" name="website[homepage_sosmed_youtube]" class="form-control" value="{$settings.website.homepage_sosmed_youtube}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-facebook-official"></i>
                                     </span>
-                                    <input type="text" name="website[sosmed_facebook]" class="form-control" value="{$settings.website.sosmed_facebook}" /><br>
+                                    <input type="text" name="website[homepage_sosmed_facebook]" class="form-control" value="{$settings.website.homepage_sosmed_facebook}" /><br>
 																</div>
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <i class="fa fa-instagram"></i>
                                     </span>
-                                    <input type="text" name="website[sosmed_instagram]" class="form-control" value="{$settings.website.sosmed_instagram}" /><br>
+                                    <input type="text" name="website[homepage_sosmed_instagram]" class="form-control" value="{$settings.website.homepage_sosmed_instagram}" /><br>
 																</div>
                             </div>
                         </div>
@@ -353,9 +353,9 @@
                     <div class="form-group">
                         <label>About Youtube</label>
                         <div class="input-group">
-                            <input type="text" name="website[about_youtube]" class="form-control" placeholder="ID Link Youtube" required value="{$settings.website.about_youtube}" />
+                            <input type="text" name="website[homepage_about_youtube]" class="form-control" placeholder="ID Link Youtube" required value="{$settings.website.homepage_about_youtube}" />
                             <span class="input-group-btn" style="width:0px;"></span>
-                            <input type="text" name="website[about_bg]" class="form-control" placeholder="Link service" required value="{$settings.website.about_bg}" disabled />
+                            <input type="text" name="website[homepage_about_bg]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_about_bg}" disabled />
                             <div class="input-group-addon">
                                 <input type="file" name="about_bg" class="custom-file-input" style="width:200px;font-size:12px;"/>
                             </div>
@@ -364,33 +364,33 @@
                     <div class="form-group">
                         <label>Service Items</label>
                         <div class="input-group">
-                            <input type="text" name="website[about_11]" class="form-control" placeholder="Nama service" required value="{$settings.website.about_11}" />
+                            <input type="text" name="website[homepage_about_11]" class="form-control" placeholder="Nama service" required value="{$settings.website.homepage_about_11}" />
                             <span class="input-group-btn" style="width:0px;"></span>
-                            <input type="text" name="website[about_12]" class="form-control" placeholder="Link service" required value="{$settings.website.about_12}" disabled />
+                            <input type="text" name="website[homepage_about_12]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_about_12}" disabled />
                             <div class="input-group-addon">
                                 <input type="file" name="about_12" class="custom-file-input" style="width:200px;font-size:12px;"/>
                             </div>
                         </div>
                         <div class="input-group">
-                            <input type="text" name="website[about_21]" class="form-control" placeholder="Nama service" required value="{$settings.website.about_21}" />
+                            <input type="text" name="website[homepage_about_21]" class="form-control" placeholder="Nama service" required value="{$settings.website.homepage_about_21}" />
                             <span class="input-group-btn" style="width:0px;"></span>
-                            <input type="text" name="website[about_22]" class="form-control" placeholder="Link service" required value="{$settings.website.about_22}" disabled />
+                            <input type="text" name="website[homepage_about_22]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_about_22}" disabled />
                             <div class="input-group-addon">
                                 <input type="file" name="about_22" class="custom-file-input" style="width:200px;font-size:12px;"/>
                             </div>
                         </div>
                         <div class="input-group">
-                            <input type="text" name="website[about_31]" class="form-control" placeholder="Nama service" required value="{$settings.website.about_31}" />
+                            <input type="text" name="website[homepage_about_31]" class="form-control" placeholder="Nama service" required value="{$settings.website.homepage_about_31}" />
                             <span class="input-group-btn" style="width:0px;"></span>
-                            <input type="text" name="website[about_32]" class="form-control" placeholder="Link service" required value="{$settings.website.about_32}" disabled />
+                            <input type="text" name="website[homepage_about_32]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_about_32}" disabled />
                             <div class="input-group-addon">
                                 <input type="file" name="about_32" class="custom-file-input" style="width:200px;font-size:12px;"/>
                             </div>
                         </div>
                         <div class="input-group">
-                            <input type="text" name="website[about_41]" class="form-control" placeholder="Nama service" required value="{$settings.website.about_41}" />
+                            <input type="text" name="website[homepage_about_41]" class="form-control" placeholder="Nama service" required value="{$settings.website.homepage_about_41}" />
                             <span class="input-group-btn" style="width:0px;"></span>
-                            <input type="text" name="website[about_42]" class="form-control" placeholder="Link service" required value="{$settings.website.about_42}" disabled />
+                            <input type="text" name="website[homepage_about_42]" class="form-control" placeholder="Link service" required value="{$settings.website.homepage_about_42}" disabled />
                             <div class="input-group-addon">
                                 <input type="file" name="about_42" class="custom-file-input" style="width:200px;font-size:12px;"/>
                             </div>

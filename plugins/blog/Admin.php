@@ -14,7 +14,8 @@ class Admin extends AdminModule
             'Index'    => 'index',
             'Kelola'    => 'manage',
             'Tambah baru'              => 'add',
-            'Pengaturan'                => 'settings'
+            'Pengaturan Blog'                => 'settings',
+            'Pengaturan Website' => 'settingswebsite'
         ];
     }
 
@@ -23,7 +24,8 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Kelola', 'url' => url([ADMIN, 'blog', 'manage']), 'icon' => 'pencil-square', 'desc' => 'Kelola postingan blog'],
         ['name' => 'Tambah Baru', 'url' => url([ADMIN, 'blog', 'add']), 'icon' => 'pencil-square', 'desc' => 'Tambah postingan baru'],
-        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'blog', 'settings']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan blog'],
+        ['name' => 'Pengaturan Blog', 'url' => url([ADMIN, 'blog', 'settings']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan blog'],
+        ['name' => 'Pengaturan Website', 'url' => url([ADMIN, 'blog', 'settingswebsite']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan website'],
       ];
       return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
@@ -340,6 +342,137 @@ class Admin extends AdminModule
         }
         $this->notify('success', 'Pengaturan sudah disimpan.');
         redirect(url([ADMIN, 'blog', 'settings']));
+    }
+
+    public function getSettingsWebsite()
+    {
+        $this->assign['title'] = 'Pengaturan Website';
+        $this->assign['website'] = htmlspecialchars_array($this->settings('blog'));
+        return $this->draw('settings.website.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettingsWebsite()
+    {
+        $dir    = $this->_uploads;
+        $img = new \Systems\Lib\Image;
+        if ($img->load(isset_or($_FILES['logo']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/logo_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['logo'] = 'website/logo_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['logo_icon']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/logo_icon_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['logo_icon'] = 'website/logo_icon_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['slider_bg']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/slider_bg_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['slider_bg'] = 'website/slider_bg_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['about_12']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/about_12_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['about_12'] = 'website/about_12_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['about_22']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/about_22_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['about_22'] = 'website/about_22_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['about_32']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/about_32_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['about_32'] = 'website/about_32_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['about_42']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/about_42_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['about_42'] = 'website/about_42_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['about_bg']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/about_bg_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['about_bg'] = 'website/about_bg_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_13']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_13_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_13'] = 'website/services_13_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_23']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_23_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_23'] = 'website/services_23_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_33']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_33_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_33'] = 'website/services_33_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_43']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_43_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_43'] = 'website/services_43_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_53']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_53_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_53'] = 'website/services_53_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+        if ($img->load(isset_or($_FILES['services_63']['tmp_name'], false))) {
+            if (isset($img)) {
+                $imgName = time().$cntr++;
+                $imgPath = $dir.'/services_63_'.$imgName.'.'.$img->getInfos('type');
+                $img->save($imgPath);
+                $_POST['website']['services_63'] = 'website/services_63_'.$imgName.'.'.$img->getInfos('type');
+            }
+        }
+
+        foreach ($_POST['website'] as $key => $val) {
+            $this->settings('blog', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'blog', 'settingswebsite']));
     }
 
     public function postEditorUpload()

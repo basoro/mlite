@@ -23,12 +23,68 @@ class Site extends SiteModule
 
     public function routes()
     {
+        $this->route('homepage', '_getHomepage');
+        $this->route('booking/save', 'postSave');
         $this->route('blog', '_importAllPosts');
         $this->route('blog/(:int)', '_importAllPosts');
         $this->route('blog/post/(:str)', '_importPost');
         $this->route('blog/tag/(:str)', '_importTagPosts');
         $this->route('blog/tag/(:str)/(:int)', '_importTagPosts');
         $this->route('blog/feed/(:str)', '_generateRSS');
+    }
+
+    public function _getHomepage()
+    {
+      $assign = [
+          'title' => $this->settings('blog.title'),
+          'desc' => $this->settings('blog.desc'),
+          'posts' => []
+      ];
+
+      $assign['notify'] = $this->core->getNotify();
+      $assign['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+      $assign['alamat'] = $this->settings->get('settings.alamat');
+      $assign['kota'] = $this->settings->get('settings.kota');
+      $assign['propinsi'] = $this->settings->get('settings.propinsi');
+      $assign['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
+      $assign['email'] = $this->settings->get('settings.email');
+      $assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+      $assign['blog'] = $this->settings('blog');
+      $assign['setting'] = $this->settings('settings');
+
+      $this->setTemplate("homepage.html");
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc']]);
+      $this->tpl->set('blog', $assign);
+    }
+
+    public function postSave()
+    {
+        unset($_POST['save']);
+        if(isset($_POST['daftar'])) {
+            $max = $this->db('booking_periksa')
+                ->select(['no_booking' => 'ifnull(MAX(CONVERT(RIGHT(no_booking,4),signed)),0)+1'])
+                ->where('tanggal', $_POST['tanggal'])
+                ->oneArray();
+            $no_urut = "BP".str_replace('-','',$_POST['tanggal']).''.sprintf("%04s", $max['no_booking']);
+            $query = $this->db('booking_periksa')->save([
+                'no_booking' => $no_urut,
+                'tanggal' => $_POST['tanggal'],
+                'nama' => $_POST['nama'],
+                'alamat' => $_POST['alamat'],
+                'no_telp' => $_POST['no_telp'],
+                'email' => $_POST['email'],
+                'kd_poli' => $_POST['kd_poli'],
+                'tambahan_pesan' => $_POST['tambahan_pesan'],
+                'status' => 'Belum Dibalas',
+                'tanggal_booking' => date('Y-m-d H:i:s')
+            ]);
+            if ($query) {
+                $this->notify('success', '<center><h2>Booking pendaftaran pasien sukes!!</h2></center>');
+            } else {
+                $this->notify('failure', '<center><h2>Booking pendaftaran pasien gagal!!</h2></center>');
+            }
+        }
+        redirect(url());
     }
 
     public function _getLatestPosts()
