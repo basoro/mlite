@@ -40,7 +40,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     $("#form_soap").hide();
     $("#form_sep").hide();
     $("#notif").hide();
-    $("#rincian").hide();
+    $("#rincian").show();
     $("#sep").hide();
     $("#soap").hide();
     $('.periode_rawat_jalan').datetimepicker('remove');
@@ -908,6 +908,19 @@ $("#rincian").on("click",".copy_resep", function(event){
 
 });
 
+$("#resep").on("click",".copy_resep", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/dokter_ralan/copyresep?t=' + mlite.token;
+  var no_resep  = $(this).attr("data-no_resep");
+
+  $.post(url, {no_resep: no_resep} ,function(data) {
+    // tampilkan data
+    $("#display_copy_resep").html(data).show();
+  });
+
+});
+
 // ketika tombol hapus ditekan
 $("#rincian").on("click","#simpan_copy_resep", function(event){
 //$('form').on('submit', function(event){
@@ -1200,13 +1213,4 @@ $(document).ready(function () {
     textField: 'deskripsi_panjang'
   });
   $('select').selectator();
-});
-
-$("#form_soap").on("click","#jam_rawat", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
-    $.post(url, {
-    } ,function(data) {
-      $("#jam_rawat").val(data);
-    });
 });

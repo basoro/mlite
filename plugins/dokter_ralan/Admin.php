@@ -914,6 +914,25 @@ class Admin extends AdminModule
                 ->select('resep_dokter_racikan.keterangan')
                 ->select('group_concat(distinct concat(databarang.nama_brng, \'<br> - Kandungan: \', resep_dokter_racikan_detail.kandungan, \'<br> - Jumlah: \', resep_dokter_racikan_detail.jml) separator \'<br><br>\') AS detail_racikan')
                 ->toArray();
+
+            $rows_data_resep = $this->db('resep_obat')
+            ->join('reg_periksa', 'reg_periksa.no_rawat=resep_obat.no_rawat')
+            ->where('resep_obat.kd_dokter', $this->core->getUserInfo('username', null, true))
+            ->where('reg_periksa.no_rkm_medis', $reg_periksa['no_rkm_medis'])
+            ->limit('3')
+            ->desc('resep_obat.tgl_peresepan')
+            ->toArray();
+
+            $data_resep = [];
+            foreach ($rows_data_resep as $row) {
+              $row['resep_dokter'] = $this->db('resep_dokter')
+                ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
+                ->where('no_resep', $row['no_resep'])
+
+                ->toArray();
+              $data_resep[] = $row;
+            }
+
             $this->assign['permintaan_lab'] = $this->db('permintaan_lab')
                 ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder = permintaan_lab.noorder')
                 ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw = permintaan_pemeriksaan_lab.kd_jenis_prw')
@@ -1012,7 +1031,7 @@ class Admin extends AdminModule
                 $this->assign['riwayat'][] = $row;
             }
 
-            return $this->draw('view.html', ['dokter_ralan' => $this->assign, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+            return $this->draw('view.html', ['dokter_ralan' => $this->assign, 'admin_mode' => $this->settings->get('settings.admin_mode'), 'data_resep' => $data_resep]);
         } else {
             redirect(url([ADMIN, 'dokter_ralan', 'manage']));
         }

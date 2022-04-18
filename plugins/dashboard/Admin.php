@@ -35,7 +35,14 @@ class Admin extends AdminModule
     $jam_jaga = [];
     $cek_rekap = [];
     $nama_pegawai = '';
-    $teks = array("Jangan Lupa Bahagia", "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan", "Waktu yang hilang tidak akan pernah ditemukan lagi", "Kamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu", "Ini bukan tentang ide. Ini tentang mewujudkan ide", "Bekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang");
+    $teks = array(
+      "Jangan Lupa Bahagia",
+      "Cara untuk memulai adalah berhenti berbicara dan mulai melakukan",
+      "Waktu yang hilang tidak akan pernah ditemukan lagi",
+      "Kamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu",
+      "Ini bukan tentang ide. Ini tentang mewujudkan ide",
+      "Bekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang"
+    );
     $random_keys = array_rand($teks);
     $teks = $teks[$random_keys];
     if ($presensi) {

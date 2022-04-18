@@ -160,6 +160,39 @@
   </div>
 {/if}
 
+<h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Data 3 E-Resep Terakhir</h4>
+      <div class="table-responsive no-margin" id="resep">
+        <div id="display_copy_resep"></div>
+        <table class="table table-striped table-bordered no-padding" width="100%">
+          <thead>
+            <tr>
+              <th>Nomor Resep</th>
+              <th>Tanggal/Jam</th>
+              <th>Detail Resep</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $data_resep}
+            <tr>
+              <td>{$value.no_resep}</td>
+              <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+              <td>
+                <ul>
+                {loop: $value.resep_dokter as $data}
+                  <li>{$data.nama_brng} - {$data.jml} - {$data.aturan_pakai}</li>
+                {/loop}
+                </ul>
+              </td>
+              <td colspan="2">
+                <button type="button" class="btn btn-danger btn-xs copy_resep" data-no_resep="{$value.no_resep}"><i class="fa fa-clone"></i><span class="hidden-xs"> Copy</span></button>
+              </td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+      </div>
+
 <script>
   $(document).ready(function() {
       $(document).on('click', '.add', function(){
@@ -376,4 +409,41 @@
       });
 
   });
+
+  $("#resep").on("click","#simpan_copy_resep", function(event){
+  //$('form').on('submit', function(event){
+    confirm('Apakah data copy resep sudah sesuai?');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url_save = baseURL + '/dokter_ralan/savecopyresep?t=' + mlite.token;
+    var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;
+    var no_rawat = '{?=revertNoRawat($dokter_ralan.no_rawat)?}';
+    var tgl_perawatan   = '{?=date('Y-m-d')?}';
+    var jam_rawat       = '{?=date('H:i:s')?}';
+    var kode_brng       = JSON.stringify($('input:hidden[name=kode_brng_copyresep]').serializeArray());
+    var jml       = JSON.stringify($('input:text[name=jml_copyresep]').serializeArray());
+    var aturan_pakai       = JSON.stringify($('input:text[name=aturan_copyresep]').serializeArray());
+
+    $.post(url_save, {no_rawat : no_rawat,
+      tgl_perawatan : tgl_perawatan,
+      jam_rawat : jam_rawat,
+      kode_brng : kode_brng,
+      jml : jml,
+      aturan_pakai : aturan_pakai
+    }, function(data) {
+        $.post(url, {no_rawat : no_rawat,
+        }, function(data) {
+          // redirect ke halama resep
+          window.location.href = baseURL + '/dokter_ralan/view/{$dokter_ralan.no_rawat}?t=' + mlite.token;
+        });
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+
+      //}
+    });
+
+  });
+
 </script>
