@@ -49,17 +49,38 @@ Konfigurasi PHP harus memiliki ekstensi berikut:
 Pemasangan
 ----------
 
-1. Unduh versi terbaru [Khanza LITE 2021] (https://github.com/basoro/Khanza-Lite).
+### Pemasangan menggunakan composer.
+1. Jalankan perintah composer untuk pemasangan paket utama dan independensi
 
-2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
+```
+$ composer require basoro/khanza-lite
+```
 
-3. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-4. Sesuaikan pengaturan di config.php
+3. Sesuaikan pengaturan di config.php
 
-5. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
+4. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
 
-6. Silahkan login dengan Username: admin dan Password: admin
+5. Silahkan login dengan Username: admin dan Password: admin
+
+### Pemasangan Manual
+1. Unduh versi terbaru [Khanza LITE 2021] (https://github.com/basoro/khanza-lite).
+
+2. Jalankan perintah composer untuk pemasangan independensi
+```
+$ composer install
+```
+
+3. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
+
+4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+
+5. Sesuaikan pengaturan di config.php
+
+6. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
+
+7. Silahkan login dengan Username: admin dan Password: admin
 
 
 ### Peringatan!
