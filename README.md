@@ -53,7 +53,7 @@ Pemasangan
 1. Jalankan perintah composer untuk pemasangan paket utama dan independensi
 
 ```
-$ composer require basoro/khanza-lite
+$ composer create-project basoro/khanza-lite
 ```
 
 2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
