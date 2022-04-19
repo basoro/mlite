@@ -5,3 +5,4 @@ webapps
 admin/tmp
 tmp
 uploads
+/vendor/
