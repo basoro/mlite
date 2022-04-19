@@ -5,12 +5,12 @@
     "require": {
         "nullpunkt/lz-string-php": "1.3"
     },
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "basoro",
             "email": "dentix.id@gmail.com"
         }
     ],
-    "minimum-stability": "dev"
+    "minimum-stability": "stable"
 }
