@@ -26,7 +26,7 @@ function deleteDir($path)
 
 function createSlug($text)
 {
-    setlocale(LC_ALL, 'pl_PL');
+    setlocale(LC_ALL, 'en_EN');
     $text = str_replace(' ', '-', trim($text));
     $text = str_replace('.', '-', trim($text));
     $text = iconv('utf-8', 'ascii//translit', $text);
@@ -545,10 +545,6 @@ function formatDuit($duit){
 }
 
 function stringDecrypt($key, $string){
-    //date_default_timezone_set('UTC');
-    //$tStamp = strval(time()-strtotime('1970-01-01 00:00:00'));
-    //=====KEY====/
-    //$key = $consid.$secretkey.$tStamp;
 
     $encrypt_method = 'AES-256-CBC';
     $key_hash = hex2bin(hash('sha256', $key));
