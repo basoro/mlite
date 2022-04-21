@@ -2,7 +2,7 @@
 Options -Indexes
 
 # Prevent visitors from viewing files directly
-<Files "\.(md|html|txt)$">
+<Files ~ "^.*\.(sdb|md|html|txt)$">
     <IfModule !mod_authz_core.c>
         Order allow,deny
         Deny from all

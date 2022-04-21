@@ -6,9 +6,9 @@
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
                 <div class="site-heading">
-                    <h1>{$blog.title}</h1>
+                    <h1>{$page.title}</h1>
                     <hr class="small">
-                    <span class="subheading">{$blog.desc}</span>
+                    <span class="subheading">{$page.desc}</span>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
             {if: $mlite.notify}
             <div id="notify" class="alert alert-{$mlite.notify.type}">{$mlite.notify.text}</div>
             {/if}
-            {loop: $blog.posts}
+            {loop: $news.posts}
             <div class="post-preview">
                 <a href="{$value.url}">
                         <h2 class="post-title">

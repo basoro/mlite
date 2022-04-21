@@ -1,29 +1,29 @@
-<!DOCTYPE html>
+website<!DOCTYPE html>
 <html>
 <head>
-<title>{$blog.setting.nama_instansi}</title>
+<title>{$website.setting.nama_instansi}</title>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <link rel="stylesheet" type="text/css" href="{?=url('/assets/css/bootstrap.min.css')?}">
 <link rel="stylesheet" type="text/css" href="{?=url('/assets/css/font-awesome.css')?}">
 <link rel="stylesheet" type="text/css" href="{?=url('/assets/css/jquery-ui.css')?}">
-<link rel="stylesheet" type="text/css" href="{?=url(MODULES.'/blog/website/css/style.css')?}">
-<script src="{?=url(MODULES.'/blog/website/js/modernizer.js')?}"></script>
+<link rel="stylesheet" type="text/css" href="{?=url(MODULES.'/website/css/style.css')?}">
+<script src="{?=url(MODULES.'/website/js/modernizer.js')?}"></script>
 </head>
 <body class="clinic_version">
-<div id="preloader"><img class="preloader" src="{?=url(MODULES.'/blog/website/img/loaders/heart-loading2.gif')?}" alt="{$blog.setting.nama_instansi}"></div>
+<div id="preloader"><img class="preloader" src="{?=url(MODULES.'/website/img/loaders/heart-loading2.gif')?}" alt="{$website.setting.nama_instansi}"></div>
 <header>
-  {if: $blog.notify}
-  <div id="notify" class="alert alert-{$blog.notify.type}">{$blog.notify.text}</div>
+  {if: $website.notify}
+  <div id="notify" class="alert alert-{$website.notify.type}">{$website.notify.text}</div>
   {/if}
   <div class="header-top wow fadeIn">
-    <div class="container"><a class="navbar-brand" href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_logo)?}" alt="{$blog.setting.nama_instansi}"></a>
+    <div class="container"><a class="navbar-brand" href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_logo)?}" alt="{$website.setting.nama_instansi}"></a>
       <div class="right-header">
         <div class="header-info">
-          <div class="info-inner"><span class="icontop"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$blog.setting.nomor_telepon}</a></span></div>
-          <div class="info-inner"><span class="icontop"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$blog.setting.email}</a></span></div>
-          {if: $blog.blog.homepage_login == 1}<div class="info-inner"><span class="icontop"><i class="fa fa-lock" aria-hidden="true"></i></span><span class="iconcont"><a href="{?=url(ADMIN)?}">Login</a></span></div>{/if}
+          <div class="info-inner"><span class="icontop"><i class="fa fa-phone" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$website.setting.nomor_telepon}</a></span></div>
+          <div class="info-inner"><span class="icontop"><i class="fa fa-envelope" aria-hidden="true"></i></span><span class="iconcont"><a href="#">{$website.setting.email}</a></span></div>
+          {if: $website.website.homepage_login == 1}<div class="info-inner"><span class="icontop"><i class="fa fa-lock" aria-hidden="true"></i></span><span class="iconcont"><a href="{?=url(ADMIN)?}">Login</a></span></div>{/if}
         </div>
       </div>
     </div>
@@ -37,6 +37,7 @@
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
             <li><a class="active" href="{?=url()?}">Beranda</a></li>
+            <li><a href="{?=url('news')?}">Info & Berita</a></li>
             <li><a data-scroll href="#about">Tentang Kami</a></li>
             <li><a data-scroll href="#service">Layanan Unggulan</a></li>
             <li><a data-scroll href="#footer">Hubungi Kami</a></li>
@@ -46,7 +47,7 @@
     </div>
   </div>
 </header>
-<div id="home" class="parallax first-section wow fadeIn" data-stellar-background-ratio="0.4" style="background-image:url('{?=url(UPLOADS.'/'.$blog.blog.homepage_slider_bg)?}')">
+<div id="home" class="parallax first-section wow fadeIn" data-stellar-background-ratio="0.4" style="background-image:url('{?=url(UPLOADS.'/'.$website.website.homepage_slider_bg)?}')">
   <div class="container">
     <div class="row">
       <div class="col-md-12 col-sm-12">
@@ -54,10 +55,10 @@
           <h2>
             <span class="center">
               <span class="icon">
-                <img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_logo_icon)?}" alt="{$blog.setting.nama_instansi}">
+                <img src="{?=url(UPLOADS.'/'.$website.website.homepage_logo_icon)?}" alt="{$bwebsitelog.setting.nama_instansi}">
               </span>
             </span>
-            <a href="javascript:void(0)" class="typewrite" data-period="2000" data-type='[ "{$blog.blog.homepage_typewriter_1}", "{$blog.blog.homepage_typewriter_2}", "{$blog.blog.homepage_typewriter_3}" ]'><span class="wrap"></span></a>
+            <a href="javascript:void(0)" class="typewrite" data-period="2000" data-type='[ "{$website.website.homepage_typewriter_1}", "{$website.website.homepage_typewriter_2}", "{$website.website.homepage_typewriter_3}" ]'><span class="wrap"></span></a>
           </h2>
         </div>
       </div>
@@ -70,7 +71,7 @@
       <div class="row">
         <div class="service-time one" style="background:#2895f1;"><span class="info-icon"><i class="fa fa-ambulance" aria-hidden="true"></i></span>
           <h3>Gawat Darurat</h3>
-          <p>{$blog.blog.homepage_gawat_darurat}</p>
+          <p>{$website.website.homepage_gawat_darurat}</p>
         </div>
       </div>
     </div>
@@ -80,9 +81,9 @@
           <h3>Rawat Jalan</h3>
           <div class="time-table-section">
             <ul>
-              <li><span class="left">Senin - Jum'at</span><span class="right">{$blog.blog.homepage_rawat_jalan_1}</span></li>
-              <li><span class="left">Sabtu</span><span class="right">{$blog.blog.homepage_rawat_jalan_2}</span></li>
-              <li><span class="left">Minggu</span><span class="right">{$blog.blog.homepage_rawat_jalan_3}</span></li>
+              <li><span class="left">Senin - Jum'at</span><span class="right">{$website.website.homepage_rawat_jalan_1}</span></li>
+              <li><span class="left">Sabtu</span><span class="right">{$website.website.homepage_rawat_jalan_2}</span></li>
+              <li><span class="left">Minggu</span><span class="right">{$website.website.homepage_rawat_jalan_3}</span></li>
             </ul>
           </div>
         </div>
@@ -92,7 +93,7 @@
       <div class="row">
         <div class="service-time three" style="background:#0060b1;"><span class="info-icon"><i class="fa fa-hospital-o" aria-hidden="true"></i></span>
           <h3>Rawat Inap</h3>
-          <p>{$blog.blog.homepage_rawat_inap}</p>
+          <p>{$website.website.homepage_rawat_inap}</p>
         </div>
       </div>
     </div>
@@ -100,46 +101,46 @@
 </div>
 <div id="about" class="section wow fadeIn">
   <div class="container">
-    <div class="heading"><span class="icon-logo"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_logo_icon)?}" alt="{$blog.setting.nama_instansi}"></span>
-      <h2>{$blog.blog.homepage_motto}</h2>
+    <div class="heading"><span class="icon-logo"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_logo_icon)?}" alt="{$website.setting.nama_instansi}"></span>
+      <h2>{$website.website.homepage_motto}</h2>
     </div>
     <div class="row">
       <div class="col-md-6">
         <div class="message-box">
-          <h4>{$blog.blog.homepage_about_title}</h4>
-          <p>{?=nl2br($blog.blog.homepage_about_content)?}</p>
+          <h4>{$website.website.homepage_about_title}</h4>
+          <p>{?=nl2br($website.website.homepage_about_content)?}</p>
           <br>
           <a href="#service" data-scroll class="btn btn-light btn-radius btn-brd grd1 effect-1">Selengkapnya</a>
         </div>
       </div>
       <div class="col-md-6">
-        <div class="post-media wow fadeIn"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_bg)?}" alt="{$blog.setting.nama_instansi}" class="img-responsive"><a href="//www.youtube.com/watch?v={$blog.blog.homepage_about_youtube}" data-rel="prettyPhoto[gal]" class="playbutton"><i class="fa fa-play"></i></a></div>
+        <div class="post-media wow fadeIn"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_about_bg)?}" alt="{$website.setting.nama_instansi}" class="img-responsive"><a href="//www.youtube.com/watch?v={$website.website.homepage_about_youtube}" data-rel="prettyPhoto[gal]" class="playbutton"><i class="fa fa-play"></i></a></div>
       </div>
     </div>
     <hr class="hr1">
     <div class="row">
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="service-widget">
-          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_12)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_12)?}" alt="{$blog.setting.nama_instansi}" class="img-responsive"></div>
-          <h3>{$blog.blog.homepage_about_11}</h3>
+          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$website.website.homepage_about_12)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$website.website.homepage_about_12)?}" alt="{$website.setting.nama_instansi}" class="img-responsive"></div>
+          <h3>{$website.website.homepage_about_11}</h3>
         </div>
       </div>
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="service-widget">
-          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_22)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_22)?}" alt="{$blog.setting.nama_instansi}" class="img-responsive"></div>
-          <h3>{$blog.blog.homepage_about_21}</h3>
+          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$website.website.homepage_about_22)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$website.website.homepage_about_22)?}" alt="{$website.setting.nama_instansi}" class="img-responsive"></div>
+          <h3>{$website.website.homepage_about_21}</h3>
         </div>
       </div>
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="service-widget">
-          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_32)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_32)?}" alt="{$blog.setting.nama_instansi}" class="img-responsive"></div>
-          <h3>{$blog.blog.homepage_about_31}</h3>
+          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$website.website.homepage_about_32)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$website.website.homepage_about_32)?}" alt="{$website.setting.nama_instansi}" class="img-responsive"></div>
+          <h3>{$website.website.homepage_about_31}</h3>
         </div>
       </div>
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="service-widget">
-          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_42)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_about_42)?}" alt="{$blog.setting.nama_instansi}" class="img-responsive"></div>
-          <h3>{$blog.blog.homepage_about_41}</h3>
+          <div class="post-media wow fadeIn"><a href="{?=url(UPLOADS.'/'.$website.website.homepage_about_42)?}" data-rel="prettyPhoto[gal]" class="hoverbutton global-radius"><i class="fa fa-link"></i></a><img src="{?=url(UPLOADS.'/'.$website.website.homepage_about_42)?}" alt="{$website.setting.nama_instansi}" class="img-responsive"></div>
+          <h3>{$website.website.homepage_about_41}</h3>
         </div>
       </div>
     </div>
@@ -151,39 +152,39 @@
       <div class="col-lg-8 col-md-8 col-sm-6 col-xs-12">
         <div class="inner-services">
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_13)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_11}</h4>
-              <p>{$blog.blog.homepage_services_12}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_13)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_11}</h4>
+              <p>{$website.website.homepage_services_12}</p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_23)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_21}</h4>
-              <p>{$blog.blog.homepage_services_22}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_23)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_21}</h4>
+              <p>{$website.website.homepage_services_22}</p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_33)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_31}</h4>
-              <p>{$blog.blog.homepage_services_32}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_33)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_31}</h4>
+              <p>{$website.website.homepage_services_32}</p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_43)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_41}</h4>
-              <p>{$blog.blog.homepage_services_42}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_43)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_41}</h4>
+              <p>{$website.website.homepage_services_42}</p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_53)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_51}</h4>
-              <p>{$blog.blog.homepage_services_52}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_53)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_51}</h4>
+              <p>{$website.website.homepage_services_52}</p>
             </div>
           </div>
           <div class="col-lg-4 col-md-6 col-sm-6 col-xs-12">
-            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_services_63)?}" alt="{$blog.setting.nama_instansi}"></span>
-              <h4>{$blog.blog.homepage_services_61}</h4>
-              <p>{$blog.blog.homepage_services_62}</p>
+            <div class="serv"><span class="icon-service"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_services_63)?}" alt="{$website.setting.nama_instansi}"></span>
+              <h4>{$website.website.homepage_services_61}</h4>
+              <p>{$website.website.homepage_services_62}</p>
             </div>
           </div>
         </div>
@@ -234,7 +235,7 @@
                     <div class="form-group">
                       <select name="kd_poli" class="form-control">
                         <option>Poliklinik</option>
-                        {loop: $blog.poliklinik}
+                        {loop: $website.poliklinik}
                         <option value="{$value.kd_poli}">{$value.nm_poli}</option>
                         {/loop}
                       </select>
@@ -269,24 +270,24 @@
   <div class="container">
     <div class="row">
       <div class="col-md-4">
-        <div class="logo padding"><a href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$blog.blog.homepage_logo)?}" alt="{$blog.setting.nama_instansi}"></a>
-          <p>{$blog.blog.homepage_footer_about}</p>
+        <div class="logo padding"><a href="{?=url()?}"><img src="{?=url(UPLOADS.'/'.$website.website.homepage_logo)?}" alt="{$website.setting.nama_instansi}"></a>
+          <p>{$website.website.homepage_footer_about}</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="footer-info padding">
           <h3>HUBUNGI KAMI</h3>
-          <p><i class="fa fa-map-marker" aria-hidden="true"></i> {$blog.setting.alamat}, {$blog.setting.kota}, {$blog.setting.propinsi}</p>
-          <p><i class="fa fa-paper-plane" aria-hidden="true"></i> {$blog.setting.email}</p>
-          <p><i class="fa fa-phone" aria-hidden="true"></i> {$blog.setting.nomor_telepon}</p>
+          <p><i class="fa fa-map-marker" aria-hidden="true"></i> {$website.setting.alamat}, {$website.setting.kota}, {$website.setting.propinsi}</p>
+          <p><i class="fa fa-paper-plane" aria-hidden="true"></i> {$website.setting.email}</p>
+          <p><i class="fa fa-phone" aria-hidden="true"></i> {$website.setting.nomor_telepon}</p>
         </div>
       </div>
       <div class="col-md-4">
         <div class="subcriber-info">
           <h3>INFORMASI</h3>
-          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$blog.blog.homepage_footer_informasi_12}">{$blog.blog.homepage_footer_informasi_11}</a></p>
-          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$blog.blog.homepage_footer_informasi_22}">{$blog.blog.homepage_footer_informasi_21}</a></p>
-          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$blog.blog.homepage_footer_informasi_32}">{$blog.blog.homepage_footer_informasi_31}</a></p>
+          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$website.website.homepage_footer_informasi_12}">{$website.website.homepage_footer_informasi_11}</a></p>
+          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$website.website.homepage_footer_informasi_22}">{$website.website.homepage_footer_informasi_21}</a></p>
+          <p><i class="fa fa-angle-double-right" aria-hidden="true"></i> <a href="{$website.website.homepage_footer_informasi_32}">{$website.website.homepage_footer_informasi_31}</a></p>
         </div>
       </div>
     </div>
@@ -297,16 +298,16 @@
     <div class="row">
       <div class="col-md-8">
         <div class="footer-text">
-          <p>&copy; {?=date('Y')?} {$blog.setting.nama_instansi}. All Rights Reserved.</p>
+          <p>&copy; {?=date('Y')?} {$website.setting.nama_instansi}. All Rights Reserved.</p>
           {$mlite.powered}.
         </div>
       </div>
       <div class="col-md-4">
         <div class="social">
           <ul class="social-links">
-            <li><a href="https://www.facebook.com/{$blog.blog.homepage_sosmed_facebook}"><i class="fa fa-facebook-official"></i></a></li>
-            <li><a href="https://www.youtube.com/{$blog.blog.homepage_sosmed_youtube}"><i class="fa fa-youtube"></i></a></li>
-            <li><a href="https://www.instagram.com/{$blog.blog.homepage_sosmed_instagram}"><i class="fa fa-instagram"></i></a></li>
+            <li><a href="https://www.facebook.com/{$website.website.homepage_sosmed_facebook}"><i class="fa fa-facebook-official"></i></a></li>
+            <li><a href="https://www.youtube.com/{$website.website.homepage_sosmed_youtube}"><i class="fa fa-youtube"></i></a></li>
+            <li><a href="https://www.instagram.com/{$website.website.homepage_sosmed_instagram}"><i class="fa fa-instagram"></i></a></li>
           </ul>
         </div>
       </div>
@@ -314,9 +315,9 @@
   </div>
 </div>
 <a href="#home" data-scroll class="dmtop global-radius"><i class="fa fa-angle-up"></i></a>
-<script src="{?=url(MODULES.'/blog/website/js/all.js')?}"></script>
+<script src="{?=url(MODULES.'/website/js/all.js')?}"></script>
 <script src="{?=url('/assets/jscripts/jquery-ui.js')?}"></script>
-<script src="{?=url(MODULES.'/blog/website/js/custom.js')?}"></script>
+<script src="{?=url(MODULES.'/website/js/custom.js')?}"></script>
 <script type="text/javascript">
 $( function() {
   $('.tanggal').datepicker({

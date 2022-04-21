@@ -1,0 +1,113 @@
+<article class="row">
+	<form name="page" action="{?=url(ADMIN.'/website/savenews/'.isset_or($news.form.id, null))?}" method="POST" enctype="multipart/form-data">
+		<div class="col-md-8">
+		    <div class="panel panel-default">
+                <div class="panel-heading">
+		            <h3 class="panel-title">{$news.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Judul</label>
+                        <input type="text" name="title" class="form-control" value="{$news.form.title}" required />
+                    </div>
+					<div class="progress-wrapper">
+						<div class="progress no-margin collapse">
+							<div class="progress-bar progress-bar-striped active" role="progressbar">
+							</div>
+						</div>
+					</div>
+                    <div class="form-group no-margin">
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane active" id="full-text">
+                                <textarea name="content" rows="16" class="editor form-control" data-editor="{$news.editor}">{$news.form.content}</textarea>
+                            </div>
+                            <div role="tabpanel" class="tab-pane" id="short-text">
+                                <textarea name="intro" rows="16" class="editor form-control" data-editor="{$news.editor}">{$news.form.intro}</textarea>
+                            </div>
+                        </div>
+                        <ul class="nav nav-tabs" role="tablist" id="textarea-tabs">
+                            <li class="active"><a href="#full-text" role="tab" data-toggle="tab">Isi</a></li>
+                            <li><a href="#short-text" role="tab" data-toggle="tab">Intro</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+	    </div>
+
+	    <div class="col-md-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan</h3>
+                </div>
+                <div class="panel-body">
+        	    	<div class="form-group">
+                        <label>Cover</label>
+                        {if: !empty($news.form.cover_photo)}
+                        <div style="position:relative;">
+                    		<img src="{?= url('uploads/website/news/'.$news.form.cover_photo) ?}?{$news.form.updated_at}" class="img-responsive" />
+                    		<input type="file" name="cover_photo" class="form-control" />
+                    		<a href="{$news.coverDeleteURL}" class="btn btn-danger" style="position:absolute; right:5px; top:5px;">Hapus Foto</a>
+                    	</div>
+                        {else}
+                        <input type="file" name="cover_photo" class="form-control"/>
+                        {/if}
+                    </div>
+
+                    <div class="form-group">
+                        <label>Slug</label>
+                        <input type="text" name="slug" class="form-control" value="{$news.form.slug}"/>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                        	<option value="0"{if: $news.form.status == 0} selected{/if}>Draft</option>
+                        	<option value="1"{if: $news.form.status == 1} selected{/if}>Sembunyi</option>
+                        	<option value="2"{if: $news.form.status == 2} selected{/if}>Terbit</option>
+                    	</select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tags</label>
+                        <select name="tags[]" class="form-control" multiple>
+                        {loop: $news.form.tags}
+                            <option value="{$value.name}" selected>{$value.name}</option>
+                        {/loop}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Penulis</label>
+                        <select name="user_id" class="form-control">
+                        	{loop: $news.users}
+                        	<option value="{$value.id}"{if: $value.id == $news.author} selected{/if}>
+                                {if: !empty($value.fullname)}
+                                {$value.fullname} ({$value.username})
+                                {else}
+                                {$value.username}
+                                {/if}
+                            </option>
+                        	{/loop}
+                    	</select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Terbit</label>
+                        <input type="datetime-local" class="form-control" name="published_at" value="{$news.form.date}" />
+                    </div>
+
+                    <div class="form-group">
+                        <label><input type="checkbox" name="comments" value="1" {if: $news.form.comments == 1}checked{/if} /> Komentar</label>
+                    </div>
+
+                    <div class="form-group">
+                        <label><input type="checkbox" name="markdown" value="1" {if: $news.form.markdown == 1}checked{/if} /> Markdown</label>
+                    </div>
+
+                    <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
+                    <a href="{$news.manageURL}" class="btn btn-default">Batal</a>
+                </div>
+            </div>
+        </div>
+	</form>
+</article>

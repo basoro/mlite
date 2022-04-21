@@ -1,0 +1,42 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/website/saveSettingsNews')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan</h3>
+                </div>
+            	<div class="panel-body">
+                    <div class="form-group">
+                        <label>Judul Berita</label>
+                        <input type="text" name="website[title]" class="form-control" value="{$settings.title}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Keterangan</label>
+                        <input type="text" name="website[desc]" class="form-control" value="{$settings.desc}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Artikel per halaman</label>
+                        <input type="number" name="website[perpage]" class="form-control" value="{$settings.perpage}" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Shortname Disqus</label>
+                        <input type="text" name="website[disqus]" class="form-control" value="{$settings.disqus}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah artikel terakhir</label>
+                        <input type="number" name="website[latestPostsCount]" class="form-control" value="{$settings.latestPostsCount}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Format tanggal</label>
+                        <select name="website[dateformat]" class="form-control" required>
+                            {loop: $settings.dateformats}
+                                <option value="{$value.value}" {?= $settings.dateformat == $value.value ? 'selected' : '' ?}>{$value.name}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <input type="submit" name="submit" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
