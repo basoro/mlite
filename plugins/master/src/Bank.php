@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Bank
 {
@@ -15,7 +16,7 @@ class Bank
     public function getIndex()
     {
 
-      $totalRecords = $this->db('bank')
+      $totalRecords = $this->mysql('bank')
         ->select('namabank')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Bank
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('bank')
+      $return['list'] = $this->mysql('bank')
         ->desc('namabank')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Bank
     public function anyForm()
     {
         if (isset($_POST['namabank'])){
-          $return['form'] = $this->db('bank')->where('namabank', $_POST['namabank'])->oneArray();
+          $return['form'] = $this->mysql('bank')->where('namabank', $_POST['namabank'])->oneArray();
         } else {
           $return['form'] = [
             'namabank' => ''
@@ -49,7 +50,7 @@ class Bank
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('bank')
+        $totalRecords = $this->mysql('bank')
           ->select('namabank')
           ->toArray();
         $offset         = 10;
@@ -57,14 +58,14 @@ class Bank
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('bank')
+        $return['list'] = $this->mysql('bank')
           ->desc('namabank')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('bank')
+          $return['list'] = $this->mysql('bank')
             ->like('namabank', '%'.$_POST['cari'].'%')
             ->desc('namabank')
             ->offset(0)
@@ -75,7 +76,7 @@ class Bank
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('bank')
+          $return['list'] = $this->mysql('bank')
             ->desc('namabank')
             ->offset($offset)
             ->limit($perpage)
@@ -88,17 +89,22 @@ class Bank
 
     public function postSave()
     {
-      if (!$this->db('bank')->where('namabank', $_POST['namabank'])->oneArray()) {
-        $query = $this->db('bank')->save($_POST);
+      if (!$this->mysql('bank')->where('namabank', $_POST['namabank'])->oneArray()) {
+        $query = $this->mysql('bank')->save($_POST);
       } else {
-        $query = $this->db('bank')->where('namabank', $_POST['namabank'])->save($_POST);
+        $query = $this->mysql('bank')->where('namabank', $_POST['namabank'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('bank')->where('namabank', $_POST['namabank'])->delete();
+      return $this->mysql('bank')->where('namabank', $_POST['namabank'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

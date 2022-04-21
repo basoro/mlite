@@ -3,6 +3,7 @@
 namespace Plugins\JKN_Mobile_FKTP;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -42,7 +43,7 @@ class Admin extends AdminModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
@@ -86,6 +87,11 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

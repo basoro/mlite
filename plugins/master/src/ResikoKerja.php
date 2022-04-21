@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class ResikoKerja
 {
@@ -15,7 +16,7 @@ class ResikoKerja
     public function getIndex()
     {
 
-      $totalRecords = $this->db('resiko_kerja')
+      $totalRecords = $this->mysql('resiko_kerja')
         ->select('kode_resiko')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class ResikoKerja
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('resiko_kerja')
+      $return['list'] = $this->mysql('resiko_kerja')
         ->desc('kode_resiko')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class ResikoKerja
     public function anyForm()
     {
         if (isset($_POST['kode_resiko'])){
-          $return['form'] = $this->db('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->oneArray();
+          $return['form'] = $this->mysql('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->oneArray();
         } else {
           $return['form'] = [
             'kode_resiko' => '',
@@ -51,7 +52,7 @@ class ResikoKerja
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('resiko_kerja')
+        $totalRecords = $this->mysql('resiko_kerja')
           ->select('kode_resiko')
           ->toArray();
         $offset         = 10;
@@ -59,14 +60,14 @@ class ResikoKerja
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('resiko_kerja')
+        $return['list'] = $this->mysql('resiko_kerja')
           ->desc('kode_resiko')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('resiko_kerja')
+          $return['list'] = $this->mysql('resiko_kerja')
             ->like('kode_resiko', '%'.$_POST['cari'].'%')
             ->orLike('nama_resiko', '%'.$_POST['cari'].'%')
             ->desc('kode_resiko')
@@ -78,7 +79,7 @@ class ResikoKerja
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('resiko_kerja')
+          $return['list'] = $this->mysql('resiko_kerja')
             ->desc('kode_resiko')
             ->offset($offset)
             ->limit($perpage)
@@ -91,17 +92,22 @@ class ResikoKerja
 
     public function postSave()
     {
-      if (!$this->db('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->oneArray()) {
-        $query = $this->db('resiko_kerja')->save($_POST);
+      if (!$this->mysql('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->oneArray()) {
+        $query = $this->mysql('resiko_kerja')->save($_POST);
       } else {
-        $query = $this->db('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->save($_POST);
+        $query = $this->mysql('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->delete();
+      return $this->mysql('resiko_kerja')->where('kode_resiko', $_POST['kode_resiko'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

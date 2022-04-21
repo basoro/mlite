@@ -3,6 +3,7 @@
 namespace Plugins\Api;
 
 use Systems\SiteModule;
+use Systems\MySQL;
 use Systems\Lib\PHPMailer\PHPMailer;
 use Systems\Lib\PHPMailer\SMTP;
 use Systems\Lib\PHPMailer\Exception;
@@ -35,7 +36,7 @@ class Site extends SiteModule
             case "signin":
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $no_ktp = trim($_REQUEST['no_ktp']);
-              $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->where('no_ktp', $no_ktp)->oneArray();
+              $pasien = $this->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->where('no_ktp', $no_ktp)->oneArray();
               if($pasien) {
                 $data['state'] = 'valid';
                 $data['no_rkm_medis'] = $pasien['no_rkm_medis'];
@@ -49,14 +50,14 @@ class Site extends SiteModule
               $email = trim($_REQUEST['email']);
               $nomor_ktp = trim($_REQUEST['nomor_ktp']);
               $nomor_telepon = trim($_REQUEST['nomor_telepon']);
-              $this->db('mlite_apamregister')->where('email', $email)->delete();
-              $pasien = $this->db('mlite_apamregister')->save([
+              $this->mysql('mlite_apamregister')->where('email', $email)->delete();
+              $pasien = $this->mysql('mlite_apamregister')->save([
                 'nama_lengkap' => $nama_lengkap,
                 'email' => $email,
                 'nomor_ktp' => $nomor_ktp,
                 'nomor_telepon' => $nomor_telepon
               ]);
-              if($this->db('pasien')->where('no_ktp', $nomor_ktp)->orWhere('email', $email)->oneArray()) {
+              if($this->mysql('pasien')->where('no_ktp', $nomor_ktp)->orWhere('email', $email)->oneArray()) {
                 $data['state'] = 'duplicate';
               } else if($pasien) {
                 $rand = mt_rand(100000, 999999);
@@ -75,7 +76,7 @@ class Site extends SiteModule
               //$_REQUEST['email'] = '000009';
               $email = trim($_REQUEST['email']);
               $sql = "SELECT * FROM mlite_apamregister WHERE email = '$email'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -88,12 +89,12 @@ class Site extends SiteModule
               unset($_POST);
 
               $no_rkm_medis = '000001';
-              /*$max_id = $this->db('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
+              /*$max_id = $this->mysql('pasien')->select(['no_rkm_medis' => 'ifnull(MAX(CONVERT(RIGHT(no_rkm_medis,6),signed)),0)'])->oneArray();
               if($max_id['no_rkm_medis']) {
                 $no_rkm_medis = sprintf('%06s', ($max_id['no_rkm_medis'] + 1));
               }*/
 
-              $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
+              $last_no_rm = $this->mysql('set_no_rkm_medis')->oneArray();
               $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
               $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
               $no_rkm_medis = $next_no_rm;
@@ -136,16 +137,16 @@ class Site extends SiteModule
               $_POST['kd_prop'] = $this->settings->get('api.apam_kdprop');
               $_POST['propinsipj'] = '-';
 
-              $query = $this->db('pasien')->save($_POST);
+              $query = $this->mysql('pasien')->save($_POST);
               if($query) {
-                $check_table = $this->db()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
+                $check_table = $this->mysql()->pdo()->query("SHOW TABLES LIKE 'set_no_rkm_medis'");
                 $check_table->execute();
                 $check_table = $check_table->fetch();
                 if($check_table) {
-                  $this->core->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+                  $this->core->mysql()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
                 }
 
-                $this->db('mlite_apamregister')->where('email', $_POST['email'])->delete();
+                $this->mysql('mlite_apamregister')->where('email', $_POST['email'])->delete();
 
                 $data['state'] = 'valid';
                 $data['no_rkm_medis'] = $_POST['no_rkm_medis'];
@@ -161,7 +162,7 @@ class Site extends SiteModule
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = '$no_rkm_medis' AND status = 'unread'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $result = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($result as $row) {
@@ -174,7 +175,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $result = $this->db('mlite_notifications')
+              $result = $this->mysql('mlite_notifications')
                 ->where('no_rkm_medis', $no_rkm_medis)
                 ->desc('id')
                 ->toArray();
@@ -185,7 +186,7 @@ class Site extends SiteModule
             break;
             case "tandaisudahdibaca":
               $id = trim($_REQUEST['id']);
-              $this->db('mlite_notifications')->where('id', $id)->update('status', 'read');
+              $this->mysql('mlite_notifications')->where('id', $id)->update('status', 'read');
             break;
             case "notifbooking":
               $data = array();
@@ -193,7 +194,7 @@ class Site extends SiteModule
               $date = date('Y-m-d');
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $sql = "SELECT stts FROM reg_periksa WHERE tgl_registrasi = '$date' AND no_rkm_medis = '$no_rkm_medis' AND (stts = 'Belum' OR stts = 'Berkas Diterima')";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $result = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($result as $row) {
@@ -226,7 +227,7 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' ORDER BY a.tanggal_periksa DESC";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -244,7 +245,7 @@ class Site extends SiteModule
               $tanggal_periksa = trim($_REQUEST['tanggal_periksa']);
               $no_reg = trim($_REQUEST['no_reg']);
               $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_periksa = '$tanggal_periksa' AND a.no_reg = '$no_reg'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -254,7 +255,7 @@ class Site extends SiteModule
             break;
             case "kamar":
               $results = array();
-              $query = $this->db()->pdo()->prepare("SELECT nama.kelas, (SELECT COUNT(*) FROM kamar WHERE kelas=nama.kelas AND statusdata='1') AS total, (SELECT COUNT(*) FROM kamar WHERE  kelas=nama.kelas AND statusdata='1' AND status='ISI') AS isi, (SELECT COUNT(*) FROM kamar WHERE  kelas=nama.kelas AND statusdata='1' AND status='KOSONG') AS kosong FROM (SELECT DISTINCT kelas FROM kamar WHERE statusdata='1') AS nama ORDER BY nama.kelas ASC");
+              $query = $this->mysql()->pdo()->prepare("SELECT nama.kelas, (SELECT COUNT(*) FROM kamar WHERE kelas=nama.kelas AND statusdata='1') AS total, (SELECT COUNT(*) FROM kamar WHERE  kelas=nama.kelas AND statusdata='1' AND status='ISI') AS isi, (SELECT COUNT(*) FROM kamar WHERE  kelas=nama.kelas AND statusdata='1' AND status='KOSONG') AS kosong FROM (SELECT DISTINCT kelas FROM kamar WHERE statusdata='1') AS nama ORDER BY nama.kelas ASC");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -272,7 +273,7 @@ class Site extends SiteModule
               }
               $results = array();
 
-              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
+              $hari = $this->mysql()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
               $hari->execute();
               $hari = $hari->fetch(\PDO::FETCH_OBJ);
 
@@ -293,7 +294,7 @@ class Site extends SiteModule
                   $namahari = "SABTU";
               }
 
-              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
+              $sql = $this->mysql()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
               $sql->execute();
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -310,7 +311,7 @@ class Site extends SiteModule
             case "riwayat":
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY a.tgl_registrasi DESC");
+              $query = $this->mysql()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY a.tgl_registrasi DESC");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -323,7 +324,7 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $tgl_registrasi = trim($_REQUEST['tgl_registrasi']);
               $no_reg = trim($_REQUEST['no_reg']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng, GROUP_CONCAT(CONCAT_WS(':', k.pemeriksaan, j.nilai)SEPARATOR '<br>') AS pemeriksaan_lab, GROUP_CONCAT(CONCAT_WS(':', m.nm_perawatan, n.hasil)SEPARATOR '<br>') AS hasil_radiologi, GROUP_CONCAT(DISTINCT o.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng LEFT JOIN detail_periksa_lab j ON a.no_rawat = j.no_rawat LEFT JOIN template_laboratorium k ON j.id_template = k.id_template LEFT JOIN periksa_radiologi l ON a.no_rawat = l.no_rawat LEFT JOIN jns_perawatan_radiologi m ON l.kd_jenis_prw = m.kd_jenis_prw LEFT JOIN hasil_radiologi n ON a.no_rawat = n.no_rawat LEFT JOIN gambar_radiologi o ON a.no_rawat = o.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tgl_registrasi = '$tgl_registrasi' AND a.no_reg = '$no_reg' GROUP BY a.no_rawat");
+              $query = $this->mysql()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.keluhan, e.pemeriksaan, GROUP_CONCAT(DISTINCT g.nm_penyakit SEPARATOR '<br>') AS nm_penyakit, GROUP_CONCAT(DISTINCT i.nama_brng SEPARATOR '<br>') AS nama_brng, GROUP_CONCAT(CONCAT_WS(':', k.pemeriksaan, j.nilai)SEPARATOR '<br>') AS pemeriksaan_lab, GROUP_CONCAT(CONCAT_WS(':', m.nm_perawatan, n.hasil)SEPARATOR '<br>') AS hasil_radiologi, GROUP_CONCAT(DISTINCT o.lokasi_gambar SEPARATOR '<br>') AS gambar_radiologi FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj LEFT JOIN pemeriksaan_ralan e ON a.no_rawat = e.no_rawat LEFT JOIN diagnosa_pasien f ON a.no_rawat = f.no_rawat LEFT JOIN penyakit g ON f.kd_penyakit = g.kd_penyakit LEFT JOIN detail_pemberian_obat h ON a.no_rawat = h.no_rawat LEFT JOIN databarang i ON h.kode_brng = i.kode_brng LEFT JOIN detail_periksa_lab j ON a.no_rawat = j.no_rawat LEFT JOIN template_laboratorium k ON j.id_template = k.id_template LEFT JOIN periksa_radiologi l ON a.no_rawat = l.no_rawat LEFT JOIN jns_perawatan_radiologi m ON l.kd_jenis_prw = m.kd_jenis_prw LEFT JOIN hasil_radiologi n ON a.no_rawat = n.no_rawat LEFT JOIN gambar_radiologi o ON a.no_rawat = o.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tgl_registrasi = '$tgl_registrasi' AND a.no_reg = '$no_reg' GROUP BY a.no_rawat");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -334,7 +335,7 @@ class Site extends SiteModule
             case "riwayatranap":
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT reg_periksa.tgl_registrasi, reg_periksa.no_reg, dokter.nm_dokter, bangsal.nm_bangsal, penjab.png_jawab, reg_periksa.no_rawat FROM kamar_inap, reg_periksa, pasien, bangsal, kamar, penjab, dokter, dpjp_ranap WHERE kamar_inap.no_rawat = reg_periksa.no_rawat AND reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND kamar_inap.no_rawat = reg_periksa.no_rawat AND kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND reg_periksa.kd_pj = penjab.kd_pj AND dpjp_ranap.no_rawat = reg_periksa.no_rawat AND dpjp_ranap.kd_dokter = dokter.kd_dokter AND pasien.no_rkm_medis = '$no_rkm_medis' ORDER BY reg_periksa.tgl_registrasi DESC");
+              $query = $this->mysql()->pdo()->prepare("SELECT reg_periksa.tgl_registrasi, reg_periksa.no_reg, dokter.nm_dokter, bangsal.nm_bangsal, penjab.png_jawab, reg_periksa.no_rawat FROM kamar_inap, reg_periksa, pasien, bangsal, kamar, penjab, dokter, dpjp_ranap WHERE kamar_inap.no_rawat = reg_periksa.no_rawat AND reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND kamar_inap.no_rawat = reg_periksa.no_rawat AND kamar_inap.kd_kamar = kamar.kd_kamar AND kamar.kd_bangsal = bangsal.kd_bangsal AND reg_periksa.kd_pj = penjab.kd_pj AND dpjp_ranap.no_rawat = reg_periksa.no_rawat AND dpjp_ranap.kd_dokter = dokter.kd_dokter AND pasien.no_rkm_medis = '$no_rkm_medis' ORDER BY reg_periksa.tgl_registrasi DESC");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -382,7 +383,7 @@ class Site extends SiteModule
                 AND a.tgl_registrasi = '$tgl_registrasi'
                 AND a.no_reg = '$no_reg'
                 GROUP BY a.no_rawat";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -394,7 +395,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->db()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite_billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
+              $query = $this->mysql()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite_billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -408,11 +409,11 @@ class Site extends SiteModule
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $sql = "SELECT * FROM pasien WHERE no_rkm_medis = '$no_rkm_medis'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
-                $personal_pasien = $this->db('personal_pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
+                $personal_pasien = $this->mysql('personal_pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
                 $row['foto'] = 'img/'.$row['jk'].'.png';
                 if($personal_pasien) {
                   $row['foto'] = $this->settings->get('api.apam_webappsurl').'/photopasien/'.$personal_pasien['gambar'];
@@ -439,7 +440,7 @@ class Site extends SiteModule
 
               $sql = "SELECT a.kd_poli, b.nm_poli, DATE_FORMAT(a.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(a.jam_selesai, '%H:%i') AS jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja LIKE '%$hari%' GROUP BY b.kd_poli";
 
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -466,7 +467,7 @@ class Site extends SiteModule
 
               $sql = "SELECT a.kd_dokter, c.nm_dokter FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.kd_poli = '$kd_poli' AND a.hari_kerja LIKE '%$hari%'";
 
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -477,7 +478,7 @@ class Site extends SiteModule
             case "carabayar":
               $results = array();
               $sql = "SELECT * FROM penjab";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -506,19 +507,19 @@ class Site extends SiteModule
               );
               $hari=$day[$tentukan_hari];
 
-              $jadwal = $this->db('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
+              $jadwal = $this->mysql('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
 
-              $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
+              $check_kuota = $this->mysql('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
 
               if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
+                $check_kuota = $this->mysql('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
               }
 
               $curr_count = $check_kuota['count'];
               $curr_kuota = $jadwal['kuota'];
               $online = $curr_kuota / $this->settings->get('api.apam_limit');
 
-              $check = $this->db('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', $tanggal)->oneArray();
+              $check = $this->mysql('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', $tanggal)->oneArray();
 
               if($curr_count > $online) {
                 $send_data['state'] = 'limit';
@@ -529,9 +530,9 @@ class Site extends SiteModule
                   $mysql_time = date( 'H:m:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
-                  $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  $max_id = $this->mysql('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
                   if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                    $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                    $max_id = $this->mysql('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
                   }
                   if(empty($max_id['no_reg'])) {
                     $max_id['no_reg'] = '000';
@@ -551,13 +552,13 @@ class Site extends SiteModule
                   $_POST['limit_reg'] = '1';
                   $_POST['status'] = 'Belum';
 
-                  $this->db('booking_registrasi')->save($_POST);
+                  $this->mysql('booking_registrasi')->save($_POST);
 
                   $send_data['state'] = 'success';
                   echo json_encode($send_data);
 
-                  $get_pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-                  $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+                  $get_pasien = $this->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+                  $get_poliklinik = $this->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
                     $url = "https://banoewa.com/send-message";
@@ -581,7 +582,7 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $date = date('Y-m-d');
               $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_booking = '$date' AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -600,7 +601,7 @@ class Site extends SiteModule
                $sql .= " AND a.no_rkm_medis = '$no_rkm_medis'";
               }
               $sql .= " ORDER BY a.tanggal DESC";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -612,7 +613,7 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $pengaduan_id = trim($_REQUEST['pengaduan_id']);
-              $sql = $this->db()->pdo()->prepare("SELECT * FROM mlite_pengaduan_detail WHERE pengaduan_id = '$pengaduan_id'");
+              $sql = $this->mysql()->pdo()->prepare("SELECT * FROM mlite_pengaduan_detail WHERE pengaduan_id = '$pengaduan_id'");
               $sql->execute();
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -621,7 +622,7 @@ class Site extends SiteModule
                 echo json_encode($data);
               } else {
                 foreach ($result as $row) {
-                  $pasien = $this->db('pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
+                  $pasien = $this->mysql('pasien')->where('no_rkm_medis', $row['no_rkm_medis'])->oneArray();
                   $row['nama'] = $pasien['nm_pasien'];
                   $results[] = $row;
                 }
@@ -630,7 +631,7 @@ class Site extends SiteModule
             break;
             case "simpanpengaduan":
               $send_data = array();
-              $max_id = $this->db('mlite_pengaduan')->select(['id' => 'ifnull(MAX(CONVERT(RIGHT(id,6),signed)),0)'])->like('tanggal', ''.date('Y-m-d').'%')->oneArray();
+              $max_id = $this->mysql('mlite_pengaduan')->select(['id' => 'ifnull(MAX(CONVERT(RIGHT(id,6),signed)),0)'])->like('tanggal', ''.date('Y-m-d').'%')->oneArray();
               if(empty($max_id['id'])) {
                 $max_id['id'] = '000000';
               }
@@ -643,7 +644,7 @@ class Site extends SiteModule
               $_POST['pesan'] = $message;
               $_POST['tanggal'] = date('Y-m-d H:i:s');
 
-              $this->db('mlite_pengaduan')->save($_POST);
+              $this->mysql('mlite_pengaduan')->save($_POST);
 
               $send_data['state'] = 'success';
               echo json_encode($send_data);
@@ -659,7 +660,7 @@ class Site extends SiteModule
               $_POST['no_rkm_medis'] = $no_rkm_medis;
               $_POST['pesan'] = $message;
               $_POST['tanggal'] = date('Y-m-d H:i:s');
-              $this->db('mlite_pengaduan_detail')->save($_POST);
+              $this->mysql('mlite_pengaduan_detail')->save($_POST);
 
               $send_data['state'] = 'success';
               echo json_encode($send_data);
@@ -671,7 +672,7 @@ class Site extends SiteModule
             case "rawatjalan":
               $results = array();
               $sql = "SELECT * FROM poliklinik WHERE status = '1'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -683,7 +684,7 @@ class Site extends SiteModule
             case "rawatinap":
               $results = array();
               $sql = "SELECT bangsal.*, kamar.* FROM bangsal, kamar WHERE kamar.statusdata = '1' AND bangsal.kd_bangsal = kamar.kd_bangsal";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -695,7 +696,7 @@ class Site extends SiteModule
             case "laboratorium":
               $results = array();
               $sql = "SELECT * FROM jns_perawatan_lab WHERE status = '1'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -706,7 +707,7 @@ class Site extends SiteModule
             case "radiologi":
               $results = array();
               $sql = "SELECT * FROM jns_perawatan_radiologi WHERE status = '1'";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -717,23 +718,23 @@ class Site extends SiteModule
             case "hitungralan":
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $hitung = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+              $hitung = $this->mysql('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('no_rkm_medis', $no_rkm_medis)->oneArray();
               echo $hitung['count'];
             break;
             case "hitungranap":
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $hitung = $this->db('kamar_inap')->select(['count' => 'COUNT(DISTINCT kamar_inap.no_rawat)'])->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+              $hitung = $this->mysql('kamar_inap')->select(['count' => 'COUNT(DISTINCT kamar_inap.no_rawat)'])->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
               echo $hitung['count'];
             break;
             case "layananunggulan":
-              $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
+              $data[] = array_column($this->mysql('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
               echo json_encode($data);
             break;
             case "lastblog":
               $limit = $this->settings->get('blog.latestPostsCount');
               $results = [];
-              $rows = $this->db('mlite_blog')
+              $rows = $this->mysql('mlite_blog')
                       ->leftJoin('mlite_users', 'mlite_users.id = mlite_blog.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
@@ -744,7 +745,7 @@ class Site extends SiteModule
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->db('mlite_blog_tags')
+                  $tags = $this->mysql('mlite_blog_tags')
                       ->leftJoin('mlite_blog_tags_relationship', 'mlite_blog_tags.id = mlite_blog_tags_relationship.tag_id')
                       ->where('mlite_blog_tags_relationship.blog_id', $row['id'])
                       ->select('name')
@@ -757,7 +758,7 @@ class Site extends SiteModule
             break;
             case "blog":
               $results = [];
-              $rows = $this->db('mlite_blog')
+              $rows = $this->mysql('mlite_blog')
                       ->leftJoin('mlite_users', 'mlite_users.id = mlite_blog.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
@@ -767,7 +768,7 @@ class Site extends SiteModule
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->db('mlite_blog_tags')
+                  $tags = $this->mysql('mlite_blog_tags')
                       ->leftJoin('mlite_blog_tags_relationship', 'mlite_blog_tags.id = mlite_blog_tags_relationship.tag_id')
                       ->where('mlite_blog_tags_relationship.blog_id', $row['id'])
                       ->select('name')
@@ -781,7 +782,7 @@ class Site extends SiteModule
             case "blogdetail":
               $id = trim($_REQUEST['id']);
               $results = [];
-              $rows = $this->db('mlite_blog')
+              $rows = $this->mysql('mlite_blog')
                       ->where('id', $id)
                       ->select(['id','title','cover_photo', 'content', 'published_at'])
                       ->oneArray();
@@ -799,7 +800,7 @@ class Site extends SiteModule
               }
               $results = array();
 
-              $hari = $this->db()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
+              $hari = $this->mysql()->pdo()->prepare("SELECT DAYNAME('$getTanggal') AS dt");
               $hari->execute();
               $hari = $hari->fetch(\PDO::FETCH_OBJ);
 
@@ -820,7 +821,7 @@ class Site extends SiteModule
                   $namahari = "SABTU";
               }
 
-              $sql = $this->db()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter, poliklinik.kd_poli FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
+              $sql = $this->mysql()->pdo()->prepare("SELECT dokter.nm_dokter, dokter.jk, poliklinik.nm_poli, DATE_FORMAT(jadwal.jam_mulai, '%H:%i') AS jam_mulai, DATE_FORMAT(jadwal.jam_selesai, '%H:%i') AS jam_selesai, dokter.kd_dokter, poliklinik.kd_poli FROM jadwal INNER JOIN dokter INNER JOIN poliklinik on dokter.kd_dokter=jadwal.kd_dokter AND jadwal.kd_poli=poliklinik.kd_poli WHERE jadwal.hari_kerja='$namahari'");
               $sql->execute();
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -888,19 +889,19 @@ class Site extends SiteModule
               );
               $hari=$day[$tentukan_hari];
 
-              $jadwal = $this->db('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
+              $jadwal = $this->mysql('jadwal')->where('kd_poli', $kd_poli)->where('hari_kerja', $hari)->oneArray();
 
-              $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
+              $check_kuota = $this->mysql('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->oneArray();
 
               if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                $check_kuota = $this->db('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
+                $check_kuota = $this->mysql('booking_registrasi')->select(['count' => 'COUNT(DISTINCT no_reg)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->oneArray();
               }
 
               $curr_count = $check_kuota['count'];
               $curr_kuota = $jadwal['kuota'];
               $online = $curr_kuota / $this->settings->get('api.apam_limit');
 
-              $check = $this->db('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', $tanggal)->oneArray();
+              $check = $this->mysql('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', $tanggal)->oneArray();
 
               if($curr_count > $online) {
                 $send_data['state'] = 'limit';
@@ -911,9 +912,9 @@ class Site extends SiteModule
                   $mysql_time = date( 'H:m:s' );
                   $waktu_kunjungan = $tanggal . ' ' . $mysql_time;
 
-                  $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                  $max_id = $this->mysql('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
                   if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-                    $max_id = $this->db('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
+                    $max_id = $this->mysql('booking_registrasi')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tanggal_periksa', $tanggal)->desc('no_reg')->limit(1)->oneArray();
                   }
                   if(empty($max_id['no_reg'])) {
                     $max_id['no_reg'] = '000';
@@ -933,13 +934,13 @@ class Site extends SiteModule
                   $_POST['limit_reg'] = '1';
                   $_POST['status'] = 'Belum';
 
-                  $this->db('booking_registrasi')->save($_POST);
+                  $this->mysql('booking_registrasi')->save($_POST);
 
                   $send_data['state'] = 'success';
                   echo json_encode($send_data);
 
 
-                  $pasien = $this->db('pasien')->where('no_rkm_medis', $_REQUEST['no_rkm_medis'])->oneArray();
+                  $pasien = $this->mysql('pasien')->where('no_rkm_medis', $_REQUEST['no_rkm_medis'])->oneArray();
                   $merchantCode = $this->settings->get('api.duitku_merchantCode'); // from duitku // settings.duitku_merchantCode
                   $merchantKey = $this->settings->get('api.duitku_merchantKey'); // from duitku // settings.duitku_merchantKey
                   $paymentAmount = $this->settings->get('api.duitku_paymentAmount'); // settings.duitku_paymentAmount
@@ -1004,7 +1005,7 @@ class Site extends SiteModule
 
                   if($httpCode == 200) {
                     $result_duitku = json_decode($request, true);
-                    $this->db('mlite_duitku')->save([
+                    $this->mysql('mlite_duitku')->save([
                       'tanggal' => $waktu_kunjungan,
                       'no_rkm_medis' => $pasien['no_rkm_medis'],
                       'paymentUrl' => $result_duitku['paymentUrl'],
@@ -1017,8 +1018,8 @@ class Site extends SiteModule
                     ]);
                   }
 
-                  $get_pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
-                  $get_poliklinik = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+                  $get_pasien = $this->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+                  $get_poliklinik = $this->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
                     $url = "https://banoewa.com/send-message";
@@ -1042,11 +1043,11 @@ class Site extends SiteModule
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $date = date('Y-m-d');
               $sql = "SELECT a.tanggal_booking, a.tanggal_periksa, a.no_reg, a.status, b.nm_poli, c.nm_dokter, d.png_jawab, a.jam_booking FROM booking_registrasi a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.tanggal_booking = '$date' AND a.jam_booking = (SELECT MAX(ax.jam_booking) FROM booking_registrasi ax WHERE ax.tanggal_booking = a.tanggal_booking) ORDER BY a.tanggal_booking ASC LIMIT 1";
-              $query = $this->db()->pdo()->prepare($sql);
+              $query = $this->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
-                $mlite_duitku = $this->db('mlite_duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
+                $mlite_duitku = $this->mysql('mlite_duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
                 $row['paymentUrl'] = $mlite_duitku['paymentUrl'];
                 $results[] = $row;
               }
@@ -1106,6 +1107,11 @@ class Site extends SiteModule
       $mail->Body = $temp;
 
       $mail->send();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

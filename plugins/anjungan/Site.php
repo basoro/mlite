@@ -3,6 +3,7 @@
 namespace Plugins\Anjungan;
 
 use Systems\SiteModule;
+use Systems\MySQL;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
 
@@ -56,9 +57,9 @@ class Site extends SiteModule
     {
         $title = 'Display Antrian Poliklinik';
         $logo  = $this->settings->get('settings.logo');
-        $poliklinik = $this->db('poliklinik')->toArray();
+        $poliklinik = $this->mysql('poliklinik')->toArray();
         $carabayar = str_replace(",","','", $this->settings->get('anjungan.carabayar'));
-        $penjab = $this->db()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
+        $penjab = $this->mysql()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
         $penjab->execute();
         $penjab = $penjab->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -96,7 +97,7 @@ class Site extends SiteModule
     private function _getPenjab($kd_pj = null)
     {
         $result = [];
-        $rows = $this->db('penjab')->toArray();
+        $rows = $this->mysql('penjab')->toArray();
 
         if (!$kd_pj) {
             $kd_pjArray = [];
@@ -171,14 +172,14 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $poliklinik = str_replace(",","','", $this->settings->get('anjungan.display_poli'));
-        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
+        $query = $this->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'  AND a.kd_poli IN ('$poliklinik')");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
         $result = [];
         if (count($rows)) {
             foreach ($rows as $row) {
-                $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+                $row['dalam_pemeriksaan'] = $this->mysql('reg_periksa')
                   ->select('no_reg')
                   ->select('nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
@@ -188,14 +189,14 @@ class Site extends SiteModule
                   ->where('kd_dokter', $row['kd_dokter'])
                   ->limit(1)
                   ->oneArray();
-                $row['dalam_antrian'] = $this->db('reg_periksa')
+                $row['dalam_antrian'] = $this->mysql('reg_periksa')
                   ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
                   ->where('reg_periksa.kd_poli', $row['kd_poli'])
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->oneArray();
-                $row['sudah_dilayani'] = $this->db('reg_periksa')
+                $row['sudah_dilayani'] = $this->mysql('reg_periksa')
                   ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
@@ -207,7 +208,7 @@ class Site extends SiteModule
                 if(!empty($row['sudah_dilayani'])) {
                   $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
                 }
-                $row['selanjutnya'] = $this->db('reg_periksa')
+                $row['selanjutnya'] = $this->mysql('reg_periksa')
                   ->select('reg_periksa.no_reg')
                   //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
@@ -218,7 +219,7 @@ class Site extends SiteModule
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
-                $row['get_no_reg'] = $this->db('reg_periksa')
+                $row['get_no_reg'] = $this->mysql('reg_periksa')
                   ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
@@ -271,7 +272,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $running_text = $this->settings->get('anjungan.text_poli');
-        $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+        $jadwal = $this->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
         $_username = $this->core->getUserInfo('fullname', null, true);
         $__username = $this->core->getUserInfo('username');
         if($this->core->getUserInfo('username') !=='') {
@@ -361,13 +362,13 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $poliklinik = $slug[3];
-        $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
+        $query = $this->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
         if(!isset($slug[4]) && $slug[3] == 'all') {
-          $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'");
+          $query = $this->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari'");
         }
         if(isset($slug[4]) && $slug[4] != '') {
           $dokter = $slug[4];
-          $query = $this->db()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik' AND a.kd_dokter = '$dokter'");
+          $query = $this->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik' AND a.kd_dokter = '$dokter'");
         }
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
@@ -375,7 +376,7 @@ class Site extends SiteModule
         $result = [];
         if (count($rows)) {
             foreach ($rows as $row) {
-                $row['dalam_pemeriksaan'] = $this->db('reg_periksa')
+                $row['dalam_pemeriksaan'] = $this->mysql('reg_periksa')
                   ->select('no_reg')
                   ->select('nm_pasien')
                   ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
@@ -385,14 +386,14 @@ class Site extends SiteModule
                   ->where('kd_dokter', $row['kd_dokter'])
                   ->limit(1)
                   ->oneArray();
-                $row['dalam_antrian'] = $this->db('reg_periksa')
+                $row['dalam_antrian'] = $this->mysql('reg_periksa')
                   ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
                   ->where('reg_periksa.kd_poli', $row['kd_poli'])
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->oneArray();
-                $row['sudah_dilayani'] = $this->db('reg_periksa')
+                $row['sudah_dilayani'] = $this->mysql('reg_periksa')
                   ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
                   ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
                   ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
@@ -404,7 +405,7 @@ class Site extends SiteModule
                 if(!empty($row['sudah_dilayani'])) {
                   $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
                 }
-                $row['selanjutnya'] = $this->db('reg_periksa')
+                $row['selanjutnya'] = $this->mysql('reg_periksa')
                   ->select('reg_periksa.no_reg')
                   //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
                   ->select('pasien.nm_pasien')
@@ -415,7 +416,7 @@ class Site extends SiteModule
                   ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
                   ->asc('reg_periksa.no_reg')
                   ->toArray();
-                $row['get_no_reg'] = $this->db('reg_periksa')
+                $row['get_no_reg'] = $this->mysql('reg_periksa')
                   ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
                   ->where('tgl_registrasi', $date)
                   ->where('kd_poli', $row['kd_poli'])
@@ -486,7 +487,7 @@ class Site extends SiteModule
 
             $setting_antrian_loket = str_replace(",","','", $this->settings->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->settings->get('anjungan.antrian_loket'));
-            $get_antrian = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -499,22 +500,22 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->db('mlite_antrian_loket')
+              $this->mysql('mlite_antrian_loket')
                 ->where('type', 'Loket')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
             }
             if(isset($_GET['no_rkm_medis'])) {
-              $this->db('mlite_antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
+              $this->mysql('mlite_antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
             }
-            $hitung_antrian = $this->db('mlite_antrian_loket')
+            $hitung_antrian = $this->mysql('mlite_antrian_loket')
               ->where('type', 'Loket')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -544,7 +545,7 @@ class Site extends SiteModule
           case "panggil_cs":
             $display = 'Panggil CS';
             $loket = explode(",", $this->settings->get('anjungan.antrian_cs'));
-            $get_antrian = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -557,19 +558,19 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->db('mlite_antrian_loket')
+              $this->mysql('mlite_antrian_loket')
                 ->where('type', 'CS')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
+              $this->mysql('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
             }
-            $hitung_antrian = $this->db('mlite_antrian_loket')
+            $hitung_antrian = $this->mysql('mlite_antrian_loket')
               ->where('type', 'CS')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -664,7 +665,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         $poliklinik = $this->settings('settings', 'laboratorium');
-        $rows = $this->db('reg_periksa')
+        $rows = $this->mysql('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->where('tgl_registrasi', date('Y-m-d'))
           ->where('kd_poli', $poliklinik)
@@ -693,7 +694,7 @@ class Site extends SiteModule
         );
         $hari=$day[$tentukan_hari];
 
-        $jadwal = $this->db('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+        $jadwal = $this->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
 
         $_username = $this->core->getUserInfo('fullname', null, true);
         $__username = $this->core->getUserInfo('username');
@@ -727,7 +728,7 @@ class Site extends SiteModule
 
     public function _resultDisplayAntrianApotek()
     {
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
           ->where('tgl_registrasi', date('Y-m-d'))
@@ -751,7 +752,7 @@ class Site extends SiteModule
       $res = [];
 
       $date = date('Y-m-d');
-      $sql = $this->db()->pdo()->prepare("SELECT * FROM mlite_antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
+      $sql = $this->mysql()->pdo()->prepare("SELECT * FROM mlite_antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
 
       if($sql) {
           //$data  = $query->fetch_object();
@@ -801,7 +802,7 @@ class Site extends SiteModule
     {
       if(!isset($_GET['id']) || $_GET['id'] == '') die(json_encode(array('status' => false)));
       $kode  = $_GET['id'];
-      $query = $this->db('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
+      $query = $this->mysql('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
       if($query) {
           $res = [
               'status' => true,
@@ -828,7 +829,7 @@ class Site extends SiteModule
       $noantrian  = $_GET['noantrian'];
       $loket  = $_GET['loket'];
       $date = date('Y-m-d');
-      $query = $this->db('mlite_antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
+      $query = $this->mysql('mlite_antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
       if($query) {
           $res = [
               'status' => true,
@@ -856,7 +857,7 @@ class Site extends SiteModule
 
       $noantrian  = $_GET['noantrian'];
       $no_rkm_medis = $_GET['no_rkm_medis'];
-      $query = $this->db('mlite_antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      $query = $this->mysql('mlite_antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
       if($query) {
           $res = [
               'status' => true,
@@ -880,7 +881,7 @@ class Site extends SiteModule
        default:
         break;
         case "tampilloket":
-          $result = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -896,7 +897,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printloket":
-          $result = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -934,7 +935,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpanloket":
-          $this->db('mlite_antrian_loket')
+          $this->mysql('mlite_antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'Loket',
@@ -946,7 +947,7 @@ class Site extends SiteModule
           //redirect(url('anjungan/pasien'));
         break;
         case "tampilcs":
-          $result = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -962,7 +963,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printcs":
-          $result = $this->db('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
         	$noantrian = $result['noantrian'];
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
@@ -1000,7 +1001,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpancs":
-          $this->db('mlite_antrian_loket')
+          $this->mysql('mlite_antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'CS',
@@ -1012,12 +1013,12 @@ class Site extends SiteModule
           //redirect(url('anjungan/pasien'));
         break;
         case "loket":
-          //$antrian = $this->db('antriloket')->oneArray();
+          //$antrian = $this->mysql('antriloket')->oneArray();
           //echo $antrian['loket'];
           echo $this->settings->get('anjungan.panggil_loket');
         break;
         case "antriloket":
-          //$antrian = $this->db('antriloket')->oneArray();
+          //$antrian = $this->mysql('antriloket')->oneArray();
           //$antrian = $antrian['antrian'] - 1;
           $antrian = $this->settings->get('anjungan.panggil_loket_nomor') - 1;
           if($antrian == '-1') {
@@ -1027,12 +1028,12 @@ class Site extends SiteModule
           }
         break;
         case "cs":
-          //$antrian = $this->db('antrics')->oneArray();
+          //$antrian = $this->mysql('antrics')->oneArray();
           //echo $antrian['loket'];
           echo $this->settings->get('anjungan.panggil_cs');
         break;
         case "antrics":
-          //$antrian = $this->db('antrics')->oneArray();
+          //$antrian = $this->mysql('antrics')->oneArray();
           //$antrian = $antrian['antrian'] - 1;
           $antrian = $this->settings->get('anjungan.panggil_cs_nomor') - 1;
           if($antrian == '-1') {
@@ -1044,7 +1045,7 @@ class Site extends SiteModule
         case "get-skdp":
           if(!empty($_POST['no_rkm_medis'])){
               $data = array();
-              $query = $this->db('skdp_bpjs')
+              $query = $this->mysql('skdp_bpjs')
                 ->join('dokter', 'dokter.kd_dokter = skdp_bpjs.kd_dokter')
                 ->join('booking_registrasi', 'booking_registrasi.tanggal_periksa = skdp_bpjs.tanggal_datang')
                 ->join('poliklinik', 'poliklinik.kd_poli = booking_registrasi.kd_poli')
@@ -1067,7 +1068,7 @@ class Site extends SiteModule
         case "get-daftar":
           if(!empty($_POST['no_rkm_medis_daftar'])){
               $data = array();
-              $query = $this->db('pasien')
+              $query = $this->mysql('pasien')
                 ->where('no_rkm_medis', $_POST['no_rkm_medis_daftar'])
                 ->oneArray();
               if(!empty($query)){
@@ -1084,7 +1085,7 @@ class Site extends SiteModule
         case "get-poli":
           if(!empty($_POST['no_rkm_medis'])){
               $data = array();
-              if($this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray()) {
+              if($this->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tgl_registrasi', $_POST['tgl_registrasi'])->oneArray()) {
                 $data['status'] = 'exist';
                 $data['result'] = '';
                 echo json_encode($data);
@@ -1093,7 +1094,7 @@ class Site extends SiteModule
                 $tentukan_hari = date('D',strtotime($tanggal));
                 $day = array('Sun' => 'AKHAD', 'Mon' => 'SENIN', 'Tue' => 'SELASA', 'Wed' => 'RABU', 'Thu' => 'KAMIS', 'Fri' => 'JUMAT', 'Sat' => 'SABTU');
                 $hari=$day[$tentukan_hari];
-                $query = $this->db('jadwal')
+                $query = $this->mysql('jadwal')
                   ->select(['kd_poli' => 'jadwal.kd_poli'])
                   ->select(['nm_poli' => 'poliklinik.nm_poli'])
                   ->select(['jam_mulai' => 'jadwal.jam_mulai'])
@@ -1120,7 +1121,7 @@ class Site extends SiteModule
               $day = array('Sun' => 'AKHAD', 'Mon' => 'SENIN', 'Tue' => 'SELASA', 'Wed' => 'RABU', 'Thu' => 'KAMIS', 'Fri' => 'JUMAT', 'Sat' => 'SABTU');
               $hari=$day[$tentukan_hari];
               $data = array();
-              $result = $this->db('jadwal')
+              $result = $this->mysql('jadwal')
                 ->select(['kd_dokter' => 'jadwal.kd_dokter'])
                 ->select(['nm_dokter' => 'dokter.nm_dokter'])
                 ->select(['kuota' => 'jadwal.kuota'])
@@ -1129,7 +1130,7 @@ class Site extends SiteModule
                 ->where('jadwal.kd_poli', $_POST['kd_poli'])
                 ->like('jadwal.hari_kerja', $hari)
                 ->oneArray();
-              $check_kuota = $this->db('reg_periksa')
+              $check_kuota = $this->mysql('reg_periksa')
                 ->select(['count' => 'COUNT(DISTINCT no_rawat)'])
                 ->where('kd_poli', $_POST['kd_poli'])
                 ->where('tgl_registrasi', $_POST['tgl_registrasi'])
@@ -1140,7 +1141,7 @@ class Site extends SiteModule
               if($curr_count > $online) {
                 $data['status'] = 'limit';
               } else {
-                $query = $this->db('jadwal')
+                $query = $this->mysql('jadwal')
                   ->select(['kd_dokter' => 'jadwal.kd_dokter'])
                   ->select(['nm_dokter' => 'dokter.nm_dokter'])
                   ->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')
@@ -1163,7 +1164,7 @@ class Site extends SiteModule
           //$_POST['kd_poli'] = 'INT';
           if(!empty($_POST['kd_poli'])){
               $data = array();
-              $result = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+              $result = $this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
               if(!empty($result)){
                   $data['status'] = 'ok';
                   $data['result'] = $result;
@@ -1178,7 +1179,7 @@ class Site extends SiteModule
           //$_POST['kd_dokter'] = 'DR001';
           if(!empty($_POST['kd_dokter'])){
               $data = array();
-              $result = $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
+              $result = $this->mysql('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
               if(!empty($result)){
                   $data['status'] = 'ok';
                   $data['result'] = $result;
@@ -1200,19 +1201,19 @@ class Site extends SiteModule
               $_POST['p_jawab']    = $this->core->getPasienInfo('namakeluarga', $_POST['no_rkm_medis']);
               $_POST['stts']       = 'Belum';
 
-              $cek_stts_daftar = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->count();
+              $cek_stts_daftar = $this->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->count();
               $_POST['stts_daftar'] = 'Baru';
               if($cek_stts_daftar > 0) {
                 $_POST['stts_daftar'] = 'Lama';
               }
 
-              $biaya_reg = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+              $biaya_reg = $this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
               $_POST['biaya_reg'] = $biaya_reg['registrasi'];
               if($_POST['stts_daftar'] == 'Lama') {
                 $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
               }
 
-              $cek_status_poli = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('kd_poli', $_POST['kd_poli'])->count();
+              $cek_status_poli = $this->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('kd_poli', $_POST['kd_poli'])->count();
               $_POST['status_poli'] = 'Baru';
               if($cek_status_poli > 0) {
                 $_POST['status_poli'] = 'Lama';
@@ -1246,9 +1247,9 @@ class Site extends SiteModule
               $_POST['no_rawat'] = $this->core->setNoRawat($date);
               $_POST['jam_reg'] = date('H:i:s');
 
-              $query = $this->db('reg_periksa')->save($_POST);
+              $query = $this->mysql('reg_periksa')->save($_POST);
 
-              $result = $this->db('reg_periksa')
+              $result = $this->mysql('reg_periksa')
                 ->select('reg_periksa.no_rkm_medis')
                 ->select('pasien.nm_pasien')
                 ->select('pasien.alamat')
@@ -1297,7 +1298,7 @@ class Site extends SiteModule
         'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
-        'jam_jaga' => $this->db('jam_jaga')->group('jam_masuk')->toArray()
+        'jam_jaga' => $this->mysql('jam_jaga')->group('jam_masuk')->toArray()
       ]);
 
       $assign = [
@@ -1314,11 +1315,11 @@ class Site extends SiteModule
     public function getGeolocation()
     {
 
-      $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+      $idpeg = $this->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
 
       if(isset($_GET['lat'], $_GET['lng'])) {
-          if(!$this->db('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
-              $this->db('mlite_geolocation_presensi')
+          if(!$this->mysql('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
+              $this->mysql('mlite_geolocation_presensi')
                 ->save([
                   'id' => $idpeg['id'],
                   'tanggal' => date('Y-m-d'),
@@ -1355,22 +1356,22 @@ class Site extends SiteModule
               $urlnya         = WEBAPPS_URL.'/presensi/'.$gambar;
               $barcode        = $_GET['barcode'];
 
-              $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
-              $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
-              $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->oneArray();
+              $idpeg          = $this->mysql('barcode')->where('barcode', $barcode)->oneArray();
+              $jam_jaga       = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
+              $jadwal_pegawai = $this->mysql('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->oneArray();
 
-              $set_keterlambatan  = $this->db('set_keterlambatan')->toArray();
+              $set_keterlambatan  = $this->mysql('set_keterlambatan')->toArray();
               $toleransi      = $set_keterlambatan['toleransi'];
               $terlambat1     = $set_keterlambatan['terlambat1'];
               $terlambat2     = $set_keterlambatan['terlambat2'];
 
-              $valid = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
+              $valid = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
 
               if($valid){
                   $this->notify('failure', 'Anda sudah presensi untuk tanggal '.date('Y-m-d'));
               //}elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_pegawai)&&(!$valid)) {
               }elseif((!empty($idpeg['id']))) {
-                  $cek = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+                  $cek = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 
                   if(!$cek){
                       if(empty($urlnya)){
@@ -1397,7 +1398,7 @@ class Site extends SiteModule
 
                           }
 
-                          $insert = $this->db('temporary_presensi')
+                          $insert = $this->mysql('temporary_presensi')
                             ->save([
                               'id' => $idpeg['id'],
                               'shift' => $jam_jaga['shift'],
@@ -1425,7 +1426,7 @@ class Site extends SiteModule
                       $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
                       $durasi = $diff->format('%H:%I:%S');
 
-                      $ubah = $this->db('temporary_presensi')
+                      $ubah = $this->mysql('temporary_presensi')
                         ->where('id', $idpeg['id'])
                         ->save([
                           'jam_pulang' => date('Y-m-d H:i:s'),
@@ -1434,8 +1435,8 @@ class Site extends SiteModule
                         ]);
 
                       if($ubah) {
-                          $presensi = $this->db('temporary_presensi')->where('id', $cek['id'])->oneArray();
-                          $insert = $this->db('rekap_presensi')
+                          $presensi = $this->mysql('temporary_presensi')->where('id', $cek['id'])->oneArray();
+                          $insert = $this->mysql('rekap_presensi')
                             ->save([
                               'id' => $presensi['id'],
                               'shift' => $presensi['shift'],
@@ -1449,7 +1450,7 @@ class Site extends SiteModule
                             ]);
                           if($insert) {
                               $this->notify('success', 'Presensi pulang telah disimpan');
-                              $this->db('temporary_presensi')->where('id', $cek['id'])->delete();
+                              $this->mysql('temporary_presensi')->where('id', $cek['id'])->delete();
                           }
                       }
                   }
@@ -1500,14 +1501,14 @@ class Site extends SiteModule
 
     public function _resultDisplayBed()
     {
-        $query = $this->db()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal , b.kelas");
+        $query = $this->mysql()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal , b.kelas");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
         $result = [];
         if (count($rows)) {
             foreach ($rows as $row) {
-                $row['kosong'] = $this->db('kamar')
+                $row['kosong'] = $this->mysql('kamar')
                   ->select(['jumlah' => 'COUNT(kamar.status)'])
                   ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
                   ->where('bangsal.kd_bangsal', $row['kd_bangsal'])
@@ -1516,7 +1517,7 @@ class Site extends SiteModule
                   ->where('kamar.statusdata','1')
                   ->group(array('kamar.kd_bangsal','kamar.kelas'))
                   ->oneArray();
-                $row['isi'] = $this->db('kamar')
+                $row['isi'] = $this->mysql('kamar')
                   ->select(['jumlah' => 'COUNT(kamar.status)'])
                   ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
                   ->where('bangsal.kd_bangsal', $row['kd_bangsal'])
@@ -1569,7 +1570,7 @@ class Site extends SiteModule
     public function getSepMandiriCek()
     {
       if(isset($_POST['cekrm']) && isset($_POST['no_rkm_medis']) && $_POST['no_rkm_medis'] !='') {
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+        $pasien = $this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
         redirect(url('anjungan/sep/'.$pasien['no_peserta'].'/'.$_POST['no_rkm_medis']));
       } else {
         redirect(url('anjungan/sep'));
@@ -1691,7 +1692,7 @@ class Site extends SiteModule
           $rujukan = json_decode($decompress, true);
       }
 
-      $reg_periksa = $this->db('reg_periksa')
+      $reg_periksa = $this->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->where('reg_periksa.tgl_registrasi', $date)
@@ -1699,9 +1700,9 @@ class Site extends SiteModule
         ->oneArray();
 
       $no_surat_kontrol_bpjs = "";
-      $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
-      //$skdp_bpjs = $this->db('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
-      $surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
+      $dpjp = $this->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+      //$skdp_bpjs = $this->mysql('skdp_bpjs')->where('no_rkm_medis', $slug[4])->where('tanggal_datang', $date)->oneArray();
+      $surat_kontrol_bpjs = $this->mysql('bridging_surat_kontrol_bpjs')
         ->select('no_surat')
         ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
         ->where('bridging_sep.nomr', $slug[4])
@@ -1709,7 +1710,7 @@ class Site extends SiteModule
         ->oneArray();
 
       if(!$surat_kontrol_bpjs){
-        $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan',$slug[3])->where('kdpolitujuan',$rujukan['rujukan']['poliRujukan']['kode'])->asc('tglsep')->oneArray();
+        $cari_rujukan = $this->mysql('bridging_sep')->where('no_rujukan',$slug[3])->where('kdpolitujuan',$rujukan['rujukan']['poliRujukan']['kode'])->asc('tglsep')->oneArray();
         if($cari_rujukan){
           $skdp_bpjs = $this->createKontrol($slug[3],$rujukan['rujukan']['poliRujukan']['kode'],$dpjp['kd_dokter_bpjs']);
           $no_surat_kontrol_bpjs = $skdp_bpjs;
@@ -1851,7 +1852,7 @@ class Site extends SiteModule
 
           $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
 
-          $simpan_sep = $this->db('bridging_sep')->save([
+          $simpan_sep = $this->mysql('bridging_sep')->save([
             'no_sep' => $_POST['sep_no_sep'],
             'no_rawat' => $_POST['no_rawat'],
             'tglsep' => $_POST['tglsep'],
@@ -1908,14 +1909,14 @@ class Site extends SiteModule
 
           if($simpan_sep) {
             if($_POST['prolanis_prb'] !=='') {
-              $simpan_prb = $this->db('bpjs_prb')->save([
+              $simpan_prb = $this->mysql('bpjs_prb')->save([
                 'no_sep' => $_POST['sep_no_sep'],
                 'prb' => $_POST['prolanis_prb']
               ]);
             }
             echo $_POST['sep_no_sep'];
           } else {
-            $simpan_sep = $this->db('bridging_sep_internal')->save([
+            $simpan_sep = $this->mysql('bridging_sep_internal')->save([
               'no_sep' => $_POST['sep_no_sep'],
               'no_rawat' => $_POST['no_rawat'],
               'tglsep' => $_POST['tglsep'],
@@ -1986,9 +1987,9 @@ class Site extends SiteModule
         $no_sep = $slug[3];
         $settings = $this->settings('settings');
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-        $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+        $data_sep = $this->mysql('bridging_sep')->where('no_sep', $no_sep)->oneArray();
         if(!$data_sep) {
-          $data_sep = $this->db('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
+          $data_sep = $this->mysql('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
         }
         $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
 
@@ -2002,11 +2003,11 @@ class Site extends SiteModule
 
         $data_sep['qrCode'] = url($image);
         $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
-        $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+        $potensi_prb = $this->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
         $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
         echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
-        $this->db('mutasi_berkas')->save([
+        $this->mysql('mutasi_berkas')->save([
           'no_rawat' => $_POST['no_rawat'],
           'status' => 'Sudah Dikirim',
           'dikirim' => date('Y-m-d H:i:s'),
@@ -2021,9 +2022,9 @@ class Site extends SiteModule
     public function createKontrol($rujukan,$poli,$dokter)
     {
       $date = date('Y-m-d');
-      $cari_rujukan = $this->db('bridging_sep')->where('no_rujukan',$rujukan)->where('kdpolitujuan',$poli)->asc('tglsep')->oneArray();
-      $dpjp = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $dokter)->oneArray();
-      $nmPoli = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $poli)->oneArray();
+      $cari_rujukan = $this->mysql('bridging_sep')->where('no_rujukan',$rujukan)->where('kdpolitujuan',$poli)->asc('tglsep')->oneArray();
+      $dpjp = $this->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $dokter)->oneArray();
+      $nmPoli = $this->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $poli)->oneArray();
 
       date_default_timezone_set('UTC');
       $tStamp = strval(time() - strtotime('1970-01-01 00:00:00'));
@@ -2062,7 +2063,7 @@ class Site extends SiteModule
         //var_dump($rujukan);
         $noKontrol = $rujukan['noSuratKontrol'];
 
-        $simpanKontrol = $this->db('bridging_surat_kontrol_bpjs')->save([
+        $simpanKontrol = $this->mysql('bridging_surat_kontrol_bpjs')->save([
           'no_sep' => $cari_rujukan['no_sep'],
           'tgl_surat' => $cari_rujukan['tglsep'],
           'no_surat' => $noKontrol,
@@ -2078,6 +2079,11 @@ class Site extends SiteModule
       }
       return $noKontrol;
       //exit();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

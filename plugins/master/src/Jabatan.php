@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Jabatan
 {
@@ -15,7 +16,7 @@ class Jabatan
     public function getIndex()
     {
 
-      $totalRecords = $this->db('jabatan')
+      $totalRecords = $this->mysql('jabatan')
         ->select('kd_jbtn')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Jabatan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('jabatan')
+      $return['list'] = $this->mysql('jabatan')
         ->desc('kd_jbtn')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Jabatan
     public function anyForm()
     {
         if (isset($_POST['kd_jbtn'])){
-          $return['form'] = $this->db('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->oneArray();
+          $return['form'] = $this->mysql('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->oneArray();
         } else {
           $return['form'] = [
             'kd_jbtn' => '',
@@ -50,7 +51,7 @@ class Jabatan
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('jabatan')
+        $totalRecords = $this->mysql('jabatan')
           ->select('kd_jbtn')
           ->toArray();
         $offset         = 10;
@@ -58,14 +59,14 @@ class Jabatan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('jabatan')
+        $return['list'] = $this->mysql('jabatan')
           ->desc('kd_jbtn')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('jabatan')
+          $return['list'] = $this->mysql('jabatan')
             ->like('kd_jbtn', '%'.$_POST['cari'].'%')
             ->orLike('nm_jbtn', '%'.$_POST['cari'].'%')
             ->desc('kd_jbtn')
@@ -77,7 +78,7 @@ class Jabatan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('jabatan')
+          $return['list'] = $this->mysql('jabatan')
             ->desc('kd_jbtn')
             ->offset($offset)
             ->limit($perpage)
@@ -90,17 +91,22 @@ class Jabatan
 
     public function postSave()
     {
-      if (!$this->db('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->oneArray()) {
-        $query = $this->db('jabatan')->save($_POST);
+      if (!$this->mysql('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->oneArray()) {
+        $query = $this->mysql('jabatan')->save($_POST);
       } else {
-        $query = $this->db('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->save($_POST);
+        $query = $this->mysql('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->delete();
+      return $this->mysql('jabatan')->where('kd_jbtn', $_POST['kd_jbtn'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

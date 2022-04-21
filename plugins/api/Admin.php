@@ -3,6 +3,7 @@
 namespace Plugins\Api;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -29,7 +30,7 @@ class Admin extends AdminModule
     public function getNotifikasi()
     {
 
-      $totalRecords = $this->db('mlite_notifications')
+      $totalRecords = $this->mysql('mlite_notifications')
         ->select('id')
         ->toArray();
       $offset         = 10;
@@ -37,7 +38,7 @@ class Admin extends AdminModule
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('mlite_notifications')
+      $return['list'] = $this->mysql('mlite_notifications')
         ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
         ->desc('id')
         ->limit(10)
@@ -57,7 +58,7 @@ class Admin extends AdminModule
     public function anyNotifikasiForm()
     {
         if (isset($_POST['id'])){
-          $return['form'] = $this->db('mlite_notifications')->where('id', $_POST['id'])->oneArray();
+          $return['form'] = $this->mysql('mlite_notifications')->where('id', $_POST['id'])->oneArray();
         } else {
           $return['form'] = [
             'id' => '',
@@ -77,7 +78,7 @@ class Admin extends AdminModule
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('mlite_notifications')
+        $totalRecords = $this->mysql('mlite_notifications')
           ->select('id')
           ->toArray();
         $offset         = 10;
@@ -85,7 +86,7 @@ class Admin extends AdminModule
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('mlite_notifications')
+        $return['list'] = $this->mysql('mlite_notifications')
           ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
           ->desc('id')
           ->offset(0)
@@ -93,7 +94,7 @@ class Admin extends AdminModule
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('mlite_notifications')
+          $return['list'] = $this->mysql('mlite_notifications')
             ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
             ->like('id', '%'.$_POST['cari'].'%')
             ->orLike('judul', '%'.$_POST['cari'].'%')
@@ -106,7 +107,7 @@ class Admin extends AdminModule
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('mlite_notifications')
+          $return['list'] = $this->mysql('mlite_notifications')
             ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
             ->desc('id')
             ->offset($offset)
@@ -121,18 +122,18 @@ class Admin extends AdminModule
 
     public function postNotifikasiSave()
     {
-      if (!$this->db('mlite_notifications')->where('id', $_POST['id'])->oneArray()) {
+      if (!$this->mysql('mlite_notifications')->where('id', $_POST['id'])->oneArray()) {
         $_POST['status'] = 'unread';
-        $query = $this->db('mlite_notifications')->save($_POST);
+        $query = $this->mysql('mlite_notifications')->save($_POST);
       } else {
-        $query = $this->db('mlite_notifications')->where('id', $_POST['id'])->save($_POST);
+        $query = $this->mysql('mlite_notifications')->where('id', $_POST['id'])->save($_POST);
       }
       return $query;
     }
 
     public function postNotifikasiHapus()
     {
-      return $this->db('mlite_notifications')->where('id', $_POST['id'])->delete();
+      return $this->mysql('mlite_notifications')->where('id', $_POST['id'])->delete();
     }
 
     public function getNotifikasiJS()
@@ -147,23 +148,23 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
-        $this->assign['penjab'] = $this->db('penjab')->toArray();
+        $this->assign['penjab'] = $this->mysql('penjab')->toArray();
         return $this->draw('settings.apam.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettingsApam()
     {
-        $cek_prop = $this->db('propinsi')->where('kd_prop', $_POST['api[apam_kdprop]'])->oneArray();
+        $cek_prop = $this->mysql('propinsi')->where('kd_prop', $_POST['api[apam_kdprop]'])->oneArray();
         if(!$cek_prop){
-          $this->db('propinsi')->save(['kd_prop' => $_POST['api[apam_kdprop]'], 'nm_prop' => $_POST['nm_prop']]);
+          $this->mysql('propinsi')->save(['kd_prop' => $_POST['api[apam_kdprop]'], 'nm_prop' => $_POST['nm_prop']]);
         }
-        $cek_kab = $this->db('kabupaten')->where('kd_kab', $_POST['api[apam_kdkab]'])->oneArray();
+        $cek_kab = $this->mysql('kabupaten')->where('kd_kab', $_POST['api[apam_kdkab]'])->oneArray();
         if(!$cek_kab){
-          $this->db('kabupaten')->save(['kd_kab' => $_POST['api[apam_kdkab]'], 'nm_kab' => $_POST['nm_kab']]);
+          $this->mysql('kabupaten')->save(['kd_kab' => $_POST['api[apam_kdkab]'], 'nm_kab' => $_POST['nm_kab']]);
         }
-        $cek_kec = $this->db('kecamatan')->where('kd_kec', $_POST['api[apam_kdkec]'])->oneArray();
+        $cek_kec = $this->mysql('kecamatan')->where('kd_kec', $_POST['api[apam_kdkec]'])->oneArray();
         if(!$cek_kec){
-          $this->db('kecamatan')->save(['kd_kec' => $_POST['api[apam_kdkec]'], 'nm_kec' => $_POST['nm_kec']]);
+          $this->mysql('kecamatan')->save(['kd_kec' => $_POST['api[apam_kdkec]'], 'nm_kec' => $_POST['nm_kec']]);
         }
 
         foreach ($_POST['api'] as $key => $val) {
@@ -281,7 +282,7 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
-      $return['list'] = $this->db('mlite_duitku')
+      $return['list'] = $this->mysql('mlite_duitku')
         ->join('pasien', 'pasien.no_rkm_medis=mlite_duitku.no_rkm_medis')
         ->desc('id')
         ->limit(10)
@@ -291,6 +292,11 @@ class Admin extends AdminModule
         'paymentduitku' => $return
       ]);
 
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

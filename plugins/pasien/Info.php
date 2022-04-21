@@ -9,7 +9,7 @@ return [
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `pasien` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `pasien` (
           `no_rkm_medis` varchar(15) NOT NULL,
           `nm_pasien` varchar(40) DEFAULT NULL,
           `no_ktp` varchar(20) DEFAULT NULL,
@@ -48,18 +48,13 @@ return [
           `propinsipj` varchar(30) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        /*
-        $core->db()->pdo()->exec("INSERT INTO `pasien` (`no_rkm_medis`, `nm_pasien`, `no_ktp`, `jk`, `tmp_lahir`, `tgl_lahir`, `nm_ibu`, `alamat`, `gol_darah`, `pekerjaan`, `stts_nikah`, `agama`, `tgl_daftar`, `no_tlp`, `umur`, `pnd`, `keluarga`, `namakeluarga`, `kd_pj`, `no_peserta`, `kd_kel`, `kd_kec`, `kd_kab`, `pekerjaanpj`, `alamatpj`, `kelurahanpj`, `kecamatanpj`, `kabupatenpj`, `perusahaan_pasien`, `suku_bangsa`, `bahasa_pasien`, `cacat_fisik`, `email`, `nip`, `kd_prop`, `propinsipj`) VALUES
-        ('000001', 'Fulan Bin Fulan', '6307064910000007', 'L', '-', '2019-09-18', '-', '-', 'O', '-', 'JOMBLO', 'Islam', '2019-09-21', '0', '0', 'S1', 'AYAH', '-', 'BPJ', '0001535601993', 1, 1, 1, '-', '-', '-', '-', '-', '-', 1, 1, 1, '-', '0', 1, '-');");
-        */
-
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `personal_pasien` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `personal_pasien` (
           `no_rkm_medis` varchar(15) NOT NULL,
           `gambar` varchar(1000) DEFAULT NULL,
           `password` varchar(1000) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $core->db()->pdo()->exec("ALTER TABLE `pasien`
+        $core->mysql()->pdo()->exec("ALTER TABLE `pasien`
           ADD PRIMARY KEY (`no_rkm_medis`),
           ADD KEY `kd_pj` (`kd_pj`),
           ADD KEY `kd_kec` (`kd_kec`),
@@ -75,16 +70,16 @@ return [
           ADD KEY `cacat_fisik` (`cacat_fisik`) USING BTREE,
           ADD KEY `kd_prop` (`kd_prop`) USING BTREE;");
 
-        $core->db()->pdo()->exec("ALTER TABLE `personal_pasien`
+        $core->mysql()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD PRIMARY KEY (`no_rkm_medis`);");
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
           `no_rkm_medis` varchar(15) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-        $core->db()->pdo()->exec("INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES ('000000');");
+        $core->mysql()->pdo()->exec("INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES ('000000');");
 
-        $core->db()->pdo()->exec("ALTER TABLE `pasien`
+        $core->mysql()->pdo()->exec("ALTER TABLE `pasien`
           ADD CONSTRAINT `pasien_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE,
           ADD CONSTRAINT `pasien_ibfk_3` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
           ADD CONSTRAINT `pasien_ibfk_4` FOREIGN KEY (`kd_kab`) REFERENCES `kabupaten` (`kd_kab`) ON UPDATE CASCADE,
@@ -94,10 +89,10 @@ return [
           ADD CONSTRAINT `pasien_ibfk_8` FOREIGN KEY (`cacat_fisik`) REFERENCES `cacat_fisik` (`id`) ON UPDATE CASCADE,
           ADD CONSTRAINT `pasien_ibfk_9` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE;");
 
-        $core->db()->pdo()->exec("ALTER TABLE `personal_pasien`
+        $core->mysql()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD CONSTRAINT `personal_pasien_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_temporary` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_temporary` (
           `temp1` text DEFAULT NULL,
           `temp2` text DEFAULT NULL,
           `temp3` text DEFAULT NULL,

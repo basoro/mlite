@@ -10,11 +10,11 @@ return [
 
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_settings` (
-            `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `module` text,
-            `field` text,
+            `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+            `module` text NOT NULL,
+            `field` text NOT NULL,
             `value` text
-        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+        )");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'logo', 'uploads/settings/logo.png')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('settings', 'nama_instansi', 'RS Masa Kini')");

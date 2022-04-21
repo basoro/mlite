@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Jenis
 {
@@ -15,7 +16,7 @@ class Jenis
     public function getIndex()
     {
 
-      $totalRecords = $this->db('jenis')
+      $totalRecords = $this->mysql('jenis')
         ->select('kdjns')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Jenis
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('jenis')
+      $return['list'] = $this->mysql('jenis')
         ->desc('kdjns')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Jenis
     public function anyForm()
     {
         if (isset($_POST['kdjns'])){
-          $return['form'] = $this->db('jenis')->where('kdjns', $_POST['kdjns'])->oneArray();
+          $return['form'] = $this->mysql('jenis')->where('kdjns', $_POST['kdjns'])->oneArray();
         } else {
           $return['form'] = [
             'kdjns' => '',
@@ -51,7 +52,7 @@ class Jenis
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('jenis')
+        $totalRecords = $this->mysql('jenis')
           ->select('kdjns')
           ->toArray();
         $offset         = 10;
@@ -59,14 +60,14 @@ class Jenis
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('jenis')
+        $return['list'] = $this->mysql('jenis')
           ->desc('kdjns')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('jenis')
+          $return['list'] = $this->mysql('jenis')
             ->like('kdjns', '%'.$_POST['cari'].'%')
             ->orLike('nama', '%'.$_POST['cari'].'%')
             ->desc('kdjns')
@@ -78,7 +79,7 @@ class Jenis
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('jenis')
+          $return['list'] = $this->mysql('jenis')
             ->desc('kdjns')
             ->offset($offset)
             ->limit($perpage)
@@ -91,17 +92,22 @@ class Jenis
 
     public function postSave()
     {
-      if (!$this->db('jenis')->where('kdjns', $_POST['kdjns'])->oneArray()) {
-        $query = $this->db('jenis')->save($_POST);
+      if (!$this->mysql('jenis')->where('kdjns', $_POST['kdjns'])->oneArray()) {
+        $query = $this->mysql('jenis')->save($_POST);
       } else {
-        $query = $this->db('jenis')->where('kdjns', $_POST['kdjns'])->save($_POST);
+        $query = $this->mysql('jenis')->where('kdjns', $_POST['kdjns'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('jenis')->where('kdjns', $_POST['kdjns'])->delete();
+      return $this->mysql('jenis')->where('kdjns', $_POST['kdjns'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

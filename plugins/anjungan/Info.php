@@ -25,7 +25,7 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'text_apotek', 'Running text display antrian apotek.....')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('anjungan', 'vidio', 'G4im8_n0OoI')");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
         `kd` int(50) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `type` varchar(50) NOT NULL,
         `noantrian` varchar(50) NOT NULL,

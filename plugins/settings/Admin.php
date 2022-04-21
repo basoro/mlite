@@ -3,6 +3,7 @@
 namespace Plugins\Settings;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 use Systems\Lib\License;
 use Systems\Lib\HttpRequest;
 
@@ -54,8 +55,8 @@ class Admin extends AdminModule
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($settings['master']) {
-          $settings['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
-          $settings['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
+          $settings['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
+          $settings['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
@@ -64,7 +65,7 @@ class Admin extends AdminModule
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $this->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
         ];
 
         $settings['license'] = [];
@@ -570,4 +571,10 @@ class Admin extends AdminModule
       }
       return $this->draw('cek.daftar.html');
     }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
+    }
+
 }

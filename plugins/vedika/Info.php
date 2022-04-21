@@ -9,7 +9,7 @@ return [
     'pages'         =>  ['e-Vedika Dashboard' => 'vedika'],
     'install'       =>  function () use ($core) {
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika` (
           `id` int(11) NOT NULL,
           `tanggal` date DEFAULT NULL,
           `no_rkm_medis` varchar(6) NOT NULL,
@@ -21,13 +21,13 @@ return [
           `username` varchar(100) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika`
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_vedika`
           ADD PRIMARY KEY (`id`);");
 
-        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika`
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_vedika`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
-        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
           `id` int(11) NOT NULL,
           `nosep` varchar(100) NOT NULL,
           `tanggal` date DEFAULT NULL,
@@ -35,10 +35,10 @@ return [
           `username` varchar(100) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
           ADD PRIMARY KEY (`id`);");
 
-        $core->db()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'username', '')");

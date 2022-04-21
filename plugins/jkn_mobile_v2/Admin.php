@@ -3,6 +3,7 @@
 namespace Plugins\JKN_Mobile_V2;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
@@ -91,13 +92,13 @@ class Admin extends AdminModule
     public function getMappingPoli()
     {
         $this->_addHeaderFiles();
-        return $this->draw('mappingpoli.html', ['row' => $this->db('maping_poli_bpjs')->toArray()]);
+        return $this->draw('mappingpoli.html', ['row' => $this->mysql('maping_poli_bpjs')->toArray()]);
     }
 
     public function getAddMappingPoli()
     {
         $this->_addHeaderFiles();
-        $this->assign['poliklinik'] = $this->db('poliklinik')->where('status','1')->toArray();
+        $this->assign['poliklinik'] = $this->mysql('poliklinik')->where('status','1')->toArray();
         return $this->draw('form.mappingpoli.html', ['row' => $this->assign]);
     }
 
@@ -108,7 +109,7 @@ class Admin extends AdminModule
 
         unset($_POST['save']);
 
-        $query = $this->db('maping_poli_bpjs')->save([
+        $query = $this->mysql('maping_poli_bpjs')->save([
             'kd_poli_rs' => $_POST['kd_poli_rs'],
             'kd_poli_bpjs' => $_POST['poli_kode'],
             'nm_poli_bpjs' => $_POST['poli_nama']
@@ -125,7 +126,7 @@ class Admin extends AdminModule
 
     public function getPoliklinik_Delete($id)
     {
-        if ($this->db('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
+        if ($this->mysql('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
             $this->notify('success', 'Hapus maping poli bpjs sukses');
         } else {
             $this->notify('failure', 'Hapus maping poli bpjs gagal');
@@ -171,14 +172,14 @@ class Admin extends AdminModule
     public function getMappingDokter()
     {
         $this->_addHeaderFiles();
-        return $this->draw('mappingdokter.html', ['row' => $this->db('maping_dokter_dpjpvclaim')->toArray()]);
+        return $this->draw('mappingdokter.html', ['row' => $this->mysql('maping_dokter_dpjpvclaim')->toArray()]);
     }
 
 
     public function getAddMappingDokter()
     {
         $this->_addHeaderFiles();
-        $this->assign['dokter'] = $this->db('dokter')->where('status','1')->toArray();
+        $this->assign['dokter'] = $this->mysql('dokter')->where('status','1')->toArray();
         return $this->draw('form.mappingdokter.html', ['row' => $this->assign]);
     }
 
@@ -189,7 +190,7 @@ class Admin extends AdminModule
 
         unset($_POST['save']);
 
-        $query = $this->db('maping_dokter_dpjpvclaim')->save([
+        $query = $this->mysql('maping_dokter_dpjpvclaim')->save([
             'kd_dokter' => $_POST['kd_dokter'],
             'kd_dokter_bpjs' => $_POST['dokter_kode'],
             'nm_dokter_bpjs' => $_POST['dokter_nama']
@@ -206,7 +207,7 @@ class Admin extends AdminModule
 
     public function getDokter_Delete($id)
     {
-        if ($this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
+        if ($this->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
             $this->notify('success', 'Hapus maping poli bpjs sukses');
         } else {
             $this->notify('failure', 'Hapus maping poli bpjs gagal');
@@ -216,7 +217,7 @@ class Admin extends AdminModule
 
     public function getJadwalDokter()
     {
-        $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+        $maping_poli_bpjs = $this->mysql('maping_poli_bpjs')->toArray();
         foreach ($maping_poli_bpjs as $value) {
           $_POST['kodepoli'] = $value['kd_poli_bpjs'];
           $kodepoli = $_POST['kodepoli'];
@@ -257,7 +258,7 @@ class Admin extends AdminModule
         $date = $_POST['periode_antrol'];
       //$date = '2022-01-20';
       $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
-      $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
+      $query = $this->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
       FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
       ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
       $query->execute();
@@ -265,23 +266,23 @@ class Admin extends AdminModule
 
       $rows = [];
       foreach ($query as $q) {
-          $reg_periksa = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
-          $reg_periksa2 = $this->db('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
+          $reg_periksa = $this->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', '<>', 'Batal')->oneArray();
+          $reg_periksa2 = $this->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->where('stts', 'Batal')->oneArray();
           $batal = '0000-00-00 00:00:00';
           if($reg_periksa2) {
             $batal = $q['tgl_registrasi'].' '.date('H:i:s');
           }
-          $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
+          $mlite_antrian_referensi = $this->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
           if(!$mlite_antrian_referensi) {
-              $mlite_antrian_referensi = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+              $mlite_antrian_referensi = $this->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
           }
-          $mutasi_berkas = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
-          $mutasi_berkas2 = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
-          $pemeriksaan_ralan = $this->db('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-          $resep_obat = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
-          $resep_obat2 = $this->db('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+          $mutasi_berkas = $this->mysql('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
+          $mutasi_berkas2 = $this->mysql('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
+          $pemeriksaan_ralan = $this->mysql('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+          $resep_obat = $this->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+          $resep_obat2 = $this->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
 
-          $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $mlite_antrian_loket = $this->mysql('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           $task1 = '';
           $task2 = '';
           if($mlite_antrian_loket) {
@@ -316,17 +317,17 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
-        $this->assign['propinsi'] = $this->db('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_v2.kdprop'))->oneArray();
-        $this->assign['kabupaten'] = $this->db('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_v2.kdkab'))->oneArray();
-        $this->assign['kecamatan'] = $this->db('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_v2.kdkec'))->oneArray();
-        $this->assign['kelurahan'] = $this->db('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_v2.kdkel'))->oneArray();
-        $this->assign['suku_bangsa'] = $this->db('suku_bangsa')->toArray();
-        $this->assign['bahasa_pasien'] = $this->db('bahasa_pasien')->toArray();
-        $this->assign['cacat_fisik'] = $this->db('cacat_fisik')->toArray();
-        $this->assign['perusahaan_pasien'] = $this->db('perusahaan_pasien')->toArray();
+        $this->assign['propinsi'] = $this->mysql('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_v2.kdprop'))->oneArray();
+        $this->assign['kabupaten'] = $this->mysql('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_v2.kdkab'))->oneArray();
+        $this->assign['kecamatan'] = $this->mysql('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_v2.kdkec'))->oneArray();
+        $this->assign['kelurahan'] = $this->mysql('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_v2.kdkel'))->oneArray();
+        $this->assign['suku_bangsa'] = $this->mysql('suku_bangsa')->toArray();
+        $this->assign['bahasa_pasien'] = $this->mysql('bahasa_pasien')->toArray();
+        $this->assign['cacat_fisik'] = $this->mysql('cacat_fisik')->toArray();
+        $this->assign['perusahaan_pasien'] = $this->mysql('perusahaan_pasien')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.display'));
         $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.exclude_taskid'));
-        $this->assign['penjab'] = $this->db('penjab')->toArray();
+        $this->assign['penjab'] = $this->mysql('penjab')->toArray();
 
         $this->assign['jkn_mobile_v2'] = htmlspecialchars_array($this->settings('jkn_mobile_v2'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
@@ -346,7 +347,7 @@ class Admin extends AdminModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
@@ -422,7 +423,7 @@ class Admin extends AdminModule
         	default:
           break;
         	case "propinsi":
-          $propinsi = $this->db('propinsi')->toArray();
+          $propinsi = $this->mysql('propinsi')->toArray();
           foreach ($propinsi as $row) {
             echo '<tr class="pilihpropinsi" data-kdprop="'.$row['kd_prop'].'" data-namaprop="'.$row['nm_prop'].'">';
       			echo '<td>'.$row['kd_prop'].'</td>';
@@ -431,7 +432,7 @@ class Admin extends AdminModule
           }
           break;
           case "kabupaten":
-          $kabupaten = $this->db('kabupaten')->toArray();
+          $kabupaten = $this->mysql('kabupaten')->toArray();
           foreach ($kabupaten as $row) {
             echo '<tr class="pilihkabupaten" data-kdkab="'.$row['kd_kab'].'" data-namakab="'.$row['nm_kab'].'">';
       			echo '<td>'.$row['kd_kab'].'</td>';
@@ -440,7 +441,7 @@ class Admin extends AdminModule
           }
           break;
           case "kecamatan":
-          $kecamatan = $this->db('kecamatan')->toArray();
+          $kecamatan = $this->mysql('kecamatan')->toArray();
           foreach ($kecamatan as $row) {
             echo '<tr class="pilihkecamatan" data-kdkec="'.$row['kd_kec'].'" data-namakec="'.$row['nm_kec'].'">';
       			echo '<td>'.$row['kd_kec'].'</td>';
@@ -489,7 +490,7 @@ class Admin extends AdminModule
 
           $sql .= " ORDER BY {$sortColumn} {$sortDir}";
 
-          $query = $this->db()->pdo()->prepare($sql);
+          $query = $this->mysql()->pdo()->prepare($sql);
           $query->execute();
           $query = $query->fetchAll();
 
@@ -505,7 +506,7 @@ class Admin extends AdminModule
 
           $sql .= " LIMIT {$start}, {$length}";
 
-          $data = $this->db()->pdo()->prepare($sql);
+          $data = $this->mysql()->pdo()->prepare($sql);
           $data->execute();
           $data = $data->fetchAll();
 
@@ -559,6 +560,11 @@ class Admin extends AdminModule
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'jkn_mobile_v2', 'javascript']), 'footer');
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

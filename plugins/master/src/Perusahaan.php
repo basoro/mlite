@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Perusahaan
 {
@@ -15,7 +16,7 @@ class Perusahaan
     public function getIndex()
     {
 
-      $totalRecords = $this->db('perusahaan_pasien')
+      $totalRecords = $this->mysql('perusahaan_pasien')
         ->select('kode_perusahaan')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Perusahaan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('perusahaan_pasien')
+      $return['list'] = $this->mysql('perusahaan_pasien')
         ->desc('kode_perusahaan')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Perusahaan
     public function anyForm()
     {
         if (isset($_POST['kode_perusahaan'])){
-          $return['form'] = $this->db('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->oneArray();
+          $return['form'] = $this->mysql('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->oneArray();
         } else {
           $return['form'] = [
             'kode_perusahaan' => '',
@@ -53,7 +54,7 @@ class Perusahaan
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('perusahaan_pasien')
+        $totalRecords = $this->mysql('perusahaan_pasien')
           ->select('kode_perusahaan')
           ->toArray();
         $offset         = 10;
@@ -61,14 +62,14 @@ class Perusahaan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('perusahaan_pasien')
+        $return['list'] = $this->mysql('perusahaan_pasien')
           ->desc('kode_perusahaan')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('perusahaan_pasien')
+          $return['list'] = $this->mysql('perusahaan_pasien')
             ->like('kode_perusahaan', '%'.$_POST['cari'].'%')
             ->orLike('nama_perusahaan', '%'.$_POST['cari'].'%')
             ->desc('kode_perusahaan')
@@ -80,7 +81,7 @@ class Perusahaan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('perusahaan_pasien')
+          $return['list'] = $this->mysql('perusahaan_pasien')
             ->desc('kode_perusahaan')
             ->offset($offset)
             ->limit($perpage)
@@ -93,17 +94,22 @@ class Perusahaan
 
     public function postSave()
     {
-      if (!$this->db('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->oneArray()) {
-        $query = $this->db('perusahaan_pasien')->save($_POST);
+      if (!$this->mysql('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->oneArray()) {
+        $query = $this->mysql('perusahaan_pasien')->save($_POST);
       } else {
-        $query = $this->db('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->save($_POST);
+        $query = $this->mysql('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->delete();
+      return $this->mysql('perusahaan_pasien')->where('kode_perusahaan', $_POST['kode_perusahaan'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

@@ -2,6 +2,7 @@
 namespace Plugins\Manajemen;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -48,9 +49,9 @@ class Admin extends AdminModule
       $stats['KunjunganTahunChart'] = $this->KunjunganTahunChart();
       $stats['RanapTahunChart'] = $this->RanapTahunChart();
       $stats['RujukTahunChart'] = $this->RujukTahunChart();
-      $stats['tunai'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', $settings['penjab_umum'])->like('tgl_registrasi', date('Y').'%')->oneArray();
-      $stats['bpjs'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', $settings['penjab_bpjs'])->like('tgl_registrasi', date('Y').'%')->oneArray();
-      $stats['lainnya'] = $this->db('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', '!=', $settings['penjab_umum'])->where('kd_pj', '!=', $settings['penjab_bpjs'])->like('tgl_registrasi', date('Y').'%')->oneArray();
+      $stats['tunai'] = $this->mysql('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', $settings['penjab_umum'])->like('tgl_registrasi', date('Y').'%')->oneArray();
+      $stats['bpjs'] = $this->mysql('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', $settings['penjab_bpjs'])->like('tgl_registrasi', date('Y').'%')->oneArray();
+      $stats['lainnya'] = $this->mysql('reg_periksa')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('kd_pj', '!=', $settings['penjab_umum'])->where('kd_pj', '!=', $settings['penjab_bpjs'])->like('tgl_registrasi', date('Y').'%')->oneArray();
 
       $day = array(
         'Sun' => 'AKHAD',
@@ -66,15 +67,15 @@ class Admin extends AdminModule
       return $this->draw('dashboard.html', [
         'settings' => $settings,
         'stats' => $stats,
-        'pasien' => $this->db('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
-        'dokter' => $this->db('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray()
+        'pasien' => $this->mysql('pasien')->join('penjab', 'penjab.kd_pj = pasien.kd_pj')->desc('tgl_daftar')->limit('5')->toArray(),
+        'dokter' => $this->mysql('dokter')->join('spesialis', 'spesialis.kd_sps = dokter.kd_sps')->join('jadwal', 'jadwal.kd_dokter = dokter.kd_dokter')->where('jadwal.hari_kerja', $hari)->where('dokter.status', '1')->group('dokter.kd_dokter')->rand()->limit('6')->toArray()
       ]);
 
     }
 
     public function countVisite()
     {
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -85,7 +86,7 @@ class Admin extends AdminModule
 
     public function countVisiteNoRM()
     {
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -98,7 +99,7 @@ class Admin extends AdminModule
     public function countYearVisite()
     {
         $date = date('Y');
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -111,7 +112,7 @@ class Admin extends AdminModule
     public function countLastYearVisite()
     {
         $date = date('Y', strtotime('-1 year'));
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -124,7 +125,7 @@ class Admin extends AdminModule
     public function countMonthVisite()
     {
         $date = date('Y-m');
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -137,7 +138,7 @@ class Admin extends AdminModule
     public function countLastMonthVisite()
     {
         $date = date('Y-m', strtotime('-1 month'));
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -151,7 +152,7 @@ class Admin extends AdminModule
     public function countCurrentVisite()
     {
         $date = date('Y-m-d');
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -164,7 +165,7 @@ class Admin extends AdminModule
     public function countCurrentTempPresensi()
     {
         $tgl_presensi = date('Y-m-d');
-        $record = $this->db('temporary_presensi')
+        $record = $this->mysql('temporary_presensi')
             ->select([
                 'count' => 'COUNT(DISTINCT id)',
             ])
@@ -188,7 +189,7 @@ class Admin extends AdminModule
     public function countPegawai()
     {
         $status = 'AKTIF';
-        $record = $this->db('pegawai')
+        $record = $this->mysql('pegawai')
             ->select([
                 'count' => 'COUNT(DISTINCT id)',
             ])
@@ -201,7 +202,7 @@ class Admin extends AdminModule
     public function countRkpPresensi()
     {
         $tgl_presensi = date('Y-m-d');
-        $record = $this->db('rekap_presensi')
+        $record = $this->mysql('rekap_presensi')
             ->select([
                 'count' => 'COUNT(DISTINCT id)',
             ])
@@ -216,7 +217,7 @@ class Admin extends AdminModule
       $date = date('j');
       $bulan = date('m');
       $tahun = date('y');
-      $data = array_column($this->db('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
+      $data = array_column($this->mysql('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
     //   //print_r($data);
     //   print("<pre>".print_r($data,true)."</pre>");
        $hasil = count($data);
@@ -227,7 +228,7 @@ class Admin extends AdminModule
 
     public function getIjin()
     {
-        $record = $this->db('rekap_presensi')
+        $record = $this->mysql('rekap_presensi')
             ->select([
                 'count' => 'COUNT(DISTINCT id)',
             ])
@@ -242,7 +243,7 @@ class Admin extends AdminModule
     public function countLastCurrentVisite()
     {
         $date = date('Y-m-d', strtotime('-1 days'));
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -254,7 +255,7 @@ class Admin extends AdminModule
 
     public function countPasien()
     {
-        $record = $this->db('pasien')
+        $record = $this->mysql('pasien')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rkm_medis)',
             ])
@@ -266,7 +267,7 @@ class Admin extends AdminModule
     public function poliChart()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
@@ -295,7 +296,7 @@ class Admin extends AdminModule
     public function KunjunganTahunChart()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'label'       => 'tgl_registrasi'
@@ -320,7 +321,7 @@ class Admin extends AdminModule
     public function RanapTahunChart()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'label'       => 'tgl_registrasi'
@@ -346,7 +347,7 @@ class Admin extends AdminModule
     public function RujukTahunChart()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'label'       => 'tgl_registrasi'
@@ -372,7 +373,7 @@ class Admin extends AdminModule
     public function poliChartBatal()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
@@ -402,7 +403,7 @@ class Admin extends AdminModule
     public function poliChartBaru()
     {
 
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
@@ -443,7 +444,7 @@ class Admin extends AdminModule
     public function countCurrentVisiteBatal($stts)
     {
         $date = date('Y-m-d');
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -457,7 +458,7 @@ class Admin extends AdminModule
     public function countLastCurrentVisiteBatal($stts)
     {
         $date = date('Y-m-d', strtotime('-1 days'));
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -471,7 +472,7 @@ class Admin extends AdminModule
     public function countCurrentVisiteBaru()
     {
         $date = date('Y-m-d');
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -485,7 +486,7 @@ class Admin extends AdminModule
     public function countLastCurrentVisiteBaru()
     {
         $date = date('Y-m-d', strtotime('-1 days'));
-        $record = $this->db('reg_periksa')
+        $record = $this->mysql('reg_periksa')
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -499,7 +500,7 @@ class Admin extends AdminModule
     public function countCheck($table,$where)
     {
         $date = date('Y-m-d');
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -513,7 +514,7 @@ class Admin extends AdminModule
     public function countLastCheck($table,$where)
     {
         $date = date('Y-m-d', strtotime('-1 days'));
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -527,7 +528,7 @@ class Admin extends AdminModule
     public function countYear($table,$where)
     {
         $date = date('Y');
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -541,7 +542,7 @@ class Admin extends AdminModule
     public function countLastYear($table,$where)
     {
         $date = date('Y', strtotime('-1 year'));
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -555,7 +556,7 @@ class Admin extends AdminModule
     public function countMonth($table,$where)
     {
         $date = date('Y-m');
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -569,7 +570,7 @@ class Admin extends AdminModule
     public function countLastMonth($table,$where)
     {
         $date = date('Y-m', strtotime('-1 month'));
-        $record = $this->db($table)
+        $record = $this->mysql($table)
             ->select([
                 'count' => 'COUNT(DISTINCT no_rawat)',
             ])
@@ -583,7 +584,7 @@ class Admin extends AdminModule
     public function countDrPerujukLab()
     {
         $date = date('Y-m-d');
-        $query = $this->db('periksa_lab')
+        $query = $this->mysql('periksa_lab')
             ->select([
               'count'       => 'COUNT(DISTINCT periksa_lab.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
@@ -613,7 +614,7 @@ class Admin extends AdminModule
     public function countDrPerujukRad()
     {
         $date = date('Y-m-d');
-        $query = $this->db('periksa_radiologi')
+        $query = $this->mysql('periksa_radiologi')
             ->select([
               'count'       => 'COUNT(DISTINCT periksa_radiologi.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
@@ -649,7 +650,7 @@ class Admin extends AdminModule
         } else {
             $poliklinik = str_replace(",","','", $stts);
         }
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
+        $query = $this->mysql()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
         $query->execute();
         $count = $query->fetchColumn();
         return $count;
@@ -664,7 +665,7 @@ class Admin extends AdminModule
         } else {
             $poliklinik = str_replace(",","','", $stts);
         }
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
+        $query = $this->mysql()->pdo()->prepare("SELECT COUNT(DISTINCT no_rawat) as count FROM kamar_inap WHERE $tgl = '$date' AND stts_pulang IN ('$poliklinik')");
         $query->execute();
         $count = $query->fetchColumn();
         return $count;
@@ -673,7 +674,7 @@ class Admin extends AdminModule
     public function countKamarInap()
     {
         $date = date('Y-m-d');
-        $query = $this->db('kamar_inap')
+        $query = $this->mysql('kamar_inap')
             ->select([
               'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
               'nm_bangsal'     => 'bangsal.nm_bangsal',
@@ -702,7 +703,7 @@ class Admin extends AdminModule
     public function countDx()
     {
         $date = date('Y-m-d');
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
+        $query = $this->mysql()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
         $query->execute();
 
             $data = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -723,7 +724,7 @@ class Admin extends AdminModule
     public function countPxDrRj()
     {
         $date = date('Y-m-d');
-        $query = $this->db('reg_periksa')
+        $query = $this->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT reg_periksa.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
@@ -752,7 +753,7 @@ class Admin extends AdminModule
     public function countPxDrRi()
     {
         $date = date('Y-m-d');
-        $query = $this->db('kamar_inap')
+        $query = $this->mysql('kamar_inap')
             ->select([
               'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
@@ -782,7 +783,7 @@ class Admin extends AdminModule
     public function countResepDr()
     {
         $date = date('Y-m-d');
-        $query = $this->db('resep_obat')
+        $query = $this->mysql('resep_obat')
             ->select([
               'count'       => 'COUNT(DISTINCT resep_obat.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
@@ -811,7 +812,7 @@ class Admin extends AdminModule
     public function sumPdptLain()
     {
         $date = date('Y-m-d');
-        $record = $this->db('pemasukan_lain')
+        $record = $this->mysql('pemasukan_lain')
             ->select([
                 'sum' => 'SUM(besar)',
             ])
@@ -1016,7 +1017,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
         $settings = htmlspecialchars_array($this->settings('manajemen'));
-        $stats['poliChart'] = $this->countResepDr(); 
+        $stats['poliChart'] = $this->countResepDr();
         return $this->draw('apotek.html',[
             'settings' => $settings,
             'stats' => $stats,
@@ -1068,7 +1069,7 @@ class Admin extends AdminModule
         $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
         $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
 
-        $query = $this->db()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
+        $query = $this->mysql()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
         $query->execute();
 
         $data = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -1105,7 +1106,7 @@ class Admin extends AdminModule
     {
       $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
 
-      $query = $this->db('rekap_presensi')
+      $query = $this->mysql('rekap_presensi')
           ->select([
             'count' => 'COUNT(photo)',
             'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
@@ -1120,7 +1121,7 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-        $this->assign['penjab'] = $this->core->db('penjab')->toArray();
+        $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
         $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
@@ -1132,6 +1133,11 @@ class Admin extends AdminModule
         }
         $this->notify('success', 'Pengaturan manajemen telah disimpan');
         redirect(url([ADMIN, 'manajemen', 'settings']));
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

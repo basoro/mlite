@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class KelompokJabatan
 {
@@ -15,7 +16,7 @@ class KelompokJabatan
     public function getIndex()
     {
 
-      $totalRecords = $this->db('kelompok_jabatan')
+      $totalRecords = $this->mysql('kelompok_jabatan')
         ->select('kode_kelompok')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class KelompokJabatan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('kelompok_jabatan')
+      $return['list'] = $this->mysql('kelompok_jabatan')
         ->desc('kode_kelompok')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class KelompokJabatan
     public function anyForm()
     {
         if (isset($_POST['kode_kelompok'])){
-          $return['form'] = $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray();
+          $return['form'] = $this->mysql('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray();
         } else {
           $return['form'] = [
             'kode_kelompok' => '',
@@ -51,7 +52,7 @@ class KelompokJabatan
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('kelompok_jabatan')
+        $totalRecords = $this->mysql('kelompok_jabatan')
           ->select('kode_kelompok')
           ->toArray();
         $offset         = 10;
@@ -59,14 +60,14 @@ class KelompokJabatan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('kelompok_jabatan')
+        $return['list'] = $this->mysql('kelompok_jabatan')
           ->desc('kode_kelompok')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('kelompok_jabatan')
+          $return['list'] = $this->mysql('kelompok_jabatan')
             ->like('kode_kelompok', '%'.$_POST['cari'].'%')
             ->orLike('nama_kelompok', '%'.$_POST['cari'].'%')
             ->desc('kode_kelompok')
@@ -78,7 +79,7 @@ class KelompokJabatan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('kelompok_jabatan')
+          $return['list'] = $this->mysql('kelompok_jabatan')
             ->desc('kode_kelompok')
             ->offset($offset)
             ->limit($perpage)
@@ -91,17 +92,22 @@ class KelompokJabatan
 
     public function postSave()
     {
-      if (!$this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray()) {
-        $query = $this->db('kelompok_jabatan')->save($_POST);
+      if (!$this->mysql('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->oneArray()) {
+        $query = $this->mysql('kelompok_jabatan')->save($_POST);
       } else {
-        $query = $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->save($_POST);
+        $query = $this->mysql('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->delete();
+      return $this->mysql('kelompok_jabatan')->where('kode_kelompok', $_POST['kode_kelompok'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

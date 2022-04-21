@@ -9,7 +9,7 @@ return [
     'icon'          =>  'database',
     'install'       =>  function () use ($core) {
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_sep` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_sep` (
         `no_sep` varchar(40) NOT NULL DEFAULT '',
         `no_rawat` varchar(17) DEFAULT NULL,
         `tglsep` date DEFAULT NULL,
@@ -64,14 +64,14 @@ return [
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_sep`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_sep`
         ADD PRIMARY KEY (`no_sep`),
         ADD KEY `no_rawat` (`no_rawat`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_sep`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_sep`
         ADD CONSTRAINT `bridging_sep_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_sep_internal` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_sep_internal` (
         `no_sep` varchar(40) NOT NULL DEFAULT '',
         `no_rawat` varchar(17) DEFAULT NULL,
         `tglsep` date DEFAULT NULL,
@@ -126,26 +126,26 @@ return [
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_sep_internal`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_sep_internal`
         ADD KEY `no_rawat` (`no_rawat`),
         ADD KEY `no_sep` (`no_sep`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_sep_internal`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_sep_internal`
         ADD CONSTRAINT `bridging_sep_internal_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `bridging_sep_internal_ibfk_2` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bpjs_prb` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bpjs_prb` (
         `no_sep` varchar(40) NOT NULL,
         `prb` varchar(50) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bpjs_prb`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bpjs_prb`
         ADD PRIMARY KEY (`no_sep`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bpjs_prb`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bpjs_prb`
         ADD CONSTRAINT `bpjs_prb_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_kontrol_bpjs` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_kontrol_bpjs` (
         `no_sep` varchar(40) DEFAULT NULL,
         `tgl_surat` date NOT NULL,
         `no_surat` varchar(40) NOT NULL,
@@ -156,14 +156,14 @@ return [
         `nm_poli_bpjs` varchar(40) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
         ADD PRIMARY KEY (`no_surat`),
         ADD KEY `bridging_surat_kontrol_bpjs_ibfk_1` (`no_sep`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_surat_kontrol_bpjs`
         ADD CONSTRAINT `bridging_surat_kontrol_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_pri_bpjs` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `bridging_surat_pri_bpjs` (
         `no_rawat` varchar(17) DEFAULT NULL,
         `no_kartu` varchar(25) DEFAULT NULL,
         `tgl_surat` date NOT NULL,
@@ -177,35 +177,35 @@ return [
         `no_sep` varchar(40) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
         ADD PRIMARY KEY (`no_surat`),
         ADD KEY `no_rawat` (`no_rawat`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `bridging_surat_pri_bpjs`
         ADD CONSTRAINT `bridging_surat_pri_bpjs_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
         `kd_dokter` varchar(20) NOT NULL,
         `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
         `nm_dokter_bpjs` varchar(50) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
         ADD PRIMARY KEY (`kd_dokter`) USING BTREE;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
         ADD CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
         `kd_poli_rs` varchar(5) NOT NULL,
         `kd_poli_bpjs` varchar(15) NOT NULL,
         `nm_poli_bpjs` varchar(40) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
         ADD PRIMARY KEY (`kd_poli_rs`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
         ADD CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
       if (!is_dir(UPLOADS."/qrcode")) {

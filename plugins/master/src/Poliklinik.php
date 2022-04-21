@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Poliklinik
 {
@@ -15,7 +16,7 @@ class Poliklinik
     public function getIndex()
     {
 
-      $totalRecords = $this->db('poliklinik')
+      $totalRecords = $this->mysql('poliklinik')
         ->select('kd_poli')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Poliklinik
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('poliklinik')
+      $return['list'] = $this->mysql('poliklinik')
         ->desc('kd_poli')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Poliklinik
     public function anyForm()
     {
         if (isset($_POST['kd_poli'])){
-          $return['form'] = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
+          $return['form'] = $this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray();
         } else {
           $return['form'] = [
             'kd_poli' => '',
@@ -53,7 +54,7 @@ class Poliklinik
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('poliklinik')
+        $totalRecords = $this->mysql('poliklinik')
           ->select('kd_poli')
           ->toArray();
         $offset         = 10;
@@ -61,14 +62,14 @@ class Poliklinik
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('poliklinik')
+        $return['list'] = $this->mysql('poliklinik')
           ->desc('kd_poli')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('poliklinik')
+          $return['list'] = $this->mysql('poliklinik')
             ->like('kd_poli', '%'.$_POST['cari'].'%')
             ->orLike('nm_poli', '%'.$_POST['cari'].'%')
             ->desc('kd_poli')
@@ -80,7 +81,7 @@ class Poliklinik
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('poliklinik')
+          $return['list'] = $this->mysql('poliklinik')
             ->desc('kd_poli')
             ->offset($offset)
             ->limit($perpage)
@@ -93,17 +94,22 @@ class Poliklinik
 
     public function postSave()
     {
-      if (!$this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray()) {
-        $query = $this->db('poliklinik')->save($_POST);
+      if (!$this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->oneArray()) {
+        $query = $this->mysql('poliklinik')->save($_POST);
       } else {
-        $query = $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->save($_POST);
+        $query = $this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('poliklinik')->where('kd_poli', $_POST['kd_poli'])->delete();
+      return $this->mysql('poliklinik')->where('kd_poli', $_POST['kd_poli'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

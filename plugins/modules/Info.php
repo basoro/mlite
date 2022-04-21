@@ -10,10 +10,10 @@ return [
 
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_modules` (
-            `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `dir` text,
-            `sequence` text
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+                `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                `dir` text NOT NULL,
+                `sequence` integer DEFAULT 0
+            )");
     },
     'uninstall'     =>  function () use ($core) {
         $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_modules`");

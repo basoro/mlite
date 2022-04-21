@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Bidang
 {
@@ -15,7 +16,7 @@ class Bidang
     public function getIndex()
     {
 
-      $totalRecords = $this->db('bidang')
+      $totalRecords = $this->mysql('bidang')
         ->select('nama')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Bidang
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('bidang')
+      $return['list'] = $this->mysql('bidang')
         ->desc('nama')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Bidang
     public function anyForm()
     {
         if (isset($_POST['nama'])){
-          $return['form'] = $this->db('bidang')->where('nama', $_POST['nama'])->oneArray();
+          $return['form'] = $this->mysql('bidang')->where('nama', $_POST['nama'])->oneArray();
         } else {
           $return['form'] = [
             'nama' => ''
@@ -49,7 +50,7 @@ class Bidang
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('bidang')
+        $totalRecords = $this->mysql('bidang')
           ->select('nama')
           ->toArray();
         $offset         = 10;
@@ -57,14 +58,14 @@ class Bidang
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('bidang')
+        $return['list'] = $this->mysql('bidang')
           ->desc('nama')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('bidang')
+          $return['list'] = $this->mysql('bidang')
             ->like('nama', '%'.$_POST['cari'].'%')
             ->desc('nama')
             ->offset(0)
@@ -75,7 +76,7 @@ class Bidang
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('bidang')
+          $return['list'] = $this->mysql('bidang')
             ->desc('nama')
             ->offset($offset)
             ->limit($perpage)
@@ -88,17 +89,22 @@ class Bidang
 
     public function postSave()
     {
-      if (!$this->db('bidang')->where('nama', $_POST['nama'])->oneArray()) {
-        $query = $this->db('bidang')->save($_POST);
+      if (!$this->mysql('bidang')->where('nama', $_POST['nama'])->oneArray()) {
+        $query = $this->mysql('bidang')->save($_POST);
       } else {
-        $query = $this->db('bidang')->where('nama', $_POST['nama'])->save($_POST);
+        $query = $this->mysql('bidang')->where('nama', $_POST['nama'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('bidang')->where('nama', $_POST['nama'])->delete();
+      return $this->mysql('bidang')->where('nama', $_POST['nama'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

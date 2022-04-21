@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Dokter
 {
@@ -15,7 +16,7 @@ class Dokter
     public function getIndex()
     {
 
-      $totalRecords = $this->db('dokter')
+      $totalRecords = $this->mysql('dokter')
         ->select('kd_dokter')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Dokter
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('dokter')
+      $return['list'] = $this->mysql('dokter')
         ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
         ->desc('kd_dokter')
         ->limit(10)
@@ -35,13 +36,13 @@ class Dokter
 
     public function anyForm()
     {
-        $return['pegawai'] = $this->db('pegawai')->toArray();
+        $return['pegawai'] = $this->mysql('pegawai')->toArray();
         $return['gol_drh'] = ['-','A','B','O','AB'];
         $return['agama'] = ['ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN'];
         $return['stts_nikah'] = ['BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO'];
-        $return['spesialis'] = $this->db('spesialis')->toArray();
+        $return['spesialis'] = $this->mysql('spesialis')->toArray();
         if (isset($_POST['kd_dokter'])){
-          $return['form'] = $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
+          $return['form'] = $this->mysql('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray();
         } else {
           $return['form'] = [
             'kd_dokter' => '',
@@ -68,7 +69,7 @@ class Dokter
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('dokter')
+        $totalRecords = $this->mysql('dokter')
           ->select('kd_dokter')
           ->toArray();
         $offset         = 10;
@@ -76,7 +77,7 @@ class Dokter
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('dokter')
+        $return['list'] = $this->mysql('dokter')
           ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
           ->desc('kd_dokter')
           ->offset(0)
@@ -84,7 +85,7 @@ class Dokter
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('dokter')
+          $return['list'] = $this->mysql('dokter')
             ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
             ->like('kd_dokter', '%'.$_POST['cari'].'%')
             ->orLike('nm_dokter', '%'.$_POST['cari'].'%')
@@ -97,7 +98,7 @@ class Dokter
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('dokter')
+          $return['list'] = $this->mysql('dokter')
             ->join('spesialis', 'spesialis.kd_sps=dokter.kd_sps')
             ->desc('kd_dokter')
             ->offset($offset)
@@ -111,17 +112,22 @@ class Dokter
 
     public function postSave()
     {
-      if (!$this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
-        $query = $this->db('dokter')->save($_POST);
+      if (!$this->mysql('dokter')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
+        $query = $this->mysql('dokter')->save($_POST);
       } else {
-        $query = $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->save($_POST);
+        $query = $this->mysql('dokter')->where('kd_dokter', $_POST['kd_dokter'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('dokter')->where('kd_dokter', $_POST['kd_dokter'])->delete();
+      return $this->mysql('dokter')->where('kd_dokter', $_POST['kd_dokter'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

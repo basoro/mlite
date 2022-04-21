@@ -3,6 +3,7 @@
 namespace Plugins\Anjungan;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -53,7 +54,7 @@ class Admin extends AdminModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
@@ -79,7 +80,7 @@ class Admin extends AdminModule
     private function _getPenjab($kd_pj = null)
     {
         $result = [];
-        $rows = $this->db('penjab')->toArray();
+        $rows = $this->mysql('penjab')->toArray();
 
         if (!$kd_pj) {
             $kd_pjArray = [];
@@ -100,6 +101,11 @@ class Admin extends AdminModule
             $result[] = ['kd_pj' => $row['kd_pj'], 'png_jawab' => $row['png_jawab'], 'attr' => $attr];
         }
         return $result;
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

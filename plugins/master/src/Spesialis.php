@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Spesialis
 {
@@ -15,7 +16,7 @@ class Spesialis
     public function getIndex()
     {
 
-      $totalRecords = $this->db('spesialis')
+      $totalRecords = $this->mysql('spesialis')
         ->select('kd_sps')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Spesialis
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('spesialis')
+      $return['list'] = $this->mysql('spesialis')
         ->desc('kd_sps')
         ->limit(10)
         ->toArray();
@@ -35,7 +36,7 @@ class Spesialis
     public function anyForm()
     {
         if (isset($_POST['kd_sps'])){
-          $return['form'] = $this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->oneArray();
+          $return['form'] = $this->mysql('spesialis')->where('kd_sps', $_POST['kd_sps'])->oneArray();
         } else {
           $return['form'] = [
             'kd_sps' => '',
@@ -50,7 +51,7 @@ class Spesialis
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('spesialis')
+        $totalRecords = $this->mysql('spesialis')
           ->select('kd_sps')
           ->toArray();
         $offset         = 10;
@@ -58,14 +59,14 @@ class Spesialis
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('spesialis')
+        $return['list'] = $this->mysql('spesialis')
           ->desc('kd_sps')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('spesialis')
+          $return['list'] = $this->mysql('spesialis')
             ->like('kd_sps', '%'.$_POST['cari'].'%')
             ->orLike('nm_sps', '%'.$_POST['cari'].'%')
             ->desc('id')
@@ -77,7 +78,7 @@ class Spesialis
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('spesialis')
+          $return['list'] = $this->mysql('spesialis')
             ->desc('kd_sps')
             ->offset($offset)
             ->limit($perpage)
@@ -90,17 +91,22 @@ class Spesialis
 
     public function postSave()
     {
-      if (!$this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->oneArray()) {
-        $query = $this->db('spesialis')->save($_POST);
+      if (!$this->mysql('spesialis')->where('kd_sps', $_POST['kd_sps'])->oneArray()) {
+        $query = $this->mysql('spesialis')->save($_POST);
       } else {
-        $query = $this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->save($_POST);
+        $query = $this->mysql('spesialis')->where('kd_sps', $_POST['kd_sps'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('spesialis')->where('kd_sps', $_POST['kd_sps'])->delete();
+      return $this->mysql('spesialis')->where('kd_sps', $_POST['kd_sps'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

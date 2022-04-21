@@ -3,6 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
+use Systems\MySQL;
 
 class Pendidikan
 {
@@ -15,7 +16,7 @@ class Pendidikan
     public function getIndex()
     {
 
-      $totalRecords = $this->db('pendidikan')
+      $totalRecords = $this->mysql('pendidikan')
         ->select('tingkat')
         ->toArray();
       $offset         = 10;
@@ -23,7 +24,7 @@ class Pendidikan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->db('pendidikan')
+      $return['list'] = $this->mysql('pendidikan')
         ->desc('tingkat')
         ->limit(10)
         ->toArray();
@@ -35,13 +36,13 @@ class Pendidikan
     public function anyForm()
     {
         if (isset($_POST['tingkat'])){
-          $return['form'] = $this->db('pendidikan')->where('tingkat', $_POST['tingkat'])->oneArray();
+          $return['form'] = $this->mysql('pendidikan')->where('tingkat', $_POST['tingkat'])->oneArray();
         } else {
           $return['form'] = [
             'tingkat' => '',
             'indek' => '',
-	          'gapok1' => '', 
-            'kenaikan' => '', 
+	          'gapok1' => '',
+            'kenaikan' => '',
             'maksimal' => ''
           ];
         }
@@ -53,7 +54,7 @@ class Pendidikan
     {
 
         $perpage = '10';
-        $totalRecords = $this->db('pendidikan')
+        $totalRecords = $this->mysql('pendidikan')
           ->select('tingkat')
           ->toArray();
         $offset         = 10;
@@ -61,14 +62,14 @@ class Pendidikan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->db('pendidikan')
+        $return['list'] = $this->mysql('pendidikan')
           ->desc('tingkat')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->db('pendidikan')
+          $return['list'] = $this->mysql('pendidikan')
             ->like('tingkat', '%'.$_POST['cari'].'%')
             ->orLike('indek', '%'.$_POST['cari'].'%')
 	          ->orLike('gapok1', '%'.$_POST['cari'].'%')
@@ -81,7 +82,7 @@ class Pendidikan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->db('pendidikan')
+          $return['list'] = $this->mysql('pendidikan')
             ->desc('tingkat')
             ->offset($offset)
             ->limit($perpage)
@@ -94,17 +95,22 @@ class Pendidikan
 
     public function postSave()
     {
-      if (!$this->db('pendidikan')->where('tingkat', $_POST['tingkat'])->oneArray()) {
-        $query = $this->db('pendidikan')->save($_POST);
+      if (!$this->mysql('pendidikan')->where('tingkat', $_POST['tingkat'])->oneArray()) {
+        $query = $this->mysql('pendidikan')->save($_POST);
       } else {
-        $query = $this->db('pendidikan')->where('tingkat', $_POST['tingkat'])->save($_POST);
+        $query = $this->mysql('pendidikan')->where('tingkat', $_POST['tingkat'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->db('pendidikan')->where('tingkat', $_POST['tingkat'])->delete();
+      return $this->mysql('pendidikan')->where('tingkat', $_POST['tingkat'])->delete();
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

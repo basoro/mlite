@@ -3,6 +3,7 @@
 namespace Plugins\Dashboard;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -50,10 +51,10 @@ class Admin extends AdminModule
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
       }
-      $idpeg        = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
-      $cek_presensi = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-      $cek_rekap = $this->db('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
-      $jam_jaga = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      $idpeg        = $this->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+      $cek_presensi = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+      $cek_rekap = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
+      $jam_jaga = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
     }
     return $this->draw('main.html', [
       'settings' => $settings,
@@ -143,15 +144,15 @@ class Admin extends AdminModule
         $hari = date('j');
         $shift = $_GET['shift'];
 
-        $idpeg          = $this->db('barcode')->where('barcode', $barcode)->oneArray();
-        $jam_jaga       = $this->db('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
+        $idpeg          = $this->mysql('barcode')->where('barcode', $barcode)->oneArray();
+        $jam_jaga       = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
 
-        $jadwal_pegawai = $this->db('jadwal_pegawai')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $jadwal_tambahan = $this->db('jadwal_tambahan')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
-        $isFullAbsen = $this->db('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', date('Y-m-d') . '%')->oneArray();
-        $isAbsen = $this->db('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+        $jadwal_pegawai = $this->mysql('jadwal_pegawai')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $jadwal_tambahan = $this->mysql('jadwal_tambahan')->where('id', $idpeg['id'])->where('h' . $hari, $jam_jaga['shift'])->where('bulan', $bulan)->where('tahun', $tahun)->oneArray();
+        $isFullAbsen = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', date('Y-m-d') . '%')->oneArray();
+        $isAbsen = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
 
-        $set_keterlambatan  = $this->db('set_keterlambatan')->oneArray();
+        $set_keterlambatan  = $this->mysql('set_keterlambatan')->oneArray();
         $toleransi      = $set_keterlambatan['toleransi'];
         $terlambat1     = $set_keterlambatan['terlambat1'];
         $terlambat2     = $set_keterlambatan['terlambat2'];
@@ -187,7 +188,7 @@ class Admin extends AdminModule
                     $keterlambatan = $diff->format('%H:%I:%S');
                   }
 
-                  $insert = $this->db('temporary_presensi')
+                  $insert = $this->mysql('temporary_presensi')
                     ->save([
                       'id' => $idpeg['id'],
                       'shift' => $jam_jaga['shift'],
@@ -230,7 +231,7 @@ class Admin extends AdminModule
                   $keterlambatan = $diff->format('%H:%I:%S');
                 }
 
-                $insert = $this->db('temporary_presensi')
+                $insert = $this->mysql('temporary_presensi')
                   ->save([
                     'id' => $idpeg['id'],
                     'shift' => $jam_jaga['shift'],
@@ -270,7 +271,7 @@ class Admin extends AdminModule
                 $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
                 $durasi = $diff->format('%H:%I:%S');
 
-                $ubah = $this->db('temporary_presensi')
+                $ubah = $this->mysql('temporary_presensi')
                   ->where('id', $idpeg['id'])
                   ->save([
                     'jam_pulang' => date('Y-m-d H:i:s'),
@@ -279,8 +280,8 @@ class Admin extends AdminModule
                   ]);
 
                 if ($ubah) {
-                  $presensi = $this->db('temporary_presensi')->where('id', $isAbsen['id'])->oneArray();
-                  $insert = $this->db('rekap_presensi')
+                  $presensi = $this->mysql('temporary_presensi')->where('id', $isAbsen['id'])->oneArray();
+                  $insert = $this->mysql('rekap_presensi')
                     ->save([
                       'id' => $presensi['id'],
                       'shift' => $presensi['shift'],
@@ -294,7 +295,7 @@ class Admin extends AdminModule
                     ]);
                   if ($insert) {
                     $this->notify('success', 'Presensi pulang telah disimpan');
-                    $this->db('temporary_presensi')->where('id', $isAbsen['id'])->delete();
+                    $this->mysql('temporary_presensi')->where('id', $isAbsen['id'])->delete();
                   }
                 }
               }
@@ -312,11 +313,11 @@ class Admin extends AdminModule
   public function postGeolocation()
   {
 
-    $idpeg = $this->db('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+    $idpeg = $this->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
 
     if (isset($_POST['lat'], $_POST['lng'])) {
-      if (!$this->db('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
-        $this->db('mlite_geolocation_presensi')
+      if (!$this->mysql('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
+        $this->mysql('mlite_geolocation_presensi')
           ->save([
             'id' => $idpeg['id'],
             'tanggal' => date('Y-m-d'),
@@ -349,4 +350,10 @@ class Admin extends AdminModule
     echo $this->tpl->draw(MODULES . '/modules/view/admin/help.html', true);
     exit();
   }
+
+  protected function mysql($table = NULL)
+  {
+      return new MySQL($table);
+  }
+
 }

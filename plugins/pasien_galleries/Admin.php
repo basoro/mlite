@@ -3,6 +3,7 @@
 namespace Plugins\Pasien_Galleries;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -27,7 +28,7 @@ class Admin extends AdminModule
         $assign = [];
         /*
         // list
-        $rows = $this->db('mlite_pasien_galleries')->toArray();
+        $rows = $this->mysql('mlite_pasien_galleries')->toArray();
         if (count($rows)) {
             foreach ($rows as $row) {
                 $row['tag']    = $this->tpl->noParse('{$gallery.'.$row['slug'].'}');
@@ -43,7 +44,7 @@ class Admin extends AdminModule
 
         $perpage = '10';
 
-        $totalRecords = $this->db('mlite_pasien_galleries')
+        $totalRecords = $this->mysql('mlite_pasien_galleries')
           ->select('slug')
           ->toArray();
         $jumlah_data    = count($totalRecords);
@@ -51,7 +52,7 @@ class Admin extends AdminModule
   			$jml_halaman    = ceil($jumlah_data / $offset);
         $halaman    = 1;
 
-        $rows = $this->db('mlite_pasien_galleries')
+        $rows = $this->mysql('mlite_pasien_galleries')
           ->desc('slug')
           ->offset(0)
           ->limit($perpage)
@@ -81,14 +82,14 @@ class Admin extends AdminModule
 
         $perpage = '10';
 
-        $totalRecords = $this->db('mlite_pasien_galleries')->select('slug')->toArray();
+        $totalRecords = $this->mysql('mlite_pasien_galleries')->select('slug')->toArray();
         $jumlah_data    = count($totalRecords);
   			$offset         = 10;
   			$jml_halaman    = ceil($jumlah_data / $offset);
         $halaman    = 1;
 
         if(isset($_POST['cari'])) {
-          $rows = $this->db('mlite_pasien_galleries')
+          $rows = $this->mysql('mlite_pasien_galleries')
             ->like('slug', '%'.$_POST['cari'].'%')
             ->orLike('name', '%'.$_POST['cari'].'%')
             ->desc('slug')
@@ -99,14 +100,14 @@ class Admin extends AdminModule
     			$jml_halaman = ceil($jumlah_data / $offset);
         }elseif(isset($_POST['halaman'])){
     			$offset = (($_POST['halaman'] - 1) * $perpage);
-          $rows = $this->db('mlite_pasien_galleries')
+          $rows = $this->mysql('mlite_pasien_galleries')
             ->desc('slug')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
           $halaman = $_POST['halaman'];
         }else{
-          $rows = $this->db('mlite_pasien_galleries')
+          $rows = $this->mysql('mlite_pasien_galleries')
             ->desc('slug')
             ->offset(0)
             ->limit($perpage)
@@ -145,7 +146,7 @@ class Admin extends AdminModule
         if(isset($_GET['s']))
           $phrase = $_GET['s'];
 
-        $rows = $this->db('pasien')->like('no_rkm_medis', '%'.$phrase.'%')->orLike('nm_pasien', '%'.$phrase.'%')->toArray();
+        $rows = $this->mysql('pasien')->like('no_rkm_medis', '%'.$phrase.'%')->orLike('nm_pasien', '%'.$phrase.'%')->toArray();
         foreach ($rows as $row) {
           $array[] = array(
               'no_rkm_medis' => $row['no_rkm_medis'],
@@ -168,24 +169,24 @@ class Admin extends AdminModule
 
         if (!empty($_POST['name'])) {
             $name = trim($_POST['name']);
-            $pasien = $this->db('pasien')->where('no_rkm_medis', $name)->oneArray();
-            if (!$this->db('mlite_pasien_galleries')->where('slug', $name)->count()) {
-                $query = $this->db('mlite_pasien_galleries')->save(['name' => $pasien['nm_pasien'], 'slug' => $name]);
+            $pasien = $this->mysql('pasien')->where('no_rkm_medis', $name)->oneArray();
+            if (!$this->mysql('mlite_pasien_galleries')->where('slug', $name)->count()) {
+                $query = $this->mysql('mlite_pasien_galleries')->save(['name' => $pasien['nm_pasien'], 'slug' => $name]);
 
                 if ($query) {
-                    $id     = $this->db()->lastInsertId();
+                    $id     = $this->mysql()->lastInsertId();
                     $dir    = $this->_uploads.'/'.$id;
 
                     if (mkdir($dir, 0755, true)) {
                         $this->notify('success', 'Sukses');
-                        $location = [ADMIN, 'pasien_galleries', 'edit', $this->db()->lastInsertId()];
+                        $location = [ADMIN, 'pasien_galleries', 'edit', $this->mysql()->lastInsertId()];
                     }
                 } else {
                     $this->notify('failure', 'Gagal');
                 }
             } else {
                 $this->notify('failure', 'Sudah ada');
-                $location = [ADMIN, 'pasien_galleries', 'edit', $this->db('mlite_pasien_galleries')->where('slug', $name)->oneArray()['id']];
+                $location = [ADMIN, 'pasien_galleries', 'edit', $this->mysql('mlite_pasien_galleries')->where('slug', $name)->oneArray()['id']];
             }
         } else {
             $this->notify('failure', 'Masih ada yg kosong');
@@ -199,7 +200,7 @@ class Admin extends AdminModule
     */
     public function getDelete($id)
     {
-        $query = $this->db('mlite_pasien_galleries')->delete($id);
+        $query = $this->mysql('mlite_pasien_galleries')->delete($id);
 
         deleteDir($this->_uploads.'/'.$id);
 
@@ -218,21 +219,21 @@ class Admin extends AdminModule
     public function getEdit($id, $page = 1)
     {
         $assign = [];
-        $assign['settings'] = $this->db('mlite_pasien_galleries')->oneArray($id);
+        $assign['settings'] = $this->mysql('mlite_pasien_galleries')->oneArray($id);
 
         // pagination
-        $totalRecords = $this->db('mlite_pasien_galleries_items')->select('id')->where('gallery', $id)->toArray();
+        $totalRecords = $this->mysql('mlite_pasien_galleries_items')->select('id')->where('gallery', $id)->toArray();
         $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'pasien_galleries', 'edit', $id, '%d']));
         $assign['pagination'] = $pagination->nav();
         $assign['page'] = $page;
 
         // items
         if ($assign['settings']['sort'] == 'ASC') {
-            $rows = $this->db('mlite_pasien_galleries_items')->where('gallery', $id)
+            $rows = $this->mysql('mlite_pasien_galleries_items')->where('gallery', $id)
                     ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
                     ->asc('id')->toArray();
         } else {
-            $rows = $this->db('mlite_pasien_galleries_items')->where('gallery', $id)
+            $rows = $this->mysql('mlite_pasien_galleries_items')->where('gallery', $id)
                     ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
                     ->desc('id')->toArray();
         }
@@ -268,7 +269,7 @@ class Admin extends AdminModule
             redirect(url([ADMIN, 'pasien_galleries', 'edit', $id]));
         }
 
-        if ($this->db('mlite_pasien_galleries')->where($id)->save(['sort' => $_POST['sort']])) {
+        if ($this->mysql('mlite_pasien_galleries')->where($id)->save(['sort' => $_POST['sort']])) {
             $this->notify('success', 'Pengaturan sukses');
         }
 
@@ -278,7 +279,7 @@ class Admin extends AdminModule
     public function postSaveImages($id, $page)
     {
         foreach ($_POST['img'] as $key => $val) {
-            $query = $this->db('mlite_pasien_galleries_items')->where($key)->save(['title' => $val['title']]);
+            $query = $this->mysql('mlite_pasien_galleries_items')->where($key)->save(['title' => $val['title']]);
         }
 
         if ($query) {
@@ -320,7 +321,7 @@ class Admin extends AdminModule
                         }
                     }
 
-                    $query = $this->db('mlite_pasien_galleries_items')->save(['src' => serialize($src), 'gallery' => $id]);
+                    $query = $this->mysql('mlite_pasien_galleries_items')->save(['src' => serialize($src), 'gallery' => $id]);
                 } else {
                     $this->notify('failure', 'Exstensi berkas salah', 'jpg, png, gif');
                 }
@@ -339,9 +340,9 @@ class Admin extends AdminModule
     */
     public function getDeleteImage($id)
     {
-        $image = $this->db('mlite_pasien_galleries_items')->where($id)->oneArray();
+        $image = $this->mysql('mlite_pasien_galleries_items')->where($id)->oneArray();
         if (!empty($image)) {
-            if ($this->db('mlite_pasien_galleries_items')->delete($id)) {
+            if ($this->mysql('mlite_pasien_galleries_items')->delete($id)) {
                 $images = unserialize($image['src']);
                 foreach ($images as $src) {
                     if (file_exists(BASE_DIR.'/'.$src)) {
@@ -381,6 +382,11 @@ class Admin extends AdminModule
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'pasien_galleries', 'javascript']), 'footer');
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

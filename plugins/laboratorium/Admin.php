@@ -2,6 +2,7 @@
 namespace Plugins\Laboratorium;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
@@ -63,9 +64,9 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->db('poliklinik')->where('status', '1')->toArray();
-        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->db('penjab')->toArray();
+        $this->assign['poliklinik']     = $this->mysql('poliklinik')->where('status', '1')->toArray();
+        $this->assign['dokter']         = $this->mysql('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']       = $this->mysql('penjab')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -93,7 +94,7 @@ class Admin extends AdminModule
           $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
         }
 
-        $stmt = $this->db()->pdo()->prepare($sql);
+        $stmt = $this->mysql()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
@@ -103,7 +104,7 @@ class Admin extends AdminModule
         }
 
         if (isset($_POST['no_rawat'])){
-          $this->assign['reg_periksa'] = $this->db('reg_periksa')
+          $this->assign['reg_periksa'] = $this->mysql('reg_periksa')
             ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
             ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
             ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -146,15 +147,15 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
-      $this->assign['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
-      $this->assign['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->db('penjab')->toArray();
+      $this->assign['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
+      $this->assign['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
+      $this->assign['penjab'] = $this->mysql('penjab')->toArray();
       $this->assign['no_rawat'] = '';
       $this->assign['no_reg']     = '';
       $this->assign['tgl_registrasi']= date('Y-m-d');
       $this->assign['jam_reg']= date('H:i:s');
       if (isset($_POST['no_rawat'])){
-        $this->assign['reg_periksa'] = $this->db('reg_periksa')
+        $this->assign['reg_periksa'] = $this->mysql('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
           ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -204,7 +205,7 @@ class Admin extends AdminModule
     public function anyStatusDaftar()
     {
       if(isset($_POST['no_rkm_medis'])) {
-        $rawat = $this->db('reg_periksa')
+        $rawat = $this->mysql('reg_periksa')
           ->where('no_rkm_medis', $_POST['no_rkm_medis'])
           ->where('status_bayar', 'Belum Bayar')
           ->limit(1)
@@ -213,7 +214,7 @@ class Admin extends AdminModule
             $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $bg_status = 'text-danger';
           } else {
-            $result = $this->db('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $result = $this->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
@@ -224,7 +225,7 @@ class Admin extends AdminModule
           }
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
       } else {
-        $rawat = $this->db('reg_periksa')
+        $rawat = $this->mysql('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
           ->oneArray();
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar']]);
@@ -234,7 +235,7 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if (!$this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if (!$this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
 
         $_POST['status_lanjut'] = 'Ralan';
         $_POST['stts'] = 'Belum';
@@ -243,11 +244,11 @@ class Admin extends AdminModule
         $_POST['almt_pj'] = '-';
         $_POST['hubunganpj'] = '-';
 
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
+        $poliklinik = $this->mysql('poliklinik')->where('kd_poli', $this->settings('settings', 'laboratorium'))->oneArray();
 
         $_POST['biaya_reg'] = $poliklinik['registrasi'];
 
-        $pasien = $this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+        $pasien = $this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
 
       	$birthDate = new \DateTime($pasien['tgl_lahir']);
       	$today = new \DateTime("today");
@@ -274,9 +275,9 @@ class Admin extends AdminModule
         $_POST['status_poli'] = 'Lama';
         $_POST['kd_poli'] = $this->settings('settings', 'laboratorium');
 
-        $query = $this->db('reg_periksa')->save($_POST);
+        $query = $this->mysql('reg_periksa')->save($_POST);
       } else {
-        $query = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
+        $query = $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_pj' => $_POST['kd_pj']
         ]);
@@ -287,7 +288,7 @@ class Admin extends AdminModule
     public function anyPasien()
     {
       if(isset($_POST['cari'])) {
-        $pasien = $this->db('pasien')
+        $pasien = $this->mysql('pasien')
           ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
           ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
           ->asc('no_rkm_medis')
@@ -302,7 +303,7 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $rawat_jalan = $this->db('reg_periksa')
+      $rawat_jalan = $this->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -317,21 +318,21 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $pj_lab = $this->db('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+      $pj_lab = $this->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
       $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
       $qrCode = $file_url;
 
-      $pasien = $this->db('reg_periksa')
+      $pasien = $this->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->where('no_rawat', $_GET['no_rawat'])
         ->oneArray();
-      $dokter_perujuk = $this->db('periksa_lab')
+      $dokter_perujuk = $this->mysql('periksa_lab')
         ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
         ->group('no_rawat')
         ->oneArray();
-      $rows_periksa_lab = $this->db('periksa_lab')
+      $rows_periksa_lab = $this->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_GET['no_rawat'])
       ->toArray();
@@ -342,7 +343,7 @@ class Admin extends AdminModule
       foreach ($rows_periksa_lab as $row) {
         $jumlah_total_lab += $row['biaya'];
         $row['nomor'] = $no_lab++;
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+        $row['detail_periksa_lab'] = $this->mysql('detail_periksa_lab')
           ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
           ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
           ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
@@ -362,7 +363,7 @@ class Admin extends AdminModule
     }
     public function postHapus()
     {
-      $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
 
@@ -370,8 +371,8 @@ class Admin extends AdminModule
     {
 
       if($_POST['kat'] == 'laboratorium') {
-        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $periksa_lab = $this->db('periksa_lab')
+        $jns_perawatan = $this->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        $periksa_lab = $this->mysql('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $this->core->getUserInfo('username', null, true),
@@ -391,9 +392,9 @@ class Admin extends AdminModule
             'status' => 'Ralan'
           ]);
         if($periksa_lab) {
-          $template_laboratorium = $this->db('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+          $template_laboratorium = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
           foreach ($template_laboratorium as $row) {
-            $this->db('detail_periksa_lab')
+            $this->mysql('detail_periksa_lab')
               ->save([
                 'no_rawat' => $_POST['no_rawat'],
                 'kd_jenis_prw' => $_POST['kd_jenis_prw'],
@@ -421,7 +422,7 @@ class Admin extends AdminModule
 
     public function anySaveNilai()
     {
-      $this->db('detail_periksa_lab')
+      $this->mysql('detail_periksa_lab')
         ->where('no_rawat', $_REQUEST['no_rawat'])
         ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
         ->where('jam', $_REQUEST['jam'])
@@ -435,7 +436,7 @@ class Admin extends AdminModule
 
     public function anySaveKeterangan()
     {
-      $this->db('detail_periksa_lab')
+      $this->mysql('detail_periksa_lab')
         ->where('no_rawat', $_REQUEST['no_rawat'])
         ->where('tgl_periksa', $_REQUEST['tgl_periksa'])
         ->where('jam', $_REQUEST['jam'])
@@ -448,7 +449,7 @@ class Admin extends AdminModule
 
     public function postHapusLaboratorium()
     {
-      $this->db('periksa_lab')
+      $this->mysql('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
@@ -461,7 +462,7 @@ class Admin extends AdminModule
     public function anyRincian()
     {
 
-      $rows_periksa_lab = $this->db('periksa_lab')
+      $rows_periksa_lab = $this->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
@@ -472,7 +473,7 @@ class Admin extends AdminModule
       foreach ($rows_periksa_lab as $row) {
         $jumlah_total_lab += $row['biaya'];
         $row['nomor'] = $no_lab++;
-        $row['detail_periksa_lab'] = $this->db('detail_periksa_lab')
+        $row['detail_periksa_lab'] = $this->mysql('detail_periksa_lab')
           ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
           ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
           ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
@@ -486,7 +487,7 @@ class Admin extends AdminModule
 
     public function anyLayananLab()
     {
-      $layanan = $this->db('jns_perawatan_lab')
+      $layanan = $this->mysql('jns_perawatan_lab')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
@@ -501,7 +502,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->db('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
+        $rows = $this->mysql('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -521,7 +522,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->db('petugas')->like('nama', $key)->limit(10)->toArray();
+        $rows = $this->mysql('petugas')->like('nama', $key)->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -537,7 +538,7 @@ class Admin extends AdminModule
 
     public function postMaxid()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
+      $max_id = $this->mysql('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
       if(empty($max_id['no_rawat'])) {
         $max_id['no_rawat'] = '000000';
       }
@@ -549,7 +550,7 @@ class Admin extends AdminModule
 
     public function postMaxAntrian()
     {
-      $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'laboratorium'))->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+      $max_id = $this->mysql('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'laboratorium'))->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
       if(empty($max_id['no_reg'])) {
         $max_id['no_reg'] = '000';
       }
@@ -586,6 +587,11 @@ class Admin extends AdminModule
     protected function data_icd($table)
     {
         return new DB_ICD($table);
+    }
+
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
     }
 
 }

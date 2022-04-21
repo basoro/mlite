@@ -29,7 +29,7 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'bahasa_pasien', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_v2', 'cacat_fisik', '')");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
         `tanggal_periksa` date NOT NULL,
         `nomor_kartu` varchar(50) NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY,
@@ -37,41 +37,41 @@ return [
         `status_kirim` varchar(20) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
         `tanggal_batal` date NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL,
         `keterangan` varchar(250) NOT NULL PRIMARY KEY
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
         `tanggal_periksa` date NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL,
         `taskid` varchar(50) NOT NULL,
         `waktu` varchar(50) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
         `kd_dokter` varchar(20) NOT NULL,
         `kd_dokter_bpjs` varchar(20) DEFAULT NULL,
         `nm_dokter_bpjs` varchar(50) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
         ADD PRIMARY KEY (`kd_dokter`) USING BTREE;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_dokter_dpjpvclaim`
         ADD CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
         `kd_poli_rs` varchar(5) NOT NULL,
         `kd_poli_bpjs` varchar(15) NOT NULL,
         `nm_poli_bpjs` varchar(40) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
         ADD PRIMARY KEY (`kd_poli_rs`);");
 
-      $core->db()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
+      $core->mysql()->pdo()->exec("ALTER TABLE `maping_poli_bpjs`
         ADD CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
     },
