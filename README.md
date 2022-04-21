@@ -107,6 +107,11 @@ location  / {
     }
 }
 
+location ^~ /systems/data/ {
+    deny all;
+    return 403;
+}
+
 location  /admin {
     index index.php;
     try_files $uri $uri/ /admin/index.php?$args;
@@ -121,6 +126,11 @@ location  /lite {
     if (!-e $request_filename) {
         rewrite / /lite/index.php last;
     }
+}
+
+location ^~ /lite/systems/data/ {
+    deny all;
+    return 403;
 }
 
 location  /lite/admin {
