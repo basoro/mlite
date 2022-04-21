@@ -3,6 +3,7 @@ config.php
 kasir.zip
 webapps
 admin/tmp
+admin/pla.php
 tmp
 uploads
 /vendor/
