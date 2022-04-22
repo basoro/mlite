@@ -25,13 +25,24 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
+        if(MULTI_APP) {
+            $dbFile = BASE_DIR.'/systems/data/database.sdb';
 
-        $dbFile = BASE_DIR.'/systems/data/database.sdb';
-
-        if (file_exists($dbFile)) {
-            QueryWrapper::connect("sqlite:{$dbFile}");
+            if (file_exists($dbFile)) {
+                QueryWrapper::connect("sqlite:{$dbFile}");
+            } else {
+                $this->freshInstall();
+            }
         } else {
-            $this->freshInstall($dbFile);
+          QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+
+          $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
+          $check_db->execute();
+          $check_db = $check_db->fetch();
+
+          if(empty($check_db)) {
+              $this->freshInstall();
+          }
         }
 
         if (!is_dir(WEBAPPS_PATH)) {
@@ -83,10 +94,6 @@ abstract class Main
         }
 
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-
-        //if(empty($check_db)) {
-        //    $this->freshInstall();
-        //}
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
@@ -440,9 +447,16 @@ abstract class Main
         }
     }
 
-    private function freshInstall($dbFile)
+    private function freshInstall()
     {
-        QueryWrapper::connect("sqlite:{$dbFile}");
+
+        if(MULTI_APP) {
+            $dbFile = BASE_DIR.'/systems/data/database.sdb';
+            QueryWrapper::connect("sqlite:{$dbFile}");
+        } else {
+            QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
+        }
+
         $pdo = QueryWrapper::pdo();
 
         $core = $this;

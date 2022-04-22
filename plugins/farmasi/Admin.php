@@ -352,4 +352,9 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'farmasi', 'javascript']), 'footer');
     }
 
+    protected function mysql($table = NULL)
+    {
+        return new MySQL($table);
+    }
+
 }
