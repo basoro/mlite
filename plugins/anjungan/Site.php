@@ -711,7 +711,8 @@ class Site extends SiteModule
           'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
-          'running_text' => $this->settings->get('anjungan.text_apotek').' :: '.$jadwal,
+          'running_text' => $this->settings->get('anjungan.text_apotek'),
+          'jadwal' => $jadwal,
           'display' => $display
         ]);
 

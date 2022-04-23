@@ -60,7 +60,7 @@
     </tbody>
   </table>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-  	<h3><marquee>{loop: $running_text}<i class="fa fa-user-md"></i> {$value.nm_dokter} [{$value.nm_poli}] - {$value.jam_mulai} s/d  {$value.jam_selesai} WITA {/loop}</marquee></h3>
+  	<h3><marquee>{$running_text} :: {loop: $jadwal}<i class="fa fa-user-md"></i> {$value.nm_dokter} [{$value.nm_poli}] - {$value.jam_mulai} s/d  {$value.jam_selesai} WITA {/loop}</marquee></h3>
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
