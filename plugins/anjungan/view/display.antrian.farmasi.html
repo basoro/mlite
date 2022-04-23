@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="400">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script type='text/javascript' src='//cdn.jsdelivr.net/jquery.marquee/1.4.0/jquery.marquee.min.js'></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+      	background: #0264d6;
+      	height:calc(100vh);
+      	width:100%;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 0px;
+          width: calc(100% - 0px);
+          font-size: 0px;
+          color: #fff;
+          visibility: hidden;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+      tr:nth-child(even) {color: #ffffff;}
+
+      .marquee {
+        width: 100%;
+        overflow: hidden;
+        /* border: 1px solid #ccc; */
+        background:#0264d6;
+      }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Farmasi {$settings.nama_instansi}</h1>
+    <div class="col-md-7">
+   <div class="embed-responsive embed-responsive-16by9">
+            <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/{$vidio}?rel=0&modestbranding=1&cc_lang_pref=id&cc_load_policy=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1&playlist={$vidio}" allowfullscreen></iframe>
+          </div></div>
+  <div class="col-md-5">
+  <table class="table table-bordered table-striped lead text-primary">
+    <thead class="bg-primary">
+      <tr>
+        <th style= "background-color: #DA0037;" width="30%">Nama Pasien</th>
+        <th style= "background-color: #F9B208;" width="10%">No RM</th>
+      </tr>
+    </thead>
+  </table>
+  <div class="marquee" data-direction='up' data-duration='23000' startVisible='true' data-gap='10' data-duplicated='true' >
+  <table class="table table-bordered table-striped lead text-primary">
+    <tbody>
+      {loop: $display}
+      <tr>
+        <td width="30%">{$value.nm_pasien}</td>
+        <td width="10%">{$value.no_rkm_medis}</td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+    </div>
+  </div>
+      <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
+    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+  </div>
+</div>
+<footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+  <div class="canvas">
+    <p class="pull-right">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$powered}.
+    </p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+  </div>
+</footer>
+</body>
+</html>
+<script>
+$('.marquee').marquee()
+</script>

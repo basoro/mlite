@@ -1,0 +1,30 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/presensi/saveSettings')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>Latitude</label>
+                        <input type="text" name="presensi[lat]" class="form-control" value="{$settings.presensi.lat}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Longitude</label>
+                        <input type="text" name="presensi[lon]" class="form-control" value="{$settings.presensi.lon}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Distance</label>
+                        <input type="text" name="presensi[distance]" class="form-control" value="{$settings.presensi.distance}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Hello World</label>
+                        <textarea name="presensi[helloworld]" class="form-control" rows="8" cols="80">{$settings.presensi.helloworld}</textarea>
+                    </div>
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

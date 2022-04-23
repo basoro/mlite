@@ -31,6 +31,7 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
         $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
+        $this->route('anjungan/farmasi', 'getDisplayAntrianFarmasi');
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
         $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
@@ -710,7 +711,7 @@ class Site extends SiteModule
           'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
-          'running_text' => $jadwal,
+          'running_text' => $this->settings->get('anjungan.text_apotek').' :: '.$jadwal,
           'display' => $display
         ]);
 
@@ -873,6 +874,67 @@ class Site extends SiteModule
       die(json_encode($res));
       exit();
     }
+
+    public function getDisplayAntrianFarmasi()
+    {
+         $logo  = $this->settings->get('settings.logo');
+         $title = 'Display Antrian Farmasi';
+         $display = $this->_resultDisplayAntrianFarmasi();
+
+         $_username = $this->core->getUserInfo('fullname', null, true);
+         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+         $content = $this->draw('display.antrian.farmasi.html', [
+           'logo' => $logo,
+           'title' => $title,
+           'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+           'username' => $username,
+           'vidio' => $this->settings->get('anjungan.vidio'),
+           'tanggal' => $tanggal,
+           'running_text' => $this->settings->get('anjungan.text_farmasi'),
+           'display' => $display
+         ]);
+
+         $assign = [
+             'title' => $this->settings->get('settings.nama_instansi'),
+             'desc' => $this->settings->get('settings.alamat'),
+             'content' => $content
+         ];
+
+         $this->setTemplate("canvas.html");
+
+         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+         //exit();
+     }
+
+     public function _resultDisplayAntrianFarmasi()
+     {
+         $date = date('Y-m-d');
+         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+         $day = array(
+           'Sun' => 'AKHAD',
+           'Mon' => 'SENIN',
+           'Tue' => 'SELASA',
+           'Wed' => 'RABU',
+           'Thu' => 'KAMIS',
+           'Fri' => 'JUMAT',
+           'Sat' => 'SABTU'
+         );
+         $hari=$day[$tentukan_hari];
+         $rows = $this->db('reg_periksa')
+           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
+           ->where('tgl_peresepan', date('Y-m-d'))
+           ->where('status', 'ralan')
+           ->where('jam=jam_peresepan',true)
+           ->asc('jam')
+           ->toArray();
+
+         return $rows;
+     }
+
 
     public function getAjax()
     {
