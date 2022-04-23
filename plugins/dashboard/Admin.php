@@ -35,9 +35,8 @@ class Admin extends AdminModule
     $jam_jaga = [];
     $cek_rekap = [];
     $nama_pegawai = '';
-    $teks = explode(';', $this->settings->get('presensi.helloworld'));
-    $random_keys = array_rand($teks);
-    $teks = $teks[$random_keys];
+    $pengaturan_presensi = '';
+    $teks = array('');
     if ($presensi) {
       $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
@@ -47,7 +46,11 @@ class Admin extends AdminModule
       $cek_presensi = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
       $cek_rekap = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
       $jam_jaga = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      $teks = explode(';', $this->settings->get('presensi.helloworld'));
+      $pengaturan_presensi = $this->settings('presensi');
     }
+    $random_keys = array_rand($teks);
+    $teks = $teks[$random_keys];
     return $this->draw('main.html', [
       'settings' => $settings,
       'cek_presensi' => $cek_presensi,
@@ -56,7 +59,7 @@ class Admin extends AdminModule
       'presensi' => $presensi,
       'nama' => $nama_pegawai,
       'teks' => $teks,
-      'pengaturan_presensi' => $this->settings('presensi'),
+      'pengaturan_presensi' => $pengaturan_presensi,
       'notif_presensi' => $this->settings('settings', 'notif_presensi')
     ]);
   }

@@ -186,34 +186,34 @@
     <i class="fa fa-plus"></i> Presensi Online
   </a>
 </div>
-{if: $notif_presensi == 'true'}
-{if: $cek_presensi}
-<div class="alert alert-success coba" role="alert">
-  <div class="halo">
-    <b>Halo {$nama}</b>
-  </div>
-  <i class="fa fa-thumbs-up"></i> Anda Sudah Absen
-  <br>
-  <i>* {$teks} *</i>
-</div>
-{elseif: $cek_rekap}
-<div class="alert alert-info coba" role="alert">
-  <div class="halo">
-    <b>Halo {$nama}</b>
-  </div>
-  <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang Hari Ini <br>
-  <i>* {$teks} *</i>
-</div>
-{else}
-<div class="alert alert-warning coba" role="alert">
-  <div class="halo">
-    <b>Halo {$nama}</b>
-  </div>
-  <i class="fa fa-exclamation-triangle"></i> Anda Belum Absen <br>
-  <i>* {$teks} *</i>
-</div>
-{/if}
-{/if}
+  {if: $notif_presensi == 'true'}
+    {if: $cek_presensi}
+    <div class="alert alert-success coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-thumbs-up"></i> Anda Sudah Absen
+      <br>
+      <i>* {$teks} *</i>
+    </div>
+    {elseif: $cek_rekap}
+    <div class="alert alert-info coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang Hari Ini <br>
+      <i>* {$teks} *</i>
+    </div>
+    {else}
+    <div class="alert alert-warning coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-exclamation-triangle"></i> Anda Belum Absen <br>
+      <i>* {$teks} *</i>
+    </div>
+    {/if}
+  {/if}
 {/if}
 <!-- The Modal -->
 <div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
