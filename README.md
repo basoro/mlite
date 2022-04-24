@@ -4,7 +4,7 @@
 </p>
 
 <p>
-<img src="https://raw.githubusercontent.com/basoro/Khanza-Lite/master/mlite.png">
+<img src="https://raw.githubusercontent.com/basoro/khanza-lite/master/mlite.png">
 </p>
 <pre>
 Disclaimer
@@ -118,7 +118,7 @@ location  /admin {
 }
 ```
 
-Jika ada didalam folder, misalnya `Khanza-Lite`
+Jika ada didalam folder, misalnya `lite`
 
 ```bash
 location  /lite {

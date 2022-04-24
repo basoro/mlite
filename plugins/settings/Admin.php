@@ -16,7 +16,7 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
+    private $feed_url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
 
     public function init()
     {
@@ -226,7 +226,7 @@ class Admin extends AdminModule
 
         if (isset($_POST['check'])) {
 
-            $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
+            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -255,7 +255,7 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                $url = "https://api.github.com/repos/basoro/Khanza-Lite/commits/master";
+                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
                 $opts = [
                     'http' => [
                         'method' => 'GET',
@@ -268,9 +268,9 @@ class Admin extends AdminModule
                 $json = file_get_contents($url, false, stream_context_create($opts));
                 $obj = json_decode($json, true);
                 $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-                $this->download('https://github.com/basoro/Khanza-Lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/khanza-lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
-                $package = glob(BASE_DIR.'/Khanza-Lite-master.zip');
+                $package = glob(BASE_DIR.'/khanza-lite-master.zip');
                 if (!empty($package)) {
                     $package = array_shift($package);
                     $this->rcopy($package, BASE_DIR.'/tmp/latest.zip');
@@ -295,11 +295,11 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/themes', BASE_DIR.'/themes');
-            $this->rcopy(BASE_DIR.'/tmp/update/Khanza-Lite-master/vendor', BASE_DIR.'/vendor');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/vendor', BASE_DIR.'/vendor');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
