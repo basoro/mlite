@@ -3,7 +3,7 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("Khanza LITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', 'localhost');
+define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
 define('DBPASS', 'basoro');

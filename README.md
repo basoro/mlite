@@ -83,6 +83,20 @@ $ composer install
 7. Silahkan login dengan Username: admin dan Password: admin
 
 
+### Untuk pengembangan
+Anda bisa melakukan debuging dan proses pengembangan dengan menggunakan build-in server PHP dengan menjalankan perintah berikut diterminal (lingkungan Unix)
+
+```
+cd systems
+php -d max_execution_time=180 -S 0.0.0.0:8080 -t .. srv/router.php
+```
+
+Atau dalam lingkungan Windows dengan klik 2x pada file
+
+```
+systems\srv\startServer.bat
+```
+
 ### Peringatan!
 
 + Aktifasi modul-modul yang belum diaktifkan jika diperlukan, misalnya...
