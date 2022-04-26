@@ -1,7 +1,7 @@
 <style>
   html {
     height: 0;
-    background: url('{?=url()?}/themes/admin/img/wallpaper.jpeg') no-repeat center center fixed;
+    background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -22,14 +22,13 @@
     bottom: 120px;
     left: 80px;
     min-width: 600px;
-    color: #fff !important;
+    color: {$settings.text_color} !important;
   }
 
   p.title {
     position: absolute;
     bottom: 30px;
     left: 140px;
-    color: #fff !important;
     font-size: 32px;
   }
 
@@ -52,7 +51,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -63,7 +61,6 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
     }
 
@@ -111,7 +108,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -122,7 +118,6 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
     }
 
@@ -243,6 +238,7 @@
   </div>
 </div>
 <script>
+  {if: $presensi}
   function getDistanceFromLatLonInKm() {
     window.navigator.geolocation.getCurrentPosition(function(pos) {
       console.log(pos);
@@ -285,6 +281,7 @@
     },
     {timeout: 5000 , maximumAge: 0});
   }
+  {/if}
 
   $(document).ready(function () {
 

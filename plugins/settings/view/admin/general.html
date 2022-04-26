@@ -50,6 +50,20 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label>Wallpaper</label>
+                        <div>
+                          <img src="{?=url()?}/{$settings.wallpaper}" width="320" height="240" class="img-thumbnail" id="wallpaperPreview" style="cursor:pointer;" onclick="$('input[name=wallpaper]').click()" />
+                          <input type="file" name="wallpaper" class="form-control hidden" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Dashboard Text Color</label>
+                        <div id="text-color" class="input-group">
+                            <input type="text" name="text_color" class="form-control" value="{$settings.text_color}" required />
+                            <span class="input-group-addon"><i></i></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
                         <label>Tema Admin</label>
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
                             <option value="">Pilih tema</option>
@@ -369,6 +383,18 @@
   }, false);
   $("input[name=logo]").change(function() {
     reader.readAsDataURL(this.files[0]);
+  });
+
+  var wallpaper  = new FileReader();
+  wallpaper.addEventListener("load", function() {
+    $("#wallpaperPreview").attr('src', wallpaper.result);
+  }, false);
+  $("input[name=wallpaper]").change(function() {
+    wallpaper.readAsDataURL(this.files[0]);
+  });
+
+  $(function () {
+    $('#text-color').colorpicker();
   });
 
   var path='{?=url()?}/assets/img/';

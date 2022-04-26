@@ -47,6 +47,7 @@ class Admin extends AdminModule
 
     public function getGeneral()
     {
+        $this->_addHeaderFiles();
         $settings = $this->settings('settings');
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
@@ -119,9 +120,23 @@ class Admin extends AdminModule
         } else {
           $logo = $this->settings->get('settings.logo');
         }
+
+        if (($_wallpaper = isset_or($_FILES['wallpaper']['tmp_name'], false))) {
+            $img = new \Systems\Lib\Image;
+
+            if ($img->load($_wallpaper)) {
+                $wallpaper_ = uniqid('wallpaper_');
+                $img->save(UPLOADS."/settings/".$wallpaper_.".".$img->getInfos('type'));
+                $wallpaper = "uploads/settings/".$wallpaper_.".".$img->getInfos('type');
+            }
+        } else {
+          $wallpaper = $this->settings->get('settings.wallpaper');
+        }
+
         $errors = 0;
 
         $_POST['logo'] = $logo;
+        $_POST['wallpaper'] = $wallpaper;
 
         foreach ($_POST as $field => $value) {
             if (!$this->db('mlite_settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
@@ -570,6 +585,12 @@ class Admin extends AdminModule
         }
       }
       return $this->draw('cek.daftar.html');
+    }
+
+    private function _addHeaderFiles()
+    {
+      $this->core->addCSS(url('assets/css/bootstrap-colorpicker.css'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-colorpicker.js'), 'footer');
     }
 
     protected function mysql($table = NULL)

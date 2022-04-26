@@ -42,7 +42,7 @@
     <style>
       html {
         height: 0;
-        background: url('{?=url()?}/themes/admin/img/wallpaper.jpeg') no-repeat center center fixed;
+        background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
@@ -56,23 +56,23 @@
         background: transparent;
       }
       .dashboard_wall {
-        position: fixed; bottom: 120px; left: 80px;min-width:600px;color: #fff !important;
+        position: fixed; bottom: 120px; left: 80px;min-width:600px;color: {$settings.text_color} !important;
       }
       p.title {
-        position: absolute; bottom: 30px;left: 140px;color: #fff !important;font-size:32px;
+        position: absolute; bottom: 30px;left: 140px;font-size:32px;
       }
       p.alamat {
         position: absolute; bottom: 0px;left: 140px;font-size:16px;
       }
       @media (max-width: 768px) {
         .dashboard_wall {
-          position: fixed; bottom: 80px; left: 0px;min-width:600px;color: #fff !important;
+          position: fixed; bottom: 80px; left: 0px;min-width:600px;
         }
         img.logo {
           width: 80px;
         }
         p.title {
-          position: absolute; bottom: 10px;left: 80px;color: #fff !important;font-size:18px;
+          position: absolute; bottom: 10px;left: 80px;font-size:18px;
         }
         p.alamat {
           position: absolute; bottom: 0px;left: 80px;font-size:10px;
