@@ -1,0 +1,55 @@
+{template: inc/header.html}
+
+<!-- Page Header -->
+<header class="intro-header" style="background: #222;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="site-heading">
+                    <h1>{$page.title}</h1>
+                    <hr class="small">
+                    <span class="subheading">{$page.desc}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+            {if: $mlite.notify}
+            <div id="notify" class="alert alert-{$mlite.notify.type}">{$mlite.notify.text}</div>
+            {/if}
+            {loop: $news.posts}
+            <div class="post-preview">
+                <a href="{$value.url}">
+                        <h2 class="post-title">
+                            {$value.title}
+                        </h2>
+                    </a>
+                <p class="post-intro">{$value.content}</p>
+                <p class="post-meta">
+                    {?= sprintf('Ditulis oleh %s pada %s', $value.author.name, $value.published_at) ?}
+                    | <a href="{$value.url}#disqus_thread" data-disqus-identifier="{$value.disqus_identifier}">Belum ada komentar</a>
+                    | <i class="fa fa-tags"></i> {loop: $value.tags as $tag}{if: $key != 0}, {/if}<a href="{$tag.url}">{$tag.name}</a>{/loop}
+                </p>
+            </div>
+            <hr> {/loop}
+            <!-- Pager -->
+            <ul class="pager">
+                {if: isset($prev)}
+                <li class="previous">
+                    <a href="{$prev.url}">&larr; Artikel baru</a>
+                </li>
+                {/if} {if: isset($next)}
+                <li class="next">
+                    <a href="{$next.url}">Artikel lama &rarr;</a>
+                </li>
+                {/if}
+            </ul>
+        </div>
+    </div>
+</div>
+{template: inc/footer.html}

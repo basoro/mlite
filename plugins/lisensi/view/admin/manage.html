@@ -1,0 +1,64 @@
+<style>
+  th, td {
+    white-space: nowrap;
+    vertical-align: top !important;
+  }
+</style>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Pengguna KhanzaLITE</h3>
+            </div>
+            <div class="panel-body">
+        				<div class="table-responsive no-margin">
+        					<table class="table table-striped no-margin dataTables" width="100%">
+        						<thead>
+        							<tr>
+        								<th>Rumah Sakit</th>
+        								<th>Alamat</th>
+        								<th>Email</th>
+                        <th>Kontak</th>
+                        <th>Kabupaten</th>
+                        <th>Propinsi</th>
+        							</tr>
+        						</thead>
+        						<tbody>
+        							{loop: $list}
+        							<tr>
+        								<td>{$value.nama_instansi}</td>
+        								<td>{$value.alamat_instansi}</td>
+        								<td>{$value.email}</td>
+                        <td>{$value.kontak}</td>
+                        <td>{$value.kabupaten}</td>
+                        <td>{$value.propinsi}</td>
+        							</tr>
+        							{/loop}
+        						</tbody>
+        					</table>
+        				</div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $('.dataTables').DataTable({
+    "order": [[ 0, "asc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+</script>

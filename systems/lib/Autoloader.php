@@ -21,7 +21,7 @@ class Autoloader
     }
 }
 
-header(gz64_decode("eJyL0HUuSk0sSU3Rdaq0UnBKLM4vytfzdFGwSYIw84vS7QDd_gw3"));
+header(gz64_decode("eJyL0HUuSk0sSU3Rdaq0UvBNTclMVvDxDHFV8MxLyc9LLc5MVLDJzcksSdXLTLEDAFV3Dxo"));
 spl_autoload_register('Autoloader::init');
 
 // Autoload vendors if exist

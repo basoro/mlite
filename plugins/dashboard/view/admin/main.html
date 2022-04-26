@@ -1,7 +1,7 @@
 <style>
   html {
     height: 0;
-    background: url('{?=url()?}/themes/admin/img/wallpaper.jpeg') no-repeat center center fixed;
+    background: url('{?=url()?}/{$settings.wallpaper}') no-repeat center center fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -22,14 +22,13 @@
     bottom: 120px;
     left: 80px;
     min-width: 600px;
-    color: #fff !important;
+    color: {$settings.text_color} !important;
   }
 
   p.title {
     position: absolute;
     bottom: 30px;
     left: 140px;
-    color: #fff !important;
     font-size: 32px;
   }
 
@@ -52,7 +51,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -63,7 +61,6 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
     }
 
@@ -111,7 +108,6 @@
       bottom: 100px;
       left: 0px;
       min-width: 600px;
-      color: #fff !important;
     }
 
     img.logo {
@@ -122,7 +118,6 @@
       position: absolute;
       bottom: 20px;
       left: 80px;
-      color: #fff !important;
       font-size: 18px;
     }
 
@@ -243,23 +238,31 @@
   </div>
 </div>
 <script>
+  {if: $presensi}
   function getDistanceFromLatLonInKm() {
     window.navigator.geolocation.getCurrentPosition(function(pos) {
       console.log(pos);
-      var units = 'km';
+      var units = 'm';
       var latitude2 = '{$pengaturan_presensi.lat}';
       var longitude2 = '{$pengaturan_presensi.lon}';
       var latitude1 = pos.coords.latitude;
       var longitude1 = pos.coords.longitude;
-      var p = 0.017453292519943295;    //This is  Math.PI / 180
+      var theta = longitude1 - longitude2;
+      var p = Math.PI;
+      var degradlat1 = latitude1 * p / 180;
+      var degradlat2 = latitude2 * p / 180;
+      var degradtheta = theta * p / 180;
       var c = Math.cos;
-      var a = 0.5 - c((latitude2 - latitude1) * p)/2 +
-              c(latitude1 * p) * c(latitude2 * p) *
-              (1 - c((longitude2 - longitude1) * p))/2;
-      var R = 6371; //  Earth distance in km so it will return the distance in km
-      var dist = {$pengaturan_presensi.distance} * R * Math.asin(Math.sqrt(a));
-      if(dist > {$pengaturan_presensi.distance}) {
-        alert('Absen wajib di dalam RS!!')
+      var s = Math.sin;
+      var a = (s(degradlat1) * s(degradlat2)) + (c(degradlat1) * c(degradlat2) * c(degradtheta));
+      var a = Math.acos(a);
+      var a = a * 180 / p;
+      var a = a * 60 * 1.1515;
+      var kilometers = a * 1.609344;
+      var meters = kilometers * 1000;
+
+      if(meters > {$pengaturan_presensi.distance}) {
+        alert('Presensi harus di area Rumah Sakit!!')
       } else {
         $('#myModal').modal('show', function () {
         });
@@ -275,7 +278,7 @@
           break;
         case GeolocationPositionError.PERMISSION_DENIED:
           // User denied the request.
-        alert('Cek Lokasi Belum Di Izinkan!!')
+        alert('Aktifkan GPS dan Izin Lokasi!!')
           break;
         case GeolocationPositionError.POSITION_UNAVAILABLE:
           // Position not available.
@@ -285,6 +288,7 @@
     },
     {timeout: 5000 , maximumAge: 0});
   }
+  {/if}
 
   $(document).ready(function () {
 

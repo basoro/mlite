@@ -1,0 +1,48 @@
+<div class="row">
+    <div class="col-md-12">
+		<div class="table-responsive no-margin" style="border: none !important;">
+			<table class="table table-striped no-margin dataTables" width="100%">
+				<thead>
+					<tr>
+					    <th>No.</th>
+						<th>Nama Instansi</th>
+					</tr>
+				</thead>
+				<tbody>
+					{loop: $list}
+					<tr>
+					    <td><b>{$value.id}</b></td>
+						<td>
+                          <b>{$value.nama_instansi}</b><br>
+                          <small>
+                            {$value.alamat_instansi}<br>
+                            {$value.kabupaten} - {$value.propinsi}
+                          </small>
+                        </td>
+					</tr>
+					{/loop}
+				</tbody>
+			</table>
+		</div>
+    </div>
+</div>
+<script type="text/javascript">
+  $('.dataTables').DataTable({
+    "order": [[ 0, "asc" ]],
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     ""
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+</script>
