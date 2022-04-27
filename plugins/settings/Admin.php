@@ -266,7 +266,7 @@ class Admin extends AdminModule
             }
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
-                $this->tpl->set('error', "ZipArchive is required to update Khanza LITE.");
+                $this->tpl->set('error', "ZipArchive is required to update mLITE.");
             }
 
             if (!isset($_GET['manual'])) {

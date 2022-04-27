@@ -1,7 +1,7 @@
 <?php
 return [
     'name'          =>  'JKN Mobile V2',
-    'description'   =>  'Modul Khanza JKN Mobile API Versi 2',
+    'description'   =>  'Modul mLITE JKN Mobile API Versi 2',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '2022',
