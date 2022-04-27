@@ -498,7 +498,7 @@ class Admin extends AdminModule
                     'no_rawat' => $_POST['no_rawat'],
                     'tgl_periksa' => $_POST['tgl_periksa'],
                     'jam' => $_POST['jam_periksa'],
-                    'lokasi_gambar' => url($imgPath)
+                    'lokasi_gambar' => 'pages/upload/'.time().'.'.$img->getInfos('type')
                   ]);
                 echo json_encode(['status' => 'success', 'result' => url($imgPath)]);
             } else {
