@@ -497,39 +497,6 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
-    public function postBridgingBkd()
-    {
-        $jadwal = 0;
-        $year = date('Y');
-        $biodata = $this->mysql('pegawai')->select(['id' => 'id', 'nama' => 'nama', 'nip' => 'nik'])->where('nik', $_POST['nik'])->oneArray();
-        $day = cal_days_in_month(CAL_GREGORIAN, $_POST['bulan'], $year);
-        for ($i = 1; $i <= $day; $i++) {
-            $jad = $this->mysql('jadwal_pegawai')->select('h' . $i)->where('id', $biodata['id'])->where('tahun', $year)->where('bulan', $_POST['bulan'])->oneArray();
-            if ($jad['h' . $i] != "") {
-                $jadwal = $jadwal + 1;
-            }
-        }
-        $absen = $this->mysql('rekap_presensi')->where('id', $biodata['id'])->where('jam_datang', 'LIKE', '%' . $year . '-' . $_POST['bulan'] . '%')->toArray();
-        $jlh = count($absen);
-
-        $query = $this->mysql('bridging_bkd_presensi')->save([
-            'id' => $biodata['id'],
-            'nama' => $biodata['nama'],
-            'nip' => $biodata['nip'],
-            'tahun' => $year,
-            'bulan' => $_POST['bulan'],
-            'jumlah_kehadiran' => $jlh,
-            'jumlah_hari_kerja' => $jadwal,
-            'persentase_hari_kerja' => '0.33'
-        ]);
-        // print_r($query);
-        if ($query) {
-            $this->notify('success', 'Simpan Sukses');
-        } else {
-            $this->notify('failure', 'Gagal Simpan');
-        }
-    }
-
     public function getJavascript()
     {
         header('Content-type: text/javascript');
