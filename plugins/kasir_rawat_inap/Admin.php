@@ -29,7 +29,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_pulang'])) {
           $status_pulang = $_POST['status_pulang'];
         }
-        $cek_vclaim = $this->mysql('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
         return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
     }

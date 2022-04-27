@@ -455,7 +455,7 @@ class Admin extends AdminModule
     {
         $errors = 0;
 
-        $row_user = $this->mysql('mlite_users')->where('id', $this->core->getUserInfo('id'))->oneArray();
+        $row_user = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->oneArray();
 
         // location to redirect
         if (!$id) {
@@ -482,7 +482,7 @@ class Admin extends AdminModule
 
             if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
                 $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
-                $query = $this->mysql('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
+                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
             }
 
             if ($query) {

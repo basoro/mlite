@@ -728,7 +728,7 @@ class Site extends SiteModule
               echo $hitung['count'];
             break;
             case "layananunggulan":
-              $data[] = array_column($this->mysql('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
+              $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
               echo json_encode($data);
             break;
             case "lastblog":

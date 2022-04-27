@@ -17,7 +17,7 @@ class Site extends SiteModule
         $this->mlite['version']        = $this->core->settings->get('settings.version');
         $this->mlite['token']          = '  ';
         if ($this->_loginCheck()) {
-            //$vedika = $this->mysql('mlite_users')->where('username', $_SESSION['vedika_user'])->oneArray();
+            //$vedika = $this->db('mlite_users')->where('username', $_SESSION['vedika_user'])->oneArray();
             $this->mlite['vedika_user']    = $_SESSION['vedika_user'];
             $this->mlite['vedika_token']   = $_SESSION['vedika_token'];
         }
@@ -1284,11 +1284,11 @@ class Site extends SiteModule
     private function _login($username, $password)
     {
         // Check attempt
-        $attempt = $this->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->mysql('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
@@ -1300,7 +1300,7 @@ class Site extends SiteModule
 
         if ($row_username == $username && $row_password == $password) {
             // Reset fail attempts for this IP
-            $this->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
             $_SESSION['vedika_user']       = $row_username;
             $_SESSION['vedika_token']      = bin2hex(openssl_random_pseudo_bytes(6));
@@ -1310,12 +1310,12 @@ class Site extends SiteModule
             return true;
         } else {
             // Increase attempt
-            $this->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                 $attempt['expires'] = strtotime("+10 minutes");
 
                 $this->core->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
