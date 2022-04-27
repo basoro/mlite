@@ -1,5 +1,6 @@
 <?php
     namespace Plugins\Master;
+    use Systems\MySQL;
 
     use Systems\AdminModule;
     use Plugins\Master\Src\Dokter;
@@ -586,13 +587,13 @@
 
         public function postJnsPerawatanLabTemplateSave()
         {
-          $this->db('template_laboratorium')->save($_POST);
+          $this->mysql('template_laboratorium')->save($_POST);
           exit();
         }
 
         public function postJnsPerawatanLabTemplateHapus()
         {
-          $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
+          $this->mysql('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
           exit();
         }
 
@@ -1844,6 +1845,11 @@
             // MODULE SCRIPTS
             $this->core->addCSS(url([ADMIN, 'master', 'css']));
             $this->core->addJS(url([ADMIN, 'master', 'javascript']), 'footer');
+        }
+
+        protected function mysql($table = NULL)
+        {
+            return new MySQL($table);
         }
 
     }
