@@ -72,7 +72,7 @@ return [
 
         $avatar = uniqid('avatar').'.png';
         $core->db()->pdo()->exec('INSERT INTO `mlite_users` (`username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`)
-            VALUES ("admin", "Administrator", "Admin ganteng baik hati, suka menabung dan tidak sombong.", "$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i", "'.$avatar.'", "admin@basoro.org", "admin", "", "all")');
+            VALUES ("admin", "Administrator", "Admin ganteng baik hati, suka menabung dan tidak sombong.", "$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i", "'.$avatar.'", "info@mlite.id", "admin", "", "all")');
 
         if (!is_dir(UPLOADS."/users")) {
             mkdir(UPLOADS."/users", 0777);

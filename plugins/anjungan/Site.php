@@ -75,7 +75,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_anjungan'),
@@ -138,7 +138,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.poli.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_poli'),
@@ -285,7 +285,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.poli.kode.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'vidio' => $vidio,
@@ -324,7 +324,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.poli.display.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'vidio' => $this->settings->get('anjungan.vidio'),
@@ -466,7 +466,7 @@ class Site extends SiteModule
             $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'logo' => $logo,
-              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
               'username' => $username,
               'tanggal' => $tanggal,
               'show' => $show,
@@ -529,7 +529,7 @@ class Site extends SiteModule
             $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'logo' => $logo,
-              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
               'username' => $username,
               'tanggal' => $tanggal,
               'show' => $show,
@@ -584,7 +584,7 @@ class Site extends SiteModule
             $content = $this->draw('display.antrian.loket.html', [
               'title' => $title,
               'logo' => $logo,
-              'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+              'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
               'username' => $username,
               'tanggal' => $tanggal,
               'show' => $show,
@@ -630,7 +630,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.laboratorium.html', [
           'logo' => $logo,
           'title' => $title,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_laboratorium'),
@@ -708,7 +708,7 @@ class Site extends SiteModule
         $content = $this->draw('display.antrian.apotek.html', [
           'logo' => $logo,
           'title' => $title,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_apotek'),
@@ -889,7 +889,7 @@ class Site extends SiteModule
          $content = $this->draw('display.antrian.farmasi.html', [
            'logo' => $logo,
            'title' => $title,
-           'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+           'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
            'username' => $username,
            'vidio' => $this->settings->get('anjungan.vidio'),
            'tanggal' => $tanggal,
@@ -1358,7 +1358,7 @@ class Site extends SiteModule
         'title' => $title,
         'notify' => $this->core->getNotify(),
         'logo' => $logo,
-        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
         'jam_jaga' => $this->mysql('jam_jaga')->group('jam_masuk')->toArray()
@@ -1543,7 +1543,7 @@ class Site extends SiteModule
         $content = $this->draw('display.bed.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_poli'),
@@ -1612,7 +1612,7 @@ class Site extends SiteModule
         $content = $this->draw('sep.mandiri.html', [
           'title' => $title,
           'logo' => $logo,
-          'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
           'username' => $username,
           'tanggal' => $tanggal,
           'running_text' => $this->settings->get('anjungan.text_anjungan'),
@@ -1693,7 +1693,7 @@ class Site extends SiteModule
       $content = $this->draw('sep.mandiri.noka.norm.html', [
         'title' => $title,
         'logo' => $logo,
-        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'username' => $username,
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_anjungan'),
@@ -1785,7 +1785,7 @@ class Site extends SiteModule
       $content = $this->draw('sep.mandiri.bikin.html', [
         'title' => $title,
         'logo' => $logo,
-        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'username' => $username,
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_anjungan'),

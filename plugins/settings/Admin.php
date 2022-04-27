@@ -146,7 +146,7 @@ class Admin extends AdminModule
 
         if (!$errors) {
 
-            $url = "https://basoro.org/datars/save";
+            $url = "https://mlite.id/datars/save";
             $curlHandle = curl_init();
             curl_setopt($curlHandle, CURLOPT_URL, $url);
             curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
@@ -567,7 +567,7 @@ class Admin extends AdminModule
     public function anyCekDaftar()
     {
       if(isset($_POST['request_code'])) {
-        $url = "https://basoro.org/datars/aktif";
+        $url = "https://mlite.id/datars/aktif";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);

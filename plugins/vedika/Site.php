@@ -504,7 +504,7 @@ class Site extends SiteModule
         $display[] = $row;
       }
       $content = $this->draw('perbaikan_excel.html', [
-        'powered' => 'Powered by <a href="https://basoro.org/">KhanzaLITE</a>',
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'display' => $display
       ]);
 

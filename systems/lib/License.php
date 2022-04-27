@@ -10,7 +10,7 @@ class License
     const ERROR = 3;
     const TIME_OUT = 5;
 
-    private static $feedURL = 'https://basoro.org/datars/cek';
+    private static $feedURL = 'https://mlite.id/datars/cek';
 
     public static function verify($license)
     {

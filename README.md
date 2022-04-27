@@ -157,4 +157,4 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `admin` Kata sandi: `admin`
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
-Demo dan Info lebih lanjut di https://basoro.org
+Demo dan Info lebih lanjut di https://mlite.id
