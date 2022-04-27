@@ -67,6 +67,7 @@
                         <label>Tema Admin</label>
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
                             <option value="">Pilih tema</option>
+                            <option value="bootstrap"{if: $settings.theme_admin == 'bootstrap'} selected{/if}>Default</option>
                             <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
                             <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
                             <option value="cyborg"{if: $settings.theme_admin == 'cyborg'} selected{/if}>Cyborg</option>
@@ -74,6 +75,7 @@
                             <option value="flatly"{if: $settings.theme_admin == 'flatly'} selected{/if}>Flatly</option>
                             <option value="journal"{if: $settings.theme_admin == 'journal'} selected{/if}>Journal</option>
                             <option value="lumen"{if: $settings.theme_admin == 'lumen'} selected{/if}>Lumen</option>
+                            <option value="mlite"{if: $settings.theme_admin == 'mlite'} selected{/if}>mLITE</option>
                             <option value="paper"{if: $settings.theme_admin == 'paper'} selected{/if}>Paper</option>
                             <option value="readable"{if: $settings.theme_admin == 'readable'} selected{/if}>Readable</option>
                             <option value="sandstone"{if: $settings.theme_admin == 'sandstone'} selected{/if}>Sandstone</option>
@@ -398,7 +400,7 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;
