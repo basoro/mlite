@@ -61,7 +61,7 @@
 	<section id="login">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <img src="{?=url()?}/{$mlite.logo}" alt="logo"> <h2>Khanza<span>LITE</span></h2>
+                <img src="{?=url()?}/{$mlite.logo}" alt="logo"> <h2>m<span>LITE</span></h2>
             </div>
             <div class="panel-body">
         		<form action="{$_SERVER['REQUEST_URI']}" method="POST">
@@ -92,9 +92,11 @@
 		{/if}
 	</section>
 
-  <footer class="hidden-xs" style="text-align:right;margin: 10px;">
+  <footer class="visible-lg visible-md bg-primary" style="padding-bottom:30px;z-index:1000;">
+    <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
       {$mlite.powered}.
+    </p>
   </footer>
 
   <!-- PWA Support -->
