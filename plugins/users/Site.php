@@ -28,7 +28,7 @@ class Site extends SiteModule
         <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-        <title>KhanzaLITE</title>
+        <title>mLITE</title>
         <link rel="icon" href="'.url().'/favicon.png" type="image/ico">
         <link href="'.url().'/assets/css/bootstrap.min.css" rel="stylesheet">
         <link href="'.url().'/themes/admin/css/style.css" rel="stylesheet">

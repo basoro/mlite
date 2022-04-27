@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'IGD',
-        'description'   =>  'Modul igd untuk KhanzaLITE',
+        'description'   =>  'Modul igd untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

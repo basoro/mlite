@@ -9,7 +9,7 @@
 <pre>
 Disclaimer
 ==========
-Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE),
+Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut Medic LITE atau mLITE),
 saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
 Silahkan gunakan sewajarnya.

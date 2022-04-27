@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Dokter Ranap',
-        'description'   =>  'Modul dokter rawat inap untuk KhanzaLITE',
+        'description'   =>  'Modul dokter rawat inap untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

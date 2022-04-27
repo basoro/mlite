@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Kasir Rawat Inap',
-        'description'   =>  'Modul kasir rawat inap untuk KhanzaLITE',
+        'description'   =>  'Modul kasir rawat inap untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

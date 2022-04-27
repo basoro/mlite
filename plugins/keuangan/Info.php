@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Keuangan',
-        'description'   =>  'Modul Keuangan untuk KhanzaLITE',
+        'description'   =>  'Modul Keuangan untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

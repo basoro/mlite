@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Dokter IGD',
-        'description'   =>  'Modul dokter IGD untuk KhanzaLITE',
+        'description'   =>  'Modul dokter IGD untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

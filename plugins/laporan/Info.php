@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Laporan-Laporan',
-        'description'   =>  'Data laporan-laporan KhanzaLITE',
+        'description'   =>  'Data laporan-laporan mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Dokter Ralan',
-        'description'   =>  'Modul dokter rawat jalan untuk KhanzaLITE',
+        'description'   =>  'Modul dokter rawat jalan untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

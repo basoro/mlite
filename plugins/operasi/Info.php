@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Operasi',
-        'description'   =>  'Modul operasi dan VK di KhanzaLITE',
+        'description'   =>  'Modul operasi dan VK di mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',

@@ -2,7 +2,7 @@
 
     return [
         'name'          =>  'Rawat Jalan',
-        'description'   =>  'Modul pendaftaran layanan untuk KhanzaLITE',
+        'description'   =>  'Modul pendaftaran layanan untuk mLITE',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
         'compatibility' =>  '2022',
