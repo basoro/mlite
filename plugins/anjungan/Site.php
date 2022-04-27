@@ -924,7 +924,7 @@ class Site extends SiteModule
            'Sat' => 'SABTU'
          );
          $hari=$day[$tentukan_hari];
-         $rows = $this->db('reg_periksa')
+         $rows = $this->mysql('reg_periksa')
            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
            ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
            ->where('tgl_peresepan', date('Y-m-d'))
@@ -1359,7 +1359,7 @@ class Site extends SiteModule
         'title' => $title,
         'notify' => $this->core->getNotify(),
         'logo' => $logo,
-        'wallpaper' => $wallpaper, 
+        'wallpaper' => $wallpaper,
         'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
