@@ -26,7 +26,7 @@
     <link rel="icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
     <link rel="icon" sizes="256x256" href="{$mlite.path}/assets/images/icon-256x256.png" />
-    <link rel="apple-touch-icon" sizes="256x256" href="{$mlite.path}/assets/images/ticon-256x256.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="{$mlite.path}/assets/images/icon-256x256.png" />
     <link rel="icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
     <link rel="apple-touch-icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
     <link rel="icon" sizes="512x512" href="{$mlite.path}/assets/images/icon-512x512.png" />
@@ -34,9 +34,29 @@
     <!-- End PWA Support -->
     <script src="{$mlite.path}/assets/jscripts/jquery.min.js?v={$mlite.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$mlite.version) ?}"></script>
+    <style>
+    body {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: 100%;
+    }
+    body:before {
+        content: "";
+        position: absolute;
+        background: url('{?=url()?}/{$mlite.wallpaper}');
+        background-size: cover;
+        z-index: -1; /* Keep the background behind the content */
+        height: 20%; width: 20%; /* Using Glen Maddern's trick /via @mente */
+
+        /* don't forget to use the prefixes you need */
+        transform: scale(5);
+        transform-origin: top left;
+        filter: blur(2px);
+    }
+    </style>
 </head>
 
-<body style="background: url('{?=url()?}/{$mlite.wallpaper}') no-repeat center center fixed; margin:0;-webkit-background-size: cover;-moz-background-size: cover;-o-background-size: cover;background-size: cover;">
+<body>
 
 	<section id="login">
         <div class="panel panel-default">
