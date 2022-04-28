@@ -683,8 +683,8 @@ class Admin extends AdminModule
         case "besar":
         $result = $this->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('tgl_billing')->desc('jam_billing')->oneArray();
 
-        $result_detail['poliklinik'] = $this->mysql('poliklinik')
-          ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
+        $result_detail['kamar_inap'] = $this->mysql('kamar_inap')
+          ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
           ->where('reg_periksa.no_rawat', $_GET['no_rawat'])
           ->oneArray();
 

@@ -17,7 +17,7 @@ define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 define('ADMIN', 'admin');
 
 // Multi APP
-define('MULTI_APP', true);
+define('MULTI_APP', false);
 
 // Themes path
 define('THEMES', BASE_DIR . '/themes');
