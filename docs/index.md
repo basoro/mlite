@@ -403,71 +403,49 @@ File ini bertanggung jawab atas tampilah yang dilihat oleh pengguna. Jika plugin
 
 Dalam contoh di atas, variabel template `bar` baru telah dibuat yang, dengan memanggil metode `_foo()` dalam penginisialisasi plugin, dapat digunakan dalam file tema sebagai `{$bar}`. Selain itu, metode `routes()` telah membuat subrutin `/example` yang menunjuk ke pemanggilan metode `mySite()`. Jika Anda membuka `http://example.com/example`, Anda akan memanggil metode `mySite()`.
 
-### Language files
-
-The module can contain language variables that can be used in classes and views. Language files have a `.ini` extension and are located in the` lang` directory of the module.
-For example, if you want to add a language file containing English expressions for the administrative part of the `Example` module, you should create a new file in the `inc/modules/example/lang/admin /en_english.ini` path.
-The content should resemble the following listing:
-
-```
-full_name           = "Firstname and surname"
-email               = "E-mail"
-subject             = "Subject"
-message             = "Message"
-send                = "Send"
-send_success        = "Mail successfully sent. I will contact you soon."
-send_failure        = "Unable to send a message. Probably mail() function is disabled on the server."
-wrong_email         = "Submited e-mail address is incorrect."
-empty_inputs        = "Fill all required fields to send a message."
-antiflood           = "You have to wait a while before you will send another message."
-```
-
-Use the `$this->lang('subject')` construction in the module class and `{$lang.example.subject}` in view. For a class, we can leave the second parameter of the `lang` method, which is the name of the module.
-
-
 Routing
 -------
 
-Routing is the process of processing a received request address and deciding what should be run or displayed. It's supposed to call the appropriate method/function based on the URL of the page. You must use routing inside public `routes()` method.
+Perutean adalah proses memproses alamat permintaan yang diterima dan memutuskan apa yang harus dijalankan atau ditampilkan. Seharusnya memanggil metode/fungsi yang sesuai berdasarkan URL halaman. Anda harus menggunakan perutean di dalam metode `routes()` publik.
 
 ```php
 void route(string $pattern, mixed $callback)
 ```
 
-The first parameter of the `route` method is a regular expression. Some of the expressions have already been defined:
+Parameter pertama dari metode `route` adalah ekspresi reguler. Beberapa ekspresi telah didefinisikan:
 
 + `:any` — any string
 + `:int` — integers
 + `:str` — string that is a slug
 
-The second parameter is a method name or an anonymous function that passes any number of arguments defined in a regular expression.
+Parameter kedua adalah nama metode atau fungsi anonim yang melewati sejumlah argumen yang ditentukan dalam ekspresi reguler.
 
 #### Example
 ```php
 public function routes()
 {
-    // URL: http://example.com/blog
+    // URL: http://example.com/news
 
     // - by calling the method inside the module:
-    $this->route('blog', 'importAllPosts');
+    $this->route('news', 'importAllPosts');
 
     // - by calling an anonymous function:
-    $this->route('blog', function() {
+    $this->route('news', function() {
         $this->importAllPosts();
     });
 
-    // URL: http://example.com/blog/2
-    $this->route('blog/(:int)', function($page) {
+    // URL: http://example.com/news/2
+    $this->route('news/(:int)', function($page) {
         $this->importAllPosts($page);
     });
 
-    // URL: http://example.com/blog/post/lorem-ipsum
-    $this->route('blog/post/(:str)', function($slug) {
+    // URL: http://example.com/news/post/lorem-ipsum
+    $this->route('news/post/(:str)', function($slug) {
         $this->importPost($slug);
     });
 
-    // URL: http://example.com/blog/post/lorem-ipsum/4
-    $this->route('blog/post/(:str)/(:int)', function($slug, $page) {
+    // URL: http://example.com/news/post/lorem-ipsum/4
+    $this->route('news/post/(:str)/(:int)', function($slug, $page) {
         $this->importPost($slug, $page);
     });
 }
@@ -477,7 +455,7 @@ public function routes()
 Methods
 -------
 
-Modules have special facades that facilitate access to the methods inside the core. This allows you to shorten the calls of `$this->core->foo->bar`.
+Plugin memiliki trik khusus yang memfasilitasi akses ke metode skrip utama. Ini memungkinkan Anda untuk mempersingkat panggilan `$this->core->foo->bar`.
 
 ### db
 
@@ -485,7 +463,7 @@ Modules have special facades that facilitate access to the methods inside the co
 void db([string $table])
 ```
 
-Allows you to operate on a database. Details are described in the core section.
+Memungkinkan Anda untuk beroperasi pada database. Rincian dijelaskan di bagian inti.
 
 #### Arguments
 + `table` — Database table name *(optional)*
@@ -502,11 +480,11 @@ $this->db('table')->where('age', 20)->delete();
 string draw(string $file [, array $variables])
 ```
 
-Returns a compiled view code that has previously used template system tags. It also allows you to define variables by replacing the `set()` method.
+Mengembalikan kode tampilan terkompilasi yang sebelumnya menggunakan tag sistem template. Ini juga memungkinkan Anda untuk mendefinisikan variabel dengan mengganti metode `set()`.
 
-#### Arguments
-+ `file` — filename with a view inside the module or path to a file outside of it
-+ `variables` — an array of variable definitions that can be used as tags *(optional)*
+#### Argumen
++ `file` — nama file dengan tampilan di dalam plugin atau ke file di luarnya
++ `variabel` — definisi variabel yang dapat digunakan sebagai tag *(opsional)*
 
 #### Example
 ```php
@@ -517,39 +495,13 @@ $this->draw('form.html', ['form' => $this->formFields]);
 $this->draw('../path/to/view.html', ['foo' => 'bar']);
 ```
 
-
-### lang
-
-```php
-string lang(string $key [, string $module])
-```
-
-Returns the contents of the language array key from the current module or indicated by the second argument.
-
-#### Arguments
-+ `key` — the name of the language array key
-+ `module` — the name of the module from which you want to select the key *(optional)*
-
-#### Example
-```php
-// Reference to local translation
-$this->lang('foo');                 // $this->core->lang['module-name']['foo'];
-
-// Reference to general translation
-$this->lang('cancel', 'general');   // $this->core->lang['general']['cancel'];
-
-// Reference to the translation of "pages" module
-$this->lang('slug', 'pages')        // $this->core->lang['pages']['slug'];
-```
-
-
 ### notify
 
 ```php
 void notify(string $type, string $text [, mixed $args [, mixed $... ]])
 ```
 
-It allows you to call the notification to the user.
+Ini memungkinkan Anda untuk memanggil pemberitahuan kepada pengguna.
 
 #### Arguments
 + `type` — type of notification: *success* or *failure*
@@ -570,7 +522,7 @@ $this->notify('success', 'This is %s!', $foo); // $this->core->setNotify('succes
 mixed settings(string $module [, string $field [, string $value]])
 ```
 
-Gets or sets the value of the module settings.
+Mendapat atau menetapkan nilai pengaturan modul.
 
 #### Arguments
 + `module` — module name and optionally field separated by a period
@@ -579,14 +531,14 @@ Gets or sets the value of the module settings.
 
 #### Example
 ```php
-// Select the "desc" field from the "blog" module
-$this->settings('blog.desc');    // $this->core->getSettings('blog', 'desc');
+// Select the "desc" field from the "website" plugin
+$this->settings('website.desc');    // $this->core->getSettings('website', 'desc');
 
-// Select the "desc" field from the "blog" module
-$this->settings('blog', 'desc'); // $this->core->getSettings('blog', 'desc');
+// Select the "desc" field from the "website" plugin
+$this->settings('website', 'desc'); // $this->core->getSettings('website', 'desc');
 
-// Set the content of the "desc" field from the "blog" module
-$this->settings('blog', 'desc', 'Lorem ipsum...');
+// Set the content of the "desc" field from the "website" plugin
+$this->settings('website', 'desc', 'Lorem ipsum...');
 ```
 
 ### setTemplate
@@ -595,7 +547,7 @@ $this->settings('blog', 'desc', 'Lorem ipsum...');
 void setTemplate(string $file)
 ```
 
-Allows you to change the template file on the front. This method works only in the `Site` class.
+Memungkinkan Anda untuk mengubah file template di bagian depan. Metode ini hanya berfungsi di kelas `Site`.
 
 #### Arguments
 + `file` — The name of the template file
@@ -606,15 +558,15 @@ $this->setTemplate('index.html'); // $this->core->template = 'index.html';
 ```
 
 
-Core
+Systems
 ====
 
-This is the kernel/engine of mLITE, the most important part that is responsible for all its basic tasks. The core contains many definitions of constants, functions, and methods that you can use when writing modules.
+Ini adalah inti dari mLITE, bagian terpenting yang bertanggung jawab atas semua tugas dasarnya. Inti berisi banyak definisi konstanta, fungsi, dan metode yang dapat Anda gunakan saat menulis plugin.
 
 Constants
 ---------
 
-All definitions of constants are described in the first part of this documentation. To use them in a PHP file just call their names. Constants are particularly useful when building URLs and file paths.
+Semua definisi konstanta dijelaskan di bagian pertama dokumentasi ini. Untuk menggunakannya dalam file PHP, panggil saja namanya. Konstanta sangat berguna saat membuat URL.
 
 #### Example
 ```php
@@ -626,7 +578,7 @@ echo MODULES.'/contact/view/form.html';
 Functions
 ---------
 
-mLITE has several built-in helper functions that facilitate the creation of modules.
+mLITE memiliki beberapa fungsi pembantu bawaan yang memfasilitasi pembuatan plugin.
 
 ### domain
 
@@ -634,10 +586,10 @@ mLITE has several built-in helper functions that facilitate the creation of modu
 string domain([bool $with_protocol = true])
 ```
 
-Returns the domain name with http(s) or without.
+Mengembalikan nama domain dengan http (s) atau tanpa.
 
 #### Arguments
-+ `with_protocol` — it decides whether the address will be returned with or without protocol
++ `with_protocol` — itu memutuskan apakah alamat akan dikembalikan dengan atau tanpa protokol
 
 #### Return value
 String with the domain name.
@@ -655,14 +607,14 @@ echo domain(false);
 bool checkEmptyFields(array $keys, array $array)
 ```
 
-Checks whether the array contains empty elements. It is useful while validating forms.
+Memeriksa apakah array berisi elemen kosong. Ini berguna saat memvalidasi formulir.
 
 #### Arguments
 + `keys` — list of array items that the function has to check
 + `array` — source array
 
 #### Return value
-Returns `TRUE` when at least one item is empty. `FALSE` when all elements are completed.
+Mengembalikan `TRUE` ketika setidaknya satu item kosong. `FALSE` ketika semua elemen selesai.
 
 #### Example
 ```php
@@ -678,10 +630,10 @@ if(checkEmptyFields(['name', 'phone', 'email'], $_POST) {
 string currentURL([bool $query = false])
 ```
 
-Returns the current URL.
+Mengembalikan URL saat ini.
 
 #### Arguments
-+ `query` — it decides whether the address will be returned with or without query
++ `query` — itu memutuskan apakah alamat akan dikembalikan dengan atau tanpa permintaan
 
 #### Example
 ```php
@@ -699,7 +651,7 @@ echo currentURL(true);
 string createSlug(string $text)
 ```
 
-Translates text in non-lingual characters, dashes to spaces, and removes special characters. Used to create slashes in URLs and variable names in the template system.
+Menerjemahkan teks dalam karakter non-bahasa, tanda hubung ke spasi, dan menghapus karakter khusus. Digunakan untuk membuat garis miring di URL dan nama variabel dalam sistem template.
 
 #### Arguments
 + `text` — text to convert
@@ -720,7 +672,7 @@ echo createSlug('To be, or not to be, that is the question!');
 bool deleteDir(string $path)
 ```
 
-Recursive function that removes the directory and all its contents.
+Fungsi rekursif yang menghapus direktori dan semua isinya.
 
 #### Arguments
 + `path` — directory path
@@ -739,7 +691,7 @@ deleteDir('foo/bar');
 mixed getRedirectData()
 ```
 
-Returns the data passed to the session when using `redirect()`.
+Mengembalikan data yang diteruskan ke sesi saat menggunakan `redirect()`.
 
 #### Return value
 An array or `null`.
@@ -756,13 +708,13 @@ $postData = getRedirectData();
 string htmlspecialchars_array(array $array)
 ```
 
-Replaces special characters from array elements into HTML entities.
+Mengganti karakter khusus dari elemen array menjadi entitas HTML.
 
 #### Arguments
 + `array` — the array that will be converted
 
 #### Return value
-Returns the converted text.
+Mengembalikan teks yang dikonversi.
 
 #### Example
 ```php
@@ -776,14 +728,14 @@ $_POST = htmlspecialchars_array($_POST);
 mixed isset_or(mixed $var [, mixed $alternate = null ])
 ```
 
-Replaces an empty variable with an alternate value.
+Menggantikan variabel kosong dengan nilai alternatif.
 
 #### Arguments
 + `var` — variable
 + `alternate` — replacement value of the variable *(optional)*
 
 #### Return value
-Returns an alternative value.
+Mengembalikan nilai alternatif.
 
 #### Example
 ```php
@@ -796,13 +748,13 @@ $foo = isset_or($_GET['bar'], 'baz');
 mixed parseURL([ int $key = null ])
 ```
 
-Parses the current URL of the script.
+Parsing URL skrip saat ini.
 
 #### Arguments
 + `key` — URL parameter number *(optional)*
 
 #### Return value
-An array or its individual element.
+Array atau elemen individualnya.
 
 #### Example
 ```php
@@ -830,7 +782,7 @@ echo parseURL(2);
 void redirect(string $url [, array $data = [] ])
 ```
 
-Redirect to the specified URL. It allows you to save data from the array to a session. It is useful to memorize unsaved data from forms.
+Arahkan ulang ke URL yang ditentukan. Ini memungkinkan Anda untuk menyimpan data dari array ke sesi. Berguna untuk mengingat data yang belum disimpan dari formulir.
 
 #### Arguments
 + `url` — address to redirect
@@ -850,7 +802,7 @@ redirect('http://www.example.com/', $_POST);
 string url([ mixed $data = null ])
 ```
 
-Creates an absolute URL. The admin panel automatically adds a token.
+Membuat URL absolut. Panel admin secara otomatis menambahkan token.
 
 #### Arguments
 + `data` — string or array
@@ -877,7 +829,7 @@ echo url(['admin', 'foo', 'bar']);
 Methods
 -------
 
-In addition to functions, there are several important methods that speed up the process of creating new system functionality.
+Selain fungsi, ada beberapa metode penting yang mempercepat proses pembuatan fungsionalitas sistem baru.
 
 ### addCSS
 
@@ -885,7 +837,7 @@ In addition to functions, there are several important methods that speed up the 
 void addCSS(string $path)
 ```
 
-Imports the CSS file in the theme header.
+Mengimpor file CSS di header tema.
 
 #### Arguments
 + `path` — URL to file
@@ -903,7 +855,7 @@ $this->core->addCSS('http://example.com/style.css');
 void addJS(string $path [, string $location = 'header'])
 ```
 
-Imports the JS file in the header or footer of the theme.
+Mengimpor file JS di header atau footer tema.
 
 #### Arguments
 + `path` — URL to file
@@ -930,7 +882,7 @@ Adds a string to the header or footer.
 
 #### Example
 ```php
-$this->core->append('<meta name="author" content="Bruce Wayne">', 'header');
+$this->core->append('<meta name="author" content="Basoro">', 'header');
 ```
 
 
@@ -940,7 +892,7 @@ $this->core->append('<meta name="author" content="Bruce Wayne">', 'header');
 array getModuleInfo(string $dir)
 ```
 
-Returns module information. This method works only in the `Admin` class.
+Mengembalikan informasi modul. Metode ini hanya berfungsi di kelas `Admin`.
 
 #### Arguments
 + `name` — module directory name
@@ -960,7 +912,7 @@ $foo = $this->core->getModuleInfo('contact');
 mixed getSettings([string $module = 'settings', string $field = null])
 ```
 
-Gets the value of the module settings. By default these are the main mLITE settings.
+Mendapatkan nilai dari pengaturan modul. Secara default ini adalah pengaturan mLITE utama.
 
 #### Arguments
 + `module` — module name *(optional)*
@@ -981,7 +933,7 @@ echo $this->core->getSettings('blog', 'title');
 string getUserInfo(string $field [, int $id ])
 ```
 
-Returns information about the logged in user or the user with the given ID. This method works only in the `Admin` class.
+Mengembalikan informasi tentang pengguna yang masuk atau pengguna dengan ID yang diberikan. Metode ini hanya berfungsi di kelas `Admin`.
 
 #### Arguments
 + `field` — field name in the database
@@ -1024,11 +976,7 @@ $this->core->setNotify('success', 'This is %s!', $foo);
 Database
 --------
 
-The database used in mLITE is SQLite version 3. For its use CMS uses a simple class that makes it easy to build queries. You do not need to know SQL to be able to operate it.
-
-In addition, we recommend [phpLiteAdmin](https://phpliteadmin.com) tool for database management. This is a one-file PHP script similar to *phpMyAdmin*, where you can administer mLITE tables. This will allow you to familiarize yourself with the structure of existing tables.
-The database file is located in `inc/data/database.sdb`.
-
+Basis data yang digunakan pada mLITE adalah MySQL dan SQLite versi 3. Untuk penggunaannya mLITE menggunakan class sederhana yang memudahkan untuk membangun query. Anda tidak perlu tahu SQL untuk dapat mengoperasikannya.
 
 ### SELECT
 
@@ -1149,7 +1097,7 @@ $rows = $this->core->db('table')->orHaving('COUNT(*)', '>', 5)->toArray();
 
 ### INSERT
 
-The `save` method can add a new record to the table or update an existing one when it has a condition. When you add a new record, identification number will be returned.
+Metode `save` dapat menambahkan catatan baru ke tabel atau memperbarui yang sudah ada ketika memiliki kondisi. Ketika Anda menambahkan catatan baru, nomor identifikasi akan dikembalikan.
 
 ```php
 // Add a new record
@@ -1164,7 +1112,7 @@ $this->core->db('table')->where('age', 50)->save(['name' => 'James Gordon', 'cit
 
 ### UPDATE
 
-Updating records in case of success will return `TRUE`. Otherwise it will be `FALSE`.
+Memperbarui catatan jika berhasil akan mengembalikan `TRUE`. Jika tidak, itu akan menjadi `FALSE`.
 
 ```php
 // Changing one column
@@ -1184,7 +1132,7 @@ $this->core->db('table')->where('age', 65)->set('age', 70)->set('name', 'Alfred 
 
 ### DELETE
 
-Successful deletion of records returns their number.
+Penghapusan catatan yang berhasil mengembalikan nomornya.
 
 ```php
 // Delete record with `id` equal to 1
@@ -1230,7 +1178,7 @@ $this->core->db('table')->offset(10)->limit(5)->toJson();
 
 ### PDO
 
-Not all queries can be created using the above methods *(e.g. creating or deleting a table)*, so you can also write queries using [PDO](http://php.net/manual/en/book.pdo.php):
+Tidak semua kueri dapat dibuat menggunakan metode di atas *(mis. membuat atau menghapus tabel)*, jadi Anda juga dapat menulis kueri menggunakan [PDO](http://php.net/manual/en/book.pdo.php):
 
 ```php
 $this->core->db()->pdo()->exec("DROP TABLE `example`");
@@ -1240,7 +1188,7 @@ $this->core->db()->pdo()->exec("DROP TABLE `example`");
 Template system
 ---------------
 
-Operating the template system is easy and is based primarily on two methods. One allows assigning variables, while the other returns the compiled code. In exceptional situations, the other two methods are useful.
+Mengoperasikan sistem template itu mudah dan terutama didasarkan pada dua metode. Satu memungkinkan menetapkan variabel, sementara yang lain mengembalikan kode yang dikompilasi. Dalam situasi luar biasa, dua metode lainnya berguna.
 
 ### set
 
@@ -1248,7 +1196,7 @@ Operating the template system is easy and is based primarily on two methods. One
 void set(string $name, mixed $value)
 ```
 
-Assigns a value or function to a variable that can be used in views.
+Menetapkan nilai atau fungsi ke variabel yang dapat digunakan dalam tampilan.
 
 #### Arguments
 + `name` — variable name
@@ -1273,7 +1221,7 @@ $this->tpl->set('bar', function() {
 string draw(string $file)
 ```
 
-Returns a compiled view code that has previously used template system tags.
+Mengembalikan kode tampilan terkompilasi yang sebelumnya menggunakan tag sistem template.
 
 #### Arguments
 + `file` — file path
@@ -1283,7 +1231,7 @@ A string, i.e. a compiled view.
 
 #### Example
 ```php
-$this->tpl->draw(MODULES.'/galleries/view/admin/manage.html');
+$this->tpl->draw(MODULES.'/pasien/view/admin/manage.html');
 ```
 
 
@@ -1293,7 +1241,7 @@ $this->tpl->draw(MODULES.'/galleries/view/admin/manage.html');
 string noParse(string $text)
 ```
 
-Protects against compiling template system tags.
+Melindungi dari kompilasi tag sistem template.
 
 #### Arguments
 + `text` — string to be left unchanged
@@ -1310,7 +1258,7 @@ $this->tpl->noParse('Place this tag in website template: {$contact.form}');
 array noParse_array(array $array)
 ```
 
-Protects against compiling template system tags inside the array.
+Melindungi dari kompilasi tag sistem template di dalam larik.
 
 #### Arguments
 + `array` — array to be left unchanged
