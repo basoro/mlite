@@ -1,21 +1,21 @@
-General
-=======
+Instruksi Umum
+==============
 
-mLITE is a medical management system that is simple, light and fast. It was first released in May 2019. The free version of the application is shared under a [license](/license) that requires leaving information about the authors and backlinks. With this documentation you will learn how to install, configure and create your own modules and themes.
+mLITE adalah sistem manajemen kesehatan yang sederhana, ringan dan cepat. Pertama kali dirilis pada Mei 2019. Versi gratis dari aplikasi ini dibagikan di bawah [lisensi](/lisensi) yang mengharuskan meninggalkan informasi tentang penulis dan tautan balik. Dengan dokumentasi ini Anda akan belajar cara menginstal, mengkonfigurasi, dan membuat modul dan tema Anda sendiri.
 
-The documentation is divided into several sections. The first is for general instructions, the second is for web designers, and the last two are for web developers.
+Dokumentasi dibagi menjadi beberapa bagian. Yang pertama adalah untuk instruksi umum, yang kedua untuk pengembang forntend, dan yang terakhir untuk pengembang backend.
 
 
-Requirements
-------------
+Persyaratan
+-----------
 
-System requirements for mLITE are modest, so every modern server should suffice.
+Persyaratan sistem untuk mLITE sangat sederhana, jadi setiap server modern sudah mencukupi.
 
 + Apache 2.2+ with `mod_rewrite`
 + PHP version 5.6+
 + Access to SQLite
 
-PHP configuration must have the following extensions:
+Konfigurasi PHP harus memiliki ekstensi berikut:
 
 + dom
 + gd
@@ -25,82 +25,81 @@ PHP configuration must have the following extensions:
 + cURL
 
 
-Installation
-------------
+Instalasi
+---------
 
-First download the latest version of [mLITE](http://mlite.id/download/latest).
+Pertama unduh versi terbaru [mLITE](https://github.com/basoro/khanza-lite/tree/mlite).
 
-Extract all files from the compressed package and then transfer them to the local directory or remote server. In the case of a remote server, connect to it via a (S)FTP client, such as the free [FileZilla](https://filezilla-project.org) program. Usually, files should be uploaded to `www`, `htdocs` or `public_html`.
+Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Untuk server cloud, sambungkan melalui klien (S)FTP, seperti program [FileZilla](https://filezilla-project.org) gratis. Biasanya, file harus diunggah ke `www`, `htdocs` atau `public_html`.
 
-**Warning!** Make sure the `.htaccess` file is also on the server. Without it the CMS will not work.
+**Peringatan!** Pastikan file `.htaccess` juga ada di server. Tanpa itu mLITE tidak akan berfungsi.
 
-Some servers may require additional permissions `chmod 777` for the following directories and files:
+Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file berikut:
 
 + tmp/
 + uploads/
 + admin/tmp/
 + inc/data/
-+ inc/data/database.sdb
++ webapps/
 
-Open your browser and navigate to the address where the mLITE's files are located. You should see a default template with sample content.
+Buka browser Anda dan arahkan ke alamat tempat file mLITE berada. Tunggu beberapa saat sampai proses instalasi dibelakang layar selesai.
 
-To go to the administration panel, add `/admin/` at the end of the URL. **The initial login and password are *"admin"*.** It should be changed right after login for security reasons. We also recommend rename the directory with the administration panel. *(you need to then change the constant value in the defines file)*.
+Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL. **Login dan kata sandi awal adalah *"admin"*.** Ini harus diubah segera setelah login untuk alasan keamanan. Kami juga merekomendasikan mengganti nama direktori dengan panel administrasi. *(Anda perlu mengubah nilai konstanta dalam file definisi di config.php)*.
 
 
-Configuration
+Konfigurasi
 -------------
 
-CMS can be configured by editing the settings in the administration panel and through the definition file. However, we do not recommend changing the configuration in the file if you are an inexperienced person.
+mLITE dapat dikonfigurasi dengan mengedit pengaturan di panel administrasi dan melalui file definisi. Namun, kami tidak menyarankan mengubah konfigurasi dalam file jika Anda adalah orang yang tidak berpengalaman.
 
-### Administration panel
-To change the basic configuration in the admin panel, select the `Settings` tab. You can enter a page name, description or keywords in the meta tags, as well as elsewhere in the default template, such as in the header. You can also change the homepage, default language *(separately for the website and the panel)*, define the footer content, and choose the editor *(HTML or WYSIWYG)* that will be available when editing subpages and blog posts.
+### Panel Administrasi
+Untuk mengubah konfigurasi dasar di panel admin, pilih tab `Pengaturan`. Anda dapat memasukkan nama instansi, deskripsi atau kata kunci di tag meta, serta di tempat lain di template default, seperti di header. Anda juga dapat mengubah default tampilan beranda.
 
-You will change the configuration of the remaining modules in the tabs corresponding to their names.
+Anda akan mengubah konfigurasi modul yang tersisa di tab yang sesuai dengan namanya.
 
 ### Defines file
-More advanced things you can change in the `inc/core/defines.php` file, which contains definitions of constant variables.
+More advanced things you can change in the `config.php` file, which contains definitions of constant variables.
 
 + `ADMIN` — the directory name that contains the administration panel
++ `MULTI_APP` — mode multiple app with storing setting to SqLITE
 + `THEMES` — path to the directory containing the themes
 + `MODULES` — path to the directory containing the modules
 + `UPLOADS` — path to the directory containing the uploaded files
 + `FILE_LOCK` — lock the ability to edit files through the administration panel
 + `BASIC_MODULES` — list of basic modules that can not be removed
-+ `HTML_BEAUTY` — nice HTML formatting after parsing
 + `DEV_MODE` — developer mode, where PHP errors and notes are displayed
 
 
 Update
 ------
 
-If you want to keep up to date with all the latest news, bug fixes and security issues, you should regularly check for mLITE updates. You can do this in the `Settings -> Updates` tab. The system will check for a new version of the script and automatically download a new package from our server and update the core files and modules.
+Jika Anda ingin tetap up to date dengan semua berita terbaru, perbaikan bug dan masalah keamanan, Anda harus secara teratur memeriksa pembaruan mLITE. Anda dapat melakukannya di tab `Pengaturan -> Pembaruan`. Sistem akan memeriksa versi baru skrip dan secara otomatis mengunduh paket baru dari server kami dan memperbarui file dan modul inti.
 
-In case of complications you can use manual mode. To do this, download the latest version of mLITE, upload it to the main application directory, and then add the `&manual` parameter to the end of the update's bookmark URL. The CMS should detect a zipped package and when you click on the update button, the process of extracting and overwriting the files will be performed.
+Jika terjadi komplikasi, Anda dapat menggunakan mode manual. Untuk melakukannya, unduh mLITE versi terbaru, unggah ke direktori aplikasi utama, lalu tambahkan parameter `&manual` di akhir URL bookmark pembaruan. CMS akan mendeteksi paket zip dan ketika Anda mengklik tombol update, proses mengekstrak dan menimpa file akan dilakukan.
 
-Before each update, mLITE creates a backup. You will find it in the script directory, in the `backup/` folder. If an update has failed, you can restore it at any time.
+Sebelum setiap pembaruan, mLITE membuat cadangan. Anda akan menemukannya di direktori skrip, di folder `backup/`. Jika pembaruan gagal, Anda dapat memulihkannya kapan saja.
 
 
 Themes
 ======
 
-Structure
----------
+Struktur
+--------
 
-The structure of themes in mLITE is very simple. Just create a new folder in the `themes/` directory and the following files:
+Struktur tema dalam mLITE sangat sederhana. Cukup buat folder baru di direktori `themes/` dan file-file berikut:
 
-+ `index.html` — default template for subpages
-+ `manifest.json` — theme informations
-+ `preview.png` — screenshot showing the theme *(optional)*
++ `index.html` — template default untuk subhalaman
++ `manifest.json` — informasi tema
++ `preview.png` — tangkapan layar yang menunjukkan tema *(opsional)*
 
-Each subpage can use another template, so besides the mentioned file, you can also create another, eg `xyz.html`. Template selection is available in the admin panel while creating a page. There are no rules about CSS and JS files. There is full freedom.
+Setiap subhalaman dapat menggunakan template lain, jadi selain file yang disebutkan, Anda juga dapat membuat yang lain, misalnya `xyz.html`. Pemilihan template tersedia di panel admin saat membuat halaman. Tidak ada aturan tentang file CSS dan JS. Ada kebebasan penuh.
 
-In the theme folder you can also create your own module views. To do this, you need to create a directory `modules/module_name` and `*.html` files with names corresponding to the names of the original views. For example, the view of the contact form should be contained in the following path: `themes/theme_name/modules/contact/form.html`. mLITE automatically detects a new view and uses it instead of the module default view.
+Di folder tema Anda juga dapat membuat tampilan modul Anda sendiri. Untuk melakukan ini, Anda perlu membuat direktori `plugins/plugin_name` dan file `*.html` dengan nama yang sesuai dengan nama tampilan asli. Misalnya, tampilan formulir kontak harus dimuat dalam jalur berikut: `themes/theme_name/plugins/contact/form.html`. mLITE secara otomatis mendeteksi tampilan baru dan menggunakannya sebagai ganti tampilan default modul.
 
-
-Template tags
+Tag template
 -------------
 
-CMS uses a simple template system that includes the following tags:
+mLITE menggunakan sistem templat sederhana yang menyertakan tag berikut:
 
 ### Variables
 ```php
@@ -109,7 +108,7 @@ CMS uses a simple template system that includes the following tags:
 {$foo|cut:10} // content of the variable cut to 10 characters
 {$foo.bar}    // array
 ```
-Access to the elements of the array is done by a dot character.
+Akses ke elemen array dilakukan oleh karakter titik.
 
 ### Conditions
 ```php
@@ -138,7 +137,7 @@ Access to the elements of the array is done by a dot character.
 {/loop}
 </ul>
 ```
-The loop tag has 3 stages of expansion. The first is an array variable that the template system will break into three variables named `$key`,` $value` and `$counter`, which counts successive iterations starting from zero. The second step allows you to specify the name of the variable that holds the value, and the third is also the name of the index variable.
+Tag loop memiliki 3 tahap ekspansi. Yang pertama adalah variabel array yang sistem template akan pecah menjadi tiga variabel bernama `$key`,` $value` dan `$counter`, yang menghitung iterasi berturut-turut mulai dari nol. Langkah kedua memungkinkan Anda menentukan nama variabel yang menyimpan nilai, dan langkah ketiga juga merupakan nama variabel indeks.
 
 ### Include template files
 ```html
@@ -157,7 +156,7 @@ The loop tag has 3 stages of expansion. The first is an array variable that the 
 ```php
 Today&grave;s date: {?= date('Y-m-d') ?}
 ```
-If you leave the character `=`, the code will just execute and nothing will display. This allows you, for example, to define new variables within a template:
+Jika Anda membiarkan karakter `=`, kode hanya akan dijalankan dan tidak ada yang ditampilkan. Ini memungkinkan Anda, misalnya, untuk mendefinisikan variabel baru dalam template:
 ```php
 {? $foo = 5 ?}
 ```
@@ -166,56 +165,44 @@ If you leave the character `=`, the code will just execute and nothing will disp
 ```
 {noparse}Use the {$ contact.form} tag to display contact form.{/noparse}
 ```
-Any tags inside the *noparse* expression will remain unchanged.
+Tag apa pun di dalam ekspresi *noparse* akan tetap tidak berubah.
 
 ### Comments
 ```
 {* this is a comment *}
 ```
-Comments are not visible in the source file after compiling the template.
+Komentar tidak terlihat di file sumber setelah mengkompilasi template.
 
-### Languages
-```
-{lang: pl_polski}
-    Witaj świecie!
-{/lang}
-{lang: en_english}
-    Hello world!
-{/lang}
-```
-If you want to customize the template elements for a particular language, use the tags above.
-
-
-System variables
+Variabel sistem
 ----------------
-mLITE, like its modules, provides many variables *(usually arrays)* that serve to display each page element. Here are the most important ones:
+mLITE, seperti pluginnya, menyediakan banyak variabel *(biasanya array)* yang berfungsi untuk menampilkan setiap elemen halaman. Berikut adalah yang paling penting:
 
-+ `{$settings.pole}` — an array element containing the value of the given mLITE settings field
-+ `{$settings.moduł.pole}` — an array element containing the value of the module settings field
-+ `{$mlite.path}` — stores the path where the system resides
-+ `{$mlite.lang}` — displays currently used language
-+ `{$mlite.notify}` — the last notification
-+ `{$mlite.notify.text}` - notification text
-+ `{$mlite.notify.type}` - message type corresponding to the Bootstrap classes *(danger, success)*
-+ `{$mlite.header}` —  additional meta tags, JS scripts and CSS style sheets loaded by modules
-+ `{$mlite.footer}` — additional JS scripts loaded by modules
-+ `{$mlite.theme}` — displays the path to the active theme with the host
-+ `{$mlite.powered}` — displays *Powered by mLITE* with a link to the official site
-+ `{$navigation.xyz}` — displays a list of `<li>` navigation elements
-+ `{$page.title}` — displays the name of the subpage
-+ `{$page.content}` — displays the contents of the subpage
++ `{$settings.pole}` — elemen larik yang berisi nilai bidang pengaturan mLITE yang diberikan
++ `{$settings.moduł.pole}` — elemen larik yang berisi nilai bidang pengaturan modul
++ `{$mlite.path}` — menyimpan jalur tempat sistem berada
++ `{$mlite.lang}` — menampilkan bahasa yang sedang digunakan
++ `{$mlite.notify}` — pemberitahuan terakhir
++ `{$mlite.notify.text}` - teks notifikasi
++ `{$mlite.notify.type}` - jenis pesan yang sesuai dengan kelas Bootstrap *(bahaya, sukses)*
++ `{$mlite.header}` — tag meta tambahan, skrip JS, dan lembar gaya CSS dimuat oleh modul
++ `{$mlite.footer}` — skrip JS tambahan dimuat oleh modul
++ `{$mlite.theme}` — menampilkan jalur ke tema aktif dengan host
++ `{$mlite.powered}` — menampilkan *Didukung oleh mLITE* dengan tautan ke situs resmi
++ `{$navigation.xyz}` — menampilkan daftar elemen navigasi `<li>`
++ `{$page.title}` — menampilkan nama subhalaman
++ `{$page.content}` — menampilkan konten subhalaman
 
-Example
+Contoh
 -------
 
 ### manifest.json
 
 ```
 {
-    "name": "Example",
+    "name": "Contoh",
     "version": "1.0",
-    "author": "Bruce Wayne",
-    "email": "contact@waynecorp.com",
+    "author": "Basoro",
+    "email": "contact@mlite.id",
     "thumb": "preview.png"
 }
 ```
@@ -257,37 +244,27 @@ Example
 </html>
 ```
 
-Modules
+Plugins
 =======
 
-Structure
----------
+Struktur
+--------
 
-Each module, like the themes, must be in a separate folder created in the `inc/modules/` path. Please note that the directory does not contain uppercase and special characters, such as spaces.
+Setiap plugin, seperti tema, harus berada dalam folder terpisah yang dibuat di jalur `plugins/`. Harap dicatat bahwa direktori tidak mengandung huruf besar dan karakter khusus, seperti spasi.
 
-Podczas tworzenia modułu należy zastanowić się nad tym, jakiego typu ma być to moduł. Czy ma być konfiguralny w panelu administracyjnym, czy może ma działać wyłącznie po stronie gości odwiedzających stronę? Ze względu na taki podział, w Batflacie wyróżniamy trzy główne pliki modułu:
+Saat membuat plugin, Anda perlu memikirkan jenis plugin apa yang ingin Anda gunakan. Apakah seharusnya dikonfigurasi di panel admin atau hanya berfungsi di front-end? Karena pembagian ini, dalam mLITE kami membedakan tiga file plugin utama:
 
-When creating a module, you need to think about what type of module you want to use. Is it supposed to be configured in the admin panel or is it supposed to work only on the front-end? Due to this division, in mLITE we distinguish three main module files:
++ `Info.php` — berisi informasi tentang plugin, seperti nama, deskripsi, penulis, atau ikon
++ `Admin.php` — konten file ini dapat diakses melalui panel admin
++ `Site.php` — konten file ini akan tersedia untuk pengunjung situs ini
 
-+ `Info.php` — contains information about the module, such as name, description, author or icon
-+ `Admin.php` — content of this file will be accessible through the admin panel
-+ `Site.php` — content of this file will be available for visitors of this site
+File keempat tetapi opsional adalah `ReadMe.md` yang seharusnya berisi informasi tambahan untuk pengguna mendatang di [Penurunan harga](https://en.wikipedia.org/wiki/Markdown), mis. cara menggunakan plugin.
 
-The fourth but optional file is `ReadMe.md` which should contain additional information for the future user in [Markdown](https://en.wikipedia.org/wiki/Markdown), e.g. how to use the module.
+Jika Anda berencana untuk menulis plugin yang akan menggunakan HTML, sebaiknya pastikan kode PHP terpisah dari bahasa markup hypertext. Untuk melakukan ini, Anda perlu membuat direktori `views` di dalam folder modul. Sertakan file tampilan apa pun di dalamnya.
 
-If you are planning to write a module that will use HTML, it would be good to make sure the PHP code is separate from the hypertext markup language. To do this, you need to create a directory `views` inside the module folder. Include any view files in it.
-
-The problem with multilingualism of the module is similar. Just create language files with the `ini` extension inside the `lang` directory.
-
-The structure of the module should look something like this:
+Struktur plugin akan terlihat seperti ini:
 ```
-example/
-|-- lang/
-|    |-- admin/
-|    |    |-- en_english.ini
-|    |    |-- pl_polski.ini
-|    |-- en_english.ini
-|    |-- pl_polski.ini
+contoh/
 |-- views/
 |    |-- admin/
 |    |    |-- bar.html
@@ -298,8 +275,8 @@ example/
 +-- ReadMe.md
 ```
 
-Creating a module
------------------
+Membuat plugin
+--------------
 
 ### Info file
 
@@ -1342,11 +1319,3 @@ Protects against compiling template system tags inside the array.
 ```php
 $this->tpl->noParse_array(['{$no}', '{$changes}']);
 ```
-
-Languages
----------
-
-All language files are located in the `lang` directories inside the modules and under the `inc/lang` path.
-In this last path there are folders corresponding to the language names in the following format: `en_english`. The first part is the abbreviation of the language and the second is the full name.
-Within the directory is the `general.ini` file, which contains general language variables for the system.
-After creating a new language folder, mLITE automatically detects the added language and allows it to be selected in the admin panel. Note that the procedure for creating a new language should be repeated for each module.
