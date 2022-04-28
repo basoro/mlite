@@ -13,6 +13,7 @@ Persyaratan sistem untuk mLITE sangat sederhana, jadi setiap server modern sudah
 
 + Apache 2.2+ or Nginx with `mod_rewrite`
 + PHP version 5.6+
++ MySQL Server 5.5+
 + Access to MySQL and SQLite
 
 Konfigurasi PHP harus memiliki ekstensi berikut:
@@ -39,7 +40,7 @@ Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan
 + tmp/
 + uploads/
 + admin/tmp/
-+ inc/data/
++ systems/data/
 + webapps/
 
 Buka browser Anda dan arahkan ke alamat tempat file mLITE berada. Tunggu beberapa saat sampai proses instalasi dibelakang layar selesai.
