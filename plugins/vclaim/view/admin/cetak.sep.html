@@ -381,23 +381,6 @@ function printContent(el){
       <button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>
       <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
     </center>
-    {else}
-      <center>
-        <div class="alert alert-danger" id="sync">
-          Data SEP <span id="no_sep">{?=parseURL()[2]?}</span> di server SIMRS tidak ditemukan.<br>
-          Apakah akan menarik data dari v-Claim?<br>
-          <button class="btn" type="button" id="syncsep">Ya</button>
-          <button class="btn" type="button" onclick="javascript:window.close();opener.window.focus();">TUTUP</button>
-        </div>
-      </center>
-      <div id="carisep">
-        <pre>
-        </pre>
-      </div>
-      <div id="caribynorujukan">
-        <pre>
-        </pre>
-      </div>
       <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
       <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
       <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
