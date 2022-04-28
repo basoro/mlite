@@ -19,7 +19,7 @@
               `respirasi` char(3) DEFAULT NULL,
               `tinggi` char(5) DEFAULT NULL,
               `berat` char(5) DEFAULT NULL,
-              `gcs` varchar(10) DEFAULT NULL,
+              `spo2` char(3) NOT NULL,
               `gcs` varchar(10) DEFAULT NULL,
               `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
               `keluhan` varchar(400) DEFAULT NULL,
