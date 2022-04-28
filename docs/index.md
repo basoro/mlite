@@ -280,20 +280,20 @@ Membuat plugin
 
 ### Info file
 
-The most important file for each module. It contains basic information and instructions during installation and uninstallation.
+File paling penting untuk setiap modul. Ini berisi informasi dasar dan instruksi selama instalasi dan penghapusan instalasi.
 
 ```php
 <?php
 
     return [
-        'name'          =>  'Example',
+        'name'          =>  'Contoh',
         'description'   =>  'Lorem ipsum....',
-        'author'        =>  'Robin',
+        'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '1.3.*',                    // Compatibility with mLITE version
+        'compatibility' =>  '2022*',                    // Compatibility with mLITE version
         'icon'          =>  'bolt',
 
-        'pages'         =>  ['Example' => 'example'],   // Registration as a page (optional)
+        'pages'         =>  ['Contoh' => 'contoh'],   // Registration as a page (optional)
 
         'install'       =>  function() use($core)       // Install commands
         {
@@ -306,20 +306,20 @@ The most important file for each module. It contains basic information and instr
     ];
 ```
 
-A list of icons that you can use in this file is available at [fontawesome.io](http://fontawesome.io/icons/). Be sure not to enter the icon name with the `fa-` prefix.
+Daftar ikon yang dapat Anda gunakan dalam file ini tersedia di [fontawesome.io](http://fontawesome.io/icons/). Pastikan untuk tidak memasukkan nama ikon dengan awalan `fa-`.
 
-Registering a module as a page allows you to freely use the routing and select it as a homepage.
+Mendaftarkan plugin sebagai halaman memungkinkan Anda untuk bebas menggunakan `route` dan memilihnya sebagai beranda.
 
 
 ### Admin file
 
-The contents of this file will be launched in the admin panel.
+Isi file ini akan digunakan di panel admin.
 
 ```php
 <?php
-    namespace Inc\Modules\Example;
+    namespace Plugins\Contoh;
 
-    use Inc\Core\AdminModule;
+    use Systems\AdminModule;
 
     class Admin extends AdminModule
     {
@@ -348,27 +348,27 @@ The contents of this file will be launched in the admin panel.
     }
 ```
 
-In the `navigation` method, include array with the subpages of the module. Each page should be assigned a method *(without a prefix)*. Items of this array will be displayed in the administration panel menu.
+Dalam metode `navigasi`, sertakan larik dengan subhalaman modul. Setiap halaman harus diberi metode *(tanpa awalan)*. Item larik ini akan ditampilkan di menu panel administrasi.
 
-Methods can also accept arguments that are passed through the URL. For example, after entering the `/example/foo/abc` address, the `getFoo` method will return *"Foo abc!"*.
+Metode juga dapat menerima argumen yang diteruskan melalui URL. Misalnya, setelah memasukkan alamat `/example/foo/abc`, metode `getFoo` akan mengembalikan *"Foo abc!"*.
 
-As you can see in the above listing, each method representing the subpage of the module should have a prefix specifying the type of the request. In most cases we will use the `getFoo` nomenclature, and the `postFoo` form form submission. If the method supports all types, it should precede the `any` prefix *(for example, `anyFoo`)*. This is important because pages without prefix will not be handled. Supported methods are translated by dynamic routing as follows:
+Seperti yang Anda lihat dalam daftar di atas, setiap metode yang mewakili subhalaman modul harus memiliki awalan yang menentukan jenis permintaan. Dalam kebanyakan kasus, kita akan menggunakan nomenklatur `getFoo`, dan pengiriman formulir `postFoo`. Jika metode mendukung semua jenis, metode tersebut harus mendahului awalan `any` *(misalnya, `anyFoo`)*. Ini penting karena halaman tanpa awalan tidak akan ditangani. Metode yang didukung diterjemahkan oleh perutean dinamis sebagai berikut:
 
-+ `getFoo()` — as `/example/foo` for a GET request
-+ `getFoo($parm)` — as `/example/foo/abc` for a GET request
-+ `postBar()` — as `example/bar` for POST requests *(form submission)*
-+ `anyFoo()` — as `/example/foo` for each request type
++ `getFoo()` — sebagai `/example/foo` untuk permintaan GET
++ `getFoo($parm)` — sebagai `/example/foo/abc` untuk permintaan GET
++ `postBar()` — sebagai `example/bar` untuk permintaan POST *(pengiriman formulir)*
++ `anyFoo()` — sebagai `/example/foo` untuk setiap jenis permintaan
 
 ### Site file
 
-This file is responsible for the portion seen by visitors of the website. If the module is quite large, good practice is to register it as a page and apply routing.
+File ini bertanggung jawab atas tampilah yang dilihat oleh pengguna. Jika plugins cukup komplek, yang baik adalah mendaftarkannya sebagai halaman dan menerapkan perutean.
 
 ```php
 <?php
 
-    namespace Inc\Modules\Example;
+    namespace Plugins\Example;
 
-    use Inc\Core\SiteModule
+    use Systems\SiteModule
 
     class Site extends SiteModule
     {
@@ -401,7 +401,7 @@ This file is responsible for the portion seen by visitors of the website. If the
     }
 ```
 
-In the above example, a new `bar` template variable has been created which, by calling the `_foo()` method in the module initializer, can be used in the theme files as `{$bar}`. In addition, the `routes()` method has created a `/example` subroutine that points to the `mySite()` method call. If you go to `http://example.com/example`, you will call the `mySite()` method.
+Dalam contoh di atas, variabel template `bar` baru telah dibuat yang, dengan memanggil metode `_foo()` dalam penginisialisasi plugin, dapat digunakan dalam file tema sebagai `{$bar}`. Selain itu, metode `routes()` telah membuat subrutin `/example` yang menunjuk ke pemanggilan metode `mySite()`. Jika Anda membuka `http://example.com/example`, Anda akan memanggil metode `mySite()`.
 
 ### Language files
 
