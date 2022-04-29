@@ -180,38 +180,38 @@
 </div>
 {if: $presensi}
 <div class="btn-group">
-   <a href="javascript:void(0)" onclick="getDistanceFromLatLonInKm()" class="btn btn-info btn-fab">
-        <i class="fa fa-camera"></i> Presensi Online
-    </a>
+  <a href="javascript:void(0)" onclick="getDistanceFromLatLonInKm()" class="btn btn-danger btn-fab">
+    <i class="fa fa-camera"></i> Presensi Online
+  </a>
 </div>
   {if: $notif_presensi == 'true'}
     {if: $cek_presensi}
     <div class="alert alert-success coba" role="alert">
       <div class="halo">
-      <b>Halo {$nama}</b>
-    </div>
-    <i class="fa fa-thumbs-up"></i>  Anda Sudah Presensi Masuk <br>
-	<br>	
-  <i>" {$teks} "</i>
-  </div>
-  {elseif: $cek_rekap}
-  <div class="alert alert-danger coba" role="alert">
-    <div class="halo">
-      <b>Terima Kasih {$nama}</b>
-    </div>
-    <i class="fa fa-smile-o"></i>  Anda Sudah Presensi Pulang <br>
-  <i>" {$teks} "</i>
-  </div>
-  {else}
-  <div class="alert alert-warning coba" role="alert">
-    <div class="halo">
-      <b>Jangan Lupa {$nama}</b>
-    </div>
-    <i class="fa fa-exclamation-triangle"></i>  Anda Belum Presensi <br>
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-thumbs-up"></i> Anda Sudah Presensi Masuk
+      <br>
       <i>* {$teks} *</i>
-  </div>
+    </div>
+    {elseif: $cek_rekap}
+    <div class="alert alert-info coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang<br>
+      <i>* {$teks} *</i>
+    </div>
+    {else}
+    <div class="alert alert-warning coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-exclamation-triangle"></i> Anda Belum Presensi<br>
+      <i>* {$teks} *</i>
+    </div>
+    {/if}
   {/if}
-{/if}
 {/if}
 <!-- The Modal -->
 <div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
@@ -226,19 +226,13 @@
         <center>
           <div id="camera"></div><br>
           <select class="form-control" id="shift" style="width:240px;">
-            {if: empty($cek_presensi)}
             <option>Pilih Shift</option>
-            {loop: $jaga}
+            {loop: $jam_jaga}
             <option value="{$value.shift}"><i>{$value.shift}</i> : {$value.jam_masuk} - {$value.jam_pulang}</option>
             {/loop}
-            {else}
-            <option>Pilih Shift</option>
-            {loop: $tem}
-            <option value="{$value.shift}"><i>{$value.shift}</i> : {$value.jam_masuk} - {$value.jam_pulang}</option>
-            {/loop}            
-            {/if}
           </select><br><br>
-          <input type="button" class="{if: empty($cek_presensi)}btn btn-success{else}btn btn-danger{/if}" value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
+          <input type="button" class="btn btn-info"
+            value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
           <input type="hidden" name="image" id="image-tag">
           <div id="results"></div>
         </center>
