@@ -30,39 +30,71 @@ class Admin extends AdminModule
     );
     $hari = $day[date('D', strtotime(date('Y-m-d')))];
 
-    $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
-    $cek_presensi = [];
-    $jam_jaga = [];
-    $cek_rekap = [];
-    $nama_pegawai = '';
-    $pengaturan_presensi = '';
-    $teks = array('');
-    if ($presensi) {
+        $presensi = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
+        $cek_presensi = [];
+        $jam_jaga = [];
+        $jaga = [];
+        $tem = [];
+        $cek_rekap = [];
+        $nama_pegawai = '';
+      	$pengaturan_presensi = '';
+    	  $teks = array('');
+        if($presensi) {
+          $har = date('j');
+          $bul = date('m');
+          $tah = date('Y');
       $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
-      }
-      $idpeg = $this->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
-      $cek_presensi = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-      $cek_rekap = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
-      $jam_jaga = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
-      $teks = explode(';', $this->settings->get('presensi.helloworld'));
-      $pengaturan_presensi = $this->settings('presensi');
+          }
+          $idpeg = $this->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+          $cek_presensi = $this->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+          $cek_rekap = $this->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
+          $jaga	= $this->mysql('jadwal_pegawai')
+                  ->select('jam_jaga.shift')
+                  ->select('jam_jaga.jam_masuk')
+                  ->select('jam_jaga.jam_pulang')
+                  ->join('pegawai', 'pegawai.id = jadwal_pegawai.id')
+                  ->join('jam_jaga', 'jam_jaga.dep_id = pegawai.departemen')
+                  ->leftJoin('jadwal_tambahan', 'jadwal_tambahan.id = jadwal_pegawai.id')
+                  ->where('jadwal_pegawai.id', $idpeg['id'])
+                  ->where('jadwal_pegawai.tahun', $tah)
+                  ->where('jadwal_pegawai.bulan', $bul)
+                  ->where('jam_jaga.shift = jadwal_pegawai.h'.$har, true)
+                  ->orWhere('jadwal_pegawai.id', $idpeg['id'])
+                  ->where('jadwal_tambahan.tahun', $tah)
+                  ->where('jadwal_tambahan.bulan', $bul)
+                  ->where('jam_jaga.shift = jadwal_tambahan.h'.$har, true)
+                  ->group('jam_jaga.shift')
+                  ->toArray();
+          $tem = $this->mysql('jam_jaga')
+                  ->select('jam_jaga.shift')
+                  ->select('jam_jaga.jam_masuk')
+                  ->select('jam_jaga.jam_pulang')
+                  ->join('temporary_presensi', 'temporary_presensi.shift = jam_jaga.shift')
+                  ->where('temporary_presensi.id', $idpeg['id'])
+                  ->group('temporary_presensi.id')
+                  ->toArray();
+          $jam_jaga = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+          $teks = explode(';', $this->settings->get('presensi.helloworld'));
+      	  $pengaturan_presensi = $this->settings('presensi');
+        }
+      	$random_keys = array_rand($teks);
+    	$teks = $teks[$random_keys];
+        return $this->draw('main.html', [
+          'settings' => $settings,
+          'cek_presensi' => $cek_presensi,
+          'cek_rekap' => $cek_rekap,
+          'jam_jaga' => $jam_jaga,
+          'jaga' => $jaga,
+          'tem' => $tem,
+          'presensi' => $presensi,
+	  'nama' => $nama_pegawai,
+          'teks' => $teks,
+          'pengaturan_presensi' => $pengaturan_presensi,
+          'notif_presensi' => $this->settings('settings', 'notif_presensi') 
+        ]);
     }
-    $random_keys = array_rand($teks);
-    $teks = $teks[$random_keys];
-    return $this->draw('main.html', [
-      'settings' => $settings,
-      'cek_presensi' => $cek_presensi,
-      'cek_rekap' => $cek_rekap,
-      'jam_jaga' => $jam_jaga,
-      'presensi' => $presensi,
-      'nama' => $nama_pegawai,
-      'teks' => $teks,
-      'pengaturan_presensi' => $pengaturan_presensi,
-      'notif_presensi' => $this->settings('settings', 'notif_presensi')
-    ]);
-  }
 
   public function getMenu()
   {
@@ -135,10 +167,10 @@ class Admin extends AdminModule
         $urlnya         = WEBAPPS_URL . '/presensi/' . $gambar;
         $barcode        = $this->core->getUserInfo('username', null, true);
 
-        $bulan = date('m');
-        $tahun = date('y');
-        $hari = date('j');
-        $shift = $_GET['shift'];
+              $bulan = date('m');
+              $tahun = date('Y');
+	            $hari = date('j');
+              $shift = $_GET['shift'];
 
         $idpeg          = $this->mysql('barcode')->where('barcode', $barcode)->oneArray();
         $jam_jaga       = $this->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $shift)->oneArray();
