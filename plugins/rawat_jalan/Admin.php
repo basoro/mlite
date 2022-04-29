@@ -189,7 +189,7 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
-      $this->assign['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
+      $this->assign['poliklinik'] = $this->mysql('poliklinik')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->where('status', '1')->toArray();
       $this->assign['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
       $this->assign['penjab'] = $this->mysql('penjab')->toArray();
       $date = date('Y-m-d');

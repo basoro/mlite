@@ -30,6 +30,13 @@
             `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
           ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+          $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `permintaan_detail_permintaan_lab` (
+            `noorder` varchar(16) NOT NULL,
+            `kd_jenis_prw` varchar(15) NOT NULL,
+            `id_template` int(11) NOT NULL,
+            `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
           $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `permintaan_pemeriksaan_radiologi` (
             `noorder` varchar(15) NOT NULL,
             `kd_jenis_prw` varchar(15) NOT NULL,
@@ -80,6 +87,11 @@
             ADD PRIMARY KEY (`noorder`,`kd_jenis_prw`),
             ADD KEY `kd_jenis_prw` (`kd_jenis_prw`);");
 
+          $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_detail_permintaan_lab`
+            ADD PRIMARY KEY (`noorder`,`kd_jenis_prw`,`id_template`) USING BTREE,
+            ADD KEY `id_template` (`id_template`) USING BTREE,
+            ADD KEY `kd_jenis_prw` (`kd_jenis_prw`) USING BTREE;");
+
           $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_pemeriksaan_radiologi`
             ADD PRIMARY KEY (`noorder`,`kd_jenis_prw`),
             ADD KEY `kd_jenis_prw` (`kd_jenis_prw`);");
@@ -104,6 +116,11 @@
           $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_pemeriksaan_lab`
             ADD CONSTRAINT `permintaan_pemeriksaan_lab_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_lab` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
             ADD CONSTRAINT `permintaan_pemeriksaan_lab_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+          $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_detail_permintaan_lab`
+            ADD CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_3` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE,
+            ADD CONSTRAINT `permintaan_detail_permintaan_lab_ibfk_4` FOREIGN KEY (`noorder`) REFERENCES `permintaan_lab` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
           $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_pemeriksaan_radiologi`
             ADD CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_radiologi` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
