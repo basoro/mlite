@@ -191,6 +191,7 @@
       <b>Halo {$nama}</b>
     </div>
     <i class="fa fa-thumbs-up"></i>  Anda Sudah Presensi Masuk <br>
+	<br>	
   <i>" {$teks} "</i>
   </div>
   {elseif: $cek_rekap}
@@ -202,11 +203,12 @@
   <i>" {$teks} "</i>
   </div>
   {else}
-  <div class="alert alert-warning cobacoba" role="alert">
+  <div class="alert alert-warning coba" role="alert">
     <div class="halo">
       <b>Jangan Lupa {$nama}</b>
     </div>
-    <i class="fa fa-exclamation-triangle"></i>  Anda Belum Presensi 
+    <i class="fa fa-exclamation-triangle"></i>  Anda Belum Presensi <br>
+      <i>* {$teks} *</i>
   </div>
   {/if}
 {/if}
