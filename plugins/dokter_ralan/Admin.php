@@ -929,7 +929,6 @@ class Admin extends AdminModule
               $row['resep_dokter'] = $this->mysql('resep_dokter')
                 ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
                 ->where('no_resep', $row['no_resep'])
-
                 ->toArray();
               $data_resep[] = $row;
             }

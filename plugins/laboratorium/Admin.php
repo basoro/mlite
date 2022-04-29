@@ -462,6 +462,21 @@ class Admin extends AdminModule
     public function anyRincian()
     {
 
+      $rows = $this->mysql('permintaan_lab')
+        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('permintaan_lab.status', 'ralan')
+        ->toArray();
+      $laboratorium = [];
+      $jumlah_total_lab = 0;
+      foreach ($rows as $row) {
+        $row['permintaan_pemeriksaan_lab'] = $this->mysql('permintaan_pemeriksaan_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+          ->toArray();
+        $laboratorium[] = $row;
+      }
+
       $rows_periksa_lab = $this->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_POST['no_rawat'])
@@ -481,7 +496,27 @@ class Admin extends AdminModule
         $periksa_lab[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'jumlah_total_lab' => $jumlah_total_lab, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'jumlah_total_lab' => $jumlah_total_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium]);
+      exit();
+    }
+
+    public function postHapusPermintaanLaboratorium()
+    {
+      $this->mysql('permintaan_lab')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('noorder', $_POST['noorder'])
+      ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+      ->where('jam_permintaan', $_POST['jam_permintaan'])
+      ->where('status', 'Ralan')
+      ->delete();
+      exit();
+    }
+
+    public function getDetailPermintaan($kd_jenis_prw)
+    {
+      $this->assign['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
+      $this->tpl->set('detail', $this->assign);
+      echo $this->tpl->draw(MODULES.'/laboratorium/view/admin/details.html', true);
       exit();
     }
 
