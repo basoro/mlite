@@ -114,6 +114,13 @@ $("#rincian").on("click","#cetak_hasil", function(event){
   window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
+$("#rincian").on("click","#cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  window.open(baseURL + '/laboratorium/cetakpermintaan?no_rawat=' + no_rawat + '&t=' + mlite.token);
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -455,6 +462,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   kat            : kat,
   jml            : jml
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;

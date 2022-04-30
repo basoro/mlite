@@ -4,6 +4,7 @@ namespace Plugins\Laboratorium;
 use Systems\AdminModule;
 use Systems\MySQL;
 use Plugins\Icd\DB_ICD;
+use Systems\Lib\QRCode;
 
 class Admin extends AdminModule
 {
@@ -319,8 +320,11 @@ class Admin extends AdminModule
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $pj_lab = $this->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
-      $file_url = url().'/uploads/qrcode/dokter/'.$this->settings->get('settings.pj_laboratorium').'.png';
-      $qrCode = $file_url;
+      $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
+      $im = $qr->createImage(4, 4);
+      imagepng($im, '../../../tmp/qrcode.png');
+      imagedestroy($im);
+      $qrCode = "../../../tmp/qrcode.png";
 
       $pasien = $this->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -332,6 +336,7 @@ class Admin extends AdminModule
         ->where('no_rawat', $_GET['no_rawat'])
         ->group('no_rawat')
         ->oneArray();
+
       $rows_periksa_lab = $this->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_GET['no_rawat'])
@@ -350,6 +355,7 @@ class Admin extends AdminModule
           ->toArray();
         $periksa_lab[] = $row;
       }
+
       echo $this->draw('cetakhasil.html', [
         'periksa_lab' => $periksa_lab,
         'jumlah_total_lab' => $jumlah_total_lab,
@@ -361,6 +367,67 @@ class Admin extends AdminModule
       ]);
       exit();
     }
+
+    public function getCetakPermintaan()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $pj_lab = $this->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+
+      $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
+      $im = $qr->createImage(4, 4);
+      imagepng($im, '../../../tmp/qrcode.png');
+      imagedestroy($im);
+      $qrCode = "../../../tmp/qrcode.png";
+
+      $pasien = $this->mysql('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+      $dokter_perujuk = $this->mysql('permintaan_lab')
+        ->join('pegawai', 'pegawai.nik=permintaan_lab.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->group('no_rawat')
+        ->oneArray();
+
+      $rows_permintaan_lab = $this->mysql('permintaan_lab')
+        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('permintaan_lab.status', 'ralan')
+        ->toArray();
+      $permintaan_laboratorium = [];
+      foreach ($rows_permintaan_lab as $row) {
+        $rows2 = $this->mysql('permintaan_pemeriksaan_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+          ->toArray();
+          foreach ($rows2 as $row2) {
+            $row2['noorder'] = $row2['noorder'];
+            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+            $row2['stts_bayar'] = $row2['stts_bayar'];
+            $row2['nm_perawatan'] = $row2['nm_perawatan'];
+            $row2['kd_pj'] = $row2['kd_pj'];
+            $row2['status'] = $row2['status'];
+            $row2['kelas'] = $row2['kelas'];
+            $row2['kategori'] = $row2['kategori'];
+            $row2['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+            $row['permintaan_pemeriksaan_lab'][] = $row2;
+          }
+        $permintaan_laboratorium[] = $row;
+      }
+
+      echo $this->draw('cetakpermintaan.html', [
+        'permintaan_laboratorium' => $permintaan_laboratorium,
+        'qrCode' => $qrCode,
+        'pj_lab' => $pj_lab['nm_dokter'],
+        'dokter_perujuk' => $dokter_perujuk['nama'],
+        'pasien' => $pasien,
+        'no_rawat' => $_GET['no_rawat']
+      ]);
+      exit();
+    }
+
     public function postHapus()
     {
       $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
@@ -449,32 +516,58 @@ class Admin extends AdminModule
 
     public function postHapusLaboratorium()
     {
-      $this->mysql('periksa_lab')
+      $periksa_lab = $this->mysql('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
       ->where('jam', $_POST['jam_rawat'])
       ->where('status', 'Ralan')
       ->delete();
+      if($periksa_lab) {
+        $this->mysql('detail_periksa_lab')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->where('tgl_periksa', $_POST['tgl_perawatan'])
+        ->where('jam', $_POST['jam_rawat'])
+        ->delete();
+      }
       exit();
     }
 
     public function anyRincian()
     {
 
-      $rows = $this->mysql('permintaan_lab')
-        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('permintaan_lab.status', 'ralan')
-        ->toArray();
+      $check_db = $this->mysql()->pdo()->query("SHOW TABLES LIKE 'permintaan_lab'");
+      $check_db->execute();
+      $check_db = $check_db->fetch();
+
       $laboratorium = [];
-      $jumlah_total_lab = 0;
-      foreach ($rows as $row) {
-        $row['permintaan_pemeriksaan_lab'] = $this->mysql('permintaan_pemeriksaan_lab')
-          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
-          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+      if($check_db) {
+        $rows = $this->mysql('permintaan_lab')
+          ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('permintaan_lab.status', 'ralan')
           ->toArray();
-        $laboratorium[] = $row;
+        $laboratorium = [];
+        foreach ($rows as $row) {
+          $rows2 = $this->mysql('permintaan_pemeriksaan_lab')
+            ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+            ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+            ->toArray();
+            foreach ($rows2 as $row2) {
+              $row2['noorder'] = $row2['noorder'];
+              $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+              $row2['stts_bayar'] = $row2['stts_bayar'];
+              $row2['nm_perawatan'] = $row2['nm_perawatan'];
+              $row2['kd_pj'] = $row2['kd_pj'];
+              $row2['status'] = $row2['status'];
+              $row2['kelas'] = $row2['kelas'];
+              $row2['kategori'] = $row2['kategori'];
+              $row2['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+              $row['permintaan_pemeriksaan_lab'][] = $row2;
+            }
+          $laboratorium[] = $row;
+        }
       }
 
       $rows_periksa_lab = $this->mysql('periksa_lab')
@@ -496,7 +589,7 @@ class Admin extends AdminModule
         $periksa_lab[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'jumlah_total_lab' => $jumlah_total_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium]);
+      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'jumlah_total_lab' => $jumlah_total_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium, 'check_permintaan_lab' => $check_db]);
       exit();
     }
 

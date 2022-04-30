@@ -102,34 +102,36 @@
 				</tr>
 			</table>
 			<br>
-			<h4>Hasil Pemeriksaan Laboratorium</h4>
+			<h4>Permintaan Pemeriksaan Laboratorium</h4>
 		  <table width="740px">
 		    <thead>
 		      <tr style="border-top: 1px solid #8c8b8b">
-		        <th width="20px;">No.</th>
 		        <th>Pemeriksaan</th>
-		        <th>Hasil</th>
-		        <th>Rujukan</th>
 		        <th>Satuan</th>
-		        <th>Keterangan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
 		      </tr>
 		    </thead>
-		    <tbody>
-		      {loop: $periksa_lab}
-		      <tr>
-		        <td>{$value.nomor}</td>
-		        <td colspan="6">{$value.nm_perawatan}</td>
-		      </tr>
-		      {loop: $value.detail_periksa_lab as $data2}
-		      <tr>
-		        <td></td>
-		        <td>{$data2.Pemeriksaan}</td>
-		        <td>{$data2.nilai}</td>
-		        <td>{$data2.nilai_rujukan}</td>
-		        <td>{$data2.satuan}</td>
-		        <td>{?=nl2br($data2.keterangan)?}</td>
-		      </tr>
-		      {/loop}
+
+				<tbody>
+		      {loop: $permintaan_laboratorium}
+		        {loop: $value.permintaan_pemeriksaan_lab as $data}
+		        <tr>
+		          <td colspan="6">{$data.nm_perawatan}</td>
+		        </tr>
+		              {loop: $data.template_laboratorium as $data2}
+		              <tr>
+		                <td>- {$data2.Pemeriksaan}</td>
+		                <td>{$data2.satuan}</td>
+		                <td>{$data2.nilai_rujukan_la}</td>
+		                <td>{$data2.nilai_rujukan_pa}</td>
+		                <td>{$data2.nilai_rujukan_ld}</td>
+		                <td>{$data2.nilai_rujukan_pd}</td>
+		              </tr>
+		              {/loop}
+		        {/loop}
 		      {/loop}
 		    </tbody>
 		  </table>
