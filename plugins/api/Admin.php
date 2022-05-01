@@ -177,100 +177,57 @@ class Admin extends AdminModule
 
     public function postKirimWA()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-message",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('settings.waapitoken');
+        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
+        $url = "https://mlite.id/wagateway/kirimpesan";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }
 
     public function postKirimWAMedia()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message'],
-            'filetype' => $_POST['tipe'],
-            'url' => $_POST['file']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-media",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('settings.waapitoken');
+        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
+        $url = "https://mlite.id/wagateway/kirimgambar";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }
 
     public function postKirimWADocument()
     {
-        $data = [
-            'api_key' => $_POST['api_key'],
-            'sender'  => $_POST['sender'],
-            'number'  => $_POST['number'],
-            'message' => $_POST['message'],
-            'filetype' => $_POST['tipe'],
-            'url' => $_POST['file']
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, array(
-          CURLOPT_URL => "https://banoewa.com/send-document",
-          CURLOPT_RETURNTRANSFER => true,
-          CURLOPT_ENCODING => "",
-          CURLOPT_MAXREDIRS => 10,
-          CURLOPT_TIMEOUT => 0,
-          CURLOPT_FOLLOWLOCATION => true,
-          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-          CURLOPT_CUSTOMREQUEST => "POST",
-          CURLOPT_POSTFIELDS => json_encode($data),
-          CURLOPT_HTTPHEADER => array(
-             'Content-Type: application/json'
-           ),
-        ));
-
-        $response = curl_exec($curl);
-
-        curl_close($curl);
+        $waapitoken = $this->settings->get('settings.waapitoken');
+        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
+        $url = "https://mlite.id/wagateway/kirimfile";
+        $curlHandle = curl_init();
+        curl_setopt($curlHandle, CURLOPT_URL, $url);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_HEADER, 0);
+        curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
+        curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($curlHandle);
+        curl_close($curlHandle);
         echo $response;
         exit();
     }
