@@ -179,10 +179,11 @@ class Admin extends AdminModule
     {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimpesan";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -198,10 +199,11 @@ class Admin extends AdminModule
     {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimgambar";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimgambar";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -217,10 +219,11 @@ class Admin extends AdminModule
     {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimfile";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimfile";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
