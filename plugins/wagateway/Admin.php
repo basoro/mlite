@@ -22,6 +22,7 @@ class Admin extends AdminModule
     public function getManage()
     {
       $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
+      $waapiserver = $this->settings->get('settings.waapiserver');
       $sub_modules = [
           ['name' => 'Send Message', 'url' => url([ADMIN, 'wagateway', 'sendmessage']), 'icon' => 'cubes', 'desc' => 'Send Message Test'],
           ['name' => 'Send File', 'url' => url([ADMIN, 'wagateway', 'sendfile']), 'icon' => 'cubes', 'desc' => 'Send File Test'],
@@ -29,7 +30,7 @@ class Admin extends AdminModule
           ['name' => 'Web Hook', 'url' => url([ADMIN, 'wagateway', 'webhook']), 'icon' => 'cubes', 'desc' => 'Webhook WA Gateway'],
           ['name' => 'Settings', 'url' => url([ADMIN, 'wagateway', 'settings']), 'icon' => 'cubes', 'desc' => 'Settings WA Getaway'],
       ];
-      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'waapiphonenumber' => $waapiphonenumber]);
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
     }
 
     public function getWebHook()
@@ -39,6 +40,7 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
+      $settings['waapiserver'] = $this->settings->get('settings.waapiserver');
       $settings['waapitoken'] = $this->settings->get('settings.waapitoken');
       $settings['waapiphonenumber'] = $this->settings->get('settings.waapiphonenumber');
       $settings['waapiwebhook'] = $this->settings->get('settings.waapiwebhook');
@@ -77,10 +79,11 @@ class Admin extends AdminModule
       if(isset($_POST['submit'])) {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimpesan";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -103,10 +106,11 @@ class Admin extends AdminModule
       if(isset($_POST['submit'])) {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimgambar";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimgambar";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -116,9 +120,9 @@ class Admin extends AdminModule
         curl_close($curlHandle);
         $response = json_decode($response, true);
         if($response['status'] == 'true') {
-          $this->notify('success', 'Sukses mengirim pesan');
+          $this->notify('success', 'Sukses mengirim gambar');
         } else {
-          $this->notify('failure', 'Gagal mengirim pesan');
+          $this->notify('failure', 'Gagal mengirim gambar');
         }
       }
       return $this->draw('send.image.html');
@@ -129,10 +133,11 @@ class Admin extends AdminModule
       if(isset($_POST['submit'])) {
         $waapitoken = $this->settings->get('settings.waapitoken');
         $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $url = "https://mlite.id/wagateway/kirimfile";
+        $waapiserver = $this->settings->get('settings.waapiserver');
+        $url = $waapiserver."/wagateway/kirimfile";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -142,9 +147,9 @@ class Admin extends AdminModule
         curl_close($curlHandle);
         $response = json_decode($response, true);
         if($response['status'] == 'true') {
-          $this->notify('success', 'Sukses mengirim pesan');
+          $this->notify('success', 'Sukses mengirim dokumen');
         } else {
-          $this->notify('failure', 'Gagal mengirim pesan');
+          $this->notify('failure', 'Gagal mengirim dokumen');
         }
       }
       return $this->draw('send.file.html');
