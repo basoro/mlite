@@ -80,7 +80,7 @@ class Admin extends AdminModule
         $url = "https://mlite.id/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&token=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -106,7 +106,7 @@ class Admin extends AdminModule
         $url = "https://mlite.id/wagateway/kirimgambar";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&token=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
@@ -132,7 +132,7 @@ class Admin extends AdminModule
         $url = "https://mlite.id/wagateway/kirimfile";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&token=".$waapitoken);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['url']."&api_key=".$waapitoken);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
