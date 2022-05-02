@@ -68,7 +68,7 @@
 <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
 <script>
 let socket;
-socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}$waapiserver{/if}', {
+socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}{$waapiserver}{/if}', {
     transports: ['websocket', 'polling', 'flashsocket']
 });
 socket.emit('StartConnection','{$waapiphonenumber}')
