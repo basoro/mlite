@@ -94,7 +94,7 @@ abstract class Main
         }
 
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
-        copy(THEMES.'/admin/img/wallpaper.png', UPLOADS.'/settings/wallpaper.png');
+        copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
 
         $this->settings = new Settings($this);
         date_default_timezone_set($this->settings->get('settings.timezone'));
