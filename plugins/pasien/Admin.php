@@ -316,23 +316,27 @@ class Admin extends AdminModule
         unset($_POST['nm_kec']);
         unset($_POST['nm_kel']);
         $query = $this->mysql('pasien')->save($_POST);
-        if($query) {
+        if($this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray()) {
           $this->core->mysql()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+          $data['status'] = 'success';
+          echo json_encode($data);
+        } else {
+          $data['status'] = 'error';
+          echo json_encode($data);
         }
       } else {
         unset($_POST['nm_prop']);
         unset($_POST['nm_kab']);
         unset($_POST['nm_kec']);
         unset($_POST['nm_kel']);
-        $query = $this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->save($_POST);
-      }
-
-      if($query) {
-        $data['status'] = 'success';
-        echo json_encode($data);
-      } else {
-        $data['status'] = 'error';
-        echo json_encode($data);
+        $query = $this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->update($_POST);
+        if($query) {
+          $data['status'] = 'success';
+          echo json_encode($data);
+        } else {
+          $data['status'] = 'error';
+          echo json_encode($data);
+        }
       }
 
       exit();
