@@ -2,6 +2,7 @@
 namespace Plugins\Kasir_Rawat_Inap;
 
 use Systems\AdminModule;
+use Systems\Lib\QRCode;
 use Systems\MySQL;
 
 class Admin extends AdminModule
@@ -742,7 +743,17 @@ class Admin extends AdminModule
 
         $reg_periksa = $this->mysql('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->mysql('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
-        echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+
+        $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+        $im=$qr->createImage(4,4);
+        imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+        imagedestroy($im);
+
+        $image = BASE_DIR."/admin/tmp/qrcode.png";
+        $qrCode = "../../tmp/qrcode.png";
+
+        echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
         $result = $this->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
