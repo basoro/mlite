@@ -3,7 +3,6 @@
 namespace Plugins\Profil;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -30,10 +29,10 @@ class Admin extends AdminModule
             ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
         ];
         $username = $this->core->getUserInfo('username', null, true);
-        $profil = $this->mysql('pegawai')->where('nik', $username)->oneArray();
+        $profil = $this->core->mysql('pegawai')->where('nik', $username)->oneArray();
         $tanggal = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-        $presensi = $this->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
-        $absensi = $this->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+        $presensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+        $absensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
         if (!empty($profil['photo'])) {
             $fotoURL = WEBAPPS_URL . '/penggajian/' . $profil['photo'];
@@ -46,15 +45,15 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $username = $this->core->getUserInfo('username', null, true);
 
-        $row = $this->mysql('pegawai')->where('nik', $username)->oneArray();
+        $row = $this->core->mysql('pegawai')->where('nik', $username)->oneArray();
         $this->assign['form'] = $row;
         $this->assign['title'] = 'Edit Biodata';
         $this->assign['jk'] = ['Pria', 'Wanita'];
-        $this->assign['departemen'] = $this->mysql('departemen')->toArray();
-        $this->assign['bidang'] = $this->mysql('bidang')->toArray();
-        $this->assign['stts_wp'] = $this->mysql('stts_wp')->toArray();
-        $this->assign['pendidikan'] = $this->mysql('pendidikan')->toArray();
-        $this->assign['jnj_jabatan'] = $this->mysql('jnj_jabatan')->toArray();
+        $this->assign['departemen'] = $this->core->mysql('departemen')->toArray();
+        $this->assign['bidang'] = $this->core->mysql('bidang')->toArray();
+        $this->assign['stts_wp'] = $this->core->mysql('stts_wp')->toArray();
+        $this->assign['pendidikan'] = $this->core->mysql('pendidikan')->toArray();
+        $this->assign['jnj_jabatan'] = $this->core->mysql('jnj_jabatan')->toArray();
 
         $this->assign['fotoURL'] = url(WEBAPPS_PATH . '/penggajian/' . $row['photo']);
 
@@ -97,7 +96,7 @@ class Admin extends AdminModule
                     }
 
                     if ($id) {
-                        $pegawai = $this->mysql('pegawai')->oneArray($id);
+                        $pegawai = $this->core->mysql('pegawai')->oneArray($id);
                     }
 
                     $_POST['photo'] = "pages/pegawai/photo/" . $pegawai['nik'] . "." . $img->getInfos('type');
@@ -105,9 +104,9 @@ class Admin extends AdminModule
             }
 
             if (!$id) {    // new
-                $query = $this->mysql('pegawai')->save($_POST);
+                $query = $this->core->mysql('pegawai')->save($_POST);
             } else {        // edit
-                $query = $this->mysql('pegawai')->where('id', $id)->save($_POST);
+                $query = $this->core->mysql('pegawai')->where('id', $id)->save($_POST);
             }
 
             if ($query) {
@@ -150,14 +149,14 @@ class Admin extends AdminModule
 
         // pagination
         if ($this->core->getUserInfo('id') == 1) {
-            $totalRecords = $this->mysql('jadwal_pegawai')
+            $totalRecords = $this->core->mysql('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', date('Y'))
                 ->where('jadwal_pegawai.bulan', date('m'))
                 ->like('pegawai.nama', '%' . $phrase . '%')
                 ->toArray();
         } else {
-            $totalRecords = $this->mysql('jadwal_pegawai')
+            $totalRecords = $this->core->mysql('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', date('Y'))
                 ->where('jadwal_pegawai.bulan', date('m'))
@@ -172,7 +171,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
         if ($this->core->getUserInfo('id') == 1) {
-            $rows = $this->mysql('jadwal_pegawai')
+            $rows = $this->core->mysql('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', date('Y'))
                 ->where('jadwal_pegawai.bulan', date('m'))
@@ -181,7 +180,7 @@ class Admin extends AdminModule
                 ->limit($perpage)
                 ->toArray();
         } else {
-            $rows = $this->mysql('jadwal_pegawai')
+            $rows = $this->core->mysql('jadwal_pegawai')
                 ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
                 ->where('jadwal_pegawai.tahun', date('Y'))
                 ->where('jadwal_pegawai.bulan', date('m'))
@@ -238,7 +237,7 @@ class Admin extends AdminModule
         $username = $this->core->getUserInfo('username', null, true);
 
         if ($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])) {
-            $totalRecords = $this->mysql('rekap_presensi')
+            $totalRecords = $this->core->mysql('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
                 ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
@@ -247,7 +246,7 @@ class Admin extends AdminModule
                 ->asc('jam_datang')
                 ->toArray();
         } elseif (isset($_GET['bulan'])) {
-            $totalRecords = $this->mysql('rekap_presensi')
+            $totalRecords = $this->core->mysql('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
                 ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
@@ -255,7 +254,7 @@ class Admin extends AdminModule
                 ->asc('jam_datang')
                 ->toArray();
         } else {
-            $totalRecords = $this->mysql('rekap_presensi')
+            $totalRecords = $this->core->mysql('rekap_presensi')
                 ->join('pegawai', 'pegawai.id = rekap_presensi.id')
                 ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
                 ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
@@ -271,7 +270,7 @@ class Admin extends AdminModule
         $offset = $pagination->offset();
 
         if ($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])) {
-            $rows = $this->mysql('rekap_presensi')
+            $rows = $this->core->mysql('rekap_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
                     'departemen' => 'pegawai.departemen',
@@ -293,7 +292,7 @@ class Admin extends AdminModule
                 ->limit($perpage)
                 ->toArray();
         } elseif (isset($_GET['bulan'])) {
-            $rows = $this->mysql('rekap_presensi')
+            $rows = $this->core->mysql('rekap_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
                     'departemen' => 'pegawai.departemen',
@@ -314,7 +313,7 @@ class Admin extends AdminModule
                 ->limit($perpage)
                 ->toArray();
         } else {
-            $rows = $this->mysql('rekap_presensi')
+            $rows = $this->core->mysql('rekap_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
                     'departemen' => 'pegawai.departemen',
@@ -354,8 +353,8 @@ class Admin extends AdminModule
 
     public function getGoogleMap($id, $tanggal)
     {
-        $geo = $this->mysql('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
-        $pegawai = $this->mysql('pegawai')->where('id', $id)->oneArray();
+        $geo = $this->core->mysql('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+        $pegawai = $this->core->mysql('pegawai')->where('id', $id)->oneArray();
 
         $this->tpl->set('geo', $geo);
         $this->tpl->set('pegawai', $pegawai);
@@ -375,14 +374,14 @@ class Admin extends AdminModule
 
         // pagination
         if ($this->core->getUserInfo('id') == 1) {
-            $totalRecords = $this->mysql('temporary_presensi')
+            $totalRecords = $this->core->mysql('temporary_presensi')
                 ->join('pegawai', 'pegawai.id = temporary_presensi.id')
                 ->like('nama', '%' . $phrase . '%')
                 // ->orLike('jam_datang', '%'.date('Y-m').'%')
                 ->asc('jam_datang')
                 ->toArray();
         } else {
-            $totalRecords = $this->mysql('temporary_presensi')
+            $totalRecords = $this->core->mysql('temporary_presensi')
                 ->join('pegawai', 'pegawai.id = temporary_presensi.id')
                 ->where('nik', $username)
                 ->like('nama', '%' . $phrase . '%')
@@ -396,7 +395,7 @@ class Admin extends AdminModule
         // list
         $offset = $pagination->offset();
         if ($this->core->getUserInfo('id') == 1) {
-            $rows = $this->mysql('temporary_presensi')
+            $rows = $this->core->mysql('temporary_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
                     'id' => 'temporary_presensi.id',
@@ -412,7 +411,7 @@ class Admin extends AdminModule
                 ->limit($perpage)
                 ->toArray();
         } else {
-            $rows = $this->mysql('temporary_presensi')
+            $rows = $this->core->mysql('temporary_presensi')
                 ->select([
                     'nama' => 'pegawai.nama',
                     'id' => 'temporary_presensi.id',
@@ -507,12 +506,10 @@ class Admin extends AdminModule
     private function _addHeaderFiles()
     {
         // CSS
-        //$this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
         $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
 
         // JS
-        //$this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
         $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'), 'footer');
         $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
 
@@ -522,11 +519,6 @@ class Admin extends AdminModule
 
         // MODULE SCRIPTS
         $this->core->addJS(url([ADMIN, 'profil', 'javascript']), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

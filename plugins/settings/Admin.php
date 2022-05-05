@@ -3,7 +3,6 @@
 namespace Plugins\Settings;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 use Systems\Lib\License;
 use Systems\Lib\HttpRequest;
 
@@ -57,8 +56,8 @@ class Admin extends AdminModule
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($settings['master']) {
-          $settings['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
-          $settings['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
+          $settings['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+          $settings['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
@@ -67,7 +66,7 @@ class Admin extends AdminModule
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $this->core->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
         ];
 
         $settings['license'] = [];
@@ -594,11 +593,6 @@ class Admin extends AdminModule
     {
       $this->core->addCSS(url('assets/css/bootstrap-colorpicker.css'));
       $this->core->addJS(url('assets/jscripts/bootstrap-colorpicker.js'), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

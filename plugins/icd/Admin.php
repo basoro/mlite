@@ -2,7 +2,6 @@
 namespace Plugins\Icd;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
@@ -86,22 +85,22 @@ class Admin extends AdminModule
 
   public function postSaveICD9()
   {
-    if(!$this->mysql('icd9')->where('kode', $_POST['kode'])->oneArray()){
-      $this->mysql('icd9')->save([
+    if(!$this->core->mysql('icd9')->where('kode', $_POST['kode'])->oneArray()){
+      $this->core->mysql('icd9')->save([
         'kode' => $_POST['kode'],
         'deskripsi_panjang' => $_POST['nama'],
         'deskripsi_pendek' => $_POST['nama']
       ]);
     }
     unset($_POST['nama']);
-    $this->mysql('prosedur_pasien')->save($_POST);
+    $this->core->mysql('prosedur_pasien')->save($_POST);
     exit();
   }
 
   public function postSaveICD10()
   {
-    if(!$this->mysql('penyakit')->where('kd_penyakit', $_POST['kd_penyakit'])->oneArray()){
-      $this->mysql('penyakit')->save([
+    if(!$this->core->mysql('penyakit')->where('kd_penyakit', $_POST['kd_penyakit'])->oneArray()){
+      $this->core->mysql('penyakit')->save([
         'kd_penyakit' => $_POST['kd_penyakit'],
         'nm_penyakit' => $_POST['nama'],
         'ciri_ciri' => '-',
@@ -111,11 +110,11 @@ class Admin extends AdminModule
       ]);
     }
     $_POST['status_penyakit'] = 'Baru';
-    //if($this->mysql('diagnosa_pasien')->where('kd_penyakit', $_POST['kd_penyakit'])->oneArray()){
+    //if($this->core->mysql('diagnosa_pasien')->where('kd_penyakit', $_POST['kd_penyakit'])->oneArray()){
     //  $_POST['status_penyakit'] = 'Lama';
     //}
     unset($_POST['nama']);
-    $this->mysql('diagnosa_pasien')->save($_POST);
+    $this->core->mysql('diagnosa_pasien')->save($_POST);
     exit();
   }
 
@@ -128,7 +127,7 @@ class Admin extends AdminModule
       ->toArray();
     $prosedur = [];
     foreach ($prosedurs as $row_prosedur) {
-      $icd9 = $this->mysql('icd9')->where('kode', $row_prosedur['kode'])->oneArray();
+      $icd9 = $this->core->mysql('icd9')->where('kode', $row_prosedur['kode'])->oneArray();
       $row_prosedur['nama'] = $icd9['deskripsi_panjang'];
       $prosedur[] = $row_prosedur;
     }
@@ -139,7 +138,7 @@ class Admin extends AdminModule
       ->toArray();
     $diagnosa = [];
     foreach ($diagnosas as $row_diagnosa) {
-      $icd10 = $this->mysql('penyakit')->where('kd_penyakit', $row_diagnosa['kd_penyakit'])->oneArray();
+      $icd10 = $this->core->mysql('penyakit')->where('kd_penyakit', $row_diagnosa['kd_penyakit'])->oneArray();
       $row_diagnosa['nama'] = $icd10['nm_penyakit'];
       $diagnosa[] = $row_diagnosa;
     }
@@ -150,24 +149,19 @@ class Admin extends AdminModule
 
   public function postHapusICD10()
   {
-    $this->mysql('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+    $this->core->mysql('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
     exit();
   }
 
   public function postHapusICD9()
   {
-    $this->mysql('prosedur_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
+    $this->core->mysql('prosedur_pasien')->where('no_rawat', $_POST['no_rawat'])->where('prioritas', $_POST['prioritas'])->delete();
     exit();
   }
 
   protected function data_icd($table)
   {
       return new DB_ICD($table);
-  }
-
-  protected function mysql($table = NULL)
-  {
-      return new MySQL($table);
   }
 
 }

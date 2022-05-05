@@ -2,7 +2,6 @@
 namespace Plugins\Laporan;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -41,7 +40,7 @@ class Admin extends AdminModule
 
       $sql = "SELECT * FROM bridging_sep WHERE (tglsep BETWEEN '$tgl_awal' AND '$tgl_akhir')";
 
-      $stmt = $this->mysql()->pdo()->prepare($sql);
+      $stmt = $this->core->mysql()->pdo()->prepare($sql);
       $stmt->execute();
       $rows = $stmt->fetchAll();
 
@@ -93,11 +92,6 @@ class Admin extends AdminModule
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'laporan', 'css']));
         $this->core->addJS(url([ADMIN, 'laporan', 'javascript']), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

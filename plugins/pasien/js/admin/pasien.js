@@ -113,7 +113,7 @@ $("#form").on("click", "#simpan", function(event){
       kd_pj: kd_pj,
       no_peserta: no_peserta
     } ,function(data) {
-      alert(data);
+      //alert(data);
       var data = JSON.parse(data);
       if(data.status == 'success')
       {

@@ -3,7 +3,6 @@
 namespace Plugins\Users;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -221,7 +220,7 @@ class Admin extends AdminModule
 
     private function _addInfoUser() {
         // get users
-        $rows = $this->mysql('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+        $rows = $this->core->mysql('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
 
         if (count($rows)) {
           $this->assign['user'] = [];
@@ -249,7 +248,7 @@ class Admin extends AdminModule
     private function _getInfoCap($kd_poli = null)
     {
         $result = [];
-        $rows = $this->mysql()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
+        $rows = $this->core->mysql()->pdo()->prepare("(SELECT kd_poli AS cap, nm_poli AS nm_cap FROM poliklinik) UNION (SELECT kd_bangsal AS cap, nm_bangsal AS nm_cap FROM bangsal)");
         $rows->execute();
         $rows = $rows->fetchAll();
 
@@ -331,11 +330,6 @@ class Admin extends AdminModule
         header('Content-type: text/css');
         echo $this->draw(MODULES.'/users/css/admin/users.css');
         exit();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }
