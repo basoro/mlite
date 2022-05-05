@@ -16,7 +16,6 @@ class Site extends SiteModule
       $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
       $this->user_key = $this->settings->get('settings.BpjsUserKey');
       $this->api_url = $this->settings->get('settings.BpjsApiUrl');
-      $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
     }
 
     public function routes()

@@ -16,7 +16,6 @@ class Admin extends AdminModule
     $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
     $this->user_key = $this->settings->get('settings.BpjsUserKey');
     $this->api_url = $this->settings->get('settings.BpjsApiUrl');
-    $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
   }
 
   public function navigation()
@@ -176,33 +175,94 @@ class Admin extends AdminModule
 
       $code = $data['metaData']['code'];
       $message = $data['metaData']['message'];
-      if ($this->vclaim_version == 1) {
-        echo json_encode($json);
-      } else {
-        $stringDecrypt = stringDecrypt($key, $data['response']);
-        $decompress = '""';
-        if (!empty($stringDecrypt)) {
-          $decompress = decompress($stringDecrypt);
+      $stringDecrypt = stringDecrypt($key, $data['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+        $decompress = decompress($stringDecrypt);
+      }
+      if ($data != null) {
+        $data = '{
+            	"metaData": {
+            		"code": "' . $code . '",
+            		"message": "' . $message . '"
+            	},
+            	"response": ' . $decompress . '}';
+
+        $data = json_decode($data, true);
+
+        $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
+
+        if ($_POST['jnspelayanan'] == 1) {
+          $this->mysql('bridging_surat_pri_bpjs')->where('no_surat', $_POST['noskdp'])->update([
+            'no_sep' => $_POST['sep_no_sep']
+          ]);
         }
-        if ($data != null) {
-          $data = '{
-              	"metaData": {
-              		"code": "' . $code . '",
-              		"message": "' . $message . '"
-              	},
-              	"response": ' . $decompress . '}';
 
-          $data = json_decode($data, true);
+        $simpan_sep = $this->mysql('bridging_sep')->save([
+          'no_sep' => $_POST['sep_no_sep'],
+          'no_rawat' => $_POST['no_rawat'],
+          'tglsep' => $_POST['tglsep'],
+          'tglrujukan' => $_POST['tglrujukan'],
+          'no_rujukan' => $_POST['norujukan'],
+          'kdppkrujukan' => $_POST['kdppkrujukan'],
+          'nmppkrujukan' => $_POST['nmppkrujukan'],
+          'kdppkpelayanan' => $_POST['kdppkpelayanan'],
+          'nmppkpelayanan' => $_POST['nmppkpelayanan'],
+          'jnspelayanan' => $_POST['jnspelayanan'],
+          'catatan' => $_POST['catatan'],
+          'diagawal' => $_POST['diagawal'],
+          'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
+          'kdpolitujuan' => $_POST['kdpolitujuan'],
+          'nmpolitujuan' => $_POST['nmpolitujuan'],
+          'klsrawat' => $_POST['klsrawat'],
+          'klsnaik' => $_POST['klsnaik'],
+          'pembiayaan' => $_POST['pembiayaan'],
+          'pjnaikkelas' => $_POST['pjnaikkelas'],
+          'lakalantas' => $_POST['lakalantas'],
+          'user' => $_POST['sep_user'],
+          'nomr' => $_POST['nomr'],
+          'nama_pasien' => $_POST['nama_pasien'],
+          'tanggal_lahir' => $_POST['tanggal_lahir'],
+          'peserta' => $_POST['peserta'],
+          'jkel' => $_POST['jenis_kelamin'],
+          'no_kartu' => $_POST['no_kartu'],
+          'tglpulang' => $_POST['tglpulang'],
+          'asal_rujukan' => $_POST['asal_rujukan'],
+          'eksekutif' => $_POST['eksekutif'],
+          'cob' => $_POST['cob'],
+          'notelep' => $_POST['notelep'],
+          'katarak' => $_POST['katarak'],
+          'tglkkl' => $_POST['tglkkl'],
+          'keterangankkl' => $_POST['keterangankkl'],
+          'suplesi' => $_POST['suplesi'],
+          'no_sep_suplesi' => $_POST['no_sep_suplesi'],
+          'kdprop' => $_POST['kdprop'],
+          'nmprop' => $_POST['nmprop'],
+          'kdkab' => $_POST['kdkab'],
+          'nmkab' => $_POST['nmkab'],
+          'kdkec' => $_POST['kdkec'],
+          'nmkec' => $_POST['nmkec'],
+          'noskdp' => $_POST['noskdp'],
+          'kddpjp' => $_POST['kddpjp'],
+          'nmdpdjp' => $_POST['nmdpdjp'],
+          'tujuankunjungan' => $_POST['tujuanKunj'],
+          'flagprosedur' => $_POST['flagProcedure'],
+          'penunjang' => $_POST['kdPenunjang'],
+          'asesmenpelayanan' => $_POST['assesmentPel'],
+          'kddpjplayanan' => $_POST['kddpjppelayanan'],
+          'nmdpjplayanan' => $_POST['nmdpjppelayanan']
+        ]);
 
-          $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
-
-          if ($_POST['jnspelayanan'] == 1) {
-            $this->mysql('bridging_surat_pri_bpjs')->where('no_surat', $_POST['noskdp'])->update([
-              'no_sep' => $_POST['sep_no_sep']
+        if ($simpan_sep) {
+          if ($_POST['prolanis_prb'] !== '') {
+            $simpan_prb = $this->mysql('bpjs_prb')->save([
+              'no_sep' => $_POST['sep_no_sep'],
+              'prb' => $_POST['prolanis_prb']
             ]);
           }
-
-          $simpan_sep = $this->mysql('bridging_sep')->save([
+          echo $_POST['sep_no_sep'];
+        } else {
+          $simpan_sep = $this->mysql('bridging_sep_internal')->save([
             'no_sep' => $_POST['sep_no_sep'],
             'no_rawat' => $_POST['no_rawat'],
             'tglsep' => $_POST['tglsep'],
@@ -256,86 +316,21 @@ class Admin extends AdminModule
             'kddpjplayanan' => $_POST['kddpjppelayanan'],
             'nmdpjplayanan' => $_POST['nmdpjppelayanan']
           ]);
-
-          if ($simpan_sep) {
-            if ($_POST['prolanis_prb'] !== '') {
-              $simpan_prb = $this->mysql('bpjs_prb')->save([
-                'no_sep' => $_POST['sep_no_sep'],
-                'prb' => $_POST['prolanis_prb']
-              ]);
-            }
-            echo $_POST['sep_no_sep'];
-          } else {
-            $simpan_sep = $this->mysql('bridging_sep_internal')->save([
+          if ($_POST['prolanis_prb'] !== '') {
+            $simpan_prb = $this->mysql('bpjs_prb')->save([
               'no_sep' => $_POST['sep_no_sep'],
-              'no_rawat' => $_POST['no_rawat'],
-              'tglsep' => $_POST['tglsep'],
-              'tglrujukan' => $_POST['tglrujukan'],
-              'no_rujukan' => $_POST['norujukan'],
-              'kdppkrujukan' => $_POST['kdppkrujukan'],
-              'nmppkrujukan' => $_POST['nmppkrujukan'],
-              'kdppkpelayanan' => $_POST['kdppkpelayanan'],
-              'nmppkpelayanan' => $_POST['nmppkpelayanan'],
-              'jnspelayanan' => $_POST['jnspelayanan'],
-              'catatan' => $_POST['catatan'],
-              'diagawal' => $_POST['diagawal'],
-              'nmdiagnosaawal' => $_POST['nmdiagnosaawal'],
-              'kdpolitujuan' => $_POST['kdpolitujuan'],
-              'nmpolitujuan' => $_POST['nmpolitujuan'],
-              'klsrawat' => $_POST['klsrawat'],
-              'klsnaik' => $_POST['klsnaik'],
-              'pembiayaan' => $_POST['pembiayaan'],
-              'pjnaikkelas' => $_POST['pjnaikkelas'],
-              'lakalantas' => $_POST['lakalantas'],
-              'user' => $_POST['sep_user'],
-              'nomr' => $_POST['nomr'],
-              'nama_pasien' => $_POST['nama_pasien'],
-              'tanggal_lahir' => $_POST['tanggal_lahir'],
-              'peserta' => $_POST['peserta'],
-              'jkel' => $_POST['jenis_kelamin'],
-              'no_kartu' => $_POST['no_kartu'],
-              'tglpulang' => $_POST['tglpulang'],
-              'asal_rujukan' => $_POST['asal_rujukan'],
-              'eksekutif' => $_POST['eksekutif'],
-              'cob' => $_POST['cob'],
-              'notelep' => $_POST['notelep'],
-              'katarak' => $_POST['katarak'],
-              'tglkkl' => $_POST['tglkkl'],
-              'keterangankkl' => $_POST['keterangankkl'],
-              'suplesi' => $_POST['suplesi'],
-              'no_sep_suplesi' => $_POST['no_sep_suplesi'],
-              'kdprop' => $_POST['kdprop'],
-              'nmprop' => $_POST['nmprop'],
-              'kdkab' => $_POST['kdkab'],
-              'nmkab' => $_POST['nmkab'],
-              'kdkec' => $_POST['kdkec'],
-              'nmkec' => $_POST['nmkec'],
-              'noskdp' => $_POST['noskdp'],
-              'kddpjp' => $_POST['kddpjp'],
-              'nmdpdjp' => $_POST['nmdpdjp'],
-              'tujuankunjungan' => $_POST['tujuanKunj'],
-              'flagprosedur' => $_POST['flagProcedure'],
-              'penunjang' => $_POST['kdPenunjang'],
-              'asesmenpelayanan' => $_POST['assesmentPel'],
-              'kddpjplayanan' => $_POST['kddpjppelayanan'],
-              'nmdpjplayanan' => $_POST['nmdpjppelayanan']
+              'prb' => $_POST['prolanis_prb']
             ]);
-            if ($_POST['prolanis_prb'] !== '') {
-              $simpan_prb = $this->mysql('bpjs_prb')->save([
-                'no_sep' => $_POST['sep_no_sep'],
-                'prb' => $_POST['prolanis_prb']
-              ]);
-            }
-            echo $_POST['sep_no_sep'];
           }
-        } else {
-          echo '{
-              	"metaData": {
-              		"code": "5000",
-              		"message": "ERROR"
-              	},
-              	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+          echo $_POST['sep_no_sep'];
         }
+      } else {
+        echo '{
+            	"metaData": {
+            		"code": "5000",
+            		"message": "ERROR"
+            	},
+            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
       }
     } else {
 
@@ -502,31 +497,27 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      $json = '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+      $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
+      echo $this->tpl->draw(MODULES . '/vclaim/view/admin/rujukan.modal.html', true);
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        $json = '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-        $this->tpl->set('rujukan', json_encode($json, JSON_PRETTY_PRINT));
-        echo $this->tpl->draw(MODULES . '/vclaim/view/admin/rujukan.modal.html', true);
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -543,29 +534,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -581,29 +568,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -619,29 +602,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -657,29 +636,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -696,29 +671,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -735,29 +706,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -774,29 +741,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -813,29 +776,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -852,29 +811,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -896,25 +851,22 @@ class Admin extends AdminModule
     if (!empty($stringDecrypt)) {
       $decompress = decompress($stringDecrypt);
     }
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
+
     exit();
   }
 
@@ -930,29 +882,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -969,29 +917,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1008,29 +952,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1047,29 +987,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1086,29 +1022,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          "metaData": {
+            "code": "' . $code . '",
+            "message": "' . $message . '"
+          },
+          "response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
-            },
-            "response": ' . $decompress . '}';
-      } else {
-        echo '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          "metaData": {
+            "code": "5000",
+            "message": "ERROR"
+          },
+          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1125,29 +1057,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+        	"metaData": {
+        		"code": "' . $code . '",
+        		"message": "' . $message . '"
+        	},
+        	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-          	"metaData": {
-          		"code": "' . $code . '",
-          		"message": "' . $message . '"
-          	},
-          	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-          	"metaData": {
-          		"code": "5000",
-          		"message": "ERROR"
-          	},
-          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+        	"metaData": {
+        		"code": "5000",
+        		"message": "ERROR"
+        	},
+        	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1233,29 +1161,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1283,29 +1207,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1322,29 +1242,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1361,29 +1277,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1399,29 +1311,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1437,29 +1345,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1475,29 +1379,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1514,29 +1414,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1553,29 +1449,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1592,29 +1484,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1631,29 +1519,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1676,29 +1560,25 @@ class Admin extends AdminModule
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $jsonresponse = $json['response'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+            "response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-              "response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1721,29 +1601,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1766,52 +1642,48 @@ class Admin extends AdminModule
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
-    } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
 
-        $noKunjungan = [];
-        $i = 1;
-        foreach ($json['response']['rujukan'] as $key => $value) {
-          //$keyword = $value['noKunjungan'];
-          /*if ($searchBy == 'RS') {
-                  $url = 'Rujukan/RS/'.$keyword;
-              } else {
-                  $url = 'Rujukan/'.$keyword;
-              }
-              $url = $this->api_url.''.$url;
-              $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-              $json = json_decode($output, true);
-              echo json_encode($json);*/
-          $row['Nomor'] = $i++;
-          $row['noKunjungan'] = '<a href="' . url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]) . '" data-toggle="modal" data-target="#rujukanModal">' . $value['noKunjungan'] . '</a>';
-          $row['Poliklinik'] = '[' . $value['poliRujukan']['kode'] . '] ' . $value['poliRujukan']['nama'];
-          $row['Diagnosa'] = '[' . $value['diagnosa']['kode'] . '] ' . $value['diagnosa']['nama'];
-          $row['Perujuk'] = '[' . $value['provPerujuk']['kode'] . '] ' . $value['provPerujuk']['nama'];
-          $row['Tanggal'] = $value['tglKunjungan'];
-          $noKunjungan[] = $row;
-        }
-        echo json_encode($noKunjungan);
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      $noKunjungan = [];
+      $i = 1;
+      foreach ($json['response']['rujukan'] as $key => $value) {
+        //$keyword = $value['noKunjungan'];
+        /*if ($searchBy == 'RS') {
+                $url = 'Rujukan/RS/'.$keyword;
+            } else {
+                $url = 'Rujukan/'.$keyword;
+            }
+            $url = $this->api_url.''.$url;
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+            $json = json_decode($output, true);
+            echo json_encode($json);*/
+        $row['Nomor'] = $i++;
+        $row['noKunjungan'] = '<a href="' . url([ADMIN, 'vclaim', 'caribynorujukanmodal', $searchBy, $value['noKunjungan']]) . '" data-toggle="modal" data-target="#rujukanModal">' . $value['noKunjungan'] . '</a>';
+        $row['Poliklinik'] = '[' . $value['poliRujukan']['kode'] . '] ' . $value['poliRujukan']['nama'];
+        $row['Diagnosa'] = '[' . $value['diagnosa']['kode'] . '] ' . $value['diagnosa']['nama'];
+        $row['Perujuk'] = '[' . $value['provPerujuk']['kode'] . '] ' . $value['provPerujuk']['nama'];
+        $row['Tanggal'] = $value['tglKunjungan'];
+        $noKunjungan[] = $row;
       }
+      echo json_encode($noKunjungan);
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1851,29 +1723,25 @@ class Admin extends AdminModule
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1890,29 +1758,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1929,29 +1793,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -1968,29 +1828,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2007,29 +1863,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2046,29 +1898,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2085,29 +1933,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2124,29 +1968,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2163,29 +2003,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }
@@ -2310,32 +2146,27 @@ class Admin extends AdminModule
     //print_r($output);
     $code = $data['metaData']['code'];
     $message = $data['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      //echo json_encode($data);
-      $data = $data;
+    $stringDecrypt = stringDecrypt($key, $data['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($data != null) {
+      $data = '{
+          "metaData": {
+            "code": "' . $code . '",
+            "message": "' . $message . '"
+          },
+          "response": ' . $decompress . '}';
+      $data = json_decode($data, true);
     } else {
-      $stringDecrypt = stringDecrypt($key, $data['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($data != null) {
-        $data = '{
-            "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
-            },
-            "response": ' . $decompress . '}';
-        $data = json_decode($data, true);
-      } else {
-        $data = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data = json_decode($data, true);
-      }
+      $data = '{
+          "metaData": {
+            "code": "5000",
+            "message": "ERROR"
+          },
+          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      $data = json_decode($data, true);
     }
 
     $url_rujukan = $this->settings->get('settings.BpjsApiUrl') . 'Rujukan/' . $data['response']['noRujukan'];
@@ -2348,32 +2179,27 @@ class Admin extends AdminModule
 
     $code = $data_rujukan['metaData']['code'];
     $message = $data_rujukan['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      //echo json_encode($data);
-      $data_rujukan = $data_rujukan;
+    $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($data_rujukan != null) {
+      $data_rujukan = '{
+          "metaData": {
+            "code": "' . $code . '",
+            "message": "' . $message . '"
+          },
+          "response": ' . $decompress . '}';
+      $data_rujukan = json_decode($data_rujukan, true);
     } else {
-      $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($data_rujukan != null) {
-        $data_rujukan = '{
-            "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
-            },
-            "response": ' . $decompress . '}';
-        $data_rujukan = json_decode($data_rujukan, true);
-      } else {
-        $data_rujukan = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data_rujukan = json_decode($data_rujukan, true);
-      }
+      $data_rujukan = '{
+          "metaData": {
+            "code": "5000",
+            "message": "ERROR"
+          },
+          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      $data_rujukan = json_decode($data_rujukan, true);
     }
 
     $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
@@ -2595,29 +2421,25 @@ class Admin extends AdminModule
     //echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      echo json_encode($json);
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
     } else {
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($json != null) {
-        echo '{
-            	"metaData": {
-            		"code": "' . $code . '",
-            		"message": "' . $message . '"
-            	},
-            	"response": ' . $decompress . '}';
-      } else {
-        echo '{
-            	"metaData": {
-            		"code": "5000",
-            		"message": "ERROR"
-            	},
-            	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
     exit();
   }

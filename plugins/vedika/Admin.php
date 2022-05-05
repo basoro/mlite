@@ -16,7 +16,6 @@ class Admin extends AdminModule
     $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
     $this->user_key = $this->settings->get('settings.BpjsUserKey');
     $this->api_url = $this->settings->get('settings.BpjsApiUrl');
-    $this->vclaim_version = $this->settings->get('settings.vClaimVersion');
   }
 
   public function navigation()
@@ -588,32 +587,27 @@ class Admin extends AdminModule
     // print_r($output);
     $code = $data['metaData']['code'];
     $message = $data['metaData']['message'];
-    if ($this->vclaim_version == 1) {
-      //echo json_encode($data);
-      $data = $data;
+    $stringDecrypt = stringDecrypt($key, $data['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($data != null) {
+      $data = '{
+          "metaData": {
+            "code": "' . $code . '",
+            "message": "' . $message . '"
+          },
+          "response": ' . $decompress . '}';
+      $data = json_decode($data, true);
     } else {
-      $stringDecrypt = stringDecrypt($key, $data['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
-      }
-      if ($data != null) {
-        $data = '{
-            "metaData": {
-              "code": "' . $code . '",
-              "message": "' . $message . '"
-            },
-            "response": ' . $decompress . '}';
-        $data = json_decode($data, true);
-      } else {
-        $data = '{
-            "metaData": {
-              "code": "5000",
-              "message": "ERROR"
-            },
-            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-        $data = json_decode($data, true);
-      }
+      $data = '{
+          "metaData": {
+            "code": "5000",
+            "message": "ERROR"
+          },
+          "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      $data = json_decode($data, true);
     }
 
     $jenis_pelayanan = '2';
@@ -641,33 +635,29 @@ class Admin extends AdminModule
 
       $code = $data_rujukan['metaData']['code'];
       $message = $data_rujukan['metaData']['message'];
-      if ($this->vclaim_version == 1) {
-        //echo json_encode($data);
-        $data_rujukan = $data_rujukan;
-      } else {
-        $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
-        $decompress = '""';
-        if (!empty($stringDecrypt)) {
-          $decompress = decompress($stringDecrypt);
-        }
-        if ($data_rujukan != null) {
-          $data_rujukan = '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-          $data_rujukan = json_decode($data_rujukan, true);
-        } else {
-          $data_rujukan = '{
-              "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-              },
-              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-          $data_rujukan = json_decode($data_rujukan, true);
-        }
+      $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+        $decompress = decompress($stringDecrypt);
       }
+      if ($data_rujukan != null) {
+        $data_rujukan = '{
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $decompress . '}';
+        $data_rujukan = json_decode($data_rujukan, true);
+      } else {
+        $data_rujukan = '{
+            "metaData": {
+              "code": "5000",
+              "message": "ERROR"
+            },
+            "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        $data_rujukan = json_decode($data_rujukan, true);
+      }
+
       // echo json_encode($data_rujukan);
       $no_telp = $data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'];
       if (empty($data_rujukan['response']['rujukan']['peserta']['mr']['noTelepon'])) {
