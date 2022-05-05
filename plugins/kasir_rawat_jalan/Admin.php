@@ -1043,7 +1043,7 @@ class Admin extends AdminModule
         imagedestroy($im);
 
         $image = BASE_DIR."/admin/tmp/qrcode.png";
-        $qrCode = "../../tmp/qrcode.png";
+        $qrCode = "../../admin/tmp/qrcode.png";
 
         $pdf->Cell(120 ,5,'',0,0);
         $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );

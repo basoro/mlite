@@ -321,9 +321,9 @@ class Admin extends AdminModule
       $pj_lab = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
       $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
       $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/tmp/qrcode.png');
+      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
       imagedestroy($im);
-      $qrCode = "../../tmp/qrcode.png";
+      $qrCode = "../../admin/tmp/qrcode.png";
 
       $pasien = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
