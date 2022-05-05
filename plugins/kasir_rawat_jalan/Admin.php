@@ -1045,6 +1045,7 @@ class Admin extends AdminModule
         imagedestroy($im);
 
         $image = BASE_DIR."/admin/tmp/qrcode.png";
+        $qrCode = "../../tmp/qrcode.png";
 
         $pdf->Cell(120 ,5,'',0,0);
         $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
@@ -1059,7 +1060,7 @@ class Admin extends AdminModule
         $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
         //$pdf->Output();
 
-        echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
         $result = $this->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->oneArray();
