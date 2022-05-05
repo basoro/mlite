@@ -87,7 +87,7 @@
           <td>{$data.stts_bayar}</td>
           <td>
             <button type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
-            <a href="{?=url([ADMIN, 'laboratorium', 'detailpermintaan', $data.kd_jenis_prw])?}" data-toggle="modal" data-target="#detailModal" class="btn btn-success btn-xs"><i class="fa fa-search"></i><span class="hidden-xs"> Detail</span></a>
+            <a href="{?=url([ADMIN, 'laboratorium', 'detailpermintaan', $data.noorder, $data.kd_jenis_prw])?}" data-toggle="modal" data-target="#detailModal" class="btn btn-success btn-xs"><i class="fa fa-search"></i><span class="hidden-xs"> Detail</span></a>
           </td>
         </tr>
         <tr>
@@ -100,15 +100,17 @@
                 <th>Rujukan PA</th>
                 <th>Rujukan LD</th>
                 <th>Rujukan PD</th>
+                <th>Aksi</th>
               </tr>
-              {loop: $data.template_laboratorium as $data2}
+              {loop: $data.permintaan_detail_permintaan_lab as $data2}
               <tr>
-                <td>- {$data2.Pemeriksaan}</td>
-                <td>{$data2.satuan}</td>
-                <td>{$data2.nilai_rujukan_la}</td>
-                <td>{$data2.nilai_rujukan_pa}</td>
-                <td>{$data2.nilai_rujukan_ld}</td>
-                <td>{$data2.nilai_rujukan_pd}</td>
+                <td>- {$data2.template_laboratorium.Pemeriksaan}</td>
+                <td>{$data2.template_laboratorium.satuan}</td>
+                <td>{$data2.template_laboratorium.nilai_rujukan_la}</td>
+                <td>{$data2.template_laboratorium.nilai_rujukan_pa}</td>
+                <td>{$data2.template_laboratorium.nilai_rujukan_ld}</td>
+                <td>{$data2.template_laboratorium.nilai_rujukan_pd}</td>
+                <td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$data.noorder} data-kd_jenis_prw={$data.kd_jenis_prw}  data-id_template={$data2.template_laboratorium.id_template}><span></td>
               </tr>
               {/loop}
             </table>
@@ -149,7 +151,7 @@
   		cache: false,
   		data:'column='+column+'&value='+editableObj.innerHTML+'&no_rawat='+no_rawat+'&tgl_periksa='+tgl_periksa+'&jam='+jam+'&id_template='+id_template,
   		success: function(response)  {
-  			console.log(response);
+  			//console.log(response);
   			// set updated value as old value
   			$(editableObj).attr('data-old_value',editableObj.innerHTML);
   			$(editableObj).css("background","#FDFDFD");
@@ -167,11 +169,76 @@
   		cache: false,
   		data:'column='+column+'&value='+editableObj.innerHTML+'&no_rawat='+no_rawat+'&tgl_periksa='+tgl_periksa+'&jam='+jam+'&id_template='+id_template,
   		success: function(response)  {
-  			console.log(response);
+  			//console.log(response);
   			// set updated value as old value
   			$(editableObj).attr('data-old_value',editableObj.innerHTML);
   			$(editableObj).css("background","#FDFDFD");
   		}
      });
   }
+
+  // ketika tombol hapus ditekan
+  $("#rincian").on("click",".validasi_permintaan_lab", function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/laboratorium/validasipermintaanlab?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+    var jam_permintaan = $(this).attr("data-jam_permintaan");
+    var noorder = $(this).attr("data-noorder");
+
+    //console.log(no_rawat + ' - ' + noorder + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menvalidasi data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat,
+          tgl_permintaan: tgl_permintaan,
+          jam_permintaan: jam_permintaan,
+          noorder: noorder
+        } ,function(data) {
+          //console.log(data);
+          var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#rincian").html(data).show();
+          });
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Validasi permintaan laboratorium telah selesai!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+
+  $("#rincian").on("click",".hapus_detail_permintaan", function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/laboratorium/hapusdetailpermintaan?t=' + mlite.token;
+    var noorder = $(this).attr("data-noorder");
+    var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+    var id_template = $(this).attr("data-id_template");
+    //console.log(noorder + ' - ' + kd_jenis_prw + ' - ' + id_template);
+    $.post(url, {
+      noorder: noorder,
+      kd_jenis_prw: kd_jenis_prw,
+      id_template: id_template
+    } ,function(data) {
+      var no_rawat = $('input:text[name=no_rawat]').val();
+      var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#rincian").html(data).show();
+      });
+    });
+    //$('#detailModal').modal('hidden');
+    //$('body').removeClass('modal-open')
+    //$('.modal-backdrop').remove()
+  });
+
 </script>

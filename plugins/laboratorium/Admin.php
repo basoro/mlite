@@ -278,7 +278,7 @@ class Admin extends AdminModule
 
         $query = $this->mysql('reg_periksa')->save($_POST);
       } else {
-        $query = $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
+        $query = $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->valu([
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_pj' => $_POST['kd_pj']
         ]);
@@ -552,8 +552,10 @@ class Admin extends AdminModule
         foreach ($rows as $row) {
           $rows2 = $this->mysql('permintaan_pemeriksaan_lab')
             ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+            //->join('permintaan_detail_permintaan_lab', 'permintaan_detail_permintaan_lab.noorder=permintaan_pemeriksaan_lab.noorder')
             ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
             ->toArray();
+            $row['permintaan_pemeriksaan_lab'] = [];
             foreach ($rows2 as $row2) {
               $row2['noorder'] = $row2['noorder'];
               $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
@@ -563,7 +565,12 @@ class Admin extends AdminModule
               $row2['status'] = $row2['status'];
               $row2['kelas'] = $row2['kelas'];
               $row2['kategori'] = $row2['kategori'];
-              $row2['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+              $rows3 = $this->mysql('permintaan_detail_permintaan_lab')->where('noorder', $row2['noorder'])->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+              $row2['permintaan_detail_permintaan_lab'] = [];
+              foreach ($rows3 as $row3) {
+                $row3['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row3['kd_jenis_prw'])->where('id_template', $row3['id_template'])->oneArray();
+                $row2['permintaan_detail_permintaan_lab'][] = $row3;
+              }
               $row['permintaan_pemeriksaan_lab'][] = $row2;
             }
           $laboratorium[] = $row;
@@ -605,11 +612,80 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getDetailPermintaan($kd_jenis_prw)
+    public function getDetailPermintaan($noorder, $kd_jenis_prw)
     {
-      $this->assign['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
-      $this->tpl->set('detail', $this->assign);
+      $rows = $this->mysql('permintaan_detail_permintaan_lab')->where('noorder', $noorder)->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
+      $detail_permintaan_lab = [];
+      foreach ($rows as $row) {
+        $row['template_laboratorium'] = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+        $detail_permintaan_lab[] = $row;
+      }
+      $this->tpl->set('detail', $detail_permintaan_lab);
       echo $this->tpl->draw(MODULES.'/laboratorium/view/admin/details.html', true);
+      exit();
+    }
+
+    public function postValidasiPermintaanLab()
+    {
+      $permintaan_lab = $this->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+      $permintaan_pemeriksaan_lab = $this->mysql('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->oneArray();
+      $jns_perawatan = $this->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $permintaan_pemeriksaan_lab['kd_jenis_prw'])->oneArray();
+      $periksa_lab = $this->mysql('periksa_lab')
+        ->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'nip' => $this->core->getUserInfo('username', null, true),
+          'kd_jenis_prw' => $permintaan_pemeriksaan_lab['kd_jenis_prw'],
+          'tgl_periksa' => $_POST['tgl_permintaan'],
+          'jam' => $_POST['jam_permintaan'],
+          'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
+          'bagian_rs' => $jns_perawatan['bagian_rs'],
+          'bhp' => $jns_perawatan['bhp'],
+          'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+          'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+          'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+          'kso' => $jns_perawatan['kso'],
+          'menejemen' => $jns_perawatan['menejemen'],
+          'biaya' => $jns_perawatan['total_byr'],
+          'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+          'status' => 'Ralan'
+        ]);
+      if($periksa_lab) {
+        $permintaan_detail_permintaan_lab = $this->mysql('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->toArray();
+        foreach ($permintaan_detail_permintaan_lab as $row) {
+          $template_laboratorium = $this->mysql('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+          $this->mysql('detail_periksa_lab')
+            ->save([
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_jenis_prw' => $row['kd_jenis_prw'],
+              'tgl_periksa' => $_POST['tgl_permintaan'],
+              'jam' => $_POST['jam_permintaan'],
+              'id_template' => $row['id_template'],
+              'nilai' => '',
+              'nilai_rujukan' => $template_laboratorium['nilai_rujukan_ld'],
+              'keterangan' => '',
+              'bagian_rs' => $template_laboratorium['bagian_rs'],
+              'bhp' => $template_laboratorium['bhp'],
+              'bagian_perujuk' => $template_laboratorium['bagian_perujuk'],
+              'bagian_dokter' => $template_laboratorium['bagian_dokter'],
+              'bagian_laborat' => $template_laboratorium['bagian_laborat'],
+              'kso' => $template_laboratorium['kso'],
+              'menejemen' => $template_laboratorium['menejemen'],
+              'biaya_item' => $template_laboratorium['biaya_item']
+            ]);
+        }
+      }
+      var_dump($permintaan_lab);
+      var_dump($permintaan_pemeriksaan_lab);
+      exit();
+    }
+
+    public function postHapusDetailPermintaan()
+    {
+      $this->mysql('permintaan_detail_permintaan_lab')
+        ->where('noorder', $_POST['noorder'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->where('id_template', $_POST['id_template'])
+        ->delete();
       exit();
     }
 
