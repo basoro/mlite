@@ -1,4 +1,4 @@
-th, td {
+.nowrap th, .nowrap td {
   white-space: nowrap;
 }
 .nav-tabs {
