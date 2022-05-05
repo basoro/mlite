@@ -52,6 +52,7 @@ class Admin extends AdminModule
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
         $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
+        $settings['module_wagateway'] = $this->db('mlite_modules')->where('dir', 'wagateway')->oneArray();
         $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];

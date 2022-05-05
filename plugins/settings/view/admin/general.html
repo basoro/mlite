@@ -211,14 +211,16 @@
                         </div>
                     </div>
                     {/if}
+                    {if: $settings.module_wagateway}
                     <div class="form-group">
-                        <label>Token WhatsApp API</label> <span class="pull-right">[<a href="https://banoewa.com" target="_blank">Dapatkan Token Key Disini</a>]</span>
+                        <label>Token WhatsApp API</label> <span class="pull-right">[<a href="#wagateway-modal" data-toggle="modal" class="small">Dapatkan Token Key Disini</a>]</span>
                         <input type="text" name="waapitoken" class="form-control" value="{$settings.waapitoken}" />
                     </div>
                     <div class="form-group">
                         <label>Nomor HP WhatsApp</label>
                         <input type="text" name="waapiphonenumber" class="form-control" value="{$settings.waapiphonenumber}" placeholder="62xxxxxxxxxx"/>
                     </div>
+                    {/if}
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>
@@ -367,11 +369,32 @@
                     <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna mLITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode validasi penggunaan.</p>
                     <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi mLITE. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
                     <p>Untuk mengaktifkan kode validasi pendaftaran, silahkan ketik kode validasi pendaftaran dalam isian dibawah. Anda bisa melihat kode validasi pendaftaran pada email konfirmasi <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>permintaan kode validasi</b></a>.</p>
+                    <p>Kode validasi pendataan ini juga bisa digunakan sebagai API KEY untuk mengakses layanan Whatsapp Gateway.</p>
                     <input type="text" name="license-key" class="form-control" placeholder="Kode validasi..." />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Upgrade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="wagateway-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Status</h4>
+            </div>
+            <form method="post" action="{?=url([ADMIN,'settings','license'])?}">
+                <div class="modal-body">
+                    <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna mLITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode validasi penggunaan.</p>
+                    <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi mLITE. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
+                    <p>Kode validasi pendataan ini juga bisa digunakan sebagai API KEY untuk mengakses layanan Whatsapp Gateway.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
