@@ -728,29 +728,31 @@ class Admin extends AdminModule
     public function postValidasiPermintaanLab()
     {
       $permintaan_lab = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
-      $permintaan_pemeriksaan_lab = $this->core->mysql('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->oneArray();
-      $jns_perawatan = $this->core->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $permintaan_pemeriksaan_lab['kd_jenis_prw'])->oneArray();
-      $periksa_lab = $this->core->mysql('periksa_lab')
-        ->save([
-          'no_rawat' => $_POST['no_rawat'],
-          'nip' => $this->core->getUserInfo('username', null, true),
-          'kd_jenis_prw' => $permintaan_pemeriksaan_lab['kd_jenis_prw'],
-          'tgl_periksa' => $_POST['tgl_permintaan'],
-          'jam' => $_POST['jam_permintaan'],
-          'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
-          'bagian_rs' => $jns_perawatan['bagian_rs'],
-          'bhp' => $jns_perawatan['bhp'],
-          'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
-          'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
-          'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
-          'kso' => $jns_perawatan['kso'],
-          'menejemen' => $jns_perawatan['menejemen'],
-          'biaya' => $jns_perawatan['total_byr'],
-          'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
-          'status' => 'Ralan'
-        ]);
-      if($periksa_lab) {
-        $permintaan_detail_permintaan_lab = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->toArray();
+      $permintaan_pemeriksaan_lab = $this->core->mysql('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->toArray();
+      //var_dump($permintaan_lab);
+      foreach ($permintaan_pemeriksaan_lab as $row) {
+        $jns_perawatan = $this->core->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+        $periksa_lab = $this->core->mysql('periksa_lab')
+          ->save([
+            'no_rawat' => $_POST['no_rawat'],
+            'nip' => $this->core->getUserInfo('username', null, true),
+            'kd_jenis_prw' => $row['kd_jenis_prw'],
+            'tgl_periksa' => $_POST['tgl_permintaan'],
+            'jam' => $_POST['jam_permintaan'],
+            'dokter_perujuk' => $permintaan_lab['dokter_perujuk'],
+            'bagian_rs' => $jns_perawatan['bagian_rs'],
+            'bhp' => $jns_perawatan['bhp'],
+            'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+            'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+            'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+            'kso' => $jns_perawatan['kso'],
+            'menejemen' => $jns_perawatan['menejemen'],
+            'biaya' => $jns_perawatan['total_byr'],
+            'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
+            'status' => 'Ralan'
+          ]);
+        //var_dump($permintaan_pemeriksaan_lab);
+        $permintaan_detail_permintaan_lab = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
         foreach ($permintaan_detail_permintaan_lab as $row) {
           $template_laboratorium = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
           $this->core->mysql('detail_periksa_lab')
@@ -772,10 +774,9 @@ class Admin extends AdminModule
               'menejemen' => $template_laboratorium['menejemen'],
               'biaya_item' => $template_laboratorium['biaya_item']
             ]);
+          //var_dump($permintaan_detail_permintaan_lab);
         }
       }
-      var_dump($permintaan_lab);
-      var_dump($permintaan_pemeriksaan_lab);
       exit();
     }
 

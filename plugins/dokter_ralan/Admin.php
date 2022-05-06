@@ -547,6 +547,7 @@ class Admin extends AdminModule
         $resep_racikan[] = $row;
       }
 
+      /*
       $rows_laboratorium = $this->core->mysql('permintaan_lab')->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
       $jumlah_total_lab = 0;
       $laboratorium = [];
@@ -560,6 +561,40 @@ class Admin extends AdminModule
           $jumlah_total_lab += $jns_perawatan['total_byr'];
           $laboratorium[] = $row;
         }
+      }
+      */
+
+      $rows_laboratorium = $this->core->mysql('permintaan_lab')
+        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('permintaan_lab.status', 'ralan')
+        ->toArray();
+      $laboratorium = [];
+      foreach ($rows_laboratorium as $row) {
+        $rows2 = $this->core->mysql('permintaan_pemeriksaan_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+          //->join('permintaan_detail_permintaan_lab', 'permintaan_detail_permintaan_lab.noorder=permintaan_pemeriksaan_lab.noorder')
+          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+          ->toArray();
+          $row['permintaan_pemeriksaan_lab'] = [];
+          foreach ($rows2 as $row2) {
+            $row2['noorder'] = $row2['noorder'];
+            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+            $row2['stts_bayar'] = $row2['stts_bayar'];
+            $row2['nm_perawatan'] = $row2['nm_perawatan'];
+            $row2['kd_pj'] = $row2['kd_pj'];
+            $row2['status'] = $row2['status'];
+            $row2['kelas'] = $row2['kelas'];
+            $row2['kategori'] = $row2['kategori'];
+            $rows3 = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $row2['noorder'])->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+            $row2['permintaan_detail_permintaan_lab'] = [];
+            foreach ($rows3 as $row3) {
+              $row3['template_laboratorium'] = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $row3['kd_jenis_prw'])->where('id_template', $row3['id_template'])->oneArray();
+              $row2['permintaan_detail_permintaan_lab'][] = $row3;
+            }
+            $row['permintaan_pemeriksaan_lab'][] = $row2;
+          }
+        $laboratorium[] = $row;
       }
 
       $rows_radiologi = $this->core->mysql('permintaan_radiologi')->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
@@ -605,10 +640,55 @@ class Admin extends AdminModule
         'jumlah_total' => $jumlah_total,
         'jumlah_total_resep' => $jumlah_total_resep,
         'jumlah_total_resep_racikan' => $jumlah_total_resep_racikan,
-        'jumlah_total_lab' => $jumlah_total_lab,
+        //'jumlah_total_lab' => $jumlah_total_lab,
         'jumlah_total_rad' => $jumlah_total_rad,
         'no_rawat' => $_POST['no_rawat']
       ]);
+      exit();
+    }
+
+    public function postHapusNomorPermintaanLaboratorium()
+    {
+      $this->core->mysql('permintaan_lab')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('noorder', $_POST['noorder'])
+      ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+      ->where('jam_permintaan', $_POST['jam_permintaan'])
+      ->where('status', 'Ralan')
+      ->delete();
+      exit();
+    }
+
+    public function postHapusPermintaanLaboratorium()
+    {
+      $this->core->mysql('permintaan_pemeriksaan_lab')
+      ->where('noorder', $_POST['noorder'])
+      ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+      ->where('stts_bayar', 'Belum')
+      ->delete();
+      exit();
+    }
+
+    public function getDetailPermintaan($noorder, $kd_jenis_prw)
+    {
+      $rows = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $noorder)->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
+      $detail_permintaan_lab = [];
+      foreach ($rows as $row) {
+        $row['template_laboratorium'] = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+        $detail_permintaan_lab[] = $row;
+      }
+      $this->tpl->set('detail', $detail_permintaan_lab);
+      echo $this->tpl->draw(MODULES.'/dokter_ralan/view/admin/details.html', true);
+      exit();
+    }
+
+    public function postHapusDetailPermintaan()
+    {
+      $this->core->mysql('permintaan_detail_permintaan_lab')
+        ->where('noorder', $_POST['noorder'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->where('id_template', $_POST['id_template'])
+        ->delete();
       exit();
     }
 

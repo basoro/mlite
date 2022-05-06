@@ -72,23 +72,18 @@
         <td>{$value.noorder}</td>
         <td>{$value.tgl_permintaan} {$value.jam_permintaan}</td>
         <td>
-          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}validasi_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
         </td>
       </tr>
       <tr>
-        <th colspan="2">Nama Pemeriksaan</th>
+        <th colspan="3">Nama Pemeriksaan</th>
         <th>Status Bayar</th>
-        <th>Aksi</th>
       </tr>
         {loop: $value.permintaan_pemeriksaan_lab as $data}
         <tr>
-          <td colspan="2">{$data.nm_perawatan}</td>
+          <td colspan="3">{$data.nm_perawatan}</td>
           <td>{$data.stts_bayar}</td>
-          <td>
-            <button type="button" class="btn btn-danger btn-xs"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
-            <a href="{?=url([ADMIN, 'laboratorium', 'detailpermintaan', $data.noorder, $data.kd_jenis_prw])?}" data-toggle="modal" data-target="#detailModal" class="btn btn-success btn-xs"><i class="fa fa-search"></i><span class="hidden-xs"> Detail</span></a>
-          </td>
         </tr>
         <tr>
           <td colspan="4">
@@ -100,7 +95,7 @@
                 <th>Rujukan PA</th>
                 <th>Rujukan LD</th>
                 <th>Rujukan PD</th>
-                <th>Aksi</th>
+                <!--<th>Aksi</th>-->
               </tr>
               {loop: $data.permintaan_detail_permintaan_lab as $data2}
               <tr>
@@ -110,7 +105,7 @@
                 <td>{$data2.template_laboratorium.nilai_rujukan_pa}</td>
                 <td>{$data2.template_laboratorium.nilai_rujukan_ld}</td>
                 <td>{$data2.template_laboratorium.nilai_rujukan_pd}</td>
-                <td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$data.noorder} data-kd_jenis_prw={$data.kd_jenis_prw}  data-id_template={$data2.template_laboratorium.id_template}><span></td>
+                <!--<td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$data.noorder} data-kd_jenis_prw={$data.kd_jenis_prw}  data-id_template={$data2.template_laboratorium.id_template}><span></td>-->
               </tr>
               {/loop}
             </table>
@@ -199,7 +194,7 @@
           jam_permintaan: jam_permintaan,
           noorder: noorder
         } ,function(data) {
-          //console.log(data);
+          console.log(data);
           var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
           $.post(url, {no_rawat : no_rawat,
           }, function(data) {
