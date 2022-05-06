@@ -9,6 +9,10 @@
         'icon'          =>  'flask',
         'install'       =>  function () use ($core) {
 
+            if (!is_dir(UPLOADS."/laboratorium")) {
+                mkdir(UPLOADS."/laboratorium", 0777);
+            }
+
         },
         'uninstall'     =>  function() use($core)
         {

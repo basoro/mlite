@@ -4,6 +4,10 @@ namespace Plugins\Laboratorium;
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
 use Systems\Lib\QRCode;
+use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\PHPMailer\PHPMailer;
+use Systems\Lib\PHPMailer\SMTP;
+use Systems\Lib\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
@@ -355,6 +359,102 @@ class Admin extends AdminModule
         $periksa_lab[] = $row;
       }
 
+      $pdf = new PDF_MC_Table('P','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image('../'.$this->settings->get('settings.logo'), 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 205, 30);
+      $pdf->Line(10, 31, 205, 31);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(189 ,30,'',0,1);//end of line
+
+      //billing address
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(45 ,6,'Nama',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_pasien'],0,1);
+      $pdf->Cell(45 ,6,'Umur',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['umur'],0,1);
+      $pdf->Cell(45 ,6,'Poli/Ruangan',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_poli'],0,1);
+      $pdf->Cell(45 ,6,'Dokter PJ',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pj_lab['nm_dokter'],0,1);
+      $pdf->Cell(45 ,6,'Dokter Pengirim',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$dokter_perujuk['nama'],0,1);
+      $pdf->Cell(45 ,6,'Tanggal',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['tgl_registrasi'],0,1);
+
+      $pdf->SetXY(10, 85);
+      $pdf->SetFont('Arial','B',14);
+      $pdf->Cell(0, 4, 'Hasil Pemeriksaan Laboratorium', 0, 1, 'C', false);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(205 ,2,'',0,1);//end of line
+      //invoice contents
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->SetWidths(array(10,85,25,25,25,25));
+      $pdf->Row(array('No','Pemeriksaan','Hasil','Rujukan','Satuan','Keterangan'));
+      $pdf->SetFont('Arial', '', 10);
+      $no_lab_pdf = 1;
+      foreach ($rows_periksa_lab as $row) {
+        $row['nomor'] = $no_lab_pdf++;
+        $rows2 = $this->core->mysql('detail_periksa_lab')
+          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+          ->toArray();
+        $pdf->SetWidths(array(10,185));
+        $pdf->Row(array($row['nomor'],$row['nm_perawatan']));
+        foreach ($rows2 as $row2) {
+          $pdf->SetWidths(array(10,85,25,25,25,25));
+          $pdf->Row(array('','',$row2['nilai'],$row2['nilai_rujukan'],$row2['satuan'],$row2['keterangan']));
+        }
+      }
+
+      $pdf->Cell(189 ,10,'',0,1);//end of line
+
+      $pdf->SetFont('Arial','',11);
+
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
+
+      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+      //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+      $im=$qr->createImage(4,4);
+      imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+      imagedestroy($im);
+
+      $image = BASE_DIR."/admin/tmp/qrcode.png";
+
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
+      $pdf->Cell(189 ,32,'',0,1);//end of line
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+
+      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
+      if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
+        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
+      }
+
+      $pdf->Output('F', UPLOADS.'/laboratorium/'.$filename.'.pdf', true);
+      //$pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+
       echo $this->draw('cetakhasil.html', [
         'periksa_lab' => $periksa_lab,
         'jumlah_total_lab' => $jumlah_total_lab,
@@ -362,6 +462,7 @@ class Admin extends AdminModule
         'pj_lab' => $pj_lab['nm_dokter'],
         'dokter_perujuk' => $dokter_perujuk['nama'],
         'pasien' => $pasien,
+        'filename' => $filename,
         'no_rawat' => $_GET['no_rawat']
       ]);
       exit();
@@ -768,6 +869,204 @@ class Admin extends AdminModule
         $text = str_replace('/', '', trim($text));
         return $text;
     }
+
+    public function getHasilPdf()
+    {
+
+      $tmp = $this->core->mysql('mlite_temporary')->toArray();
+      $settings = $this->settings('settings');
+      $logo = $this->settings->get('settings.logo');
+      $pj_lab = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();
+
+      $pasien = $this->core->mysql('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+      $dokter_perujuk = $this->core->mysql('periksa_lab')
+        ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->group('no_rawat')
+        ->oneArray();
+
+      $rows_periksa_lab = $this->core->mysql('periksa_lab')
+      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+      ->where('no_rawat', $_GET['no_rawat'])
+      ->toArray();
+
+      $periksa_lab = [];
+      $jumlah_total_lab = 0;
+      $no_lab = 1;
+      foreach ($rows_periksa_lab as $row) {
+        $jumlah_total_lab += $row['biaya'];
+        $row['nomor'] = $no_lab++;
+        $row['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
+          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+          ->toArray();
+        $periksa_lab[] = $row;
+      }
+
+      $pdf = new PDF_MC_Table('P','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 205, 30);
+      $pdf->Line(10, 31, 205, 31);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(189 ,30,'',0,1);//end of line
+
+      //billing address
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(45 ,6,'Nama',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_pasien'],0,1);
+      $pdf->Cell(45 ,6,'Umur',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['umur'],0,1);
+      $pdf->Cell(45 ,6,'Poli/Ruangan',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_poli'],0,1);
+      $pdf->Cell(45 ,6,'Dokter PJ',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pj_lab['nm_dokter'],0,1);
+      $pdf->Cell(45 ,6,'Dokter Pengirim',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$dokter_perujuk['nama'],0,1);
+      $pdf->Cell(45 ,6,'Tanggal',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['tgl_registrasi'],0,1);
+
+      $pdf->SetXY(10, 85);
+      $pdf->SetFont('Arial','B',14);
+      $pdf->Cell(0, 4, 'Hasil Pemeriksaan Laboratorium', 0, 1, 'C', false);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(205 ,2,'',0,1);//end of line
+      //invoice contents
+      /*
+      $pdf->SetFont('Arial','B',12);
+
+      $pdf->Cell(10 ,7,'No',1,0);
+      $pdf->Cell(85 ,7,'Pemeriksaan',1,0);
+      $pdf->Cell(25 ,7,'Hasil',1,0);
+      $pdf->Cell(25 ,7,'Rujukan',1,0);
+      $pdf->Cell(25 ,7,'Satuan',1,0);
+      $pdf->Cell(25 ,7,'Keterangan',1,1);//end of line
+      */
+
+      $pdf->SetFont('Arial', 'B', 11);
+      $pdf->SetWidths(array(10,85,25,25,25,25));
+      $pdf->Row(array('No','Pemeriksaan','Hasil','Rujukan','Satuan','Keterangan'));
+      $pdf->SetFont('Arial', '', 10);
+      $no_lab_pdf = 1;
+      foreach ($rows_periksa_lab as $row) {
+        $row['nomor'] = $no_lab_pdf++;
+        $rows2 = $this->core->mysql('detail_periksa_lab')
+          ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+          ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+          ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
+          ->toArray();
+        $pdf->SetWidths(array(10,185));
+        $pdf->Row(array($row['nomor'],$row['nm_perawatan']));
+        foreach ($rows2 as $row2) {
+          $pdf->SetWidths(array(10,85,25,25,25,25));
+          $pdf->Row(array('','',$row2['nilai'],$row2['nilai_rujukan'],$row2['satuan'],$row2['keterangan']));
+        }
+      }
+
+      $pdf->Cell(189 ,10,'',0,1);//end of line
+
+      $pdf->SetFont('Arial','',11);
+
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
+
+      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+      //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+      $im=$qr->createImage(4,4);
+      imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+      imagedestroy($im);
+
+      $image = BASE_DIR."/admin/tmp/qrcode.png";
+
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
+      $pdf->Cell(189 ,32,'',0,1);//end of line
+      $pdf->Cell(120 ,5,'',0,0);
+      $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+
+      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
+      if (file_exists(UPLOADS.'/laboratorium/'.$filename.'.pdf')) {
+        unlink(UPLOADS.'/laboratorium/'.$filename.'.pdf');
+      }
+
+      //$pdf->Output('F', UPLOADS.'/laboratorium/'.$filename.'.pdf', true);
+
+      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+
+      exit();
+    }
+
+
+    public function postKirimEmail() {
+      $email = $_POST['email'];
+      $nama_lengkap = $_POST['receiver'];
+      $file = $_POST['file'];
+      $this->sendEmail($email, $nama_lengkap, $file);
+      exit();
+    }
+
+    private function sendEmail($email, $receiver, $file)
+    {
+      $binary_content = file_get_contents($file);
+
+      if ($binary_content === false) {
+         throw new Exception("Could not fetch remote content from: '$file'");
+      }
+
+	    $mail = new PHPMailer(true);
+      $temp  = @file_get_contents(MODULES."/laboratorium/email/email.send.html");
+
+      $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+      $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
+      $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
+      //$temp  = str_replace("{NUMBER}", $number, $temp);
+
+	    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
+      $mail->isSMTP();
+      $mail->Host = $this->settings->get('api.apam_smtp_host');
+      $mail->SMTPAuth = true;
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = $this->settings->get('api.apam_smtp_port');
+
+      $mail->Username = $this->settings->get('api.apam_smtp_username');
+      $mail->Password = $this->settings->get('api.apam_smtp_password');
+
+      // Sender and recipient settings
+      $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
+      $mail->addAddress($email, $receiver);
+      $mail->AddStringAttachment($binary_content, "hasil_laboratorium.pdf", $encoding = 'base64', $type = 'application/pdf');
+
+      // Setting the email content
+      $mail->IsHTML(true);
+      $mail->Subject = "Detail pembayaran anda di ".$this->core->settings->get('settings.nama_instansi');
+      $mail->Body = $temp;
+
+      $mail->send();
+    }
+
 
     public function getJavascript()
     {
