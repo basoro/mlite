@@ -14,7 +14,6 @@ class Admin extends AdminModule
             'Send Message' => 'sendmessage',
             'Send Image' => 'sendimage',
             'Send File' => 'sendfile',
-            'Web Hook' => 'webhook',
             'Settings' => 'settings'
         ];
     }
@@ -27,7 +26,6 @@ class Admin extends AdminModule
           ['name' => 'Send Message', 'url' => url([ADMIN, 'wagateway', 'sendmessage']), 'icon' => 'cubes', 'desc' => 'Send Message Test'],
           ['name' => 'Send File', 'url' => url([ADMIN, 'wagateway', 'sendfile']), 'icon' => 'cubes', 'desc' => 'Send File Test'],
           ['name' => 'Send Image', 'url' => url([ADMIN, 'wagateway', 'sendimage']), 'icon' => 'cubes', 'desc' => 'Send Image Test'],
-          ['name' => 'Web Hook', 'url' => url([ADMIN, 'wagateway', 'webhook']), 'icon' => 'cubes', 'desc' => 'Webhook WA Gateway'],
           ['name' => 'Settings', 'url' => url([ADMIN, 'wagateway', 'settings']), 'icon' => 'cubes', 'desc' => 'Settings WA Getaway'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'waapiserver' => $waapiserver, 'waapiphonenumber' => $waapiphonenumber]);
@@ -55,13 +53,12 @@ class Admin extends AdminModule
 
         $settings['waapitoken'] = $this->settings->get('settings.waapitoken');
         $settings['waapiphonenumber'] = $this->settings->get('settings.waapiphonenumber');
-        $settings['waapiwebhook'] = $this->settings->get('settings.waapiwebhook');
         $settings['email'] = $this->settings->get('settings.email');
 
         $url = "https://mlite.id/wagateway/activated";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$settings['waapitoken']."&body=".$settings['waapiphonenumber']."&webhook=".$settings['waapiwebhook']."&email=".$settings['email']);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$settings['waapitoken']."&body=".$settings['waapiphonenumber']."&email=".$settings['email']);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
