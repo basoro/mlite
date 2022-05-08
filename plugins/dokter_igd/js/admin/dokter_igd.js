@@ -1134,54 +1134,6 @@ $(document).ready(function () {
     valueField: 'kd_jenis_prw',
     textField: 'nm_perawatan'
   });
-  $('.icd10').selectator({
-    labels: {
-      search: 'Cari ICD-10...'
-    },
-    load: function (search, callback) {
-      if (search.length < this.minSearchLength) return callback();
-      $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd10&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          callback(data.slice(0, 100));
-          console.log(data);
-        },
-        error: function() {
-          callback();
-        }
-      });
-    },
-    delay: 300,
-    minSearchLength: 1,
-    valueField: 'kd_penyakit',
-    textField: 'nm_penyakit'
-  });
-  $('.icd9').selectator({
-    labels: {
-      search: 'Cari ICD-9...'
-    },
-    load: function (search, callback) {
-      if (search.length < this.minSearchLength) return callback();
-      $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd9&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-          callback(data.slice(0, 100));
-          console.log(data);
-        },
-        error: function() {
-          callback();
-        }
-      });
-    },
-    delay: 300,
-    minSearchLength: 1,
-    valueField: 'kode',
-    textField: 'deskripsi_panjang'
-  });
   $('select').selectator();
 });
 

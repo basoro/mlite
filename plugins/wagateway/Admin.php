@@ -38,11 +38,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-      $settings['waapiserver'] = $this->settings->get('wagateway.server');
-      $settings['waapitoken'] = $this->settings->get('wagateway.token');
-      $settings['waapiphonenumber'] = $this->settings->get('wagateway.phonenumber');
-      $settings['waapiwebhook'] = $this->settings->get('wagateway.webhook');
-      return $this->draw('settings.html', ['settings' => $settings]);
+      $wagateway['server'] = $this->settings->get('wagateway.server');
+      $wagateway['token'] = $this->settings->get('wagateway.token');
+      $wagateway['phonenumber'] = $this->settings->get('wagateway.phonenumber');
+      return $this->draw('settings.html', ['wagateway' => $wagateway]);
     }
 
     public function postSaveSettings()
@@ -51,14 +50,14 @@ class Admin extends AdminModule
             $this->settings('settings', $key, $val);
         }
 
-        $settings['waapitoken'] = $this->settings->get('wagateway.token');
-        $settings['waapiphonenumber'] = $this->settings->get('wagateway.phonenumber');
+        $wagateway['token'] = $this->settings->get('wagateway.token');
+        $wagateway['phonenumber'] = $this->settings->get('wagateway.phonenumber');
         $settings['email'] = $this->settings->get('settings.email');
 
         $url = "https://mlite.id/wagateway/activated";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
-        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$settings['waapitoken']."&body=".$settings['waapiphonenumber']."&email=".$settings['email']);
+        curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"token=".$wagateway['token']."&body=".$wagateway['phonenumber']."&email=".$settings['email']);
         curl_setopt($curlHandle, CURLOPT_HEADER, 0);
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
