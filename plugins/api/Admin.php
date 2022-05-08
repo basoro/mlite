@@ -176,9 +176,9 @@ class Admin extends AdminModule
 
     public function postKirimWA()
     {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
@@ -196,9 +196,9 @@ class Admin extends AdminModule
 
     public function postKirimWAMedia()
     {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
@@ -216,9 +216,9 @@ class Admin extends AdminModule
 
     public function postKirimWADocument()
     {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);

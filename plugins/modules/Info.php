@@ -24,6 +24,5 @@ return [
         }
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABLE IF EXISTS `mlite_modules`");
     }
 ];

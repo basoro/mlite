@@ -183,9 +183,6 @@ return [
 
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DROP TABLE `mlite_news_tags_relationship`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_news_tags`");
-        $core->db()->pdo()->exec("DROP TABLE `mlite_news`");
         $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'website'");
     }
 ];

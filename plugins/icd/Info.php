@@ -6,5 +6,10 @@ return [
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '2022',
-    'icon'          =>  'database'
+    'icon'          =>  'database',
+    'install'       =>  function () use ($core) {
+    },
+    'uninstall'     =>  function() use($core)
+    {
+    }
 ];

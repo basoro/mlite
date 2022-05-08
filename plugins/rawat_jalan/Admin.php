@@ -375,8 +375,8 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery-ui.js'), 'footer');
       $this->core->addJS(url('assets/jscripts/jquery.timepicker.js'), 'footer');
 
-      $waapitoken =  $this->settings->get('settings.waapitoken');
-      $waapiphonenumber =  $this->settings->get('settings.waapiphonenumber');
+      $waapitoken =  $this->settings->get('wagateway.token');
+      $waapiphonenumber =  $this->settings->get('wagateway.phonenumber');
       $nama_instansi =  $this->settings->get('settings.nama_instansi');
 
       if (isset($_POST['valid'])) {
@@ -517,8 +517,8 @@ class Admin extends AdminModule
         return $this->draw('booking.periksa.html',
           [
             'text' => $text,
-            'waapitoken' => $this->settings->get('settings.waapitoken'),
-            'waapiphonenumber' => $this->settings->get('settings.waapiphonenumber'),
+            'waapitoken' => $this->settings->get('wagateway.token'),
+            'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
             'nama_instansi' => $this->settings->get('settings.nama_instansi'),
             'booking' => $this->core->mysql('booking_periksa')
               ->select([

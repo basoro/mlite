@@ -20,8 +20,8 @@ class Admin extends AdminModule
 
     public function getManage()
     {
-      $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-      $waapiserver = $this->settings->get('settings.waapiserver');
+      $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+      $waapiserver = $this->settings->get('wagateway.server');
       $sub_modules = [
           ['name' => 'Send Message', 'url' => url([ADMIN, 'wagateway', 'sendmessage']), 'icon' => 'cubes', 'desc' => 'Send Message Test'],
           ['name' => 'Send File', 'url' => url([ADMIN, 'wagateway', 'sendfile']), 'icon' => 'cubes', 'desc' => 'Send File Test'],
@@ -38,10 +38,10 @@ class Admin extends AdminModule
 
     public function getSettings()
     {
-      $settings['waapiserver'] = $this->settings->get('settings.waapiserver');
-      $settings['waapitoken'] = $this->settings->get('settings.waapitoken');
-      $settings['waapiphonenumber'] = $this->settings->get('settings.waapiphonenumber');
-      $settings['waapiwebhook'] = $this->settings->get('settings.waapiwebhook');
+      $settings['waapiserver'] = $this->settings->get('wagateway.server');
+      $settings['waapitoken'] = $this->settings->get('wagateway.token');
+      $settings['waapiphonenumber'] = $this->settings->get('wagateway.phonenumber');
+      $settings['waapiwebhook'] = $this->settings->get('wagateway.webhook');
       return $this->draw('settings.html', ['settings' => $settings]);
     }
 
@@ -51,8 +51,8 @@ class Admin extends AdminModule
             $this->settings('settings', $key, $val);
         }
 
-        $settings['waapitoken'] = $this->settings->get('settings.waapitoken');
-        $settings['waapiphonenumber'] = $this->settings->get('settings.waapiphonenumber');
+        $settings['waapitoken'] = $this->settings->get('wagateway.token');
+        $settings['waapiphonenumber'] = $this->settings->get('wagateway.phonenumber');
         $settings['email'] = $this->settings->get('settings.email');
 
         $url = "https://mlite.id/wagateway/activated";
@@ -74,9 +74,9 @@ class Admin extends AdminModule
     public function anySendMessage()
     {
       if(isset($_POST['submit'])) {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimpesan";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
@@ -101,9 +101,9 @@ class Admin extends AdminModule
     public function anySendImage()
     {
       if(isset($_POST['submit'])) {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
@@ -128,9 +128,9 @@ class Admin extends AdminModule
     public function anySendFile()
     {
       if(isset($_POST['submit'])) {
-        $waapitoken = $this->settings->get('settings.waapitoken');
-        $waapiphonenumber = $this->settings->get('settings.waapiphonenumber');
-        $waapiserver = $this->settings->get('settings.waapiserver');
+        $waapitoken = $this->settings->get('wagateway.token');
+        $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
+        $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);

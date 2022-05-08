@@ -7,5 +7,10 @@ return [
     'version'       =>  '1.1',
     'compatibility' =>  '2022',
     'icon'          =>  'home',
-    'pages'         =>  ['Main' => 'main'] 
+    'pages'         =>  ['Main' => 'main'] ,
+    'install'       =>  function () use ($core) {
+    },
+    'uninstall'     =>  function() use($core)
+    {
+    }
 ];
