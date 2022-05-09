@@ -46,8 +46,8 @@ class Admin extends AdminModule
 
     public function postSaveSettings()
     {
-        foreach ($_POST['settings'] as $key => $val) {
-            $this->settings('settings', $key, $val);
+        foreach ($_POST['wagateway'] as $key => $val) {
+            $this->settings('wagateway', $key, $val);
         }
 
         $wagateway['token'] = $this->settings->get('wagateway.token');
