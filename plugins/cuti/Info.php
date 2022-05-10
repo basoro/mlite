@@ -1,50 +1,35 @@
 <?php
-return [
-    'name'          =>  'Farmasi',
-    'description'   =>  'Pengelolaan data gudang farmasi.',
-    'author'        =>  'Basoro',
-    'version'       =>  '1.1',
-    'compatibility' =>  '2022',
-    'icon'          =>  'medkit',
 
-    'install'       =>  function () use ($core) {
+    return [
+        'name'          =>  'Cuti',
+        'description'   =>  'Modul Cuti Pegawai untuk KhanzaLITE',
+        'author'        =>  'Adit',
+        'version'       =>  '1.0',
+        'compatibility' =>  '2022',
+        'icon'          =>  'calendar-check-o',
+        'install'       =>  function () use ($core) {
 
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `opname` (
-          `kode_brng` varchar(15) NOT NULL,
-          `h_beli` double DEFAULT NULL,
-          `tanggal` date NOT NULL,
-          `stok` double NOT NULL,
-          `real` double NOT NULL,
-          `selisih` double NOT NULL,
-          `nomihilang` double NOT NULL,
-          `lebih` double NOT NULL,
-          `nomilebih` double NOT NULL,
-          `keterangan` varchar(60) NOT NULL,
-          `kd_bangsal` char(5) NOT NULL,
-          `no_batch` varchar(20) NOT NULL,
-          `no_faktur` varchar(20) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+          $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `pengajuan_cuti` (
+            `no_pengajuan` varchar(17) NOT NULL,
+            `tanggal` date NOT NULL,
+            `tanggal_awal` date NOT NULL,
+            `tanggal_akhir` date NOT NULL,
+            `nik` varchar(20) NOT NULL,
+            `urgensi` enum('Tahunan','Besar','Sakit','Bersalin','Alasan Penting','Keterangan Lainnya') NOT NULL,
+            `alamat` varchar(100) NOT NULL,
+            `jumlah` int(11) NOT NULL,
+            `kepentingan` varchar(70) NOT NULL,
+            `nik_pj` varchar(20) NOT NULL,
+            `status` enum('Proses Pengajuan','Disetujui','Ditolak') NOT NULL,
+            PRIMARY KEY (`no_pengajuan`) USING BTREE,
+            KEY `nik` (`nik`) USING BTREE,
+            KEY `nik_pj` (`nik_pj`) USING BTREE,
+            CONSTRAINT `pengajuan_cuti_ibfk_1` FOREIGN KEY (`nik`) REFERENCES `pegawai` (`nik`) ON UPDATE CASCADE,
+            CONSTRAINT `pengajuan_cuti_ibfk_2` FOREIGN KEY (`nik_pj`) REFERENCES `pegawai` (`nik`) ON UPDATE CASCADE
+          ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
-        $core->mysql()->pdo()->exec("ALTER TABLE `opname`
-          ADD PRIMARY KEY (`kode_brng`,`tanggal`,`kd_bangsal`,`no_batch`,`no_faktur`) USING BTREE,
-          ADD KEY `kd_bangsal` (`kd_bangsal`) USING BTREE,
-          ADD KEY `stok` (`stok`) USING BTREE,
-          ADD KEY `real` (`real`) USING BTREE,
-          ADD KEY `selisih` (`selisih`) USING BTREE,
-          ADD KEY `nomihilang` (`nomihilang`) USING BTREE,
-          ADD KEY `keterangan` (`keterangan`) USING BTREE,
-          ADD KEY `kode_brng` (`kode_brng`) USING BTREE;");
-
-        $core->mysql()->pdo()->exec("ALTER TABLE `opname`
-          ADD CONSTRAINT `opname_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
-          ADD CONSTRAINT `opname_ibfk_2` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE;");
-
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporalan', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'igd', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporanap', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'gudang', '-')");
-    },
-    'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'farmasi'");
-    }
-];
+        },
+        'uninstall'     =>  function() use($core)
+        {
+        }
+    ];
