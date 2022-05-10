@@ -1,0 +1,89 @@
+<article class="row">
+  <div class="col-md-12" id='rekap_cuti'>
+      <div class="panel panel-default">
+          <div class="panel-heading"><div class="btn-group pull-right" style="margin-top:-8px;">
+            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Cuti</span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li style="padding-left:5px;padding-right:5px;">
+                <input type="text" id="periode" class="form-control periode" name="periode" required>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <div id="submit_periode" class="btn btn-primary btn-block">Semua</div>
+              </li>
+            </ul>
+          </div>
+              <h3 class="panel-title">Rekap Cuti</h3>
+          </div>
+          <div class="panel-body">
+            <div class="row clearfix">
+              <div class="col col-md-8">
+                <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {$rekap.totalRecords.total} | Sisa: {$rekap.totalsisa}</h3>
+              </div>
+              <div class="col col-md-2"></div>
+              <div class="col col-md-2">
+                <div class="input-group">
+                    <input type="text" name="s" minlength="3" class="form-control" placeholder="Search">
+                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                    <span class="input-group-btn">
+                      <button class="btn btn-default" id="cari" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+                    </span>
+                  </div>
+              </div>
+            </div>
+            <div class="table-responsive no-margin" >
+              <table class="table table-striped no-padding dataTables" width="100%">
+                <thead>
+                  <tr>
+                    <th style="white-space: nowrap;">No.Pengajuan</th>
+                    <th style="white-space: nowrap;">Pengajuan</th>
+                    <th style="white-space: nowrap;">Mulai Cuti</th>
+                    <th style="white-space: nowrap;">Selesai Cuti</th>
+                    <th style="white-space: nowrap;">Jenis Cuti</th>
+                    <th style="white-space: nowrap;">Alamat Tujuan</th>
+                    <th style="white-space: nowrap;">Jml Cuti</th>
+                    <th style="white-space: nowrap;">Kepentingan Cuti</th>
+                    <th style="white-space: nowrap;">P.J. Terkait</th>
+                    <th style="white-space: nowrap;">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {if: !empty($rekap.list)}
+                {loop: $rekap.list}
+                  <tr{if: $value.status == 'Disetujui'} style="background-color: #dff0d8 !important;"{/if}{if: $value.status == 'Ditolak'} style="background-color: #f0d8d8 !important;"{/if}>
+                    <td style="white-space: nowrap;">{$value.no_pengajuan}</td>
+                    <td style="white-space: nowrap;">{$value.tanggal}</td>
+                    <td style="white-space: nowrap;">{$value.tanggal_awal}</td>
+                    <td style="white-space: nowrap;">{$value.tanggal_akhir}</td>        
+                    <td style="white-space: nowrap;">{$value.urgensi}</td>
+                    <td style="white-space: nowrap;">{$value.alamat}</td>
+                    <td style="white-space: nowrap;">{$value.jumlah}</td>
+                    <td style="white-space: nowrap;">{$value.kepentingan}</td>
+                    <td style="white-space: nowrap;">{$value.namapj}</td>
+                    <td style="white-space: nowrap;">{$value.status}</td>
+                  </tr>
+                  {/loop}
+                  {else}
+                  <tr>
+                    <td colspan="4" class="text-center">Kosong</td>
+                  </tr>
+                  {/if}
+                </tbody>
+              </table>
+            </div>
+        {$rekap.pagination}
+          </div>
+      </div>
+  </div>
+</article>
+<script type="text/javascript">
+  $(function () {
+      $('.periode').datetimepicker({
+        defaultDate: '{?=date('Y')?}',
+        format: 'YYYY',
+       //  minDate: moment().add(6, 'days'),
+        locale: 'id'
+      });
+  });
+</script>

@@ -1,0 +1,166 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding dataTables" width="100%">
+      <thead>
+        <tr>
+          {if: $this->core->getUserInfo('role') == 'admin'}
+          <th style="white-space: nowrap;">NIP</th>
+          <th style="white-space: nowrap;">Diajukan Oleh</th>
+          <th style="white-space: nowrap;">Jabatan</th>
+          <th style="white-space: nowrap;">Departemen</th>
+          {/if}
+          <th style="white-space: nowrap;">No.Pengajuan</th>
+          <th style="white-space: nowrap;">Pengajuan</th>
+          <th style="white-space: nowrap;">Mulai Cuti</th>
+          <th style="white-space: nowrap;">Selesai Cuti</th>
+          <th style="white-space: nowrap;">Jenis Cuti</th>
+          <th style="white-space: nowrap;">Alamat Tujuan</th>
+          <th style="white-space: nowrap;">Jml Cuti</th>
+          <th style="white-space: nowrap;">Kepentingan Cuti</th>
+          <th style="white-space: nowrap;">P.J. Terkait</th>
+          <th style="white-space: nowrap;">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {loop: $cuti.list}
+        <tr{if: $value.status == 'Disetujui'} style="background-color: #dff0d8 !important;"{/if}{if: $value.status == 'Ditolak'} style="background-color: #f0d8d8 !important;"{/if}>
+        {if: $this->core->getUserInfo('role') == 'admin'}
+        <td style="white-space: nowrap;">
+            <span class="dropdown-toggle" data-toggle="dropdown" data-disabled="true" aria-expanded="true"><button type="button" name="button" class="btn btn-sm btn-default">{$value.nik} <span class="caret"></span></button></span>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="#status_ct" data-status="{$value.status}" data-no_pengajuan="{$value.no_pengajuan}" >Status</a></li>
+          </ul>
+        </td>
+        
+        <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.namapengaju}</td>
+        <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.jbtn}</td>
+        <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.departemen}</td>
+        {/if}  
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}">{$value.no_pengajuan}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.tanggal}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.tanggal_awal}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.tanggal_akhir}</td>        
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.urgensi}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.alamat}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.jumlah}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.kepentingan}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.namapj}</td>
+          <td class="edit" data-no_pengajuan="{$value.no_pengajuan}" style="white-space: nowrap;">{$value.status}</td>
+        </tr>
+        {/loop}
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="riwayatModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $('a[href="#status_ct"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/cuti/statuscuti?t=' + mlite.token;
+    var no_pengajuan = $(this).attr("data-no_pengajuan");
+    var status = $(this).attr("data-status");
+
+    // tampilkan dialog konfirmasi
+
+    bootbox.prompt({
+        title: "Status cuti pegawai.",
+        message: '',
+        inputType: 'radio',
+        value: status,
+        inputOptions: [
+        {
+            text: 'Proses Pengajuan',
+            value: 'Proses Pengajuan',
+        },
+        {
+            text: 'Disetujui',
+            value: 'Disetujui',
+        },        
+        {
+            text: 'Ditolak',
+            value: 'Ditolak',
+        }
+        ],
+        callback: function (result) {
+            console.log(result);
+            // ketika ditekan tombol ok
+            if (result){
+              // mengirimkan perintah
+              $.post(url, {
+                no_pengajuan: no_pengajuan,
+                statusct: result
+              } ,function(data) {
+                // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+                $("#display").load(baseURL + '/cuti/display?t=' + mlite.token);
+                $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+                "Status telah disimpan!"+
+                "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+                "</div>").show();
+              });
+            }
+        }
+    });
+  });
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $('.dataTables').DataTable({
+    "order": [[ 3, "desc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  //event.stopPropagation();
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+   $(function () {
+       $('.jam').datetimepicker({
+         format: 'HH:mm:ss',
+         locale: 'id'
+       });
+   });
+</script>
+<script>
+  $('body').on('hidden.bs.modal', '.modal', function () {
+      $(this).removeData('bs.modal');
+  });
+</script>
+

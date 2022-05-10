@@ -1,0 +1,61 @@
+<div class="row" id="manage" style="margin-bottom:100px;">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+          <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode Cuti</span>
+          </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li style="padding-left:5px;padding-right:5px;">
+              <input type="text" id="periode_cuti" class="form-control periode_cuti" name="periode_cuti" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <input type="text" id="periode_cuti_akhir" class="form-control periode_cuti" name="periode_cuti_akhir" required>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="submit_periode_cuti" class="btn btn-primary btn-block">Semua</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="proses_periode_cuti" class="btn btn-primary btn-block">Proses Pengajuan</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="disetujui_periode_cuti" class="btn btn-primary btn-block">Disetujui</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="ditolak_periode_cuti" class="btn btn-primary btn-block">Ditolak</div>
+            </li>
+          </ul>
+        </div>
+        <h3 class="panel-title">Kelola Cuti</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div id="notif"></div>
+        </div>
+        <div class="row">
+          <div id="form">
+            {include: ../plugins/cuti/view/admin/form.html}
+          </div>
+        </div>
+        <div class="searchbox-input form-inline padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
+          <div class="input-group" id="index">
+            <input class="btn btn-default" type="button" id="bukaform" value="Buka Form" />
+          </div>
+        </div>        
+        <div class="display">
+          {include: ../plugins/cuti/view/admin/display.html}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+   $(function () {
+       $('.periode_cuti').datetimepicker({
+         defaultDate: '{?=date('Y-m-d')?}',
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+</script>
