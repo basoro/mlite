@@ -29,7 +29,7 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Resume Perawatan</a></li>
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Riwayat Perawatan</a></li>
-              {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+              {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'radiologi'}
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Input Pemeriksaan</a></li>
               {/if}
             </ul>
