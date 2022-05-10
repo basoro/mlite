@@ -1,0 +1,90 @@
+<div id="form">
+  <div class="col-md-3"></div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Tanggal Cuti</label>
+            <div class="col-sm-4">
+              <input type="text" id="tgl_pengajuan" name="tgl_pengajuan" class="form-control {if: $cuti.pengajuan_cuti.tanggal_awal == ''}tanggal{else}tanggaledit{/if}" value="{if: $cuti.pengajuan_cuti.tanggal_awal == ''}{?=date('Y-m-d')?}{else}{$cuti.pengajuan_cuti.tanggal_awal}{/if}">
+            </div>
+            <label for="" class="col-sm-1 control-label">s/d</label>
+            <div class="col-sm-4">
+              <input type="text" id="tgl_akhir" name="tgl_akhir" class="form-control {if: $cuti.pengajuan_cuti.tanggal_akhir == ''}tanggal{else}tanggaledit{/if}" value="{if: $cuti.pengajuan_cuti.tanggal_akhir == ''}{?=date('Y-m-d')?}{else}{$cuti.pengajuan_cuti.tanggal_akhir}{/if}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">No. Pengajuan</label>
+            <div class="col-sm-4">
+              <input type="text" id="no_pengajuan" name="no_pengajuan" class="form-control" value="{$cuti.pengajuan_cuti.no_pengajuan}" {if: !empty($cuti.pengajuan_cuti.no_pengajuan)}disabled{/if}>
+              <input name="no_pengajuan_baru" class="form-control" type="hidden" value="" id="no_pengajuan_baru" >
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Alamat Tujuan</label>
+            <div class="col-sm-9">
+              <textarea class="form-control" id="description" name="description" placeholder="Isikan Alamat" rows="6">{$cuti.pengajuan_cuti.alamat}</textarea>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Jenis Cuti</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="urgensi" name="urgensi">
+                {loop: $cuti.urgensi}
+                <option value="{$value}"{if: $cuti.pengajuan_cuti.urgensi == $value} selected{/if}>{$value}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <!-- PJ TERKAIT -->
+          <div class="form-group">
+            <label for="id_pj" class="col-sm-3 control-label">PJ Terkait</label>
+            <div class="col-sm-9">
+              <select class="form-control" id="kd_pj" name="kd_pj">
+                {loop: $cuti.pj}
+                <option value="{$value.nik}"{if: $cuti.pengajuan_cuti.nik_pj == $value.nik} selected{/if}>{$value.nik} - {$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_penjamin" class="col-sm-3 control-label">Kepentingan Cuti</label>
+            <div class="col-sm-9">
+              <input type="text" name="kepentingan" id="kepentingan" class="form-control" value="{$cuti.pengajuan_cuti.kepentingan}">
+              <input name="kepentingan_baru" class="form-control" type="hidden" value="" id="kepentingan_baru" >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3"></div>
+  <div class="col-md-12 m-b-xl">
+    <div class="text-center">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'YYYY-MM-DD',
+         minDate: moment().add(6, 'days'),
+         locale: 'id'
+       });
+   });
+
+   $(function () {
+       $('.tanggaledit').datetimepicker({
+         format: 'YYYY-MM-DD',
+        //  minDate: moment().add(6, 'days'),
+         locale: 'id'
+       });
+   });
+</script>
