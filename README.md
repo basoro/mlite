@@ -1,6 +1,5 @@
 <p align="right">
     <b>Codename: mLITE</b><br>
-    Medic LITE Indonesia
 </p>
 
 <p>
