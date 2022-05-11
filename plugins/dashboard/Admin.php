@@ -180,7 +180,11 @@ class Admin extends AdminModule
                     $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
                     $akhir = new \DateTime();
                     $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                    $keterlambatan = $diff->format('%H:%I:%S');
+                    if ($awal > $akhir) {
+                     $keterlambatan = $diff->format('');
+                     }else{
+                     $keterlambatan = $diff->format('%H:%I:%S');
+                   }
                   }
 
                   $insert = $this->core->mysql('temporary_presensi')
@@ -223,7 +227,11 @@ class Admin extends AdminModule
                   $awal  = new \DateTime(date('Y-m-d') . ' ' . $jam_jaga['jam_masuk']);
                   $akhir = new \DateTime();
                   $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
-                  $keterlambatan = $diff->format('%H:%I:%S');
+                  if ($awal > $akhir) {
+                     $keterlambatan = $diff->format('');
+                     }else{
+                     $keterlambatan = $diff->format('%H:%I:%S');
+                   }
                 }
 
                 $insert = $this->core->mysql('temporary_presensi')
