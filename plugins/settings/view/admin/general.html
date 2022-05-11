@@ -67,6 +67,7 @@
                         <label>Tema Admin</label>
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
                             <option value="">Pilih tema</option>
+                            <option value="bootstrap"{if: $settings.theme_admin == 'bootstrap'} selected{/if}>Default</option>
                             <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
                             <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
                             <option value="cyborg"{if: $settings.theme_admin == 'cyborg'} selected{/if}>Cyborg</option>
@@ -74,6 +75,7 @@
                             <option value="flatly"{if: $settings.theme_admin == 'flatly'} selected{/if}>Flatly</option>
                             <option value="journal"{if: $settings.theme_admin == 'journal'} selected{/if}>Journal</option>
                             <option value="lumen"{if: $settings.theme_admin == 'lumen'} selected{/if}>Lumen</option>
+                            <option value="mlite"{if: $settings.theme_admin == 'mlite'} selected{/if}>mLITE</option>
                             <option value="paper"{if: $settings.theme_admin == 'paper'} selected{/if}>Paper</option>
                             <option value="readable"{if: $settings.theme_admin == 'readable'} selected{/if}>Readable</option>
                             <option value="sandstone"{if: $settings.theme_admin == 'sandstone'} selected{/if}>Sandstone</option>
@@ -209,14 +211,6 @@
                         </div>
                     </div>
                     {/if}
-                    <div class="form-group">
-                        <label>Token WhatsApp API</label> <span class="pull-right">[<a href="https://banoewa.com" target="_blank">Dapatkan Token Key Disini</a>]</span>
-                        <input type="text" name="waapitoken" class="form-control" value="{$settings.waapitoken}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Nomor HP WhatsApp</label>
-                        <input type="text" name="waapiphonenumber" class="form-control" value="{$settings.waapiphonenumber}" placeholder="62xxxxxxxxxx"/>
-                    </div>
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>
@@ -237,17 +231,6 @@
                     <div class="form-group">
                         <label>User Key BPJS</label>
                         <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" />
-                    </div>
-                    <div class="form-group">
-                         <label>Versi WS vClaim</label>
-                         <div class="radio">
-                             <label class="radio-inline">
-                                <input type="radio" name="vClaimVersion" value="1" {if: $settings.vClaimVersion == '1'}checked{/if} /> Versi 1.0
-                             </label>
-                             <label class="radio-inline">
-                                <input type="radio" name="vClaimVersion" value="2" {if: $settings.vClaimVersion == '2'}checked{/if} /> Versi 2.0
-                             </label>
-                         </div>
                     </div>
                     {/if}
                     <div class="form-group">
@@ -322,7 +305,7 @@
                         <a href="{?=url([ADMIN, 'settings', 'license?downgrade'])?}" data-confirm="Apakah anda ingin menurunkan status menjadi Tidak Terdaftar?" class="btn btn-default">Downgrade</a>
                         {/if}
                         <br><br>
-                        <p>Informasi tentang status aplikasi digunakan untuk kebutuhan pendataan pengguna Khanza Lite. Licensi yang dianut di perangkat lunak tetap mengacu ke <a href="https://en.wikipedia.org/wiki/Aladdin_Free_Public_License">Aladdin Free Public License</a>. Tidak ada biaya yang dikenakan atas penggunaan aplikasi ini.</p>
+                        <p>Informasi tentang status aplikasi digunakan untuk kebutuhan pendataan pengguna mLITE. Licensi yang dianut di perangkat lunak tetap mengacu ke <a href="https://en.wikipedia.org/wiki/Aladdin_Free_Public_License">Aladdin Free Public License</a>. Tidak ada biaya yang dikenakan atas penggunaan aplikasi ini.</p>
                     </div>
                 </div>
             </div>
@@ -362,14 +345,35 @@
             </div>
             <form method="post" action="{?=url([ADMIN,'settings','license'])?}">
                 <div class="modal-body">
-                    <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna Khanza LITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode validasi penggunaan.</p>
-                    <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi Khanza Lite. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
+                    <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna mLITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode validasi penggunaan.</p>
+                    <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi mLITE. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
                     <p>Untuk mengaktifkan kode validasi pendaftaran, silahkan ketik kode validasi pendaftaran dalam isian dibawah. Anda bisa melihat kode validasi pendaftaran pada email konfirmasi <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>permintaan kode validasi</b></a>.</p>
+                    <p>Kode validasi pendataan ini juga bisa digunakan sebagai API KEY untuk mengakses layanan Whatsapp Gateway.</p>
                     <input type="text" name="license-key" class="form-control" placeholder="Kode validasi..." />
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">Upgrade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="wagateway-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Status</h4>
+            </div>
+            <form method="post" action="{?=url([ADMIN,'settings','license'])?}">
+                <div class="modal-body">
+                    <p>Sebagai pengembang, saya ingin mengetahui jumlah pengguna mLITE. Untuk itu, jika tidak berkeberatan, anda bisa mengaktifkan kode validasi penggunaan.</p>
+                    <p>Anda belum terdaftar dan belum tervalidasi dalam Daftar Pengguna Aplikasi mLITE. Apabila anda ingin mendapatkan layakan teknis dan bantuan saat ada perubahan (update), mintalah <a href="{?=url([ADMIN,'settings','cekdaftar'])?}" ><b>kode validasi Pendaftaran</b></a>.</p>
+                    <p>Kode validasi pendataan ini juga bisa digunakan sebagai API KEY untuk mengakses layanan Whatsapp Gateway.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div>
             </form>
         </div>
@@ -398,7 +402,7 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;

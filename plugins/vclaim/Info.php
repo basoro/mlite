@@ -2,7 +2,7 @@
 
 return [
     'name'          =>  'VClaim Request',
-    'description'   =>  'Modul vclaim api untuk KhanzaLITE',
+    'description'   =>  'Modul vclaim api untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
     'compatibility' =>  '2022',

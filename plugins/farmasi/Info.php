@@ -1,4 +1,5 @@
 <?php
+
 return [
     'name'          =>  'Farmasi',
     'description'   =>  'Pengelolaan data gudang farmasi.',

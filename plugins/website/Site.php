@@ -3,7 +3,6 @@
 namespace Plugins\Website;
 
 use Systems\SiteModule;
-use Systems\MySQL;
 
 class Site extends SiteModule
 {
@@ -49,7 +48,7 @@ class Site extends SiteModule
       $assign['propinsi'] = $this->settings->get('settings.propinsi');
       $assign['nomor_telepon'] = $this->settings->get('settings.nomor_telepon');
       $assign['email'] = $this->settings->get('settings.email');
-      $assign['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
+      $assign['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
       $assign['website'] = $this->settings('website');
       $assign['setting'] = $this->settings('settings');
 
@@ -62,12 +61,12 @@ class Site extends SiteModule
     {
         unset($_POST['save']);
         if(isset($_POST['daftar'])) {
-            $max = $this->mysql('booking_periksa')
+            $max = $this->core->mysql('booking_periksa')
                 ->select(['no_booking' => 'ifnull(MAX(CONVERT(RIGHT(no_booking,4),signed)),0)+1'])
                 ->where('tanggal', $_POST['tanggal'])
                 ->oneArray();
             $no_urut = "BP".str_replace('-','',$_POST['tanggal']).''.sprintf("%04s", $max['no_booking']);
-            $query = $this->mysql('booking_periksa')->save([
+            $query = $this->core->mysql('booking_periksa')->save([
                 'no_booking' => $no_urut,
                 'tanggal' => $_POST['tanggal'],
                 'nama' => $_POST['nama'],
@@ -409,11 +408,6 @@ class Site extends SiteModule
     protected function filterRecord(array &$post)
     {
         $post['title'] = htmlspecialchars($post['title']);
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

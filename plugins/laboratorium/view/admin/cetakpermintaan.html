@@ -1,0 +1,160 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Cetak Hasil</title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body{
+		margin: 20px;
+		width: 800px;
+	}
+	table {
+	  border-collapse: collapse;
+	}
+	tr{
+	  border-bottom: 1px solid #8c8b8b;
+	}
+	th,td {padding:3px 0px 3px 10px;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:40px;
+		background-color:#4C9A2A;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+		<center>
+			<table width="740px">
+				<tr style="border:none;">
+					<td width="80px">
+						<img width="70px" src='{?=url()?}/{$settings.logo}' />
+					</td>
+					<td>
+						<span style="font-size:24px">{$settings.nama_instansi}</span><br>
+						{$settings.alamat} - {$settings.nomor_telepon} - {$settings.email}<br>
+						{$settings.kota} - {$settings.propinsi}
+					</td>
+				</tr>
+			</table>
+			<hr style="border-top: 3px double #8c8b8b;width:740px;">
+			<table width="740px">
+				<tr style="border:none;">
+					<td width="150px">Nama Pasien/RM</td>
+					<td>:</td>
+					<td width="600px">
+						{$pasien.nm_pasien}
+					</td>
+				</tr>
+				<tr style="border:none;">
+					<td width="150px">Umur</td>
+					<td>:</td>
+					<td width="600px">
+						{$pasien.umur}
+					</td>
+				</tr>
+				<tr style="border:none;">
+					<td width="150px">Poli</td>
+					<td>:</td>
+					<td width="600px">
+						{$pasien.nm_poli}
+					</td>
+				</tr>
+				<tr style="border:none;">
+					<td width="150px">Dokter PJ</td>
+					<td>:</td>
+					<td width="600px">
+						{$pj_lab}
+					</td>
+				</tr>
+				<tr style="border:none;">
+					<td width="150px">Dokter Pengirim</td>
+					<td>:</td>
+					<td width="600px">
+						{$dokter_perujuk}
+					</td>
+				</tr>
+				<tr style="border:none;">
+					<td width="150px">Tanggal</td>
+					<td>:</td>
+					<td width="600px">
+						{$pasien.tgl_registrasi}
+					</td>
+				</tr>
+			</table>
+			<br>
+			<h4>Permintaan Pemeriksaan Laboratorium</h4>
+		  <table width="740px">
+		    <thead>
+		      <tr style="border-top: 1px solid #8c8b8b">
+		        <th>Pemeriksaan</th>
+		        <th>Satuan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
+						<th>Rujukan</th>
+		      </tr>
+		    </thead>
+
+				<tbody>
+		      {loop: $permintaan_laboratorium}
+		        {loop: $value.permintaan_pemeriksaan_lab as $data}
+		        <tr>
+		          <td colspan="6">{$data.nm_perawatan}</td>
+		        </tr>
+		              {loop: $data.template_laboratorium as $data2}
+		              <tr>
+		                <td>- {$data2.Pemeriksaan}</td>
+		                <td>{$data2.satuan}</td>
+		                <td>{$data2.nilai_rujukan_la}</td>
+		                <td>{$data2.nilai_rujukan_pa}</td>
+		                <td>{$data2.nilai_rujukan_ld}</td>
+		                <td>{$data2.nilai_rujukan_pd}</td>
+		              </tr>
+		              {/loop}
+		        {/loop}
+		      {/loop}
+		    </tbody>
+		  </table>
+			<br>
+			<table width="740px">
+				<tr style="border:none;text-align:center;">
+					<td width="500px"></td>
+					<td>
+							Penanggung Jawab
+							<br>
+							<br>
+							<center>
+							<img src="{$qrCode}" width="100px"/>
+							</center>
+							<br>
+							{$pj_lab}
+					</td>
+				</tr>
+			</table>
+		</center>
+		</div>
+
+		<button onclick="printContent('faktur')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+
+</body>
+</html>

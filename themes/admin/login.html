@@ -6,16 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{$mlite.nama_instansi}</title>
     <link rel="icon" href="{?=url()?}/{$mlite.logo}" type="image/x-icon">
-    <link href="{$mlite.path}/assets/css/bootstrap.min.css?v={$mlite.version}" rel="stylesheet">
-    <link href="{$mlite.path}/assets/css/cerulean.min.css?v={$mlite.version}" rel="stylesheet">
+    <link href="{$mlite.path}/assets/css/{$mlite.theme_admin}.min.css?v={$mlite.version}" rel="stylesheet">
     <link href="{?= url(THEMES.'/admin/css/style.css?v='.$mlite.version) ?}" rel="stylesheet">
     <link href="{$mlite.path}/assets/css/font-awesome.css?v={$mlite.version}" rel="stylesheet">
     <!-- PWA Support -->
     <link rel="manifest" href="{$mlite.path}/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="KhanzaLITE" />
-    <meta name="apple-mobile-web-app-title" content="KhanzaLITE" />
+    <meta name="application-name" content="mLITE" />
+    <meta name="apple-mobile-web-app-title" content="mLITE" />
     <meta name="theme-color" content="#222" />
     <meta name="msapplication-navbutton-color" content="#222" />
     <meta name="apple-mobile-web-app-status-bar-style" content="green-translucent" />
@@ -26,7 +25,7 @@
     <link rel="icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="{$mlite.path}/assets/images/icon-192x192.png" />
     <link rel="icon" sizes="256x256" href="{$mlite.path}/assets/images/icon-256x256.png" />
-    <link rel="apple-touch-icon" sizes="256x256" href="{$mlite.path}/assets/images/ticon-256x256.png" />
+    <link rel="apple-touch-icon" sizes="256x256" href="{$mlite.path}/assets/images/icon-256x256.png" />
     <link rel="icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
     <link rel="apple-touch-icon" sizes="384x384" href="{$mlite.path}/assets/images/icon-384x384.png" />
     <link rel="icon" sizes="512x512" href="{$mlite.path}/assets/images/icon-512x512.png" />
@@ -34,14 +33,34 @@
     <!-- End PWA Support -->
     <script src="{$mlite.path}/assets/jscripts/jquery.min.js?v={$mlite.version}"></script>
     <script src="{?=url(THEMES.'/admin/js/kalypto.min.js?v='.$mlite.version) ?}"></script>
+    <style>
+    body {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: 100%;
+    }
+    body:before {
+        content: "";
+        position: absolute;
+        background: url('{?=url()?}/{$mlite.wallpaper}');
+        background-size: cover;
+        z-index: -1; /* Keep the background behind the content */
+        height: 20%; width: 20%; /* Using Glen Maddern's trick /via @mente */
+
+        /* don't forget to use the prefixes you need */
+        transform: scale(5);
+        transform-origin: top left;
+        filter: blur(2px);
+    }
+    </style>
 </head>
 
-<body style="background: #222;margin:0;">
+<body>
 
 	<section id="login">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <img src="{?=url()?}/{$mlite.logo}" alt="logo"> <h2>Khanza<span>LITE</span></h2>
+                <img src="{?=url()?}/{$mlite.logo}" alt="logo"> <h2>m<span>LITE</span></h2>
             </div>
             <div class="panel-body">
         		<form action="{$_SERVER['REQUEST_URI']}" method="POST">
@@ -72,9 +91,11 @@
 		{/if}
 	</section>
 
-  <footer class="hidden-xs" style="text-align:right;margin: 10px;">
+  <footer class="visible-lg visible-md bg-primary" style="padding-bottom:30px;z-index:1000;">
+    <p class="pull-right">
       Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
       {$mlite.powered}.
+    </p>
   </footer>
 
   <!-- PWA Support -->

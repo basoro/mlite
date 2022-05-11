@@ -23,8 +23,11 @@
           <div class="form-group">
             <label for="jk" class="col-sm-3 control-label">Sex</label>
             <div class="col-sm-4">
-              <label class="radio-inline"><input type="radio" name="jk" value="L" {if: $pasien.jk == 'L'}checked{/if}><span class="fa fa-male"></span></label>
-              <label class="radio-inline"><input type="radio" name="jk" value="P" {if: $pasien.jk == 'P'}checked{/if}><span class="fa fa-female"></span></label>
+              <select class="form-control" name="jk" id="jk">
+                <option value=""></option>
+                <option value="L" {if: $pasien.jk == 'L'}selected{/if}>Laki-Laki</option>
+                <option value="P" {if: $pasien.jk == 'P'}selected{/if}>Perempuan</option>
+              </select>
             </div>
             <label for="tgl_lahir" class="col-sm-2 control-label">Tgl. Lahir</label>
             <div class="col-sm-3">
@@ -90,7 +93,7 @@
                 {/loop}
               </select>
             </div>
-            <label for="no_peserta" class="col-sm-2 control-label">No. Peserta</label>
+            <label for="no_peserta" class="col-sm-2 control-label">No. Kartu</label>
             <div class="col-sm-3">
               <input type="text" name="no_peserta" id="no_peserta" class="form-control noKartu" value="{$pasien.no_peserta}">
             </div>
@@ -180,7 +183,7 @@
     <div class="text-center">
       <button type="button" name="button" class="btn btn-success" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
       <button type="button" name="button" class="btn btn-info hidden" id="kartu" data-no_rkm_medis="{$pasien.no_rkm_medis}"><i class="fa fa-address-book-o"></i><span class="hidden-xs"> Kartu</span></button>
-      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning hidden hidden-lg hidden-lg" id="foto"><i class="fa fa-camera"></i></a>
+      <a href="{$urlUploadPhoto}" name="button" class="btn btn-warning hidden" id="foto"><i class="fa fa-camera"></i><span class="hidden-xs"> Foto</span></a>
       <button type="button" name="button" class="btn btn-primary hidden" id="kirimwa" data-toggle="modal" data-target="#waModal" data-no_tlp={$pasien.no_tlp}><i class="fa fa-whatsapp"></i><span class="hidden-xs"> Kirim WA</span></button>
       <button type="button" name="button" class="btn btn-danger hidden" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
       <button type="button" name="button" class="btn btn-primary" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>

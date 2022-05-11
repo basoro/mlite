@@ -3,7 +3,6 @@
 namespace Plugins\Settings;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 use Systems\Lib\License;
 use Systems\Lib\HttpRequest;
 
@@ -16,7 +15,7 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
+    private $feed_url = "https://api.github.com/repos/basoro/khanza-lite/commits/mlite";
 
     public function init()
     {
@@ -30,7 +29,7 @@ class Admin extends AdminModule
         return [
             'Pengaturan'          => 'manage',
             'Umum'          => 'general',
-            //'Tema' => 'theme',
+            'Tema' => 'theme',
             'Pembaruan'          => 'updates',
         ];
     }
@@ -38,8 +37,8 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum KhanzaLITE'],
-        //['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
+        ['name' => 'Pengaturan Umum', 'url' => url([ADMIN, 'settings', 'general']), 'icon' => 'wrench', 'desc' => 'Pengaturan umum mLITE'],
+        ['name' => 'Tema Publik', 'url' => url([ADMIN, 'settings', 'theme']), 'icon' => 'cubes', 'desc' => 'Pengaturan tema tampilan publik'],
         ['name' => 'Pembaruan Sistem', 'url' => url([ADMIN, 'settings', 'updates']), 'icon' => 'cubes', 'desc' => 'Pembaruan sistem'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -52,12 +51,13 @@ class Admin extends AdminModule
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
         $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
+        $settings['module_wagateway'] = $this->db('mlite_modules')->where('dir', 'wagateway')->oneArray();
         $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($settings['master']) {
-          $settings['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
-          $settings['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
+          $settings['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+          $settings['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
@@ -66,7 +66,7 @@ class Admin extends AdminModule
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $this->core->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
         ];
 
         $settings['license'] = [];
@@ -146,7 +146,7 @@ class Admin extends AdminModule
 
         if (!$errors) {
 
-            $url = "https://basoro.org/datars/save";
+            $url = "https://mlite.id/datars/save";
             $curlHandle = curl_init();
             curl_setopt($curlHandle, CURLOPT_URL, $url);
             curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"nama_instansi=".$_POST['nama_instansi']."&alamat_instansi=".$_POST['alamat']."&kabupaten=".$_POST['kota']."&propinsi=".$_POST['propinsi']."&kontak=".$_POST['nomor_telepon']."&email=".$_POST['email']);
@@ -154,6 +154,7 @@ class Admin extends AdminModule
             curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
             curl_setopt($curlHandle, CURLOPT_POST, 1);
+            curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
             curl_exec($curlHandle);
             curl_close($curlHandle);
 
@@ -241,7 +242,7 @@ class Admin extends AdminModule
 
         if (isset($_POST['check'])) {
 
-            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
+            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/mlite";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -266,11 +267,11 @@ class Admin extends AdminModule
             }
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
-                $this->tpl->set('error', "ZipArchive is required to update Khanza LITE.");
+                $this->tpl->set('error', "ZipArchive is required to update mLITE.");
             }
 
             if (!isset($_GET['manual'])) {
-                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
+                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/mlite";
                 $opts = [
                     'http' => [
                         'method' => 'GET',
@@ -283,9 +284,9 @@ class Admin extends AdminModule
                 $json = file_get_contents($url, false, stream_context_create($opts));
                 $obj = json_decode($json, true);
                 $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-                $this->download('https://github.com/basoro/khanza-lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/khanza-lite/archive/mlite.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
-                $package = glob(BASE_DIR.'/khanza-lite-master.zip');
+                $package = glob(BASE_DIR.'/khanza-lite-mlite.zip');
                 if (!empty($package)) {
                     $package = array_shift($package);
                     $this->rcopy($package, BASE_DIR.'/tmp/latest.zip');
@@ -310,11 +311,11 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/themes', BASE_DIR.'/themes');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/vendor', BASE_DIR.'/vendor');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/vendor', BASE_DIR.'/vendor');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -567,7 +568,7 @@ class Admin extends AdminModule
     public function anyCekDaftar()
     {
       if(isset($_POST['request_code'])) {
-        $url = "https://basoro.org/datars/aktif";
+        $url = "https://mlite.id/datars/aktif";
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"email=".$_POST['email']);
@@ -575,13 +576,14 @@ class Admin extends AdminModule
         curl_setopt($curlHandle, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($curlHandle, CURLOPT_TIMEOUT,30);
         curl_setopt($curlHandle, CURLOPT_POST, 1);
+        curl_setopt($curlHandle, CURLOPT_SSL_VERIFYPEER, false);
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'Ok') {
-          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
-        } else {
+        if($response['status'] == 'error') {
           $this->notify('failure', 'Request kode validasi pendaftaran aplikasi tidak bisa dilakukan. Silahkan simpan dulu pengaturan aplikasi anda. Atau pastikan email request sama dengan email di pengaturan aplikasi.');
+        } else {
+          $this->notify('success', 'Request kode validasi pendaftaran aplikasi sukses. Silahkan cek inbox email / spam folder yang anda daftarkan.');
         }
       }
       return $this->draw('cek.daftar.html');
@@ -591,11 +593,6 @@ class Admin extends AdminModule
     {
       $this->core->addCSS(url('assets/css/bootstrap-colorpicker.css'));
       $this->core->addJS(url('assets/jscripts/bootstrap-colorpicker.js'), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

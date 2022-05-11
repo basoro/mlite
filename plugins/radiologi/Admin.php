@@ -2,7 +2,6 @@
 namespace Plugins\Radiologi;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
@@ -64,9 +63,9 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->mysql('poliklinik')->where('status', '1')->toArray();
-        $this->assign['dokter']         = $this->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->mysql('penjab')->toArray();
+        $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+        $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -94,7 +93,7 @@ class Admin extends AdminModule
           $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
         }
 
-        $stmt = $this->mysql()->pdo()->prepare($sql);
+        $stmt = $this->core->mysql()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
@@ -104,7 +103,7 @@ class Admin extends AdminModule
         }
 
         if (isset($_POST['no_rawat'])){
-          $this->assign['reg_periksa'] = $this->mysql('reg_periksa')
+          $this->assign['reg_periksa'] = $this->core->mysql('reg_periksa')
             ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
             ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
             ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -147,15 +146,15 @@ class Admin extends AdminModule
     public function anyForm()
     {
 
-      $this->assign['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
-      $this->assign['dokter'] = $this->mysql('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->mysql('penjab')->toArray();
+      $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+      $this->assign['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
+      $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
       $this->assign['no_rawat'] = '';
       $this->assign['no_reg']     = '';
       $this->assign['tgl_registrasi']= date('Y-m-d');
       $this->assign['jam_reg']= date('H:i:s');
       if (isset($_POST['no_rawat'])){
-        $this->assign['reg_periksa'] = $this->mysql('reg_periksa')
+        $this->assign['reg_periksa'] = $this->core->mysql('reg_periksa')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
           ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -205,7 +204,7 @@ class Admin extends AdminModule
     public function anyStatusDaftar()
     {
       if(isset($_POST['no_rkm_medis'])) {
-        $rawat = $this->mysql('reg_periksa')
+        $rawat = $this->core->mysql('reg_periksa')
           ->where('no_rkm_medis', $_POST['no_rkm_medis'])
           ->where('status_bayar', 'Belum Bayar')
           ->limit(1)
@@ -214,7 +213,7 @@ class Admin extends AdminModule
             $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
             $bg_status = 'text-danger';
           } else {
-            $result = $this->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+            $result = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
@@ -225,7 +224,7 @@ class Admin extends AdminModule
           }
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
       } else {
-        $rawat = $this->mysql('reg_periksa')
+        $rawat = $this->core->mysql('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])
           ->oneArray();
         echo $this->draw('stts.daftar.html', ['stts_daftar' => $rawat['stts_daftar']]);
@@ -235,7 +234,7 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      if (!$this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if (!$this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
 
         $_POST['status_lanjut'] = 'Ralan';
         $_POST['stts'] = 'Belum';
@@ -244,11 +243,11 @@ class Admin extends AdminModule
         $_POST['almt_pj'] = '-';
         $_POST['hubunganpj'] = '-';
 
-        $poliklinik = $this->mysql('poliklinik')->where('kd_poli', $this->settings('settings', 'radiologi'))->oneArray();
+        $poliklinik = $this->core->mysql('poliklinik')->where('kd_poli', $this->settings('settings', 'radiologi'))->oneArray();
 
         $_POST['biaya_reg'] = $poliklinik['registrasi'];
 
-        $pasien = $this->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
+        $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
 
       	$birthDate = new \DateTime($pasien['tgl_lahir']);
       	$today = new \DateTime("today");
@@ -275,9 +274,9 @@ class Admin extends AdminModule
         $_POST['status_poli'] = 'Lama';
         $_POST['kd_poli'] = $this->settings('settings', 'radiologi');
 
-        $query = $this->mysql('reg_periksa')->save($_POST);
+        $query = $this->core->mysql('reg_periksa')->save($_POST);
       } else {
-        $query = $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
+        $query = $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_pj' => $_POST['kd_pj']
         ]);
@@ -288,7 +287,7 @@ class Admin extends AdminModule
     public function anyPasien()
     {
       if(isset($_POST['cari'])) {
-        $pasien = $this->mysql('pasien')
+        $pasien = $this->core->mysql('pasien')
           ->like('no_rkm_medis', '%'.$_POST['cari'].'%')
           ->orLike('nm_pasien', '%'.$_POST['cari'].'%')
           ->asc('no_rkm_medis')
@@ -303,7 +302,7 @@ class Admin extends AdminModule
     {
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-      $rawat_jalan = $this->mysql('reg_periksa')
+      $rawat_jalan = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
@@ -316,7 +315,7 @@ class Admin extends AdminModule
 
     public function postHapus()
     {
-      $this->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
 
@@ -324,8 +323,8 @@ class Admin extends AdminModule
     {
 
       if($_POST['kat'] == 'radiologi') {
-        $jns_perawatan = $this->mysql('jns_perawatan_radiologi')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $this->mysql('periksa_radiologi')
+        $jns_perawatan = $this->core->mysql('jns_perawatan_radiologi')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        $this->core->mysql('periksa_radiologi')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $this->core->getUserInfo('username', null, true),
@@ -359,7 +358,7 @@ class Admin extends AdminModule
 
     public function postHapusRadiologi()
     {
-      $this->mysql('periksa_radiologi')
+      $this->core->mysql('periksa_radiologi')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
@@ -372,7 +371,7 @@ class Admin extends AdminModule
     public function anyRincian()
     {
 
-      $rows_periksa_radiologi = $this->mysql('periksa_radiologi')
+      $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
       ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
@@ -392,7 +391,7 @@ class Admin extends AdminModule
 
     public function anyLayananRadiologi()
     {
-      $layanan = $this->mysql('jns_perawatan_radiologi')
+      $layanan = $this->core->mysql('jns_perawatan_radiologi')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
@@ -407,7 +406,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->mysql('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
+        $rows = $this->core->mysql('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -427,7 +426,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->mysql('petugas')->like('nama', $key)->limit(10)->toArray();
+        $rows = $this->core->mysql('petugas')->like('nama', $key)->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -443,7 +442,7 @@ class Admin extends AdminModule
 
     public function postMaxid()
     {
-      $max_id = $this->mysql('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
+      $max_id = $this->core->mysql('reg_periksa')->select(['no_rawat' => 'ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0)'])->where('tgl_registrasi', date('Y-m-d'))->oneArray();
       if(empty($max_id['no_rawat'])) {
         $max_id['no_rawat'] = '000000';
       }
@@ -455,7 +454,7 @@ class Admin extends AdminModule
 
     public function postMaxAntrian()
     {
-      $max_id = $this->mysql('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'radiologi'))->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+      $max_id = $this->core->mysql('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $this->settings('settings', 'radiologi'))->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
       if(empty($max_id['no_reg'])) {
         $max_id['no_reg'] = '000';
       }
@@ -466,7 +465,7 @@ class Admin extends AdminModule
 
     public function postSaveHasil()
     {
-      $result = $this->mysql('hasil_radiologi')
+      $result = $this->core->mysql('hasil_radiologi')
         ->save([
           'no_rawat' => $_POST['no_rawat'],
           'tgl_periksa' => $_POST['tgl_periksa'],
@@ -493,12 +492,12 @@ class Admin extends AdminModule
             if ($img->load($_FILES['file']['tmp_name'])) {
                 $imgPath = $dir.'/'.time().'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $result = $this->mysql('gambar_radiologi')
+                $result = $this->core->mysql('gambar_radiologi')
                   ->save([
                     'no_rawat' => $_POST['no_rawat'],
                     'tgl_periksa' => $_POST['tgl_periksa'],
                     'jam' => $_POST['jam_periksa'],
-                    'lokasi_gambar' => url($imgPath)
+                    'lokasi_gambar' => 'pages/upload/'.time().'.'.$img->getInfos('type')
                   ]);
                 echo json_encode(['status' => 'success', 'result' => url($imgPath)]);
             } else {
@@ -533,11 +532,6 @@ class Admin extends AdminModule
     protected function data_icd($table)
     {
         return new DB_ICD($table);
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

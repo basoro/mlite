@@ -1,12 +1,12 @@
 <?php
 return [
     'name'          =>  'API',
-    'description'   =>  'Katalog API KhanzaLITE',
+    'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '2022',
     'icon'          =>  'database',
-    'pages'         =>  ['API KhanzaLITE' => 'api'],
+    'pages'         =>  ['API mLITE' => 'api'],
     'install'       =>  function () use ($core) {
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_pengaduan` (

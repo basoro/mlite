@@ -14,21 +14,23 @@
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
     <script src="{?=url()?}/plugins/dashboard/js/admin/webcam.js"></script>
     <style media="screen">
-      html {
-        height: 0;
-        background: url('{?=url()?}/themes/admin/img/wallpaper.jpeg') no-repeat center center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-      }
       body {
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        color: #fff;
-      	/*background: #0264d6;
-      	height:calc(100vh);
-      	width:100%;*/
-        height: 0;
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: 100%;
+      }
+      body:before {
+        content: "";
+        position: absolute;
+        background: url('{?=url()?}/{$wallpaper}');
+        background-size: cover;
+        z-index: -1; /* Keep the background behind the content */
+        height: 20%; width: 20%; /* Using Glen Maddern's trick /via @mente */
+
+        /* don't forget to use the prefixes you need */
+        transform: scale(5);
+        transform-origin: top left;
+        filter: blur(2px);
       }
       .wrapper {
           text-align: center;

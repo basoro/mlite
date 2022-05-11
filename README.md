@@ -1,6 +1,6 @@
 <p align="right">
     <b>Codename: mLITE</b><br>
-    Modular Khanza LITE
+    Medic LITE Indonesia
 </p>
 
 <p>
@@ -9,7 +9,7 @@
 <pre>
 Disclaimer
 ==========
-Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut KhanzaLITE),
+Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut Medic LITE atau mLITE),
 saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
 Silahkan gunakan sewajarnya.
@@ -17,11 +17,11 @@ Tidak ada biaya dalam penggunaan aplikasi ini.
 Sebagaimana diterapkan juga pada SIMRS Khanza.
 </pre>
 
-# Khanza LITE V.2021
+# mLITE
 
-Khanza LITE 2021  dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini Khanza LITE 2021  dibangun lagi dari awal dengan berfokus pada kesederhanaan - bahkan programer pemula dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
+Medic LITE adalah penerus Khanza LITE, dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini Medic LITE dibangun lagi dari awal dengan berfokus pada kesederhanaan - programer pemula pun dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
 
-Oh iya, Khanza LITE 2021  memiliki panduan pemasangan yang sangat mudah juga. Hanya perlu 1 langkah penyesuaian (jika sudah ada database SIMEKS Khanza sebelumnya) atau 5 langkah pemasangan jika anda menginginkan sistem anda kosong (tanpa dummy data). Segera setelah anda menyalin file-file ke komputer / server dan pengaturan selesai, Khanza LITE 2021  siap digunakan! Proses pemasangan bahkan tidak membutuhkan waktu sebanyak yang diperlukan untuk menyalin file-filenya ;-)
+Oh iya, Medic LITE memiliki panduan pemasangan yang sangat mudah juga. Hanya perlu 1 langkah penyesuaian. Segera setelah anda menyalin file-file ke komputer / server dan pengaturan selesai, Medic LITE siap digunakan! Proses pemasangan bahkan tidak membutuhkan waktu sebanyak yang diperlukan untuk menyalin file-filenya ;-)
 
 Panel kontrol dan tampilan default sepenuhnya responsif, yang membuatnya dapat diakses dari perangkat seluler apa pun, bahkan di ponsel berkat kerangka kerja CSS yang digunakan - Bootstrap. Setiap modul dapat menyesuaikan dengan CSS nya sendiri.
 
@@ -31,10 +31,10 @@ Masih banyak fitur-fitur tersembunyi untuk kebutuhan pengembangan. Silahkan jela
 Kebutuhan Sistem
 ----------------
 
-Persyaratan sistem untuk Khanza LITE 2021  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
+Persyaratan sistem untuk Medic LITE  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
 
 + Apache 2.2+ dengan `mod_rewrite` atau Nginx
-+ PHP versi 5.6+
++ PHP versi 5.5+
 + MySQL atau MariaDB
 
 Konfigurasi PHP harus memiliki ekstensi berikut:
@@ -60,12 +60,12 @@ $ composer create-project basoro/khanza-lite
 
 3. Sesuaikan pengaturan di config.php
 
-4. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
+4. Buka browser Anda dan navigasikan ke alamat tempat file Medic LITE berada.
 
 5. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan Manual
-1. Unduh versi terbaru [Khanza LITE 2021] (https://github.com/basoro/khanza-lite).
+1. Unduh versi terbaru [Medic LITE] (https://github.com/basoro/khanza-lite).
 
 2. Jalankan perintah composer untuk pemasangan independensi
 ```
@@ -78,10 +78,24 @@ $ composer install
 
 5. Sesuaikan pengaturan di config.php
 
-6. Buka browser Anda dan navigasikan ke alamat tempat file Khanza LITE 2021 berada.
+6. Buka browser Anda dan navigasikan ke alamat tempat file Medic LITE berada.
 
 7. Silahkan login dengan Username: admin dan Password: admin
 
+
+### Untuk pengembangan
+Anda bisa melakukan debuging dan proses pengembangan dengan menggunakan build-in server PHP dengan menjalankan perintah berikut diterminal (lingkungan Unix)
+
+```
+cd systems
+php -d max_execution_time=180 -S 0.0.0.0:8080 -t .. srv/router.php
+```
+
+Atau dalam lingkungan Windows dengan klik 2x pada file
+
+```
+systems\srv\startServer.bat
+```
 
 ### Peringatan!
 
@@ -96,7 +110,7 @@ $ composer install
   - Profil
   - Dan seterusnya....
 
-+ Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Khanza LITE 2021 tidak akan berfungsi.
++ Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Medic LITE tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
 ```bash
@@ -143,4 +157,4 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `admin` Kata sandi: `admin`
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
-Demo dan Info lebih lanjut di https://basoro.org
+Demo dan Info lebih lanjut di https://mlite.id

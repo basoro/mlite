@@ -210,7 +210,9 @@
 				<td colspan=3>
 					<br><br>
 				<p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
-				 Kasir<br><br><br>
+				 Kasir<br><br>
+				 <img src="{$qrCode}">
+				 <br><br>
 				{$fullname}<br>
 				</p>
 				</td>
@@ -289,8 +291,8 @@ function KirimEmail() {
 }
 function KirimWA() {
 	var xhttp = new XMLHttpRequest();
-	var api_key = '{$settings.waapitoken}';
-	var sender = '{$settings.waapiphonenumber}';
+	var api_key = '{$wagateway.token}';
+	var sender = '{$wagateway.phonenumber}';
 	var number = document.getElementById("number").value;
 	var message = document.getElementById("message").value;
 	var tipe = 'pdf';

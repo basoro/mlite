@@ -37,7 +37,7 @@ $("#form").on("click", "#simpan", function(event){
   var nm_pasien = $('input:text[name=nm_pasien]').val();
   var nm_ibu = $('input:text[name=nm_ibu]').val();
   var tgl_lahir = $('#tgl_lahir').val();
-  var jk = $('input:radio[name=jk]:checked').val();
+  var jk = $('select[name=jk]').val();
   var gol_darah = $('select[name=gol_darah]').val();
   var stts_nikah = $('select[name=stts_nikah]').val();
   var agama = $('select[name=agama]').val();
@@ -113,19 +113,24 @@ $("#form").on("click", "#simpan", function(event){
       kd_pj: kd_pj,
       no_peserta: no_peserta
     } ,function(data) {
+      //alert(data);
+      var data = JSON.parse(data);
+      if(data.status == 'success')
+      {
+        $("#form").hide();
+        $("#tutupform").val("Buka Form");
+        $("#tutupform").attr("id", "bukaform");
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data pasien telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      } else {
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Gagal menyimpan data pasien!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      }
       $("#display").show().load(baseURL + '/pasien/display?t=' + mlite.token);
-      $("#form").hide();
-      $("#tutupform").val("Buka Form");
-      $("#tutupform").attr("id", "bukaform");
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
-    }).error(function () {
-      $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Gagal menyimpan data pasien!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
     });
   }
 

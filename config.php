@@ -1,16 +1,16 @@
 <?php
 if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
-    exit("Khanza LITE requires at least <b>PHP 5.5</b>");
+    exit("mLITE requires at least <b>PHP 5.5</b>");
 }
 
 define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', 'basoro');
+define('DBPASS', '');
 define('DBNAME', 'mlite');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://localhost/khanza-lite/webapps');
+define('WEBAPPS_URL', 'http://localhost/Khanza-Lite/webapps');
 define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
 // Admin cat name

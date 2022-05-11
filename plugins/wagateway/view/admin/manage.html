@@ -1,0 +1,127 @@
+<div class="row">
+  <div class="col-md-12 text-center">
+    <div class="imageee text-center">
+      <img src="{?=url()?}/plugins/wagateway/images/waiting.jpg" height="300px" alt="">
+    </div>
+    <br>
+  </div>
+</div>
+<h4 class="text-center">#Device {$waapiphonenumber}</h4>
+<div class="row" style="margin-bottom:20px;">
+  <div class="col-md-12">
+    <div class="text-center">
+      <button class="btn btn-big btn-primary">Dont turn off camera scanner until CONNECTED</button>
+    </div>
+    <div class="statusss text-center" style="margin-top:20px;">
+      <button class="btn btn-primary" type="button" disabled>
+        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        Connecting to Node server...
+      </button>
+    </div>
+    <div class="text-center" style="margin-top:10px;">
+      <div class="card-header logoutbutton">
+    </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-body text-center">
+        <div class="panel-header">
+          <h5 class="card-title">Whatsapp Info <span class="badge badge-info badge-style-light">Updated 5 min ago</span></h5>
+        </div>
+        <div class="panel-body account">
+          <ul class="list-group account list-group-flush">
+            <li class="list-group-item name">Nama : </li>
+            <li class="list-group-item number">Nomor : </li>
+            <li class="list-group-item device">Device : </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<article class="row">
+    <div class="col-md-12">
+        <div class="row">
+            <ul class="modules" style="padding:0;margin:0;">
+                {loop: $sub_modules}
+                <li class="module" data-module="{$value.dir}">
+                    <div class="panel panel-default">
+                        <a href="{$value.url}" class="panel-body text-center">
+                            <div class="panel-thumb">
+                                <i class="fa fa-{$value.icon}"></i>
+                                <div class="desc">
+                                    {$value.desc}
+                                </div>
+                            </div>
+                            <h4><b>{$value.name}</b></h4>
+                        </a>
+                    </div>
+                </li>
+                {/loop}
+            </ul>
+        </div>
+    </div>
+</article>
+<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+<script>
+let socket;
+socket = io('{if: $waapiserver == "https://mlite.id"}https://wa.mlite.id{else}{$waapiserver}{/if}', {
+    transports: ['websocket', 'polling', 'flashsocket']
+});
+socket.emit('StartConnection','{$waapiphonenumber}')
+socket.on('QrGenerated', (url) => {
+    $('.imageee').html(` <img src="${url}" height="300px" alt="">`)
+    let count = 0;
+    $('.statusss').html(`  <button class="btn btn-warning" type="button" disabled>
+                                        <span class="" role="status" aria-hidden="true"></span>
+                                       QR Code didapatkan, silahkan scan
+                                    </button>`)
+    timeout = setTimeout(() => {
+        $('.statusss').html(`  <button class="btn btn-danger" type="button" disabled>
+                                            <span class="" role="status" aria-hidden="true"></span>
+                                     Timed Out, Reload halaman untuk Generate qr ulang
+                                        </button>`)
+        $('.imageee').html(' <img src="../assets/images/other/waiting.jpg" height="300px" alt="">');
+
+    }, 30000);
+
+})
+socket.on('Authenticated',data => {
+    $('.name').html(`Nama : ${data.name}`)
+    $('.number').html(`Number : ${data.id}`)
+    $('.device').html(`Device : Tidak terdeteksi`)
+    $('.imageee').html(` <img src="${data.imgUrl}" height="300px" alt="">`)
+    $('.statusss').html(`  <button class="btn btn-success" type="button" disabled>
+                                        <span class="" role="status" aria-hidden="true"></span>
+                                       Connected
+                                    </button>`)
+                                    $('.logoutbutton').html(` <button class="btn btn-danger" class="logout"  id="logout"  onclick="logout({$waapiphonenumber})">
+                                       Logout
+                                   </button>`)
+})
+socket.on('Proccess',()=> {
+    $('.statusss').html(`  <button class="btn btn-success" type="button" disabled>
+                                        <span class="" role="status" aria-hidden="true"></span>
+                                       Connection Progres, Will refresh in 5 seconds.
+                                    </button>`)
+                                    setTimeout(() => {
+                                        location.reload()
+                                    }, 5000);
+})
+socket.on('Unauthorized',()=> {
+    $('.statusss').html(`  <button class="btn btn-danger" type="button" disabled>
+                                        <span class="" role="status" aria-hidden="true"></span>
+                                       Unauthorized,you have been logged out, will generate Qr again in 5 seconds
+                                    </button>`)
+                                    setTimeout(() => {
+                                        location.reload()
+                                    }, 5000);
+})
+
+function logout(device){
+ socket.emit('LogoutDevice',device)
+}
+</script>

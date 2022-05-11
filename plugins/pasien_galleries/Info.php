@@ -29,8 +29,5 @@ return [
         }
     },
     'uninstall'     => function () use ($core) {
-        //$core->db()->pdo()->exec("DROP TABLE `mlite_pasien_galleries`");
-        //$core->db()->pdo()->exec("DROP TABLE `mlite_pasien_galleries_items`");
-        deleteDir(UPLOADS.'/pasien_galleries');
     }
 ];

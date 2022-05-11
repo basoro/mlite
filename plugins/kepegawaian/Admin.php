@@ -3,7 +3,6 @@
 namespace Plugins\Kepegawaian;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
@@ -14,7 +13,6 @@ class Admin extends AdminModule
             'Kelola' => 'manage',
             'Data Pegawai' => 'index',
             'Tambah Baru' => 'add',
-            //'Master Pegawai' => 'master',
         ];
     }
 
@@ -23,7 +21,6 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Data Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'index']), 'icon' => 'group', 'desc' => 'Data Pegawai'],
         ['name' => 'Add Pegawai', 'url' => url([ADMIN, 'kepegawaian', 'add']), 'icon' => 'group', 'desc' => 'Tambah Data Pegawai'],
-        //['name' => 'Master Kepegawaian', 'url' => url([ADMIN, 'kepegawaian', 'master']), 'icon' => 'group', 'desc' => 'Master data Kepegawaian'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -33,7 +30,7 @@ class Admin extends AdminModule
 
         $this->_addHeaderFiles();
 
-        $rows = $this->mysql('pegawai')->where('stts_aktif','AKTIF')->toArray();
+        $rows = $this->core->mysql('pegawai')->where('stts_aktif','AKTIF')->toArray();
 
         $this->assign['list'] = [];
         if (count($rows)) {
@@ -100,16 +97,16 @@ class Admin extends AdminModule
         $this->assign['jk'] = ['Pria','Wanita'];
         $this->assign['ms_kerja'] = ['<1','PT','FT>1'];
         $this->assign['stts_aktif'] = ['AKTIF','CUTI','KELUAR','TENAGA LUAR'];
-        $this->assign['jnj_jabatan'] = $this->mysql('jnj_jabatan')->toArray();
-        $this->assign['kelompok_jabatan'] = $this->mysql('kelompok_jabatan')->toArray();
-        $this->assign['resiko_kerja'] = $this->mysql('resiko_kerja')->toArray();
-        $this->assign['departemen'] = $this->mysql('departemen')->toArray();
-        $this->assign['bidang'] = $this->mysql('bidang')->toArray();
-        $this->assign['stts_wp'] = $this->mysql('stts_wp')->toArray();
-        $this->assign['stts_kerja'] = $this->mysql('stts_kerja')->toArray();
-        $this->assign['pendidikan'] = $this->mysql('pendidikan')->toArray();
-        $this->assign['bank'] = $this->mysql('bank')->toArray();
-        $this->assign['emergency_index'] = $this->mysql('emergency_index')->toArray();
+        $this->assign['jnj_jabatan'] = $this->core->mysql('jnj_jabatan')->toArray();
+        $this->assign['kelompok_jabatan'] = $this->core->mysql('kelompok_jabatan')->toArray();
+        $this->assign['resiko_kerja'] = $this->core->mysql('resiko_kerja')->toArray();
+        $this->assign['departemen'] = $this->core->mysql('departemen')->toArray();
+        $this->assign['bidang'] = $this->core->mysql('bidang')->toArray();
+        $this->assign['stts_wp'] = $this->core->mysql('stts_wp')->toArray();
+        $this->assign['stts_kerja'] = $this->core->mysql('stts_kerja')->toArray();
+        $this->assign['pendidikan'] = $this->core->mysql('pendidikan')->toArray();
+        $this->assign['bank'] = $this->core->mysql('bank')->toArray();
+        $this->assign['emergency_index'] = $this->core->mysql('emergency_index')->toArray();
 
         $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
 
@@ -119,7 +116,7 @@ class Admin extends AdminModule
     public function getEdit($id)
     {
         $this->_addHeaderFiles();
-        $row = $this->mysql('pegawai')->oneArray($id);
+        $row = $this->core->mysql('pegawai')->oneArray($id);
         if (!empty($row)) {
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit Pegawai';
@@ -127,16 +124,16 @@ class Admin extends AdminModule
             $this->assign['jk'] = ['Pria','Wanita'];
             $this->assign['ms_kerja'] = ['<1','PT','FT>1'];
             $this->assign['stts_aktif'] = ['AKTIF','CUTI','KELUAR','TENAGA LUAR'];
-            $this->assign['jnj_jabatan'] = $this->mysql('jnj_jabatan')->toArray();
-            $this->assign['kelompok_jabatan'] = $this->mysql('kelompok_jabatan')->toArray();
-            $this->assign['resiko_kerja'] = $this->mysql('resiko_kerja')->toArray();
-            $this->assign['departemen'] = $this->mysql('departemen')->toArray();
-            $this->assign['bidang'] = $this->mysql('bidang')->toArray();
-            $this->assign['stts_wp'] = $this->mysql('stts_wp')->toArray();
-            $this->assign['stts_kerja'] = $this->mysql('stts_kerja')->toArray();
-            $this->assign['pendidikan'] = $this->mysql('pendidikan')->toArray();
-            $this->assign['bank'] = $this->mysql('bank')->toArray();
-            $this->assign['emergency_index'] = $this->mysql('emergency_index')->toArray();
+            $this->assign['jnj_jabatan'] = $this->core->mysql('jnj_jabatan')->toArray();
+            $this->assign['kelompok_jabatan'] = $this->core->mysql('kelompok_jabatan')->toArray();
+            $this->assign['resiko_kerja'] = $this->core->mysql('resiko_kerja')->toArray();
+            $this->assign['departemen'] = $this->core->mysql('departemen')->toArray();
+            $this->assign['bidang'] = $this->core->mysql('bidang')->toArray();
+            $this->assign['stts_wp'] = $this->core->mysql('stts_wp')->toArray();
+            $this->assign['stts_kerja'] = $this->core->mysql('stts_kerja')->toArray();
+            $this->assign['pendidikan'] = $this->core->mysql('pendidikan')->toArray();
+            $this->assign['bank'] = $this->core->mysql('bank')->toArray();
+            $this->assign['emergency_index'] = $this->core->mysql('emergency_index')->toArray();
 
             $this->assign['fotoURL'] = WEBAPPS_URL.'/penggajian/'.$row['photo'];
 
@@ -149,12 +146,12 @@ class Admin extends AdminModule
     public function getView($id)
     {
         $this->_addHeaderFiles();
-        $row = $this->mysql('pegawai')->oneArray($id);
+        $row = $this->core->mysql('pegawai')->oneArray($id);
 
         if (!empty($row)) {
             $this->assign['pegawai'] = $row;
-            $this->assign['petugas'] = $this->mysql('petugas')->where('nip',$row['nik'])->oneArray();
-            $this->assign['stts_wp'] = $this->mysql('stts_wp')->where('stts',$row['stts_wp'])->oneArray();
+            $this->assign['petugas'] = $this->core->mysql('petugas')->where('nip',$row['nik'])->oneArray();
+            $this->assign['stts_wp'] = $this->core->mysql('stts_wp')->where('stts',$row['stts_wp'])->oneArray();
             $this->assign['manageURL'] = url([ADMIN, 'kepegawaian', 'index']);
 
             $this->assign['fotoURL'] = url(MODULES.'/kepegawaian/img/default.png');
@@ -204,7 +201,7 @@ class Admin extends AdminModule
                     }
 
                     if ($id) {
-                        $pegawai = $this->mysql('pegawai')->oneArray($id);
+                        $pegawai = $this->core->mysql('pegawai')->oneArray($id);
                     }
 
                     $_POST['photo'] = "pages/pegawai/photo/".$pegawai['nik'].".".$img->getInfos('type');
@@ -212,9 +209,9 @@ class Admin extends AdminModule
             }
 
             if (!$id) {    // new
-                $query = $this->mysql('pegawai')->save($_POST);
+                $query = $this->core->mysql('pegawai')->save($_POST);
             } else {        // edit
-                $query = $this->mysql('pegawai')->where('id', $id)->save($_POST);
+                $query = $this->core->mysql('pegawai')->where('id', $id)->save($_POST);
             }
 
             if ($query) {
@@ -239,7 +236,7 @@ class Admin extends AdminModule
 
     public function getPrint()
     {
-      $pasien = $this->mysql('pegawai')->toArray();
+      $pasien = $this->core->mysql('pegawai')->toArray();
       $logo = $this->settings->get('settings.logo');
 
       $pdf = new PDF_MC_Table();
@@ -299,11 +296,6 @@ class Admin extends AdminModule
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'kepegawaian', 'css']));
         $this->core->addJS(url([ADMIN, 'kepegawaian', 'javascript']), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

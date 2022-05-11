@@ -1,0 +1,37 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Detail Permintaan Lab</h4>
+</div>
+<div class="modal-body">
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th>Pemeriksaan</th>
+        <th>Satuan</th>
+        <th>Rujukan LA</th>
+        <th>Rujukan PA</th>
+        <th>Rujukan LD</th>
+        <th>Rujukan PD</th>
+        <!--<th>Aksi</th>-->
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $detail}
+      <tr>
+        <td>{$value.template_laboratorium.urut}</td>
+        <td>{$value.template_laboratorium.Pemeriksaan}</td>
+        <td>{$value.template_laboratorium.satuan}</td>
+        <td>{$value.template_laboratorium.nilai_rujukan_la}</td>
+        <td>{$value.template_laboratorium.nilai_rujukan_pa}</td>
+        <td>{$value.template_laboratorium.nilai_rujukan_ld}</td>
+        <td>{$value.template_laboratorium.nilai_rujukan_pd}</td>
+        <!--<td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$value.noorder} data-kd_jenis_prw={$value.kd_jenis_prw}  data-id_template={$value.id_template}><span></td>-->
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

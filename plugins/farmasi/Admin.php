@@ -3,7 +3,6 @@
 namespace Plugins\Farmasi;
 
 use Systems\AdminModule;
-use Systems\MySQL;
 
 class Admin extends AdminModule
 {
@@ -32,7 +31,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $databarang['title'] = 'Kelola Databarang';
-        $databarang['bangsal']  = $this->mysql('bangsal')->toArray();
+        $databarang['bangsal']  = $this->core->mysql('bangsal')->toArray();
         $databarang['list'] = $this->_databarangList($status);
         return $this->draw('index.html', ['databarang' => $databarang, 'tab' => $status]);
     }
@@ -41,10 +40,10 @@ class Admin extends AdminModule
     {
         $result = [];
 
-        foreach ($this->mysql('databarang')->where('status', $status)->toArray() as $row) {
+        foreach ($this->core->mysql('databarang')->where('status', $status)->toArray() as $row) {
             $row['delURL']  = url([ADMIN, 'farmasi', 'delete', $row['kode_brng']]);
             $row['restoreURL']  = url([ADMIN, 'farmasi', 'restore', $row['kode_brng']]);
-            $row['gudangbarang'] = $this->mysql('gudangbarang')->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')->where('kode_brng', $row['kode_brng'])->toArray();
+            $row['gudangbarang'] = $this->core->mysql('gudangbarang')->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')->where('kode_brng', $row['kode_brng'])->toArray();
             $result[] = $row;
         }
         return $result;
@@ -72,13 +71,13 @@ class Admin extends AdminModule
 
     public function postSetStok()
     {
-      if($this->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
+      if($this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
 
-        $get_gudangbarang = $this->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
-        $gudangbarang = $this->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
+        $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
+        $gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
 
         if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
-          $query = $this->mysql('riwayat_barang_medis')
+          $query = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => $get_gudangbarang['stok'],
@@ -95,7 +94,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
             if($query2) {
-              $this->mysql('gudangbarang')
+              $this->core->mysql('gudangbarang')
                 ->where('kode_brng', $_POST['kode_brng'])
                 ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
                 ->save([
@@ -104,7 +103,7 @@ class Admin extends AdminModule
             }
         } else {
 
-          $query = $this->mysql('riwayat_barang_medis')
+          $query = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => $get_gudangbarang['stok'],
@@ -121,7 +120,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
 
-          $query2 = $this->mysql('riwayat_barang_medis')
+          $query2 = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => $gudangbarang['stok'],
@@ -140,7 +139,7 @@ class Admin extends AdminModule
         }
 
         if($query) {
-          $this->mysql('gudangbarang')
+          $this->core->mysql('gudangbarang')
             ->where('kode_brng', $_POST['kode_brng'])
             ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
             ->save([
@@ -148,7 +147,7 @@ class Admin extends AdminModule
           ]);
         }
         if($query2) {
-          $this->mysql('gudangbarang')
+          $this->core->mysql('gudangbarang')
             ->where('kode_brng', $_POST['kode_brng'])
             ->where('kd_bangsal', $_POST['kd_bangsal'])
             ->save([
@@ -157,13 +156,13 @@ class Admin extends AdminModule
         }
       } else {
 
-        $get_gudangbarang = $this->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
+        $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.gudang'))->oneArray();
         $stok = '0';
         if($get_gudangbarang) {
           $stok = $get_gudangbarang['stok'];
         }
         if($_POST['kd_bangsal'] == $this->settings->get('farmasi.gudang')) {
-          $query = $this->mysql('riwayat_barang_medis')
+          $query = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => '0',
@@ -180,7 +179,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
             if($query) {
-              $this->mysql('gudangbarang')->save([
+              $this->core->mysql('gudangbarang')->save([
                 'kode_brng' => $_POST['kode_brng'],
                 'kd_bangsal' => $this->settings->get('farmasi.gudang'),
                 'stok' => $_POST['stok'],
@@ -191,7 +190,7 @@ class Admin extends AdminModule
 
         } else {
 
-          $query = $this->mysql('riwayat_barang_medis')
+          $query = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => $stok,
@@ -208,7 +207,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
 
-          $query2 = $this->mysql('riwayat_barang_medis')
+          $query2 = $this->core->mysql('riwayat_barang_medis')
             ->save([
               'kode_brng' => $_POST['kode_brng'],
               'stok_awal' => '0',
@@ -225,7 +224,7 @@ class Admin extends AdminModule
               'no_faktur' => '0'
             ]);
           if($query) {
-            $this->mysql('gudangbarang')
+            $this->core->mysql('gudangbarang')
               ->where('kode_brng', $_POST['kode_brng'])
               ->where('kd_bangsal', $this->settings->get('farmasi.gudang'))
               ->save([
@@ -233,7 +232,7 @@ class Admin extends AdminModule
             ]);
           }
           if($query2) {
-            $this->mysql('gudangbarang')->save([
+            $this->core->mysql('gudangbarang')->save([
               'kode_brng' => $_POST['kode_brng'],
               'kd_bangsal' => $_POST['kd_bangsal'],
               'stok' => $_POST['stok'],
@@ -257,7 +256,7 @@ class Admin extends AdminModule
 
     public function postOpnameAll()
     {
-      $gudangbarang = $this->mysql('gudangbarang')
+      $gudangbarang = $this->core->mysql('gudangbarang')
         ->join('databarang', 'databarang.kode_brng=gudangbarang.kode_brng')
         ->join('bangsal', 'bangsal.kd_bangsal=gudangbarang.kd_bangsal')
         ->where('databarang.status', '1')
@@ -279,7 +278,7 @@ class Admin extends AdminModule
       $no_faktur = $_POST['no_faktur'];
       for($count = 0; $count < count($kode_brng); $count++){
        $query = "UPDATE gudangbarang SET stok=? WHERE kode_brng=? AND kd_bangsal=?";
-       $opname = $this->mysql()->pdo()->prepare($query);
+       $opname = $this->core->mysql()->pdo()->prepare($query);
        $opname->execute([$real[$count], $kode_brng[$count], $kd_bangsal[$count]]);
 
        $selisih = $real[$count] - $stok[$count];
@@ -294,7 +293,7 @@ class Admin extends AdminModule
        }
 
        $query2 = "INSERT INTO `opname` (`kode_brng`, `h_beli`, `tanggal`, `stok`, `real`, `selisih`, `nomihilang`, `lebih`, `nomilebih`, `keterangan`, `kd_bangsal`, `no_batch`, `no_faktur`) VALUES ('$kode_brng[$count]', '$h_beli[$count]', '$tanggal[$count]', '$real[$count]', '$stok[$count]', '$selisih', '$nomihilang', '$lebih', '$nomilebih', '$keterangan[$count]', '$kd_bangsal[$count]', '$no_batch[$count]', '$no_faktur[$count]')";
-       $opname2 = $this->mysql()->pdo()->prepare($query2);
+       $opname2 = $this->core->mysql()->pdo()->prepare($query2);
        $opname2->execute();
 
       }
@@ -305,7 +304,7 @@ class Admin extends AdminModule
     public function getSettings()
     {
         $this->assign['title'] = 'Pengaturan Modul Farmasi';
-        $this->assign['bangsal'] = $this->mysql('bangsal')->toArray();
+        $this->assign['bangsal'] = $this->core->mysql('bangsal')->toArray();
         $this->assign['farmasi'] = htmlspecialchars_array($this->settings('farmasi'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
@@ -350,11 +349,6 @@ class Admin extends AdminModule
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'farmasi', 'css']));
         $this->core->addJS(url([ADMIN, 'farmasi', 'javascript']), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }
