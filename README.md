@@ -8,7 +8,7 @@
 <pre>
 Disclaimer
 ==========
-Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut Medic LITE atau mLITE),
+Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut mLITE atau mLITE),
 saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
 Silahkan gunakan sewajarnya.
@@ -18,9 +18,9 @@ Sebagaimana diterapkan juga pada SIMRS Khanza.
 
 # mLITE
 
-Medic LITE adalah penerus Khanza LITE, dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini Medic LITE dibangun lagi dari awal dengan berfokus pada kesederhanaan - programer pemula pun dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
+mLITE adalah penerus Khanza LITE, dibuat sebagai alternatif ringan untuk SIMKES Khanza agar bisa dijalankan via Mobile / Browser. Kali ini mLITE dibangun lagi dari awal dengan berfokus pada kesederhanaan - programer pemula pun dapat membuat Module-Modul sendiri. Bahkan mengganti tampilan pengguna (User Interface). Ini karena menerapkan sistem dan arsitektur aplikasi yang sangat mudah dalam bentuk Kerangka Kerja (Framework).
 
-Oh iya, Medic LITE memiliki panduan pemasangan yang sangat mudah juga. Hanya perlu 1 langkah penyesuaian. Segera setelah anda menyalin file-file ke komputer / server dan pengaturan selesai, Medic LITE siap digunakan! Proses pemasangan bahkan tidak membutuhkan waktu sebanyak yang diperlukan untuk menyalin file-filenya ;-)
+Oh iya, mLITE memiliki panduan pemasangan yang sangat mudah juga. Hanya perlu 1 langkah penyesuaian. Segera setelah anda menyalin file-file ke komputer / server dan pengaturan selesai, mLITE siap digunakan! Proses pemasangan bahkan tidak membutuhkan waktu sebanyak yang diperlukan untuk menyalin file-filenya ;-)
 
 Panel kontrol dan tampilan default sepenuhnya responsif, yang membuatnya dapat diakses dari perangkat seluler apa pun, bahkan di ponsel berkat kerangka kerja CSS yang digunakan - Bootstrap. Setiap modul dapat menyesuaikan dengan CSS nya sendiri.
 
@@ -30,7 +30,7 @@ Masih banyak fitur-fitur tersembunyi untuk kebutuhan pengembangan. Silahkan jela
 Kebutuhan Sistem
 ----------------
 
-Persyaratan sistem untuk Medic LITE  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
+Persyaratan sistem untuk mLITE  sangat sederhana, sehingga setiap server modern sudah cukup. Berikut persyaratan minimal yang diperlukan
 
 + Apache 2.2+ dengan `mod_rewrite` atau Nginx
 + PHP versi 5.5+
@@ -59,12 +59,12 @@ $ composer create-project basoro/khanza-lite
 
 3. Sesuaikan pengaturan di config.php
 
-4. Buka browser Anda dan navigasikan ke alamat tempat file Medic LITE berada.
+4. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
 
 5. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan Manual
-1. Unduh versi terbaru [Medic LITE] (https://github.com/basoro/khanza-lite).
+1. Unduh versi terbaru [mLITE] (https://github.com/basoro/khanza-lite).
 
 2. Jalankan perintah composer untuk pemasangan independensi
 ```
@@ -77,7 +77,7 @@ $ composer install
 
 5. Sesuaikan pengaturan di config.php
 
-6. Buka browser Anda dan navigasikan ke alamat tempat file Medic LITE berada.
+6. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
 
 7. Silahkan login dengan Username: admin dan Password: admin
 
@@ -109,7 +109,7 @@ systems\srv\startServer.bat
   - Profil
   - Dan seterusnya....
 
-+ Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya Medic LITE tidak akan berfungsi.
++ Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)
 
 ```bash
