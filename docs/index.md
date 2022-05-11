@@ -1268,3 +1268,5 @@ Melindungi dari kompilasi tag sistem template di dalam larik.
 ```php
 $this->tpl->noParse_array(['{$no}', '{$changes}']);
 ```
+
+(Diperbarui 11 Mei 2022)
