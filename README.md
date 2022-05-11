@@ -8,7 +8,7 @@
 <pre>
 Disclaimer
 ==========
-***mLITE tidak berafiliasi langsung dengan SIMRS Khanza ataupun YASKI***.
+### mLITE tidak berafiliasi langsung dengan SIMRS Khanza ataupun YASKI ###.
 Aplikasi SIMRS Khanza versi web ini (selanjutnya akan disebut mLITE),
 saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
