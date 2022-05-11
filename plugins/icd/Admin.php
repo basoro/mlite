@@ -2,6 +2,7 @@
 namespace Plugins\Icd;
 
 use Systems\AdminModule;
+use Systems\MySQL;
 use Plugins\Icd\DB_ICD;
 
 class Admin extends AdminModule
