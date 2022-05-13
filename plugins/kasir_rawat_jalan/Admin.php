@@ -1058,7 +1058,7 @@ class Admin extends AdminModule
         $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
         //$pdf->Output();
 
-        echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
+        echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
         $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->oneArray();
