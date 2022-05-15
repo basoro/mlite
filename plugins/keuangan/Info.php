@@ -108,7 +108,7 @@ return [
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_arus_kas` (`id`, `arus_kas`) VALUES
-        (1, 'Arus Kas Kegiatan Operasi'),
+        (1, 'Arus Kas Kegiatan Operasional'),
         (2, 'Arus Kas Kegiatan Investasi'),
         (3, 'Arus Kas Kegiatan Pendanaan'),
         (0, 'Tidak Semua');");
