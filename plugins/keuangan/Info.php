@@ -14,6 +14,7 @@ return [
           `no_bukti` varchar(20) DEFAULT NULL,
           `tgl_jurnal` date DEFAULT NULL,
           `jenis` enum('U','P') DEFAULT NULL,
+          `kegiatan` varchar(350) DEFAULT NULL,
           `keterangan` varchar(350) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -27,6 +28,7 @@ return [
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
           `no_jurnal` varchar(20) DEFAULT NULL,
           `kd_rek` varchar(15) DEFAULT NULL,
+          `arus_kas` int(10) NOT NULL,
           `debet` double DEFAULT NULL,
           `kredit` double DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -82,10 +84,32 @@ return [
           ADD CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
           ADD CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_akun_kegiatan` (
+          `id` int(11) NOT NULL,
+          `kegiatan` varchar(200) DEFAULT NULL,
+          `kd_rek` varchar(20) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
+          ADD PRIMARY KEY (`id`) USING BTREE;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_arus_kas` (
+          `id` int(11) NOT NULL,
+          `arus_kas` varchar(200) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_arus_kas`
+          ADD PRIMARY KEY (`id`) USING BTREE;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_arus_kas`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_pendaftaran', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan_ralan', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_obat_bhp', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_laboratorium', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_radiologi', '')");

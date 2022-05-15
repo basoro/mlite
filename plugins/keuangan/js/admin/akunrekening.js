@@ -37,7 +37,49 @@ $("#display").on("click", ".edit", function(event){
   $.post(url, {kd_rek: kd_rek} ,function(data) {
     // tampilkan data
     $("#form").html(data).show();
-    $("#bukaform").val("Tutup Form");
-    $("#bukaform").attr("id", "tutupform");
+    $("#buka_form").val("Tutup Form");
+    $("#buka_form").attr("id", "tutupform");
   });
+});
+
+// ketika baris data diklik
+$("#akunrekening").on("click", "#buka_form", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url    = baseURL + '/keuangan/akunrekeningform?t=' + mlite.token;
+  var kd_rek  = $(this).attr("data-kd_rek");
+
+  $.post(url, {kd_rek: kd_rek} ,function(data) {
+    // tampilkan data
+    $("#form").html(data).show();
+    $("#buka_form").val("Tutup Form");
+    $("#buka_form").attr("id", "tutupform");
+  });
+});
+
+// tombol tutup form diklik
+$("#akunrekening").on('click', '#tutupform', function(){
+  event.preventDefault();
+  $("#form").hide();
+  $("#tutupform").val("Buka Form");
+  $("#tutupform").attr("id", "buka_form");
+});
+
+// ketika baris data diklik
+$("#jenis_kegiatan").on("click", ".kegiatan", function(event){
+  var id  = $(this).attr("data-id");
+  var kegiatan  = $(this).attr("data-kegiatan");
+  //alert(kegiatan);
+  $('input:hidden[name=id]').val(id);
+  $('input:text[name=nama_kegiatan]').val(kegiatan);
+});
+
+// ketika baris data diklik
+$("#rekeningtahun").on("click", ".rekeningtahun", function(event){
+  var tahun  = $(this).attr("data-tahun");
+  var kd_rek  = $(this).attr("data-kd_rek");
+  var saldo_awal  = $(this).attr("data-saldo_awal");
+  $('#kd_rek').val(kd_rek).change();
+  $('input:text[name=tahun]').val(tahun);
+  $('input:text[name=saldo_awal]').val(saldo_awal);
 });

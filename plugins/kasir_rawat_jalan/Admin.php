@@ -650,18 +650,23 @@ class Admin extends AdminModule
       if($this->settings('keuangan', 'jurnal_kasir') == 1) {
           // jurnal_pendaftaran //
           if($_POST['jurnal_pendaftaran'] != 0) {
-            $no_jurnal_pendaftaran = $this->setNoJurnal();
+            $no_jurnal_pendaftaran = $this->core->setNoJurnal();
+            $keterangan = $this->core->mysql('mlite_rekening')
+            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_pendaftaran'))
+            ->oneArray();
             $query_jurnal_pendaftaran =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_pendaftaran,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Pendaftaran rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => $keterangan['nm_rek'].' '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => $keterangan['nm_rek']
               ]);
             if($query_jurnal_pendaftaran) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_pendaftaran,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_pendaftaran'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_pendaftaran'])
               ]);
@@ -672,18 +677,20 @@ class Admin extends AdminModule
 
           // jurnal_tindakan_ralan //
           if($_POST['jurnal_tindakan_ralan'] != 0) {
-            $no_jurnal_tindakan_ralan = $this->setNoJurnal();
+            $no_jurnal_tindakan_ralan = $this->core->setNoJurnal();
             $query_jurnal_tindakan_ralan =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Tindakan rawat jalan '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => ''
               ]);
             if($query_jurnal_tindakan_ralan) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_tindakan_ralan,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan_ralan'),
+                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tindakan'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_tindakan_ralan'])
               ]);
@@ -694,18 +701,20 @@ class Admin extends AdminModule
 
           // jurnal_obat_bhp //
           if($_POST['jurnal_obat_bhp'] != 0) {
-            $no_jurnal_obat_bhp = $this->setNoJurnal();
+            $no_jurnal_obat_bhp = $this->core->setNoJurnal();
             $query_jurnal_obat_bhp =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_obat_bhp,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Obat dan BHP '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => ''
               ]);
             if($query_jurnal_obat_bhp) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_obat_bhp,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_obat_bhp'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_obat_bhp'])
               ]);
@@ -716,18 +725,20 @@ class Admin extends AdminModule
 
           // jurnal_laboratorium //
           if($_POST['jurnal_laboratorium'] != 0) {
-            $no_jurnal_laboratorium = $this->setNoJurnal();
+            $no_jurnal_laboratorium = $this->core->setNoJurnal();
             $query_jurnal_laboratorium =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_laboratorium,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Laboratorium '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => ''
               ]);
             if($query_jurnal_laboratorium) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_laboratorium,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_laboratorium'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_laboratorium'])
               ]);
@@ -738,18 +749,20 @@ class Admin extends AdminModule
 
           // jurnal_radiologi//
           if($_POST['jurnal_radiologi'] != 0) {
-            $no_jurnal_radiologi = $this->setNoJurnal();
+            $no_jurnal_radiologi = $this->core->setNoJurnal();
             $query_jurnal_radiologi =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_radiologi,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Radiologi '.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => ''
               ]);
             if($query_jurnal_radiologi) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_radiologi,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_radiologi'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_radiologi'])
               ]);
@@ -760,18 +773,20 @@ class Admin extends AdminModule
 
           // jurnal_tambahan_biaya //
           if($_POST['jurnal_tambahan_biaya'] != 0) {
-            $no_jurnal_tambahan_biaya = $this->setNoJurnal();
+            $no_jurnal_tambahan_biaya = $this->core->setNoJurnal();
             $query_jurnal_tambahan_biaya =  $this->core->mysql('mlite_jurnal')->save([
                 'no_jurnal' => $no_jurnal_tambahan_biaya,
                 'no_bukti' => $_POST['no_rawat'],
                 'tgl_jurnal' => date('Y-m-d'),
                 'jenis' => 'U',
-                'keterangan' => 'Tambahan biaya'.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.'
+                'kegiatan' => 'Tambahan biaya'.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
+                'keterangan' => ''
               ]);
             if($query_jurnal_tambahan_biaya) {
               $this->core->mysql('mlite_detailjurnal')->save([
                 'no_jurnal' => $no_jurnal_tambahan_biaya,
                 'kd_rek' => $this->settings('keuangan', 'akun_kredit_tambahan_biaya'),
+                'arus_kas' => '1',
                 'debet' => '0',
                 'kredit' => str_replace(".", "", $_POST['jurnal_tambahan_biaya'])
               ]);
@@ -1068,21 +1083,6 @@ class Admin extends AdminModule
         break;
       }
       exit();
-    }
-
-    public function setNoJurnal()
-    {
-        $date = date('Y-m-d');
-        $last_no_jurnal = $this->core->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM jurnal WHERE tgl_jurnal = '$date'");
-        $last_no_jurnal->execute();
-        $last_no_jurnal = $last_no_jurnal->fetch();
-        if(empty($last_no_jurnal[0])) {
-          $last_no_jurnal[0] = '000000';
-        }
-        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
-        $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
-
-        return $next_no_jurnal;
     }
 
     public function postKirimEmail() {

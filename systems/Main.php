@@ -441,6 +441,21 @@ abstract class Main
         return $next_no;
     }
 
+    public function setNoJurnal()
+    {
+        $date = date('Y-m-d');
+        $last_no_jurnal = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
+        $last_no_jurnal->execute();
+        $last_no_jurnal = $last_no_jurnal->fetch();
+        if(empty($last_no_jurnal[0])) {
+          $last_no_jurnal[0] = '000000';
+        }
+        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
+        $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
+
+        return $next_no_jurnal;
+    }
+
     public function loadModules()
     {
         if ($this->module == null) {
