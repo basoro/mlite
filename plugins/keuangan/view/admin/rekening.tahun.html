@@ -47,7 +47,7 @@
               <tr class="rekeningtahun" data-tahun="{$value.thn}" data-kd_rek="{$value.kd_rek}" data-saldo_awal="{$value.saldo_awal}">
                 <td>{$value.thn}</td>
                 <td>{$value.kd_rek} - {$value.nm_rek}</td>
-                <td>{$value.saldo_awal}</td>
+                <td><span class="pull-right">{?= number_format($value.saldo_awal,2,',','.')?}</span></td>
               </tr>
               {/loop}
               {else}

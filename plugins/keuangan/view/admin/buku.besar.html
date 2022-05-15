@@ -1,5 +1,5 @@
 <style media="screen">
-  th, td {
+  .bukubesar th, .bukubesar td {
     white-space: nowrap;
   }
 </style>
@@ -35,7 +35,7 @@
       </div>
       <div class="panel-body">
         <div class="table-responsive no-margin">
-          <table class="table table-striped no-margin" width="100%">
+          <table class="table table-striped no-margin bukubesar" width="100%">
             <thead>
               <tr>
                 <th>No. Jurnal</th>
@@ -52,9 +52,9 @@
                 <td>{$value.no_jurnal}</td>
                 <td>{$value.tgl_jurnal}</td>
                 <td>{$value.keterangan}</td>
-                <td>{$value.debet}</td>
-                <td>{$value.kredit}</td>
-                <td>{$value.saldo}</td>
+                <td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.saldo,2,',','.')?}</span></td>
               </tr>
               {/loop}
             </tbody>

@@ -68,9 +68,9 @@
 								<td>{$value.no_jurnal}</td>
                 <td>{$value.tgl_jurnal}</td>
                 <td>{$value.keterangan}</td>
-                <td>{$value.debet}</td>
-                <td>{$value.kredit}</td>
-                <td>{$value.saldo}</td>
+								<td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.saldo,2,',','.')?}</span></td>
               </tr>
               {/loop}
             </tbody>
