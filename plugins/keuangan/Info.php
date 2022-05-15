@@ -107,6 +107,12 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_arus_kas`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
+        $core->db()->pdo()->exec("INSERT INTO `mlite_arus_kas` (`id`, `arus_kas`) VALUES
+        (1, 'Arus Kas Kegiatan Operasi'),
+        (2, 'Arus Kas Kegiatan Investasi'),
+        (3, 'Arus Kas Kegiatan Pendanaan'),
+        (0, 'Tidak Semua');");
+
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_pendaftaran', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan', '')");
