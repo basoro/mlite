@@ -54,6 +54,7 @@
           <table class="table table-striped no-margin dataTables" width="100%">
             <thead>
               <tr>
+								<th>No. Jurnal</th>
                 <th>Tanggal</th>
                 <th>Keterangan</th>
                 <th>Debet</th>
@@ -64,6 +65,7 @@
             <tbody>
               {loop: $bukubesar}
               <tr>
+								<td>{$value.no_jurnal}</td>
                 <td>{$value.tgl_jurnal}</td>
                 <td>{$value.keterangan}</td>
                 <td>{$value.debet}</td>

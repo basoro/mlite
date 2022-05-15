@@ -93,9 +93,11 @@ class Admin extends AdminModule
     {
       $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
       $this->_addHeaderFiles();
+      $curr_year = date('Y');
       $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
       $rekeningtahun = $this->core->mysql('mlite_rekeningtahun')
       ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_rekeningtahun.kd_rek')
+      ->where('thn', $curr_year)
       ->toArray();
       return $this->draw('rekening.tahun.html', ['akunrekening' => $akunrekening, 'rekeningtahun' => $rekeningtahun]);
     }
@@ -192,7 +194,8 @@ class Admin extends AdminModule
 
     public function getBukuBesar()
     {
-      //$this->_addHeaderFiles();
+      $this->_addHeaderFiles();
+      $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
       $settings = $this->settings('settings');
       $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
@@ -206,16 +209,9 @@ class Admin extends AdminModule
         $tgl_akhir = $_GET['tgl_akhir'];
       }
 
-      $bukubesar = [];
-      $query = $this->core->mysql()->pdo()->query("SELECT no_jurnal, debet, kredit, cast((@saldo:= @saldo+kredit-debet) AS DECIMAL(12,2)) AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara ORDER BY no_jurnal ASC");
+      $query = $this->core->mysql()->pdo()->query("SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, cast((@saldo:= @saldo+kredit-debet) AS DECIMAL(12,0)) AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal WHERE mlite_jurnal.tgl_jurnal BETWEEN '.$tgl_awal' AND '$tgl_akhir' ORDER BY mlite_detailjurnal.no_jurnal ASC");
       $query->execute();
-      $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
-      foreach ($rows as $row) {
-        $jurnal = $this->core->mysql('mlite_jurnal')->where('no_jurnal', $row['no_jurnal'])->oneArray();
-        $row['tgl_jurnal'] = $jurnal['tgl_jurnal'];
-        $row['keterangan'] = $jurnal['keterangan'];
-        $bukubesar[] = $row;
-      }
+      $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
         echo $this->draw('buku.besar.print.html', [
@@ -224,7 +220,7 @@ class Admin extends AdminModule
         ]);
         exit();
       } else {
-        return $this->draw('buku.besar.html', ['bukubesar' => $bukubesar, 'saldo' => $saldo]);
+        return $this->draw('buku.besar.html', ['bukubesar' => $bukubesar]);
       }
     }
 
