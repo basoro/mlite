@@ -1020,12 +1020,13 @@ class Site extends SiteModule
 
                   $get_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
                   $get_poliklinik = $this->core->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+                  $waapiserver = $this->settings->get('wagateway.server');
+                  $url = $waapiserver."/wagateway/kirimpesan";
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
-                    $url = "https://banoewa.com/send-message";
                     curl_setopt($ch, CURLOPT_URL,$url);
                     curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, "api_key=".$this->settings->get('wagateway.token')."&sender=".$this->settings->get('wagateway.phonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, "type=text&api_key=".$this->settings->get('wagateway.token')."&sender=".$this->settings->get('wagateway.phonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
