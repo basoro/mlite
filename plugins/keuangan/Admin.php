@@ -225,6 +225,8 @@ class Admin extends AdminModule
 
     public function getCashFlow()
     {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
       $curr_year = date('Y');
       $aruskas = [];
 
@@ -304,7 +306,12 @@ class Admin extends AdminModule
         }
       }
       $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
-      return $this->draw('cash.flow.html', ['aruskas' => $aruskas, 'akunrekening' => $akunrekening, 'masuk_all' => $total_kredit, 'keluar_all' => $total_debet, 'saldo_masuk' => $total_saldo_kredit, 'saldo_keluar' => $total_saldo_debet, 'jumlah_total_saldo' => $jumlah_total_saldo]);
+      if(isset($_GET['action']) && $_GET['action'] == 'print') {
+        echo $this->draw('cash.flow.print.html', ['aruskas' => $aruskas, 'akunrekening' => $akunrekening, 'masuk_all' => $total_kredit, 'keluar_all' => $total_debet, 'saldo_masuk' => $total_saldo_kredit, 'saldo_keluar' => $total_saldo_debet, 'jumlah_total_saldo' => $jumlah_total_saldo]);
+        exit();
+      } else {
+        return $this->draw('cash.flow.html', ['aruskas' => $aruskas, 'akunrekening' => $akunrekening, 'masuk_all' => $total_kredit, 'keluar_all' => $total_debet, 'saldo_masuk' => $total_saldo_kredit, 'saldo_keluar' => $total_saldo_debet, 'jumlah_total_saldo' => $jumlah_total_saldo]);
+      }
     }
 
     public function getNeraca()
