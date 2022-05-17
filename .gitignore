@@ -7,3 +7,4 @@ uploads
 vendor
 systems/data/database.sdb
 webapps
+backup/
