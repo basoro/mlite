@@ -8,6 +8,20 @@ return [
     'compatibility' =>  '2022',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
+      
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekening` (
+          `kd_rek` varchar(15) NOT NULL DEFAULT '',
+          `nm_rek` varchar(100) DEFAULT NULL,
+          `tipe` enum('N','M','R') DEFAULT NULL,
+          `balance` enum('D','K') DEFAULT NULL,
+          `level` enum('0','1') DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_rekening`
+          ADD PRIMARY KEY (`kd_rek`),
+          ADD KEY `nm_rek` (`nm_rek`),
+          ADD KEY `tipe` (`tipe`),
+          ADD KEY `balance` (`balance`);");
 
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
           `no_jurnal` varchar(20) NOT NULL,
@@ -40,20 +54,6 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_detailjurnal`
           ADD CONSTRAINT `mlite_detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite_jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
           ADD CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;");
-
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekening` (
-          `kd_rek` varchar(15) NOT NULL DEFAULT '',
-          `nm_rek` varchar(100) DEFAULT NULL,
-          `tipe` enum('N','M','R') DEFAULT NULL,
-          `balance` enum('D','K') DEFAULT NULL,
-          `level` enum('0','1') DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-
-        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_rekening`
-          ADD PRIMARY KEY (`kd_rek`),
-          ADD KEY `nm_rek` (`nm_rek`),
-          ADD KEY `tipe` (`tipe`),
-          ADD KEY `balance` (`balance`);");
 
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekeningtahun` (
           `thn` year(4) NOT NULL,
