@@ -52,9 +52,14 @@
                   <div class="form-group">
                       <label>Role</label>
                       <select name="role" class="form-control">
+                        {if: !empty($users.user)}
                         {loop: $users.role}
                           <option value="{$value}"{if: $value == $users.form.role} selected{/if}>{$value}</option>
                         {/loop}
+                        {else}
+                          <option value="pengguna"{if: $users.form.role == 'pengguna'} selected{/if}>Pengguna</option>
+                          <option value="admin"{if: $users.form.role == 'admin'} selected{/if}>Admin</option>
+                        {/if}
                       </select>
                   </div>
                   {if: !empty($users.cap)}
