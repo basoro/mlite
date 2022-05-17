@@ -14,7 +14,6 @@ return [
           `no_bukti` varchar(20) DEFAULT NULL,
           `tgl_jurnal` date DEFAULT NULL,
           `jenis` enum('U','P') DEFAULT NULL,
-          `kegiatan` varchar(350) DEFAULT NULL,
           `keterangan` varchar(350) DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -28,7 +27,6 @@ return [
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
           `no_jurnal` varchar(20) DEFAULT NULL,
           `kd_rek` varchar(15) DEFAULT NULL,
-          `arus_kas` int(10) NOT NULL,
           `debet` double DEFAULT NULL,
           `kredit` double DEFAULT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -91,27 +89,10 @@ return [
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
-          ADD PRIMARY KEY (`id`) USING BTREE;");
+          ADD PRIMARY KEY (`id`);");
 
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
-
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_arus_kas` (
-          `id` int(11) NOT NULL,
-          `arus_kas` varchar(200) NOT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-
-        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_arus_kas`
-          ADD PRIMARY KEY (`id`) USING BTREE;");
-
-        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_arus_kas`
-          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
-
-        $core->db()->pdo()->exec("INSERT INTO `mlite_arus_kas` (`id`, `arus_kas`) VALUES
-        (1, 'Arus Kas Kegiatan Operasional'),
-        (2, 'Arus Kas Kegiatan Investasi'),
-        (3, 'Arus Kas Kegiatan Pendanaan'),
-        (0, 'Tidak Semua');");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_pendaftaran', '')");

@@ -176,6 +176,7 @@
                          </div>
                     </div>
                     {/if}
+                    {if: $settings.module_pasien}
                     <div class="form-group">
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
@@ -198,6 +199,7 @@
                             </label>
                         </div>
                     </div>
+                    {/if}
                     {if: $settings.presensi}
                     <div class="form-group">
                         <label>Aktifkan Notifikasi Presensi</label>
@@ -233,6 +235,7 @@
                         <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" />
                     </div>
                     {/if}
+                    {if: $settings.module_pasien}
                     <div class="form-group">
                          <label>Mode Input Admin</label>
                          <div class="radio">
@@ -255,11 +258,12 @@
                              </label>
                          </div>
                     </div>
-                    <!--
+                    {/if}
                     <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
                     </div>
+                    <!--
                     <div class="form-group">
                          <label>Editor</label>
                          <div class="radio">

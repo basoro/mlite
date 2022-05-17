@@ -48,6 +48,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $settings = $this->settings('settings');
+        $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
         $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();

@@ -18,8 +18,10 @@
         <tbody>
           {loop: $aruskas}
           <tr>
-            <td><b>{$value.id}</b></td>
-            <td colspan="3"><b>{?=strtoupper($value.arus_kas)?}</b></td>
+            <td><b>{$value.nomor}</b></td>
+            <td colspan="3"><b>
+              {?=strtoupper($value.arus_kas)?}
+            </b></td>
           </tr>
           <tr>
             <td></td>
@@ -59,7 +61,7 @@
             </tr>
             <tr>
               <td></td>
-              <td align="right"><b>Netto {$value.arus_kas} ({$value.id})</b></td>
+              <td align="right"><b>Netto {$value.arus_kas} ({$value.nomor})</b></td>
               <td><span class="pull-right">{?= number_format($value.total_masuk - $value.total_keluar,2,',','.')?}</span></td>
               <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk - $value.total_saldo_awal_keluar,2,',','.')?}</span></td>
             </tr>
@@ -75,14 +77,14 @@
           <tr>
             <th></th>
             <th style="text-align:right">Saldo Awal Kas dan Setara Kas</th>
-            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + ($saldo_masuk - $saldo_keluar),2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
             <th><span class="pull-right">{?= number_format($jumlah_total_saldo,2,',','.')?}</span></th>
           </tr>
           <tr>
             <th></th>
             <th style="text-align:right">Saldo Akhir Kas dan Setara Kas</th>
-            <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + ($saldo_masuk - $saldo_keluar)),2,',','.')?}</span></th>
-            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + ($saldo_masuk - $saldo_keluar),2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + $saldo_keluar),2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
           </tr>
         </tfoot>
       </table>

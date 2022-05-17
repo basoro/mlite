@@ -141,10 +141,9 @@ class Admin extends AdminModule
     public function getPostingJurnal()
     {
       $this->_addHeaderFiles();
-      $aruskas = $this->core->mysql('mlite_arus_kas')->toArray();
       $kegiatan = $this->core->mysql('mlite_akun_kegiatan')->toArray();
       $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
-      return $this->draw('posting.jurnal.html', ['aruskas' => $aruskas, 'kegiatan' => $kegiatan, 'akunrekening' => $akunrekening, 'no_jurnal' => $this->core->setNoJurnal()]);
+      return $this->draw('posting.jurnal.html', ['kegiatan' => $kegiatan, 'akunrekening' => $akunrekening, 'no_jurnal' => $this->core->setNoJurnal()]);
     }
 
     public function getJurnalHarian()
@@ -225,6 +224,90 @@ class Admin extends AdminModule
     }
 
     public function getCashFlow()
+    {
+      $curr_year = date('Y');
+      $aruskas = [];
+
+      $rows_aruskas = array(
+          array(
+              "tipe" => "N",
+              "arus_kas" => "Kegiatan Operasional",
+          ),
+          array(
+              "tipe" => "R",
+              "arus_kas" => "Kegiatan Pendanaan",
+          ),
+          array(
+              "tipe" => "M",
+              "arus_kas" => "Kegiatan Investasi",
+          )
+      );
+      $total_kredit = 0;
+      $total_debet = 0;
+      $total_saldo_kredit = 0;
+      $total_saldo_debet = 0;
+      $n = 1;
+      foreach ($rows_aruskas as $row) {
+        $row['nomor'] = $n++;
+        $row['total_masuk'] = 0;
+        $row['total_keluar'] = 0;
+        $row['total_saldo_awal_masuk'] = 0;
+        $row['total_saldo_awal_keluar'] = 0;
+        $jumlah_total_saldo = 0;
+        $rows_kredit = $this->core->mysql('mlite_detailjurnal')
+        ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
+        ->where('tipe', $row['tipe'])
+        ->where('balance', 'K')
+        ->group('mlite_detailjurnal.kd_rek')
+        ->toArray();
+        $row['jurnal_masuk'] = [];
+        foreach ($rows_kredit as $row_kredit) {
+          $kredits = $this->core->mysql('mlite_detailjurnal')->where('kd_rek', $row_kredit['kd_rek'])->toArray();
+          $row_kredit['kredit_all'] = 0;
+          foreach ($kredits as $kredit) {
+            $row['total_masuk'] += $kredit['kredit'];
+            $row_kredit['kredit_all'] += $kredit['kredit'];
+          }
+          $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_kredit['kd_rek'])->oneArray();
+          $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
+          $row['total_saldo_awal_masuk'] += $saldo_awal['saldo_awal'];
+          $row['jurnal_masuk'][] = $row_kredit;
+          $total_saldo_kredit += $row['total_saldo_awal_masuk'];
+          $total_kredit += $row_kredit['kredit_all'];
+        }
+
+        $rows_debet = $this->core->mysql('mlite_detailjurnal')
+        ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
+        ->where('tipe', $row['tipe'])
+        ->where('balance', 'D')
+        ->group('mlite_detailjurnal.kd_rek')
+        ->toArray();
+        $row['jurnal_keluar'] = [];
+        foreach ($rows_debet as $row_debet) {
+          $debets = $this->core->mysql('mlite_detailjurnal')->where('kd_rek', $row_debet['kd_rek'])->toArray();
+          $row_debet['debet_all'] = 0;
+          foreach ($debets as $debet) {
+            $row['total_keluar'] += $debet['debet'];
+            $row_debet['debet_all'] += $debet['debet'];
+          }
+          $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
+          $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
+          $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
+          $row['jurnal_keluar'][] = $row_debet;
+          $total_saldo_debet += $row['total_saldo_awal_keluar'];
+          $total_debet += $row_debet['debet_all'];
+        }
+        $aruskas[] = $row;
+        $total_saldo_awal = $this->core->mysql('mlite_rekeningtahun')->toArray();
+        foreach ($total_saldo_awal as $saldo) {
+          $jumlah_total_saldo += $saldo['saldo_awal'];
+        }
+      }
+      $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
+      return $this->draw('cash.flow.html', ['aruskas' => $aruskas, 'akunrekening' => $akunrekening, 'masuk_all' => $total_kredit, 'keluar_all' => $total_debet, 'saldo_masuk' => $total_saldo_kredit, 'saldo_keluar' => $total_saldo_debet, 'jumlah_total_saldo' => $jumlah_total_saldo]);
+    }
+
+    public function getCashFlow_Ori()
     {
       $curr_year = date('Y');
       $aruskas = [];
@@ -366,14 +449,12 @@ class Admin extends AdminModule
           'no_bukti' => $_POST['no_bukti'],
           'tgl_jurnal' => $_POST['tgl_jurnal'],
           'jenis' => $_POST['jenis'],
-          'kegiatan' => $_POST['kegiatan'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-          'keterangan' => $_POST['keterangan']
+          'keterangan' => $_POST['kegiatan'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'. ('.$_POST['keterangan'].').'
           ]);
         $this->core->mysql('mlite_detailjurnal')
         ->save([
           'no_jurnal' => $_POST['no_jurnal'],
           'kd_rek' => $_POST['kd_rek'],
-          'arus_kas' => $_POST['arus_kas'],
           'debet' => $_POST['debet'],
           'kredit' => $_POST['kredit']
         ]);
