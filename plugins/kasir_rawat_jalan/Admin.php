@@ -235,7 +235,8 @@ class Admin extends AdminModule
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nama_biaya' => $_POST['nm_perawatan'],
-            'besar_biaya' => $_POST['biaya']
+            'besar_biaya' => $_POST['biaya'],
+            'status' => 'ralan'
           ]);
       }
 
@@ -346,6 +347,7 @@ class Admin extends AdminModule
       $this->core->mysql('tambahan_biaya')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('nama_biaya', $_POST['nama_biaya'])
+      ->where('status', 'ralan')
       ->delete();
       exit();
     }
@@ -496,6 +498,7 @@ class Admin extends AdminModule
 
       $rows_tambahan_biaya = $this->core->mysql('tambahan_biaya')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('status', 'ralan')
         ->toArray();
       $tambahan_biaya = [];
       $no_tambahan_biaya = 1;
@@ -923,6 +926,7 @@ class Admin extends AdminModule
         }
 
         $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
+          ->where('status', 'ralan')
           ->where('no_rawat', $_GET['no_rawat'])
           ->toArray();
 

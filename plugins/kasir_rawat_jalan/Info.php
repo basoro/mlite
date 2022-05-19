@@ -12,7 +12,8 @@ return [
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `tambahan_biaya` (
         `no_rawat` varchar(17) NOT NULL,
         `nama_biaya` varchar(60) NOT NULL,
-        `besar_biaya` double NOT NULL
+        `besar_biaya` double NOT NULL,
+        `status` enum('ralan','ranap') NOT NULL 
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `tambahan_biaya`

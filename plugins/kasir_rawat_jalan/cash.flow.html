@@ -1,0 +1,94 @@
+<div class="row">
+  <div class="col-md-12">
+    <div class="text-center">
+    <h3>Laporan Arus Kas</h3>
+    <h4>Tahun Anggaran {?=date('Y')?}</h4>
+    <br>
+    </div>
+    <div class="table-responsive no-margin">
+      <table class="table table-striped table-condensed no-padding">
+        <thead>
+          <tr>
+            <th width="50px">No.</th>
+            <th>Uraian Arus Kas</th>
+            <th width="160px"><span class="pull-right">{?=date('Y')?}</span></th>
+            <th width="160px"><span class="pull-right">{?=date('Y')-1?}</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $aruskas}
+          <tr>
+            <td><b>{$value.nomor}</b></td>
+            <td colspan="3"><b>
+              {?=strtoupper($value.arus_kas)?}
+            </b></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan="3">Arus Masuk Kas</td>
+          </tr>
+            {loop: $value.jurnal_masuk as $data}
+            <tr>
+              <td></td>
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+              <td><span class="pull-right">{?= number_format($data.kredit_all,2,',','.')?}</span></td>
+              <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
+            </tr>
+            {/loop}
+            <tr>
+              <td></td>
+              <td align="right">Jumlah Arus Masuk Kas</td>
+              <td><span class="pull-right">{?= number_format($value.total_masuk,2,',','.')?}</span></td>
+              <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk,2,',','.')?}</span></td>
+            </tr>
+          <tr>
+            <td></td>
+            <td colspan="3">Arus Keluar Kas</td>
+          </tr>
+            {loop: $value.jurnal_keluar as $data}
+            <tr>
+              <td></td>
+              <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+              <td><span class="pull-right">{?= number_format($data.debet_all,2,',','.')?}</span></td>
+              <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
+            </tr>
+            {/loop}
+            <tr>
+              <td></td>
+              <td align="right">Jumlah Arus Keluar Kas</td>
+              <td><span class="pull-right">{?= number_format($value.total_keluar,2,',','.')?}</span></td>
+              <td><span class="pull-right">{?= number_format($value.total_saldo_awal_keluar,2,',','.')?}</span></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td align="right"><b>Netto {$value.arus_kas} ({$value.nomor})</b></td>
+              <td><span class="pull-right">{?= number_format($value.total_masuk - $value.total_keluar,2,',','.')?}</span></td>
+              <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk - $value.total_saldo_awal_keluar,2,',','.')?}</span></td>
+            </tr>
+          {/loop}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th style="text-align:right">Jumlah Arus Kas Bersih (1+2+3)</th>
+            <th><span class="pull-right">{?= number_format($masuk_all - $keluar_all,2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format($saldo_masuk - $saldo_keluar,2,',','.')?}</span></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th style="text-align:right">Saldo Awal Kas dan Setara Kas</th>
+            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format($jumlah_total_saldo,2,',','.')?}</span></th>
+          </tr>
+          <tr>
+            <th></th>
+            <th style="text-align:right">Saldo Akhir Kas dan Setara Kas</th>
+            <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + $saldo_keluar),2,',','.')?}</span></th>
+            <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <a href="{?=url()?}/admin/keuangan/cashflow?action=print&t={?=$_SESSION['token']?}" target="_blank" class="btn btn-danger pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+  </div>
+</div>
