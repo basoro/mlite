@@ -416,6 +416,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $.post(url, {no_rawat : no_rawat,
     }, function(data) {
       // tampilkan data
+      console.log(data);
       $("#rincian").html(data).show();
     });
     $("#rawat_inap_dr").hide();

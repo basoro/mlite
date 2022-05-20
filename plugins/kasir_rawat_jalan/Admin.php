@@ -840,7 +840,7 @@ class Admin extends AdminModule
         }
         break;
         case "besar":
-        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('tgl_billing')->desc('jam_billing')->oneArray();
+        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
         $result_detail['poliklinik'] = $this->core->mysql('poliklinik')
           ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -1095,7 +1095,7 @@ class Admin extends AdminModule
         echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
-        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->oneArray();
+        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
         $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
         echo $this->draw('billing.kecil.html', ['billing' => $result, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
