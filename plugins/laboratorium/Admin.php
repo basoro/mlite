@@ -759,6 +759,7 @@ class Admin extends AdminModule
 
       $rows_periksa_lab = $this->core->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+      ->where('periksa_lab.status', $_POST['status'])
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
 
