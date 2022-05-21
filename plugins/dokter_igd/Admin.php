@@ -252,7 +252,16 @@ class Admin extends AdminModule
               'kd_jenis_prw' => $_POST['kd_jenis_prw'],
               'stts_bayar' => 'Belum'
             ]);
-
+          $template_laboratorium = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+          for ($i = 0; $i < count($template_laboratorium); $i++) {
+            $this->core->mysql('permintaan_detail_permintaan_lab')
+              ->save([
+                'noorder' => $noorder,
+                'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                'id_template' => $template_laboratorium[$i]['id_template'],
+                'stts_bayar' => 'Belum'
+              ]);
+          }
         } else {
           $noorder = $cek_lab['noorder'];
           $this->core->mysql('permintaan_pemeriksaan_lab')
@@ -261,6 +270,16 @@ class Admin extends AdminModule
               'kd_jenis_prw' => $_POST['kd_jenis_prw'],
               'stts_bayar' => 'Belum'
             ]);
+          $template_laboratorium = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
+          for ($i = 0; $i < count($template_laboratorium); $i++) {
+            $this->core->mysql('permintaan_detail_permintaan_lab')
+              ->save([
+                'noorder' => $noorder,
+                'kd_jenis_prw' => $_POST['kd_jenis_prw'],
+                'id_template' => $template_laboratorium[$i]['id_template'],
+                'stts_bayar' => 'Belum'
+              ]);
+          }
         }
       }
 

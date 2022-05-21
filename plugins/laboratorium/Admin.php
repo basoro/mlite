@@ -19,12 +19,13 @@ class Admin extends AdminModule
         ];
     }
 
-    public function anyManage()
+    public function anyManage($type = "ralan")
     {
         $tgl_kunjungan = date('Y-m-d');
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
         $status_bayar = '';
+        $status_pulang = '';
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -39,8 +40,8 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
     }
 
     public function anyDisplay()
@@ -48,6 +49,9 @@ class Admin extends AdminModule
         $tgl_kunjungan = date('Y-m-d');
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
+        $status_bayar = '';
+        $status_pulang = '';
+        $type = $_POST['status'];
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -59,12 +63,12 @@ class Admin extends AdminModule
           $status_periksa = $_POST['status_periksa'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='')
+    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar, $type)
     {
         $this->_addHeaderFiles();
 
@@ -98,12 +102,58 @@ class Admin extends AdminModule
           $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
         }
 
+        if($type == 'ranap') {
+          $sql = "SELECT
+              kamar_inap.*,
+              reg_periksa.*,
+              pasien.*,
+              kamar.*,
+              bangsal.*,
+              penjab.*
+            FROM
+              kamar_inap,
+              reg_periksa,
+              pasien,
+              kamar,
+              bangsal,
+              penjab
+            WHERE
+              kamar_inap.no_rawat=reg_periksa.no_rawat
+            AND
+              reg_periksa.no_rkm_medis=pasien.no_rkm_medis
+            AND
+              kamar_inap.kd_kamar=kamar.kd_kamar
+            AND
+              bangsal.kd_bangsal=kamar.kd_bangsal
+            AND
+              reg_periksa.kd_pj=penjab.kd_pj";
+
+          if($status_periksa == '') {
+            $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+          if($status_periksa == 'belum') {
+            $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+          if($status_periksa == 'selesai') {
+            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+          if($status_periksa == 'lunas') {
+            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+
+        }
+
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $dpjp_ranap = $this->core->mysql('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+          $row['dokter'] = $dpjp_ranap;
           $this->assign['list'][] = $row;
         }
 
@@ -115,6 +165,17 @@ class Admin extends AdminModule
             ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
             ->where('no_rawat', $_POST['no_rawat'])
             ->oneArray();
+          if($type == 'ranap') {
+            $this->assign['kamar_inap'] = $this->core->mysql('kamar_inap')
+              ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+              ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+              ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+              ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
+              ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+              ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+              ->where('kamar_inap.no_rawat', $_POST['no_rawat'])
+              ->oneArray();
+          }
         } else {
           $this->assign['reg_periksa'] = [
             'no_rkm_medis' => '',
@@ -145,6 +206,24 @@ class Admin extends AdminModule
             'no_tlp' => '',
             'pekerjaan' => ''
           ];
+          if($type == 'ranap') {
+            $this->assign['reg_periksa'] = [
+              'tgl_masuk' => date('Y-m-d'),
+              'jam_masuk' => date('H:i:s'),
+              'tgl_keluar' => date('Y-m-d'),
+              'jam_keluar' => date('H:i:s'),
+              'no_rkm_medis' => '',
+              'nm_pasien' => '',
+              'no_rawat' => '',
+              'kd_dokter' => '',
+              'kd_kamar' => '',
+              'kd_pj' => '',
+              'diagnosa_awal' => '',
+              'diagnosa_akhir' => '',
+              'stts_pulang' => '',
+              'lama' => ''
+            ];
+          }
         }
     }
 
@@ -343,6 +422,7 @@ class Admin extends AdminModule
       $rows_periksa_lab = $this->core->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_GET['no_rawat'])
+      ->where('periksa_lab.status', strtolower($_GET['status']))
       ->toArray();
 
       $periksa_lab = [];
@@ -476,9 +556,9 @@ class Admin extends AdminModule
 
       $qr = QRCode::getMinimumQRCode($pj_lab['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
       $im = $qr->createImage(4, 4);
-      imagepng($im, '../../../tmp/qrcode.png');
+      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
       imagedestroy($im);
-      $qrCode = "../../../tmp/qrcode.png";
+      $qrCode = "../../admin/tmp/qrcode.png";
 
       $pasien = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -488,13 +568,14 @@ class Admin extends AdminModule
       $dokter_perujuk = $this->core->mysql('permintaan_lab')
         ->join('pegawai', 'pegawai.nik=permintaan_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
+        ->where('permintaan_lab.status', strtolower($_GET['status']))
         ->group('no_rawat')
         ->oneArray();
 
       $rows_permintaan_lab = $this->core->mysql('permintaan_lab')
         ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
-        ->where('permintaan_lab.status', 'ralan')
+        ->where('permintaan_lab.status', strtolower($_GET['status']))
         ->toArray();
       $permintaan_laboratorium = [];
       foreach ($rows_permintaan_lab as $row) {
@@ -534,9 +615,8 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postSaveDetail()
+    public function postSaveDetail($type = "ralan")
     {
-
       if($_POST['kat'] == 'laboratorium') {
         $jns_perawatan = $this->core->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         $periksa_lab = $this->core->mysql('periksa_lab')
@@ -556,7 +636,7 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
-            'status' => 'Ralan'
+            'status' => $_POST['status']
           ]);
         if($periksa_lab) {
           $template_laboratorium = $this->core->mysql('template_laboratorium')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->toArray();
@@ -646,7 +726,7 @@ class Admin extends AdminModule
         $rows = $this->core->mysql('permintaan_lab')
           ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
           ->where('no_rawat', $_POST['no_rawat'])
-          ->where('permintaan_lab.status', 'ralan')
+          ->where('permintaan_lab.status', strtolower($_POST['status']))
           ->toArray();
         $laboratorium = [];
         foreach ($rows as $row) {
@@ -749,7 +829,7 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
-            'status' => 'Ralan'
+            'status' => $_POST['status']
           ]);
         //var_dump($permintaan_pemeriksaan_lab);
         $permintaan_detail_permintaan_lab = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
