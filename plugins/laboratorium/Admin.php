@@ -129,7 +129,7 @@ class Admin extends AdminModule
               reg_periksa.kd_pj=penjab.kd_pj";
 
           if($status_periksa == '') {
-            $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+            $sql .= " AND kamar_inap.stts_pulang = '-'";
           }
           if($status_periksa == 'belum') {
             $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
