@@ -107,6 +107,22 @@ $("#display").on("click",".antrian", function(event){
   window.open(baseURL + '/radiologi/antrian?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
+$("#rincian").on("click","#cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click","#cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -241,6 +257,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
   var url    = baseURL + '/radiologi/display?t=' + mlite.token;
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -249,7 +266,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -272,6 +289,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'belum';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -280,7 +298,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -303,6 +321,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'selesai';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -311,7 +330,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -334,6 +353,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'lunas';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -342,7 +362,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -435,6 +455,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var status          = $('input:text[name=status]').val();
 
   var url = baseURL + '/radiologi/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -446,12 +467,13 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  status         : status
   }, function(data) {
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
+    $.post(url, {no_rawat : no_rawat, status : status
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
@@ -479,6 +501,7 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
   var tgl_perawatan = $(this).attr("data-tgl_periksa");
   var jam_rawat = $(this).attr("data-jam_periksa");
   var provider = $(this).attr("data-provider");
+  var status          = $('input:text[name=status]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -493,7 +516,7 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
         provider: provider
       } ,function(data) {
         var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
+        $.post(url, {no_rawat : no_rawat, status : status
         }, function(data) {
           // tampilkan data
           $("#rincian").html(data).show();

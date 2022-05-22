@@ -422,7 +422,7 @@ class Admin extends AdminModule
       $rows_periksa_lab = $this->core->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_GET['no_rawat'])
-      ->where('periksa_lab.status', strtolower($_GET['status']))
+      ->where('periksa_lab.status', $_GET['status'])
       ->toArray();
 
       $periksa_lab = [];

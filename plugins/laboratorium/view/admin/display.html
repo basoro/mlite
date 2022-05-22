@@ -56,7 +56,7 @@
               {if: $value.dokter}
               {loop: $value.dokter as $data_dokter}
               <li>
-                <span class="fa fa-minus-square-o hapus_dpjp" data-no_rawat="{$value.no_rawat}" data-kd_dokter="{$data_dokter.kd_dokter}"></span> {$data_dokter.nm_dokter}
+                <span class="fa fa-minus-square-o"></span> {$data_dokter.nm_dokter}
               </li>
               {/loop}
               {else}
