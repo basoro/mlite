@@ -8,6 +8,9 @@ return [
     'compatibility' =>  '2022',
     'icon'          =>  'film',
     'install'       =>  function () use ($core) {
+      if (!is_dir(UPLOADS."/radiologi")) {
+          mkdir(UPLOADS."/radiologi", 0777);
+      }
     },
     'uninstall'     =>  function() use($core)
     {
