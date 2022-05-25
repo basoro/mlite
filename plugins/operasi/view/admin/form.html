@@ -1,0 +1,247 @@
+<div id="form">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Tanggal Masuk</label>
+            <div class="col-sm-9">
+              <input type="text" id="tgl_operasi" name="tgl_operasi" class="form-control tanggal_jam" value="{$operasi.operasi.tgl_operasi}">
+            </div>
+          </div>
+          <div class="form-group" id="cari_pasien">
+            <label for="pasien" class="col-sm-3 control-label">Pasien</label>
+            <div class="col-sm-9">
+              <input type="text" name="pasien" class="form-control" placeholder="Cari nama pasien/nomor rekam medik/nomor rawat" value="">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="{$operasi.operasi.no_rkm_medis}" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="{$operasi.operasi.nm_pasien}" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor Rawat</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rawat" class="form-control" value="{$operasi.operasi.no_rawat}" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="no_rkm_medis" class="col-sm-3 control-label">Status</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="status">
+                <option value="Ralan">Ralan</option>
+                <option value="Ranap">Ranap</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Kategori</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="kategori">
+                {loop: $operasi.kategori}
+                <option value="{$value}">{$value}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Anastesi</label>
+            <div class="col-sm-9">
+              <input type="text" name="jenis_anasthesi" class="form-control" value="{$operasi.operasi.jenis_anasthesi}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Paket Operasi</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="kode_paket">
+                {loop: $operasi.paket_operasi}
+                <option value="{$value.kode_paket}">{$value.nm_perawatan}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div id="pasien">
+    </div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Operator 1</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="operator1">
+                {loop: $operasi.dokter}
+                <option value="{$value.kd_dokter}"{if: $operasi.operasi.operator1 == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Operator 2</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="operator2">
+                {loop: $operasi.dokter}
+                <option value="{$value.kd_dokter}"{if: $operasi.operasi.operator2 == $value.kd_dokter} selected{/if}>{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Operator 3</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="operator3">
+                {loop: $operasi.dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Asisten Operator 1</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="asisten_operator1">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Asisten Operator 2</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="asisten_operator2">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Dokter Anak</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="dokter_anak">
+                {loop: $operasi.dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Prwt. Resusitasi</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="perawaat_resusitas">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Dokter Anastesi</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="dokter_anestesi">
+                {loop: $operasi.dokter}
+                <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Asisten Anastesi</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="asisten_anestesi">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Bidan</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="bidan">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="id_dokter" class="col-sm-3 control-label">Perawat Luar</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="perawat_luar">
+                {loop: $operasi.petugas}
+                <option value="{$value.nip}">{$value.nama}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-12 m-b-xl">
+    <div class="text-center">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+  // ketika inputbox pencarian no rm/nama pasien diisi
+  $('input:text[name=pasien]').on('keydown',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    if(event.which==13){
+    var url    = baseURL + '/operasi/pasien?t=' + mlite.token;
+    var cari = $('input:text[name=pasien]').val();
+
+    if(cari!="") {
+        $.post(url, {cari: cari} ,function(data) {
+        // tampilkan data yang sudah di perbaharui
+          $("#pasien").html(data).show();
+        });
+    }
+    else {
+        $("#pasien").hide();
+    }
+    }
+  });
+  // ketika baris data diklik
+  $("#pasien").on("click", ".pilih", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rkm_medis		   = $(this).attr("data-no_rkm_medis");
+    var nm_pasien    = $(this).attr("data-nm_pasien");
+    var no_rawat      = $(this).attr("data-no_rawat");
+
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=no_rawat]').val(no_rawat);
+
+    $("#pasien").hide();
+
+  });
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal_jam').datetimepicker({
+         format: 'YYYY-MM-DD HH:mm:ss',
+         locale: 'id'
+       });
+   });
+</script>

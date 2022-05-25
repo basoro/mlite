@@ -471,11 +471,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   jml            : jml,
   status         : status
   }, function(data) {
-    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
+    $.post(url, {no_rawat : no_rawat, status: status
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
@@ -503,6 +502,7 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
   var tgl_perawatan = $(this).attr("data-tgl_periksa");
   var jam_rawat = $(this).attr("data-jam_periksa");
   var provider = $(this).attr("data-provider");
+  var status = $('input:text[name=status]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -517,7 +517,7 @@ $("#rincian").on("click",".hapus_laboratorium", function(event){
         provider: provider
       } ,function(data) {
         var url = baseURL + '/laboratorium/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
+        $.post(url, {no_rawat : no_rawat, status: status
         }, function(data) {
           // tampilkan data
           $("#rincian").html(data).show();

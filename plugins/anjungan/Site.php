@@ -22,6 +22,7 @@ class Site extends SiteModule
         $this->route('anjungan', 'getIndex');
         $this->route('anjungan/pasien', 'getDisplayAPM');
         $this->route('anjungan/loket', 'getDisplayAntrianLoket');
+        $this->route('anjungan/loket2', 'getDisplayAntrianLoket2');
         $this->route('anjungan/poli', 'getDisplayAntrianPoli');
         $this->route('anjungan/poli/(:str)', 'getDisplayAntrianPoliKode');
         $this->route('anjungan/poli/(:str)/(:str)', 'getDisplayAntrianPoliKode');
@@ -609,6 +610,46 @@ class Site extends SiteModule
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
         //exit();
+    }
+
+    public function getDisplayAntrianLoket2()
+    {
+      $title = 'Display Antrian Loket';
+      $logo  = $this->settings->get('settings.logo');
+      $display = '';
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $__username = $this->core->getUserInfo('username');
+      if($this->core->getUserInfo('username') !=='') {
+        $__username = 'Tamu';
+      }
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $__username;
+
+      $show = isset($_GET['show']) ? $_GET['show'] : "";
+      switch($show){
+        default:
+          $display = 'Depan';
+          $content = $this->draw('display.antrian.loket2.html', [
+            'title' => $title,
+            'logo' => $logo,
+            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+            'username' => $username,
+            'tanggal' => $tanggal,
+            'show' => $show,
+            'vidio' => $this->settings->get('anjungan.vidio'),
+            'running_text' => $this->settings->get('anjungan.text_loket'),
+            'display' => $display
+          ]);
+        break;
+      }
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+      $this->setTemplate("canvas.html");
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
     }
 
     public function getDisplayAntrianLaboratorium()

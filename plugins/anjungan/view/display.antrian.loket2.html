@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Display Antrian Loket</title>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+        background: #0264d6;
+        height:calc(100vh);
+        width:100%;
+        margin:0;
+        padding:0;
+      }
+      .antrian-judul {
+        font-size:56px;
+        padding-bottom: 20px;
+      }
+      .carousel-control.left, .carousel-control.right {
+      	background-image:none !important;
+      }
+      .carousel-control {
+      	color:#fff;
+      	top:40%;
+      	color:#428BCA;
+      	bottom:auto;
+      	padding-top:4px;
+      	width:30px;
+      	height:30px;
+      	text-shadow:none;
+      	opacity:1;
+      }
+      .carousel-control:hover {
+      	color: #d9534f;
+      }
+      .carousel-control.left, .carousel-control.right {
+      	background-image:none !important;
+      }
+      .carousel-control.right {
+      	left:auto;
+      	right:-32px;
+      }
+      .carousel-control.left {
+      	right:auto;
+      	left:-32px;
+      }
+      .carousel-indicators {
+      	bottom:-30px;
+      }
+      .carousel-indicators li {
+      	border-radius:0;
+      	width:10px;
+      	height:10px;
+      	background:#ccc;
+      	border:1px solid #ccc;
+      }
+      .carousel-indicators .active {
+      	width:12px;
+      	height:12px;
+      	background:#3276b1;
+      	border-color:#3276b1;
+      }
+      .panel-title.marquee {
+         font-size:36px;
+         padding-top: 10px;
+         padding-bottom: 0px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+         color: #FF0000;
+         background-color: #fff;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+    </style>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1 class="text-center text-white antrian-judul"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Antrian Loket {$settings.nama_instansi}</h1>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="panel panel-default text-center" style="border-radius:0 !important;">
+                    <div class="panel-heading">
+                        <h1 class="panel-title" style="font-size:36px;">Antrian Dipanggil</h1>
+                    </div>
+                    <div class="panel-body" style="color:#000;padding:0;margin:0;">
+                      <div class="bg-success" style="font-size:150px;">
+                        A1-400
+                      </div>
+                      <div class="bg-danger" style="font-size:80px;">
+                        LOKET 2
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="panel panel-default" style="border-radius:0 !important;">
+                    <div class="panel-body text-center bg-warning" style="padding:0;margin:0;">
+                      <div class="embed-responsive embed-responsive-16by9">
+                        <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/vIkFO8pWN1s?rel=0&modestbranding=1&autohide=1&mute=0&showinfo=0&controls=1&loop=1&autoplay=1&playlist=vIkFO8pWN1s" allowfullscreen></iframe>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container-fluid">
+        <!-- Carousel
+        ================================================== -->
+        <div id="myCarousel" class="carousel slide">
+            <div class="carousel-inner">
+                <div class="item active">
+                    <div class="row">
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="row">
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="item">
+                    <div class="row">
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-3">
+                          <div class="panel panel-default">
+                            <div class="panel-body text-center bg-success" style="height:200px;">
+                              Basic panel example
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--
+            <a class="left carousel-control" href="#myCarousel" data-slide="prev"><i class="fa fa-chevron-left fa-2x"></i></a>
+            <a class="right carousel-control" href="#myCarousel" data-slide="next"><i class="fa fa-chevron-right fa-2x"></i></a>
+
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+            -->
+        </div><!-- End Carousel -->
+    </div>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="panel-title marquee">
+          <marquee>Running text anjungan pasien mandiri.....</marquee>
+        </div>
+      </div>
+    </div>
+    <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+      <div class="canvas">
+        <p class="pull-right">
+          Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+          {$powered}.
+        </p>
+        {if: $show}
+        <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+        {/if}
+      </div>
+    </footer>
+    <script type="text/javascript">
+      $('#myCarousel').carousel({
+      		interval:   3000
+      });
+    </script>
+  </body>
+</html>
