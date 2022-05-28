@@ -558,19 +558,20 @@ class Site extends SiteModule
 
                   $get_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
                   $get_poliklinik = $this->core->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+                  $waapiserver = $this->settings->get('wagateway.server');
+                  $url = $waapiserver."/wagateway/kirimpesan";
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
-                    $url = $this->settings->get('wagateway.server')."/wagateway/kirimpesan";
-                    curl_setopt($ch, CURLOPT_URL,$url);
-                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_URL, $url);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, "type=text&api_key=".$this->settings->get('wagateway.token')."&sender=".$this->settings->get('wagateway.phonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nBawalah kartu berobat anda. \nDatanglah 30 menit sebelumnya.\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
+                    curl_setopt($ch, CURLOPT_HEADER, 0);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT,30);
+                    curl_setopt($ch, CURLOPT_POST, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    $output = curl_exec ($ch);
-                    curl_close ($ch);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
                   }
-
               }
               else{
                   $send_data['state'] = 'duplication';
@@ -731,23 +732,23 @@ class Site extends SiteModule
               $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
               echo json_encode($data);
             break;
-            case "lastblog":
-              $limit = $this->settings->get('blog.latestPostsCount');
+            case "lastnews":
+              $limit = $this->settings->get('website.latestPostsCount');
               $results = [];
-              $rows = $this->core->mysql('mlite_blog')
-                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_blog.user_id')
+              $rows = $this->db('mlite_news')
+                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
                       ->desc('published_at')
                       ->limit($limit)
-                      ->select(['mlite_blog.id', 'mlite_blog.title', 'mlite_blog.cover_photo', 'mlite_blog.published_at', 'mlite_blog.slug', 'mlite_blog.intro', 'mlite_blog.content', 'mlite_users.username', 'mlite_users.fullname'])
+                      ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.cover_photo', 'mlite_news.published_at', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
                       ->toArray();
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->core->mysql('mlite_blog_tags')
-                      ->leftJoin('mlite_blog_tags_relationship', 'mlite_blog_tags.id = mlite_blog_tags_relationship.tag_id')
-                      ->where('mlite_blog_tags_relationship.blog_id', $row['id'])
+                  $tags = $this->db('mlite_news_tags')
+                      ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                      ->where('mlite_news_tags_relationship.news_id', $row['id'])
                       ->select('name')
                       ->oneArray();
                   $row['tag'] = $tags['name'];
@@ -756,21 +757,21 @@ class Site extends SiteModule
               }
               echo json_encode($results);
             break;
-            case "blog":
+            case "news":
               $results = [];
-              $rows = $this->core->mysql('mlite_blog')
-                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_blog.user_id')
+              $rows = $this->db('mlite_news')
+                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
                       ->desc('published_at')
-                      ->select(['mlite_blog.id', 'mlite_blog.title', 'mlite_blog.cover_photo', 'mlite_blog.published_at', 'mlite_blog.slug', 'mlite_blog.intro', 'mlite_blog.content', 'mlite_users.username', 'mlite_users.fullname'])
+                      ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.cover_photo', 'mlite_news.published_at', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
                       ->toArray();
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->core->mysql('mlite_blog_tags')
-                      ->leftJoin('mlite_blog_tags_relationship', 'mlite_blog_tags.id = mlite_blog_tags_relationship.tag_id')
-                      ->where('mlite_blog_tags_relationship.blog_id', $row['id'])
+                  $tags = $this->db('mlite_news_tags')
+                      ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                      ->where('mlite_news_tags_relationship.news_id', $row['id'])
                       ->select('name')
                       ->oneArray();
                   $row['tag'] = $tags['name'];
@@ -779,10 +780,10 @@ class Site extends SiteModule
               }
               echo json_encode($results);
             break;
-            case "blogdetail":
+            case "newsdetail":
               $id = trim($_REQUEST['id']);
               $results = [];
-              $rows = $this->core->mysql('mlite_blog')
+              $rows = $this->db('mlite_news')
                       ->where('id', $id)
                       ->select(['id','title','cover_photo', 'content', 'published_at'])
                       ->oneArray();
@@ -1024,14 +1025,15 @@ class Site extends SiteModule
                   $url = $waapiserver."/wagateway/kirimpesan";
                   if($get_pasien['no_tlp'] !='') {
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL,$url);
-                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_URL, $url);
                     curl_setopt($ch, CURLOPT_POSTFIELDS, "type=text&api_key=".$this->settings->get('wagateway.token')."&sender=".$this->settings->get('wagateway.phonenumber')."&number=".$get_pasien['no_tlp']."&message=Terima kasih sudah melakukan pendaftaran Online Telemedicine di ".$this->settings->get('settings.nama_instansi').". \n\nDetail pendaftaran Telemedicine anda adalah, \nTanggal: ".date('Y-m-d', strtotime($waktu_kunjungan))." \nNomor Antrian: ".$no_reg." \nPoliklinik: ".$get_poliklinik['nm_poli']." \nStatus: Menunggu \n\nSilahkan lakukan pembayaran dengan mengklik link berikut ".$result_duitku['paymentUrl'].".\n\n-------------------\nPesan WhatsApp ini dikirim otomatis oleh ".$this->settings->get('settings.nama_instansi')." \nTerima Kasih"); // Define what you want to post
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HEADER, 0);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                    curl_setopt($ch, CURLOPT_TIMEOUT,30);
+                    curl_setopt($ch, CURLOPT_POST, 1);
                     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/json'));
-                    $output = curl_exec ($ch);
-                    curl_close ($ch);
+                    $response = curl_exec($ch);
+                    curl_close($ch);
                   }
 
               }
