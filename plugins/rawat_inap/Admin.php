@@ -266,7 +266,8 @@ class Admin extends AdminModule
         'ttl_biaya' => $kamar['trf_kamar']*$_POST['lama']
       ]);
       $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
-        'kd_pj' => $_POST['kd_pj']
+        'kd_pj' => $_POST['kd_pj'],
+        'stts' => 'Sudah'
       ]);
       exit();
     }

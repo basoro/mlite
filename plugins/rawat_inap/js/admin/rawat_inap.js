@@ -87,6 +87,7 @@ $("#form").on("click", "#simpan_keluar", function(event){
   var lama = $('input:text[name=lama]').val();
   var diagnosa_akhir = $('input:text[name=diagnosa_akhir]').val();
   var stts_pulang = $('select[name=stts_pulang]').val();
+  var kd_pj = $('select[name=kd_pj]').val();
 
   var url = baseURL + '/rawat_inap/savekeluar?t=' + mlite.token;
 
@@ -100,7 +101,8 @@ $("#form").on("click", "#simpan_keluar", function(event){
       jam_keluar: jam_keluar,
       lama: lama,
       diagnosa_akhir: diagnosa_akhir,
-      stts_pulang: stts_pulang
+      stts_pulang: stts_pulang,
+      kd_pj: kd_pj 
     } ,function(data) {
       $("#display").show().load(baseURL + '/rawat_inap/display?t=' + mlite.token);
       bersih();
