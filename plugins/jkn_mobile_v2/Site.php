@@ -727,7 +727,7 @@ class Site extends SiteModule
                         http_response_code(201);
                     }else if($booking_registrasi['status']=='Belum'){
                         $batal = $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
-                        if($batal){
+                        if(!$this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray()){
                             $response = array(
                                 'metadata' => array(
                                     'message' => 'Ok',

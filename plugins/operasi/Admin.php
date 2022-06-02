@@ -187,7 +187,7 @@ class Admin extends AdminModule
     public function postSave()
     {
       $paket_operasi = $this->core->mysql('paket_operasi')->where('kode_paket', $_POST['kode_paket'])->oneArray();
-      if(!$this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if(!$this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->oneArray()) {
         $operasi = $this->core->mysql('operasi')->save([
           'no_rawat' => $_POST['no_rawat'],
           'tgl_operasi' => $_POST['tgl_operasi'],
@@ -248,7 +248,7 @@ class Admin extends AdminModule
           'status' => $_POST['status']
         ]);
       } else {
-        $operasi = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->update([
+        $operasi = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->update([
           'tgl_operasi' => $_POST['tgl_operasi'],
           'jenis_anasthesi' => $_POST['jenis_anasthesi'],
           'kategori' => $_POST['kategori'],
@@ -275,7 +275,6 @@ class Admin extends AdminModule
           'omloop5' => '',
           'dokter_pjanak' => '',
           'dokter_umum' => '',
-          'kode_paket' => $_POST['kode_paket'],
           'biayaoperator1' => $paket_operasi['operator1'],
           'biayaoperator2' => $paket_operasi['operator2'],
           'biayaoperator3' => $paket_operasi['operator3'],

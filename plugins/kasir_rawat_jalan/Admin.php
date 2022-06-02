@@ -509,6 +509,19 @@ class Admin extends AdminModule
         $tambahan_biaya[] = $row;
       }
 
+      $jumlah_total_operasi = 0;
+      $operasis = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('status', 'Ralan')->toArray();
+      foreach ($operasis as $operasi) {
+        $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+        $jumlah_total_operasi += $operasi['jumlah'];
+      }
+      $jumlah_total_obat_operasi = 0;
+      $obat_operasis = $this->core->mysql('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      foreach ($obat_operasis as $obat_operasi) {
+        $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+        $jumlah_total_obat_operasi += $obat_operasi['harga'];
+      }
+
       echo $this->draw('rincian.html', [
         'rawat_jl_dr' => $rawat_jl_dr,
         'rawat_jl_pr' => $rawat_jl_pr,
@@ -525,6 +538,8 @@ class Admin extends AdminModule
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
         'tambahan_biaya' => $tambahan_biaya,
         'jumlah_total_tambahan' => $jumlah_total_tambahan,
+        'jumlah_total_operasi' => $jumlah_total_operasi,
+        'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
         'no_rawat' => $_POST['no_rawat']
       ]);
       exit();
@@ -935,6 +950,23 @@ class Admin extends AdminModule
           $total_tambahan_biaya += $row['besar_biaya'];
         }
 
+        $jumlah_total_operasi = 0;
+        $operasis = $this->core->mysql('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('status', 'Ralan')->toArray();
+        $result_detail['operasi'] = [];
+        foreach ($operasis as $operasi) {
+          $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+          $jumlah_total_operasi += $operasi['jumlah'];
+          $result_detail['operasi'][] = $operasi;
+        }
+        $jumlah_total_obat_operasi = 0;
+        $obat_operasis = $this->core->mysql('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $_GET['no_rawat'])->toArray();
+        $result_detail['obat_operasi'] = [];
+        foreach ($obat_operasis as $obat_operasi) {
+          $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+          $jumlah_total_obat_operasi += $obat_operasi['harga'];
+          $result_detail['obat_operasi'][] = $obat_operasi;
+        }
+
         $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
         $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
 
@@ -1040,6 +1072,16 @@ class Admin extends AdminModule
         $pdf->Cell(44 ,5,number_format($total_periksa_radiologi,2,',','.'),1,1,'R');//end of line
 
         $pdf->Cell(10 ,5,'8',1,0);
+        $pdf->Cell(110 ,5,'Jasa Operasi',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['operasi']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format($jumlah_total_operasi,2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'9',1,0);
+        $pdf->Cell(110 ,5,'Obat dan BHP Operasi',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['obat_operasi']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format($jumlah_total_obat_operasi,2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'10',1,0);
         $pdf->Cell(110 ,5,'Biaya Tambahan',1,0);
         $pdf->Cell(25 ,5,count($result_detail['tambahan_biaya']),1,0, 'C');
         $pdf->Cell(44 ,5,number_format($total_tambahan_biaya,2,',','.'),1,1,'R');//end of line
@@ -1061,7 +1103,7 @@ class Admin extends AdminModule
 
         $pdf->Cell(120 ,15,'',0,0);
         $pdf->Cell(25 ,15,'Total',0,0);
-        $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$total_tambahan_biaya,2,',','.'),0,0,'R');//end of line
+        $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$jumlah_total_operasi+$jumlah_total_obat_operasi+$total_tambahan_biaya,2,',','.'),0,0,'R');//end of line
 
         $pdf->Cell(189 ,20,'',0,1);//end of line
 
