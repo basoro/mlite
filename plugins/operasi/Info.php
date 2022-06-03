@@ -117,6 +117,22 @@ return [
     $core->mysql()->pdo()->exec("ALTER TABLE `paket_operasi`
       ADD CONSTRAINT `paket_operasi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+    $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `obatbhp_ok` (
+      `kd_obat` varchar(15) NOT NULL,
+      `nm_obat` varchar(50) NOT NULL,
+      `kode_sat` char(4) NOT NULL,
+      `hargasatuan` double NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+    $core->mysql()->pdo()->exec("ALTER TABLE `obatbhp_ok`
+      ADD PRIMARY KEY (`kd_obat`),
+      ADD KEY `kode_sat` (`kode_sat`),
+      ADD KEY `nm_obat` (`nm_obat`),
+      ADD KEY `hargasatuan` (`hargasatuan`);");
+
+    $core->mysql()->pdo()->exec("ALTER TABLE `obatbhp_ok`
+      ADD CONSTRAINT `obatbhp_ok_ibfk_1` FOREIGN KEY (`kode_sat`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE;");
+
     },
     'uninstall'     =>  function() use($core)
     {
