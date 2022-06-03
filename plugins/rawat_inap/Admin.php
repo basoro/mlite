@@ -344,9 +344,9 @@ class Admin extends AdminModule
     public function postSaveDetail()
     {
       if($_POST['kat'] == 'tindakan') {
-        $jns_perawatan = $this->core->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        if($_POST['provider'] == 'rawat_jl_dr') {
-          $this->core->mysql('rawat_jl_dr')->save([
+        $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        if($_POST['provider'] == 'rawat_inap_dr') {
+          $this->core->mysql('rawat_inap_dr')->save([
             'no_rawat' => $_POST['no_rawat'],
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'kd_dokter' => $_POST['kode_provider'],
@@ -357,12 +357,11 @@ class Admin extends AdminModule
             'tarif_tindakandr' => $jns_perawatan['tarif_tindakandr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
+            'biaya_rawat' => $jns_perawatan['total_byrdr']
           ]);
         }
-        if($_POST['provider'] == 'rawat_jl_pr') {
-          $this->core->mysql('rawat_jl_pr')->save([
+        if($_POST['provider'] == 'rawat_inap_pr') {
+          $this->core->mysql('rawat_inap_pr')->save([
             'no_rawat' => $_POST['no_rawat'],
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'nip' => $_POST['kode_provider2'],
@@ -373,12 +372,11 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
+            'biaya_rawat' => $jns_perawatan['total_byrdr']
           ]);
         }
-        if($_POST['provider'] == 'rawat_jl_drpr') {
-          $this->core->mysql('rawat_jl_drpr')->save([
+        if($_POST['provider'] == 'rawat_inap_drpr') {
+          $this->core->mysql('rawat_inap_drpr')->save([
             'no_rawat' => $_POST['no_rawat'],
             'kd_jenis_prw' => $_POST['kd_jenis_prw'],
             'kd_dokter' => $_POST['kode_provider'],
@@ -391,8 +389,7 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr'],
-            'stts_bayar' => 'Belum'
+            'biaya_rawat' => $jns_perawatan['total_byrdr']
           ]);
         }
       }
@@ -416,7 +413,7 @@ class Admin extends AdminModule
               'kd_dokter' => $_POST['kode_provider'],
               'tgl_peresepan' => $_POST['tgl_perawatan'],
               'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan'
+              'status' => 'ranap'
             ]);
           $this->core->mysql('resep_dokter')
             ->save([
@@ -443,24 +440,24 @@ class Admin extends AdminModule
 
     public function postHapusDetail()
     {
-      if($_POST['provider'] == 'rawat_jl_dr') {
-        $this->core->mysql('rawat_jl_dr')
+      if($_POST['provider'] == 'rawat_inap_dr') {
+        $this->core->mysql('rawat_inap_dr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
         ->where('jam_rawat', $_POST['jam_rawat'])
         ->delete();
       }
-      if($_POST['provider'] == 'rawat_jl_pr') {
-        $this->core->mysql('rawat_jl_pr')
+      if($_POST['provider'] == 'rawat_inap_pr') {
+        $this->core->mysql('rawat_inap_pr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
         ->where('jam_rawat', $_POST['jam_rawat'])
         ->delete();
       }
-      if($_POST['provider'] == 'rawat_jl_drpr') {
-        $this->core->mysql('rawat_jl_drpr')
+      if($_POST['provider'] == 'rawat_inap_drpr') {
+        $this->core->mysql('rawat_inap_drpr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
@@ -491,49 +488,50 @@ class Admin extends AdminModule
 
     public function anyRincian()
     {
-      $rows_rawat_jl_dr = $this->core->mysql('rawat_jl_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
-      $rows_rawat_jl_pr = $this->core->mysql('rawat_jl_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
-      $rows_rawat_jl_drpr = $this->core->mysql('rawat_jl_drpr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_dr = $this->core->mysql('rawat_inap_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_pr = $this->core->mysql('rawat_inap_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_drpr = $this->core->mysql('rawat_inap_drpr')->where('no_rawat', $_POST['no_rawat'])->toArray();
 
       $jumlah_total = 0;
-      $rawat_jl_dr = [];
-      $rawat_jl_pr = [];
-      $rawat_jl_drpr = [];
+      $rawat_inap_dr = [];
+      $rawat_inap_pr = [];
+      $rawat_inap_drpr = [];
       $i = 1;
 
-      if($rows_rawat_jl_dr) {
-        foreach ($rows_rawat_jl_dr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+      if($rows_rawat_inap_dr) {
+        foreach ($rows_rawat_inap_dr as $row) {
+          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
-          $row['provider'] = 'rawat_jl_dr';
-          $rawat_jl_dr[] = $row;
+          $row['provider'] = 'rawat_inap_dr';
+          $rawat_inap_dr[] = $row;
         }
       }
 
-      if($rows_rawat_jl_pr) {
-        foreach ($rows_rawat_jl_pr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+      if($rows_rawat_inap_pr) {
+        foreach ($rows_rawat_inap_pr as $row) {
+          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
-          $row['provider'] = 'rawat_jl_pr';
-          $rawat_jl_pr[] = $row;
+          $row['provider'] = 'rawat_inap_pr';
+          $rawat_inap_pr[] = $row;
         }
       }
 
-      if($rows_rawat_jl_drpr) {
-        foreach ($rows_rawat_jl_drpr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+      if($rows_rawat_inap_drpr) {
+        foreach ($rows_rawat_inap_drpr as $row) {
+          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
-          $row['provider'] = 'rawat_jl_drpr';
-          $rawat_jl_drpr[] = $row;
+          $row['provider'] = 'rawat_inap_drpr';
+          $rawat_inap_drpr[] = $row;
         }
       }
 
       $rows = $this->core->mysql('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ranap')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -541,12 +539,12 @@ class Admin extends AdminModule
         $row['nomor'] = $i++;
         $row['resep_dokter'] = $this->core->mysql('resep_dokter')->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')->where('no_resep', $row['no_resep'])->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
-          $jumlah_total_resep += floatval($value['ralan']);
+          $value['dasar'] = $value['jml'] * $value['dasar'];
+          $jumlah_total_resep += floatval($value['dasar']);
         }
         $resep[] = $row;
       }
-      echo $this->draw('rincian.html', ['rawat_jl_dr' => $rawat_jl_dr, 'rawat_jl_pr' => $rawat_jl_pr, 'rawat_jl_drpr' => $rawat_jl_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['rawat_inap_dr' => $rawat_inap_dr, 'rawat_inap_pr' => $rawat_inap_pr, 'rawat_inap_drpr' => $rawat_inap_drpr, 'jumlah_total' => $jumlah_total, 'jumlah_total_resep' => $jumlah_total_resep, 'resep' =>$resep, 'no_rawat' => $_POST['no_rawat']]);
       exit();
     }
 
@@ -641,7 +639,7 @@ class Admin extends AdminModule
 
     public function anyLayanan()
     {
-      $layanan = $this->core->mysql('jns_perawatan')
+      $layanan = $this->core->mysql('jns_perawatan_inap')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)

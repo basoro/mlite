@@ -704,7 +704,7 @@ $("#obat").on("click", ".pilih_obat", function(event){
 
   $('#obat').hide();
   $('#aturan_pakai').show();
-  $('#rawat_jl_dr').show();
+  $('#rawat_inap_dr').show();
 });
 
 // ketika tombol simpan diklik

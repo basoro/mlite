@@ -152,12 +152,12 @@
         </td>
       </tr>
       {/if}
-      {if: $value.pemeriksaan_ralan}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            {if: $value.pemeriksaan_ralan}
              <tr align="center">
                 <td valign="top" width="14%" bgcolor="#eee">Unit</td>
                 <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
@@ -206,6 +206,8 @@
                   <td valign="top" colspan="9"> : {$data.rtl}</td>
                </tr>
              {/loop}
+             {/if}
+             {if: $value.pemeriksaan_ranap}
              <tr align="center">
                 <td valign="top" width="14%" bgcolor="#eee">Unit</td>
                 <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
@@ -217,7 +219,8 @@
                 <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
-                <td valign="top" width="9%" bgcolor="#eee" colspan="2">Alergi</td>
+                <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
+                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
              </tr>
              {loop: $value.pemeriksaan_ranap as $data}
                <tr>
@@ -233,7 +236,8 @@
                   <td valign="top">{$data.tinggi}</td>
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
-                  <td valign="top" colspan="2">{$data.alergi}</td>
+                  <td valign="top">{$data.alergi}</td>
+                  <td valign="top">{$data.kesadaran}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
@@ -252,10 +256,10 @@
                   <td valign="top" colspan="9"> : {$data.rtl}</td>
                </tr>
              {/loop}
+             {/if}
           </table>
         </td>
       </tr>
-      {/if}
       {if: $value.rawat_jl_dr || $value.rawat_jl_pr || $value.rawat_jl_drpr}
       <tr class="isi">
         <td valign="top" width="20%">

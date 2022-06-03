@@ -11,7 +11,7 @@
       </tr>
     </thead>
     <tbody>
-      {loop: $rawat_jl_dr}
+      {loop: $rawat_inap_dr}
       <tr>
         <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
         <td>{$value.nm_perawatan}</td>
@@ -20,7 +20,7 @@
         <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
       </tr>
       {/loop}
-      {loop: $rawat_jl_pr}
+      {loop: $rawat_inap_pr}
       <tr>
         <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
         <td>{$value.nm_perawatan}</td>
@@ -29,7 +29,7 @@
         <td><button type="button" class="btn btn-danger btn-xs hapus_detail" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-tgl_perawatan="{$value.tgl_perawatan}" data-jam_rawat="{$value.jam_rawat}" data-provider="{$value.provider}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button></td>
       </tr>
       {/loop}
-      {loop: $rawat_jl_drpr}
+      {loop: $rawat_inap_drpr}
       <tr>
         <td>{$value.tgl_perawatan} {$value.jam_rawat}</td>
         <td>{$value.nm_perawatan}</td>
@@ -81,7 +81,7 @@
           <td>{$data.nama_brng}</td>
           <td>{$data.jml}</td>
           <td>{$data.aturan_pakai}</td>
-          <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.dasar * $data.jml),2,',','.')?}</span></td>
           <td><button type="button" class="btn btn-danger btn-xs hapus_resep_dokter" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$data.kode_brng}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button></td>
         </tr>
       {/loop}
