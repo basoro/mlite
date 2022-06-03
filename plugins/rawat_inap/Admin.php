@@ -609,11 +609,19 @@ class Admin extends AdminModule
       $check_db->execute();
       $check_db = $check_db->fetch();
 
+      $check_db2 = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ranap` LIKE 'instruksi'");
+      $check_db2->execute();
+      $check_db2 = $check_db2->fetch();
+
       if($check_db) {
         $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-        $_POST['spo2'] = '-';
-        $_POST['evaluasi'] = '-';
+      } else if($check_db2) {
+        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
+        unset($_POST['spo2']);
+        unset($_POST['evaluasi']);
       } else {
+        unset($_POST['spo2']);
+        unset($_POST['evaluasi']);
         unset($_POST['instruksi']);
       }
 

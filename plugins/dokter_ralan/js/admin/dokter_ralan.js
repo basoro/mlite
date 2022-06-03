@@ -171,6 +171,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var penilaian       = $('textarea[name=penilaian]').val();
     var rtl             = $('textarea[name=rtl]').val();
     var instruksi       = $('textarea[name=instruksi]').val();
+    var evaluasi        = $('textarea[name=evaluasi]').val();
+    var spo2            = $('input:text[name=spo2]').val();
 
     var url = baseURL + '/dokter_ralan/savesoap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -190,7 +192,9 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     pemeriksaan : pemeriksaan,
     penilaian : penilaian,
     rtl : rtl,
-    instruksi : instruksi
+    instruksi : instruksi,
+    evaluasi : evaluasi,
+    spo2 : spo2
     }, function(data) {
       // tampilkan data
       $("#display").hide();
@@ -215,6 +219,8 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('textarea[name=penilaian]').val("");
       $('textarea[name=rtl]').val("");
       $('textarea[name=instruksi]').val("");
+      $('textarea[name=evaluasi]').val("");
+      $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
       $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
@@ -248,6 +254,8 @@ $("#soap").on("click",".edit_soap", function(event){
   var penilaian       = $(this).attr("data-penilaian");
   var rtl             = $(this).attr("data-rtl");
   var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
 
   $('input:text[name=tgl_perawatan]').val(tgl_perawatan);
   $('input:text[name=jam_rawat]').val(jam_rawat);
@@ -266,6 +274,8 @@ $("#soap").on("click",".edit_soap", function(event){
   $('textarea[name=penilaian]').val(penilaian);
   $('textarea[name=rtl]').val(rtl);
   $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
 
 });
 
@@ -309,6 +319,8 @@ $("#soap").on("click",".hapus_soap", function(event){
         $('textarea[name=penilaian]').val("");
         $('textarea[name=rtl]').val("");
         $('textarea[name=instruksi]').val("");
+        $('textarea[name=evaluasi]').val("");
+        $('input:text[name=spo2]').val("");
         $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
         $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
         $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");

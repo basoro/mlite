@@ -64,11 +64,15 @@
               <input type="text" name="kesadaran" class="form-control" placeholder="" value="Compos Mentis">
               <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
+              <label for="nama_pasien">SPO2</label>
+              <input type="text" name="spo2" class="form-control" placeholder="" value="">
+            </div>
+            <div class="col-sm-2">
               <label for="nama_pasien">GCS(E,V,M)</label>
               <input type="text" name="gcs" class="form-control" placeholder="" value="">
             </div>
-            <div class="col-sm-3">
+            <div class="col-sm-2">
               <label for="nama_pasien">Alergi</label>
               <input type="text" name="alergi" class="form-control" placeholder="" value="">
             </div>
@@ -98,6 +102,10 @@
         <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
           <label for="jenis">Instruksi</label>
           <textarea name="instruksi" id="instruksi" rows="2" class="form-control"></textarea>
+        </div>
+        <div class="form-group {if: $admin_mode == 'simple'}hidden{/if}">
+          <label for="jenis">Evaluasi</label>
+          <textarea name="evaluasi" id="evaluasi" rows="2" class="form-control"></textarea>
         </div>
         <div class="m-t-xl">
           <button type="button" name="button" class="btn btn-primary" id="simpan_soap"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
