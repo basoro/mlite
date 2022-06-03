@@ -140,7 +140,7 @@ class Admin extends AdminModule
 
         $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', date('Y-m-d'))->where('status', 'ralan')->oneArray();
         if(!$cek_resep) {
-          $max_id = $this->core->mysql('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->where('status', 'ralan')->oneArray();
+          $max_id = $this->core->mysql('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', date('Y-m-d'))->oneArray();
           if(empty($max_id['no_resep'])) {
             $max_id['no_resep'] = '0000';
           }
@@ -515,6 +515,7 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->join('resep_dokter', 'resep_dokter.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
+        ->where('resep_obat.status', 'ralan')
         ->group('resep_dokter.no_resep')
         ->toArray();
       $resep = [];
@@ -534,6 +535,7 @@ class Admin extends AdminModule
         ->join('resep_dokter_racikan', 'resep_dokter_racikan.no_resep=resep_obat.no_resep')
         ->where('no_rawat', $_POST['no_rawat'])
         ->group('resep_dokter_racikan.no_resep')
+        ->where('resep_obat.status', 'ranap')
         ->toArray();
       $resep_racikan = [];
       $jumlah_total_resep_racikan = 0;
@@ -597,7 +599,11 @@ class Admin extends AdminModule
         $laboratorium[] = $row;
       }
 
-      $rows_radiologi = $this->core->mysql('permintaan_radiologi')->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_radiologi = $this->core->mysql('permintaan_radiologi')
+        ->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->where('permintaan_radiologi.status', 'ralan')
+        ->toArray();
       $jumlah_total_rad = 0;
       $radiologi = [];
 
