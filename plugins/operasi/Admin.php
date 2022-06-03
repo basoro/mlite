@@ -311,26 +311,23 @@ class Admin extends AdminModule
 
     public function anyPasien()
     {
-      $_POST['cari'] = '';
       $cari = $_POST['cari'];
       if(isset($_POST['cari'])) {
         $sql = "SELECT
-            pasien.nm_pasien,
-            pasien.no_rkm_medis,
-            reg_periksa.no_rawat
+            reg_periksa.no_rkm_medis,
+            reg_periksa.no_rawat,
+            pasien.nm_pasien
           FROM
             reg_periksa,
             pasien
           WHERE
-            (reg_periksa.stts='Belum' OR reg_periksa.stts='Dirawat')
+            reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            pasien.no_rkm_medis=reg_periksa.no_rkm_medis
-          AND
-            (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?)
+            (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR reg_periksa.stts LIKE ? OR reg_periksa.stts LIKE ?)
           LIMIT 10";
 
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
-        $stmt->execute(['%'.$cari.'%', '%'.$cari.'%', '%'.$cari.'%']);
+        $stmt->execute(['%'.$cari.'%', '%'.$cari.'%', '%'.$cari.'%', 'Belum', 'Dirawat']);
         $pasien = $stmt->fetchAll();
 
       }
