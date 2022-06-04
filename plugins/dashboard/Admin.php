@@ -128,7 +128,7 @@ class Admin extends AdminModule
       }
 
       if (isset($img) && $img->getInfos('width')) {
-        date_default_timezone_set('Asia/Makassar');
+        date_default_timezone_set($this->settings->get('settings.timezone'));
         $img->save(WEBAPPS_PATH . "/presensi/" . $gambar);
 
         $urlnya         = WEBAPPS_URL . '/presensi/' . $gambar;
