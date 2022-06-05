@@ -23,8 +23,6 @@ class Admin extends AdminModule
     return [
       'Manage' => 'manage',
       'Index' => 'index',
-      'Pengajuan' => 'pengajuan',
-      'Perbaikan' => 'perbaikan',
       'Pengaturan' => 'settings',
     ];
   }
