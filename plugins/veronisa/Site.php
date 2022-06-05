@@ -26,6 +26,7 @@ class Site extends SiteModule
     public function routes()
     {
         $this->route('vero', 'getIndex');
+        $this->route('vero/index/(:int)', 'getIndex');
         $this->route('vero/css', 'getCss');
         $this->route('vero/javascript', 'getJavascript');
         $this->route('vero/pdf/(:str)', 'getPDF');
@@ -67,7 +68,7 @@ class Site extends SiteModule
     public function _getManage($page = 1)
     {
       $this->_addHeaderFiles();
-      $perpage = '1';
+      $perpage = '10';
       $phrase = '';
       if(isset($_GET['s']))
         $phrase = $_GET['s'];
@@ -78,12 +79,17 @@ class Site extends SiteModule
       if (isset($_GET['end_date']) && $_GET['end_date'] != '')
         $end_date = $_GET['end_date'];
 
+      $slug = parseURL();
+      if (count($slug) == 4 && $slug[0] == 'vero' && $slug[1] == 'index') {
+        $page = $slug[2];
+      }
+
       // pagination
       $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
       $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
       $totalRecords = $totalRecords->fetchAll();
 
-      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url([ADMIN, 'vero', 'index', '%d?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
+      $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), $perpage, url(['vero', 'index', '%d/?s=' . $phrase . '&start_date=' . $start_date . '&end_date=' . $end_date]));
       $this->assign['pagination'] = $pagination->nav('pagination', '5');
       $this->assign['totalRecords'] = $totalRecords;
 
