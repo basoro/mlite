@@ -36,6 +36,7 @@
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+              <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
               {/if}
             </ul>
           </td>
@@ -255,6 +256,29 @@
     var no_rawat = $(this).attr("data-no_rawat");
     // tampilkan dialog konfirmasi
     bootbox.confirm("Apakah pasien dimasukkan dalam kamar inap?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Status periksa pasien telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+  $('a[href="#obat_kronis"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_jalan/obatkronis?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah pasien dimasukkan sebagai pasien dengan obat kronis?", function(result){
       // ketika ditekan tombol ok
       if (result){
         // mengirimkan perintah penghapusan

@@ -162,6 +162,19 @@ function addTokenVedika($url)
     return $url;
 }
 
+function addTokenVeronisa($url)
+{
+    if (isset($_SESSION['veronisa_token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['veronisa_token'];
+        } else {
+            return $url.'?t='.$_SESSION['veronisa_token'];
+        }
+    }
+
+    return $url;
+}
+
 function url($data = null)
 {
     if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
@@ -197,6 +210,10 @@ function url($data = null)
 
     if (strpos($url, '/veda/') !== false) {
         $url = addTokenVedika($url);
+    }
+
+    if (strpos($url, '/vero/') !== false) {
+        $url = addTokenVeronisa($url);
     }
 
     return $url;
