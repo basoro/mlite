@@ -50,8 +50,8 @@
         <td>{$value.no_resep}</td>
         <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
         <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== $value.tgl_peresepan || $value.jam !== $value.jam_peresepan}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
-          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== $value.tgl_peresepan || $value.jam !== $value.jam_peresepan}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Validasi Resep</span></button>
+          <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}hapus_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+          <button type="button" class="btn btn-success btn-xs {if: $value.tgl_perawatan !== '0000-00-00'}disabled{else}validasi_resep_obat{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Validasi Resep</span></button>
         </td>
       </tr>
       <tr>

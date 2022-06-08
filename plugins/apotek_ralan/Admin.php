@@ -219,7 +219,7 @@ class Admin extends AdminModule
           ]);
       }
 
-      $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_peresepan' => date('Y-m-d'), 'jam_peresepan' => date('H:i:s')]);
+      $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
 
       //var_dump($get_resep);
       exit();
