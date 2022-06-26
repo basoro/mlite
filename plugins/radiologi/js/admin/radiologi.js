@@ -522,7 +522,42 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Data rincian radiologi telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_hasil_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/hapushasilradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_periksa");
+  var jam_rawat = $(this).attr("data-jam_periksa");
+  var status          = $('input:text[name=status]').val();
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam_rawat: jam_rawat
+      } ,function(data) {
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status : status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian hasil radiologi telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });

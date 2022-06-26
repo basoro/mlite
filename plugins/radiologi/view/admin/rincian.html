@@ -16,10 +16,27 @@
         <td>{$value.nm_perawatan}</td>
         <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
         <td colspan="2">
-          <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
-          <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
+          <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
         </td>
       </tr>
+      {if: $value.hasil_radiologi}
+        {loop: $value.hasil_radiologi as $data1}
+        <tr>
+          <td></td>
+          <td colspan="2">{$data1.hasil}</td>
+          <td colspan="2">
+            <button type="button" class="btn btn-danger btn-xs hapus_hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          </td>
+        </tr>
+        {/loop}
+        {loop: $value.gambar_radiologi as $data2}
+        <tr>
+          <td></td>
+          <td colspan="3"><img src="{?=WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar?}" height="400px"></td>
+        </tr>
+        {/loop}
+      {/if}
       {/loop}
     </tbody>
     <tfoot>
@@ -85,6 +102,7 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var tgl_periksa = $(this).attr("data-tgl_periksa");
     var jam_periksa = $(this).attr("data-jam_periksa");
+    var status = $(this).attr("data-status");
 
     var set_stok = ''
         + '<div class="form-group">'
@@ -121,6 +139,12 @@
             } ,function(data) {
               // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
               //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+              var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+              $.post(url, {no_rawat : no_rawat, status : status
+              }, function(data) {
+                // tampilkan data
+                $("#rincian").html(data).show();
+              });
               $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
               "Hasil radiologi telah disimpan!"+
               "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+

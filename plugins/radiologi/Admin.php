@@ -654,6 +654,21 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusHasilRadiologi()
+    {
+      $this->core->mysql('hasil_radiologi')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_periksa', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam_rawat'])
+      ->delete();
+      $this->core->mysql('gambar_radiologi')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_periksa', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam_rawat'])
+      ->delete();
+      exit();
+    }
+
     public function anyRincian()
     {
 
@@ -701,6 +716,9 @@ class Admin extends AdminModule
       foreach ($rows_periksa_radiologi as $row) {
         $jumlah_total_radiologi += $row['biaya'];
         $row['nomor'] = $no_radiologi++;
+        $row['status_periksa'] = $_POST['status'];
+        $row['hasil_radiologi'] = $this->core->mysql('hasil_radiologi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+        $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')->where('no_rawat', $_POST['no_rawat'])->toArray();
         $periksa_radiologi[] = $row;
       }
 

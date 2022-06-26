@@ -403,6 +403,9 @@ class Admin extends AdminModule
         ->join('reg_periksa', 'reg_periksa.kd_poli=poliklinik.kd_poli')
         ->where('no_rawat', $_POST['no_rawat'])
         ->oneArray();
+      if($poliklinik['stts_daftar'] == 'Lama') {
+        $poliklinik['registrasi'] = $poliklinik['registrasilama'];
+      }
 
       $rows_rawat_jl_dr = $this->core->mysql('rawat_jl_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
       $rows_rawat_jl_pr = $this->core->mysql('rawat_jl_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
