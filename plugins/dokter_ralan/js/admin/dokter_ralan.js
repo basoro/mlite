@@ -767,6 +767,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   informasi_tambahan : informasi_tambahan,
   diagnosa_klinis      : diagnosa_klinis
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/dokter_ralan/rincian?t=' + mlite.token;

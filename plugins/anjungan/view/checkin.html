@@ -143,42 +143,18 @@
     <h2 class="display-5">{$settings.nama_instansi}</h2>
   </div>
 
-  <br><br>
+  <br><br><br>
   <div class="container">
-    <div class="row">
-      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
-        <div class="card card-signin my-5">
-          <div class="card-header">
-            <h5 class="title">Silahkan Pilih Poli Tujuan</h5>
-          </div>
-          <div class="card-body">
-            <div class="form-signin">
-              {if: is_array($sep_response)}
-              <u class="list-unstyled">
-              {loop: $sep_response.rujukan as $key => $val }
-                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/{$val.poliRujukan.kode}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase">{$val.poliRujukan.nama}</a></li>
-              {/loop}
-              </ul>
-              {else}
-                {$sep_response}
-              {/if}
-            </div>
-          </div>
-        </div>
-      </div>
+    {if: $notify}
+    <div id="notify" class="alert alert-{$notify.type} alert-dismissible fade in" role="alert">
+        {$notify.text}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
-    <div class="row">
-      <div class="col-sm-9 col-md-8 col-lg-8 mx-auto">
-        <center>
-        <button type="button" name="button" class="btn btn-lg btn-primary" id="reload">REFRESH</button>
-        </center>
-      </div>
-    </div>
+    {/if}
   </div>
   <br>
-  <div class="pricing-header mt-5 px-3 py-3 pt-md-3 pb-md-2 mx-auto text-center text-danger bg-white">
-    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
-  </div>
 
   <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
     <div class="canvas">
@@ -230,110 +206,10 @@
   }
   setInterval(showTime, 500);
   </script>
-  <script>
-  $( function() {
-    $( '#tanggal' ).datepicker({
-      format: 'yyyy-mm-dd'
-    });
-  } );
-  $(function() {
-      $('#norm')
-      .keyboard({
-        layout: 'custom',
-        customLayout: {
-          'normal' : [
-            '8 9 . {b}',
-            '4 5 6 7',
-            '0 1 2 3',
-            '{accept} {cancel}'
-          ]
-        },
-        maxLength : 6,
-        // Prevent keys not in the displayed keyboard from being typed in
-        restrictInput : true,
-        // include lower case characters (added v1.25.7)
-        restrictInclude : 'a b c d e f',
-        // don't use combos or A+E could become a ligature
-        useCombos : false,
-        // activate the "validate" callback function
-        acceptValid : true,
-        validate : function(keyboard, value, isClosing){
-          // only make valid if input is 6 characters in length
-          return value.length === 6;
-        }
-      })
-      //.addTyping();
-  });
-
-  $(function() {
-      $('.norm')
-      .keyboard({
-        layout: 'custom',
-        customLayout: {
-          'normal' : [
-            '8 9 . {b}',
-            '4 5 6 7',
-            '0 1 2 3',
-            '{accept} {cancel}'
-          ]
-        },
-        maxLength : 6,
-        // Prevent keys not in the displayed keyboard from being typed in
-        restrictInput : true,
-        // include lower case characters (added v1.25.7)
-        restrictInclude : 'a b c d e f',
-        // don't use combos or A+E could become a ligature
-        useCombos : false,
-        // activate the "validate" callback function
-        acceptValid : true,
-        validate : function(keyboard, value, isClosing){
-          // only make valid if input is 6 characters in length
-          return value.length === 6;
-        }
-      })
-      //.addTyping();
-  });
-
-  $(function() {
-      $('#cek_norm')
-      .keyboard({
-        layout: 'custom',
-        customLayout: {
-          'normal' : [
-            '8 9 . {b}',
-            '4 5 6 7',
-            '0 1 2 3',
-            '{accept} {cancel}'
-          ]
-        },
-        maxLength : 6,
-        // Prevent keys not in the displayed keyboard from being typed in
-        restrictInput : true,
-        // include lower case characters (added v1.25.7)
-        restrictInclude : 'a b c d e f',
-        // don't use combos or A+E could become a ligature
-        useCombos : false,
-        // activate the "validate" callback function
-        acceptValid : true,
-        validate : function(keyboard, value, isClosing){
-          // only make valid if input is 6 characters in length
-          return value.length === 6;
-        }
-      })
-      //.addTyping();
-  });
-
+  <script type="text/javascript">
+    $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+    setTimeout(() => {  window.location.href = '{$redirect}' }, 3000);
   </script>
 
-  <script>
-  $('#reload').click(function() {
-      location.reload();
-  });
-  function loading(){
-      $("#reload").html("<i class='fa fa-spinner'></i> Loading ...");
-  }
-  var btn_reload = document.getElementById("reload");
-  btn_reload.addEventListener("click", loading);
-  </script>
 </body>
 </html>

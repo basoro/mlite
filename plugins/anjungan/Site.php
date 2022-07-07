@@ -42,9 +42,12 @@ class Site extends SiteModule
         $this->route('anjungan/sep', 'getSepMandiri');
         $this->route('anjungan/sep/cek', 'getSepMandiriCek');
         $this->route('anjungan/sep/(:int)/(:int)', 'getSepMandiriNokaNorm');
-        $this->route('anjungan/sep/bikin/(:str)/(:int)', 'getSepMandiriBikin');
+        $this->route('anjungan/sep/bikin/(:str)/(:int)/(:str)', 'getSepMandiriBikin');
         $this->route('anjungan/sep/savesep', 'postSaveSep');
         $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
+        $this->route('anjungan/checkin/(:str)', 'getDisplayCheckin');
+        $this->route('anjungan/daftar/(:str)', 'getDaftarBPJS');
+        //$this->route('anjungan/daftar/baru/(:str)', 'getDaftarBPJS');
     }
 
     public function getIndex()
@@ -1796,6 +1799,70 @@ class Site extends SiteModule
           $rujukan = json_decode($decompress, true);
       }
 
+      if(!$this->core->mysql('reg_periksa')->where('no_rkm_medis', $slug[4])->where('tgl_registrasi', $date)->oneArray()) {
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $slug[5])->oneArray();
+        $jadwal = $this->core->mysql('jadwal')->where('hari_kerja', $hari)->where('kd_poli', $maping_poli_bpjs['kd_poli_rs'])->oneArray();
+        $poliklinik = $this->core->mysql('poliklinik')->where('kd_poli', $jadwal['kd_poli'])->oneArray();
+
+        $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $slug['4'])->oneArray();
+
+        $birthDate = new \DateTime($pasien['tgl_lahir']);
+      	$today = new \DateTime("today");
+      	$umur_daftar = "0";
+        $status_umur = 'Hr';
+        if ($birthDate < $today) {
+        	$y = $today->diff($birthDate)->y;
+        	$m = $today->diff($birthDate)->m;
+        	$d = $today->diff($birthDate)->d;
+          $umur_daftar = $d;
+          $status_umur = "Hr";
+          if($y !='0'){
+            $umur_daftar = $y;
+            $status_umur = "Th";
+          }
+          if($y =='0' && $m !='0'){
+            $umur_daftar = $m;
+            $status_umur = "Bl";
+          }
+        }
+
+        $insert = $this->core->mysql('reg_periksa')
+          ->save([
+            'no_reg' => $this->core->setNoReg($jadwal['kd_dokter'], $jadwal['kd_poli']),
+            'no_rawat' => $this->core->setNoRawat(date('Y-m-d')),
+            'tgl_registrasi' => date('Y-m-d'),
+            'jam_reg' => date('H:i:s'),
+            'kd_dokter' => $jadwal['kd_dokter'],
+            'no_rkm_medis' => $slug['4'],
+            'kd_poli' => $jadwal['kd_poli'],
+            'p_jawab' => $this->core->getPasienInfo('namakeluarga', $slug['4']),
+            'almt_pj' => $this->core->getPasienInfo('alamatpj', $slug['4']),
+            'hubunganpj' => $this->core->getPasienInfo('keluarga', $slug['4']),
+            'biaya_reg' => $poliklinik['registrasi'],
+            'stts' => 'Belum',
+            'stts_daftar' => 'Baru',
+            'status_lanjut' => 'Ralan',
+            'kd_pj' => 'BPJ',
+            'umurdaftar' => $umur_daftar,
+            'sttsumur' => $status_umur,
+            'status_bayar' => 'Belum Bayar',
+            'status_poli' => 'Baru'
+          ]);
+
+      }
+
       $reg_periksa = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
@@ -2183,6 +2250,276 @@ class Site extends SiteModule
       }
       return $noKontrol;
       //exit();
+    }
+
+    public function getDisplayCheckin($referensi)
+    {
+      $title = 'Display Antrian Poliklinik';
+      $logo  = $this->settings->get('settings.logo');
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $__username = $this->core->getUserInfo('username');
+      if($this->core->getUserInfo('username') !=='') {
+        $__username = 'Tamu';
+      }
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $__username;
+
+      //echo 'Checkin';
+      $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $referensi)->oneArray();
+      $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
+      $no_peserta = $referensi['nomor_kartu'];
+      $no_rkm_medis = $pasien['no_rkm_medis'];
+      $tgl_periksa = $referensi['tanggal_periksa'];
+      $booking_registrasi = $this->core->mysql('booking_registrasi')->where('tanggal_periksa', date('Y-m-d'))->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+      if($booking_registrasi['status'] == 'Terdaftar') {
+        $this->notify('failure', 'Anda sudah terdaftar!. Halaman akan beralih dalam 3 detik.');
+        $redirect = url().'/anjungan/sep';
+      } elseif($booking_registrasi['tanggal_periksa'] != date('Y-m-d')) {
+        $this->notify('failure', 'Anda tidak bisa checkin hari ini. Booking anda terdaftar untuk tanggal '.$tgl_periksa.'.  Halaman akan beralih dalam 3 detik.');
+        $redirect = url().'/anjungan/sep';
+      } else {
+        // Insert ke tabel reg_periksa //
+        $cek_stts_daftar = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->count();
+        $_POST['stts_daftar'] = 'Baru';
+        if($cek_stts_daftar > 0) {
+          $_POST['stts_daftar'] = 'Lama';
+        }
+
+        $biaya_reg = $this->core->mysql('poliklinik')->where('kd_poli', $booking_registrasi['kd_poli'])->oneArray();
+        $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+        if($_POST['stts_daftar'] == 'Lama') {
+          $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+        }
+
+        $cek_status_poli = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->where('kd_poli', $booking_registrasi['kd_poli'])->count();
+        $_POST['status_poli'] = 'Baru';
+        if($cek_status_poli > 0) {
+          $_POST['status_poli'] = 'Lama';
+        }
+
+        // set umur
+        $date = new \DateTime($this->core->getPasienInfo('tgl_lahir', $no_rkm_medis));
+        $today = new \DateTime(date('Y-m-d'));
+        $y = $today->diff($date)->y;
+        $m = $today->diff($date)->m;
+        $d = $today->diff($date)->d;
+
+        $umur="0";
+        $sttsumur="Th";
+        if($y>0){
+            $umur=$y;
+            $sttsumur="Th";
+        }else if($y==0){
+            if($m>0){
+                $umur=$m;
+                $sttsumur="Bl";
+            }else if($m==0){
+                $umur=$d;
+                $sttsumur="Hr";
+            }
+        }
+
+        if($booking_registrasi['status'] == 'Belum') {
+          $insert = $this->core->mysql('reg_periksa')
+            ->save([
+              'no_reg' => $booking_registrasi['no_reg'],
+              'no_rawat' => $this->core->setNoRawat(date('Y-m-d')),
+              'tgl_registrasi' => date('Y-m-d'),
+              'jam_reg' => date('H:i:s'),
+              'kd_dokter' => $booking_registrasi['kd_dokter'],
+              'no_rkm_medis' => $no_rkm_medis,
+              'kd_poli' => $booking_registrasi['kd_poli'],
+              'p_jawab' => $this->core->getPasienInfo('namakeluarga', $no_rkm_medis),
+              'almt_pj' => $this->core->getPasienInfo('alamatpj', $no_rkm_medis),
+              'hubunganpj' => $this->core->getPasienInfo('keluarga', $no_rkm_medis),
+              'biaya_reg' => $_POST['biaya_reg'],
+              'stts' => 'Belum',
+              'stts_daftar' => $_POST['stts_daftar'],
+              'status_lanjut' => 'Ralan',
+              'kd_pj' => $booking_registrasi['kd_pj'],
+              'umurdaftar' => $umur,
+              'sttsumur' => $sttsumur,
+              'status_bayar' => 'Belum Bayar',
+              'status_poli' => $_POST['status_poli']
+            ]);
+
+            if ($insert) {
+                $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal_periksa', date('Y-m-d'))->update('status', 'Terdaftar');
+                $this->notify('success', 'Anda berhasil checkin untuk pelayanan hari ini. Halaman akan beralih dalam 3 detik untuk proses pencetakan SEP.');
+                $redirect = url().'/anjungan/sep/'.$no_peserta.'/'.$no_rkm_medis;
+            } else {
+                $this->notify('failure', 'Checkin gagal');
+                $redirect = url().'/anjungan/sep';
+            }
+        }
+      }
+
+      $content = $this->draw('checkin.html', [
+        'title' => $title,
+        'notify' => $this->core->getNotify(),
+        'logo' => $logo,
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+        'username' => $username,
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_poli'),
+        'redirect' => $redirect
+      ]);
+
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function getDaftarBPJS($nik)
+    {
+      $title = 'Display Antrian Poliklinik';
+      $logo  = $this->settings->get('settings.logo');
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $__username = $this->core->getUserInfo('username');
+      if($this->core->getUserInfo('username') !=='') {
+        $__username = 'Tamu';
+      }
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $__username;
+
+      $pasien = $this->core->mysql('pasien')->where('no_ktp', $nik)->oneArray();
+      $no_peserta = $pasien['no_peserta'];
+      $no_rkm_medis = $pasien['no_rkm_medis'];
+      if($pasien) {
+        $this->notify('failure', 'Anda sudah terdaftar sebagai pasien. Halaman akan beralih dalam 3 detik.');
+        $redirect = url().'/anjungan/sep/'.$no_peserta.'/'.$no_rkm_medis;
+      } else if(!$pasien) {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid . $this->secretkey . $tStamp;
+        $tglPelayananSEP = date('Y-m-d');
+
+        $url = $this->api_url . 'Peserta/nik/' . $nik . '/tglSEP/' . $tglPelayananSEP;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        //echo json_encode($json);
+        $code = $json['metaData']['code'];
+        $message = $json['metaData']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if (!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+        }
+        if ($json != null) {
+          $data = '{
+            "metaData": {
+              "code": "'.$code.'",
+              "message": "'.$message.'"
+            },
+            "response": '.$decompress.'}';
+
+          $data = json_decode($data, true);
+
+          $no_rkm_medis = $this->core->setNoRM();
+          $nm_pasien = $data['response']['peserta']['nama'];
+          $nik = $data['response']['peserta']['nik'];
+          $noKartu = $data['response']['peserta']['noKartu'];
+          $sex = $data['response']['peserta']['sex'];
+          $tglLahir = $data['response']['peserta']['tglLahir'];
+          $umurPasien = $this->hitungUmur($tglLahir);
+
+        } else {
+          $this->notify('failure', 'Pendaftaran periksa gagal. Silahkan coba lagi. Halaman akan beralih dalam 3 detik.');
+          $redirect = url().'/anjungan/sep';
+        }
+
+        $simpanPasien = $this->core->mysql('pasien')->save([
+          'no_rkm_medis' => $no_rkm_medis,
+          'nm_pasien' => $nm_pasien,
+          'no_ktp' => $nik,
+          'jk' => $sex,
+          'tmp_lahir' => '-',
+          'tgl_lahir' => $tglLahir,
+          'nm_ibu' => '-',
+          'alamat' => '-',
+          'gol_darah' => '-',
+          'pekerjaan' => '-',
+          'stts_nikah' => 'BELUM MENIKAH',
+          'agama' => 'ISLAM',
+          'tgl_daftar' => date('Y-m-d'),
+          'no_tlp' => '000000000000',
+          'umur' => $umurPasien,
+          'pnd' => '-',
+          'keluarga' => 'SAUDARA',
+          'namakeluarga' => '',
+          'kd_pj' => 'BPJ',
+          'no_peserta' => $noKartu,
+          'kd_kel' => '1',
+          'kd_kec' => '1',
+          'kd_kab' => '1',
+          'pekerjaanpj' => '',
+          'alamatpj' => 'ALAMAT',
+          'kelurahanpj' => 'KELURAHAN',
+          'kecamatanpj' => 'KECAMATAN',
+          'kabupatenpj' => 'KABUPATEN',
+          'perusahaan_pasien' => '-',
+          'suku_bangsa' => '1',
+          'bahasa_pasien' => '1',
+          'cacat_fisik' => '1',
+          'email' => '',
+          'nip' => '',
+          'kd_prop' => '1',
+          'propinsipj' => 'PROPINSI'
+        ]);
+        if($this->core->mysql('pasien')->where('no_ktp', $nik)->oneArray()) {
+          $this->notify('success', 'Pendaftaran periksa sukses. Halaman akan beralih dalam 3 detik.');
+          $redirect = url().'/anjungan/sep/'.$noKartu.'/'.$no_rkm_medis;
+        }
+      } else {
+        $this->notify('failure', 'Ada kegagalan sistem. Halaman akan beralih dalam 3 detik.');
+        $redirect = url().'/anjungan/sep';
+      }
+
+      $content = $this->draw('daftar.html', [
+        'title' => $title,
+        'notify' => $this->core->getNotify(),
+        'logo' => $logo,
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+        'username' => $username,
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_poli'),
+        'redirect' => $redirect
+      ]);
+
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function hitungUmur($tanggal_lahir)
+    {
+      $birthDate = new \DateTime($tanggal_lahir);
+      $today = new \DateTime("today");
+      $umur = "0 Th 0 Bl 0 Hr";
+      if ($birthDate < $today) {
+        $y = $today->diff($birthDate)->y;
+        $m = $today->diff($birthDate)->m;
+        $d = $today->diff($birthDate)->d;
+        $umur =  $y." Th ".$m." Bl ".$d." Hr";
+      }
+      return $umur;
     }
 
 }
