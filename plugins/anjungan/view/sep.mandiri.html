@@ -311,7 +311,7 @@
     });
   } );
   $(function() {
-      $('#no_peserta')
+      $('#nik')
       .keyboard({
         layout: 'custom',
         customLayout: {
@@ -322,7 +322,7 @@
             '{accept} {cancel}'
           ]
         },
-        maxLength : 13,
+        maxLength : 16,
         // Prevent keys not in the displayed keyboard from being typed in
         restrictInput : true,
         // include lower case characters (added v1.25.7)
@@ -333,7 +333,7 @@
         acceptValid : true,
         validate : function(keyboard, value, isClosing){
           // only make valid if input is 6 characters in length
-          return value.length === 13;
+          return value.length === 16;
         }
       })
       //.addTyping();
