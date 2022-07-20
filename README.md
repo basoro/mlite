@@ -67,14 +67,14 @@ $ composer create-project basoro/khanza-lite
 ### Pemasangan Manual
 1. Unduh versi terbaru [mLITE] (https://github.com/basoro/khanza-lite).
 
-2. Jalankan perintah composer untuk pemasangan independensi
+2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
+
+3. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+
+4. Jalankan perintah composer untuk pemasangan independensi
 ```
 $ composer install
 ```
-
-3. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
-
-4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
 5. Sesuaikan pengaturan di config.php
 
