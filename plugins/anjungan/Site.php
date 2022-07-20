@@ -2179,7 +2179,7 @@ class Site extends SiteModule
 
         echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
         $this->core->mysql('mutasi_berkas')->save([
-          'no_rawat' => $_POST['no_rawat'],
+          'no_rawat' => $data_sep['no_rawat'],
           'status' => 'Sudah Dikirim',
           'dikirim' => date('Y-m-d H:i:s'),
           'diterima' => '0000-00-00 00:00:00',
