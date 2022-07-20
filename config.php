@@ -6,8 +6,8 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 define('DBHOST', 'mysql');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
-define('DBPASS', 'root');
-define('DBNAME', 'rshd_sik');
+define('DBPASS', '');
+define('DBNAME', 'mlite');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/Khanza-Lite/webapps');
