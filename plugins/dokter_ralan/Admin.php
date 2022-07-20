@@ -138,7 +138,7 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('status', 'ralan')->oneArray();
+        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->oneArray();
         if(!$cek_resep) {
           $max_id = $this->core->mysql('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->oneArray();
           if(empty($max_id['no_resep'])) {
