@@ -34,6 +34,7 @@ return [
         `tanggal_periksa` date NOT NULL,
         `nomor_kartu` varchar(50) NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY,
+        `kodebooking` varchar(100) NOT NULL,
         `jenis_kunjungan` varchar(10) NOT NULL,
         `status_kirim` varchar(20) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
@@ -41,6 +42,7 @@ return [
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
         `tanggal_batal` date NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL,
+        `kodebooking` varchar(100) NOT NULL,
         `keterangan` varchar(250) NOT NULL PRIMARY KEY
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 

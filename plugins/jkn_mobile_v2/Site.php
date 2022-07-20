@@ -243,11 +243,12 @@ class Site extends SiteModule
                             'status' => 'Belum'
                         ]);
                         if ($query) {
+                            $kodebooking = date('Ymdhis').''.$decode['kodepoli'].''.$no_reg;
                             $response = array(
                                 'response' => array(
                                     'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
                                     'angkaantrean' => $no_reg,
-                                    'kodebooking' => $decode['nomorreferensi'],
+                                    'kodebooking' => $kodebooking,
                                     'pasienbaru'=>0,
                                     'norm' => $data_pasien['no_rkm_medis'],
                                     'namapoli' => $cek_kouta['nm_poli'],
@@ -271,54 +272,11 @@ class Site extends SiteModule
                                   'tanggal_periksa' => $decode['tanggalperiksa'],
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
+                                  'kodebooking' => $kodebooking,
                                   'jenis_kunjungan' => $decode['jeniskunjungan'],
                                   'status_kirim' => 'Sudah'
                               ]);
                             }
-                            /*
-                            $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $cek_kouta['kd_dokter'])->oneArray();
-                            $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $cek_kouta['kd_poli'])->oneArray();
-
-                            $data = [
-                                'kodebooking' => $decode['nomorreferensi'],
-                                'jenispasien' => 'JKN',
-                                'nomorkartu' => $decode['nomorkartu'],
-                                'nik' => $decode['nik'],
-                                'nohp' => $data_pasien['no_tlp'],
-                                'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
-                                'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-                                'pasienbaru' => 0,
-                                'norm' => $data_pasien['no_rkm_medis'],
-                                'tanggalperiksa' => $decode['tanggalperiksa'],
-                                'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
-                                'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-                                'jampraktek' => $jadwal['jam_mulai'].'-'.$jadwal['jam_selesai'],
-                                'jeniskunjungan' => $decode['jeniskunjungan'],
-                                'nomorreferensi' => $decode['nomorreferensi'],
-                                'nomorantrean' => $decode['kodepoli'].'-'.$no_reg,
-                                'angkaantrean' => $no_reg,
-                                'estimasidilayani' => strtotime($decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai']) * 1000,
-                                'sisakuotajkn' => ($cek_kouta['sisa_kouta']-1),
-                                'kuotajkn' => $cek_kouta['kuota'],
-                                'sisakuotanonjkn' => ($cek_kouta['sisa_kouta']-1),
-                                'kuotanonjkn' => $cek_kouta['kuota'],
-                                'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-                            ];
-                            $data = json_encode($data);
-                            $url = $this->bpjsurl.'antrean/add';
-                            $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-                            $data = json_decode($output, true);
-                            if($data['metadata']['code'] == 200){
-                              if(!empty($decode['nomorreferensi'])) {
-                                $this->core->mysql('mlite_antrian_referensi')->save([
-                                    'tanggal_periksa' => $decode['tanggalperiksa'],
-                                    'nomor_kartu' => $decode['nomorkartu'],
-                                    'nomor_referensi' => $decode['nomorreferensi'],
-                                    'status_kirim' => 'Sudah'
-                                ]);
-                              }
-                            }
-                            */
                         } else {
                             $response = array(
                                 'metadata' => array(
@@ -544,7 +502,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -691,7 +649,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -737,10 +695,11 @@ class Site extends SiteModule
                             );
                             $this->core->mysql('mlite_antrian_referensi_batal')->save([
                                 'tanggal_batal' => date('Y-m-d'),
-                                'nomor_referensi' => $decode['kodebooking'],
+                                'nomor_referensi' => $referensi['nomor_referensi'],
+                                'kodebooking' => $decode['kodebooking'],
                                 'keterangan' => $decode['keterangan']
                             ]);
-                            $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->delete();
+                            $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->delete();
                             http_response_code(200);
                         }else{
                             $response = array(
@@ -1252,7 +1211,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
