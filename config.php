@@ -3,11 +3,11 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("mLITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', 'mysql');
-define('DBPORT', '3306');
-define('DBUSER', 'root');
-define('DBPASS', '');
-define('DBNAME', 'mlite');
+define('DBHOST', 'rsimabarrotnu.rumahsakit.online');
+define('DBPORT', '4051');
+define('DBUSER', 'sik');
+define('DBPASS', 'mabarr0tsikdb');
+define('DBNAME', 'sik');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/khanza-lite/webapps');
