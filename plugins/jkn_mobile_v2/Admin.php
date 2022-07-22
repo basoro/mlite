@@ -26,6 +26,7 @@ class Admin extends AdminModule
             'Mapping Dokter' => 'mappingdokter',
             'Add Mapping Dokter' => 'addmappingdokter',
             'Jadwal Dokter HFIS' => 'jadwaldokter',
+            'Data Booking Antrol' => 'bookingantrol',
             'Task ID' => 'taskid',
             'Dashboard Antrol BPJS' => 'antrol',
             'Pengaturan' => 'settings',
@@ -41,6 +42,7 @@ class Admin extends AdminModule
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile V2'],
         ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
         ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
+        ['name' => 'Data Booking Antrol', 'url' => url([ADMIN, 'jkn_mobile_v2', 'bookingantrol']), 'icon' => 'list', 'desc' => 'Booking Antrol JKN Mobile V2'],
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
         ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_v2', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
@@ -532,6 +534,77 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getBookingAntrol()
+    {
+        $this->_addHeaderFiles();
+        return $this->draw('bookingantrol.html', ['row' => $this->core->mysql('mlite_antrian_referensi')->toArray()]);
+    }
+
+    public function getModalAntrol($noref)
+    {
+        $this->tpl->set('noref',$noref);
+        echo $this->tpl->draw(MODULES . '/jkn_mobile_v2/view/admin/batalantrol.html', true);
+        exit();
+    }
+
+    public function postHapusAntrol()
+    {
+        $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray();
+        $booking_registrasi = [];
+        $pasien = [];
+        if($referensi) {
+            $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
+            $booking_registrasi = $this->core->mysql('booking_registrasi')
+            ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+            ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+            ->oneArray();
+        }
+        if(!$booking_registrasi) {
+            echo 'Data Booking tidak ditemukan';
+        }else{
+            if(date("Y-m-d")>$booking_registrasi['tanggal_periksa']){
+                echo 'Pembatalan Antrean tidak berlaku mundur';
+            }else if($booking_registrasi['status']=='Terdaftar'){
+                echo 'Anda Sudah Checkin, Pendaftaran Tidak Bisa Dibatalkan';
+            }else if($booking_registrasi['status']=='Belum'){
+                $batal = $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
+                if(!$this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray()){
+                    $this->core->mysql('mlite_antrian_referensi_batal')->save([
+                        'tanggal_batal' => date('Y-m-d'),
+                        'nomor_referensi' => $referensi['nomor_referensi'],
+                        'kodebooking' => $_POST['kodebooking'],
+                        'keterangan' => $_POST['keterangan']
+                    ]);
+                    $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->delete();
+                    if (!$this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray()) {
+                        date_default_timezone_set('UTC');
+                        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+                        $key = $this->consid.$this->secretkey.$tStamp;
+
+                        $data = [
+                            'kodebooking' => $_POST['kodebooking'],
+                            'keterangan' => $_POST['keterangan']
+                        ];
+
+                        $data = json_encode($data);
+                        $url = $this->bpjsurl.'antrean/batal';
+                        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                        $json = json_decode($output, true);
+                        if ($json == NULL) {
+                            echo 'Data Booking di JKN Mobile Tidak Ada';
+                            echo 'Berhasil Dibatalkan di SIMRS';
+                        } else if ($json['metadata']['code'] == 200) {
+                            echo 'Berhasil Dibatalkan di JKN Mobile';
+                        }
+                    }
+                }else{
+                    echo 'Maaf Terjadi Kesalahan, Hubungi Admnistrator..';
+                }
+            }
+        }
+        exit();
+    }
+    
     public function getJavascript()
     {
         header('Content-type: text/javascript');

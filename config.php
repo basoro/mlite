@@ -3,7 +3,7 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("mLITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', 'mysql');
+define('DBHOST', 'localhost');
 define('DBPORT', '3306');
 define('DBUSER', 'root');
 define('DBPASS', '');
