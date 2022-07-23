@@ -6,16 +6,16 @@
 <div class="modal-body">
     <form name="" action="{?=url(ADMIN.'/jkn_mobile_v2/hapusantrol/'.@$noref)?}" method="POST">
         <div class="row clearfix">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Kode Booking</label>
                     <input type="text" name="kodebooking" id="" class="form-control" value="{$noref}" readonly>
                 </div>
             </div>
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="form-group">
                     <label for="">Keterangan</label>
-                    <input type="text" name="keterangan" id="" class="form-control" value="">
+                    <textarea name="keterangan" class="form-control" rows="4" cols="80"></textarea>
                 </div>
             </div>
         </div>

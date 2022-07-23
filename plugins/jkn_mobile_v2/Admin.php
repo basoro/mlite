@@ -560,12 +560,12 @@ class Admin extends AdminModule
             ->oneArray();
         }
         if(!$booking_registrasi) {
-            echo 'Data Booking tidak ditemukan';
+            $notif = 'Data Booking tidak ditemukan';
         }else{
             if(date("Y-m-d")>$booking_registrasi['tanggal_periksa']){
-                echo 'Pembatalan Antrean tidak berlaku mundur';
+                $notif = 'Pembatalan Antrean tidak berlaku mundur';
             }else if($booking_registrasi['status']=='Terdaftar'){
-                echo 'Anda Sudah Checkin, Pendaftaran Tidak Bisa Dibatalkan';
+                $notif = 'Pasien Sudah Checkin, Pendaftaran Tidak Bisa Dibatalkan';
             }else if($booking_registrasi['status']=='Belum'){
                 $batal = $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
                 if(!$this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray()){
@@ -591,20 +591,20 @@ class Admin extends AdminModule
                         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
                         $json = json_decode($output, true);
                         if ($json == NULL) {
-                            echo 'Data Booking di JKN Mobile Tidak Ada';
-                            echo 'Berhasil Dibatalkan di SIMRS';
+                            $notif = 'Data Booking di JKN Mobile Tidak Ada!<br>Berhasil Dibatalkan di SIMRS';
                         } else if ($json['metadata']['code'] == 200) {
-                            echo 'Berhasil Dibatalkan di JKN Mobile';
+                            $notif = 'Berhasil Dibatalkan di JKN Mobile';
                         }
                     }
                 }else{
-                    echo 'Maaf Terjadi Kesalahan, Hubungi Admnistrator..';
+                    $notif = 'Maaf Terjadi Kesalahan, Hubungi Admnistrator..';
                 }
             }
         }
-        exit();
+        //exit();
+        return $this->draw('hapusantrol.html', ['row' => $this->core->mysql('mlite_antrian_referensi')->toArray(), 'notif' => $notif]);
     }
-    
+
     public function getJavascript()
     {
         header('Content-type: text/javascript');
