@@ -158,3 +158,10 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
 Demo dan Info lebih lanjut di https://mlite.id
+
+
+# Some Screenshot
+| ![frame_generic_light](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/1.png) | ![frame_generic_light (1)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/2.png) | ![frame_generic_light (2)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/3.png) |
+| :---: | :---: | :---: |
+| ![frame_generic_light (3)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/4.png) | ![frame_generic_light (4)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/5.png) | ![frame_generic_light (5)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/6.png) |
+| ![frame_generic_light (6)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/7.png) | ![frame_generic_light (7)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/8.png) | ![frame_generic_light (8)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/9.png) |
