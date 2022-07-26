@@ -24,6 +24,14 @@ class Site extends SiteModule
         $this->route('anjungan/loket', 'getDisplayAntrianLoket');
         $this->route('anjungan/loket2', 'getDisplayAntrianLoket2');
         $this->route('anjungan/poli', 'getDisplayAntrianPoli');
+
+        /* Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
+        $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliSatu');
+    		$this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDua');
+    		$this->route('anjungan/display/poli/(:str)/(:str)/(:str)', 'getDisplayAntrianPoliTiga');
+    		$this->route('anjungan/poli/(:str)/(:str)/(:str)', 'getDisplayAntrianPoliKodex');
+        /* End Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
+
         $this->route('anjungan/poli/(:str)', 'getDisplayAntrianPoliKode');
         $this->route('anjungan/poli/(:str)/(:str)', 'getDisplayAntrianPoliKode');
         $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliDisplay');
@@ -307,6 +315,462 @@ class Site extends SiteModule
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
     }
+
+    /* Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
+    public function getDisplayAntrianPoliKodex()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $slug = parseURL();
+        $vidio = $this->settings->get('anjungan.vidio');
+        $_GET['vid'] = '';
+        if(isset($_GET['vid']) && $_GET['vid'] !='') {
+          $vidio = $_GET['vid'];
+        }
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $running_text = $this->settings->get('anjungan.text_poli');
+        $jadwal = $this->core->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+
+        $content = $this->draw('display.antrian.poli.tvb.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $vidio,
+          'running_text' => $running_text,
+          'jadwal' => $jadwal,
+          'slug' => $slug
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function getDisplayAntrianPoliSatu()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $display = $this->_resultDisplayAntrianPoliKodeSatu();
+        $slug = parseURL();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+
+        $content = $this->draw('display.antrian.poli.displaytv.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $this->settings->get('anjungan.vidio'),
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'slug' => $slug,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayAntrianPoliKodeSatu()
+    {
+        $slug = parseURL();
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $poliklinik = $slug[3];
+        $query = $this->core->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['dalam_pemeriksaan'] = $this->core->mysql('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Berkas Diterima')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->limit(1)
+                  ->oneArray();
+                $row['dalam_antrian'] = $this->core->mysql('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->core->mysql('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
+                $row['selanjutnya'] = $this->core->mysql('reg_periksa')
+                  ->select('reg_periksa.no_reg')
+                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  ->select('pasien.nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
+                  ->toArray();
+                $row['get_no_reg'] = $this->core->mysql('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
+                  ->where('tgl_registrasi', $date)
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = 0;
+                if($row['diff'] == 0) {
+                  $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                }
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  //$minutes = $value['no_reg'] * $interval;
+                  //$row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getDisplayAntrianPoliDua()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $display = $this->_resultDisplayAntrianPoliKodeDua();
+        $slug = parseURL();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+
+        $content = $this->draw('display.antrian.poli.displaytv.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $this->settings->get('anjungan.vidio'),
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'slug' => $slug,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayAntrianPoliKodeDua()
+    {
+        $slug = parseURL();
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $poliklinik = $slug[4];
+        $query = $this->core->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['dalam_pemeriksaan'] = $this->core->mysql('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Berkas Diterima')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->limit(1)
+                  ->oneArray();
+                $row['dalam_antrian'] = $this->core->mysql('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->core->mysql('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
+                $row['selanjutnya'] = $this->core->mysql('reg_periksa')
+                  ->select('reg_periksa.no_reg')
+                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  ->select('pasien.nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
+                  ->toArray();
+                $row['get_no_reg'] = $this->core->mysql('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
+                  ->where('tgl_registrasi', $date)
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = 0;
+                if($row['diff'] == 0) {
+                  $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                }
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  //$minutes = $value['no_reg'] * $interval;
+                  //$row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+
+    public function getDisplayAntrianPoliTiga()
+    {
+        $title = 'Display Antrian Poliklinik';
+        $logo  = $this->settings->get('settings.logo');
+        $display = $this->_resultDisplayAntrianPoliKodeTiga();
+        $slug = parseURL();
+
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
+        if($this->core->getUserInfo('username') !=='') {
+          $__username = 'Tamu';
+        }
+        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+        $username      = !empty($_username) ? $_username : $__username;
+
+        $content = $this->draw('display.antrian.poli.displaytv.html', [
+          'title' => $title,
+          'logo' => $logo,
+          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+          'username' => $username,
+          'tanggal' => $tanggal,
+          'vidio' => $this->settings->get('anjungan.vidio'),
+          'running_text' => $this->settings->get('anjungan.text_poli'),
+          'slug' => $slug,
+          'display' => $display
+        ]);
+
+        $assign = [
+            'title' => $this->settings->get('settings.nama_instansi'),
+            'desc' => $this->settings->get('settings.alamat'),
+            'content' => $content
+        ];
+
+        $this->setTemplate("canvas.html");
+
+        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayAntrianPoliKodeTiga()
+    {
+        $slug = parseURL();
+
+        $date = date('Y-m-d');
+        $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+        $day = array(
+          'Sun' => 'AKHAD',
+          'Mon' => 'SENIN',
+          'Tue' => 'SELASA',
+          'Wed' => 'RABU',
+          'Thu' => 'KAMIS',
+          'Fri' => 'JUMAT',
+          'Sat' => 'SABTU'
+        );
+        $hari=$day[$tentukan_hari];
+
+        $poliklinik = $slug[5];
+        $query = $this->core->mysql()->pdo()->prepare("SELECT a.kd_dokter, a.kd_poli, b.nm_poli, c.nm_dokter, a.jam_mulai, a.jam_selesai FROM jadwal a, poliklinik b, dokter c WHERE a.kd_poli = b.kd_poli AND a.kd_dokter = c.kd_dokter AND a.hari_kerja = '$hari' AND a.kd_poli = '$poliklinik'");
+        $query->execute();
+        $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
+
+        $result = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row['dalam_pemeriksaan'] = $this->core->mysql('reg_periksa')
+                  ->select('no_reg')
+                  ->select('nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('tgl_registrasi', $date)
+                  ->where('stts', 'Berkas Diterima')
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->limit(1)
+                  ->oneArray();
+                $row['dalam_antrian'] = $this->core->mysql('reg_periksa')
+                  ->select(['jumlah' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['sudah_dilayani'] = $this->core->mysql('reg_periksa')
+                  ->select(['count' => 'COUNT(DISTINCT reg_periksa.no_rawat)'])
+                  ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+                  ->where('reg_periksa.tgl_registrasi', date('Y-m-d'))
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->where('reg_periksa.stts', 'Sudah')
+                  ->oneArray();
+                $row['sudah_dilayani']['jumlah'] = 0;
+                if(!empty($row['sudah_dilayani'])) {
+                  $row['sudah_dilayani']['jumlah'] = $row['sudah_dilayani']['count'];
+                }
+                $row['selanjutnya'] = $this->core->mysql('reg_periksa')
+                  ->select('reg_periksa.no_reg')
+                  //->select(['no_urut_reg' => 'ifnull(MAX(CONVERT(RIGHT(reg_periksa.no_reg,3),signed)),0)'])
+                  ->select('pasien.nm_pasien')
+                  ->join('pasien', 'pasien.no_rkm_medis = reg_periksa.no_rkm_medis')
+                  ->where('reg_periksa.tgl_registrasi', $date)
+                  ->where('reg_periksa.stts', 'Belum')
+                  ->where('reg_periksa.kd_poli', $row['kd_poli'])
+                  ->where('reg_periksa.kd_dokter', $row['kd_dokter'])
+                  ->asc('reg_periksa.no_reg')
+                  ->toArray();
+                $row['get_no_reg'] = $this->core->mysql('reg_periksa')
+                  ->select(['max' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])
+                  ->where('tgl_registrasi', $date)
+                  ->where('kd_poli', $row['kd_poli'])
+                  ->where('kd_dokter', $row['kd_dokter'])
+                  ->oneArray();
+                $row['diff'] = (strtotime($row['jam_selesai'])-strtotime($row['jam_mulai']))/60;
+                $row['interval'] = 0;
+                if($row['diff'] == 0) {
+                  $row['interval'] = round($row['diff']/$row['get_no_reg']['max']);
+                }
+                if($row['interval'] > 10){
+                  $interval = 10;
+                } else {
+                  $interval = $row['interval'];
+                }
+                foreach ($row['selanjutnya'] as $value) {
+                  //$minutes = $value['no_reg'] * $interval;
+                  //$row['jam_mulai'] = date('H:i',strtotime('+10 minutes',strtotime($row['jam_mulai'])));
+                }
+
+                $result[] = $row;
+            }
+        }
+
+        return $result;
+    }
+    /* End Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
 
     public function getDisplayAntrianPoliDisplay()
     {
