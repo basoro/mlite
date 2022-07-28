@@ -42,7 +42,8 @@ define('BASIC_MODULES', serialize([
     5 => 'kepegawaian',
     6 => 'farmasi',
     8 => 'users',
-    7 => 'modules'
+    7 => 'modules',
+   10 => 'wagateway'
 ]));
 
 // Developer mode
