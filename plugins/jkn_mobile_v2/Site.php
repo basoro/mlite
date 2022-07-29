@@ -1239,18 +1239,35 @@ class Site extends SiteModule
                         );
                         http_response_code(201);
                     }else if($booking_registrasi['status']=='Belum'){
+                        $tentukan_hari=date('D',strtotime($tanggal));
+                        $day = array(
+                        'Sun' => 'AKHAD',
+                        'Mon' => 'SENIN',
+                        'Tue' => 'SELASA',
+                        'Wed' => 'RABU',
+                        'Thu' => 'KAMIS',
+                        'Fri' => 'JUMAT',
+                        'Sat' => 'SABTU'
+                        );
+                        $hari=$day[$tentukan_hari];
+
+                        $cekjam = $this->core->mysql("jadwal")->where("kd_poli",$booking_registrasi['kd_poli'])
+                        ->where('kd_dokter',$booking_registrasi['kd_dokter'])->where('hari_kerja',$hari)->oneArray();
                         $interval = $this->core->mysql()->pdo()->prepare("SELECT (TO_DAYS('$booking_registrasi[tanggal_periksa]')-TO_DAYS('$tanggal'))");
                         $interval->execute();
                         $interval = $interval->fetch();
 
                         if($interval[0]<=0){
-                            $response = array(
-                                'metadata' => array(
-                                    'message' => 'Chekin Anda sudah expired, maksimal 1 hari sebelum tanggal periksa. Silahkan konfirmasi ke layanan pelanggan',
-                                    'code' => 201
-                                )
-                            );
-                            http_response_code(201);
+                            if (date('H:i:s') >= $cekjam['jam_mulai']) {
+                                # code...
+                                $response = array(
+                                    'metadata' => array(
+                                        'message' => 'Chekin Anda sudah expired, maksimal 1 hari sebelum tanggal periksa. Silahkan konfirmasi ke layanan pelanggan',
+                                        'code' => 201
+                                    )
+                                );
+                                http_response_code(201);
+                            }
                         }else{
                             $cek_stts_daftar = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->count();
                             $_POST['stts_daftar'] = 'Baru';
