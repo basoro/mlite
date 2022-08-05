@@ -1170,6 +1170,7 @@ class Site extends SiteModule
             http_response_code(201);
         } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
             $tanggal=date("Y-m-d", ($decode['waktu']/1000));
+            $jam = date("H:i:s",($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -1258,7 +1259,7 @@ class Site extends SiteModule
                         $interval = $interval->fetch();
 
                         if($interval[0]<=0){
-                            if (date('H:i:s') >= $cekjam['jam_mulai']) {
+                            if ($jam >= $cekjam['jam_mulai']) {
                                 # code...
                                 $response = array(
                                     'metadata' => array(
@@ -1267,6 +1268,88 @@ class Site extends SiteModule
                                     )
                                 );
                                 http_response_code(201);
+                            } else {
+                                $cek_stts_daftar = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->count();
+                                $_POST['stts_daftar'] = 'Baru';
+                                if($cek_stts_daftar > 0) {
+                                $_POST['stts_daftar'] = 'Lama';
+                                }
+
+                                $biaya_reg = $this->core->mysql('poliklinik')->where('kd_poli', $booking_registrasi['kd_poli'])->oneArray();
+                                $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+                                if($_POST['stts_daftar'] == 'Lama') {
+                                $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+                                }
+
+                                $cek_status_poli = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->where('kd_poli', $booking_registrasi['kd_poli'])->count();
+                                $_POST['status_poli'] = 'Baru';
+                                if($cek_status_poli > 0) {
+                                $_POST['status_poli'] = 'Lama';
+                                }
+
+                                // set umur
+                                $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $booking_registrasi['no_rkm_medis']));
+                                $today = new \DateTime(date('Y-m-d'));
+                                $y = $today->diff($tanggal)->y;
+                                $m = $today->diff($tanggal)->m;
+                                $d = $today->diff($tanggal)->d;
+
+                                $umur="0";
+                                $sttsumur="Th";
+                                if($y>0){
+                                    $umur=$y;
+                                    $sttsumur="Th";
+                                }else if($y==0){
+                                    if($m>0){
+                                        $umur=$m;
+                                        $sttsumur="Bl";
+                                    }else if($m==0){
+                                        $umur=$d;
+                                        $sttsumur="Hr";
+                                    }
+                                }
+
+                                $tanggalupdate=date("Y-m-d H:i:s", ($decode['waktu']/1000));
+                                $update = $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->update(['status' => 'Terdaftar']);
+                                $insert = $this->core->mysql('reg_periksa')
+                                ->save([
+                                    'no_reg' => $booking_registrasi['no_reg'],
+                                    'no_rawat' => $this->core->setNoRawat($booking_registrasi['tanggal_periksa']),
+                                    'tgl_registrasi' => $booking_registrasi['tanggal_periksa'],
+                                    'jam_reg' => date('H:i:s'),
+                                    'kd_dokter' => $booking_registrasi['kd_dokter'],
+                                    'no_rkm_medis' => $booking_registrasi['no_rkm_medis'],
+                                    'kd_poli' => $booking_registrasi['kd_poli'],
+                                    'p_jawab' => $this->core->getPasienInfo('namakeluarga', $booking_registrasi['no_rkm_medis']),
+                                    'almt_pj' => $this->core->getPasienInfo('alamatpj', $booking_registrasi['no_rkm_medis']),
+                                    'hubunganpj' => $this->core->getPasienInfo('keluarga', $booking_registrasi['no_rkm_medis']),
+                                    'biaya_reg' => $_POST['biaya_reg'],
+                                    'stts' => 'Belum',
+                                    'stts_daftar' => $_POST['stts_daftar'],
+                                    'status_lanjut' => 'Ralan',
+                                    'kd_pj' => $booking_registrasi['kd_pj'],
+                                    'umurdaftar' => $umur,
+                                    'sttsumur' => $sttsumur,
+                                    'status_bayar' => 'Belum Bayar',
+                                    'status_poli' => $_POST['status_poli']
+                                ]);
+                                if($insert){
+                                    $response = array(
+                                        'metadata' => array(
+                                            'message' => 'Ok',
+                                            'code' => 200
+                                        )
+                                    );
+                                    http_response_code(200);
+                                }else{
+                                    $response = array(
+                                        'metadata' => array(
+                                            'message' => "Maaf terjadi kesalahan, hubungi Admnistrator..",
+                                            'code' => 401
+                                        )
+                                    );
+                                    http_response_code(401);
+                                }
                             }
                         }else{
                             $cek_stts_daftar = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $booking_registrasi['no_rkm_medis'])->count();
@@ -1865,24 +1948,22 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if($mutasi_berkas){
-                $data = [
-                    'kodebooking' => $q['nomor_referensi'],
-                    'keterangan' => $q['keterangan']
-                ];
-                $data = json_encode($data);
-                echo 'Request:<br>';
-                echo $data;
+            $data = [
+                'kodebooking' => $q['nomor_referensi'],
+                'keterangan' => $q['keterangan']
+            ];
+            $data = json_encode($data);
+            echo 'Request:<br>';
+            echo $data;
 
-                echo '<br>';
-                $url = $this->bpjsurl.'antrean/batal';
-                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-                $json = json_decode($output, true);
-                echo 'Response:<br>';
-                echo json_encode($json);
+            echo '<br>';
+            $url = $this->bpjsurl.'antrean/batal';
+            $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+            $json = json_decode($output, true);
+            echo 'Response:<br>';
+            echo json_encode($json);
 
-                echo '<br>-------------------------------------<br><br>';
-            }
+            echo '<br>-------------------------------------<br><br>';
         }
 
         exit();
