@@ -13,9 +13,10 @@
                   <div class="form-group">
                       <label>Nomor SEP</label>
                       <input type="text" name="no_sep" id="no_sep" class="form-control" />
+                      <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
                   </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-6 dokter">
                   <div class="form-group">
                       <label>Dokter</label>
                       <select class="form-control" name="dokter" id="dokter" data-use-search="true">
@@ -25,7 +26,7 @@
                       </select>
                   </div>
               </div>
-              <div class="col-md-6">
+              <div class="col-md-6 poli">
                   <div class="form-group">
                       <label>Poli/Unit</label>
                       <select class="form-control" name="poli" id="poli" data-use-search="true">
@@ -52,6 +53,7 @@
               <div class="col-md-12">
                   <button type="button" class="btn btn-primary" id="simpan_kontrol">Simpan</button>
                   <button type="button" class="btn btn-primary" id="load_kontrol">Load</button>
+                  <button type="button" class="btn btn-danger" id="hapus_kontrol">Hapus</button>
               </div>
           </div>
         </div>
@@ -67,6 +69,7 @@
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
 </div>
 <script type="text/javascript">
+  $("#hapus_kontrol").hide();
    $('select').selectator();
    $(function () {
        $('.tanggal').datetimepicker({
@@ -86,6 +89,7 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+    $("#hapus_kontrol").hide();
   });
 
   $(document).ready(function() {
@@ -98,6 +102,7 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_sep          = $('#no_sep').val();
+    var no_surkon       = $('#no_surkon').val();
     var tanggal_surat   = $('#tanggal_rujukan').val();
     var tanggal_periksa = $('#tanggal_datang').val();
     var poli            = $('#poli').val();
@@ -107,6 +112,7 @@
 
     $.post(url,{
       no_sep: no_sep,
+      no_surkon: no_surkon,
       tanggal_surat : tanggal_surat,
       tanggal_periksa : tanggal_periksa,
       dokter : dokter,
@@ -119,12 +125,30 @@
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
     });
-
   });
 
   $("#kontroldisplay").on("click", ".pilih_nosurat", function(event){
     var no_surat = $(this).attr("data-no_surat");
     $('input:text[name=sep_nomor_skdp]').val(no_surat);
     $('#kontrolModal').modal('hide');
+  });
+
+  $("#kontroldisplay").on("click", "#ubah_kontrol", function(event){
+    var no_surkon = $(this).attr("data-no_surat");
+    var no_sep = $(this).attr("data-no_sep");
+    var kd_poli = $(this).attr("data-kd_poli");
+    var kd_dokter = $(this).attr("data-kd_dokter");
+    var tanggal_surat = $(this).attr("data-tanggal_surat");
+    var tanggal_kontrol = $(this).attr("data-tanggal_kontrol");
+
+    $('input:text[name=no_sep]').val(no_sep);
+    $('input:text[name=no_surkon]').val(no_surkon);
+    $('input:text[name=tanggal_rujukan]').val(tanggal_surat);
+    $('input:text[name=tanggal_datang]').val(tanggal_kontrol);
+    $("div.dokter select").val(kd_dokter).change();
+    $("div.poli select").val(kd_poli).change();
+    $('#tanggal_rujukan').attr('readonly', true);
+    $('#no_sep').attr('readonly', true);
+    $("#hapus_kontrol").show();
   });
 </script>

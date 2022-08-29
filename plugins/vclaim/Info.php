@@ -59,7 +59,7 @@ return [
         `tujuankunjungan` enum('0','1','2') NOT NULL,
         `flagprosedur` enum('','0','1') NOT NULL,
         `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-        `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+        `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
         `kddpjplayanan` varchar(10) NOT NULL,
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -121,7 +121,7 @@ return [
         `tujuankunjungan` enum('0','1','2') NOT NULL,
         `flagprosedur` enum('','0','1') NOT NULL,
         `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-        `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+        `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
         `kddpjplayanan` varchar(10) NOT NULL,
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
