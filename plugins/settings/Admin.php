@@ -307,7 +307,7 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
             // Unzip latest update
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
