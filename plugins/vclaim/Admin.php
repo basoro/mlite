@@ -389,7 +389,7 @@ class Admin extends AdminModule
     $qr = QRCode::getMinimumQRCode($data_sep['no_sep'], QR_ERROR_CORRECT_LEVEL_L);
     //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
     $im = $qr->createImage(4, 4);
-    imagepng($im, '../../../tmp/qrcode.png');
+    imagepng($im, '../tmp/qrcode.png');
     imagedestroy($im);
     $image = "../../../tmp/qrcode.png";
 
