@@ -574,7 +574,7 @@ $("#soap").on("click",".hapus_soap", function(event){
         $('input:text[name=gcs]').val("");
         $('input:text[name=kesadaran]').val("");
         $('input:text[name=alergi]').val("");
-        $('input:text[name=imun_ke]').val("");
+        $('input:text[name=lingkar_perut]').val("");
         $('textarea[name=keluhan]').val("");
         $('textarea[name=pemeriksaan]').val("");
         $('textarea[name=penilaian]').val("");

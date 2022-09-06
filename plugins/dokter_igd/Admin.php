@@ -916,7 +916,6 @@ class Admin extends AdminModule
 	        $perpage = '5';
             $this->assign['no_rawat'] = convertNorawat($id);
             $this->assign['pemeriksaan_ralan']['kesadaran'] = $this->core->getEnum('pemeriksaan_ralan','kesadaran');
-            $this->assign['pemeriksaan_ralan']['imun_ke'] = $this->core->getEnum('pemeriksaan_ralan','imun_ke');
             $this->assign['view'] = $reg_periksa;
             $this->assign['view']['pasien'] = $pasien;
             $this->assign['view']['count_ralan'] = $count_ralan;
@@ -1086,7 +1085,7 @@ class Admin extends AdminModule
                   'keluhan' => $_POST['keluhan'],
                   'pemeriksaan' => $_POST['pemeriksaan'],
                   'alergi' => $_POST['alergi'],
-                  'imun_ke' => $_POST['imun_ke'],
+                  'lingkar_perut' => $_POST['lingkar_perut'],
                   'rtl' => $_POST['rtl'],
                   'penilaian' => $_POST['penilaian']
               ]);
@@ -1162,7 +1161,7 @@ class Admin extends AdminModule
                   'keluhan' => $_POST['keluhan'],
                   'pemeriksaan' => $_POST['pemeriksaan'],
                   'alergi' => $_POST['alergi'],
-                  'imun_ke' => $_POST['imun_ke'],
+                  'lingkar_perut' => $_POST['lingkar_perut'],
                   'rtl' => $_POST['rtl'],
                   'penilaian' => $_POST['penilaian']
               ]);

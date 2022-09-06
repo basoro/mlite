@@ -249,7 +249,7 @@ return [
         `keluhan` varchar(400) DEFAULT NULL,
         `pemeriksaan` varchar(400) DEFAULT NULL,
         `alergi` varchar(50) DEFAULT NULL,
-        `imun_ke` enum('-','1','2','3','4','5','6','7','8','10','11','12','13') DEFAULT NULL,
+        `lingkar_perut` varchar(5) DEFAULT NULL,
         `rtl` varchar(400) NOT NULL,
         `penilaian` varchar(400) NOT NULL,
         `instruksi` varchar(400) NOT NULL,
