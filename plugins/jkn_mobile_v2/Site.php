@@ -2089,6 +2089,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 1,
@@ -2131,6 +2132,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 2,
@@ -2173,6 +2175,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mutasi_berkas = $this->core->mysql('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
                 if($mutasi_berkas){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 3,
@@ -2215,6 +2218,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $mutasi_berkas = $this->core->mysql('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
                 if($mutasi_berkas){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 4,
@@ -2257,6 +2261,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $pemeriksaan_ralan = $this->core->mysql('pemeriksaan_ralan')->select(['datajam' => 'concat(tgl_perawatan," ",jam_rawat)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 if($pemeriksaan_ralan){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 5,
@@ -2300,6 +2305,7 @@ class Site extends SiteModule
                 $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
 
                 if($resep_obat){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 6,
@@ -2342,6 +2348,7 @@ class Site extends SiteModule
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 if($resep_obat){
+                    date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 7,
