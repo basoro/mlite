@@ -3,11 +3,11 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("mLITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', 'localhost');
+define('DBHOST', '');
 define('DBPORT', '3306');
-define('DBUSER', 'root');
+define('DBUSER', '');
 define('DBPASS', '');
-define('DBNAME', 'mlite');
+define('DBNAME', '');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://localhost/khanza-lite/webapps');
