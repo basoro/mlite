@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.9.0.1
+-- version 4.9.10
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Jun 03, 2022 at 11:19 AM
--- Server version: 5.7.26
--- PHP Version: 7.3.6
+-- Host: 127.0.0.1
+-- Generation Time: Sep 06, 2022 at 06:54 PM
+-- Server version: 5.7.37-log
+-- PHP Version: 7.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -19,7 +19,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `mlite`
+-- Database: `mlite_dev`
 --
 
 -- --------------------------------------------------------
@@ -71,7 +71,8 @@ CREATE TABLE `bangsal` (
 --
 
 INSERT INTO `bangsal` (`kd_bangsal`, `nm_bangsal`, `status`) VALUES
-('-', '-', '1');
+('-', '-', '1'),
+('ANG', 'Anggrek', '1');
 
 -- --------------------------------------------------------
 
@@ -256,10 +257,10 @@ CREATE TABLE `bridging_sep` (
   `kdpolitujuan` varchar(15) DEFAULT NULL,
   `nmpolitujuan` varchar(50) DEFAULT NULL,
   `klsrawat` enum('1','2','3') DEFAULT NULL,
-  `klsnaik` enum('','1','2') NOT NULL,
+  `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
   `pembiayaan` enum('','1','2','3') NOT NULL,
   `pjnaikkelas` varchar(100) NOT NULL,
-  `lakalantas` enum('0','1') DEFAULT NULL,
+  `lakalantas` enum('0','1','2','3') DEFAULT NULL,
   `user` varchar(25) DEFAULT NULL,
   `nomr` varchar(15) DEFAULT NULL,
   `nama_pasien` varchar(100) DEFAULT NULL,
@@ -289,7 +290,7 @@ CREATE TABLE `bridging_sep` (
   `tujuankunjungan` enum('0','1','2') NOT NULL,
   `flagprosedur` enum('','0','1') NOT NULL,
   `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-  `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+  `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
   `kddpjplayanan` varchar(10) NOT NULL,
   `nmdpjplayanan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -317,10 +318,10 @@ CREATE TABLE `bridging_sep_internal` (
   `kdpolitujuan` varchar(15) DEFAULT NULL,
   `nmpolitujuan` varchar(50) DEFAULT NULL,
   `klsrawat` enum('1','2','3') DEFAULT NULL,
-  `klsnaik` enum('','1','2') NOT NULL,
+  `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
   `pembiayaan` enum('','1','2','3') NOT NULL,
   `pjnaikkelas` varchar(100) NOT NULL,
-  `lakalantas` enum('0','1') DEFAULT NULL,
+  `lakalantas` enum('0','1','2','3') DEFAULT NULL,
   `user` varchar(25) DEFAULT NULL,
   `nomr` varchar(15) DEFAULT NULL,
   `nama_pasien` varchar(100) DEFAULT NULL,
@@ -350,7 +351,7 @@ CREATE TABLE `bridging_sep_internal` (
   `tujuankunjungan` enum('0','1','2') NOT NULL,
   `flagprosedur` enum('','0','1') NOT NULL,
   `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-  `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+  `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
   `kddpjplayanan` varchar(10) NOT NULL,
   `nmdpjplayanan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -464,7 +465,7 @@ CREATE TABLE `databarang` (
 --
 
 INSERT INTO `databarang` (`kode_brng`, `nama_brng`, `kode_satbesar`, `kode_sat`, `letak_barang`, `dasar`, `h_beli`, `ralan`, `kelas1`, `kelas2`, `kelas3`, `utama`, `vip`, `vvip`, `beliluar`, `jualbebas`, `karyawan`, `stokminimal`, `kdjns`, `isi`, `kapasitas`, `expire`, `status`, `kode_industri`, `kode_kategori`, `kode_golongan`) VALUES
-('B000000001', '-', '-', '-', '-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-', 0, 0, '2019-09-19', '1', '-', '-', '-');
+('B000000001', 'Amoxicillin 500mg', '-', '-', '-', 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 0, '-', 0, 500, '2024-07-16', '1', '-', '-', '-');
 
 -- --------------------------------------------------------
 
@@ -922,6 +923,13 @@ CREATE TABLE `jns_perawatan` (
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan`
+--
+
+INSERT INTO `jns_perawatan` (`kd_jenis_prw`, `nm_perawatan`, `kd_kategori`, `material`, `bhp`, `tarif_tindakandr`, `tarif_tindakanpr`, `kso`, `menejemen`, `total_byrdr`, `total_byrpr`, `total_byrdrpr`, `kd_pj`, `kd_poli`, `status`) VALUES
+('RJ001', 'Pemeriksaan rutin', '-', 0, 0, 100000, 0, 0, 0, 100000, 0, 100000, '-', '-', '1');
+
 -- --------------------------------------------------------
 
 --
@@ -947,6 +955,13 @@ CREATE TABLE `jns_perawatan_inap` (
   `kelas` enum('-','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan_inap`
+--
+
+INSERT INTO `jns_perawatan_inap` (`kd_jenis_prw`, `nm_perawatan`, `kd_kategori`, `material`, `bhp`, `tarif_tindakandr`, `tarif_tindakanpr`, `kso`, `menejemen`, `total_byrdr`, `total_byrpr`, `total_byrdrpr`, `kd_pj`, `kd_bangsal`, `status`, `kelas`) VALUES
+('RI001', 'Pemeriksaan rutin', '-', 0, 0, 150000, 0, 0, 0, 150000, 0, 150000, '-', '-', '1', 'Kelas 1');
+
 -- --------------------------------------------------------
 
 --
@@ -970,6 +985,13 @@ CREATE TABLE `jns_perawatan_lab` (
   `kategori` enum('PK','PA') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan_lab`
+--
+
+INSERT INTO `jns_perawatan_lab` (`kd_jenis_prw`, `nm_perawatan`, `bagian_rs`, `bhp`, `tarif_perujuk`, `tarif_tindakan_dokter`, `tarif_tindakan_petugas`, `kso`, `menejemen`, `total_byr`, `kd_pj`, `status`, `kelas`, `kategori`) VALUES
+('LAB01', 'Pemeriksaan Darah Lengkap', 0, 0, 0, 200000, 0, 0, 0, 200000, '-', '1', 'Kelas 1', 'PK');
+
 -- --------------------------------------------------------
 
 --
@@ -991,6 +1013,13 @@ CREATE TABLE `jns_perawatan_radiologi` (
   `status` enum('0','1') NOT NULL,
   `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jns_perawatan_radiologi`
+--
+
+INSERT INTO `jns_perawatan_radiologi` (`kd_jenis_prw`, `nm_perawatan`, `bagian_rs`, `bhp`, `tarif_perujuk`, `tarif_tindakan_dokter`, `tarif_tindakan_petugas`, `kso`, `menejemen`, `total_byr`, `kd_pj`, `status`, `kelas`) VALUES
+('RAD001', 'Thorax', 0, 0, 0, 50000, 0, 0, 0, 50000, '-', '1', 'Kelas 1');
 
 -- --------------------------------------------------------
 
@@ -1024,6 +1053,13 @@ CREATE TABLE `kamar` (
   `kelas` enum('Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') DEFAULT NULL,
   `statusdata` enum('0','1') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `kamar`
+--
+
+INSERT INTO `kamar` (`kd_kamar`, `kd_bangsal`, `trf_kamar`, `status`, `kelas`, `statusdata`) VALUES
+('ANG01', 'ANG', 100000, 'KOSONG', 'Kelas 1', '1');
 
 -- --------------------------------------------------------
 
@@ -1254,6 +1290,13 @@ CREATE TABLE `metode_racik` (
   `nm_racik` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `metode_racik`
+--
+
+INSERT INTO `metode_racik` (`kd_racik`, `nm_racik`) VALUES
+('1', 'Puyer');
+
 -- --------------------------------------------------------
 
 --
@@ -1294,6 +1337,7 @@ CREATE TABLE `mlite_antrian_referensi` (
   `tanggal_periksa` date NOT NULL,
   `nomor_kartu` varchar(50) NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
+  `kodebooking` varchar(100) NOT NULL,
   `jenis_kunjungan` varchar(10) NOT NULL,
   `status_kirim` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -1307,6 +1351,7 @@ CREATE TABLE `mlite_antrian_referensi` (
 CREATE TABLE `mlite_antrian_referensi_batal` (
   `tanggal_batal` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
+  `kodebooking` varchar(100) NOT NULL,
   `keterangan` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1461,31 +1506,32 @@ INSERT INTO `mlite_modules` (`id`, `dir`, `sequence`) VALUES
 (8, 'farmasi', '6'),
 (9, 'users', '8'),
 (10, 'modules', '7'),
-(11, 'rawat_inap', '10'),
+(11, 'wagateway', '10'),
 (12, 'igd', '11'),
-(13, 'dokter_ralan', '12'),
-(14, 'dokter_ranap', '13'),
-(15, 'dokter_igd', '14'),
-(16, 'laboratorium', '15'),
-(17, 'radiologi', '16'),
-(18, 'kasir_rawat_inap', '17'),
-(19, 'vclaim', '18'),
-(20, 'icd', '19'),
-(21, 'api', '20'),
-(22, 'anjungan', '21'),
-(23, 'vedika', '22'),
-(24, 'profil', '23'),
-(25, 'presensi', '24'),
-(26, 'apotek_ralan', '25'),
+(13, 'apotek_ralan', '12'),
+(14, 'dokter_ralan', '13'),
+(15, 'laboratorium', '14'),
+(16, 'radiologi', '15'),
+(17, 'icd', '16'),
+(18, 'presensi', '17'),
+(19, 'profil', '18'),
+(20, 'rawat_inap', '19'),
+(21, 'dokter_igd', '20'),
+(22, 'dokter_ranap', '21'),
+(23, 'operasi', '22'),
+(24, 'anjungan', '23'),
+(25, 'api', '24'),
+(26, 'jkn_mobile_v2', '25'),
 (27, 'cuti', '26'),
-(28, 'jkn_mobile_v2', '27'),
+(28, 'kasir_rawat_inap', '27'),
 (29, 'keuangan', '28'),
-(30, 'manajemen', '29'),
-(31, 'operasi', '30'),
+(30, 'laporan', '29'),
+(31, 'manajemen', '30'),
 (32, 'pasien_galleries', '31'),
-(33, 'laporan', '32'),
-(34, 'wagateway', '33'),
-(35, 'website', '34');
+(33, 'vclaim', '32'),
+(34, 'vedika', '33'),
+(35, 'veronisa', '34'),
+(36, 'website', '35');
 
 -- --------------------------------------------------------
 
@@ -1679,13 +1725,13 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (19, 'settings', 'dokter_ralan_per_dokter', 'false'),
 (20, 'settings', 'cekstatusbayar', 'false'),
 (21, 'settings', 'ceklimit', 'false'),
-(22, 'settings', 'notif_presensi', 'true'),
+(22, 'settings', 'notif_presensi', 'false'),
 (23, 'settings', 'responsivevoice', 'true'),
-(24, 'settings', 'BpjsApiUrl', 'https://new-api.bpjs-kesehatan.go.id/new-vclaim-rest/'),
+(24, 'settings', 'BpjsApiUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),
 (25, 'settings', 'BpjsConsID', '-'),
 (26, 'settings', 'BpjsSecretKey', '-'),
 (27, 'settings', 'BpjsUserKey', '-'),
-(28, 'settings', 'timezone', 'Asia/Jakarta'),
+(28, 'settings', 'timezone', 'Asia/Makassar'),
 (29, 'settings', 'theme', 'default'),
 (30, 'settings', 'theme_admin', 'mlite'),
 (31, 'settings', 'admin_mode', 'complex'),
@@ -1695,161 +1741,164 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (35, 'settings', 'update_check', '0'),
 (36, 'settings', 'update_changelog', ''),
 (37, 'settings', 'update_version', '0'),
-(38, 'settings', 'license', ''),
+(38, 'settings', 'license', 'ffc1b55b46f3a7346c8ba28c221c28a0'),
 (39, 'farmasi', 'deporalan', '-'),
 (40, 'farmasi', 'igd', '-'),
 (41, 'farmasi', 'deporanap', '-'),
 (42, 'farmasi', 'gudang', '-'),
-(43, 'api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
-(44, 'api', 'apam_status_daftar', 'Terdaftar'),
-(45, 'api', 'apam_status_dilayani', 'Anda siap dilayani'),
-(46, 'api', 'apam_webappsurl', 'http://localhost/webapps/'),
-(47, 'api', 'apam_normpetugas', '000001,000002'),
-(48, 'api', 'apam_limit', '2'),
-(49, 'api', 'apam_smtp_host', 'ssl://smtp.gmail.com'),
-(50, 'api', 'apam_smtp_port', '465'),
-(51, 'api', 'apam_smtp_username', ''),
-(52, 'api', 'apam_smtp_password', ''),
-(53, 'api', 'apam_kdpj', ''),
-(54, 'api', 'apam_kdprop', ''),
-(55, 'api', 'apam_kdkab', ''),
-(56, 'api', 'apam_kdkec', ''),
-(57, 'api', 'duitku_merchantCode', ''),
-(58, 'api', 'duitku_merchantKey', ''),
-(59, 'api', 'duitku_paymentAmount', ''),
-(60, 'api', 'duitku_paymentMethod', ''),
-(61, 'api', 'duitku_productDetails', ''),
-(62, 'api', 'duitku_expiryPeriod', ''),
-(63, 'api', 'duitku_kdpj', ''),
-(64, 'anjungan', 'display_poli', ''),
-(65, 'anjungan', 'carabayar', ''),
-(66, 'anjungan', 'antrian_loket', '1'),
-(67, 'anjungan', 'antrian_cs', '2'),
-(68, 'anjungan', 'panggil_loket', '1'),
-(69, 'anjungan', 'panggil_loket_nomor', '1'),
-(70, 'anjungan', 'panggil_cs', '1'),
-(71, 'anjungan', 'panggil_cs_nomor', '1'),
-(72, 'anjungan', 'panggil_cs', '1'),
-(73, 'anjungan', 'panggil_cs_nomor', '1'),
-(74, 'anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....'),
-(75, 'anjungan', 'text_loket', 'Running text display antrian loket.....'),
-(76, 'anjungan', 'text_poli', 'Running text display antrian poliklinik.....'),
-(77, 'anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....'),
-(78, 'anjungan', 'text_apotek', 'Running text display antrian apotek.....'),
-(79, 'anjungan', 'text_farmasi', 'Running text display antrian farmasi.....'),
-(80, 'anjungan', 'vidio', 'G4im8_n0OoI'),
-(81, 'vedika', 'username', ''),
-(82, 'vedika', 'password', ''),
-(83, 'vedika', 'sep', ''),
-(84, 'vedika', 'skdp', ''),
-(85, 'vedika', 'operasi', ''),
-(86, 'presensi', 'lat', '-2.58'),
-(87, 'presensi', 'lon', '115.37'),
-(88, 'presensi', 'distance', '2'),
-(89, 'presensi', 'helloworld', 'Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),
-(90, 'jkn_mobile_v2', 'x_username', 'jkn'),
-(91, 'jkn_mobile_v2', 'x_password', 'mobile'),
-(92, 'jkn_mobile_v2', 'header_token', 'X-Token'),
-(93, 'jkn_mobile_v2', 'header_username', 'X-Username'),
-(94, 'jkn_mobile_v2', 'header_password', 'X-Password'),
-(95, 'jkn_mobile_v2', 'BpjsConsID', ''),
-(96, 'jkn_mobile_v2', 'BpjsSecretKey', ''),
-(97, 'jkn_mobile_v2', 'BpjsUserKey', ''),
-(98, 'jkn_mobile_v2', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),
-(99, 'jkn_mobile_v2', 'kd_pj_bpjs', ''),
-(100, 'jkn_mobile_v2', 'exclude_taskid', ''),
-(101, 'jkn_mobile_v2', 'display', ''),
-(102, 'jkn_mobile_v2', 'kdprop', ''),
-(103, 'jkn_mobile_v2', 'kdkab', ''),
-(104, 'jkn_mobile_v2', 'kdkec', ''),
-(105, 'jkn_mobile_v2', 'kdkel', ''),
-(106, 'jkn_mobile_v2', 'perusahaan_pasien', ''),
-(107, 'jkn_mobile_v2', 'suku_bangsa', ''),
-(108, 'jkn_mobile_v2', 'bahasa_pasien', ''),
-(109, 'jkn_mobile_v2', 'cacat_fisik', ''),
-(110, 'keuangan', 'jurnal_kasir', '0'),
-(111, 'keuangan', 'akun_kredit_pendaftaran', ''),
-(112, 'keuangan', 'akun_kredit_tindakan', ''),
-(113, 'keuangan', 'akun_kredit_obat_bhp', ''),
-(114, 'keuangan', 'akun_kredit_laboratorium', ''),
-(115, 'keuangan', 'akun_kredit_radiologi', ''),
-(116, 'keuangan', 'akun_kredit_tambahan_biaya', ''),
-(117, 'manajemen', 'penjab_umum', 'UMU'),
-(118, 'manajemen', 'penjab_bpjs', 'BPJ'),
-(119, 'wagateway', 'server', 'https://mlite.id'),
-(120, 'wagateway', 'token', '-'),
-(121, 'wagateway', 'phonenumber', '-'),
-(122, 'website', 'perpage', '5'),
-(123, 'website', 'disqus', ''),
-(124, 'website', 'dateformat', 'M d, Y'),
-(125, 'website', 'title', 'Berita Internal'),
-(126, 'website', 'desc', '... RS Masa Gitu ...'),
-(127, 'website', 'latestPostsCount', '5'),
-(128, 'website', 'homepage_login', '1'),
-(129, 'website', 'homepage_logo', 'website/logo.png'),
-(130, 'website', 'homepage_logo_icon', 'website/icon-logo.png'),
-(131, 'website', 'homepage_slider_bg', 'website/slider-bg.jpg'),
-(132, 'website', 'homepage_typewriter_1', 'Medic LITE Indonesia'),
-(133, 'website', 'homepage_typewriter_2', 'We Care Your Health'),
-(134, 'website', 'homepage_typewriter_3', 'We are Expert!'),
-(135, 'website', 'homepage_gawat_darurat', 'To save life and limb, itu adalah moto kami dalam layanan Gawat Darurat'),
-(136, 'website', 'homepage_rawat_jalan_1', '8.00 – 18.00'),
-(137, 'website', 'homepage_rawat_jalan_2', '8.00 – 16.00'),
-(138, 'website', 'homepage_rawat_jalan_3', '8.00 – 13.00'),
-(139, 'website', 'homepage_rawat_inap', 'Dengan 128 bed tersedia, 8 kamar VVIP, 24 Kelas 1, 56 Kelas 2 dan 50 Kelas 3'),
-(140, 'website', 'homepage_motto', 'Melayani Dengan Hati'),
-(141, 'website', 'homepage_about_title', 'MENGAPA MEMILIH KAMI'),
-(142, 'website', 'homepage_about_content', '<h2>Layanan Paripurna</h2>\r\nMemberi pelayanan kesehatan yang aman, bermutu, antidiskriminasi, dan efektif dengan mengutamakan kepentingan pasien sesuai dengan standar pelayanan Rumah Sakit.\r\n\r\nDengan Misi, Mendorong peningkatan kualitas kehidupan masyarakat Indonesia dengan menyediakan solusi bisnis kesehatan yang bernilai tambah dan mengutamakan prinsip kemanusiaan dan keselamatan.'),
-(143, 'website', 'homepage_about_bg', 'website/about_03.jpg'),
-(144, 'website', 'homepage_about_youtube', 'T0qagA4_eVQ'),
-(145, 'website', 'homepage_about_11', 'Peralatan Digital'),
-(146, 'website', 'homepage_about_12', 'website/clinic_01.jpg'),
-(147, 'website', 'homepage_about_21', 'Ruang Operasi Higienis'),
-(148, 'website', 'homepage_about_22', 'website/clinic_02.jpg'),
-(149, 'website', 'homepage_about_31', 'Spesialis Dibidangnya'),
-(150, 'website', 'homepage_about_32', 'website/clinic_03.jpg'),
-(151, 'website', 'homepage_about_41', 'Layanan Paripurna'),
-(152, 'website', 'homepage_about_42', 'website/clinic_01.jpg'),
-(153, 'website', 'homepage_services_11', 'FASILITAS PREMIUM'),
-(154, 'website', 'homepage_services_12', 'Untuk memastikan bahwa Anda diberi perawatan terbaik'),
-(155, 'website', 'homepage_services_13', 'website/service-icon1.png'),
-(156, 'website', 'homepage_services_14', 'Terbaik Dibidangnya'),
-(157, 'website', 'homepage_services_15', ''),
-(158, 'website', 'homepage_services_21', 'LABORATORIUM'),
-(159, 'website', 'homepage_services_22', 'Alat laboratorium terbaik untuk ketepatan diagnosa'),
-(160, 'website', 'homepage_services_23', 'website/service-icon2.png'),
-(161, 'website', 'homepage_services_24', 'Tekhnologi Terkini'),
-(162, 'website', 'homepage_services_25', ''),
-(163, 'website', 'homepage_services_31', 'DOKTER SPESIALIS'),
-(164, 'website', 'homepage_services_32', 'Dilayani 35 Dokter Spesialis dan Sub Spesialis'),
-(165, 'website', 'homepage_services_33', 'website/service-icon3.png'),
-(166, 'website', 'homepage_services_34', 'Akurat & Rendah Radiasi'),
-(167, 'website', 'homepage_services_35', ''),
-(168, 'website', 'homepage_services_41', 'PERAWATAN ANAK'),
-(169, 'website', 'homepage_services_42', 'Deteksi dini dan pelayanan tumbuh kembang anak'),
-(170, 'website', 'homepage_services_43', 'website/service-icon4.png'),
-(171, 'website', 'homepage_services_44', 'Untuk Buah Hati'),
-(172, 'website', 'homepage_services_45', ''),
-(173, 'website', 'homepage_services_51', 'LAYANAN FARMASI'),
-(174, 'website', 'homepage_services_52', 'Memastikan ketepatan indikasi, aturan dan dosis obat'),
-(175, 'website', 'homepage_services_53', 'website/service-icon5.png'),
-(176, 'website', 'homepage_services_54', 'Tepat & Cepat'),
-(177, 'website', 'homepage_services_55', ''),
-(178, 'website', 'homepage_services_61', 'BANK DARAH'),
-(179, 'website', 'homepage_services_62', 'Menjamin ketersediaan darah untuk transfusi yang aman'),
-(180, 'website', 'homepage_services_63', 'website/service-icon1.png'),
-(181, 'website', 'homepage_services_64', 'Aman dan Nyaman'),
-(182, 'website', 'homepage_services_65', ''),
-(183, 'website', 'homepage_footer_about', 'Rumah Sakit Pemerintah tipe C dengan layanan terdepan menggunakan tekhnologi terkini.'),
-(184, 'website', 'homepage_footer_informasi_11', 'Jadwal Dokter'),
-(185, 'website', 'homepage_footer_informasi_12', 'http://localhost/webapps/jadwal.php'),
-(186, 'website', 'homepage_footer_informasi_21', 'Ketersediaan Tempat Tidur'),
-(187, 'website', 'homepage_footer_informasi_22', 'http://localhost/webapps/bed5.php'),
-(188, 'website', 'homepage_footer_informasi_31', 'Display Antrian'),
-(189, 'website', 'homepage_footer_informasi_32', 'http://localhost/webapps/antrian.php'),
-(190, 'website', 'homepage_sosmed_facebook', 'basoro'),
-(191, 'website', 'homepage_sosmed_youtube', 'basoro'),
-(192, 'website', 'homepage_sosmed_instagram', 'basoro');
+(43, 'wagateway', 'server', 'https://mlite.id'),
+(44, 'wagateway', 'token', '0000'),
+(45, 'wagateway', 'phonenumber', '6282345678'),
+(46, 'presensi', 'lat', '-2.58'),
+(47, 'presensi', 'lon', '115.37'),
+(48, 'presensi', 'distance', '2'),
+(49, 'presensi', 'helloworld', 'Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),
+(50, 'anjungan', 'display_poli', ''),
+(51, 'anjungan', 'carabayar', ''),
+(52, 'anjungan', 'antrian_loket', '1'),
+(53, 'anjungan', 'antrian_cs', '2'),
+(54, 'anjungan', 'panggil_loket', '1'),
+(55, 'anjungan', 'panggil_loket_nomor', '1'),
+(56, 'anjungan', 'panggil_cs', '1'),
+(57, 'anjungan', 'panggil_cs_nomor', '1'),
+(58, 'anjungan', 'panggil_cs', '1'),
+(59, 'anjungan', 'panggil_cs_nomor', '1'),
+(60, 'anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....'),
+(61, 'anjungan', 'text_loket', 'Running text display antrian loket.....'),
+(62, 'anjungan', 'text_poli', 'Running text display antrian poliklinik.....'),
+(63, 'anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....'),
+(64, 'anjungan', 'text_apotek', 'Running text display antrian apotek.....'),
+(65, 'anjungan', 'text_farmasi', 'Running text display antrian farmasi.....'),
+(66, 'anjungan', 'vidio', 'G4im8_n0OoI'),
+(67, 'api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
+(68, 'api', 'apam_status_daftar', 'Terdaftar'),
+(69, 'api', 'apam_status_dilayani', 'Anda siap dilayani'),
+(70, 'api', 'apam_webappsurl', 'http://localhost/webapps/'),
+(71, 'api', 'apam_normpetugas', '000001,000002'),
+(72, 'api', 'apam_limit', '2'),
+(73, 'api', 'apam_smtp_host', 'ssl://smtp.gmail.com'),
+(74, 'api', 'apam_smtp_port', '465'),
+(75, 'api', 'apam_smtp_username', ''),
+(76, 'api', 'apam_smtp_password', ''),
+(77, 'api', 'apam_kdpj', ''),
+(78, 'api', 'apam_kdprop', ''),
+(79, 'api', 'apam_kdkab', ''),
+(80, 'api', 'apam_kdkec', ''),
+(81, 'api', 'duitku_merchantCode', ''),
+(82, 'api', 'duitku_merchantKey', ''),
+(83, 'api', 'duitku_paymentAmount', ''),
+(84, 'api', 'duitku_paymentMethod', ''),
+(85, 'api', 'duitku_productDetails', ''),
+(86, 'api', 'duitku_expiryPeriod', ''),
+(87, 'api', 'duitku_kdpj', ''),
+(88, 'jkn_mobile_v2', 'x_username', 'jkn'),
+(89, 'jkn_mobile_v2', 'x_password', 'mobile'),
+(90, 'jkn_mobile_v2', 'header_token', 'X-Token'),
+(91, 'jkn_mobile_v2', 'header_username', 'X-Username'),
+(92, 'jkn_mobile_v2', 'header_password', 'X-Password'),
+(93, 'jkn_mobile_v2', 'BpjsConsID', ''),
+(94, 'jkn_mobile_v2', 'BpjsSecretKey', ''),
+(95, 'jkn_mobile_v2', 'BpjsUserKey', ''),
+(96, 'jkn_mobile_v2', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),
+(97, 'jkn_mobile_v2', 'kd_pj_bpjs', ''),
+(98, 'jkn_mobile_v2', 'exclude_taskid', ''),
+(99, 'jkn_mobile_v2', 'display', ''),
+(100, 'jkn_mobile_v2', 'kdprop', ''),
+(101, 'jkn_mobile_v2', 'kdkab', ''),
+(102, 'jkn_mobile_v2', 'kdkec', ''),
+(103, 'jkn_mobile_v2', 'kdkel', ''),
+(104, 'jkn_mobile_v2', 'perusahaan_pasien', ''),
+(105, 'jkn_mobile_v2', 'suku_bangsa', ''),
+(106, 'jkn_mobile_v2', 'bahasa_pasien', ''),
+(107, 'jkn_mobile_v2', 'cacat_fisik', ''),
+(108, 'keuangan', 'jurnal_kasir', '0'),
+(109, 'keuangan', 'akun_kredit_pendaftaran', ''),
+(110, 'keuangan', 'akun_kredit_tindakan', ''),
+(111, 'keuangan', 'akun_kredit_obat_bhp', ''),
+(112, 'keuangan', 'akun_kredit_laboratorium', ''),
+(113, 'keuangan', 'akun_kredit_radiologi', ''),
+(114, 'keuangan', 'akun_kredit_tambahan_biaya', ''),
+(115, 'manajemen', 'penjab_umum', 'UMU'),
+(116, 'manajemen', 'penjab_bpjs', 'BPJ'),
+(117, 'vedika', 'username', ''),
+(118, 'vedika', 'password', ''),
+(119, 'vedika', 'sep', ''),
+(120, 'vedika', 'skdp', ''),
+(121, 'vedika', 'operasi', ''),
+(122, 'veronisa', 'username', ''),
+(123, 'veronisa', 'password', ''),
+(124, 'veronisa', 'obat_kronis', ''),
+(125, 'website', 'perpage', '5'),
+(126, 'website', 'disqus', ''),
+(127, 'website', 'dateformat', 'M d, Y'),
+(128, 'website', 'title', 'Berita Internal'),
+(129, 'website', 'desc', '... RS Masa Gitu ...'),
+(130, 'website', 'latestPostsCount', '5'),
+(131, 'website', 'homepage_login', '1'),
+(132, 'website', 'homepage_logo', 'website/logo.png'),
+(133, 'website', 'homepage_logo_icon', 'website/icon-logo.png'),
+(134, 'website', 'homepage_slider_bg', 'website/slider-bg.jpg'),
+(135, 'website', 'homepage_typewriter_1', 'Medic LITE Indonesia'),
+(136, 'website', 'homepage_typewriter_2', 'We Care Your Health'),
+(137, 'website', 'homepage_typewriter_3', 'We are Expert!'),
+(138, 'website', 'homepage_gawat_darurat', 'To save life and limb, itu adalah moto kami dalam layanan Gawat Darurat'),
+(139, 'website', 'homepage_rawat_jalan_1', '8.00 – 18.00'),
+(140, 'website', 'homepage_rawat_jalan_2', '8.00 – 16.00'),
+(141, 'website', 'homepage_rawat_jalan_3', '8.00 – 13.00'),
+(142, 'website', 'homepage_rawat_inap', 'Dengan 128 bed tersedia, 8 kamar VVIP, 24 Kelas 1, 56 Kelas 2 dan 50 Kelas 3'),
+(143, 'website', 'homepage_motto', 'Melayani Dengan Hati'),
+(144, 'website', 'homepage_about_title', 'MENGAPA MEMILIH KAMI'),
+(145, 'website', 'homepage_about_content', '<h2>Layanan Paripurna</h2>\r\nMemberi pelayanan kesehatan yang aman, bermutu, antidiskriminasi, dan efektif dengan mengutamakan kepentingan pasien sesuai dengan standar pelayanan Rumah Sakit.\r\n\r\nDengan Misi, Mendorong peningkatan kualitas kehidupan masyarakat Indonesia dengan menyediakan solusi bisnis kesehatan yang bernilai tambah dan mengutamakan prinsip kemanusiaan dan keselamatan.'),
+(146, 'website', 'homepage_about_bg', 'website/about_03.jpg'),
+(147, 'website', 'homepage_about_youtube', 'T0qagA4_eVQ'),
+(148, 'website', 'homepage_about_11', 'Peralatan Digital'),
+(149, 'website', 'homepage_about_12', 'website/clinic_01.jpg'),
+(150, 'website', 'homepage_about_21', 'Ruang Operasi Higienis'),
+(151, 'website', 'homepage_about_22', 'website/clinic_02.jpg'),
+(152, 'website', 'homepage_about_31', 'Spesialis Dibidangnya'),
+(153, 'website', 'homepage_about_32', 'website/clinic_03.jpg'),
+(154, 'website', 'homepage_about_41', 'Layanan Paripurna'),
+(155, 'website', 'homepage_about_42', 'website/clinic_01.jpg'),
+(156, 'website', 'homepage_services_11', 'FASILITAS PREMIUM'),
+(157, 'website', 'homepage_services_12', 'Untuk memastikan bahwa Anda diberi perawatan terbaik'),
+(158, 'website', 'homepage_services_13', 'website/service-icon1.png'),
+(159, 'website', 'homepage_services_14', 'Terbaik Dibidangnya'),
+(160, 'website', 'homepage_services_15', ''),
+(161, 'website', 'homepage_services_21', 'LABORATORIUM'),
+(162, 'website', 'homepage_services_22', 'Alat laboratorium terbaik untuk ketepatan diagnosa'),
+(163, 'website', 'homepage_services_23', 'website/service-icon2.png'),
+(164, 'website', 'homepage_services_24', 'Tekhnologi Terkini'),
+(165, 'website', 'homepage_services_25', ''),
+(166, 'website', 'homepage_services_31', 'DOKTER SPESIALIS'),
+(167, 'website', 'homepage_services_32', 'Dilayani 35 Dokter Spesialis dan Sub Spesialis'),
+(168, 'website', 'homepage_services_33', 'website/service-icon3.png'),
+(169, 'website', 'homepage_services_34', 'Akurat & Rendah Radiasi'),
+(170, 'website', 'homepage_services_35', ''),
+(171, 'website', 'homepage_services_41', 'PERAWATAN ANAK'),
+(172, 'website', 'homepage_services_42', 'Deteksi dini dan pelayanan tumbuh kembang anak'),
+(173, 'website', 'homepage_services_43', 'website/service-icon4.png'),
+(174, 'website', 'homepage_services_44', 'Untuk Buah Hati'),
+(175, 'website', 'homepage_services_45', ''),
+(176, 'website', 'homepage_services_51', 'LAYANAN FARMASI'),
+(177, 'website', 'homepage_services_52', 'Memastikan ketepatan indikasi, aturan dan dosis obat'),
+(178, 'website', 'homepage_services_53', 'website/service-icon5.png'),
+(179, 'website', 'homepage_services_54', 'Tepat & Cepat'),
+(180, 'website', 'homepage_services_55', ''),
+(181, 'website', 'homepage_services_61', 'BANK DARAH'),
+(182, 'website', 'homepage_services_62', 'Menjamin ketersediaan darah untuk transfusi yang aman'),
+(183, 'website', 'homepage_services_63', 'website/service-icon1.png'),
+(184, 'website', 'homepage_services_64', 'Aman dan Nyaman'),
+(185, 'website', 'homepage_services_65', ''),
+(186, 'website', 'homepage_footer_about', 'Rumah Sakit Pemerintah tipe C dengan layanan terdepan menggunakan tekhnologi terkini.'),
+(187, 'website', 'homepage_footer_informasi_11', 'Jadwal Dokter'),
+(188, 'website', 'homepage_footer_informasi_12', 'http://localhost/webapps/jadwal.php'),
+(189, 'website', 'homepage_footer_informasi_21', 'Ketersediaan Tempat Tidur'),
+(190, 'website', 'homepage_footer_informasi_22', 'http://localhost/webapps/bed5.php'),
+(191, 'website', 'homepage_footer_informasi_31', 'Display Antrian'),
+(192, 'website', 'homepage_footer_informasi_32', 'http://localhost/webapps/antrian.php'),
+(193, 'website', 'homepage_sosmed_facebook', 'basoro'),
+(194, 'website', 'homepage_sosmed_youtube', 'basoro'),
+(195, 'website', 'homepage_sosmed_instagram', 'basoro');
 
 -- --------------------------------------------------------
 
@@ -1995,7 +2044,7 @@ CREATE TABLE `mlite_users` (
 --
 
 INSERT INTO `mlite_users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
-(1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar629a4e74cd08a.png', 'info@mlite.id', 'admin', '', 'all');
+(1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar63171c1c4cd49.png', 'info@mlite.id', 'admin', '', 'all');
 
 -- --------------------------------------------------------
 
@@ -2026,6 +2075,22 @@ CREATE TABLE `mlite_vedika_feedback` (
   `nosep` varchar(100) NOT NULL,
   `tanggal` date DEFAULT NULL,
   `catatan` text,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_veronisa`
+--
+
+CREATE TABLE `mlite_veronisa` (
+  `id` int(11) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `no_rkm_medis` varchar(6) NOT NULL,
+  `no_rawat` varchar(100) NOT NULL,
+  `tgl_registrasi` varchar(100) NOT NULL,
+  `nosep` varchar(100) NOT NULL,
   `username` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -2234,6 +2299,15 @@ CREATE TABLE `pasien` (
   `propinsipj` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `pasien`
+--
+
+INSERT INTO `pasien` (`no_rkm_medis`, `nm_pasien`, `no_ktp`, `jk`, `tmp_lahir`, `tgl_lahir`, `nm_ibu`, `alamat`, `gol_darah`, `pekerjaan`, `stts_nikah`, `agama`, `tgl_daftar`, `no_tlp`, `umur`, `pnd`, `keluarga`, `namakeluarga`, `kd_pj`, `no_peserta`, `kd_kel`, `kd_kec`, `kd_kab`, `pekerjaanpj`, `alamatpj`, `kelurahanpj`, `kecamatanpj`, `kabupatenpj`, `perusahaan_pasien`, `suku_bangsa`, `bahasa_pasien`, `cacat_fisik`, `email`, `nip`, `kd_prop`, `propinsipj`) VALUES
+('000001', 'SUPRIYANTO', '3571031909590005', 'L', '-', '1959-09-19', '-', 'Jl. Perintis Kemerdekaan', '-', '-', 'BELUM MENIKAH', 'ISLAM', '2022-09-06', '081250067788', '62 Th 11 Bl 17 Hr', '-', 'AYAH', '-', 'BPJ', '0001535601993', 1, 1, 1, '-', 'Jl. Perintis Kemerdekaan', '-', '-', '-', '-', 1, 1, 1, 'dentix.id@gmail.com', '-', 1, '-'),
+('000002', 'AZHAR', '1174020504980003', 'L', '-', '1998-04-05', '-', 'Jl. Perintis Kemerdekaan', '-', '-', 'BELUM MENIKAH', 'ISLAM', '2022-09-06', '081250067788', '24 Th 5 Bl 1 Hr', '-', 'AYAH', '-', 'BPJ', '0002035875396', 1, 1, 1, '-', 'Jl. Perintis Kemerdekaan', '-', '-', '-', '-', 1, 1, 1, 'dentix.id@gmail.com', '-', 1, '-'),
+('000003', 'RAHMATUL LAILIYAH', '3571025208960004', 'P', '-', '1996-08-01', '-', 'Jl. Perintis Kemerdekaan', '-', '-', 'BELUM MENIKAH', 'ISLAM', '2022-09-06', '081250067788', '26 Th 1 Bl 5 Hr', '-', 'AYAH', '-', 'BPJ', '0000782978411', 1, 1, 1, '-', 'Jl. Perintis Kemerdekaan', '-', '-', '-', '-', 1, 1, 1, 'dentix.id@gmail.com', '-', 1, '-');
+
 -- --------------------------------------------------------
 
 --
@@ -2306,7 +2380,7 @@ CREATE TABLE `pemeriksaan_ralan` (
   `keluhan` varchar(400) DEFAULT NULL,
   `pemeriksaan` varchar(400) DEFAULT NULL,
   `alergi` varchar(50) DEFAULT NULL,
-  `imun_ke` enum('-','1','2','3','4','5','6','7','8','10','11','12','13') DEFAULT NULL,
+  `lingkar_perut` varchar(5) DEFAULT NULL,
   `rtl` varchar(400) NOT NULL,
   `penilaian` varchar(400) NOT NULL,
   `instruksi` varchar(400) NOT NULL,
@@ -2640,7 +2714,8 @@ CREATE TABLE `poliklinik` (
 
 INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, `status`) VALUES
 ('-', '-', 0, 0, '1'),
-('IGDK', 'IGD', 0, 0, '1');
+('IGDK', 'IGD', 0, 0, '1'),
+('INT', 'Penyakit Dalam', 10000, 10000, '1');
 
 -- --------------------------------------------------------
 
@@ -2976,7 +3051,7 @@ CREATE TABLE `set_no_rkm_medis` (
 --
 
 INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES
-('000000');
+('000003');
 
 -- --------------------------------------------------------
 
@@ -3111,6 +3186,14 @@ CREATE TABLE `template_laboratorium` (
   `biaya_item` double NOT NULL,
   `urut` int(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `template_laboratorium`
+--
+
+INSERT INTO `template_laboratorium` (`kd_jenis_prw`, `id_template`, `Pemeriksaan`, `satuan`, `nilai_rujukan_ld`, `nilai_rujukan_la`, `nilai_rujukan_pd`, `nilai_rujukan_pa`, `bagian_rs`, `bhp`, `bagian_perujuk`, `bagian_dokter`, `bagian_laborat`, `kso`, `menejemen`, `biaya_item`, `urut`) VALUES
+('LAB01', 1, 'Leukosit', 'LK', '5', '5', '5', '5', 0, 0, 0, 0, 0, 0, 0, 0, 1),
+('LAB01', 2, 'Hemoglobin', 'HL', '10', '10', '10', '10', 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -3720,12 +3803,6 @@ ALTER TABLE `mlite_antrian_referensi`
   ADD PRIMARY KEY (`nomor_referensi`);
 
 --
--- Indexes for table `mlite_antrian_referensi_batal`
---
-ALTER TABLE `mlite_antrian_referensi_batal`
-  ADD PRIMARY KEY (`keterangan`);
-
---
 -- Indexes for table `mlite_billing`
 --
 ALTER TABLE `mlite_billing`
@@ -3874,6 +3951,12 @@ ALTER TABLE `mlite_vedika`
 -- Indexes for table `mlite_vedika_feedback`
 --
 ALTER TABLE `mlite_vedika_feedback`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_veronisa`
+--
+ALTER TABLE `mlite_veronisa`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4418,7 +4501,7 @@ ALTER TABLE `mlite_duitku`
 -- AUTO_INCREMENT for table `mlite_modules`
 --
 ALTER TABLE `mlite_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT for table `mlite_news`
@@ -4466,7 +4549,7 @@ ALTER TABLE `mlite_remember_me`
 -- AUTO_INCREMENT for table `mlite_settings`
 --
 ALTER TABLE `mlite_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=193;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=196;
 
 --
 -- AUTO_INCREMENT for table `mlite_users`
@@ -4484,6 +4567,12 @@ ALTER TABLE `mlite_vedika`
 -- AUTO_INCREMENT for table `mlite_vedika_feedback`
 --
 ALTER TABLE `mlite_vedika_feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `mlite_veronisa`
+--
+ALTER TABLE `mlite_veronisa`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -4508,7 +4597,7 @@ ALTER TABLE `suku_bangsa`
 -- AUTO_INCREMENT for table `template_laboratorium`
 --
 ALTER TABLE `template_laboratorium`
-  MODIFY `id_template` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_template` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Constraints for dumped tables

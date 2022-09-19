@@ -211,7 +211,7 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=gcs]').val("");
       $('input:text[name=kesadaran]').val("");
       $('input:text[name=alergi]').val("");
-      $('input:text[name=imun_ke]').val("");
+      $('input:text[name=lingkar_perut]').val("");
       $('textarea[name=keluhan]').val("");
       $('textarea[name=pemeriksaan]').val("");
       $('textarea[name=penilaian]').val("");
@@ -246,7 +246,7 @@ $("#soap").on("click",".edit_soap", function(event){
   var gcs             = $(this).attr("data-gcs");
   var kesadaran       = $(this).attr("data-kesadaran");
   var alergi          = $(this).attr("data-alergi");
-  var imun_ke         = $(this).attr("data-imun_ke");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
   var keluhan         = $(this).attr("data-keluhan");
   var pemeriksaan     = $(this).attr("data-pemeriksaan");
   var penilaian       = $(this).attr("data-penilaian");
@@ -266,7 +266,7 @@ $("#soap").on("click",".edit_soap", function(event){
   $('input:text[name=gcs]').val(gcs);
   $('input:text[name=kesadaran]').val(kesadaran);
   $('input:text[name=alergi]').val(alergi);
-  $('input:text[name=imun_ke]').val(imun_ke);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
   $('textarea[name=keluhan]').val(keluhan);
   $('textarea[name=pemeriksaan]').val(pemeriksaan);
   $('textarea[name=penilaian]').val(penilaian);
@@ -311,7 +311,7 @@ $("#soap").on("click",".hapus_soap", function(event){
         $('input:text[name=gcs]').val("");
         $('input:text[name=kesadaran]').val("");
         $('input:text[name=alergi]').val("");
-        $('input:text[name=imun_ke]').val("");
+        $('input:text[name=lingkar_perut]').val("");
         $('textarea[name=keluhan]').val("");
         $('textarea[name=pemeriksaan]').val("");
         $('textarea[name=penilaian]').val("");

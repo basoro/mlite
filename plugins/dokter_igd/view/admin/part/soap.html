@@ -109,12 +109,8 @@
                     <input type="text" name="alergi" class="form-control" placeholder="" value="{$dokter_igd.soap.alergi}">
                   </div>
                   <div class="col-sm-3">
-                    <label for="imun_ke">Imunisasi</label>
-                    <select class="form-control" name="imun_ke" width="100%">
-                      {loop: $dokter_igd.pemeriksaan_ralan.imun_ke}
-                        <option value="{$value}"{if: $dokter_igd.soap.imun_ke == $value} selected{/if}>{$value}</option>
-                      {/loop}
-                    </select>
+                    <label for="lingkar_perut">Lingkar Perut</label>
+                    <input type="text" name="lingkar_perut" class="form-control" placeholder="" value="{$dokter_igd.soap.lingkar_perut}">
                   </div>
                 </div>
             </div>
