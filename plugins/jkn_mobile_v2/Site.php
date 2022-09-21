@@ -1833,7 +1833,12 @@ class Site extends SiteModule
 
               $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
               if($jenispasien == 'JKN') {
-                $kodebooking = $nomorreferensi;
+                if ($referensi['kodebooking'] == '') {
+                    # code...
+                    $kodebooking = $nomorreferensi;
+                } else {
+                    $kodebooking = $referensi['kodebooking'];
+                }
               }
               //if(!$referensi) {
                 $data = [

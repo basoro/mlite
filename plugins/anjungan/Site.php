@@ -2166,6 +2166,13 @@ class Site extends SiteModule
           $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
           $json = json_decode($output, true);
           //var_dump($json);
+          if($json['metaData']['code'] == 201){
+            $url = "Rujukan/RS/List/Peserta/" . $slug[2];
+
+            $url = $this->api_url . '' . $url;
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+            $json = json_decode($output, true);
+          }
           $code = $json['metaData']['code'];
           $message = $json['metaData']['message'];
           $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2244,14 +2251,19 @@ class Site extends SiteModule
 
       $date = date('Y-m-d');
 
-      //if ($searchBy == 'RS') {
-      //    $url = 'Rujukan/RS/'.$slug[3];
-      //} else {
-          $url = 'Rujukan/'.$slug[3];
-      //}
+      $url = 'Rujukan/'.$slug[3];
       $url = $this->api_url.''.$url;
       $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
       $json = json_decode($output, true);
+
+      if($json['metaData']['code'] == 201){
+        $url = 'Rujukan/RS/' . $slug[3];
+
+        $url = $this->api_url . '' . $url;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+      }
+
       //var_dump($json);
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
