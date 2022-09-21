@@ -1335,17 +1335,36 @@ class Admin extends AdminModule
             $no_resep = $query['no_resep'];
             if(empty($query)) {
               $no_resep = $this->core->setNoResep();
-              $query = $this->core->mysql('resep_obat')
-                ->save([
-                  'no_resep' => $no_resep,
-                  'tgl_perawatan' => date('Y-m-d'),
-                  'jam' => date('H:i:s'),
-                  'no_rawat' => revertNorawat($id),
-                  'kd_dokter' => $this->core->getUserInfo('username', null, true),
-                  'tgl_peresepan' => date('Y-m-d'),
-                  'jam_peresepan' => date('H:i:s'),
-                  'status' => 'ralan'
-                ]);
+              $check_db = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `resep_obat` LIKE 'tgl_penyerahan'");
+              $check_db->execute();
+              $check_db = $check_db->fetch();
+              if($check_db) {
+                $query = $this->core->mysql('resep_obat')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'tgl_perawatan' => '0000-00-00',
+                    'jam' => '00:00:00',
+                    'no_rawat' => revertNorawat($id),
+                    'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                    'tgl_peresepan' => date('Y-m-d'),
+                    'jam_peresepan' => date('H:i:s'),
+                    'status' => 'ralan',
+                    'tgl_penyerahan' => '0000-00-00',
+                    'jam_penyerahan' => '00:00:00'
+                  ]);
+              } else {
+                $query = $this->core->mysql('resep_obat')
+                  ->save([
+                    'no_resep' => $no_resep,
+                    'tgl_perawatan' => '0000-00-00',
+                    'jam' => '00:00:00',
+                    'no_rawat' => revertNorawat($id),
+                    'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                    'tgl_peresepan' => date('Y-m-d'),
+                    'jam_peresepan' => date('H:i:s'),
+                    'status' => 'ralan'
+                  ]);
+              }
             }
             if ($query) {
                 for ($i = 0; $i < count($_POST['kode_brng']); $i++) {
@@ -1376,17 +1395,36 @@ class Admin extends AdminModule
         if (!$errors) {
             unset($_POST['save']);
             $no_resep = $this->core->setNoResep();
-            $query = $this->core->mysql('resep_obat')
-              ->save([
-                'no_resep' => $no_resep,
-                'tgl_perawatan' => date('Y-m-d'),
-                'jam' => date('H:i:s'),
-                'no_rawat' => revertNorawat($id),
-                'kd_dokter' => $this->core->getUserInfo('username', null, true),
-                'tgl_peresepan' => date('Y-m-d'),
-                'jam_peresepan' => date('H:i:s'),
-                'status' => 'ralan'
-              ]);
+            $check_db = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `resep_obat` LIKE 'tgl_penyerahan'");
+            $check_db->execute();
+            $check_db = $check_db->fetch();
+            if($check_db) {
+              $query = $this->core->mysql('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
+                  'no_rawat' => revertNorawat($id),
+                  'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                  'tgl_peresepan' => date('Y-m-d'),
+                  'jam_peresepan' => date('H:i:s'),
+                  'status' => 'ralan',
+                  'tgl_penyerahan' => '0000-00-00',
+                  'jam_penyerahan' => '00:00:00'
+                ]);
+            } else {
+              $query = $this->core->mysql('resep_obat')
+                ->save([
+                  'no_resep' => $no_resep,
+                  'tgl_perawatan' => '0000-00-00',
+                  'jam' => '00:00:00',
+                  'no_rawat' => revertNorawat($id),
+                  'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                  'tgl_peresepan' => date('Y-m-d'),
+                  'jam_peresepan' => date('H:i:s'),
+                  'status' => 'ralan'
+                ]);
+            }
 
             if ($query) {
               $no_racik = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $no_resep)->count();

@@ -376,9 +376,9 @@ abstract class Main
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
-          $last_no_resep[0] = '000000';
+          $last_no_resep[0] = '0000';
         }
-        $next_no_resep = sprintf('%06s', ($last_no_resep[0] + 1));
+        $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
         $next_no_resep = date('Ymd').''.$next_no_resep;
 
         return $next_no_resep;
