@@ -161,6 +161,7 @@ class Admin extends AdminModule
 
         $row = htmlspecialchars_array($row);
         $row['pdfURL'] = url([ADMIN, 'veronisa', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+        $row['batalURL'] = url([ADMIN, 'veronisa', 'batal', $this->convertNorawat($row['no_rawat'])]);
         $row['berkas_digital'] = $berkas_digital;
         $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
@@ -359,6 +360,12 @@ class Admin extends AdminModule
     } else {
       $this->notify('failure', 'Simpan gagal');
     }
+  }
+
+  public function getBatal($id)
+  {
+    $delete = $this->core->mysql('mlite_veronisa')->where('no_rawat', $this->revertNorawat($id))->delete();
+    redirect(url([ADMIN, 'veronisa', 'index']));
   }
 
   public function getPDF($id)
@@ -683,6 +690,23 @@ class Admin extends AdminModule
       ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
       ->where('no_rawat', $this->revertNorawat($id))
       ->toArray();
+    $riwayat_obat = [];
+    $list_riwayat = $this->core->mysql('reg_periksa')
+    ->where('no_rkm_medis',$this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+    ->toArray();
+    foreach($list_riwayat as $list_riw){
+      $beri_obat = $this->core->mysql('detail_pemberian_obat')
+        ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+        ->where('no_rawat', $list_riw['no_rawat'])
+        ->toArray();
+        foreach($beri_obat as $row){
+          $row['resep_obat_ku'] = $this->core->mysql('aturan_pakai')
+          ->where('aturan_pakai.no_rawat',$row['no_rawat'])
+          ->where('aturan_pakai.kode_brng',$row['kode_brng'])
+          ->oneArray();
+          $riwayat_obat[] = $row;
+        }
+    }
     $obat_operasi = $this->core->mysql('beri_obat_operasi')
       ->join('obatbhp_ok', 'beri_obat_operasi.kd_obat=obatbhp_ok.kd_obat')
       ->where('no_rawat', $this->revertNorawat($id))
@@ -718,6 +742,7 @@ class Admin extends AdminModule
     $this->tpl->set('pemberian_obat', $pemberian_obat);
     $this->tpl->set('obat_operasi', $obat_operasi);
     $this->tpl->set('laporan_operasi', $laporan_operasi);
+    $this->tpl->set('riwayat_obat', $riwayat_obat);
 
     $this->tpl->set('berkas_digital', $berkas_digital);
     $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);

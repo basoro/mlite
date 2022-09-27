@@ -944,6 +944,39 @@ Ralan :
   </fieldset>
   <br><br><br>
   <fieldset style="page-break-before:always;">
+    <h2><center>Riwayat Obat</center></h2>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      {*Pemberian Obat*}
+      {if: $riwayat_obat}
+      <tr class="isi">
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align='center'>
+              <td valign='top' width='10%' bgcolor='#FFFAF8'>Tanggal</td>
+              <td valign='top' width='10%' bgcolor='#FFFAF8'>Kode</td>
+              <td valign='top' width='45%' bgcolor='#FFFAF8'>Nama Obat</td>
+              <td valign='top' width='20%' bgcolor='#FFFAF8'>Jumlah</td>
+              <td valign='top' width='20%' bgcolor='#FFFAF8'>Aturan Pakai</td>
+            </tr>
+            {loop: $riwayat_obat as $value}
+            <tr>
+              <td valign='top'>{$value.tgl_perawatan} {$value.jam}</td>
+              <td valign='top'>{$value.kode_brng}</td>
+              <td valign='top'>{$value.nama_brng}</td>
+              <td valign='top'>{$value.jml} {$value.kode_sat}</td>
+              <td valign='top'>
+                {$value.resep_obat_ku.aturan}
+              </td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+    </table>
+  </fieldset>
+  <br><br><br>
+  <fieldset style="page-break-before:always;">
     <h2><center>Billing</center></h2>
     <table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
 			<tr>
@@ -1206,11 +1239,11 @@ Ralan :
     <h2><center>Berkas Digital Perawatan</center></h2>
     <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="tbl_form">
         {loop: $berkas_digital}
-        {if: $value.kode == $billing_mlite_veronisa.obat_kronis}
+        {*if: $value.kode == $billing_mlite_veronisa.obat_kronis*}
         <tr>
           <td><img src="{?=url(WEBAPPS_URL)?}/berkasrawat/{$value.lokasi_file}" style="max-width: 800px;"><br>{$value.nama}</td>
         </tr>
-        {/if}
+        {*/if*}
         {/loop}
     </table>
   </fieldset>

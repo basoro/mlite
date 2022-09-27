@@ -441,6 +441,23 @@ class Site extends SiteModule
           ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
           ->where('no_rawat', $this->revertNorawat($id))
           ->toArray();
+        $riwayat_obat = [];
+        $list_riwayat = $this->core->mysql('reg_periksa')
+        ->where('no_rkm_medis',$this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+        ->toArray();
+        foreach($list_riwayat as $list_riw){
+          $beri_obat = $this->core->mysql('detail_pemberian_obat')
+            ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+            ->where('no_rawat', $list_riw['no_rawat'])
+            ->toArray();
+            foreach($beri_obat as $row){
+              $row['resep_obat_ku'] = $this->core->mysql('aturan_pakai')
+              ->where('aturan_pakai.no_rawat',$row['no_rawat'])
+              ->where('aturan_pakai.kode_brng',$row['kode_brng'])
+              ->oneArray();
+              $riwayat_obat[] = $row;
+            }
+        }
         $obat_operasi = $this->core->mysql('beri_obat_operasi')
           ->join('obatbhp_ok', 'beri_obat_operasi.kd_obat=obatbhp_ok.kd_obat')
           ->where('no_rawat', $this->revertNorawat($id))
@@ -475,6 +492,7 @@ class Site extends SiteModule
         $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
         $this->tpl->set('pemberian_obat', $pemberian_obat);
         $this->tpl->set('obat_operasi', $obat_operasi);
+        $this->tpl->set('riwayat_obat', $riwayat_obat);
 
         $this->tpl->set('berkas_digital', $berkas_digital);
         $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
@@ -491,11 +509,11 @@ class Site extends SiteModule
     private function _login($username, $password)
     {
         // Check attempt
-        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->core->mysql('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
@@ -507,7 +525,7 @@ class Site extends SiteModule
 
         if ($row_username == $username && $row_password == $password) {
             // Reset fail attempts for this IP
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
             $_SESSION['veronisa_user']       = $row_username;
             $_SESSION['veronisa_token']      = bin2hex(openssl_random_pseudo_bytes(6));
@@ -517,12 +535,12 @@ class Site extends SiteModule
             return true;
         } else {
             // Increase attempt
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                 $attempt['expires'] = strtotime("+10 minutes");
 
                 $this->core->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
