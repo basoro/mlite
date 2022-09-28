@@ -680,6 +680,12 @@ class Admin extends AdminModule
       }
     }
 
+    if($data['response']['dpjp']['kdDPJP'] =='0')
+    {
+	    $data['response']['dpjp']['kdDPJP'] = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['kd_dokter_bpjs'];
+      $data['response']['dpjp']['nmDPJP'] = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'];
+    }
+
     if ($data['metaData']['code'] == 200) {
       $insert = $this->core->mysql('bridging_sep')->save([
         'no_sep' => $data['response']['noSep'],
