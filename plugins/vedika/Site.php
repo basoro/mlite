@@ -812,6 +812,12 @@ class Site extends SiteModule
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
+        if(!$this->core->mysql('resume_pasien')->where('no_rawat', $this->revertNorawat($id))->oneArray()) {
+          $resume_pasien = $this->core->mysql('resume_pasien_ranap')
+            ->join('dokter', 'dokter.kd_dokter = resume_pasien_ranap.kd_dokter')
+            ->where('no_rawat', $this->revertNorawat($id))
+            ->oneArray();
+        }
         $this->tpl->set('resume_pasien', $resume_pasien);
 
         $pasien = $this->core->mysql('pasien')
