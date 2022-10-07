@@ -1882,6 +1882,7 @@ class Site extends SiteModule
                           'tanggal_periksa' => $q['tgl_registrasi'],
                           'nomor_kartu' => $q['no_peserta'],
                           'nomor_referensi' => $nomorreferensi,
+                          'kodebooking' => $kodebooking,
                           'jenis_kunjungan' => $jeniskunjungan,
                           'status_kirim' => 'Sudah'
                       ]);
@@ -1897,6 +1898,7 @@ class Site extends SiteModule
                           'tanggal_periksa' => $q['tgl_registrasi'],
                           'nomor_kartu' => $q['no_rkm_medis'],
                           'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+                          'kodebooking' => $kodebooking,
                           'jenis_kunjungan' => $jeniskunjungan,
                           'status_kirim' => 'Sudah'
                       ]);
