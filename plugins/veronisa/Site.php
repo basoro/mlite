@@ -29,6 +29,7 @@ class Site extends SiteModule
         $this->route('vero/index/(:int)', 'getIndex');
         $this->route('vero/css', 'getCss');
         $this->route('vero/javascript', 'getJavascript');
+        $this->route('vero/catatan/(:str)', 'getCatatan');
         $this->route('vero/pdf/(:str)', 'getPDF');
         $this->route('vero/logout', function () {
             $this->logout();
@@ -43,6 +44,22 @@ class Site extends SiteModule
                 'desc' => 'Dashboard Verifikasi Obat Kronis Aura Syifa',
                 'content' => $this->_getManage()
             ];
+            if(isset($_POST['perbaiki'])) {
+              $simpan_status = $this->core->mysql('mlite_veronisa')
+              ->where('nosep', $_POST['nosep'])
+              ->save([
+                'status' => 'Perbaiki'
+              ]);
+              if($simpan_status) {
+                $this->core->mysql('mlite_veronisa_feedback')->save([
+                  'id' => NULL,
+                  'nosep' => $_POST['nosep'],
+                  'tanggal' => date('Y-m-d'),
+                  'catatan' => $_POST['catatan'],
+                  'username' => $_SESSION['veronisa_user']
+                ]);
+              }
+            }
         } else {
             if (isset($_POST['login'])) {
                 if ($this->_login($_POST['username'], $_POST['password'])) {
@@ -127,6 +144,8 @@ class Site extends SiteModule
               $row = htmlspecialchars_array($row);
               $row['berkas_digital'] = $berkas_digital;
               $row['berkas_digital_pasien'] = $berkas_digital_pasien;
+              $row['catatanURL'] = url(['vero', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+              $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
@@ -138,6 +157,21 @@ class Site extends SiteModule
       $this->assign['searchUrl'] =  url(['vero', 'index', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('index.html', ['veronisa' => $this->assign]);
 
+    }
+
+    public function getCatatan($id)
+    {
+      $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
+      $veronisa = $this->core->mysql('mlite_veronisa')->where('nosep', $id)->asc('id')->toArray();
+      $veronisa_feedback = $this->core->mysql('mlite_veronisa_feedback')->where('nosep', $id)->asc('id')->toArray();
+      $this->tpl->set('logo', $this->settings->get('settings.logo'));
+      $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
+      $this->tpl->set('set_status', $set_status);
+      $this->tpl->set('veronisa', $veronisa);
+      $this->tpl->set('veronisa_feedback', $veronisa_feedback);
+      $this->tpl->set('username', $_SESSION['veronisa_user']);
+      echo $this->tpl->draw(MODULES.'/veronisa/view/catatan.html', true);
+      exit();
     }
 
     public function getPDF($id)
