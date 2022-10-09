@@ -15,6 +15,7 @@ return [
         `no_rawat` varchar(100) NOT NULL,
         `tgl_registrasi` varchar(100) NOT NULL,
         `nosep` varchar(100) NOT NULL,
+        `status` varchar(100) NOT NULL,
         `username` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
@@ -22,6 +23,20 @@ return [
         ADD PRIMARY KEY (`id`);");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `mlite_veronisa`
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_veronisa_feedback` (
+        `id` int(11) NOT NULL,
+        `nosep` varchar(100) NOT NULL,
+        `tanggal` date DEFAULT NULL,
+        `catatan` TEXT,
+        `username` varchar(100) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `mlite_veronisa_feedback`
+        ADD PRIMARY KEY (`id`);");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `mlite_veronisa_feedback`
         MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('veronisa', 'username', '')");

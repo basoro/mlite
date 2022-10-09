@@ -997,7 +997,7 @@ class Admin extends AdminModule
   public function getSetStatus($id)
   {
     $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
-    $vedika = $this->core->mysql('mlite_vedika')->where('nosep', $id)->asc('id')->toArray();
+    $vedika = $this->core->mysql('mlite_vedika')->join('mlite_vedika_feedback','mlite_vedika_feedback.nosep=mlite_vedika.nosep')->where('mlite_vedika.nosep', $id)->asc('mlite_vedika.id')->toArray();
     $this->tpl->set('logo', $this->settings->get('settings.logo'));
     $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
     $this->tpl->set('set_status', $set_status);

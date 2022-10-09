@@ -57,6 +57,16 @@ class Admin extends AdminModule
             'status' => $_POST['status']
           ]);
       }
+      if ($simpan_status) {
+        $this->core->mysql('mlite_veronisa_feedback')->save([
+          'id' => NULL,
+          'nosep' => $_POST['nosep'],
+          'tanggal' => date('Y-m-d'),
+          'catatan' => $_POST['catatan'],
+          'username' => $this->core->getUserInfo('username', null, true)
+        ]);
+      }
+
     }
 
     if (isset($_POST['simpanberkas'])) {
@@ -165,6 +175,8 @@ class Admin extends AdminModule
         $row['berkas_digital'] = $berkas_digital;
         $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
+        $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
+        $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
         $row['berkasPasien'] = url([ADMIN, 'veronisa', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'veronisa', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
         $this->assign['list'][] = $row;
@@ -750,6 +762,18 @@ class Admin extends AdminModule
     $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
     echo $this->tpl->draw(MODULES . '/veronisa/view/admin/pdf.html', true);
+    exit();
+  }
+
+  public function getSetStatus($id)
+  {
+    $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
+    $veronisa = $this->core->mysql('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
+    $this->tpl->set('logo', $this->settings->get('settings.logo'));
+    $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
+    $this->tpl->set('set_status', $set_status);
+    $this->tpl->set('veronisa', $veronisa);
+    echo $this->tpl->draw(MODULES . '/veronisa/view/admin/setstatus.html', true);
     exit();
   }
 

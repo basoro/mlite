@@ -69,6 +69,18 @@
                           <a href="{$value.pdfURL}" target="_blank" class="btn btn-primary btn-xs">
       											<i class="fa fa-print"></i> Lihat Data Klaim
       										</a><br/>
+                          {if: $value.nosep == ''}
+                            <button class="btn btn-warning btn-xs">
+        											<i class="fa fa-check"></i> Status
+        										</button><br>
+                          {else}
+                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+        											<i class="fa fa-check"></i> Status
+        										</a>
+                          {/if}
+                          {loop: $value.status_pengajuan as $data}
+                          <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
+                          {/loop}
                         </td>
       									<td>
                           <table>
