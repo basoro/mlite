@@ -3641,4 +3641,11 @@ class Site extends SiteModule
       return $umur;
     }
 
+    public function getJavascript()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/anjungan/js/antrian.js');
+        exit();
+    }
+
 }
