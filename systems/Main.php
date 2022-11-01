@@ -402,7 +402,7 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
