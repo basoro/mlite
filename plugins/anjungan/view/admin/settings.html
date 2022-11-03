@@ -63,6 +63,11 @@
                         <input type="text" name="anjungan[vidio]" class="form-control" value="{$settings.anjungan.vidio}" />
                     </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    <div class="btn-group pull-right" role="group" aria-label="Basic example">
+                      <a href="{?=url([ADMIN,'anjungan','resetanjunganloket'])?}" target="_blank" class="btn btn-danger" data-confirm="Yakin ingin mereset antrian anjungan Loket? Mereset antrian anjungan Loket juga akan menghapus data Task ID 1 dan 2 di tanggal hari ini!">Reset Loket</a>
+                      <a href="{?=url([ADMIN,'anjungan','resetanjungancs'])?}" target="_blank" class="btn btn-info" data-confirm="Yakin ingin mereset antrian anjungan CS? Mereset antrian anjungan CS juga akan menghapus data Task ID 1 dan 2 di tanggal hari ini!">Reset CS</a>
+                      <a href="{?=url([ADMIN,'anjungan','resetanjunganapotek'])?}" target="_blank" class="btn btn-warning" data-confirm="Yakin ingin mereset antrian anjungan Apotek? Mereset antrian anjungan Apotek juga akan menghapus data Task ID 6 dan 7 di tanggal hari ini!">Reset Apotek</a>
+                    </div>
                 </div>
             </div>
         </div>
