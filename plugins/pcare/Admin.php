@@ -16,15 +16,6 @@ class Admin extends AdminModule
     $this->consumerSecret = $this->settings->get('pcare.consumerSecret');
     $this->consumerUserKey = $this->settings->get('pcare.consumerUserKey');
     $this->api_url = $this->settings->get('pcare.PCareApiUrl');
-    /*
-    $this->usernamePcare = '0283U102';
-    $this->passwordPcare = 'Baru.diganti22';
-    $this->kdAplikasi = '095';
-    $this->consumerID = '21294';
-    $this->consumerSecret = '5eL7B8431E';
-    $this->consumerUserKey = 'f3ad5e8aed986ee78f10340d4359f892';
-    $this->api_url = 'https://apijkn-dev.bpjs-kesehatan.go.id/pcare-rest-dev/';
-    */
   }
 
   public function navigation()
