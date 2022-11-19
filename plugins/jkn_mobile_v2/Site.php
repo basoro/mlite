@@ -224,7 +224,7 @@ class Site extends SiteModule
                         http_response_code(202);
                     } else {
                         // Get antrian poli
-                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode['tanggalperiksa']);
+                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode['tanggalperiksa'], $decode['tanggalperiksa']);
                         $no_urut_reg = substr($no_reg, 0, 3);
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
