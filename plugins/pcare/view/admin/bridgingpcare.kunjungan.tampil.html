@@ -1,0 +1,104 @@
+<h4>Data Kunjungan Tampil</h4>
+<div class="table-responsive">
+<table id="tindakanobat" class="table table-bordered table-striped table-hover display nowrap datatabletampilkunjungan" width="100%">
+  <thead>
+    <tr>
+      <th>Tgl. Kunjungan</th>
+      <th>Nomor Kunjungan</th>
+      <th>ID. Rawat</th>
+      <th>No. RM</th>
+      <th>Nama Pasien</th>
+      <th>No. Kartu</th>
+      <th>Nama Poli</th>
+      <th>Keluhan</th>
+      <th>Jenis Kunjungan</th>
+      <th>Sis</th>
+      <th>Dias</th>
+      <th>B.B</th>
+      <th>T.B</th>
+      <th>R.R</th>
+      <th>L.P</th>
+      <th>H.R</th>
+      <th>Perawatan</th>
+      <th>No. Urut</th>
+      <th>Kesadaran</th>
+      <th>Terapi</th>
+      <th>Status Pulang</th>
+      <th>Tgl. Pulang</th>
+      <th>Nama Dokter</th>
+      <th>Diagnosa 1</th>
+      <th>Diagnosa 2</th>
+      <th>Diagnosa 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $bridging_pcare}
+    <tr>
+      <td>{$value.tgl_kunjungan}</td>
+      <td>{$value.nomor_kunjungan} <a href="#" class="btn btn-xs btn-info bridgingpcaretindakan" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-send"></span></a> <a href="#" class="btn btn-xs btn-primary bridgingpcareobat" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-medkit"></span></a></td>
+      <td>{$value.no_rawat}</td>
+      <td>{$value.no_rkm_medis}</td>
+      <td>{$value.nm_pasien}</td>
+      <td>{$value.nomor_jaminan}</td>
+      <td>{$value.nama_poli}</td>
+      <td>{$value.subyektif}</td>
+      <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
+      <td>{$value.sistole}</td>
+      <td>{$value.diastole}</td>
+      <td>{$value.berat}</td>
+      <td>{$value.tinggi}</td>
+      <td>{$value.respirasi}</td>
+      <td>{$value.lingkar_perut}</td>
+      <td>{$value.nadi}</td>
+      <td>{$value.terapi}</td>
+      <td>{$value.nomor_urut}</td>
+      <td>{$value.nama_kesadaran}</td>
+      <td>{$value.terapi}</td>
+      <td>{$value.nama_status_pulang}</td>
+      <td>{$value.tgl_pulang}</td>
+      <td>{$value.nama_dokter}</td>
+      <td>{$value.nama_diagnosa1}</td>
+      <td>{$value.nama_diagnosa2}</td>
+      <td>{$value.nama_diagnosa3}</td>
+    </tr>
+    {/loop}
+  </tbody>
+</table>
+</div>
+<script type="text/javascript">
+  $('.datatabletampilkunjungan').DataTable();
+</script>
+<script type="text/javascript">
+  $("#tindakanobat").on("click",".bridgingpcaretindakan", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var nomor_kunjungan = $(this).attr("data-nomor_kunjungan");
+    var loadURL =  baseURL + '/pcare/bridgingpcaretindakan/' + nomor_kunjungan + '?t=' + mlite.token;
+
+    var modal = $('#bridgingpcaretindakanobatModal');
+    var modalContent = $('#bridgingpcaretindakanobatModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#tindakanobat").on("click",".bridgingpcareobat", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var nomor_kunjungan = $(this).attr("data-nomor_kunjungan");
+    var loadURL =  baseURL + '/pcare/bridgingpcareobat/' + nomor_kunjungan + '?t=' + mlite.token;
+
+    var modal = $('#bridgingpcaretindakanobatModal');
+    var modalContent = $('#bridgingpcaretindakanobatModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>

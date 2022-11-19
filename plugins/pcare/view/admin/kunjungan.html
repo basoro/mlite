@@ -1,0 +1,254 @@
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kunjungan</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Get Rujukan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseOne" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="kunjungan" name="kunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Rujukan</label>
+                                      <input type="text" id="noRujukan" name="noRujukan" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['noRujukan'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Get Riwayat Kunjungan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseTwo" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="kunjungan" name="kunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="noKartu" name="noKartu" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['noKartu'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Add Kunjungan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseThree" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="addkunjungan" name="addkunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="noKartu" name="noKartu" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Daftar</label>
+                                      <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Poli</label>
+                                      <input type="text" id="kdPoli" name="kdPoli" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Dokter</label>
+                                      <input type="text" id="kdDokter" name="kdDokter" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['addkunjungan'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Edit Kunjungan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseFour" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="editkunjungan" name="editkunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kunjungan</label>
+                                      <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="noKartu" name="noKartu" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Kesadaran</label>
+                                      <input type="text" id="kdSadar" name="kdSadar" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Pulang</label>
+                                      <input type="text" id="tglPulang" name="tglPulang" class="form-control tanggal" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Dokter</label>
+                                      <input type="text" id="kdDokter" name="kdDokter" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['editkunjungan'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Delete Kunjungan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseFive" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="delkunjungan" name="delkunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kunjungan</label>
+                                      <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['delkunjungan'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'DD-MM-YYYY',
+         locale: 'id'
+       });
+   });
+</script>
+<script>
+    {if: isset($_GET['kunjungan']) && isset($_GET['noRujukan']) && $_GET['noRujukan']!=''}
+        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'rujukan', $_GET['noRujukan']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['kunjungan']) && isset($_GET['noKartu']) && $_GET['noKartu']!=''}
+        $.get("{?=url([ADMIN, 'pcare', 'kunjungan', 'peserta', $_GET['noKartu']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['addkunjungan']) && isset($_GET['kdDokter']) && isset($_GET['noKartu']) && isset($_GET['tglDaftar']) && isset($_GET['kdPoli'])}
+        $.get("{?=url([ADMIN, 'pcare', 'addkunjungan', $_GET['kdDokter'], $_GET['tglDaftar'], $_GET['noKartu'],$_GET['kdPoli']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['editkunjungan']) && isset($_GET['noKunjungan']) && isset($_GET['noKartu']) && isset($_GET['kdSadar']) && $_GET['tglPulang'] && $_GET['kdDokter']}
+        $.get("{?=url([ADMIN, 'pcare', 'editkunjungan', $_GET['noKunjungan'], $_GET['noKartu'], $_GET['kdSadar'], $_GET['tglPulang'], $_GET['kdDokter']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['delkunjungan'])}
+        $.get("{?=url([ADMIN, 'pcare', 'delkunjungan', $_GET['noKunjungan']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+</script>
