@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'name'          =>  'PCare Request',
+    'name'          =>  'Bridging PCare',
     'description'   =>  'Modul pcare api untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
