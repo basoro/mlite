@@ -11,8 +11,8 @@ return [
 
       $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
         `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-        `id_pendaftaran` TEXT NOT NULL,
-        `id_pasien` TEXT DEFAULT NULL,
+        `no_rawat` TEXT NOT NULL,
+        `no_rkm_medis` TEXT DEFAULT NULL,
         `tgl_daftar` TEXT DEFAULT NULL,
         `nomor_kunjungan` TEXT DEFAULT NULL,
         `kode_provider_peserta` TEXT DEFAULT NULL,
