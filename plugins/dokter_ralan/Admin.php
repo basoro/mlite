@@ -1168,6 +1168,13 @@ class Admin extends AdminModule
                   //->select('detail_pemberian_obat.jml')
                   //->select('resep_dokter.aturan_pakai')
                   ->toArray();
+
+                // Show Gambar Pemeriksaan Catatan - Start
+                $pemeriksaan_catatan = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$id)->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
+                
+                $row['pemeriksaan_catatan'] = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$row['no_rawat'])->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
+                // Show Gambar Pemeriksaan Catatan - END
+
                 $detail_periksa_lab = $this->core->mysql('detail_periksa_lab')->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')->where('no_rawat', $row['no_rawat'])->toArray();
                 $hasil_radiologi = $this->core->mysql('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
                 $gambar_radiologi = $this->core->mysql('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
@@ -1200,8 +1207,7 @@ class Admin extends AdminModule
                 $row['berkas_digital'] = $berkas_digital;
                 $this->assign['riwayat'][] = $row;
             }
-
-            return $this->draw('view.html', ['dokter_ralan' => $this->assign, 'admin_mode' => $this->settings->get('settings.admin_mode'), 'data_resep' => $data_resep]);
+            return $this->draw('view.html', ['dokter_ralan' => $this->assign, 'admin_mode' => $this->settings->get('settings.admin_mode'), 'data_resep' => $data_resep, 'pemeriksaan_catatan' => $pemeriksaan_catatan]);
         } else {
             redirect(url([ADMIN, 'dokter_ralan', 'manage']));
         }
@@ -1457,6 +1463,59 @@ class Admin extends AdminModule
 
         redirect($location, $_POST);
     }
+
+    // Fitur Menggambar Catatan Pemeriksaan - START
+    public function postUploadGambarPemeriksaan($id = null)
+    {
+        $dir    = UPLOADS.'/catatan_pemeriksaan';
+        $cntr   = 0;
+        $img = new \Systems\Lib\Image();
+        $nip = $this->core->getUserInfo('username', null, true);
+    
+        if ($_POST['gambar']) {
+          $imgName = time().$cntr++;
+          $waktu_catatan = date('Y-m-d H:i:s');
+          
+          $imgGetPart = explode(",",$_POST['gambar']);
+          $img64Decode = base64_decode($imgGetPart[1]);
+            
+          $imgPath = $dir.'/'.$id.'_'.$imgName.'.png';
+          $lokasi_file = $id.'_'.$imgName.'.png';
+          file_put_contents($imgPath, $img64Decode); //upload_file
+          $query = $this->db('pemeriksaan_catatan')->save(['no_rawat' => revertNorawat($id), 'waktu_catatan' => $waktu_catatan, 'gambar_catatan' => $lokasi_file, 'nip' => $nip]);
+        } else {
+          $this->notify('failure', 'Gagal menambahkan Catatan Pemeriksaan', 'Catatan Pemeriksaan Kosong / Belum diisi');
+        }
+        
+        if ($query) {
+          $this->notify('success', 'Sukses menambahkan Catatan Pemeriksaan');
+        };
+        redirect(url([ADMIN, 'dokter_ralan', 'view', $id]).'#soap');
+    }
+
+    public function getDelGambarPemeriksaan($id, $gambar)
+    {
+      $gambar = $gambar.'.png';
+      $lokasi_file = UPLOADS.'/catatan_pemeriksaan/'.$gambar;
+
+      if (file_exists($lokasi_file)) {
+        $data = $this->core->mysql('pemeriksaan_catatan')
+                ->where('no_rawat',revertNorawat($id))
+                ->where('gambar_catatan', $gambar)
+                ->delete();
+        if ($data) {
+          unlink($lokasi_file);
+          $this->notify('success', 'Sukses menghapus Gambar Catatan Pemeriksaan');
+        } else {
+          $this->notify('failure', 'Gagal menghapus Catatan Pemeriksaan '.revertNorawat($id).' '.$gambar);
+        }
+      } else {
+        $this->notify('failure', 'Gagal menghapus Catatan Pemeriksaan, '.$lokasi_file.' Tidak ditemukan');
+      }
+
+      redirect(url([ADMIN, 'dokter_ralan', 'view', $id]).'#soap');
+    }
+    // Fitur Menggambar Catatan Pemeriksaan - END
 
     public function postRadiologiSave($id = null)
     {
