@@ -1,0 +1,64 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{$opensimrs.path}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css?v={$opensimrs.version}" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{?=url(THEMES)?}/js/theme.js"></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+      	background: #0264d6; /* Old browsers */
+      	background: -moz-radial-gradient(center, ellipse cover,  #0264d6 1%, #1c2b5a 100%); /* FF3.6+ */
+      	background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(1%,#0264d6), color-stop(100%,#1c2b5a)); /* Chrome,Safari4+ */
+      	background: -webkit-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Chrome10+,Safari5.1+ */
+      	background: -o-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* Opera 12+ */
+      	background: -ms-radial-gradient(center, ellipse cover,  #0264d6 1%,#1c2b5a 100%); /* IE10+ */
+      	background: radial-gradient(ellipse at center,  #0264d6 1%,#1c2b5a 100%); /* W3C */
+      	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#0264d6', endColorstr='#1c2b5a',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+      	height:calc(100vh);
+      	width:100%;
+      }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+<h1 class="display-3 text-center text-white m-3">Antrian Poliklinik {$settings.nama_instansi}</h1>
+<table class="table table-bordered table-striped lead text-primary">
+  <thead class="bg-primary">
+    <tr>
+      <th>Dokter/Klinik</th>
+      <th>Dalam Pemeriksaan</th>
+      <th>Nomor Urut Berikutnya</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $display}
+    <tr>
+      <th>{$value.nm_dokter}<small> - {$value.nm_poli}</small><br><small>[ Antrian: {$value.dalam_antrian.jumlah} - Terlayani: {$value.sudah_dilayani.jumlah} ]</small></th>
+      <td>{if: empty($value.dalam_pemeriksaan)}Kosong{else}{$value.dalam_pemeriksaan.no_reg} - {$value.dalam_pemeriksaan.nm_pasien}{/if}</td>
+      <td>
+        <marquee scrollamount="3">
+          {if: !empty($value.selanjutnya)}
+            {loop: $value.selanjutnya as $data}
+              - {$data.nm_pasien} (<strong>{$data.no_reg} - {$value.jam_mulai_selanjutnya}</strong>)
+            {/loop}
+          {/if}
+        </marquee>
+      </td>
+    </tr>
+    {/loop}
+  </tbody>
+</table>
+</div>
+</body>
+</html>

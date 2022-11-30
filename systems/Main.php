@@ -356,9 +356,12 @@ abstract class Main
         return $_next_no_reg;
     }
 
-    public function setNoBooking($kd_dokter, $date)
+    public function setNoBooking($kd_dokter, $kd_poli = null, $date)
     {
-        $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+          $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        }
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
         if(empty($last_no_reg[0])) {

@@ -1,0 +1,72 @@
+<article class="row">
+  <div class="col-md-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <form action="{?=url(ADMIN.'/pcare/saveSettings')?}" method="POST">
+      <div class="panel panel-default">
+          <div class="panel-heading">
+              <h3 class="panel-title">{$settings.title}</h3>
+          </div>
+      	  <div class="panel-body">
+              <div class="form-group">
+                  <label>Username PCare</label>
+                  <input type="text" name="pcare[usernamePcare]" class="form-control" value="{$settings.pcare.usernamePcare}" />
+              </div>
+              <div class="form-group">
+                  <label>Password PCare</label>
+                  <input type="text" name="pcare[passwordPcare]" class="form-control" value="{$settings.pcare.passwordPcare}" />
+              </div>
+              <div class="form-group">
+                  <label>PCare Cons ID</label>
+                  <input type="text" name="pcare[consumerID]" class="form-control" value="{$settings.pcare.consumerID}" />
+              </div>
+              <div class="form-group">
+                  <label>PCare Secret Key</label>
+                  <input type="text" name="pcare[consumerSecret]" class="form-control" value="{$settings.pcare.consumerSecret}" />
+              </div>
+              <div class="form-group">
+                  <label>PCare User Key</label>
+                  <input type="text" name="pcare[consumerUserKey]" class="form-control" value="{$settings.pcare.consumerUserKey}" />
+              </div>
+              <div class="form-group">
+                  <label>PCare API Url</label>
+                  <input type="text" name="pcare[PCareApiUrl]" class="form-control" value="{$settings.pcare.PCareApiUrl}" />
+              </div>
+              <div class="form-group">
+                  <label>Kode FKTP</label>
+                  <input type="text" name="pcare[kode_fktp]" class="form-control" value="{$settings.pcare.kode_fktp}" />
+              </div>
+              <div class="form-group">
+                  <label>Nama FKTP</label>
+                  <input type="text" name="pcare[nama_fktp]" class="form-control" value="{$settings.pcare.nama_fktp}" />
+              </div>
+              <div class="form-group">
+                  <label>Kode Kabupaten/Kota</label>
+                  <input type="text" name="pcare[kode_kabupatenkota]" class="form-control" value="{$settings.pcare.kode_kabupatenkota}" />
+              </div>
+              <div class="form-group">
+                  <label>Nama Kabupaten/Kota</label>
+                  <input type="text" name="pcare[kabupatenkota]" class="form-control" value="{$settings.pcare.kabupatenkota}" />
+              </div>
+              <div class="form-group">
+                  <label>Kantor Wilayah</label>
+                  <input type="text" name="pcare[wilayah]" class="form-control" value="{$settings.pcare.wilayah}" />
+              </div>
+              <div class="form-group">
+                  <label>Kantor Cabang</label>
+                  <input type="text" name="pcare[cabang]" class="form-control" value="{$settings.pcare.cabang}" />
+              </div>
+              <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+          </div>
+      </div>
+    </form>
+  </div>
+</article>

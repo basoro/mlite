@@ -102,4 +102,73 @@ class Admin extends AdminModule
         return $result;
     }
 
+    public function getResetAnjunganLoket(){
+      date_default_timezone_set($this->settings->get('settings.timezone'));
+      $date = date('Y-m-d');
+      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      if($checkAnjungan){
+        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        echo 'Berhasil Reset Antrian Anjungan Loket<br>';
+        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        if(!$checkAnjungan){
+          $this->core->mysql('mlite_antrian_loket')->save([
+            'type' => 'Loket',
+            'noantrian' => '1',
+            'postdate' => $date,
+            'start_time' => date('H:i:s')
+          ]);
+        }
+        echo 'Berhasil Memperbarui Antrian Anjungan Loket';
+      } else {
+        echo 'Antrian Anjungan Loket Tidak Ada Data';
+      }
+      exit();
+    }
+
+    public function getResetAnjunganCS(){
+      date_default_timezone_set($this->settings->get('settings.timezone'));
+      $date = date('Y-m-d');
+      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      if($checkAnjungan){
+        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        echo 'Berhasil Reset Antrian Anjungan CS<br>';
+        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        if(!$checkAnjungan){
+          $this->core->mysql('mlite_antrian_loket')->save([
+            'type' => 'CS',
+            'noantrian' => '1',
+            'postdate' => $date,
+            'start_time' => date('H:i:s')
+          ]);
+        }
+        echo 'Berhasil Memperbarui Antrian Anjungan CS';
+      } else {
+        echo 'Antrian Anjungan CS Tidak Ada Data';
+      }
+      exit();
+    }
+
+    public function getResetAnjunganApotek(){
+      date_default_timezone_set($this->settings->get('settings.timezone'));
+      $date = date('Y-m-d');
+      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      if($checkAnjungan){
+        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        echo 'Berhasil Reset Antrian Anjungan Apotek<br>';
+        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        if(!$checkAnjungan){
+          $this->core->mysql('mlite_antrian_loket')->save([
+            'type' => 'Apotek',
+            'noantrian' => '1',
+            'postdate' => $date,
+            'start_time' => date('H:i:s')
+          ]);
+        }
+        echo 'Berhasil Memperbarui Antrian Anjungan Apotek';
+      } else {
+        echo 'Antrian Anjungan Apotek Tidak Ada Data';
+      }
+      exit();
+    }
+
 }

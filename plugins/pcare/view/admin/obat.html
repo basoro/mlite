@@ -1,0 +1,204 @@
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Obat</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Get DPHO</a>
+                              </h4>
+                          </div>
+                          <div id="collapseTwo" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="getobatreferensi" name="getobatreferensi" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Kode / Nama DPHO</label>
+                                      <input type="text" id="dpho" name="dpho" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['getobatreferensi'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Get Obat by Kunjungan</a>
+                              </h4>
+                          </div>
+                          <div id="collapseOne" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="getobatkunjungan" name="getobatkunjungan" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kunjungan</label>
+                                      <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['getobatkunjungan'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Add Obat</a>
+                              </h4>
+                          </div>
+                          <div id="collapseThree" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="addobat" name="addobat" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kunjungan</label>
+                                      <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Obat</label>
+                                      <input type="text" id="kdObat" name="kdObat" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Signa 1</label>
+                                      <input type="text" id="signa1" name="signa1" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Signa 2</label>
+                                      <input type="text" id="signa2" name="signa2" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Jumlah</label>
+                                      <input type="text" id="jumlah" name="jumlah" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['addobat'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFive">Del Obat</a>
+                              </h4>
+                          </div>
+                          <div id="collapseFive" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="delobat" name="delobat" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Kode Obat SK</label>
+                                      <input type="text" id="kdObatSK" name="kdObatSK" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kunjungan</label>
+                                      <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['delobat'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+    {if: isset($_GET['getobatreferensi'])}
+        $.get("{?=url([ADMIN, 'pcare', 'obatreferensi', $_GET['dpho']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['getobatkunjungan']) && isset($_GET['noKunjungan'])}
+        $.get("{?=url([ADMIN, 'pcare', 'getobatkunjungan', $_GET['noKunjungan']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['addobat']) && isset($_GET['noKunjungan']) && isset($_GET['kdObat']) && isset($_GET['signa1']) && isset($_GET['signa2']) && isset($_GET['jumlah'])}
+        $.get("{?=url([ADMIN, 'pcare', 'addobat', $_GET['noKunjungan'], $_GET['kdObat'], $_GET['signa1'], $_GET['signa2'], $_GET['jumlah']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['delobat']) && isset($_GET['kdObatSK']) && isset($_GET['noKunjungan'])}
+        $.get("{?=url([ADMIN, 'pcare', 'delobat', $_GET['kdObatSK'], $_GET['noKunjungan']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+</script>

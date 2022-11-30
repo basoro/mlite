@@ -1,0 +1,123 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Pemberian Obat PCare BPJS</h4>
+</div>
+<div class="modal-body">
+  <div class="form-group">
+    <label for="poli">Nomor Kunjungan</label>
+    <input type="text" id="noKunjungan" name="noKunjungan" class="form-control" value="{$bridging_pcare.nomor_kunjungan}">
+  </div>
+  <div class="form-group">
+    <label for="poli">Obat</label>
+    <input type="text" id="getObat" name="getObat" class="form-control" value="">
+    <ul class="list-group" id="obatList" style="z-index:1000;position:absolute;width:100%;"></ul>
+  </div>
+  <div class="form-group">
+    <label for="poli">Signa 1</label>
+    <input type="text" id="signa1" name="signa1" class="form-control" value="">
+  </div>
+  <div class="form-group">
+    <label for="poli">Signa 2</label>
+    <input type="text" id="signa2" name="signa2" class="form-control" value="">
+  </div>
+  <div class="form-group">
+    <label for="poli">Jumlah</label>
+    <input type="text" id="jumlah" name="jumlah" class="form-control" value="">
+  </div>
+  <button type="submit" class="btn btn-danger" id="simpanobat">
+      Simpan
+  </button>
+</div>
+<div class="table-responsive" style="margin: 10px;">
+<table class="table table-bordered table-striped table-hover display nowrap datatabledatatindakan">
+    <thead>
+        <tr>
+            <th>Nomor Kunjungan</th>
+            <th>Kode Obat SK</th>
+            <th>Kode Obat</th>
+            <th>Nama Obat</th>
+            <th>Signa</th>
+            <th>Jumlah Obat</th>
+        </tr>
+    </thead>
+    <tbody>
+        {loop: $data_obat.list}
+        <tr>
+            <td>{$value.kdObatSK}</td>
+            <td>{$value.kdObatSK}</td>
+            <td>{$value.obat.kdObat}</td>
+            <td>{$value.obat.nmObat}</td>
+            <td>{$value.signa1} x {$value.signa2}</td>
+            <td>{$value.jmlObat}</td>
+        </tr>
+        {/loop}
+    </tbody>
+</table>
+</div>
+<script type="text/javascript">
+  $('.datatabledatatindakan').DataTable();
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#getObat').keyup(function(){
+    if($('#getObat').val().length >= 4 && $('#getObat').val() != ""){
+       var query = $(this).val();
+       var obat = $('#getObat').val();
+          $.ajax({
+               url: '{?=url()?}/admin/pcare/obatreferensi/' + obat + '?t={?=$_SESSION['token']?}',
+               method:"GET",
+               data:{},
+               success:function(data)
+               {
+                   var data = JSON.parse(data);
+                   var json_obj = [data];
+                   var output='';
+                   if(json_obj[0].metaData.code == 200) {
+                     var obat = json_obj[0].response.list;
+                     for (var i in obat) {
+                       output+='<li class=\"list-group-item link-class\">' + obat[i].kdObat + ': ' + obat[i].nmObat + '</li>';
+                     }
+                   } else {
+                     output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                   }
+                   output+='';
+                   //console.log(output);
+                   $('#obatList').fadeIn();
+                   $('#obatList').html(output).show();
+               }
+          });
+      }
+  });
+  $('#obatList').on('click', 'li', function(){
+       $('#getObat').val($(this).text());
+       var getObat = $('#getObat').val();
+       $('#obatList').fadeOut();
+  });
+});
+</script>
+<script type="text/javascript">
+$("#simpanobat").click(function(){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var noKunjungan = $('input:text[name=noKunjungan]').val();
+  var getObat = $('#getObat').val();
+  var signa1 = $('#signa1').val();
+  var signa2 = $('#signa2').val();
+  var jumlah = $('#jumlah').val();
+
+  var url = baseURL + '/pcare/addobat/' + noKunjungan + '/' + getObat.split(':')[0] + '/' + signa1 + '/' + signa2 + '/' + jumlah + '?t=' + mlite.token;
+
+  $.get(url, function(data){
+    //console.log(data);
+  });
+
+});
+</script>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

@@ -1,0 +1,45 @@
+<h4>History Odontogram</h4>
+<table class="table table-bordered table-striped table-hover display nowrap" width="100%">
+  <thead>
+    <tr>
+      <th>Tanggal</th>
+      <th>Elemen</th>
+      <th>Kondisi</th>
+      <th>Catatan</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $odontogram}
+      <tr>
+        <td>{$value.tgl_input}</td>
+        <td>{?=str_replace('gg_','Gigi ',$value.pemeriksaan)?}</td>
+        <td>{$value.kondisi}</td>
+        <td>{$value.catatan}</td>
+        <td><a href="#" class="btn btn-xs btn-danger delete" data-tgl_input="{$value.tgl_input}" data-pemeriksaan="{$value.pemeriksaan}" data-kondisi="{$value.kondisi}" data-catatan="{$value.catatan}"><span class="fa fa-trash"></span><span class="hidden-xs">Hapus</span></a></td>
+      </tr>
+    {/loop}
+  </tbody>
+</table>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".delete").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=no_rkm_medis]').val();
+    var gg_xx  = $(this).attr("data-pemeriksaan");
+    var kondisi  = $(this).attr("data-kondisi");
+    var catatan  = $(this).attr("data-catatan");
+    var tgl_input  = $(this).attr("data-tgl_input");
+    var url = baseURL + '/rawat_jalan/odontogramdelete/?t=' + mlite.token;
+    $.post(url,{
+      no_rkm_medis:id_pasien,
+      pemeriksaan:gg_xx,
+      kondisi:kondisi,
+      catatan: catatan,
+      tgl_input: tgl_input
+    } ,function(data) {
+      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+});
+</script>

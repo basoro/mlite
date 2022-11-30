@@ -1116,6 +1116,16 @@ return [
         ADD KEY `perawat_luar` (`perawat_luar`),
         ADD KEY `kode_paket` (`kode_paket`);");
 
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
+        `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `no_rkm_medis` TEXT NOT NULL,
+        `pemeriksaan` TEXT DEFAULT NULL,
+        `kondisi` TEXT DEFAULT NULL,
+        `catatan` TEXT DEFAULT NULL,
+        `id_user` TEXT NOT NULL,
+        `tgl_input` TEXT NOT NULL
+      )");
+
       $core->mysql()->pdo()->exec("ALTER TABLE `operasi`
         ADD CONSTRAINT `operasi_ibfk_31` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
         ADD CONSTRAINT `operasi_ibfk_32` FOREIGN KEY (`operator1`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
