@@ -1,0 +1,222 @@
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Pendaftaran</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Get Pendaftaran by Nomor Urut</a>
+                              </h4>
+                          </div>
+                          <div id="collapseOne" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="getpendaftarannourut" name="getpendaftarannourut" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Urut</label>
+                                      <input type="text" id="noUrut" name="noUrut" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Daftar</label>
+                                      <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['getpendaftarannourut'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Get Pendaftaran Provider</a>
+                              </h4>
+                          </div>
+                          <div id="collapseTwo" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="getpendaftaranprovider" name="getpendaftaranprovider" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Daftar</label>
+                                      <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['getpendaftaranprovider'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">Add Pendaftaran</a>
+                              </h4>
+                          </div>
+                          <div id="collapseThree" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="addpendaftaran" name="addpendaftaran" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Kode Provider</label>
+                                      <input type="text" id="kdProviderPeserta" name="kdProviderPeserta" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Daftar</label>
+                                      <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="noKartu" name="noKartu" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Poli</label>
+                                      <input type="text" id="kdPoli" name="kdPoli" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Keluhan</label>
+                                      <textarea name="keluhan" id="keluhan" class="form-control" rows="4" cols="80">
+                                      </textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['addpendaftaran'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">Del Pendaftaran</a>
+                              </h4>
+                          </div>
+                          <div id="collapseFour" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <input type="hidden" id="delpendaftaran" name="delpendaftaran" class="form-control" value="">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="noKartu" name="noKartu" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Tanggal Daftar</label>
+                                      <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Urut</label>
+                                      <input type="text" id="noUrut" name="noUrut" class="form-control" value="">
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Kode Poli</label>
+                                      <input type="text" id="kdPoli" name="kdPoli" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['delpendaftaran'])}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'DD-MM-YYYY',
+         locale: 'id'
+       });
+   });
+</script>
+<script>
+    {if: isset($_GET['getpendaftarannourut']) && isset($_GET['noUrut']) && isset($_GET['tglDaftar'])}
+        $.get("{?=url([ADMIN, 'pcare', 'getpendaftarannourut', $_GET['noUrut'], $_GET['tglDaftar']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['getpendaftaranprovider']) && isset($_GET['tglDaftar'])}
+        $.get("{?=url([ADMIN, 'pcare', 'getpendaftaranprovider', $_GET['tglDaftar']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['addpendaftaran']) && isset($_GET['kdProviderPeserta']) && isset($_GET['tglDaftar']) && isset($_GET['noKartu']) && isset($_GET['kdPoli'])}
+        $.get("{?=url([ADMIN, 'pcare', 'addpendaftaran', $_GET['kdProviderPeserta'], $_GET['tglDaftar'], $_GET['noKartu'], $_GET['kdPoli']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['delpendaftaran']) && isset($_GET['noKartu']) && isset($_GET['tglDaftar']) && isset($_GET['noUrut']) && isset($_GET['kdPoli'])}
+        $.get("{?=url([ADMIN, 'pcare', 'delpendaftaran', $_GET['noKartu'], $_GET['tglDaftar'], $_GET['noUrut'], $_GET['kdPoli']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+</script>

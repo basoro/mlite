@@ -51,6 +51,7 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
         $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
@@ -58,6 +59,7 @@ class Admin extends AdminModule
           [
             'rawat_jalan' => $this->assign,
             'cek_vclaim' => $cek_vclaim,
+            'cek_pcare' => $cek_pcare,
             'master_berkas_digital' => $master_berkas_digital,
             'responsivevoice' => $responsivevoice,
             'admin_mode' => $this->settings->get('settings.admin_mode')
@@ -85,9 +87,10 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_pcare' => $cek_pcare, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
         exit();
     }
 
@@ -300,7 +303,7 @@ class Admin extends AdminModule
           'tanggal_periksa' => $_POST['tgl_registrasi'],
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_poli' => $_POST['kd_poli'],
-          'no_reg' => $this->core->setNoReg($_POST['kd_dokter'], $_POST['kd_poli']),
+          'no_reg' => $this->core->setNoBooking($_POST['kd_dokter'], $_POST['kd_poli'], $_POST['tgl_registrasi']),
           'kd_pj' => $_POST['kd_pj'],
           'limit_reg' => '0',
           'waktu_kunjungan' => $_POST['jam_reg'],
@@ -596,7 +599,7 @@ class Admin extends AdminModule
             'tanggal_periksa' => $_POST['tanggal_datang'],
             'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
             'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $_POST['tanggal_datang']),
+            'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $no_rawat), $_POST['tanggal_datang']),
             'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
             'limit_reg' => 0,
             'waktu_kunjungan' => $_POST['tanggal_datang'].' '.date('H:i:s'),
@@ -1297,6 +1300,40 @@ class Admin extends AdminModule
           'username' => $this->core->getUserInfo('username', null, true)
         ]);
       }
+      exit();
+    }
+
+    public function getOdontogram($no_rkm_medis)
+    {
+      echo $this->draw('odontogram.html', ['odontogram' => $this->core->mysql('mlite_odontogram')->where('no_rkm_medis', $no_rkm_medis)->toArray()]);
+      exit();
+    }
+
+    public function getOdontogramTampil($no_rkm_medis)
+    {
+      echo $this->draw('odontogram.tampil.html', ['odontogram' => $this->core->mysql('mlite_odontogram')->where('no_rkm_medis', $no_rkm_medis)->toArray()]);
+      exit();
+    }
+
+    public function postOdontogramSave()
+    {
+      $_POST['id_user']	= $this->core->getUserInfo('id');
+      $_POST['tgl_input'] = date('Y-m-d');
+      $query = $this->core->mysql('mlite_odontogram')->save($_POST);
+      exit();
+    }
+
+    public function postOdontogramDelete()
+    {
+      $_POST['id_user']	= $this->core->getUserInfo('id');
+      $query = $this->core->mysql('mlite_odontogram')
+      ->where('no_rkm_medis', $_POST['no_rkm_medis'])
+      ->where('pemeriksaan', $_POST['pemeriksaan'])
+      ->where('kondisi', $_POST['kondisi'])
+      ->where('catatan', $_POST['catatan'])
+      ->where('tgl_input', $_POST['tgl_input'])
+      ->where('id_user', $_POST['id_user'])
+      ->delete();
       exit();
     }
 

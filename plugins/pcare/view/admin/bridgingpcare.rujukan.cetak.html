@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Cetak Rujukan PCare</title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body {margin-top: 20px;}
+	table, tr, td, th { border-collapse:collapse; border:0px solid black; font-size: 14px;}
+	th,td {padding:6px;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:180px;
+		background-color:black;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	.float2{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:40px;
+		background-color:green;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	.center {
+	  margin-left: auto;
+	  margin-right: auto;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="rujukan">
+			<table class="center" width="920px" style="margin-bottom: 10px;">
+				<tr>
+					<td width="550px"><img src="{?=url()?}/plugins/pcare/images/bpjslogo.png" width="250px"></td>
+					<td>
+						Kedeputian Wilayah {$settings.wilayah}<br>
+						Kantor Cabang {$settings.cabang}
+					</td>
+				</tr>
+				<tr>
+					<td colspan="2" align="center" style="font-size:20px;font-weight: bold;">Surat Rujukan FKTP</td>
+				</tr>
+			</table>
+			<table class="center" width="920px" style="border: 1px solid #000000;">
+				<tr>
+					<td>
+						<table width="900px" style="border: 1px solid #000000; margin: 10px;">
+							<tr>
+								<td width="140px">No. Rujukan</td>
+								<td>: {$bridging_pcare.nomor_kunjungan}</td>
+								<td rowspan="3" align="right"><img src="{?=url()?}/systems/lib/Barcode.php?codetype=code39&size=60&text={$bridging_pcare.nomor_kunjungan}" width="350px" height="40px"></td>
+							</tr>
+							<tr>
+								<td width="140px">FKTP</td>
+								<td>: {$settings.nama_fktp} ({$settings.kode_fktp})</td>
+							</tr>
+							<tr>
+								<td width="140px">Kabupaten / Kota</td>
+								<td>: {$settings.kabupatenkota} ({$settings.kode_kabupatenkota})</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table width="900px" style="border: 0px solid #000000; margin: 10px;">
+							<tr>
+								<td width="160px">Kepada Yth. TS Dokter</td>
+								<td>: {$bridging_pcare.nama_spesialis}</td>
+							</tr>
+							<tr>
+								<td width="160px">Di</td>
+								<td>: {$bridging_pcare.nama_ppk}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table width="900px" style="border: 0px solid #000000; margin: 10px;">
+							<tr>
+								<td colspan="6">Mohon pemeriksaan dan penangan lebih lanjut pasien :</td>
+							</tr>
+							<tr>
+								<td width="160px">Nama</td>
+								<td width="350px">: {$bridging_pcare.nm_pasien}</td>
+								<td>Umur :</td>
+								<td>{$umur}</td>
+								<td>:</td>
+								<td>{$bridging_pcare.tgl_lahir}</td>
+							</tr>
+							<tr>
+								<td width="160px">Nomor Kartu BPJS</td>
+								<td>: {$bridging_pcare.nomor_jaminan}</td>
+								<td>Status: </td>
+								<td><b>[&nbsp;&nbsp;&nbsp;]</b> Utama/Tanggungan</td>
+								<td></td>
+								<td><b>[{$bridging_pcare.jk}]</b> (L/P)</td>
+							</tr>
+							<tr>
+								<td width="160px">Diagnosa</td>
+								<td colspan="5">: {$bridging_pcare.nama_diagnosa1} ({$bridging_pcare.kode_diagnosa1})</td>
+							</tr>
+							<tr>
+								<td width="160px">Catatan</td>
+								<td colspan="5">: {$bridging_pcare.catatan}</td>
+							</tr>
+							<tr>
+								<td width="160px" valign="top">Telah diberikan</td>
+								<td colspan="5" height="100px" valign="top">: {$bridging_pcare.terapi}</td>
+							</tr>
+							<tr>
+								<td colspan="6">Atas bantuannya, diucapkan terima kasih</td>
+							</tr>
+							<tr>
+								<td colspan="3"></td>
+								<td colspan="3" align="center">Salam Sejawat<br>{?=dateIndonesia(date('Y-m-d'))?}</td>
+							</tr>
+							<tr>
+								<td colspan="6" style="font-size: 11px;">Tgl. Rencana Berkunjung : {?=date('d-M-Y', strtotime($bridging_pcare.tgl_estimasi_rujuk))?}</td>
+							</tr>
+							<tr>
+								<td colspan="3" style="font-size: 11px;">Surat rujukan berlaku 1[satu] kali kunjungan.</td>
+								<td colspan="3" align="center">drg. FAISOL BASORO</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+	 	<button onclick="printContent('rujukan')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+		<button type="button" class="btn btn-primary center-block float2" onclick="KirimWA()" data-dismiss="modal">Kirim WA</button>
+
+  </body>
+</html>
