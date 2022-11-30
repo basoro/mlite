@@ -154,20 +154,7 @@
             <div class="panel-body text-success" style="background-color: rgb(225, 69, 69);
             border-radius: 5px 5px 0 0;">
               <div class="date" style=" padding: 15px 15px;">
-                <script type='text/javascript'>
-                  //<!--
-                  var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                  var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
-                  var date = new Date();
-                  var day = date.getDate();
-                  var month = date.getMonth();
-                  var thisDay = date.getDay(),
-                      thisDay = myDays[thisDay];
-                  var yy = date.getYear();
-                  var year = (yy < 1000) ? yy + 1900 : yy;
-                  document.write(thisDay + ', ' + day + ' ' + months[month] + ' ' + year);
-                  //-->
-                </script>
+                <span id="dtloket"></span>
               </div>
             </div>
             <div class="panel-footer border-success" style="background-color:#ffcc00; padding: 0px; font-weight: normal;">
@@ -372,6 +359,21 @@
   </footer>
 
   <script type="text/javascript">
+
+  function showDate(){
+      var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+      var date = new Date();
+      var day = date.getDate();
+      var month = date.getMonth();
+      var thisDay = date.getDay(),
+          thisDay = myDays[thisDay];
+      var yy = date.getYear();
+      var year = (yy < 1000) ? yy + 1900 : yy;
+      document.getElementById('dtloket').innerHTML = thisDay + ', ' + day + ' ' + months[month] + ' ' + year;
+    }
+  setInterval(showDate, 500);
+  
   function showTime() {
       var a_p = "";
       var today = new Date();
