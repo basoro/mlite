@@ -341,6 +341,37 @@
 
  </script>
 <script>
+  {if: $cek_pcare}
+  $("#no_ktp").on('keyup', function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl = $('input:text[name=tgl_daftar]').val();
+    var no_ktp = $('input:text[name=no_ktp]').val();
+    var url = baseURL + '/pcare/byjeniskartu/nik/' + no_ktp + '/' + tgl + '?t=' + mlite.token;
+
+    if (event.key === 'Enter' || event.keyCode === 13) {
+
+      $.get(url, function(data){
+        var data = JSON.parse(data);
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.nama);
+          $('.noKartu').val(data.response.noKartu);
+          $('.sex').val(data.response.sex);
+          $('.tgl_lahir').val(moment(data.response.tglLahir).format('YYYY-MM-DD'));
+          $('.noTelepon').val(data.response.noHP);
+          if(data.response.kdProviderPst.kdProvider !== '{$usernamePcare}'){
+            alert('Pasien tidak terdaftar sebagai peserta.');
+          }
+        } else {
+          alert(json_obj[0].metaData.message);
+        }
+      });
+    }
+    event.preventDefault();
+  });
+  {else}
   $("#no_ktp").on('keyup', function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     var tgl = $('input:text[name=tgl_daftar]').val();
@@ -367,6 +398,39 @@
     }
     event.preventDefault();
   });
+  {/if}
+  {if: $cek_pcare}
+  $("#no_peserta").on('keyup', function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var tgl = $('input:text[name=tgl_daftar]').val();
+    var no_peserta = $('input:text[name=no_peserta]').val();
+    var url = baseURL + '/pcare/peserta/' + no_peserta + '?t=' + mlite.token;
+
+    if (event.key === 'Enter' || event.keyCode === 13) {
+
+      $.get(url, function(data){
+        //console.log(data);
+        var data = JSON.parse(data);
+        var json_obj = [data];
+        if(!json_obj[0]) {
+          alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+        } else if(json_obj[0].metaData.code == 200) {
+          $('.nama').val(data.response.nama);
+          $('.no_ktp').val(data.response.noKTP);
+          $('.sex').val(data.response.sex);
+          $('.tgl_lahir').val(moment(data.response.tglLahir).format('YYYY-MM-DD'));
+          $('.noTelepon').val(data.response.noHP);
+          if(data.response.kdProviderPst.kdProvider !== '{$usernamePcare}'){
+            alert('Pasien tidak terdaftar sebagai peserta.');
+          }
+        } else {
+          alert(json_obj[0].metaData.message);
+        }
+      });
+    }
+    event.preventDefault();
+  });
+  {else}
   $("#no_peserta").on('keyup', function (event) {
     var baseURL = mlite.url + '/' + mlite.admin;
     var tgl = $('input:text[name=tgl_daftar]').val();
@@ -376,6 +440,7 @@
     if (event.key === 'Enter' || event.keyCode === 13) {
 
       $.get(url, function(data){
+        //console.log(data);
         var data = JSON.parse(data);
         var json_obj = [data];
         if(!json_obj[0]) {
@@ -393,6 +458,7 @@
     }
     event.preventDefault();
   });
+  {/if}
 </script>
 <script>
   $(document).ready(function() {
@@ -449,7 +515,7 @@
   	var sender = '{$waapiphonenumber}';
   	var number = document.getElementById("number").value;
   	var message = document.getElementById("message").value;
-  	console.log(api_key + " - " + number + " - " + message);
+  	//console.log(api_key + " - " + number + " - " + message);
   	xhttp.onreadystatechange = function() {
   		if (this.readyState == 4 && this.status == 200) {
   			var data=xhttp.responseText;

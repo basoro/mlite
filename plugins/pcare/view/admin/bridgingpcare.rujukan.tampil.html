@@ -1,0 +1,82 @@
+<h4>Data Rujukan Tampil</h4>
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover display nowrap datatabletampilrujukan" width="100%">
+  <thead>
+    <tr>
+      <th>Tgl. Kunjungan</th>
+      <th>Nomor Rujukan</th>
+      <th>ID. Rawat</th>
+      <th>No. RM</th>
+      <th>Nama Pasien</th>
+      <th>No. Kartu</th>
+      <th>Nama Poli</th>
+      <th>Keluhan</th>
+      <th>Jenis Kunjungan</th>
+      <th>Sis</th>
+      <th>Dias</th>
+      <th>B.B</th>
+      <th>T.B</th>
+      <th>R.R</th>
+      <th>L.P</th>
+      <th>H.R</th>
+      <th>Perawatan</th>
+      <th>No. Urut</th>
+      <th>Kesadaran</th>
+      <th>Terapi</th>
+      <th>Status Pulang</th>
+      <th>Tgl. Pulang</th>
+      <th>Nama Dokter</th>
+      <th>Diagnosa 1</th>
+      <th>Diagnosa 2</th>
+      <th>Diagnosa 3</th>
+      <th>Tgl. Est. Rujuk</th>
+      <th>Nama PPK Rujuk</th>
+      <th>Spesialis</th>
+      <th>Sub Spesialis</th>
+      <th>Rujukan Khusus</th>
+      <th>Faskes Khusus</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $bridging_pcare}
+    <tr>
+      <td>{$value.tgl_kunjungan}</td>
+      <td>{$value.nomor_kunjungan} <a href="{?=url([ADMIN,'pcare','bridgingpcarerujukancetak', $value.nomor_kunjungan])?}" class="btn btn-xs btn-info" target="_blank"><i class="fa fa-print"></i></a></td>
+      <td>{$value.no_rawat}</td>
+      <td>{$value.no_rkm_medis}</td>
+      <td>{$value.nm_pasien}</td>
+      <td>{$value.nomor_jaminan}</td>
+      <td>{$value.nama_poli}</td>
+      <td>{$value.subyektif}</td>
+      <td>{$value.kunjungan_sakit}</td>
+      <td>{$value.sistole}</td>
+      <td>{$value.diastole}</td>
+      <td>{$value.berat}</td>
+      <td>{$value.tinggi}</td>
+      <td>{$value.respirasi}</td>
+      <td>{$value.lingkar_perut}</td>
+      <td>{$value.nadi}</td>
+      <td>{$value.terapi}</td>
+      <td>{$value.nomor_urut}</td>
+      <td>{$value.nama_kesadaran}</td>
+      <td>{$value.terapi}</td>
+      <td>{$value.nama_status_pulang}</td>
+      <td>{$value.tgl_pulang}</td>
+      <td>{$value.nama_dokter}</td>
+      <td>{$value.nama_diagnosa1}</td>
+      <td>{$value.nama_diagnosa2}</td>
+      <td>{$value.nama_diagnosa3}</td>
+      <td>{$value.tgl_estimasi_rujuk}</td>
+      <td>{$value.nama_ppk}</td>
+      <td>{$value.nama_spesialis}</td>
+      <td>{$value.nama_subspesialis}</td>
+      <td>{$value.nama_referensikhusus}</td>
+      <td>{$value.nama_faskeskhusus}</td>
+    </tr>
+    {/loop}
+  </tbody>
+</table>
+</div>
+<script type="text/javascript">
+  $('.datatabletampilrujukan').DataTable();
+</script>

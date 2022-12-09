@@ -64,6 +64,18 @@
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
             {/if}
+            {if: $cek_pcare}
+              <button type="button" name="button" class="btn btn-xs btn-info bridgingpcare"
+                data-no_rkm_medis="{$value.no_rkm_medis}"
+                data-nm_pasien="{$value.nm_pasien}"
+                data-no_rawat="{$value.no_rawat}"
+                data-no_peserta="{$value.no_peserta}"
+                data-tgl_registrasi="{$value.tgl_registrasi}"
+                {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+                disabled
+                {/if}
+              ><span class="fa fa-refresh"></span> BPJS</button>
+            {/if}
           {else}
             {$value.png_jawab}
           {/if}
@@ -94,6 +106,20 @@
     </div>
 </div>
 <div class="modal fade" id="printModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bridgingpcareModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bridgingpcaretindakanobatModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             ...
@@ -380,5 +406,23 @@
       $("#form_kontrol").show();
       $("#surat_kontrol").html(data).show();
     });
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridgingpcare", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var id_pasien = $(this).attr("data-no_rkm_medis");
+    var tgl_pendaftaran = $(this).attr("data-tgl_registrasi");
+    var loadURL =  baseURL + '/pcare/bridgingpcare/' + id_pasien + '/' + tgl_pendaftaran + '?t=' + mlite.token;
+
+    var modal = $('#bridgingpcareModal');
+    var modalContent = $('#bridgingpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
   });
 </script>

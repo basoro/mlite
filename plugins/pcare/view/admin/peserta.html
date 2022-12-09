@@ -1,0 +1,105 @@
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Peserta</h3>
+      </div>
+      <div class="panel-body">
+          <div class="row">
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Get Peserta</a>
+                              </h4>
+                          </div>
+                          <div id="collapseOne" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <div class="form-group">
+                                      <label for="poli">Nomor Kartu</label>
+                                      <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['no_kartu']) && $_GET['no_kartu']}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="col-lg-12">
+                  <div class="panel-group" id="accordion">
+                      <div class="panel panel-default">
+                          <div class="panel-heading">
+                              <h4 class="panel-title">
+                                  <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Get Peserta By Jenis Kartu</a>
+                              </h4>
+                          </div>
+                          <div id="collapseTwo" class="panel-collapse collapse">
+                              <div class="panel-body">
+                                  <form class="" action="" method="">
+                                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                    <div class="radio">
+                                      <label><input type="radio" name="jeniskartu" value="nik">NIK</label>
+                                    </div>
+                                    <div class="radio">
+                                      <label><input type="radio" name="jeniskartu" value="noka" checked>Nomor Kartu</label>
+                                    </div>
+                                    <div class="form-group">
+                                      <label for="poli">Nomor NIK/Kartu</label>
+                                      <input type="text" id="nomor" name="nomor" class="form-control" value="">
+                                    </div>
+                                    <button type="submit" class="btn btn-danger">
+                                        Kirim Parameter
+                                    </button>
+                                  </form>
+                                  {if: isset($_GET['nomor']) && $_GET['nomor']}
+                                  <h4 class="m-t-xl">Respons result</h4>
+                                  <pre>
+                                  </pre>
+                                  {/if}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+    {if: isset($_GET['no_kartu']) && $_GET['no_kartu']!=''}
+        $.get("{?=url([ADMIN, 'pcare', 'peserta', $_GET['no_kartu']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+    {if: isset($_GET['nomor']) && $_GET['nomor']!='' && $_GET['jeniskartu'] !=''}
+        $.get("{?=url([ADMIN, 'pcare', 'byjeniskartu', $_GET['jeniskartu'], $_GET['nomor']])?}", function(data){
+          var data = JSON.parse(data);
+          var data = JSON.stringify(data, null, '\t');
+          $("pre").text(data);
+        });
+    {/if}
+</script>

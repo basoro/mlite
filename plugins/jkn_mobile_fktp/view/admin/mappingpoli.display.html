@@ -1,0 +1,79 @@
+<div id="display">
+  <div class="table-responsive no-margin">
+    <table class="table table-striped no-padding">
+      <thead>
+        <tr>
+          <th>Kode Poli RS</th>
+          <th>Kode Poli BPJS</th>
+          <th>Nama Poli Pcare</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $mappingpoli}
+        {loop: $mappingpoli}
+        <tr class="edit" data-kd_poli_rs="{$value.kd_poli_rs}">
+          <td>{$value.kd_poli_rs}</td>
+          <td>{$value.kd_poli_pcare}</td>
+          <td>{$value.nm_poli_pcare}</td>
+        </tr>
+        {/loop}
+        {else}
+        <tr>
+          <td colspan="4" class="text-center">Tidak ada data mappingpoli.</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+  <nav class="clearfix m-t-xs">
+    <div class="col">
+      <ul class="pagination no-margin pull-right">
+      {if: isset($halaman)}
+        {if: $halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $halaman > 1}
+        <li class="halaman" data-hal="{?=$halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$halaman} dari {$jml_halaman} Hal</a></li>
+        {if: $halaman < $jml_halaman}
+        <li class="halaman" data-hal="{?=$halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $halaman == $jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {else}
+        {if: $halaman == 1}
+        <li class="disabled"><a href="#">&laquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="1"><a href="#">&laquo;</a></li>
+        {/if}
+        {if: $halaman > 1}
+        <li class="halaman" data-hal="{?=$halaman - 1?}"><a href="#">&larr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&larr;</a></li>
+        {/if}
+        <li class="disabled"><a href="#">Hal : {$halaman} dari {$jml_halaman} Hal</a></li>
+        {if: $halaman < $jml_halaman}
+        <li class="halaman" data-hal="{?=$halaman + 1?}"><a href="#">&rarr;</a></li>
+        {else}
+        <li class="disabled"><a href="#">&rarr;</a></li>
+        {/if}
+        {if: $halaman == $jml_halaman}
+        <li class="disabled"><a href="#">&raquo;</a></li>
+        {else}
+        <li class="halaman" data-hal="{$jml_halaman}"><a href="#">&raquo;</a></li>
+        {/if}
+      {/if}
+      </ul>
+    </div>
+  </nav>
+</div>

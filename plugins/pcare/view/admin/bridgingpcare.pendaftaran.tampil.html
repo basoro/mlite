@@ -1,0 +1,54 @@
+<h4>Data Pendaftaran Tampil</h4>
+<div class="table-responsive">
+<table class="table table-bordered table-striped table-hover display nowrap datatabletampilpendaftaran" width="100%">
+  <thead>
+    <tr>
+      <th>Tgl. Kunjungan</th>
+      <th>ID. Rawat</th>
+      <th>No. RM</th>
+      <th>Nama Pasien</th>
+      <th>No. Kartu</th>
+      <th>Nama Poli</th>
+      <th>Keluhan</th>
+      <th>Jenis Kunjungan</th>
+      <th>Sis</th>
+      <th>Dias</th>
+      <th>B.B</th>
+      <th>T.B</th>
+      <th>R.R</th>
+      <th>L.P</th>
+      <th>H.R</th>
+      <th>Perawatan</th>
+      <th>No. Urut</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $bridging_pcare}
+    <tr>
+      <td>{$value.tgl_kunjungan}</td>
+      <td>{$value.no_rawat}</td>
+      <td>{$value.no_rkm_medis}</td>
+      <td>{$value.nm_pasien}</td>
+      <td>{$value.nomor_jaminan}</td>
+      <td>{$value.nama_poli}</td>
+      <td>{$value.subyektif}</td>
+      <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
+      <td>{$value.sistole}</td>
+      <td>{$value.diastole}</td>
+      <td>{$value.berat}</td>
+      <td>{$value.tinggi}</td>
+      <td>{$value.respirasi}</td>
+      <td>{$value.lingkar_perut}</td>
+      <td>{$value.nadi}</td>
+      <td>{$value.terapi}</td>
+      <td>{$value.nomor_urut}</td>
+      <td>{$value.status_kirim}</td>
+    </tr>
+    {/loop}
+  </tbody>
+</table>
+</div>
+<script type="text/javascript">
+  $('.datatabletampilpendaftaran').DataTable();
+</script>

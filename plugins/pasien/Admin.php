@@ -187,7 +187,7 @@ class Admin extends AdminModule
 
     public function anyForm()
     {
-
+      $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
       $penjab = $this->core->mysql('penjab')->toArray();
       $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
       $agama = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
@@ -210,7 +210,9 @@ class Admin extends AdminModule
           'waapitoken' => $this->settings->get('wagateway.token'),
           'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']])
+          'urlUploadPhoto' => url([ADMIN,'pasien','uploadphoto',$_POST['no_rkm_medis']]),
+          'cek_pcare' => $cek_pcare,
+          'usernamePcare' => $this->settings('pcare', 'usernamePcare')
         ]);
       } else {
         $pasien = [
@@ -266,7 +268,9 @@ class Admin extends AdminModule
           'waapitoken' => $this->settings->get('wagateway.token'),
           'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
           'admin_mode' => $this->settings->get('settings.admin_mode'),
-          'urlUploadPhoto' => ''
+          'urlUploadPhoto' => '',
+          'cek_pcare' => $cek_pcare,
+          'usernamePcare' => $this->settings('pcare', 'usernamePcare')
         ]);
       }
       exit();
