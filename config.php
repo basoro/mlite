@@ -3,14 +3,14 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
     exit("mLITE requires at least <b>PHP 5.5</b>");
 }
 
-define('DBHOST', '127.0.0.1');
+define('DBHOST', 'mysql');
 define('DBPORT', '3306');
-define('DBUSER', 'mlite_dev');
-define('DBPASS', 'mlite_dev');
-define('DBNAME', 'mlite_dev');
+define('DBUSER', 'root');
+define('DBPASS', 'root');
+define('DBNAME', 'sik_new');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/webapps');
+define('WEBAPPS_URL', 'http://latest-lite.loc/webapps');
 define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
 // Admin cat name

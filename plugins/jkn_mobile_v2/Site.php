@@ -135,7 +135,11 @@ class Site extends SiteModule
             $data_pasien = $this->core->mysql('pasien')->where('no_peserta', $decode['nomorkartu'])->oneArray();
             $poli = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
             $dokter = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
-            $cek_kouta = $this->core->mysql()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa) FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]' AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kouta, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter HAVING sisa_kouta > 0 ORDER BY sisa_kouta DESC LIMIT 1");
+            $cek_kouta = $this->core->mysql()->pdo()->prepare("SELECT jadwal.kuota - (SELECT COUNT(booking_registrasi.tanggal_periksa)
+            FROM booking_registrasi WHERE booking_registrasi.tanggal_periksa='$decode[tanggalperiksa]'
+            AND booking_registrasi.kd_dokter=jadwal.kd_dokter) as sisa_kouta, jadwal.kd_dokter, jadwal.kd_poli, jadwal.jam_mulai as jam_mulai, poliklinik.nm_poli, dokter.nm_dokter, jadwal.kuota
+            FROM jadwal INNER JOIN maping_poli_bpjs ON maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli INNER JOIN poliklinik ON poliklinik.kd_poli=jadwal.kd_poli INNER JOIN dokter ON dokter.kd_dokter=jadwal.kd_dokter
+            WHERE jadwal.hari_kerja='$hari' AND maping_poli_bpjs.kd_poli_bpjs='$decode[kodepoli]' GROUP BY jadwal.kd_dokter HAVING sisa_kouta > 0 ORDER BY sisa_kouta DESC LIMIT 1");
             $cek_kouta->execute();
             $cek_kouta = $cek_kouta->fetch();
             $jadwal = $this->core->mysql('jadwal')
@@ -146,7 +150,7 @@ class Site extends SiteModule
                 ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
                 ->oneArray();
 
-            $cek_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->oneArray();
+            $cek_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->core->mysql('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if($cek_referensi > 0) {
@@ -234,8 +238,8 @@ class Site extends SiteModule
                             'jam_booking' => date('H:i:s'),
                             'no_rkm_medis' => $data_pasien['no_rkm_medis'],
                             'tanggal_periksa' => $decode['tanggalperiksa'],
-                            'kd_dokter' => $cek_kouta['kd_dokter'],
-                            'kd_poli' => $cek_kouta['kd_poli'],
+                            'kd_dokter' => $jadwal['kd_dokter'],
+                            'kd_poli' => $jadwal['kd_poli'],
                             'no_reg' => $no_reg,
                             'kd_pj' => 'BPJ',
                             'limit_reg' => 1,
@@ -252,7 +256,7 @@ class Site extends SiteModule
                                     'pasienbaru'=>0,
                                     'norm' => $data_pasien['no_rkm_medis'],
                                     'namapoli' => $cek_kouta['nm_poli'],
-                                    'namadokter' => $cek_kouta['nm_dokter'],
+                                    'namadokter' => $jadwal['nm_dokter_bpjs'],
                                     'estimasidilayani' => strtotime($decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai']) * 1000,
                                     'sisakuotajkn' => ($cek_kouta['sisa_kouta']-1),
                                     'kuotajkn' => intval($cek_kouta['kuota']),
@@ -2100,7 +2104,7 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['nomor_referensi'],
                         'taskid' => 1,
-                        'waktu' => strtotime($mlite_antrian_loket['start_time']) * 1000
+                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2516,4 +2520,30 @@ class Site extends SiteModule
         return $umur;
     }
 
+    private function is_jwt_valid($jwt, $secret = 'abC123!') {
+        // split the jwt
+        $tokenParts = explode('.', $jwt);
+        $header = base64_decode($tokenParts[0]);
+        $payload = base64_decode($tokenParts[1]);
+        $signature_provided = $tokenParts[2];
+
+        // check the expiration time - note this will cause an error if there is no 'exp' claim in the jwt
+        $expiration = json_decode($payload)->exp;
+        $is_token_expired = ($expiration - time()) < 0;
+
+        // build a signature based on the header and payload using the secret
+        $base64_url_header = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+        $base64_url_payload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+        $signature = hash_hmac('sha256', $base64_url_header . "." . $base64_url_payload, $secret , true);
+        $base64_url_signature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+
+        // verify it matches the signature provided in the jwt
+        $is_signature_valid = ($base64_url_signature === $signature_provided);
+
+        if ($is_token_expired || !$is_signature_valid) {
+            return FALSE;
+        } else {
+            return TRUE;
+        }
+    }
 }
