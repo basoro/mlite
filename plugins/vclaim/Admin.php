@@ -1200,7 +1200,7 @@ class Admin extends AdminModule
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
 
-    $url = $this->api_url . 'SEP/Delete';
+    $url = $this->api_url . 'SEP/2.0/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
     //echo json_encode($json);
