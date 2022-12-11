@@ -1297,6 +1297,7 @@ class Admin extends AdminModule
           'no_rawat' => $_POST['no_rawat'],
           'tgl_registrasi' => $reg_periksa['tgl_registrasi'],
           'nosep' => $bridging_sep['no_sep'],
+          'status' => 'Belum',
           'username' => $this->core->getUserInfo('username', null, true)
         ]);
       }

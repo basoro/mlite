@@ -358,7 +358,7 @@ class Admin extends AdminModule
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
 
-    $url = $this->api_url . 'SEP/Delete';
+    $url = $this->api_url . 'SEP/2.0/delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $data = json_decode($output, true);
 
@@ -2412,7 +2412,7 @@ class Admin extends AdminModule
               'tanggal_periksa' => $_POST['tanggal_datang'],
               'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
               'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $no_rawat), $_POST['tanggal_datang']),
+              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']), $_POST['tanggal_datang']),
               'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
               'limit_reg' => 0,
               'waktu_kunjungan' => $_POST['tanggal_datang'] . ' ' . date('H:i:s'),
@@ -2454,7 +2454,7 @@ class Admin extends AdminModule
               'tanggal_periksa' => $_POST['tanggal_datang'],
               'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
               'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $no_rawat), $_POST['tanggal_datang']),
+              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']), $_POST['tanggal_datang']),
               'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
               'limit_reg' => 0,
               'waktu_kunjungan' => $_POST['tanggal_datang'] . ' ' . date('H:i:s'),
@@ -2468,8 +2468,10 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getDataKontrol($no_kartu,$bulan,$tahun)
+  public function getDataKontrol($no_kartu,$tanggal)
   {
+    $tahun = substr($tanggal,0,4);
+    $bulan = substr($tanggal,5,2);
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;

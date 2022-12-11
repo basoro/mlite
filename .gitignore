@@ -8,3 +8,5 @@ vendor
 systems/data/database.sdb
 webapps
 backup/
+plugins/apotek_online
+config.php
