@@ -125,7 +125,7 @@ th, td {
   font-size: 13px;
 }
 
-.resep ul.nav-tabs > li {
+.resep ul.nav-tabs > li, .soap ul.nav-tabs > li {
   width: 50%;
   text-align: center;
 }

@@ -597,7 +597,12 @@ class Admin extends AdminModule
           ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
-
+        
+        // Show Gambar Pemeriksaan Catatan - Start
+        $pemeriksaan_catatan = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$row['no_rawat'])->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
+                
+        $row['pemeriksaan_catatan'] = $pemeriksaan_catatan;
+        // Show Gambar Pemeriksaan Catatan - END
 
         $riwayat['reg_periksa'][] = $row;
       }
@@ -743,6 +748,12 @@ class Admin extends AdminModule
           ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
+        
+        // Show Gambar Pemeriksaan Catatan - Start
+        $pemeriksaan_catatan = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$row['no_rawat'])->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
+                
+        $row['pemeriksaan_catatan'] = $pemeriksaan_catatan;
+        // Show Gambar Pemeriksaan Catatan - END
 
         $riwayat['reg_periksa'][] = $row;
       }
