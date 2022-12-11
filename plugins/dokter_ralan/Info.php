@@ -153,6 +153,10 @@ return [
       ADD CONSTRAINT `pemeriksaan_catatan_ibfk` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
       ADD CONSTRAINT `pemeriksaan_catatan_ibfk2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+      if (!is_dir(UPLOADS."/pemeriksaan_catatan")) {
+          mkdir(UPLOADS."/pemeriksaan_catatan", 0777);
+      }
+
     },
     'uninstall'     =>  function() use($core)
     {
