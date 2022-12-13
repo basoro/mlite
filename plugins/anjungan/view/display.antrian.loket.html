@@ -41,7 +41,7 @@
         padding: 10px;
       }
       .panel-body .no_antrian {
-        font-size:100px;
+        font-size:90px;
         font-weight:lighter;
         padding:0;
         margin-top:-45px;
@@ -59,20 +59,20 @@
         font-weight:lighter;
         padding-top:5px;
         padding-bottom:5px;
-        margin-top:-20px;
-        margin-bottom:-25px;
+        margin-top:-10px;
+        margin-bottom:-10px;
       }
       .panel-footer .clock {
-        font-size:26px;
+        font-size:36px;
         color: #000;
         padding-top:0;
         padding-bottom:0;
       }
       .panel-title.marquee {
          font-size:36px;
-         padding-top: 10px;
+         padding-top: 5px;
          padding-bottom: 0px;
-         margin-top: 10px;
+         margin-top: 0px;
          margin-bottom: 10px;
          color: #FF0000;
          background-color: #fff;
@@ -234,9 +234,7 @@
         Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
         {$powered}.
       </p>
-      {if: $show}
-      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
-      {/if}
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="jam"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
     </div>
   </footer>
 
@@ -271,6 +269,38 @@
       return i;
   }
   setInterval(showTime, 500);
+  </script>
+  <script type="text/javascript">
+  function showTime2() {
+      var a_p = "";
+      var today = new Date();
+      var curr_hour = today.getHours();
+      var curr_minute = today.getMinutes();
+      var curr_second = today.getSeconds();
+      if (curr_hour < 12) {
+          a_p = "AM";
+      } else {
+          a_p = "PM";
+      }
+      if (curr_hour == 0) {
+          curr_hour = 12;
+      }
+      if (curr_hour > 12) {
+          curr_hour = curr_hour - 12;
+      }
+      curr_hour = checkTime2(curr_hour);
+      curr_minute = checkTime2(curr_minute);
+      curr_second = checkTime2(curr_second);
+      document.getElementById('jam').innerHTML = curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+      }
+
+  function checkTime2(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+  }
+  setInterval(showTime2, 500);
   </script>
   {if: !$show}
   <script>
