@@ -76,11 +76,13 @@ $ composer install
 
 4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-5. Sesuaikan pengaturan di config.php
+5. Buat database lalu sesuaikan pengaturan di config.php
 
-6. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+6. Import mlite.sql ke database yang sudah dibuat di point 5
 
-7. Silahkan login dengan Username: admin dan Password: admin
+7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+
+8. Silahkan login dengan Username: admin dan Password: admin
 
 
 ### Untuk pengembangan
