@@ -10,7 +10,7 @@ define('DBPASS', 'mlite_dev');
 define('DBNAME', 'mlite_dev');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://lite.loc/webapps');
+define('WEBAPPS_URL', 'http://mlite.loc/webapps');
 define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
 // Admin cat name

@@ -440,7 +440,7 @@ class Admin extends AdminModule
                 'tgl_perawatan' => '0000-00-00',
                 'jam' => '00:00:00',
                 'no_rawat' => $_POST['no_rawat'],
-                'kd_dokter' => $this->core->getUserInfo('username', $_POST['kode_provider'], true),
+                'kd_dokter' => $_POST['kode_provider'],
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
                 'status' => 'ralan',
@@ -454,7 +454,7 @@ class Admin extends AdminModule
                 'tgl_perawatan' => '0000-00-00',
                 'jam' => '00:00:00',
                 'no_rawat' => $_POST['no_rawat'],
-                'kd_dokter' => $this->core->getUserInfo('username', $_POST['kode_provider'], true),
+                'kd_dokter' => $_POST['kode_provider'],
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
                 'status' => 'ralan'

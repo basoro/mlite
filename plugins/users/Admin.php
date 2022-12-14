@@ -89,7 +89,7 @@ class Admin extends AdminModule
             $this->assign['modules'] = $this->_getModules($user['access']);
             $this->assign['cap'] = [];
             if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
-              $this->assign['cap'] = $this->_getInfoCap();
+              $this->assign['cap'] = $this->_getInfoCap($user['cap']);
             }
             $this->assign['avatarURL'] = url(UPLOADS.'/users/'.$user['avatar']);
 
