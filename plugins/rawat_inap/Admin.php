@@ -395,7 +395,7 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->oneArray();
+        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('status', 'ranap')->oneArray();
         if(!$cek_resep) {
           $max_id = $this->core->mysql('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->oneArray();
           if(empty($max_id['no_resep'])) {
@@ -415,10 +415,10 @@ class Admin extends AdminModule
                 'tgl_perawatan' => '0000-00-00',
                 'jam' => '00:00:00',
                 'no_rawat' => $_POST['no_rawat'],
-                'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                'kd_dokter' => $_POST['kode_provider'],
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
-                'status' => 'ralan',
+                'status' => 'ranap',
                 'tgl_penyerahan' => '0000-00-00',
                 'jam_penyerahan' => '00:00:00'
               ]);
@@ -429,10 +429,10 @@ class Admin extends AdminModule
                 'tgl_perawatan' => '0000-00-00',
                 'jam' => '00:00:00',
                 'no_rawat' => $_POST['no_rawat'],
-                'kd_dokter' => $this->core->getUserInfo('username', null, true),
+                'kd_dokter' => $_POST['kode_provider'],
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
-                'status' => 'ralan'
+                'status' => 'ranap'
               ]);
           }
           $this->core->mysql('resep_dokter')
