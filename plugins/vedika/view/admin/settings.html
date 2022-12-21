@@ -38,6 +38,13 @@
                           {/loop}
                         </select>
                     </div>
+                    <div class="form-group">
+                      <label>Jenis Billing</label>
+                      <select name="vedika[billing]" class="form-control">
+                        <option value="mlite" {if: $settings.vedika.billing == 'mlite'}selected{/if}>mLITE</option>
+                        <option value="desktop" {if: $settings.vedika.billing == 'desktop'}selected{/if}>Desktop</option>
+                      </select>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
