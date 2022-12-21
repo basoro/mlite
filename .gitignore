@@ -9,4 +9,5 @@ systems/data/database.sdb
 webapps
 backup/
 plugins/apotek_online
+plugins/simrsp
 config.php
