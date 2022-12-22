@@ -411,15 +411,14 @@ Ralan :
       <tr class="isi">
         <td valign="top" width="20%">Unit/Poliklinik</td>
         <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">{$reg_periksa.nm_poli}, {$rujukan_internal.nm_poli} </td>
+        <td valign="top" width="79%">{$reg_periksa.nm_poli}</td>
       </tr>
       <tr class="isi">
         <td valign="top" width="20%">Dokter</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           {if: $reg_periksa.status_lanjut == 'Ralan'}
-            {$reg_periksa.nm_dokter}<br>
-            {$rujukan_internal.nm_dokter}
+            {$reg_periksa.nm_dokter}
           {else}
             {loop: $dpjp_ranap}
               {$value.nm_dokter}<br>

@@ -1278,7 +1278,7 @@ class Admin extends AdminModule
 
     $this->tpl->set('pasien', $pasien);
     $this->tpl->set('reg_periksa', $reg_periksa);
-    $this->tpl->set('rujukan_internal', $rujukan_internal);
+    //$this->tpl->set('rujukan_internal', $rujukan_internal);
     $this->tpl->set('dpjp_ranap', $dpjp_ranap);
     $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
     $this->tpl->set('prosedur_pasien', $prosedur_pasien);
