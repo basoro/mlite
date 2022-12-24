@@ -441,6 +441,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postDataBarangMaxId()
+    {
+      $this->databarang->postMaxId();
+      exit();
+    }
+
     public function getDataBarangJS()
     {
         header('Content-type: text/javascript');
@@ -486,6 +492,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postJnsPerawatanMaxId()
+    {
+      $this->jnsperawatan->postMaxId();
+      exit();
+    }
+
     public function getJnsPerawatanJS()
     {
         header('Content-type: text/javascript');
@@ -528,6 +540,12 @@ class Admin extends AdminModule
     public function postJnsPerawatanInapHapus()
     {
       $this->jnsperawataninap->postHapus();
+      exit();
+    }
+
+    public function postJnsPerawatanInapMaxId()
+    {
+      $this->jnsperawataninap->postMaxId();
       exit();
     }
 
@@ -601,6 +619,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postJnsPerawatanLabMaxId()
+    {
+      $this->jnsperawatanlab->postMaxId();
+      exit();
+    }
+
     public function getJnsPerawatanLabJS()
     {
         header('Content-type: text/javascript');
@@ -643,6 +667,12 @@ class Admin extends AdminModule
     public function postJnsPerawatanRadiologiHapus()
     {
       $this->jnsperawatanradiologi->postHapus();
+      exit();
+    }
+
+    public function postJnsPerawatanRadiologiMaxId()
+    {
+      $this->jnsperawatanradiologi->postMaxId();
       exit();
     }
 

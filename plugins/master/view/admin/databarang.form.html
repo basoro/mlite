@@ -6,7 +6,8 @@
             <div class="col-md-6">
                 <div class="form-group">
                     <label>Kode Barang</label>
-                    <input type="text" name="kode_brng" class="form-control" value="{$databarang.form.kode_brng}" />
+                    <input type="text" id="kode_brng" name="kode_brng" class="form-control" value="{$databarang.form.kode_brng}"  {if: !empty($databarang.form.kode_brng)}disabled{/if}/>
+                    <input name="kode_brng_baru" class="form-control" type="hidden" value="" id="kode_brng_baru" >
                 </div>
             </div>
             <div class="col-md-6">

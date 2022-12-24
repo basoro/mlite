@@ -140,6 +140,18 @@ class JnsPerawatanLab
       return $this->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->delete();
     }
 
+    public function postMaxId()
+    {
+      $max_id = $this->mysql('jns_perawatan_lab')->select(['kd_jenis_prw' => 'ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0)'])->oneArray();
+      if(empty($max_id['kd_jenis_prw'])) {
+        $max_id['kd_jenis_prw'] = '000';
+      }
+      $_next_max_id = sprintf('%03s', ($max_id['kd_jenis_prw'] + 1));
+      $next_max_id = 'LAB'.$_next_max_id;
+      echo $next_max_id;
+      exit();
+    }
+
     protected function mysql($table = NULL)
     {
         return new MySQL($table);

@@ -2,15 +2,8 @@
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
+                <span class="pull-right"><a href="{?=url(ADMIN.'/farmasi/index')?}" class="btn btn-xs btn-info" role="tab">Aktif</a> <a href="{?=url(ADMIN.'/farmasi/index/0')?}" class="btn btn-xs btn-info" role="tab">Tidak Aktif</a></span>
                 <h3 class="panel-title">{$databarang.title}</h3>
-                <ul class="nav nav-tabs">
-                    <li class="{if: $tab == '1'}active{/if}">
-                        <a href="{?=url(ADMIN.'/farmasi/index')?}" role="tab">Aktif</a>
-                    </li>
-                    <li class="{if: $tab == '0'}active{/if}">
-                        <a href="{?=url(ADMIN.'/farmasi/index/0')?}" role="tab">Tidak Aktif</a>
-                    </li>
-				        </ul>
             </div>
             <div class="panel-body">
     					<div class="table-responsive no-margin">
@@ -118,7 +111,7 @@
         }
       }
     });
-    //$('select').selectator();
+    $('select').selectator();
     event.stopPropagation();
     return false;
   });
