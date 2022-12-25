@@ -5007,6 +5007,7 @@ CREATE TABLE `tambahan_biaya` (
   `no_rawat` varchar(17) NOT NULL,
   `nama_biaya` varchar(60) NOT NULL,
   `besar_biaya` double NOT NULL,
+  `status` enum('ralan','ranap') NOT NULL, 
   PRIMARY KEY (`no_rawat`,`nama_biaya`),
   CONSTRAINT `tambahan_biaya_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
