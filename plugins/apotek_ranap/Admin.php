@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\Apotek_Ralan;
+namespace Plugins\Apotek_Ranap;
 
 use Systems\AdminModule;
 
@@ -19,18 +19,18 @@ class Admin extends AdminModule
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
 
-        if(isset($_POST['periode_rawat_jalan'])) {
-          $tgl_kunjungan = $_POST['periode_rawat_jalan'];
+        if(isset($_POST['periode_rawat_inap'])) {
+          $tgl_kunjungan = $_POST['periode_rawat_inap'];
         }
-        if(isset($_POST['periode_rawat_jalan_akhir'])) {
-          $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
+        if(isset($_POST['periode_rawat_inap_akhir'])) {
+          $tgl_kunjungan_akhir = $_POST['periode_rawat_inap_akhir'];
         }
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
     }
 
     public function anyDisplay()
@@ -39,53 +39,71 @@ class Admin extends AdminModule
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
 
-        if(isset($_POST['periode_rawat_jalan'])) {
-          $tgl_kunjungan = $_POST['periode_rawat_jalan'];
+        if(isset($_POST['periode_rawat_inap'])) {
+          $tgl_kunjungan = $_POST['periode_rawat_inap'];
         }
-        if(isset($_POST['periode_rawat_jalan_akhir'])) {
-          $tgl_kunjungan_akhir = $_POST['periode_rawat_jalan_akhir'];
+        if(isset($_POST['periode_rawat_inap_akhir'])) {
+          $tgl_kunjungan_akhir = $_POST['periode_rawat_inap_akhir'];
         }
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='')
+    public function _Display($tgl_masuk='', $tgl_masuk_akhir='', $status_pulang='')
     {
         $this->_addHeaderFiles();
 
-        $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+        $this->assign['kamar'] = $this->core->mysql('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
         $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
         $this->assign['no_rawat'] = '';
-        $this->assign['no_reg']     = '';
-        $this->assign['tgl_registrasi']= date('Y-m-d');
-        $this->assign['jam_reg']= date('H:i:s');
 
-        $sql = "SELECT reg_periksa.*,
+        $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
+
+        $sql = "SELECT
+            kamar_inap.*,
+            reg_periksa.*,
             pasien.*,
-            dokter.*,
-            poliklinik.*,
+            kamar.*,
+            bangsal.*,
             penjab.*
-          FROM reg_periksa, pasien, dokter, poliklinik, penjab
-          WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis
-          AND reg_periksa.tgl_registrasi BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'
-          AND reg_periksa.kd_dokter = dokter.kd_dokter
-          AND reg_periksa.kd_poli = poliklinik.kd_poli
-          AND reg_periksa.kd_pj = penjab.kd_pj";
+          FROM
+            kamar_inap,
+            reg_periksa,
+            pasien,
+            kamar,
+            bangsal,
+            penjab
+          WHERE
+            kamar_inap.no_rawat=reg_periksa.no_rawat
+          AND
+            reg_periksa.no_rkm_medis=pasien.no_rkm_medis
+          AND
+            kamar_inap.kd_kamar=kamar.kd_kamar
+          AND
+            bangsal.kd_bangsal=kamar.kd_bangsal
+          AND
+            reg_periksa.kd_pj=penjab.kd_pj";
 
-        if($status_periksa == 'belum') {
-          $sql .= " AND reg_periksa.stts = 'Belum'";
+        if ($this->core->getUserInfo('role') != 'admin') {
+          $sql .= " AND bangsal.kd_bangsal IN ('$bangsal')";
         }
-        if($status_periksa == 'selesai') {
-          $sql .= " AND reg_periksa.stts = 'Sudah'";
+        if($status_pulang == '') {
+          $sql .= " AND kamar_inap.stts_pulang = '-'";
         }
-        if($status_periksa == 'lunas') {
-          $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
+        if($status_pulang == 'all' && $tgl_masuk !== '' && $tgl_masuk_akhir !== '') {
+          $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
+        }
+        if($status_pulang == 'masuk' && $tgl_masuk !== '' && $tgl_masuk_akhir !== '') {
+          $sql .= " AND kamar_inap.tgl_masuk BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
+        }
+        if($status_pulang == 'pulang' && $tgl_masuk !== '' && $tgl_masuk_akhir !== '') {
+          $sql .= " AND kamar_inap.tgl_keluar BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
         }
 
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
@@ -94,6 +112,11 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $dpjp_ranap = $this->core->mysql('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+          $row['dokter'] = $dpjp_ranap;
           $this->assign['list'][] = $row;
         }
 
@@ -102,11 +125,11 @@ class Admin extends AdminModule
     public function postSaveDetail()
     {
 
-      $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+      $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
 
       $this->core->mysql('gudangbarang')
         ->where('kode_brng', $_POST['kd_jenis_prw'])
-        ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->update([
           'stok' => $get_gudangbarang['stok'] - $_POST['jml']
         ]);
@@ -122,7 +145,7 @@ class Admin extends AdminModule
           'tanggal' => $_POST['tgl_perawatan'],
           'jam' => $_POST['jam_rawat'],
           'petugas' => $this->core->getUserInfo('fullname', null, true),
-          'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+          'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
           'status' => 'Simpan',
           'no_batch' => $get_gudangbarang['no_batch'],
           'no_faktur' => $get_gudangbarang['no_faktur']
@@ -140,8 +163,8 @@ class Admin extends AdminModule
           'embalase' => '0',
           'tuslah' => '0',
           'total' => $_POST['biaya'] * $_POST['jml'],
-          'status' => 'Ralan',
-          'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+          'status' => 'Ranap',
+          'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
           'no_batch' => $get_gudangbarang['no_batch'],
           'no_faktur' => $get_gudangbarang['no_faktur']
         ]);
@@ -164,12 +187,12 @@ class Admin extends AdminModule
       $get_resep_dokter = $this->core->mysql('resep_dokter')->where('no_resep', $_POST['no_resep'])->toArray();
       foreach ($get_resep_dokter as $item) {
 
-        $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+        $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
         $get_databarang = $this->core->mysql('databarang')->where('kode_brng', $item['kode_brng'])->oneArray();
 
         $this->core->mysql('gudangbarang')
           ->where('kode_brng', $item['kode_brng'])
-          ->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))
+          ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
           ->update([
             'stok' => $get_gudangbarang['stok'] - $item['jml']
           ]);
@@ -185,7 +208,7 @@ class Admin extends AdminModule
             'tanggal' => $get_resep_obat['tgl_perawatan'],
             'jam' => $get_resep_obat['jam'],
             'petugas' => $this->core->getUserInfo('fullname', null, true),
-            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
             'no_faktur' => $get_gudangbarang['no_faktur']
@@ -203,8 +226,8 @@ class Admin extends AdminModule
             'embalase' => '0',
             'tuslah' => '0',
             'total' => $get_databarang['h_beli'] * $item['jml'],
-            'status' => 'Ralan',
-            'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
+            'status' => 'Ranap',
+            'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'no_batch' => $get_gudangbarang['no_batch'],
             'no_faktur' => $get_gudangbarang['no_faktur']
           ]);
@@ -249,7 +272,7 @@ class Admin extends AdminModule
       $rows = $this->core->mysql('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
         ->where('no_rawat', $_POST['no_rawat'])
-        ->where('resep_obat.status', 'ralan')
+        ->where('resep_obat.status', 'ranap')
         ->toArray();
       $resep = [];
       $jumlah_total_resep = 0;
@@ -260,15 +283,15 @@ class Admin extends AdminModule
           ->where('resep_dokter.no_resep', $row['no_resep'])
           ->toArray();
         foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
-          $jumlah_total_resep += floatval($value['ralan']);
+          $value['h_beli'] = $value['jml'] * $value['h_beli'];
+          $jumlah_total_resep += floatval($value['h_beli']);
         }
 
         $row['validasi'] = $this->core->mysql('resep_obat')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('tgl_perawatan','!=', $row['tgl_peresepan'])
         ->where('jam', '!=', $row['jam_peresepan'])
-        ->where('status', 'ralan')
+        ->where('status', 'ranap')
         ->oneArray();
 
         $resep[] = $row;
@@ -277,7 +300,7 @@ class Admin extends AdminModule
       $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
       ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
       ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
-      ->where('detail_pemberian_obat.status', 'Ralan')
+      ->where('detail_pemberian_obat.status', 'Ranap')
       ->toArray();
 
       $detail_pemberian_obat = [];
@@ -303,7 +326,7 @@ class Admin extends AdminModule
       $obat = $this->core->mysql('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('status', '1')
-        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporalan'))
+        ->where('gudangbarang.kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->like('databarang.nama_brng', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
@@ -374,7 +397,7 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/apotek_ralan/js/admin/apotek_ralan.js');
+        echo $this->draw(MODULES.'/apotek_ranap/js/admin/apotek_ranap.js');
         exit();
     }
 
@@ -386,7 +409,7 @@ class Admin extends AdminModule
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
-        $this->core->addJS(url([ADMIN, 'apotek_ralan', 'javascript']), 'footer');
+        $this->core->addJS(url([ADMIN, 'apotek_ranap', 'javascript']), 'footer');
     }
 
     protected function data_icd($table)
