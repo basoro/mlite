@@ -42,6 +42,23 @@ class Admin extends AdminModule
           $status_cuti = $_POST['status_cuti'];
         }
 
+        $this->assign['urgensi'] = array("Tahunan","Besar","Sakit","Bersalin","Alasan Penting","Keterangan Lainnya");
+        $this->assign['pj'] = $this->mysql('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+
+        $this->assign['pengajuan_cuti'] = [
+          'no_pengajuan' => '',
+          'tanggal' => '',
+          'tanggal_awal' => '',
+          'tanggal_akhir' => '',
+          'nik' => '',
+          'urgensi' => '',
+          'alamat' => '',
+          'jumlah' => '',
+          'kepentingan' => '',
+          'nik_pj' => '',
+          'status' => ''
+         ];
+
         $this->_Display($tgl_pengajuan, $tgl_pengajuan_akhir, $status_cuti);
         return $this->draw('index.html',['cuti' => $this->assign]);
     }
@@ -123,20 +140,20 @@ class Admin extends AdminModule
       $this->assign['tgl_akhir']= date('Y-m-d');
       if (isset($_POST['no_pengajuan'])){
         $this->assign['pengajuan_cuti'] = $this->mysql('pengajuan_cuti')
-        ->select([
-          'no_pengajuan' => 'pengajuan_cuti.no_pengajuan',
-          'tanggal' => 'pengajuan_cuti.tanggal',
-          'tanggal_awal' => 'pengajuan_cuti.tanggal_awal',
-          'tanggal_akhir' => 'pengajuan_cuti.tanggal_akhir',
-          'nik' => 'pengajuan_cuti.nik',
-          'urgensi' => 'pengajuan_cuti.urgensi',
-          'alamat' => 'pengajuan_cuti.alamat',
-          'jumlah' => 'pengajuan_cuti.jumlah',
-          'kepentingan' => 'pengajuan_cuti.kepentingan',
-          'nik_pj' => 'pengajuan_cuti.nik_pj',
-          'status' => 'pengajuan_cuti.status',
-          'nama' => 'pegawai.nama',
-      ])
+          ->select([
+            'no_pengajuan' => 'pengajuan_cuti.no_pengajuan',
+            'tanggal' => 'pengajuan_cuti.tanggal',
+            'tanggal_awal' => 'pengajuan_cuti.tanggal_awal',
+            'tanggal_akhir' => 'pengajuan_cuti.tanggal_akhir',
+            'nik' => 'pengajuan_cuti.nik',
+            'urgensi' => 'pengajuan_cuti.urgensi',
+            'alamat' => 'pengajuan_cuti.alamat',
+            'jumlah' => 'pengajuan_cuti.jumlah',
+            'kepentingan' => 'pengajuan_cuti.kepentingan',
+            'nik_pj' => 'pengajuan_cuti.nik_pj',
+            'status' => 'pengajuan_cuti.status',
+            'nama' => 'pegawai.nama',
+          ])
           ->join('pegawai', 'pengajuan_cuti.nik_pj=pegawai.nik')
           ->where('no_pengajuan', $_POST['no_pengajuan'])
           ->oneArray();
