@@ -10,10 +10,21 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
+            'Kelola' => 'manage',
+            'Katalog' => 'index',
             'Mapping Poli' => 'mappingpoli',
             'Pengaturan' => 'settings',
         ];
+    }
+
+    public function getManage()
+    {
+      $sub_modules = [
+        ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'index']), 'icon' => 'cube', 'desc' => 'Data obat dan barang habis pakai'],
+        ['name' => 'Mapping Poli', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'mappingpoli']), 'icon' => 'cube', 'desc' => 'Tambah stok opname'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_fktp', 'settings']), 'icon' => 'cube', 'desc' => 'Pengaturan farmasi dan depo'],
+      ];
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
     public function getIndex()
