@@ -668,7 +668,7 @@ $("#kontrol").on("click",".hapus_kontrol", function(event){
         kd_poli: kd_poli,
         no_rkm_medis: no_rkm_medis
       } ,function(data) {
-        console.log(data);
+        //console.log(data);
         var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
         $.post(url, {no_rkm_medis : no_rkm_medis,
         }, function(data) {
@@ -879,7 +879,7 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   dokter : dokter,
   poli : poli
   }, function(data) {
-    console.log(data);
+    //console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;

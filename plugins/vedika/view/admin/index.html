@@ -82,13 +82,13 @@
         											<i class="fa fa-check"></i> Status
         										</button><br>
                           {else}
-                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+                            <a href="{$value.setstatusURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#statusModal">
         											<i class="fa fa-check"></i> Status
         										</a>
                             {loop: $value.status_pengajuan as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
-                            <br>
+                            <br><br><br>
                             <a href="#" class="btn btn-danger btn-xs hapus_vedika" data-no_sep="{$value.no_sep}">
                               <i class="fa fa-trash"></i> Hapus
                             </a>
@@ -119,10 +119,10 @@
                         <td>
                           <table>
                             <tr>
-                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Tgl.Registrasi{else}Tgl.Pulang{/if}</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
@@ -158,7 +158,7 @@
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_sep={$value.no_sep} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
+                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat={?=convertNorawat($value.no_rawat)?} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
                             </tr>
                             {/loop}
                           </table>
@@ -225,13 +225,13 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var url = baseURL + '/vedika/hapusberkas?t=' + mlite.token;
-    var no_sep = $(this).attr("data-no_sep");
+    var no_rawat = $(this).attr("data-no_rawat");
     var nama_file = $(this).attr("data-nama_file");
 
     bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
       // ketika ditekan tombol ok
       if (result){
-        window.open(baseURL + '/vedika/hapusberkas/' + no_sep + '/' + nama_file + '?t=' + mlite.token, '_blank');
+        window.open(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, '_blank');
       }
     });
     event.stopPropagation();

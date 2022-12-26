@@ -623,7 +623,7 @@
     event.preventDefault();
     var url = baseURL + '/vclaim/hapussep?t=' + mlite.token;
     var no_sep = $(this).attr("data-no_sep");
-    console.log(no_sep);
+    //console.log(no_sep);
 
     $.post(url, {
       no_sep: no_sep
@@ -1068,7 +1068,7 @@
             alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
           } else if(json_obj[0].metaData.code == 200) {
             var histori = json_obj[0].response.histori;
-            console.log(histori);
+            //console.log(histori);
             var output="<div class=\"panel panel-default m-t-xl\">";
             for (var i in histori) {
                 var jnsPelayanan = "Rawat Inap";
@@ -1575,7 +1575,7 @@
                      data:{query:query},
                      success:function(data)
                      {
-                          console.log(data);
+                          //console.log(data);
                           $('#provinsiList').fadeIn();
                           $('#provinsiList').html(data);
                      }
@@ -1587,7 +1587,7 @@
            $('#id_provinsi').val($(this).text().split(': ')[0]);
            var id_provinsi = $('#id_provinsi').val();
            $('#provinsiList').fadeOut();
-           console.log(id_provinsi);
+           //console.log(id_provinsi);
 
            $('#kabupaten').keyup(function(){
                 var query = $(this).val();
@@ -1612,7 +1612,7 @@
            $('#id_kabupaten').val($(this).text().split(': ')[0]);
            var id_kabupaten = $('#id_kabupaten').val();
            $('#kabupatenList').fadeOut();
-           console.log(id_kabupaten);
+           //console.log(id_kabupaten);
 
            $('#kecamatan').keyup(function(){
                 var query = $(this).val();
@@ -1638,7 +1638,7 @@
            $('#id_kecamatan').val($(this).text().split(': ')[0]);
            var id_kecamatan = $('#id_kecamatan').val();
            $('#kecamatanList').fadeOut();
-           console.log(id_kecamatan);
+           //console.log(id_kecamatan);
 
            $('#kelurahan').keyup(function(){
                 var query = $(this).val();
@@ -1663,7 +1663,7 @@
            $('#kelurahan').val($(this).text().split(': ')[1]);
            $('#id_kelurahan').val($(this).text().split(': ')[0]);
            $('#kelurahanList').fadeOut();
-           console.log(id_kelurahan);
+           //console.log(id_kelurahan);
 
       });
 

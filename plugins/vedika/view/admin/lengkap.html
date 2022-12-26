@@ -1,4 +1,4 @@
-<article class="row" id="display">
+<article class="row">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -7,7 +7,7 @@
                     <i class="fa fa-calendar"></i><span class="hidden-xs"> Pilihan dan Pemilahan</span>
                   </span>
                   <ul class="dropdown-menu dropdown-menu-right">
-                    <form class="" action="{?=url(ADMIN.'/vedika/perbaikan')?}" method="">
+                    <form class="" action="{?=url(ADMIN.'/vedika/lengkap')?}" method="">
                     <li style="padding-left:5px;padding-right:5px;">
                       <input type="text" id="start_date" class="form-control tanggal" name="start_date" required>
                     </li>
@@ -27,16 +27,15 @@
                     </form>
                   </ul>
                 </div>
-                <h3 class="panel-title">Kelola Perbaikan e-Vedika</h3>
+                <h3 class="panel-title">Kelola Lengkap e-Vedika</h3>
             </div>
             <div class="panel-body">
                 <div class="row clearfix">
                   <div class="col col-md-6">
-                    <h3 style="margin-top:5px;margin-bottom:15px;">
-                      Jumlah: {?=count($vedika.totalRecords)?}
-                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
-                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
-                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+                    <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
+                      <a href="{?=url()?}/admin/vedika/lengkapexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+                      <a href="{?=url()?}/admin/vedika/lengkapexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+                      <a href="{?=url()?}/admin/vedika/lengkapexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
                     </h3>
                   </div>
                   <div class="col col-md-6">
@@ -90,7 +89,7 @@
                             <a href="{$value.setstatusURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#statusModal">
         											<i class="fa fa-check"></i> Status
         										</a>
-                            {loop: $value.status_pengajuan as $data}
+                            {loop: $value.status_lengkap as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
                             <br><br><br>
@@ -163,7 +162,7 @@
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat={?=convertNorawat($value.no_rawat)?} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
+                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
                             </tr>
                             {/loop}
                           </table>
@@ -205,23 +204,4 @@
     });
   } );
   $('.gallery').lightbox();
-</script>
-<script type="text/javascript">
-  // ketika tombol hapus ditekan
-  $("#display").on("click",".hapus_berkas", function(event){
-    var baseURL = mlite.url + '/' + mlite.admin;
-    event.preventDefault();
-    var url = baseURL + '/vedika/hapusberkas?t=' + mlite.token;
-    var no_rawat = $(this).attr("data-no_rawat");
-    var nama_file = $(this).attr("data-nama_file");
-
-    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
-      // ketika ditekan tombol ok
-      if (result){
-        window.open(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, '_blank');
-      }
-    });
-    event.stopPropagation();
-    return false;
-  });
 </script>
