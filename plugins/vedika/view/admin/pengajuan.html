@@ -92,10 +92,6 @@
                             {loop: $value.status_pengajuan as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
-                            <br><br><br>
-                            <a href="{?=url([ADMIN,'vedika', 'hapus', $value.no_sep])?}" target="_blank" class="btn btn-danger btn-xs">
-                              <i class="fa fa-trash"></i> Hapus
-                            </a>
                           {/if}
                         </td>
       									<td>
