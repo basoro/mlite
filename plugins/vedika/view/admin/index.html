@@ -141,7 +141,7 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                             </tr>
                           </table>
                         </td>
@@ -191,6 +191,10 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  var no_rawat = $(this).attr("data-no_rawat");
+  $('input:text[name=no_rawat]').val(no_rawat);
+</script>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({

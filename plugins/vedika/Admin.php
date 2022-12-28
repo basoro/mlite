@@ -1771,6 +1771,20 @@ class Admin extends AdminModule
     return $result;
   }
 
+  public function getUbahDiagnosa($status_lanjut, $no_rawat)
+  {
+    $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', revertNoRawat($no_rawat))->where('diagnosa_pasien.status', $status_lanjut)->asc('prioritas')->toArray();
+    echo $this->draw('ubah.diagnosa.html', ['no_rawat' => revertNoRawat($no_rawat), 'diagnosa_pasien' => $diagnosa_pasien]);
+    exit();
+  }
+
+  public function postHapusDiagnosa()
+  {
+    $query = $this->core->mysql('diagnosa_pasien')->where('no_rawat', $_POST['no_rawat'])->where('kd_penyakit', $_POST['kd_penyakit'])->where('prioritas', $_POST['prioritas'])->delete();
+    //echo 'Hapus';
+    exit();
+  }
+
   public function getJavascript()
   {
     header('Content-type: text/javascript');
