@@ -1508,7 +1508,15 @@ class Admin extends AdminModule
     $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')
       ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
       ->where('no_rawat', $this->revertNorawat($id))
+      ->where('diagnosa_pasien.status', 'Ralan')
       ->toArray();
+    if($reg_periksa['status_lanjut'] == 'Ranap'){
+      $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')
+        ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', $this->revertNorawat($id))
+        ->where('diagnosa_pasien.status', 'Ralan')
+        ->toArray();
+    }
     $prosedur_pasien = $this->core->mysql('prosedur_pasien')
       ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
       ->where('no_rawat', $this->revertNorawat($id))
