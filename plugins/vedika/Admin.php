@@ -1822,6 +1822,22 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getBridgingInacbgs($no_rawat)
+  {
+    $reg_periksa = $this->core->mysql('reg_periksa')
+      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+      ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->oneArray();
+    if(empty($reg_periksa)) {
+      $reg_periksa = [];
+    }
+    echo $this->draw('inacbgs.html', ['reg_periksa' => $reg_periksa]);
+    exit();
+  }
+
   public function getJavascript()
   {
     header('Content-type: text/javascript');

@@ -1,4 +1,4 @@
-<article class="row">
+<article class="row" id="display">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -92,6 +92,10 @@
                             {loop: $value.status_lengkap as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
+                            <br><br><br>
+                            <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
+                              <i class="fa fa-refresh"></i> Grouping Inacbgs
+                            </a>
                           {/if}
                         </td>
       									<td>
@@ -191,6 +195,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="inacbgsModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
@@ -200,4 +211,21 @@
     });
   } );
   $('.gallery').lightbox();
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridging_inacbgs", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/vedika/bridginginacbgs/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#inacbgsModal');
+    var modalContent = $('#inacbgsModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
 </script>

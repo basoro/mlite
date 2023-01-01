@@ -1,0 +1,536 @@
+<style media="screen">
+  .panel-heading-nav {
+    border-bottom: 0;
+    padding: 10px 0 0;
+  }
+
+  .panel-heading-nav .nav {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Bridging Inacbgs</h4>
+</div>
+<div class="modal-body">
+  <div class="row" style="margin-top:20px;">
+    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+    <input type="hidden" id="addrujukan" name="addrujukan" class="form-control" value="">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nama Pasien/JK</label>
+        <input type="text" id="noSep" name="noSep" class="form-control" value="{$reg_periksa.nm_pasien}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor RM</label>
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.no_rkm_medis}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Rawat</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$reg_periksa.no_rawat}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Kartu</label>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$reg_periksa.no_peserta}" readonly>
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Tanggal Registrasi</label>
+        <input type="text" id="noSep" name="noSep" class="form-control" value="{$reg_periksa.tgl_registrasi}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Poliklinik/Unit</label>
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.nm_poli}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Dokter</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$reg_periksa.nm_dokter}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Cara Bayar</label>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$reg_periksa.png_jawab}" readonly>
+      </div>
+    </div>
+    <!--
+    <div class="col col-md-6">
+      <div class="form-group">
+        <label for="poli">Nomor SEP</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <div class="form-group">
+        <label for="poli">Tanggal Keluar</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Kelas Rawat</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Upgrade Kelas</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Naik ke Kelas</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Lama Hari Naik Kelas</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">ADL Sub Acute</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">ADL Chronic</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">ICU Indikator</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">ICU Los</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Berat Saat Lahir</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Status Pulang</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Diagnosa</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Prosedur</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div id="collapseOne" class="panel-collapse collapse">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Prosedur Non Bedah</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Prosedur Bedah</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Konsultasi</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Tenaga Ahli</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Keperawatan</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Penunjang</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Radiologi</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Laboratorium</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Pelayanan Darah</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Rehabilitasi</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Kamar</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Rawat Intensif</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Obat</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Obat Kronis</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Obat Kemoterapi</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Alkes</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">BMHP</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Sewa Alat</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Poli Eksekutif</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Biaya Tambahan</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+      </div>
+    </div>
+    </div>
+    -->
+
+    <div class="col col-md-12" style="margin: 20px 0;">
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active">
+          <a href="#one" aria-controls="one" role="tab" data-toggle="tab">Data Umum</a>
+        </li>
+        <li role="presentation">
+          <a href="#two" aria-controls="two" role="tab" data-toggle="tab">Data Biaya</a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="one">
+
+        <div class="col col-md-6">
+          <div class="form-group">
+            <label for="poli">Nomor SEP</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-6">
+          <div class="form-group">
+            <label for="poli">Tanggal Keluar</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Kelas Rawat</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Upgrade Kelas</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Naik ke Kelas</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Lama Hari Naik Kelas</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ADL Sub Acute</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ADL Chronic</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ICU Indikator</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ICU Los</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Berat Saat Lahir</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Status Pulang</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Diagnosa</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+      </div>
+
+      <div role="tabpanel" class="tab-pane fade" id="two">
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur Non Bedah</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur Bedah</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Konsultasi</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Tenaga Ahli</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Keperawatan</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Penunjang</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Radiologi</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Laboratorium</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Pelayanan Darah</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Rehabilitasi</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Kamar</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Rawat Intensif</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat Kronis</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat Kemoterapi</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Alkes</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">BMHP</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Sewa Alat</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Poli Eksekutif</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Biaya Tambahan</label>
+            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col col-md-12" style="margin: 20px 0;">
+      <button class="btn btn-success simpanbridging">
+          Simpan
+      </button>
+      <button class="btn btn-info editbridging">
+          Edit
+      </button>
+      <button class="btn btn-danger hapusbridging">
+          Hapus
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
