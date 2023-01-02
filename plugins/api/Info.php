@@ -4,7 +4,7 @@ return [
     'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'database',
     'pages'         =>  ['API mLITE' => 'api'],
     'install'       =>  function () use ($core) {

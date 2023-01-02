@@ -261,7 +261,7 @@ class Admin extends AdminModule
                 $this->tpl->set('error', $obj);
             } else {
                 if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2022-01-01 00:00:00');
+                  $this->settings('settings', 'version', '2023-01-01 00:00:00');
                 }
                 $this->settings('settings', 'update_version', $new_date_format);
                 $this->settings('settings', 'update_changelog', $obj['commit']['message']);

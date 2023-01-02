@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul dokter rawat inap untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'user-md',
     'install'       =>  function () use ($core) {
       $core->mysql()->pdo()->exec("CREATE TABLE `resume_pasien_ranap` (

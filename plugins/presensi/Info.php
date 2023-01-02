@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul presensi',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.2',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'user-o',
     'install'       =>  function () use ($core) {
 

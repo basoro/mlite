@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Verifikasi Obat Kronis Aura Syifa',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'medkit',
     'install'       =>  function () use ($core) {
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_veronisa` (

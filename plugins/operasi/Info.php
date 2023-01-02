@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul operasi dan VK di mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'bolt',
     'install'       =>  function () use ($core) {
 
