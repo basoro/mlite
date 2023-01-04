@@ -1171,7 +1171,7 @@ class Admin extends AdminModule
 
                 // Show Gambar Pemeriksaan Catatan - Start
                 $pemeriksaan_catatan = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$id)->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
-                
+
                 $row['pemeriksaan_catatan'] = $this->core->mysql('pemeriksaan_catatan')->join('pegawai', 'pegawai.nik = pemeriksaan_catatan.nip')->where('pemeriksaan_catatan.no_rawat',$row['no_rawat'])->desc('pemeriksaan_catatan.waktu_catatan')->toArray();
                 // Show Gambar Pemeriksaan Catatan - END
 
@@ -1285,6 +1285,17 @@ class Admin extends AdminModule
               $get_kd_penyakit = $_POST['kd_penyakit'];
               for ($i = 0; $i < count($get_kd_penyakit); $i++) {
                 $kd_penyakit = $get_kd_penyakit[$i];
+                if(!$this->core->mysql('penyakit')->where('kd_penyakit', $kd_penyakit)->oneArray()){
+                  $rows_icd10 = $this->data_icd('icd10')->where('kode', $kd_penyakit)->oneArray();
+                  $this->core->mysql('penyakit')->save([
+                    'kd_penyakit' => $kd_penyakit,
+                    'nm_penyakit' => $rows_icd10['nama'],
+                    'ciri_ciri' => '-',
+                    'keterangan' => '-',
+                    'kd_ktg' => '-',
+                    'status' => 'Tidak Menular'
+                  ]);
+                }
                 $query = $this->core->mysql('diagnosa_pasien')
                   ->save([
                     'no_rawat' => revertNorawat($id),
@@ -1298,6 +1309,14 @@ class Admin extends AdminModule
               $get_kode = $_POST['kode'];
               for ($i = 0; $i < count($get_kode); $i++) {
                 $kode = $get_kode[$i];
+                if(!$this->core->mysql('icd9')->where('kode', $kode)->oneArray()){
+                  $rows_icd9 = $this->data_icd('icd9')->where('kode', $kode)->oneArray();
+                  $this->core->mysql('icd9')->save([
+                    'kode' => $kode,
+                    'deskripsi_panjang' => $rows_icd9['nama'],
+                    'deskripsi_pendek' => $rows_icd9['nama']
+                  ]);
+                }
                 $query = $this->core->mysql('prosedur_pasien')
                   ->save([
                     'no_rawat' => revertNorawat($id),
@@ -1387,6 +1406,17 @@ class Admin extends AdminModule
               $this->core->mysql('diagnosa_pasien')->where('no_rawat', revertNorawat($id))->delete();
               for ($i = 0; $i < count($get_kd_penyakit); $i++) {
                 $kd_penyakit = $get_kd_penyakit[$i];
+                if(!$this->core->mysql('penyakit')->where('kd_penyakit', $kd_penyakit)->oneArray()){
+                  $rows_icd10 = $this->data_icd('icd10')->where('kode', $kd_penyakit)->oneArray();
+                  $this->core->mysql('penyakit')->save([
+                    'kd_penyakit' => $kd_penyakit,
+                    'nm_penyakit' => $rows_icd10['nama'],
+                    'ciri_ciri' => '-',
+                    'keterangan' => '-',
+                    'kd_ktg' => '-',
+                    'status' => 'Tidak Menular'
+                  ]);
+                }
                 $query = $this->core->mysql('diagnosa_pasien')
                   ->save([
                     'no_rawat' => revertNorawat($id),
@@ -1401,6 +1431,14 @@ class Admin extends AdminModule
               $this->core->mysql('prosedur_pasien')->where('no_rawat', revertNorawat($id))->delete();
               for ($i = 0; $i < count($get_kode); $i++) {
                 $kode = $get_kode[$i];
+                if(!$this->core->mysql('icd9')->where('kode', $kode)->oneArray()){
+                  $rows_icd9 = $this->data_icd('icd9')->where('kode', $kode)->oneArray();
+                  $this->core->mysql('icd9')->save([
+                    'kode' => $kode,
+                    'deskripsi_panjang' => $rows_icd9['nama'],
+                    'deskripsi_pendek' => $rows_icd9['nama']
+                  ]);
+                }
                 $query = $this->core->mysql('prosedur_pasien')
                   ->save([
                     'no_rawat' => revertNorawat($id),
@@ -1471,14 +1509,14 @@ class Admin extends AdminModule
         $cntr   = 0;
         $img = new \Systems\Lib\Image();
         $nip = $this->core->getUserInfo('username', null, true);
-    
+
         if ($_POST['gambar']) {
           $imgName = time().$cntr++;
           $waktu_catatan = date('Y-m-d H:i:s');
-          
+
           $imgGetPart = explode(",",$_POST['gambar']);
           $img64Decode = base64_decode($imgGetPart[1]);
-            
+
           $imgPath = $dir.'/'.$id.'_'.$imgName.'.png';
           $lokasi_file = $id.'_'.$imgName.'.png';
           file_put_contents($imgPath, $img64Decode); //upload_file
@@ -1486,7 +1524,7 @@ class Admin extends AdminModule
         } else {
           $this->notify('failure', 'Gagal menambahkan Catatan Pemeriksaan', 'Catatan Pemeriksaan Kosong / Belum diisi');
         }
-        
+
         if ($query) {
           $this->notify('success', 'Sukses menambahkan Catatan Pemeriksaan');
         };
