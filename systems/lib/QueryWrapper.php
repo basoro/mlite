@@ -385,7 +385,8 @@ class QueryWrapper
             $this->where($column, $value);
         }
         $st = $this->_build();
-        return $st->fetch(\PDO::FETCH_ASSOC);
+        //return $st->fetch(\PDO::FETCH_ASSOC);
+        return $st->fetch(\PDO::FETCH_ASSOC) ? : [];
     }
 
     public function oneObject($column = null, $value = null)

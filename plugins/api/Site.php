@@ -30,7 +30,7 @@ class Site extends SiteModule
         header("Access-Control-Allow-Headers: X-Requested-With");
 
         $key = $this->settings->get('api.apam_key');
-        $token = trim(isset($_REQUEST['token'])?$_REQUEST['token']:null);
+        $token = trim(isset($_REQUEST['token'])? $_REQUEST['token'] : null);
         if($token == $key) {
           $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
           switch($action){

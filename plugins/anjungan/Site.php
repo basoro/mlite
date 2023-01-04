@@ -1931,7 +1931,10 @@ class Site extends SiteModule
         break;
         case "tampilloket":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -1947,7 +1950,10 @@ class Site extends SiteModule
         break;
         case "printloket":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -1997,7 +2003,10 @@ class Site extends SiteModule
         break;
         case "tampilcs":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -2013,7 +2022,10 @@ class Site extends SiteModule
         break;
         case "printcs":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -2065,7 +2077,10 @@ class Site extends SiteModule
         //Ausyi 3 Antrian
         case "tampiligd":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'IGD')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -2081,7 +2096,10 @@ class Site extends SiteModule
         break;
         case "printigd":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'IGD')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -2157,7 +2175,10 @@ class Site extends SiteModule
 
         case "tampilapotek":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {
@@ -2173,7 +2194,10 @@ class Site extends SiteModule
         break;
         case "printapotek":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-        	$noantrian = $result['noantrian'];
+          $noantrian = '';
+          if($result) {
+            $noantrian = $result['noantrian'];
+          }
         	if($noantrian > 0) {
         		$next_antrian = $noantrian + 1;
         	} else {

@@ -66,7 +66,13 @@ class Templates
         if (preg_match_all('/(\$(?:[a-zA-Z0-9_-]+)(?:\.(?:(?:[a-zA-Z0-9_-][^\s]+)))*)/', $content, $matches)) {
             $matches = $this->organize_array($matches);
             usort($matches, function ($a, $b) {
-                return strlen($a[0]) < strlen($b[0]);
+                //return strlen($a[0]) < strlen($b[0]);
+                $aLen = strlen($a[0]);
+                $bLen = strlen($b[0]);
+                if ($aLen === $bLen) {
+                    return 0;
+                }
+                return $aLen < $bLen ? 1 : -1;
             });
 
             foreach ($matches as $match) {
@@ -83,7 +89,13 @@ class Templates
         if (preg_match_all('/\%\%(.)([a-zA-Z0-9_-]+)/', $content, $matches)) {
             $matches = $this->organize_array($matches);
             usort($matches, function ($a, $b) {
-                return strlen($a[2]) < strlen($b[2]);
+                //return strlen($a[2]) < strlen($b[2]);
+                $aLen = strlen($a[2]);
+                $bLen = strlen($b[2]);
+                if ($aLen === $bLen) {
+                    return 0;
+                }
+                return $aLen < $bLen ? 1 : -1;
             });
 
             foreach ($matches as $match) {
