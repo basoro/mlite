@@ -2525,6 +2525,7 @@ class Site extends SiteModule
       $title = 'Presensi Pegawai';
       $logo  = $this->settings->get('settings.logo');
       $wallpaper  = $this->settings->get('settings.wallpaper');
+      $text_color  = $this->settings->get('settings.text_color');
 
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
 
@@ -2533,6 +2534,7 @@ class Site extends SiteModule
         'notify' => $this->core->getNotify(),
         'logo' => $logo,
         'wallpaper' => $wallpaper,
+        'text_color' => $text_color,
         'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
         'tanggal' => $tanggal,
         'running_text' => $this->settings->get('anjungan.text_poli'),
