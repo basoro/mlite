@@ -1,4 +1,4 @@
-<article class="row">
+<article class="row" id="display">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -32,7 +32,12 @@
             <div class="panel-body">
                 <div class="row clearfix">
                   <div class="col col-md-6">
-                    <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}</h3>
+                    <h3 style="margin-top:5px;margin-bottom:15px;">
+                      Jumlah: {?=count($vedika.totalRecords)?}
+                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+                      <a href="{?=url()?}/admin/vedika/perbaikanexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+                    </h3>
                   </div>
                   <div class="col col-md-6">
                     <form action="{$vedika.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
@@ -82,16 +87,17 @@
         											<i class="fa fa-check"></i> Status
         										</button><br>
                           {else}
-                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+                            <a href="{$value.setstatusURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#statusModal">
         											<i class="fa fa-check"></i> Status
-        										</a><br>
+        										</a>
+                            {loop: $value.status_pengajuan as $data}
+                            <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
+                            {/loop}
+                            <br><br><br>
                             <a href="{?=url([ADMIN,'vedika', 'hapus', $value.no_sep])?}" target="_blank" class="btn btn-danger btn-xs">
                               <i class="fa fa-trash"></i> Hapus
                             </a>
                           {/if}
-                          {loop: $value.status_pengajuan as $data}
-                          <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
-                          {/loop}
                         </td>
       									<td>
                           <table>
@@ -140,7 +146,7 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                             </tr>
                           </table>
                         </td>
@@ -157,7 +163,7 @@
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
+                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat={?=convertNorawat($value.no_rawat)?} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
                             </tr>
                             {/loop}
                           </table>
@@ -165,7 +171,7 @@
       								</tr>
       								{/loop}
       								{else}
-      								<tr><td colspan="4" class="text-center">Data pasien tidak ditemukan</td></tr>
+      								<tr><td colspan="5" class="text-center">Data pasien tidak ditemukan</td></tr>
       							{/if}
       							</tbody>
       						</table>
@@ -190,6 +196,10 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  var no_rawat = $(this).attr("data-no_rawat");
+  $('input:text[name=no_rawat]').val(no_rawat);
+</script>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
@@ -199,4 +209,41 @@
     });
   } );
   $('.gallery').lightbox();
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  $("#display").on("click",".hapus_vedika", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/hapus?t=' + mlite.token;
+    var no_sep = $(this).attr("data-no_sep");
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        window.open(baseURL + '/vedika/hapus/' + no_sep + '?t=' + mlite.token, '_blank');
+      }
+    });
+    event.stopPropagation();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  $("#display").on("click",".hapus_berkas", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/hapusberkas?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    var nama_file = $(this).attr("data-nama_file");
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        window.open(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, '_blank');
+      }
+    });
+    event.stopPropagation();
+    return false;
+  });
 </script>

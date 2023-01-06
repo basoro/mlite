@@ -58,7 +58,7 @@ $("#form").on("click", "#simpan", function(event){
     total_byrdrpr: total_byrdrpr,
     kd_pj: kd_pj,
     kd_bangsal: kd_bangsal,
-    kelas: kelas, 
+    kelas: kelas,
     status: status
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/jnsperawataninapdisplay?t=' + mlite.token);
@@ -148,6 +148,16 @@ $("#display").on("click", ".halaman",function(event){
 
 });
 // end halaman
+
+$("#form").on("click","#kd_jenis_prw", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/master/jnsperawataninapmaxid?t=' + mlite.token;
+  $.post(url, {
+  } ,function(data) {
+    $("#kd_jenis_prw").val(data);
+  });
+});
 
 function bersih(){
   $('input:text[name=id]').val("").removeAttr('disabled');

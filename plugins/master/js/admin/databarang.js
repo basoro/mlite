@@ -169,6 +169,16 @@ $("#display").on("click", ".halaman",function(event){
 });
 // end halaman
 
+$("#form").on("click","#kode_brng", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/master/databarangmaxid?t=' + mlite.token;
+  $.post(url, {
+  } ,function(data) {
+    $("#kode_brng").val(data);
+  });
+});
+
 function bersih(){
   $('input:text[name=kode_brng]').val("").removeAttr('disabled');
   $('input:text[name=nama_brng]').val("");

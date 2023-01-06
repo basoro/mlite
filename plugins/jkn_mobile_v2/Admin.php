@@ -20,7 +20,7 @@ class Admin extends AdminModule
     {
         return [
             'Kelola' => 'manage',
-            'Index' => 'index',
+            'Katalog' => 'index',
             'Mapping Poliklinik' => 'mappingpoli',
             'Add Mapping Poliklinik' => 'addmappingpoli',
             'Mapping Dokter' => 'mappingdokter',
@@ -36,7 +36,7 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Index', 'url' => url([ADMIN, 'jkn_mobile_v2', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile V2'],
+        ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile_v2', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile V2'],
         ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile V2'],
         ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile V2'],
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile V2'],

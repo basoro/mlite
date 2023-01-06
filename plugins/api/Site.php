@@ -9,10 +9,12 @@ use Systems\Lib\PHPMailer\Exception;
 
 class Site extends SiteModule
 {
+
     public function routes()
     {
         $this->route('api', 'getIndex');
         $this->route('api/apam', 'getApam');
+        $this->route('api/berkasdigital', 'getBerkasDigital');
     }
 
     public function getIndex()
@@ -28,7 +30,7 @@ class Site extends SiteModule
         header("Access-Control-Allow-Headers: X-Requested-With");
 
         $key = $this->settings->get('api.apam_key');
-        $token = trim(isset($_REQUEST['token'])?$_REQUEST['token']:null);
+        $token = trim(isset($_REQUEST['token'])? $_REQUEST['token'] : null);
         if($token == $key) {
           $action = isset($_REQUEST['action']) ? $_REQUEST['action'] : "";
           switch($action){
@@ -1111,6 +1113,40 @@ class Site extends SiteModule
       $mail->Body = $temp;
 
       $mail->send();
+    }
+
+    public function getBerkasDigital()
+    {
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Methods: GET, POST');
+        header("Access-Control-Allow-Headers: X-Requested-With");
+        $dir    = WEBAPPS_PATH.'/berkasrawat/pages/upload';
+        $cntr   = 0;
+
+        $key = $this->settings->get('api.berkasdigital_key');
+        $token = trim(isset($_POST['token'])?$_POST['token']:null);
+
+        if($token == $key) {
+
+          $image = $_FILES['file']['tmp_name'];
+          $img = new \Systems\Lib\Image();
+          $id = convertNorawat($_POST['no_rawat']);
+          if ($img->load($image)) {
+              $imgName = time().$cntr++;
+              $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+              $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+              $img->save($imgPath);
+              $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+              if($query) {
+                echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+              }
+          }
+
+        } else {
+          echo 'Error';
+        }
+
+        exit();
     }
 
 }

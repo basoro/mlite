@@ -50,6 +50,8 @@ class Admin extends Main
         $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
         $this->assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
+        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
+
         $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 
         $this->tpl->set('mlite', $this->assign);
@@ -255,6 +257,32 @@ class Admin extends Main
     private function registerPage($name, $path)
     {
         $this->registerPage[] = ['id' => null, 'title' => $name, 'slug' => $path];
+    }
+
+    private function _getPoliklinik($kd_poli = null)
+    {
+        $result = [];
+        $rows = $this->db('poliklinik')->toArray();
+
+        if (!$kd_poli) {
+            $kd_poliArray = [];
+        } else {
+            $kd_poliArray = explode(',', $kd_poli);
+        }
+
+        foreach ($rows as $row) {
+            if (empty($kd_poliArray)) {
+                $attr = '';
+            } else {
+                if (in_array($row['kd_poli'], $kd_poliArray)) {
+                    $attr = 'selected';
+                } else {
+                    $attr = '';
+                }
+            }
+            $result[] = ['kd_poli' => $row['kd_poli'], 'nm_poli' => $row['nm_poli'], 'attr' => $attr];
+        }
+        return $result;
     }
 
     public function getRegisteredPages()

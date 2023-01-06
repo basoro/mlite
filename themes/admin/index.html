@@ -105,9 +105,19 @@
                   <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
                   <li><a href="{?=url()?}/anjungan/sep" target="_blank">Anjungan Cetak SEP</a></li>
                   <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
-                  <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
                   <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
                   <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
+                  <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{?=url()?}/anjungan/poli/all" target="_blank">Antrian Poliklinik Alternatif</a></li>
+                  {loop: $mlite.poliklinik}
+                    {if: $value.attr == 'selected'}
+                      <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
+                    {/if}
+                  {/loop}
+                  <li role="separator" class="divider"></li>
+                  <li><a href="{?=url()?}/anjungan/ausyi/loket" target="_blank">Antrian Loket Ausyi</a></li>
+                  <li><a href="{?=url()?}/anjungan/ausyi/pasien" target="_blank">Antrian Pasien Ausyi</a></li>
                 </ul>
               </li>
               {/if}
@@ -155,7 +165,7 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-lg-12" style="margin-bottom:50px !important;">
-                        <h2 class="content-title">{if: $module.name !== 'Dashboard'}<a href="{?=url([ADMIN,$module.dir,'manage'])?}">{$module.name}</a> <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a>{/if}</h2>
+                        <h2 class="content-title">{if: $module.name == 'Rawat Jalan' | $module.name == 'Pengguna'}<a href="{?=url([ADMIN,$module.dir,'index'])?}">{$module.name}</a>{else}<a href="{?=url([ADMIN,$module.dir,'manage'])?}">{$module.name}</a>{/if} <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a></h2>
                         {$module.content}
                     </div>
                 </div>

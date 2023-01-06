@@ -277,6 +277,7 @@ class Admin extends AdminModule
       $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
       ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
       ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
+      ->where('detail_pemberian_obat.status', 'Ralan')
       ->toArray();
 
       $detail_pemberian_obat = [];

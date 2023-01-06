@@ -172,7 +172,7 @@ class Admin extends AdminModule
                 'kd_dokter' => $this->core->getUserInfo('username', null, true),
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
-                'status' => 'ralan',
+                'status' => 'ranap',
                 'tgl_penyerahan' => '0000-00-00',
                 'jam_penyerahan' => '00:00:00'
               ]);
@@ -186,7 +186,7 @@ class Admin extends AdminModule
                 'kd_dokter' => $this->core->getUserInfo('username', null, true),
                 'tgl_peresepan' => $_POST['tgl_perawatan'],
                 'jam_peresepan' => $_POST['jam_rawat'],
-                'status' => 'ralan'
+                'status' => 'ranap'
               ]);
           }
           if ($this->core->mysql('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {
@@ -235,7 +235,7 @@ class Admin extends AdminModule
               'kd_dokter' => $this->core->getUserInfo('username', null, true),
               'tgl_peresepan' => $_POST['tgl_perawatan'],
               'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan',
+              'status' => 'ranap',
               'tgl_penyerahan' => '0000-00-00',
               'jam_penyerahan' => '00:00:00'
             ]);
@@ -249,7 +249,7 @@ class Admin extends AdminModule
               'kd_dokter' => $this->core->getUserInfo('username', null, true),
               'tgl_peresepan' => $_POST['tgl_perawatan'],
               'jam_peresepan' => $_POST['jam_rawat'],
-              'status' => 'ralan'
+              'status' => 'ranap'
             ]);
         }
         if ($this->core->mysql('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $this->core->getUserInfo('username', null, true))->oneArray()) {

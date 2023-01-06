@@ -287,7 +287,7 @@ class Admin extends AdminModule
     public function postUbahPenjab()
     {
       $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save([
-        'kd_pj' => $_POST['kd_pj'] 
+        'kd_pj' => $_POST['kd_pj']
       ]);
       exit();
     }
