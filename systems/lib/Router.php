@@ -43,7 +43,7 @@ class Router
                 $pointsB = preg_match_all($patterns, $b);
             }
 
-            return $pointsA <=> $pointsB;
+            return $pointsA > $pointsB;
         });
 
         foreach ($this->routes as $pattern => $callback) {
