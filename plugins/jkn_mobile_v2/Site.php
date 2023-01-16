@@ -2120,7 +2120,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 1,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000
                       ]);
@@ -2163,7 +2163,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 2,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000
                       ]);
@@ -2206,7 +2206,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 3,
                         'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000
                       ]);
@@ -2249,7 +2249,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 4,
                         'waktu' => strtotime($mutasi_berkas['diterima']) * 1000
                       ]);
@@ -2292,7 +2292,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 5,
                         'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000
                       ]);
@@ -2336,7 +2336,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 6,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000
                       ]);
@@ -2379,7 +2379,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 7,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000
                       ]);
@@ -2420,7 +2420,7 @@ class Site extends SiteModule
                       $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
-                        'nomor_referensi' => $q['kodebooking'],
+                        'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 99,
                         'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000
                       ]);
