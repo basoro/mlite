@@ -477,6 +477,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
+      bersih();
     });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
@@ -490,6 +491,151 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     "</div>").show();
   });
 });
+
+$("#rincian").on("click",".hasil_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam_periksa = $(this).attr("data-jam_periksa");
+  var status = $(this).attr("data-status");
+
+  var set_stok = ''
+      + '<div class="form-group">'
+      + '<div class="form-group">'
+      + '<label>Hasil</label>'
+      + '<textarea name="hasil" id="hasil" rows="4" class="form-control""></textarea>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label>Upload</label>'
+      + '<form method="post" action="" enctype="multipart/form-data">'
+      + '  Select file : <input type="file" name="file" id="file" class="form-control"><br>'
+      + '  <input type="button" class="btn btn-info" value="Upload" id="btn_upload">'
+      + '</form>'
+      + '<div id="preview"></div>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  var box = bootbox.dialog({
+    message: set_stok,
+    title: 'Input Hasil Radiologi',
+    buttons: {
+      main: {
+        label: 'Simpan',
+        className: 'btn-primary',
+        callback() {
+          var hasil = $('#hasil').val();
+          //console.log(tgl_keluar);
+          $.post(url, {
+            no_rawat: no_rawat,
+            tgl_periksa: tgl_periksa,
+            jam_periksa: jam_periksa,
+            hasil: hasil
+          } ,function(data) {
+            // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+            //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+            var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+            $.post(url, {no_rawat : no_rawat, status : status
+            }, function(data) {
+              // tampilkan data
+              $("#rincian").html(data).show();
+            });
+            $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+            "Hasil radiologi telah disimpan!"+
+            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+            "</div>").show();
+          });
+        }
+      },
+      cancel: {
+        label: "Cancel",
+        className: "btn-default"
+      }
+    }
+  });
+  box.on("shown.bs.modal", function() {
+    $('#btn_upload').click(function(){
+
+      var baseURL = mlite.url + '/' + mlite.admin;
+      event.preventDefault();
+      var url= baseURL + '/radiologi/uploadhasil?t=' + mlite.token;
+
+      var fd = new FormData();
+      var files = $('#file')[0].files[0];
+      fd.append('file',files);
+      fd.append('no_rawat',no_rawat);
+      fd.append('tgl_periksa',tgl_periksa);
+      fd.append('jam_periksa',jam_periksa);
+      // AJAX request
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: fd,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function(data)
+        {
+            if(data.status == 'success')
+            {
+                $('#preview').append("<img src='"+data.result+"' width='100' height='100' style='display: inline-block;'>");
+            }
+            else if(data.status == 'failure')
+            {
+                bootbox.alert(data.result);
+            }
+        }
+      });
+    });
+  });
+
+  box.modal('show');
+  //$('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
+  event.preventDefault();
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/radiologi/validasipermintaanradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
+  var noorder = $(this).attr("data-noorder");
+  var status  = $('input:text[name=status]').val();
+
+  //console.log(no_rawat + ' - ' + noorder + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan,
+        noorder: noorder,
+        status: status
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status: status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Validasi permintaan laboratorium telah selesai!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
 
 // ketika tombol hapus ditekan
 $("#rincian").on("click",".hapus_radiologi", function(event){
