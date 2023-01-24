@@ -22,6 +22,8 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/token', 'getToken');
         $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
         $this->route('jknmobile_v2/antrian/status', 'getStatusAntrian');
+        $this->route('jknmobile_v2/antrian/ambilfarmasi', 'getAmbilAntrianFarmasi');
+        $this->route('jknmobile_v2/antrian/statusfarmasi', 'getStatusAntrianFarmasi');
         $this->route('jknmobile_v2/antrian/sisa', 'getSisaAntrian');
         $this->route('jknmobile_v2/antrian/batal', 'getBatalAntrian');
         $this->route('jknmobile_v2/pasien/baru', 'getPasienBaru');
@@ -463,6 +465,292 @@ class Site extends SiteModule
                     'code' => 201
                 )
             );
+        }
+        echo json_encode($response);
+    }
+
+    public function getAmbilAntrianFarmasi()
+    {
+        echo $this->_resultAmbilAntrianFarmasi();
+        exit();
+    }
+
+    private function _resultAmbilAntrianFarmasi()
+    {
+        header("Content-Type: application/json");
+        $header = apache_request_headers();
+        $konten = trim(file_get_contents("php://input"));
+        $decode = json_decode($konten, true);
+        $response = array();
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+            if(empty($decode['kodebooking'])) {
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Kode Booking tidak boleh kosong',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(strpos($decode['kodebooking'],"'")||strpos($decode['kodebooking'],"\\")){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Format Kode Booking salah',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else{
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $booking_registrasi = [];
+                $pasien = [];
+                if($referensi) {
+                  $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
+                  $booking_registrasi = $this->core->mysql('booking_registrasi')
+                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                    ->oneArray();
+                }
+                if(!$booking_registrasi) {
+                    $response = array(
+                        'metadata' => array(
+                            'message' => 'Data Booking tidak ditemukan',
+                            'code' => 201
+                        )
+                    );
+                    http_response_code(201);
+                }else{
+                    if($booking_registrasi['status']=='Batal'){
+                        $response = array(
+                            'metadata' => array(
+                                'message' => 'Booking Anda Sudah Dibatalkan.',
+                                'code' => 201
+                            )
+                        );
+                        http_response_code(201);
+                    }else if($booking_registrasi['status']=='Belum'){
+                        $response = array(
+                            'metadata' => array(
+                                'message' => 'Anda Belum Melakukan Checkin.',
+                                'code' => 201
+                            )
+                        );
+                        http_response_code(201);
+                    }else if($booking_registrasi['status']=='Terdaftar'){
+
+                        $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
+                        $resep = $this->core->mysql('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
+
+                        $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')
+                        ->select([
+                            'count' => 'COUNT(DISTINCT noantrian)',
+                        ])
+                        ->where('type', 'Apotek')
+                        ->where('postdate', $booking_registrasi['tanggal_periksa'])
+                        ->toArray();
+
+                        $get_mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+
+                        if(!$resep){
+                            $response = array(
+                                'metadata' => array(
+                                    'message' => 'Anda tidak memiliki resep dari dokter yang anda tuju, silahkan konfirmasi petugas poli',
+                                    'code' => 201
+                                )
+                            );
+                            http_response_code(201);
+                        }else{
+                            $resep_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep['no_resep'])->oneArray();
+                            $jenis_resep = 'No Racikan';
+                            if($resep_racikan) {
+                              $jenis_resep = 'Racikan';
+                            }
+                            $response = array(
+                                'response' => array(
+                                    'jenisresep' => $jenis_resep,
+                                    'nomorantrean' => $get_mlite_antrian_loket['noantrian'],
+                                    'keterangan' => "Resep dibuat secara elektronik di poli"
+                                ),
+                                'metadata' => array(
+                                    'message' => 'Ok',
+                                    'code' => 200
+                                )
+                            );
+                            http_response_code(200);
+                        }
+                    }
+                }
+            }
+        } else {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Access denied',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        }
+        echo json_encode($response);
+    }
+
+    public function getStatusAntrianFarmasi()
+    {
+        echo $this->_resultStatusAntrianFarmasi();
+        exit();
+    }
+
+    private function _resultStatusAntrianFarmasi()
+    {
+        header("Content-Type: application/json");
+        $header = apache_request_headers();
+        $konten = trim(file_get_contents("php://input"));
+        $decode = json_decode($konten, true);
+        $response = array();
+        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Token expired',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
+        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+            if(empty($decode['kodebooking'])) {
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Kode Booking tidak boleh kosong',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else if(strpos($decode['kodebooking'],"'")||strpos($decode['kodebooking'],"\\")){
+                $response = array(
+                    'metadata' => array(
+                        'message' => 'Format Kode Booking salah',
+                        'code' => 201
+                    )
+                );
+                http_response_code(201);
+            }else{
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $booking_registrasi = [];
+                $pasien = [];
+                if($referensi) {
+                  $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
+                  $booking_registrasi = $this->core->mysql('booking_registrasi')
+                    ->where('no_rkm_medis', $pasien['no_rkm_medis'])
+                    ->where('tanggal_periksa', $referensi['tanggal_periksa'])
+                    ->oneArray();
+                }
+                if(!$booking_registrasi) {
+                    $response = array(
+                        'metadata' => array(
+                            'message' => 'Data Booking tidak ditemukan',
+                            'code' => 201
+                        )
+                    );
+                    http_response_code(201);
+                }else{
+                    if($booking_registrasi['status']=='Batal'){
+                        $response = array(
+                            'metadata' => array(
+                                'message' => 'Booking Anda Sudah Dibatalkan.',
+                                'code' => 201
+                            )
+                        );
+                        http_response_code(201);
+                    }else if($booking_registrasi['status']=='Belum'){
+                        $response = array(
+                            'metadata' => array(
+                                'message' => 'Anda Belum Melakukan Checkin.',
+                                'code' => 201
+                            )
+                        );
+                        http_response_code(201);
+                    }else if($booking_registrasi['status']=='Terdaftar'){
+
+                        $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
+                        $resep = $this->core->mysql('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
+
+                        $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')
+                        ->select([
+                            'count' => 'COUNT(DISTINCT noantrian)',
+                        ])
+                        ->where('type', 'Apotek')
+                        ->where('postdate', $booking_registrasi['tanggal_periksa'])
+                        ->toArray();
+
+                        $mlite_antrian_loket_sisaantrean = $this->core->mysql('mlite_antrian_loket')
+                        ->select([
+                            'count' => 'COUNT(DISTINCT noantrian)',
+                        ])
+                        ->where('type', 'Apotek')
+                        ->where('postdate', $booking_registrasi['tanggal_periksa'])
+                        ->where('end_time', '<>', '00:00:00')
+                        ->toArray();
+
+                        $get_mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+
+                        if(!$resep){
+                            $response = array(
+                                'metadata' => array(
+                                    'message' => 'Anda tidak memiliki resep dari dokter yang anda tuju, silahkan konfirmasi petugas poli',
+                                    'code' => 201
+                                )
+                            );
+                            http_response_code(201);
+                        }else{
+                            $resep_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep['no_resep'])->oneArray();
+                            $jenis_resep = 'No Racikan';
+                            if($resep_racikan) {
+                              $jenis_resep = 'Racikan';
+                            }
+                            $response = array(
+                                'response' => array(
+                                    'jenisresep' => $jenis_resep,
+                                    'nomorantrean' => substr($resep['no_resep'], -3),
+                                    'keterangan' => "Resep dibuat secara elektronik di poli"
+                                ),
+                                'metadata' => array(
+                                    'message' => 'Ok',
+                                    'code' => 200
+                                )
+                            );
+
+                            $response = array(
+                                'response' => array(
+                                    'jenisresep' => $jenis_resep,
+                                    'totalantrean' => $mlite_antrian_loket['count'],
+                                    'sisaantrean' => $mlite_antrian_loket_sisaantrean['count'],
+                                    'antreanpanggil' => $this->settings->get('anjungan.panggil_apotek_nomor'),
+                                    'keterangan' => ""
+                                ),
+                                'metadata' => array(
+                                    'message' => 'Ok',
+                                    'code' => 200
+                                )
+                            );
+
+                            http_response_code(200);
+                        }
+                    }
+                }
+            }
+        } else {
+            $response = array(
+                'metadata' => array(
+                    'message' => 'Access denied',
+                    'code' => 201
+                )
+            );
+            http_response_code(201);
         }
         echo json_encode($response);
     }

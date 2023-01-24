@@ -627,7 +627,7 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_radiologi'),
-            'status' => 'Ralan',
+            'status' => $_POST['status'],
             'proyeksi' => '',
             'kV' => '',
             'mAS' => '',
