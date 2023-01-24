@@ -67,7 +67,7 @@
 						<tr>
               <td>
                 <span class="btn btn-primary btn-xs">
-                  <a href="{$value.pdfURL}" target="_blank"><i class="fa fa-file"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.nosep}</a>
+                    <a href="{$value.downloadURL}" target="_blank"><i class="fa fa-download"></i></a><a href="{$value.pdfURL}" target="_blank"><i class="fa fa-file"></i></a> <a href="{$value.pdfURL}" target="_blank">{$value.nosep}</a>
 								</span><br>
                 <a href="{$value.catatanURL}" class="btn btn-danger btn-xs" data-toggle="modal" data-target="#moduleModal">
                   <i class="fa fa-folder-open"></i> Feedback
@@ -131,7 +131,7 @@
                   {/if}
                   {loop: $value.berkas_digital as $data}
                   <tr>
-                    <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" target="_blank" class="gallery">{$data.nama}</a></td>
+                    <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
                   </tr>
                   {/loop}
                 </table>
