@@ -1874,6 +1874,9 @@ class Site extends SiteModule
             if (!empty($decode['nopeserta']) && !ctype_digit($decode['nopeserta']) ){
                $errors[] = 'Nomor kartu harus mengandung angka saja!!';
             }
+            if (!empty($decode['nomorkartu']) && mb_strlen($decode['nomorkartu'], 'UTF-8') < 13){
+               $errors[] = 'Nomor kartu harus 13 digit';
+            }
             if(!empty($errors)) {
                 foreach($errors as $error) {
                     $response = array(
