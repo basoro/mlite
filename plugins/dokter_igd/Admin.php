@@ -1694,7 +1694,12 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/dokter_igd/js/admin/dokter_igd.js');
+        $cek_pegawai = $this->core->mysql('pegawai')->where('nik', $_SESSION['mlite_user'])->oneArray();
+        $cek_role = '';
+        if($cek_pegawai) {
+          $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
+        }
+        echo $this->draw(MODULES.'/dokter_igd/js/admin/dokter_igd.js', ['cek_role' => $cek_role]);
         exit();
     }
 

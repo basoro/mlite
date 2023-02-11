@@ -7,12 +7,12 @@
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="vedika[username]" class="form-control" value="{$settings.vedika.username}" />
+                        <label>Periode Klaim</label>
+                        <input type="text" name="vedika[periode]" class="form-control tanggal" value="{$settings.vedika.periode}" />
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="text" name="vedika[password]" class="form-control" value="{$settings.vedika.password}" />
+                        <label>Periode Verivikasi</label>
+                        <input type="text" name="vedika[verifikasi]" class="form-control tanggal" value="{$settings.vedika.verifikasi}" />
                     </div>
                     <div class="form-group">
                         <label>Cara Bayar</label>
@@ -59,3 +59,12 @@
         </div>
     </form>
 </article>
+<script>
+  $( function() {
+    $('.tanggal').datetimepicker({
+      defaultDate: '{?=date('Y-m')?}',
+      format: 'YYYY-MM',
+      locale: 'id'
+    });
+  } );
+</script>

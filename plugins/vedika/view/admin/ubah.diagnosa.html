@@ -130,12 +130,13 @@
       status: status,
       kd_penyakit: kode
     } ,function(data) {
-      //$("#display_icd").show().load(baseURL + '/icd/display?no_rawat=' + no_rawat + '&t=' + mlite.token);
+      alert('Data diagnosa ' + kode + ' telah disimpan!!');
+      $("#data_diagnosa").show().load(baseURL + '/vedika/displaydiagnosa/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
       //bersih();
-      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data ICD 10 (Diagnosa) pasien telah disimpan!"+
-      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
-      "</div>").show();
+      //$('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      //"Data ICD 10 (Diagnosa) pasien telah disimpan!"+
+      //"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      //"</div>").show();
     });
   });
 </script>

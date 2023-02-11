@@ -82,7 +82,7 @@
           </td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.no_peserta}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.stts}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{if: $value.stts == 'Dirujuk'}<a href="#" class="btn btn-xs btn-danger dirujuk" data-no_rawat="{?=convertNorawat($value.no_rawat)?}"><span class="fa fa-ambulance"></span> {$value.stts}</a>{else}{$value.stts}{/if}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_lanjut}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_bayar}</td>
         </tr>
@@ -121,6 +121,13 @@
 </div>
 <div class="modal fade" id="bridgingpcaretindakanobatModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dirujukModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
         </div>
@@ -256,7 +263,7 @@
         }
         ],
         callback: function (result) {
-            console.log(result);
+            //console.log(result);
             // ketika ditekan tombol ok
             if (result){
               // mengirimkan perintah penghapusan
@@ -397,7 +404,7 @@
     var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
-      console.log(data);
+      //console.log(data);
       // tampilkan data
       $("#form_rincian").hide();
       $("#form").hide();
@@ -418,6 +425,23 @@
 
     var modal = $('#bridgingpcareModal');
     var modalContent = $('#bridgingpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".dirujuk", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/vclaim/dirujuk/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#dirujukModal');
+    var modalContent = $('#dirujukModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {

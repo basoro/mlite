@@ -1,0 +1,181 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Ubah Diagnosa</h4>
+</div>
+<div class="modal-body">
+
+  <div id="icd10dan9">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <input type="hidden" name="no_rawat" value="{$no_rawat}">
+        <div class="form-group">
+          <div class="row">
+              <div class="col-sm-12">
+                <div class="form-group icd9">
+                  <label for="">Prosedur (ICD 9)</label>
+                  <button id="filter" class="btn btn-default">
+                      <span id="kode_icd9">kode</span>
+                  </button>
+                  <div class="btn-group">
+                      <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">
+                          <span data-bind="label" id="prioritas_icd9"></span> <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" role="menu" style="min-width:0px;">
+                          <li><a>1</a></li>
+                          <li><a>2</a></li>
+                          <li><a>3</a></li>
+                          <li><a>4</a></li>
+                          <li><a>5</a></li>
+                          <li><a>6</a></li>
+                          <li><a>7</a></li>
+                          <li><a>8</a></li>
+                          <li><a>9</a></li>
+                      </ul>
+                  </div>
+                  <div class="input-group">
+                    <input type="text" name="icd9" id="icd9" class="form-control" />
+                    <input type="hidden" name="status" class="form-control" value="{$status_lanjut}" />
+                    <ul class="list-group" id="icd9List" style="z-index:1000;position:absolute;width:100%;"></ul>
+                    <span class="input-group-btn">
+                        <button id="simpan_icd9" class="btn btn-primary btn-block">
+                            <span class="glyphicon glyphicon-plus"></span>
+                        </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="table-responsive no-margin" id="data_prosedur">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Prosedur</th>
+          <th>Prioritas</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {loop: $prosedur_pasien}
+        <tr>
+          <td>{$value.kode}</td>
+          <td>{$value.deskripsi_panjang}</td>
+          <td>{$value.prioritas}</td>
+          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_prosedur" data-no_rawat="{$value.no_rawat}" data-kode="{$value.kode}" data-prioritas="{$value.prioritas}"></a></td>
+        </tr>
+        {/loop}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function () {
+    $(".icd9 .dropdown-menu li a").click(function () {
+        var prioritas_icd9 = $(this).text();
+        $(this).closest('.form-group').find('#prioritas_icd9').text(prioritas_icd9);
+    });
+  });
+</script>
+<script>
+  $('#icd9').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'icd', 'icd9'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#icd9List').fadeIn();
+                      $('#icd9List').html(data);
+                 }
+            });
+       }
+       $('#icd9List').fadeIn();
+  });
+  $('#icd9List').on('click', 'li', function(){
+       $('#icd9').val($(this).text().split(': ')[1]);
+       $('#kode_icd9').text($(this).text().split(': ')[0]);
+       var kode_icd9 = $('#kode_icd9').val();
+       $('#icd9List').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  // tombol simpan diklik
+  $("#icd10dan9").on("click", "#simpan_icd9", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:hidden[name=no_rawat]').val();
+    var prioritas = $('#prioritas_icd9').text();
+    var nama = $('input:text[name=icd9]').val();
+    var kode = $('#kode_icd9').text();
+    var status = $('input:hidden[name=status]').val();
+
+    var url = baseURL + '/icd/saveicd9?t=' + mlite.token;
+
+    $.post(url,{
+      no_rawat: no_rawat,
+      prioritas: prioritas,
+      nama: nama,
+      status: status,
+      kode: kode
+    } ,function(data) {
+      alert('Data prosedur ' + kode + ' telah disimpan!!');
+      $("#data_prosedur").show().load(baseURL + '/vedika/displayprosedur/' + status + '/{?=convertNoRawat($no_rawat)?}/?t=' + mlite.token);
+      //console.log(status + ' - ' + no_rawat);
+      //bersih();
+      //$('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      //"Data ICD 9 (Prosedur) pasien telah disimpan!"+
+      //"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      //"</div>").show();
+    });
+  });
+</script>
+<script type="text/javascript">
+
+  // ketika tombol hapus ditekan
+  $("#data_prosedur").on("click",".hapus_prosedur", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/hapusprosedur?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    var kode = $(this).attr("data-kode");
+    var prioritas = $(this).attr("data-prioritas");
+
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat,
+          kode: kode,
+          prioritas: prioritas
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          //$("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          //bersih();
+          alert('Data prosedur ' + kode + ' telah dihapus!!');
+          /*
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data diagnosa telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+          */
+          $('#statusModal').modal('toggle');
+        });
+      }
+    });
+  });
+</script>
