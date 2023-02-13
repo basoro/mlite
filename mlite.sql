@@ -2141,6 +2141,19 @@ INSERT INTO `mlite_users` (`id`, `username`, `fullname`, `description`, `passwor
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_users_vedika`
+--
+
+CREATE TABLE `mlite_users_vedika` (
+  `id` int(11) NOT NULL,
+  `username` text,
+  `password` text,
+  `fullname` text
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_vedika`
 --
 
@@ -4167,6 +4180,12 @@ ALTER TABLE `mlite_users`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `mlite_users_vedika`
+--
+ALTER TABLE `mlite_users_vedika`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `mlite_vedika`
 --
 ALTER TABLE `mlite_vedika`
@@ -4829,6 +4848,12 @@ ALTER TABLE `mlite_settings`
 --
 ALTER TABLE `mlite_users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `mlite_users_vedika`
+--
+ALTER TABLE `mlite_users_vedika`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `mlite_vedika`

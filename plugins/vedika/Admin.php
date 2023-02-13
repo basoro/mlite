@@ -27,6 +27,7 @@ class Admin extends AdminModule
       'Perbaikan' => 'perbaikan',
       'Mapping Inacbgs' => 'mappinginacbgs',
       'Bridging Eklaim' => 'bridgingeklaim',
+      'User Vedika' => 'uservedika',
       'Pengaturan' => 'settings',
     ];
   }
@@ -114,6 +115,7 @@ class Admin extends AdminModule
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
       ['name' => 'Mapping Inacbgs', 'url' => url([ADMIN, 'vedika', 'mappinginacbgs']), 'icon' => 'code', 'desc' => 'Pengaturan Mapping Inacbgs'],
       ['name' => 'Bridging Eklaim', 'url' => url([ADMIN, 'vedika', 'bridgingeklaim']), 'icon' => 'code', 'desc' => 'Bridging Eklaim'],
+      ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'stats' => $stats, 'periode' => $date]);
@@ -1979,6 +1981,66 @@ class Admin extends AdminModule
     }
     $this->notify('success', 'Pengaturan telah disimpan');
     redirect(url([ADMIN, 'vedika', 'bridgingeklaim']));
+  }
+
+  public function getUsers()
+  {
+    $rows = $this->core->mysql('mlite_users_vedika')->toArray();
+    foreach ($rows as &$row) {
+        $row['editURL'] = url([ADMIN, 'vedika', 'useredit', $row['id']]);
+        $row['delURL']  = url([ADMIN, 'vedika', 'userdelete', $row['id']]);
+    }
+    return $this->draw('users.html', ['users' => $rows]);
+  }
+
+  public function getUserAdd()
+  {
+    $this->assign['form'] = ['username' => '', 'fullname' => '', 'password' => ''];
+    return $this->draw('user.form.html', ['users' => $this->assign]);
+  }
+
+  public function getUserEdit($id)
+  {
+    $this->assign['form'] = $this->core->mysql('mlite_users_vedika')->where('id', $id)->oneArray();
+    return $this->draw('user.form.html', ['users' => $this->assign]);
+  }
+
+  public function postUserSave($id = null)
+  {
+    if (!$id) {    // new
+      $query = $this->core->mysql('mlite_users_vedika')
+      ->save([
+        'username' => $_POST['username'],
+        'fullname' => $_POST['fullname'],
+        'password' => $_POST['password']
+      ]);
+    } else {        // edit
+      $query = $this->core->mysql('mlite_users_vedika')
+      ->where('id', $id)
+      ->save([
+        'username' => $_POST['username'],
+        'fullname' => $_POST['fullname'],
+        'password' => $_POST['password']
+      ]);
+    }
+
+    if ($query) {
+        $this->notify('success', 'Pengguna berhasil disimpan.');
+    } else {
+        $this->notify('failure', 'Gagak menyimpan pengguna.');
+    }
+
+    redirect(url([ADMIN, 'vedika', 'users']));
+  }
+
+  public function getUserDelete($id)
+  {
+    if ($this->core->mysql('mlite_users_vedika')->delete($id)) {
+        $this->notify('success', 'Pengguna berhasil dihapus.');
+    } else {
+        $this->notify('failure', 'Tak dapat menghapus pengguna.');
+    }
+    redirect(url([ADMIN, 'vedika', 'users']));
   }
 
   public function getPegawaiInfo($field, $nik)

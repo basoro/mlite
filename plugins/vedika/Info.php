@@ -41,6 +41,19 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_vedika_feedback`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_users_vedika` (
+          `id` int(11) NOT NULL,
+          `username` text,
+          `password` text,
+          `fullname` text
+        ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_users_vedika`
+          ADD PRIMARY KEY (`id`);");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_users_vedika`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'carabayar', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'sep', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'skdp', '')");

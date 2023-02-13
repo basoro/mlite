@@ -1,0 +1,30 @@
+<article class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Form user vedika</h3>
+            </div>
+            <div class="panel-body">
+    		<form name="user" action="{?=url(ADMIN.'/vedika/usersave/'.@$users.form.id)?}" method="POST" enctype="multipart/form-data">
+    			<fieldset>
+                  <div class="form-group">
+    	                <label>Pengguna</label>
+    	                <input type="text" name="username" id="username" class="form-control" placeholder="Nama Pengguna" value="{$users.form.username}" />
+    	            </div>
+    	            <div class="form-group">
+    	                <label>Nama lengkap</label>
+    	                <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Nama lengkap (optional)" value="{$users.form.fullname}" />
+    	            </div>
+    	            <div class="form-group">
+    	                <label>Kata kunci</label>
+    	                <input type="text" name="password" class="form-control" placeholder="Kata kunci baru"  value="{$users.form.password}"/>
+    	            </div>
+    	            <div class="form-group">
+    	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+    	            </div>
+                </fieldset>
+            </form>
+            </div>
+        </div>
+    </div>
+</article>
