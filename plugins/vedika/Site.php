@@ -198,9 +198,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'pengajuan', 'ralan', $page]);
       return $this->draw('pengajuan_ralan.html', ['vedika' => $this->assign]);
     }
@@ -332,9 +329,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'pengajuan', 'ralan', $page]);
       return $this->draw('pengajuan_ranap.html', ['vedika' => $this->assign]);
     }
@@ -460,9 +454,6 @@ class Site extends SiteModule
               $this->assign['list'][] = $row;
           }
       }
-
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
 
       $this->assign['searchUrl'] =  url(['veda', 'perbaikan', $page]);
       return $this->draw('perbaikan.html', ['vedika' => $this->assign]);
@@ -716,9 +707,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'ralan', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage_ralan.html', ['vedika' => $this->assign]);
 
@@ -775,9 +763,6 @@ class Site extends SiteModule
               $this->assign['list'][] = $row;
           }
       }
-
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
 
       $this->assign['searchUrl'] =  url(['veda', 'ranap', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage_ranap.html', ['vedika' => $this->assign]);
