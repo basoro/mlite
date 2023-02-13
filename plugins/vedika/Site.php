@@ -1285,8 +1285,8 @@ class Site extends SiteModule
 
   	public function getDelFeed($id,$user)
     {
-		$delete = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $id)->where('username',$user)->delete();
- 		if($delete)
+  		$delete = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $id)->where('username',$user)->delete();
+   		if($delete)
           header('Location: '.$_SERVER['REQUEST_URI']);
     }
 

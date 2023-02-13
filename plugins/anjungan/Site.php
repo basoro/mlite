@@ -82,10 +82,11 @@ class Site extends SiteModule
         $penjab->execute();
         $penjab = $penjab->fetchAll(\PDO::FETCH_ASSOC);;
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -123,10 +124,11 @@ class Site extends SiteModule
         $penjab->execute();
         $penjab = $penjab->fetchAll(\PDO::FETCH_ASSOC);;
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -160,10 +162,11 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
         $display = '';
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -430,10 +433,11 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayAntrianPoli();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -577,10 +581,11 @@ class Site extends SiteModule
 
         $running_text = $this->settings->get('anjungan.text_poli');
         $jadwal = $this->core->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -636,10 +641,11 @@ class Site extends SiteModule
 
         $running_text = $this->settings->get('anjungan.text_poli');
         $jadwal = $this->core->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -675,10 +681,11 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianPoliKodeSatu();
         $slug = parseURL();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -807,10 +814,11 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianPoliKodeDua();
         $slug = parseURL();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -939,10 +947,11 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianPoliKodeTiga();
         $slug = parseURL();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -1072,10 +1081,11 @@ class Site extends SiteModule
         $display = $this->_resultDisplayAntrianPoliKodeDisplay();
         $slug = parseURL();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -1210,10 +1220,11 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
         $display = '';
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -1237,10 +1248,11 @@ class Site extends SiteModule
           case "panggil_loket":
             $display = 'Panggil Loket';
 
-            $_username = $this->core->getUserInfo('fullname', null, true);
-            $__username = $this->core->getUserInfo('username');
-            if($this->core->getUserInfo('username') !=='') {
-              $__username = 'Tamu';
+            $_username = '';
+            $__username = 'Tamu';
+            if(isset($_SESSION['mlite_user'])) {
+              $_username = $this->core->getUserInfo('fullname', null, true);
+              $__username = $this->core->getUserInfo('username');
             }
             $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
             $username      = !empty($_username) ? $_username : $__username;
@@ -1433,10 +1445,11 @@ class Site extends SiteModule
       $logo  = $this->settings->get('settings.logo');
       $display = '';
 
-      $_username = $this->core->getUserInfo('fullname', null, true);
-      $__username = $this->core->getUserInfo('username');
-      if($this->core->getUserInfo('username') !=='') {
-        $__username = 'Tamu';
+      $_username = '';
+      $__username = 'Tamu';
+      if(isset($_SESSION['mlite_user'])) {
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
       }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $username      = !empty($_username) ? $_username : $__username;
@@ -1473,10 +1486,11 @@ class Site extends SiteModule
         $title = 'Display Antrian Laboratorium';
         $display = $this->_resultDisplayAntrianLaboratorium();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -1551,10 +1565,11 @@ class Site extends SiteModule
 
         $jadwal = $this->core->mysql('jadwal')->join('dokter', 'dokter.kd_dokter = jadwal.kd_dokter')->join('poliklinik', 'poliklinik.kd_poli = jadwal.kd_poli')->where('hari_kerja', $hari)->toArray();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -1760,7 +1775,11 @@ class Site extends SiteModule
          $title = 'Display Antrian Farmasi';
          $display = $this->_resultDisplayAntrianFarmasi();
 
-         $_username = $this->core->getUserInfo('fullname', null, true);
+         $_username = '';
+         if(isset($_SESSION['mlite_user'])) {
+           $_username = $this->core->getUserInfo('fullname', null, true);
+         }
+
          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
 
@@ -1821,7 +1840,10 @@ class Site extends SiteModule
          $title = 'Display Antrian Farmasi';
          $display = $this->_resultDisplayAntrianFarmasi2();
 
-         $_username = $this->core->getUserInfo('fullname', null, true);
+         $_username = '';
+         if(isset($_SESSION['mlite_user'])) {
+           $_username = $this->core->getUserInfo('fullname', null, true);
+         }
          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
 
@@ -1869,7 +1891,10 @@ class Site extends SiteModule
           $title = 'Display Antrian Farmasi';
           $display = $this->_resultDisplayAntrianFarmasiAmbil();
 
-          $_username = $this->core->getUserInfo('fullname', null, true);
+          $_username = '';
+          if(isset($_SESSION['mlite_user'])) {
+            $_username = $this->core->getUserInfo('fullname', null, true);
+          }
           $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
           $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
 
@@ -2709,10 +2734,11 @@ class Site extends SiteModule
         $logo  = $this->settings->get('settings.logo');
         $display = $this->_resultDisplayBed();
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -2778,10 +2804,11 @@ class Site extends SiteModule
         $title = 'Display SEP Mandiri';
         $logo  = $this->settings->get('settings.logo');
 
-        $_username = $this->core->getUserInfo('fullname', null, true);
-        $__username = $this->core->getUserInfo('username');
-        if($this->core->getUserInfo('username') !=='') {
-          $__username = 'Tamu';
+        $_username = '';
+        $__username = 'Tamu';
+        if(isset($_SESSION['mlite_user'])) {
+          $_username = $this->core->getUserInfo('fullname', null, true);
+          $__username = $this->core->getUserInfo('username');
         }
         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
         $username      = !empty($_username) ? $_username : $__username;
@@ -2866,10 +2893,11 @@ class Site extends SiteModule
       $title = 'Display SEP Mandiri';
       $logo  = $this->settings->get('settings.logo');
 
-      $_username = $this->core->getUserInfo('fullname', null, true);
-      $__username = $this->core->getUserInfo('username');
-      if($this->core->getUserInfo('username') !=='') {
-        $__username = 'Tamu';
+      $_username = '';
+      $__username = 'Tamu';
+      if(isset($_SESSION['mlite_user'])) {
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
       }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $username      = !empty($_username) ? $_username : $__username;
@@ -2910,10 +2938,11 @@ class Site extends SiteModule
       $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
       $nama_ppk  = $this->settings->get('settings.nama_instansi');
 
-      $_username = $this->core->getUserInfo('fullname', null, true);
-      $__username = $this->core->getUserInfo('username');
-      if($this->core->getUserInfo('username') !=='') {
-        $__username = 'Tamu';
+      $_username = '';
+      $__username = 'Tamu';
+      if(isset($_SESSION['mlite_user'])) {
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
       }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $username      = !empty($_username) ? $_username : $__username;
@@ -3402,10 +3431,11 @@ class Site extends SiteModule
       $title = 'Display Antrian Poliklinik';
       $logo  = $this->settings->get('settings.logo');
 
-      $_username = $this->core->getUserInfo('fullname', null, true);
-      $__username = $this->core->getUserInfo('username');
-      if($this->core->getUserInfo('username') !=='') {
-        $__username = 'Tamu';
+      $_username = '';
+      $__username = 'Tamu';
+      if(isset($_SESSION['mlite_user'])) {
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
       }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $username      = !empty($_username) ? $_username : $__username;
@@ -3529,10 +3559,11 @@ class Site extends SiteModule
       $title = 'Display Antrian Poliklinik';
       $logo  = $this->settings->get('settings.logo');
 
-      $_username = $this->core->getUserInfo('fullname', null, true);
-      $__username = $this->core->getUserInfo('username');
-      if($this->core->getUserInfo('username') !=='') {
-        $__username = 'Tamu';
+      $_username = '';
+      $__username = 'Tamu';
+      if(isset($_SESSION['mlite_user'])) {
+        $_username = $this->core->getUserInfo('fullname', null, true);
+        $__username = $this->core->getUserInfo('username');
       }
       $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
       $username      = !empty($_username) ? $_username : $__username;
