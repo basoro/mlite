@@ -215,7 +215,7 @@
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur Non Bedah</label>
-            <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$biaya_non_bedah}">
+            <input type="text" id="prosedur_non_bedah" name="prosedur_non_bedah" class="form-control" value="{$biaya_non_bedah}">
           </div>
         </div>
         <div class="col col-md-3">
@@ -406,14 +406,15 @@
     var nosep = $('input:text[name=nosep]').val();
     var nokartu = $('input:text[name=nokartu]').val();
     var keluar = $('input:text[name=keluar]').val();
-    var kelas_rawat = $('input:text[name=kelas_rawat]').val();
+    var kelas_rawat = $('select[name=kelas_rawat]').val();
+    var nm_pasien = $('input:text[name=nm_pasien]').val();
     var nama_dokter = $('input:text[name=nama_dokter]').val();
     var diagnosa = $('input:text[name=diagnosa]').val();
     var procedure = $('input:text[name=procedure]').val();
     var adl_sub_acute = $('select[name=adl_sub_acute]').val();
     var adl_chronic = $('select[name=adl_chronic]').val();
     var icu_indikator = $('select[name=icu_indikator]').val();
-    var icu_los = $('select[name=icu_los]').val();
+    var icu_los = $('input:text[name=icu_los]').val();
     var upgrade_class_ind = $('select[name=upgrade_class_ind]').val();
     var upgrade_class_class = $('select[name=upgrade_class_class]').val();
     var upgrade_class_los = $('input:text[name=upgrade_class_los]').val();
@@ -440,6 +441,7 @@
     var sewa_alat = $('input:text[name=sewa_alat]').val();
     var tarif_poli_eks = $('input:text[name=tarif_poli_eks]').val();
 
+    //alert(bmhp + ' - ' + sewa_alat + ' - ' + tarif_poli_eks + ' - ' + obat_kronis + ' - ' + obat_kemoterapi + ' - ' + alkes);
     // tampilkan dialog konfirmasi
     bootbox.confirm("Apakah Anda yakin ingin mengirim data ini?", function(result){
       // ketika ditekan tombol ok
@@ -487,7 +489,8 @@
           sewa_alat: sewa_alat,
           tarif_poli_eks: tarif_poli_eks
         } ,function(data) {
-          alert('Data prosedur ' + kode + ' telah disimpan!!');
+          console.log(data);
+          alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
           //$('#inacbgsModal').modal('toggle');
         });
       }

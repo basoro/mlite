@@ -2276,6 +2276,18 @@ class Admin extends AdminModule
       ->toArray();
     $a_prosedur=1;
     foreach ($row_prosedur as $row) {
+      /* == Khusus RSHD karena data ICD nya kacau == */
+      /*
+      $kode = $row["kode"];
+      if(strpos($row["kode"],'.') == false) {
+        $kode = substr_replace($row["kode"],".", 2, 0);
+      }
+      if($a_prosedur==1){
+          $prosedur=$kode;
+      }else{
+          $prosedur=$prosedur."#".$kode;
+      }
+      */
       if($a_prosedur==1){
           $prosedur=$row["kode"];
       }else{
@@ -2589,6 +2601,7 @@ class Admin extends AdminModule
         $gender="2";
     }
 
+
     $this->BuatKlaimBaru2($nokartu,$nosep,$no_rkm_medis,$nm_pasien,$tgl_lahir." 00:00:00", $gender,$norawat);
     $this->EditUlangKlaim($nosep);
     $this->UpdateDataKlaim2($nosep,$nokartu,$tgl_registrasi,$keluar,$jnsrawat,$kelas_rawat,$adl_sub_acute,
@@ -2712,7 +2725,7 @@ class Admin extends AdminModule
       $save=str_replace("--","",$save);
       $save=str_replace("/*","",$save);
       $save=str_replace("*/","",$save);
-      $save=str_replace("#","",$save);
+      //$save=str_replace("#","",$save);
       return $save;
   }
 
@@ -2839,10 +2852,10 @@ class Admin extends AdminModule
       echo "Data : ".$request;
       $msg= $this->Request($request);
       if($msg['metadata']['message']=="Ok"){
-          echo 'Sukses';
+          //echo 'Sukses';
           //Hapus2("inacbg_data_terkirim2", "no_sep='".$nomor_sep."'");
           //InsertData2("inacbg_data_terkirim2","'".$nomor_sep."','".$coder_nik."'");
-          //$this->GroupingStage12($nomor_sep,$coder_nik);
+          $this->GroupingStage12($nomor_sep,$coder_nik);
       } else {
         echo json_encode($msg);
       }
@@ -2861,12 +2874,14 @@ class Admin extends AdminModule
       $msg= $this->Request($request);
       if($msg['metadata']['message']=="Ok"){
           //Hapus2("inacbg_grouping_stage12", "no_sep='".$nomor_sep."'");
+          /*
           $cbg                = validangka($msg['response']['cbg']['tariff']);
           $sub_acute          = validangka($msg['response']['sub_acute']['tariff']);
           $chronic            = validangka($msg['response']['chronic']['tariff']);
           $add_payment_amt    = validangka($msg['response']['add_payment_amt']);
+          */
           //InsertData2("inacbg_grouping_stage12","'".$nomor_sep."','".$msg['response']['cbg']['code']."','".$msg['response']['cbg']['description']."','".($cbg+$sub_acute+$chronic+$add_payment_amt)."'");
-          //$this->FinalisasiKlaim($nomor_sep,$coder_nik);
+          $this->FinalisasiKlaim($nomor_sep,$coder_nik);
       }
   }
 
@@ -2880,7 +2895,7 @@ class Admin extends AdminModule
                           "coder_nik": "'.$coder_nik.'"
                       }
                  }';
-      $msg= Request($request);
+      $msg= $this->Request($request);
       if($msg['metadata']['message']=="Ok"){
           //KirimKlaimIndividualKeDC($nomor_sep);
       }
