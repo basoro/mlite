@@ -2394,7 +2394,7 @@ class Admin extends AdminModule
     }
 
     /* Biaya Konsultasi */
-    $biaya_poliklinik = $this->db('reg_periksa')
+    $biaya_poliklinik = $this->core->mysql('reg_periksa')
       ->select(['biaya_rawat' => 'SUM(registrasi)'])
       ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
       ->where('no_rawat', revertNoRawat($no_rawat))
