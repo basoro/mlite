@@ -26,6 +26,7 @@ class Admin extends AdminModule
       'Pengajuan' => 'pengajuan',
       'Perbaikan' => 'perbaikan',
       'Mapping Inacbgs' => 'mappinginacbgs',
+      'Bridging Eklaim' => 'bridgingeklaim',
       'Pengaturan' => 'settings',
     ];
   }
@@ -112,6 +113,7 @@ class Admin extends AdminModule
       ['name' => 'Pengajuan', 'url' => url([ADMIN, 'vedika', 'pengajuan']), 'icon' => 'code', 'desc' => 'Index Pengajuan Vedika'],
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
       ['name' => 'Mapping Inacbgs', 'url' => url([ADMIN, 'vedika', 'mappinginacbgs']), 'icon' => 'code', 'desc' => 'Pengaturan Mapping Inacbgs'],
+      ['name' => 'Bridging Eklaim', 'url' => url([ADMIN, 'vedika', 'bridgingeklaim']), 'icon' => 'code', 'desc' => 'Bridging Eklaim'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'stats' => $stats, 'periode' => $date]);
@@ -1898,18 +1900,27 @@ class Admin extends AdminModule
   private function _getSEPInfo($field, $no_rawat)
   {
     $row = $this->core->mysql('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
+    if(!$row) {
+      $row[$field] = '';
+    }
     return $row[$field];
   }
 
   private function _getSPRIInfo($field, $no_rawat)
   {
     $row = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_rawat', $no_rawat)->oneArray();
+    if(!$row) {
+      $row[$field] = '';
+    }
     return $row[$field];
   }
 
   private function _getDiagnosa($field, $no_rawat, $status_lanjut)
   {
     $row = $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')->where('diagnosa_pasien.no_rawat', $no_rawat)->where('diagnosa_pasien.prioritas', 1)->where('diagnosa_pasien.status', $status_lanjut)->oneArray();
+    if(!$row) {
+      $row[$field] = '';
+    }
     return $row[$field];
   }
 
@@ -1953,21 +1964,47 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'vedika', 'mappinginacbgs']));
   }
 
+  public function getBridgingEklaim()
+  {
+    $this->_addHeaderFiles();
+    $this->assign['title'] = 'Pengaturan Modul Vedika';
+    $this->assign['vedika'] = htmlspecialchars_array($this->settings('vedika'));
+    return $this->draw('bridging.eklaim.html', ['settings' => $this->assign]);
+  }
+
+  public function postSaveBridgingEklaim()
+  {
+    foreach ($_POST['vedika'] as $key => $val) {
+      $this->settings('vedika', $key, $val);
+    }
+    $this->notify('success', 'Pengaturan telah disimpan');
+    redirect(url([ADMIN, 'vedika', 'bridgingeklaim']));
+  }
+
   public function getPegawaiInfo($field, $nik)
   {
     $row = $this->core->mysql('pegawai')->where('nik', $nik)->oneArray();
+    if(!$row) {
+      $row[$field] = '';
+    }
     return $row[$field];
   }
 
   public function getPasienInfo($field, $no_rkm_medis)
   {
     $row = $this->core->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+    if(!$row) {
+      $row[$field] = '';
+    }
     return $row[$field];
   }
 
   private function _getProsedur($field, $no_rawat, $status_lanjut)
   {
       $row = $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat', $no_rawat)->where('prosedur_pasien.prioritas', 1)->where('prosedur_pasien.status', $status_lanjut)->oneArray();
+      if(!$row) {
+        $row[$field] = '';
+      }
       return $row[$field];
   }
 
@@ -2157,6 +2194,34 @@ class Admin extends AdminModule
       $reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', $revertNoRawat($no_rawat));
     }
 
+    $row_diagnosa = $this->core->mysql('diagnosa_pasien')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->asc('prioritas')
+      ->toArray();
+    $a_diagnosa=1;
+    foreach ($row_diagnosa as $row) {
+      if($a_diagnosa==1){
+          $penyakit=$row["kd_penyakit"];
+      }else{
+          $penyakit=$penyakit."#".$row["kd_penyakit"];
+      }
+      $a_diagnosa++;
+    }
+
+    $row_prosedur = $this->core->mysql('prosedur_pasien')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->asc('prioritas')
+      ->toArray();
+    $a_prosedur=1;
+    foreach ($row_prosedur as $row) {
+      if($a_prosedur==1){
+          $prosedur=$row["kode"];
+      }else{
+          $prosedur=$prosedur."#".$row["kode"];
+      }
+      $a_prosedur++;
+    }
+
     /* Prosedur non bedah ralan */
     $biaya_non_bedah_dr = $this->core->mysql('rawat_jl_dr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
@@ -2254,20 +2319,522 @@ class Admin extends AdminModule
       ->toArray();
     /* End prosedur bedah ranap */
 
+    /* Start biaya operasi */
+    $biaya_operasi = $this->core->mysql('operasi')
+      ->select(['biaya_rawat' => 'SUM(biayaoperator1 + biayaoperator2)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End biaya operasi */
+
     $total_biaya_bedah = 0;
-    foreach (array_merge($biaya_bedah_dr, $biaya_bedah_pr, $biaya_bedah_drpr, $biaya_bedah_dr_ranap, $biaya_bedah_pr_ranap, $biaya_bedah_drpr_ranap) as $row) {
+    foreach (array_merge($biaya_bedah_dr, $biaya_bedah_pr, $biaya_bedah_drpr, $biaya_bedah_dr_ranap, $biaya_bedah_pr_ranap, $biaya_bedah_drpr_ranap, $biaya_operasi) as $row) {
       $total_biaya_bedah += $row['biaya_rawat'];
     }
 
-    /* Konsultasi */
-    //$biaya_konsultasi = $this->db('poliklinik')->where()->oneArray();
+    /* Biaya Konsultasi */
+    $biaya_poliklinik = $this->db('reg_periksa')
+      ->select(['biaya_rawat' => 'SUM(registrasi)'])
+      ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_konsultasi_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_konsultasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_konsultasi_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_konsultasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_konsultasi_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_konsultasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Konsultasi */
+
+    $total_biaya_konsultasi = 0;
+    foreach (array_merge($biaya_poliklinik, $biaya_konsultasi_dr, $biaya_konsultasi_pr, $biaya_konsultasi_drpr) as $row) {
+      $total_biaya_konsultasi += $row['biaya_rawat'];
+    }
+
+    /* Biaya Tenaga Ahli */
+    $biaya_tenagah_ahli_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_tenagah_ahli_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_tenagah_ahli_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Tenaga Ahli */
+
+    $total_biaya_tenaga_ahli = 0;
+    foreach (array_merge($biaya_tenagah_ahli_dr, $biaya_tenagah_ahli_pr, $biaya_tenagah_ahli_drpr) as $row) {
+      $total_biaya_tenaga_ahli += $row['biaya_rawat'];
+    }
+
+
+    $total_biaya_keperawatan = 0;
+    $total_biaya_penunjang = 0;
+    $total_biaya_radiologi = 0;
+    $total_biaya_laboratorium = 0;
+    $total_biaya_pelayanan_darah = 0;
+    $total_biaya_rehabilitasi = 0;
+    $total_biaya_kamar = 0;
+    $total_biaya_rawat_intensif = 0;
+    $total_biaya_obat = 0;
+    $total_biaya_obat_kronis = 0;
+    $total_biaya_obat_kemoterapi = 0;
+    $total_biaya_alkes = 0;
+    $total_biaya_bmhp = 0;
+    $total_biaya_sewa_alat = 0;
+    $total_biaya_tarif_poli_eks = 0;
+    $total_biaya_add_payment_pct = 0;
+
+    $request ='{
+                     "metadata": {
+                         "method":"get_claim_data"
+                     },
+                     "data": {
+                         "nomor_sep":"'.$this->_getSEPInfo('no_sep', revertNoRawat($no_rawat)).'"
+                     }
+                }';
+
+    $msg = $this->Request($request);
+    $get_claim_data = [];
+    if($msg['metadata']['message']=="Ok"){
+      $get_claim_data = $msg;
+      echo json_encode($msg, true);
+    }
+
+    $adl = [];
+    for($i=12; $i<=60; $i++){
+       $adl[] = $i;
+    }
+    //echo json_encode($adl, true);
 
     echo $this->draw('inacbgs.html', [
       'reg_periksa' => $reg_periksa,
       'biaya_non_bedah' => $total_biaya_non_bedah,
-      'biaya_bedah' => $total_biaya_bedah
+      'biaya_bedah' => $total_biaya_bedah,
+      'biaya_konsultasi' => $total_biaya_konsultasi,
+      'biaya_tenaga_ahli' => $total_biaya_tenaga_ahli,
+      'biaya_keperawatan' => $total_biaya_keperawatan,
+      'biaya_penunjang' => $total_biaya_penunjang,
+      'biaya_radiologi' => $total_biaya_radiologi,
+      'biaya_laboratorium' => $total_biaya_laboratorium,
+      'biaya_pelayanan_darah' => $total_biaya_pelayanan_darah,
+      'biaya_rehabilitasi' => $total_biaya_rehabilitasi,
+      'biaya_kamar' => $total_biaya_kamar,
+      'biaya_rawat_intensif' => $total_biaya_rawat_intensif,
+      'biaya_obat' => $total_biaya_obat,
+      'biaya_obat_kronis' => $total_biaya_obat_kronis,
+      'biaya_obat_kemoterapi' => $total_biaya_obat_kemoterapi,
+      'biaya_alkes' => $total_biaya_alkes,
+      'biaya_bmhp' => $total_biaya_bmhp,
+      'biaya_sewa_alat' => $total_biaya_sewa_alat,
+      'biaya_tarif_poli_eks' => $total_biaya_tarif_poli_eks,
+      'biaya_add_payment_pct' => $total_biaya_add_payment_pct,
+      'get_claim_data' => $get_claim_data,
+      'penyakit' => $penyakit,
+      'prosedur' => $prosedur,
+      'adl' => $adl
     ]);
     exit();
+  }
+
+  public function postKirimInacbgs()
+  {
+    $_POST['ventilator_hour'] = '0';
+    $_POST['jk'] = $this->core->getPasienInfo('jk', $_POST['no_rkm_medis']);;
+    $_POST['tgl_lahir'] = $this->core->getPasienInfo('tgl_lahir', $_POST['no_rkm_medis']);;
+
+
+    $no_rkm_medis      = $this->validTeks(trim($_POST['no_rkm_medis']));
+
+    $norawat           = $this->validTeks(trim($_POST['no_rawat']));
+    $tgl_registrasi    = $this->validTeks(trim($_POST['tgl_registrasi']));
+    $nosep             = $this->validTeks(trim($_POST['nosep']));
+    $nokartu           = $this->validTeks(trim($_POST['nokartu']));
+    $nm_pasien         = $this->validTeks(trim($_POST['nm_pasien']));
+    $keluar            = $this->validTeks(trim($_POST['keluar']));
+    $kelas_rawat       = $this->validTeks(trim($_POST['kelas_rawat']));
+    $adl_sub_acute     = $this->validTeks(trim($_POST['adl_sub_acute']));
+    $adl_chronic       = $this->validTeks(trim($_POST['adl_chronic']));
+    $icu_indikator     = $this->validTeks(trim($_POST['icu_indikator']));
+    $icu_los           = $this->validTeks(trim($_POST['icu_los']));
+    $ventilator_hour   = $this->validTeks(trim($_POST['ventilator_hour']));
+    $upgrade_class_ind = $this->validTeks(trim($_POST['upgrade_class_ind']));
+    $upgrade_class_class = $this->validTeks(trim($_POST['upgrade_class_class']));
+    $upgrade_class_los = $this->validTeks(trim($_POST['upgrade_class_los']));
+    $add_payment_pct   = $this->validTeks(trim($_POST['add_payment_pct']));
+    $birth_weight      = $this->validTeks(trim($_POST['birth_weight']));
+    $discharge_status  = $this->validTeks(trim($_POST['discharge_status']));
+    $diagnosa          = $this->validTeks(trim($_POST['diagnosa']));
+    $procedure         = $this->validTeks(trim($_POST['procedure']));
+    $prosedur_non_bedah = $this->validTeks(trim($_POST['prosedur_non_bedah']));
+    $prosedur_bedah    = $this->validTeks(trim($_POST['prosedur_bedah']));
+    $konsultasi        = $this->validTeks(trim($_POST['konsultasi']));
+    $tenaga_ahli       = $this->validTeks(trim($_POST['tenaga_ahli']));
+    $keperawatan       = $this->validTeks(trim($_POST['keperawatan']));
+    $penunjang         = $this->validTeks(trim($_POST['penunjang']));
+    $radiologi         = $this->validTeks(trim($_POST['radiologi']));
+    $laboratorium      = $this->validTeks(trim($_POST['laboratorium']));
+    $pelayanan_darah   = $this->validTeks(trim($_POST['pelayanan_darah']));
+    $rehabilitasi      = $this->validTeks(trim($_POST['rehabilitasi']));
+    $kamar             = $this->validTeks(trim($_POST['kamar']));
+    $rawat_intensif    = $this->validTeks(trim($_POST['rawat_intensif']));
+    $obat              = $this->validTeks(trim($_POST['obat']));
+    $obat_kronis       = $this->validTeks(trim($_POST['obat_kronis']));
+    $obat_kemoterapi   = $this->validTeks(trim($_POST['obat_kemoterapi']));
+    $alkes             = $this->validTeks(trim($_POST['alkes']));
+    $bmhp              = $this->validTeks(trim($_POST['bmhp']));
+    $sewa_alat         = $this->validTeks(trim($_POST['sewa_alat']));
+    $tarif_poli_eks    = $this->validTeks(trim($_POST['tarif_poli_eks']));
+    $nama_dokter       = $this->validTeks(trim($_POST['nama_dokter']));
+    $jk                = $this->validTeks(trim($_POST['jk']));
+    $tgl_lahir         = $this->validTeks(trim($_POST['tgl_lahir']));
+
+    $jnsrawat="2";
+    if($this->getRegPeriksaInfo('status_lanjut', $_POST['no_rawat']) == "Ranap"){
+        $jnsrawat="1";
+    }
+
+    $gender = "";
+    if($jk=="L"){
+        $gender="1";
+    }else{
+        $gender="2";
+    }
+
+    $this->BuatKlaimBaru2($nokartu,$nosep,$no_rkm_medis,$nm_pasien,$tgl_lahir." 00:00:00", $gender,$norawat);
+    $this->EditUlangKlaim($nosep);
+    $this->UpdateDataKlaim2($nosep,$nokartu,$tgl_registrasi,$keluar,$jnsrawat,$kelas_rawat,$adl_sub_acute,
+        $adl_chronic,$icu_indikator,$icu_los,$ventilator_hour,$upgrade_class_ind,$upgrade_class_class,
+        $upgrade_class_los,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,
+        $tarif_poli_eks,$nama_dokter,$this->settings->get('vedika.eklaim_kelasrs'),$this->settings->get('vedika.eklaim_payor_id'),$this->settings->get('vedika.eklaim_payor_cd'),$this->settings->get('vedika.eklaim_cob_cd'),$this->core->getPegawaiInfo('no_ktp', $this->core->getUserInfo('username', null, true)),
+        $prosedur_non_bedah,$prosedur_bedah,$konsultasi,$tenaga_ahli,$keperawatan,$penunjang,
+        $radiologi,$laboratorium,$pelayanan_darah,$rehabilitasi,$kamar,$rawat_intensif,$obat,
+        $obat_kronis,$obat_kemoterapi,$alkes,$bmhp,$sewa_alat);
+
+    //$this->CekTarif(SEP,NO_PESERTA,'2018-01-01','2018-01-01',$jenis_rawat,$kelas_rawat,'','','0','0','0','0','','0','','0','1',$diagnosa,$prosedur,'0','Dokter Uji Coba',TIPE_RS,'3','JKN','#',NIK_KODER,'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
+    exit();
+  }
+
+  public function getKlaimPDF($nosep)
+  {
+    $request ='{
+                    "metadata": {
+                        "method":"claim_print"
+                    },
+                    "data": {
+                        "nomor_sep":"'.$nosep.'"
+                    }
+               }';
+
+    $msg = $this->Request($request);
+    $get_claim_data = [];
+    if($msg['metadata']['message']=="Ok"){
+         //$get_claim_data = $msg;
+        echo json_encode($msg, true);
+        // variable data adalah base64 dari file pdf
+        $pdf = base64_decode($msg['data']);
+    } else {
+      echo json_encode($msg, true);
+    }
+
+    // hasilnya adalah berupa binary string $pdf, untuk disimpan:
+    file_put_contents($nosep.'.pdf',$pdf);
+    // atau untuk ditampilkan dengan perintah:
+    header("Content-type:application/pdf");
+    //header("Content-Disposition:attachment;filename=$nosep.pdf");
+    ob_clean();
+    flush();
+    echo $pdf;
+    exit();
+  }
+
+  private function Request($request){
+      $json = $this->mc_encrypt ($request, $this->settings->get('vedika.eklaim_key'));
+      $header = array("Content-Type: application/x-www-form-urlencoded");
+      $ch = curl_init();
+      curl_setopt($ch, CURLOPT_URL, $this->settings->get('vedika.eklaim_url'));
+      curl_setopt($ch, CURLOPT_HEADER, 0);
+      curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($ch, CURLOPT_HTTPHEADER,$header);
+      curl_setopt($ch, CURLOPT_POST, 1);
+      curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+      $response = curl_exec($ch);
+      $first = strpos($response, "\n")+1;
+      $last = strrpos($response, "\n")-1;
+      $hasilresponse = substr($response,$first,strlen($response) - $first - $last);
+      $hasildecrypt = $this->mc_decrypt($hasilresponse, $this->settings->get('vedika.eklaim_key'));
+      //echo $hasildecrypt;
+      $msg = json_decode($hasildecrypt,true);
+      return $msg;
+  }
+
+  private function mc_encrypt($data, $strkey) {
+      $key = hex2bin($strkey);
+      if (mb_strlen($key, "8bit") !== 32) {
+              throw new Exception("Needs a 256-bit key!");
+      }
+
+      $iv_size = openssl_cipher_iv_length("aes-256-cbc");
+      $iv = openssl_random_pseudo_bytes($iv_size);
+      $encrypted = openssl_encrypt($data,"aes-256-cbc",$key,OPENSSL_RAW_DATA,$iv );
+      $signature = mb_substr(hash_hmac("sha256",$encrypted,$key,true),0,10,"8bit");
+      $encoded = chunk_split(base64_encode($signature.$iv.$encrypted));
+      return $encoded;
+  }
+
+  private function mc_decrypt($str, $strkey){
+      $key = hex2bin($strkey);
+      if (mb_strlen($key, "8bit") !== 32) {
+          throw new Exception("Needs a 256-bit key!");
+      }
+
+      $iv_size = openssl_cipher_iv_length("aes-256-cbc");
+      $decoded = base64_decode($str);
+      $signature = mb_substr($decoded,0,10,"8bit");
+      $iv = mb_substr($decoded,10,$iv_size,"8bit");
+      $encrypted = mb_substr($decoded,$iv_size+10,NULL,"8bit");
+      $calc_signature = mb_substr(hash_hmac("sha256",$encrypted,$key,true),0,10,"8bit");
+      if(!$this->mc_compare($signature,$calc_signature)) {
+          return "SIGNATURE_NOT_MATCH";
+      }
+
+      $decrypted = openssl_decrypt($encrypted,"aes-256-cbc",$key,OPENSSL_RAW_DATA,$iv);
+      return $decrypted;
+  }
+
+  private function mc_compare($a, $b) {
+      if (strlen($a) !== strlen($b)) {
+          return false;
+      }
+
+      $result = 0;
+
+      for($i = 0; $i < strlen($a); $i ++) {
+          $result |= ord($a[$i]) ^ ord($b[$i]);
+      }
+
+      return $result == 0;
+  }
+
+  private function validTeks($data){
+      $save=str_replace("'","",$data);
+      $save=str_replace("\\","",$save);
+      $save=str_replace(";","",$save);
+      $save=str_replace("`","",$save);
+      $save=str_replace("--","",$save);
+      $save=str_replace("/*","",$save);
+      $save=str_replace("*/","",$save);
+      $save=str_replace("#","",$save);
+      return $save;
+  }
+
+  private function Grouper($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"grouper",
+                          "stage":"1"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          if($msg['response']['cbg']['tariff'] == '') {
+            $tarif = '0';
+          } else {
+            $tarif = $msg['response']['cbg']['tariff'];
+          }
+          echo '<dt>Grouper</dt> <dd>'.$msg['response']['cbg']['code'].'</dd><br>';
+          echo '<dt>Deskripsi</dt> <dd>'.$msg['response']['cbg']['description'].'</dd><br>';
+          echo '<dt>Tarif INACBG\'s</dt> <dd>Rp. '.number_format($tarif,0,",",".").'</dd><br><br>';
+      }
+  }
+
+  private function BuatKlaimBaru2($nomor_kartu,$nomor_sep,$nomor_rm,$nama_pasien,$tgl_lahir,$gender,$norawat){
+      $request ='{
+                      "metadata":{
+                          "method":"new_claim"
+                      },
+                      "data":{
+                          "nomor_kartu":"'.$nomor_kartu.'",
+                          "nomor_sep":"'.$nomor_sep.'",
+                          "nomor_rm":"'.$nomor_rm.'",
+                          "nama_pasien":"'.$nama_pasien.'",
+                          "tgl_lahir":"'.$tgl_lahir.'",
+                          "gender":"'.$gender.'"
+                      }
+                  }';
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          //InsertData2("inacbg_klaim_baru2","'".$norawat."','".$nomor_sep."','".$msg['response']['patient_id']."','".$msg['response']['admission_id']."','".$msg['response']['hospital_admission_id']."'");
+      }
+      return $msg['metadata']['message'];
+  }
+
+  private function EditUlangKlaim($nomor_sep){
+      $request ='{
+                      "metadata": {
+                          "method":"reedit_claim"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= $this->Request($request);
+      //echo $msg['metadata']['message']."";
+  }
+
+  private function UpdateDataKlaim2($nomor_sep,$nomor_kartu,$tgl_masuk,$tgl_pulang,$jenis_rawat,$kelas_rawat,$adl_sub_acute,
+                          $adl_chronic,$icu_indikator,$icu_los,$ventilator_hour,$upgrade_class_ind,$upgrade_class_class,
+                          $upgrade_class_los,$add_payment_pct,$birth_weight,$discharge_status,$diagnosa,$procedure,
+                          $tarif_poli_eks,$nama_dokter,$kode_tarif,$payor_id,$payor_cd,$cob_cd,$coder_nik,
+                          $prosedur_non_bedah,$prosedur_bedah,$konsultasi,$tenaga_ahli,$keperawatan,$penunjang,
+                          $radiologi,$laboratorium,$pelayanan_darah,$rehabilitasi,$kamar,$rawat_intensif,$obat,
+                          $obat_kronis,$obat_kemoterapi,$alkes,$bmhp,$sewa_alat){
+      $request ='{
+                      "metadata": {
+                          "method": "set_claim_data",
+                          "nomor_sep": "'.$nomor_sep.'"
+                      },
+                      "data": {
+                          "nomor_sep": "'.$nomor_sep.'",
+                          "nomor_kartu": "'.$nomor_kartu.'",
+                          "tgl_masuk": "'.$tgl_masuk.' 00:00:01",
+                          "tgl_pulang": "'.$tgl_pulang.' 23:59:59",
+                          "jenis_rawat": "'.$jenis_rawat.'",
+                          "kelas_rawat": "'.$kelas_rawat.'",
+                          "adl_sub_acute": "'.$adl_sub_acute.'",
+                          "adl_chronic": "'.$adl_chronic.'",
+                          "icu_indikator": "'.$icu_indikator.'",
+                          "icu_los": "'.$icu_los.'",
+                          "ventilator_hour": "'.$ventilator_hour.'",
+                          "upgrade_class_ind": "'.$upgrade_class_ind.'",
+                          "upgrade_class_class": "'.$upgrade_class_class.'",
+                          "upgrade_class_los": "'.$upgrade_class_los.'",
+                          "add_payment_pct": "'.$add_payment_pct.'",
+                          "birth_weight": "'.$birth_weight.'",
+                          "discharge_status": "'.$discharge_status.'",
+                          "diagnosa": "'.$diagnosa.'",
+                          "procedure": "'.$procedure.'",
+                          "diagnosa_inagrouper": "'.$diagnosa.'",
+                          "procedure_inagrouper": "'.$procedure.'",
+                          "tarif_rs": {
+                              "prosedur_non_bedah": "'.$prosedur_non_bedah.'",
+                              "prosedur_bedah": "'.$prosedur_bedah.'",
+                              "konsultasi": "'.$konsultasi.'",
+                              "tenaga_ahli": "'.$tenaga_ahli.'",
+                              "keperawatan": "'.$keperawatan.'",
+                              "penunjang": "'.$penunjang.'",
+                              "radiologi": "'.$radiologi.'",
+                              "laboratorium": "'.$laboratorium.'",
+                              "pelayanan_darah": "'.$pelayanan_darah.'",
+                              "rehabilitasi": "'.$rehabilitasi.'",
+                              "kamar": "'.$kamar.'",
+                              "rawat_intensif": "'.$rawat_intensif.'",
+                              "obat": "'.$obat.'",
+                              "obat_kronis": "'.$obat_kronis.'",
+                              "obat_kemoterapi": "'.$obat_kemoterapi.'",
+                              "alkes": "'.$alkes.'",
+                              "bmhp": "'.$bmhp.'",
+                              "sewa_alat": "'.$sewa_alat.'"
+                           },
+                          "tarif_poli_eks": "'.$tarif_poli_eks.'",
+                          "nama_dokter": "'.$nama_dokter.'",
+                          "kode_tarif": "'.$kode_tarif.'",
+                          "payor_id": "'.$payor_id.'",
+                          "payor_cd": "'.$payor_cd.'",
+                          "cob_cd": "'.$cob_cd.'",
+                          "coder_nik": "'.$coder_nik.'"
+                      }
+                 }';
+      echo "Data : ".$request;
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          echo 'Sukses';
+          //Hapus2("inacbg_data_terkirim2", "no_sep='".$nomor_sep."'");
+          //InsertData2("inacbg_data_terkirim2","'".$nomor_sep."','".$coder_nik."'");
+          //$this->GroupingStage12($nomor_sep,$coder_nik);
+      } else {
+        echo json_encode($msg);
+      }
+  }
+
+  private function GroupingStage12($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"grouper",
+                          "stage":"1"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          //Hapus2("inacbg_grouping_stage12", "no_sep='".$nomor_sep."'");
+          $cbg                = validangka($msg['response']['cbg']['tariff']);
+          $sub_acute          = validangka($msg['response']['sub_acute']['tariff']);
+          $chronic            = validangka($msg['response']['chronic']['tariff']);
+          $add_payment_amt    = validangka($msg['response']['add_payment_amt']);
+          //InsertData2("inacbg_grouping_stage12","'".$nomor_sep."','".$msg['response']['cbg']['code']."','".$msg['response']['cbg']['description']."','".($cbg+$sub_acute+$chronic+$add_payment_amt)."'");
+          //$this->FinalisasiKlaim($nomor_sep,$coder_nik);
+      }
+  }
+
+  private function FinalisasiKlaim($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"claim_final"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'",
+                          "coder_nik": "'.$coder_nik.'"
+                      }
+                 }';
+      $msg= Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          //KirimKlaimIndividualKeDC($nomor_sep);
+      }
+  }
+
+  private function KirimKlaimIndividualKeDC($nomor_sep){
+      $request ='{
+                      "metadata": {
+                          "method":"send_claim_individual"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= Request($request);
+      echo $msg['metadata']['message']."";
   }
 
   public function getJavascript()

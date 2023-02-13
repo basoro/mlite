@@ -13,13 +13,13 @@
       <div class="col-md-12">
         <div class="form-group">
             <label>Diagnosa</label>
-            <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3"></textarea> 
+            <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3"></textarea>
         </div>
       </div>
       <div class="col-md-12">
         <div class="form-group">
             <label>Prosedur</label>
-            <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3"></textarea> 
+            <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3"></textarea>
         </div>
       </div>
       <div class="col-md-12">
@@ -46,16 +46,18 @@
         </tr>
       </thead>
       <tbody>
+        {if: $resume_pasien}
         <tr>
           <td>{$resume_pasien.no_rawat}</td>
           <td>{$resume_pasien.diagnosa_utama}</td>
           <td>{$resume_pasien.prosedur_utama}</td>
           <td>{if: $resume_pasien.no_rawat !=''}<a href="" class="btn btn-xs btn-danger fa fa-edit edit_resume" data-no_rawat="{$resume_pasien.no_rawat}" data-diagnosa_utama="{$resume_pasien.diagnosa_utama}" data-prosedur_utama="{$resume_pasien.prosedur_utama}"></a>{/if}</td>
         </tr>
+        {/if}
       </tbody>
     </table>
   </div>
-  
+
 </div>
 <div class="modal-footer">
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
@@ -74,7 +76,7 @@
     var prosedur_utama = $('textarea[name=prosedur_resume]').val();
 	var kondisi_pulang = $('select[name=kondisi_pulang]').val();
     //alert(no_rawat + ' - ' + diagnosa_utama + ' - ' + prosedur_utama + ' - ' + kondisi_pulang);
-    
+
     var url = baseURL + '/vedika/saveresume?t=' + mlite.token;
 
     $.post(url,{
@@ -93,7 +95,7 @@
       //"</div>").show();
     });
   });
-  
+
   $("#display_resume_pasien").on("click",".edit_resume", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -102,7 +104,7 @@
 
     $('textarea[name=diagnosa_resume]').val(diagnosa_utama);
     $('textarea[name=prosedur_resume]').val(prosedur_utama);
-    
+
   });
 
 </script>

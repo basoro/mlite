@@ -1984,7 +1984,13 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (231, 'website', 'homepage_footer_informasi_32', 'http://localhost/webapps/antrian.php'),
 (232, 'website', 'homepage_sosmed_facebook', 'basoro'),
 (233, 'website', 'homepage_sosmed_youtube', 'basoro'),
-(234, 'website', 'homepage_sosmed_instagram', 'basoro');
+(234, 'website', 'homepage_sosmed_instagram', 'basoro'),
+(235, 'vedika', 'eklaim_url', ''),
+(236, 'vedika', 'eklaim_key', ''),
+(237, 'vedika', 'eklaim_kelasrs', 'CP'),
+(238, 'vedika', 'eklaim_payor_id', '3'),
+(239, 'vedika', 'eklaim_payor_cd', 'JKN'),
+(240, 'vedika', 'eklaim_cob_cd', '#');
 
 -- --------------------------------------------------------
 
