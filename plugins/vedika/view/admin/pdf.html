@@ -1030,7 +1030,7 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
+              <td valign="top">{?=nl2br($resume_pasien.diagnosa_utama)?}<br>
                 {$resume_pasien.diagnosa_sekunder}<br>
                 {$resume_pasien.diagnosa_sekunder2}<br>
                 {$resume_pasien.diagnosa_sekunder3}<br>
@@ -1046,7 +1046,7 @@ Ralan :
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             <tr>
-              <td valign="top">{$resume_pasien.prosedur_utama}<br>
+              <td valign="top">{?=nl2br($resume_pasien.prosedur_utama)?}<br>
                 {$resume_pasien.prosedur_sekunder}<br>
                 {$resume_pasien.prosedur_sekunder2}<br>
                 {$resume_pasien.prosedur_sekunder3}</td>
