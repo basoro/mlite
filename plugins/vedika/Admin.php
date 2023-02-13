@@ -2486,7 +2486,7 @@ class Admin extends AdminModule
     $get_claim_data = [];
     if($msg['metadata']['message']=="Ok"){
       $get_claim_data = $msg;
-      echo json_encode($msg, true);
+      //echo json_encode($msg, true);
     }
 
     $adl = [];
