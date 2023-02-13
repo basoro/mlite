@@ -374,7 +374,7 @@
         <tr>
           <td>{$get_claim_data.response.data.nama_pasien}</td>
           <td>{$get_claim_data.response.data.nomor_kartu}</td>
-          <td><a href="{?=url([ADMIN,'vedika','klaimpdf','1708R0081222V000002'])?}" target="_blank">{$get_claim_data.response.data.nomor_sep}</a></td>
+          <td><a href="{?=url([ADMIN,'vedika','klaimpdf','{$get_claim_data.response.data.nomor_sep}'])?}" target="_blank">{$get_claim_data.response.data.nomor_sep}</a></td>
           <td>{$get_claim_data.response.data.nama_dokter}</td>
           <td>{$get_claim_data.response.data.diagnosa}</td>
           <td>{$get_claim_data.response.data.procedure}</td>
