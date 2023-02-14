@@ -17,8 +17,9 @@
     <h4 class="modal-title">Bridging Inacbgs</h4>
 </div>
 <div class="modal-body" id="bridginginacbgs">
-  <div class="row" style="margin-top:20px;">
+  <div style="margin-top:20px;">
     <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+    <div class="row">
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Nama Pasien/JK</label>
@@ -43,7 +44,8 @@
         <input type="text" id="nokartu" name="nokartu" class="form-control" value="{$reg_periksa.no_peserta}" readonly>
       </div>
     </div>
-
+    </div>
+    <div class="row">
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Tanggal Registrasi</label>
@@ -68,7 +70,8 @@
         <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$reg_periksa.png_jawab}" readonly>
       </div>
     </div>
-
+    </div>
+    <div class="row">
     <div class="col col-md-12" style="margin: 20px 0;">
       <ul class="nav nav-tabs">
         <li role="presentation" class="active">
@@ -79,10 +82,11 @@
         </li>
       </ul>
     </div>
+    </div>
 
     <div class="tab-content">
       <div role="tabpanel" class="tab-pane fade in active" id="one">
-
+      <div class="row">
         <div class="col col-md-6">
           <div class="form-group">
             <label for="poli">Nomor SEP</label>
@@ -95,7 +99,8 @@
             <input type="text" id="keluar" name="keluar" class="form-control" value="{$reg_periksa.tgl_registrasi} {$reg_periksa.jam_reg}">
           </div>
         </div>
-
+      </div>
+      <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Kelas Rawat</label>
@@ -138,7 +143,8 @@
             <input type="text" id="upgrade_class_los" name="upgrade_class_los" class="form-control" value="0">
           </div>
         </div>
-
+      </div>
+      <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">ADL Sub Acute</label>
@@ -176,7 +182,8 @@
             <input type="text" id="icu_los" name="icu_los" class="form-control" value="0">
           </div>
         </div>
-
+      </div>
+      <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Berat Saat Lahir</label>
@@ -207,11 +214,10 @@
             <input type="text" id="procedure" name="procedure" class="form-control" value="{$prosedur}">
           </div>
         </div>
-
       </div>
-
+      </div>
       <div role="tabpanel" class="tab-pane fade" id="two">
-
+        <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Prosedur Non Bedah</label>
@@ -236,7 +242,8 @@
             <input type="text" id="tenaga_ahli" name="tenaga_ahli" class="form-control" value="{$biaya_tenaga_ahli}">
           </div>
         </div>
-
+        </div>
+        <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Keperawatan</label>
@@ -261,7 +268,8 @@
             <input type="text" id="laboratorium" name="laboratorium" class="form-control" value="{$biaya_laboratorium}">
           </div>
         </div>
-
+        </div>
+        <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Pelayanan Darah</label>
@@ -286,7 +294,8 @@
             <input type="text" id="rawat_intensif" name="rawat_intensif" class="form-control" value="{$biaya_rawat_intensif}">
           </div>
         </div>
-
+        </div>
+        <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Obat</label>
@@ -311,7 +320,8 @@
             <input type="text" id="alkes" name="alkes" class="form-control" value="{$biaya_alkes}">
           </div>
         </div>
-
+        </div>
+        <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">BMHP</label>
@@ -336,10 +346,10 @@
             <input type="text" id="add_payment_pct" name="add_payment_pct" class="form-control" value="{$biaya_add_payment_pct}">
           </div>
         </div>
-
+        </div>
       </div>
     </div>
-
+    <div class="row">
     <div class="col col-md-12" style="margin: 20px 0;">
       <button class="btn btn-success simpanbridging">
           Simpan
@@ -350,6 +360,7 @@
       <button class="btn btn-danger hapusbridging">
           Hapus
       </button>
+    </div>
     </div>
   </div>
   <h3>Data Claim</h3>

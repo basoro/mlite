@@ -2252,8 +2252,8 @@ class Admin extends AdminModule
       ->oneArray();
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     if($reg_periksa['status_lanjut'] == 'Ranap') {
-      $reg_periksa['tgl_registrasi'] = $this->core->getKamarInapInfo('tgl_keluar', $revertNoRawat($no_rawat));
-      $reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', $revertNoRawat($no_rawat));
+      $reg_periksa['tgl_registrasi'] = $this->core->getKamarInapInfo('tgl_keluar', revertNoRawat($no_rawat));
+      $reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', revertNoRawat($no_rawat));
     }
 
     $row_diagnosa = $this->core->mysql('diagnosa_pasien')
@@ -2274,10 +2274,11 @@ class Admin extends AdminModule
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->asc('prioritas')
       ->toArray();
+    $prosedur= '';
     $a_prosedur=1;
     foreach ($row_prosedur as $row) {
       /* == Khusus RSHD karena data ICD nya kacau == */
-      /*
+
       $kode = $row["kode"];
       if(strpos($row["kode"],'.') == false) {
         $kode = substr_replace($row["kode"],".", 2, 0);
@@ -2287,12 +2288,14 @@ class Admin extends AdminModule
       }else{
           $prosedur=$prosedur."#".$kode;
       }
-      */
+
+      /*
       if($a_prosedur==1){
           $prosedur=$row["kode"];
       }else{
           $prosedur=$prosedur."#".$row["kode"];
       }
+      */
       $a_prosedur++;
     }
 
@@ -2474,7 +2477,9 @@ class Admin extends AdminModule
     $total_biaya_laboratorium = 0;
     $total_biaya_pelayanan_darah = 0;
     $total_biaya_rehabilitasi = 0;
-    $total_biaya_kamar = 0;
+    //$total_biaya_kamar = 0;
+    $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $total_biaya_kamar = $piutang_pasien['totalpiutang'];
     $total_biaya_rawat_intensif = 0;
     $total_biaya_obat = 0;
     $total_biaya_obat_kronis = 0;
@@ -2639,7 +2644,7 @@ class Admin extends AdminModule
     }
 
     // hasilnya adalah berupa binary string $pdf, untuk disimpan:
-    file_put_contents($nosep.'.pdf',$pdf);
+    file_put_contents('tmp/'.$nosep.'.pdf',$pdf);
     // atau untuk ditampilkan dengan perintah:
     header("Content-type:application/pdf");
     //header("Content-Disposition:attachment;filename=$nosep.pdf");
