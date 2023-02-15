@@ -115,10 +115,19 @@ class Admin extends AdminModule
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
       ['name' => 'Mapping Inacbgs', 'url' => url([ADMIN, 'vedika', 'mappinginacbgs']), 'icon' => 'code', 'desc' => 'Pengaturan Mapping Inacbgs'],
       ['name' => 'Bridging Eklaim', 'url' => url([ADMIN, 'vedika', 'bridgingeklaim']), 'icon' => 'code', 'desc' => 'Bridging Eklaim'],
+      ['name' => 'Purifikasi', 'url' => url([ADMIN, 'vedika', 'purif']), 'icon' => 'code', 'desc' => 'Purifikasi Vedika'],
       ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'stats' => $stats, 'periode' => $date]);
+  }
+
+  public function getPurif(){
+    $sub_modules = [
+      ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'sanding']), 'icon' => 'code', 'desc' => 'Index Vedika'],
+      ['name' => 'Upload File Excel', 'url' => url([ADMIN, 'vedika', 'uploadxl']), 'icon' => 'code', 'desc' => 'Index Lengkap Vedika'],
+    ];
+    return $this->draw('manage_purif.html', ['sub_modules' => $sub_modules]);
   }
 
   public function Chart()
@@ -2190,6 +2199,120 @@ class Admin extends AdminModule
       ]);
     }
     exit();
+  }
+
+  public function getSanding(){
+    if (isset($_GET['y'])) {
+      $tahun = $_GET['y'];
+    } else {
+      $tahun = date('Y');
+    }
+    if (isset($_GET['bln'])) {
+      $bln = $_GET['bln'];
+    } else {
+      $bln = date('m');
+    }
+    switch ($bln) {
+      case 'Des':
+        $bulan = '12';
+        break;
+      case 'Nov':
+        $bulan = '11';
+        break;
+      case 'Jan':
+        $bulan = '01';
+        break;
+
+      default:
+        $bulan = $bln;
+        break;
+    }
+    $this->assign['list'] = [];
+    $eklaim = $this->core->mysql('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
+    foreach ($eklaim as $value) {
+      $value['vedika'] = $this->core->mysql('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
+      $this->assign['list'][] = $value;
+    }
+    $this->assign['ym'] = 'Bulan '.$bulan.' Tahun '.$tahun;
+    $this->assign['bulan'] = ['Jan','Peb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+    return $this->draw('sanding.html',['sanding' => $this->assign]);
+  }
+
+  public function getUploadXl(){
+    return $this->draw('uploadxl.html');
+  }
+
+  public function postUploadFileXl(){
+    if(isset($_FILES['xls_file']['tmp_name'])){
+      $file_type = $_FILES['xls_file']['name'];
+      $FileType = strtolower(pathinfo($file_type,PATHINFO_EXTENSION));
+      $target = UPLOADS.'/purif/sanding.'.$FileType;
+      if ($FileType != "xls" && $FileType != "xlsx") {
+        echo "<script>alert('Salah File Bro!! ini bukan ".$FileType."');history.go(-1);</script>";
+      } else {
+        include(BASE_DIR. "/vendor/php-excel-reader-master/src/PHPExcelReader/SpreadsheetReader.php"); //better use autoloading
+        move_uploaded_file($_FILES['xls_file']['tmp_name'], $target);
+        $data = new \PHPExcelReader\SpreadsheetReader($target);
+        $jumlah_baris = $data->rowcount($sheet_index=0);
+        $berhasil = 0;
+        $sukses = false;
+        $bulans = ['Jan','Peb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+        for ($i=5; $i<=$jumlah_baris; $i++){
+          $bulanTahun = $data->val($i,3);
+          foreach ($bulans as $bln) {
+            if (strpos($bulanTahun, $bln) !== false) {
+              switch ($bln) {
+                case 'Des':
+                  $bulan = '12';
+                  break;
+                case 'Nov':
+                  $bulan = '11';
+                  break;
+                case 'Jan':
+                  $bulan = '01';
+                  break;
+
+                default:
+                  $bulan = '00';
+                  break;
+              }
+            }
+          }
+          $tahun = substr($bulanTahun,-4);
+          $ym = $tahun.'-'.$bulan;
+          $no_sep     = $data->val($i, 6);
+          $no_rm   = $data->val($i, 4);
+          $nama  = $data->val($i, 5);
+          $biaya  = $data->val($i, 9);
+          $biaya = ltrim($biaya , '* ');
+          $biaya = str_replace([',','.'],'',$biaya);
+          $cek = $this->core->mysql('mlite_purif')->where('no_sep',$no_sep)->oneArray();
+
+            // menangkap data dan memasukkan ke variabel sesuai dengan kolumnya masing-masing
+
+          if($no_sep != "" && $no_rm != "" && $nama != ""){
+            if (!$cek) {
+                # code...
+                $this->core->mysql('mlite_purif')->save([
+                  'no_sep' => $no_sep,
+                  'no_rkm_medis' => $no_rm,
+                  'nama' => $nama,
+                  'tarif' => $biaya,
+                  'yearMonth' => $ym
+                ]);
+                $berhasil++;
+            }
+              // input data ke database (table data_pegawai)
+          }
+          $sukses = true;
+        }
+        if ($sukses == true) {
+          # code...
+          $this->notify('success', 'Upload telah berhasil disimpan');
+        }
+      }
+    }
+    redirect(url([ADMIN, 'vedika', 'purif']));
   }
 
   public function getDisplayResume($no_rawat)

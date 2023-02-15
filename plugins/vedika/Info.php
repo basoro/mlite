@@ -54,6 +54,21 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_users_vedika`
           MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_purif` (
+          `id` int(11) NOT NULL,
+          `no_rkm_medis` varchar(15) NOT NULL,
+          `nama` varchar(100) NOT NULL,
+          `no_sep` varchar(20) NOT NULL,
+          `tarif` varchar(15) NOT NULL,
+          `yearMonth` varchar(10) NOT NULL,
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_purif`
+        ADD PRIMARY KEY (`id`);");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_purif`
+        MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'carabayar', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'sep', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('vedika', 'skdp', '')");
