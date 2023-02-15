@@ -405,11 +405,9 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 });
 
-//$("#display").on("click", ".soap", function(event){
-
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
-  {if: !$this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))}
+  {if: !$cek_role}
     bootbox.alert({
         title: "Pemberitahuan penggunaan!",
         message: "Silahkan login dengan akun non administrator (akun yang berelasi dengan modul kepegawaian)!"

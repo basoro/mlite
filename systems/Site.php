@@ -28,9 +28,15 @@ class Site extends Main
     private function drawTheme($file)
     {
         $assign = [];
-        $username = $this->getUserInfo('fullname', null, true);
+        $username = '';
+        if(isset($_SESSION['mlite_user'])) {
+          $username = $this->getUserInfo('fullname', null, true);
+        }
         $assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
+        $assign['username'] = '';
+        if(isset($_SESSION['mlite_user'])) {
+          $assign['username'] = !empty($username) ? $username : $this->getUserInfo('username');
+        }
         $assign['notify']   = $this->getNotify();
         $assign['powered']  = 'Powered by <a href="https://mlite.id/">mLITE</a>';
         $assign['path']     = url();

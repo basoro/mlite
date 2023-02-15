@@ -18,11 +18,18 @@ class Admin extends Main
 
     public function drawTheme($file)
     {
-        $username = $this->getUserInfo('fullname', null, true);
-        $access = $this->getUserInfo('access');
+
+        $username = '';
+        $access = '';
+        $this->assign['username'] = '';
+
+        if($this->db('mlite_users')->where('id', $_SESSION['mlite_user'])->oneArray()) {
+          $username = $this->getUserInfo('fullname', null, true);
+          $access = $this->getUserInfo('access');
+          $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
+        }
 
         $this->assign['tanggal']       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
         $this->assign['notify']        = $this->getNotify();
         $this->assign['powered']       = 'Powered by <a href="https://mlite.id/">mLITE</a>';
         $this->assign['path']          = url();
@@ -50,7 +57,10 @@ class Admin extends Main
         $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
         $this->assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
+        $this->assign['poliklinik'] = '';
+        if($this->assign['cek_anjungan']) {
+          $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
+        }
 
         $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 

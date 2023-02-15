@@ -1,0 +1,39 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/vedika/savebridgingeklaim')?}" method="POST">
+        <div class="col-md-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{$settings.title}</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="form-group">
+                        <label>URL Eklaim</label>
+                        <input type="text" name="vedika[eklaim_url]" class="form-control" value="{$settings.vedika.eklaim_url}" />
+                    </div>
+                    <div class="form-group">
+                        <label>WS Key Eklaim</label>
+                        <input type="text" name="vedika[eklaim_key]" class="form-control" value="{$settings.vedika.eklaim_key}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas RS</label>
+                        <input type="text" name="vedika[eklaim_kelasrs]" class="form-control" value="{$settings.vedika.eklaim_kelasrs}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Payor ID</label>
+                        <input type="text" name="vedika[eklaim_payor_id]" class="form-control" value="{$settings.vedika.eklaim_payor_id}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Payor CD</label>
+                        <input type="text" name="vedika[eklaim_payor_cd]" class="form-control" value="{$settings.vedika.eklaim_payor_cd}" />
+                    </div>
+                    <div class="form-group">
+                        <label>COB CD</label>
+                        <input type="text" name="vedika[eklaim_cob_cd]" class="form-control" value="{$settings.vedika.eklaim_cob_cd}" />
+                    </div>
+
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </div>
+    </form>
+</article>

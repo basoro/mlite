@@ -978,7 +978,12 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/dokter_ranap/js/admin/dokter_ranap.js');
+        $cek_pegawai = $this->core->mysql('pegawai')->where('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))->oneArray();
+        $cek_role = '';
+        if($cek_pegawai) {
+          $cek_role = $this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']));
+        }
+        echo $this->draw(MODULES.'/dokter_ranap/js/admin/dokter_ranap.js', ['cek_role' => $cek_role]);
         exit();
     }
 

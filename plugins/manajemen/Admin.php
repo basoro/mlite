@@ -235,7 +235,7 @@ class Admin extends AdminModule
             ->where ('keterangan', '!=' , '-')
           	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
             ->oneArray();
-        echo $record;
+        //echo $record;
         return $record['count'];
     }
 

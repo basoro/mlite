@@ -21,6 +21,17 @@
     background-color: #4C9A2A;
   }
 </style>
+<h4>
+  Periode Klaim {?=bulan(date('m', strtotime($periode)))?} {?=date('Y', strtotime($periode))?}
+  <span class="pull-right">
+    <form class="" action="" method="">
+      <input type="text" name="periode" class="tanggal" value="" placeholder="Pilih periode">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <input type="submit" value="Go">
+    </form>
+  </span>
+</h4>
+<br>
 <div class="row">
     <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
@@ -28,10 +39,10 @@
                     <span class="fa-3x fa-stack fa-lg pull-left">
                         <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Rencana Klaim ({?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/$stats.totalKlaim)*100, 2, '.', '')?}%)</div>
+                    <div class="stat-title text-grey">Rencana Klaim</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.KlaimRalan}</b> ({?=number_format(($stats.rencanaRalan/$stats.KlaimRalan)*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.KlaimRanap}</b> ({?=number_format(($stats.rencanaRanap/$stats.KlaimRanap)*100, 2, '.', '')?}%)
+                      Ralan : <b>{$stats.KlaimRalan}</b> ({?=number_format(($stats.rencanaRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.KlaimRanap}</b> ({?=number_format(($stats.rencanaRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -42,10 +53,10 @@
                     <span class="fa-3x fa-stack fa-lg pull-left">
                         <i class="fa fa-calendar fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Status Lengkap ({?=number_format(($stats.totalLengkap/$stats.totalKlaim)*100, 2, '.', '')?}%)</div>
+                    <div class="stat-title text-grey">Status Lengkap</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.LengkapRalan}</b> ({?=number_format(($stats.LengkapRalan/$stats.KlaimRalan)*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.LengkapRanap}</b> ({?=number_format(($stats.LengkapRanap/$stats.KlaimRanap)*100, 2, '.', '')?}%)
+                      Ralan : <b>{$stats.LengkapRalan}</b> ({?=number_format(($stats.LengkapRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.LengkapRanap}</b> ({?=number_format(($stats.LengkapRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -56,10 +67,10 @@
                     <span class="fa-3x fa-stack fa-lg pull-left">
                         <i class="fa fa-users fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Status Pengajuan ({?=number_format(($stats.totalPengajuan/$stats.totalKlaim)*100, 2, '.', '')?}%)</div>
+                    <div class="stat-title text-grey">Status Pengajuan</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.PengajuanRalan}</b> ({?=number_format(($stats.PengajuanRalan/$stats.KlaimRalan)*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.PengajuanRanap}</b> ({?=number_format(($stats.PengajuanRanap/$stats.KlaimRanap)*100, 2, '.', '')?}%)
+                      Ralan : <b>{$stats.PengajuanRalan}</b> ({?=number_format(($stats.PengajuanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.PengajuanRanap}</b> ({?=number_format(($stats.PengajuanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -70,10 +81,10 @@
                     <span class="fa-3x fa-stack fa-lg pull-left">
                         <i class="fa fa-wheelchair fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Status Perbaikan ({?=number_format(($stats.totalPerbaikan/$stats.totalKlaim)*100, 2, '.', '')?}%)</div>
+                    <div class="stat-title text-grey">Status Perbaikan</div>
                     <div class="stat-bold">
-                      Ralan : <b>{$stats.PerbaikanRalan}</b> ({?=number_format(($stats.PerbaikanRalan/$stats.KlaimRalan)*100, 2, '.', '')?}%)<br>
-                      Ranap: <b>{$stats.PerbaikanRanap}</b> ({?=number_format(($stats.PerbaikanRanap/$stats.KlaimRanap)*100, 2, '.', '')?}%)
+                      Ralan : <b>{$stats.PerbaikanRalan}</b> ({?=number_format(($stats.PerbaikanRalan/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}%)<br>
+                      Ranap: <b>{$stats.PerbaikanRanap}</b> ({?=number_format(($stats.PerbaikanRanap/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}%)
                     </div>
               </div>
         </div>
@@ -116,10 +127,17 @@
         </div>
     </div>
 </article>
-
+<script>
+  $( function() {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM',
+      locale: 'id'
+    });
+  } );
+</script>
 <script type="text/javascript">
     $(function () {
-        //bar chart
+        //line chart
         var ctx = document.getElementById("line-chartcanvas");
         const dataLabel = ["Rencana Klaim", "Rawat Jalan", "Rawat Inap"];
         new Chart(ctx, {
@@ -127,7 +145,7 @@
           data: {
             labels: dataLabel,
             datasets: [{
-              data: [{?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/$stats.totalKlaim)*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRalan+$stats.PengajuanRalan)/$stats.KlaimRalan)*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRanap+$stats.PengajuanRanap)/$stats.KlaimRanap)*100, 2, '.', '')?}],
+              data: [{?=number_format((($stats.rencanaRalan+$stats.rencanaRanap)/($stats.totalKlaim ?: 1))*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRalan+$stats.PengajuanRalan)/($stats.KlaimRalan ?: 1))*100, 2, '.', '')?}, {?=number_format((($stats.LengkapRanap+$stats.PengajuanRanap)/($stats.KlaimRanap ?: 1))*100, 2, '.', '')?}],
               backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',

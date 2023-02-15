@@ -17,6 +17,7 @@
         <td>Rp. <span class="pull-right">{?= number_format($value.biaya,2,',','.')?}</span></td>
         <td colspan="2">
           <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
+          <a href="{?=url([ADMIN,'orthanc','bridgingorthanc',convertNorawat($value.no_rawat)])?}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#orthancModal"><i class="fa fa-edit"></i><span class="hidden-xs"> PACS</span></a>
           <button type="button" class="btn btn-danger btn-xs hapus_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
         </td>
       </tr>
@@ -94,3 +95,12 @@
   <button type="button" name="button" class="btn btn-primary" id="cetak_permintaan"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Permintaan</span></button>
 </div>
 {/if}
+
+<!-- Modal -->
+<div class="modal fade" id="orthancModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>

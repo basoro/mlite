@@ -92,10 +92,16 @@
                             {loop: $value.status_lengkap as $data}
                             <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
                             {/loop}
-                            <br><br><br>
+                            <br>
                             <a href="#" class="btn btn-danger btn-xs bridging_inacbgs" data-no_rawat="{?=convertNorawat($value.no_rawat)?}">
                               <i class="fa fa-refresh"></i> Grouping Inacbgs
                             </a>
+                            <br><br><br>
+                            <div class="">
+                              {loop: $value.pegawai as $data}
+                                <i class="fa fa-user"></i> {$data.nama}
+                              {/loop}
+                            </div>
                           {/if}
                         </td>
       									<td>
@@ -123,10 +129,10 @@
                         <td>
                           <table>
                             <tr>
-                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Tgl.Registrasi{else}Tgl.Pulang{/if}</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
@@ -145,7 +151,10 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahprosedur',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Pros. Utama</a></td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
                             </tr>
                           </table>
                         </td>
