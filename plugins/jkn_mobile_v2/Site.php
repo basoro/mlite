@@ -1551,7 +1551,7 @@ class Site extends SiteModule
                         $interval = $interval->fetch();
 
                         if($interval[0]<=0){
-                            if ($jam >= $cekjam['jam_mulai']) {
+                            if ($jam >= $cekjam['jam_selesai']) {
                                 # code...
                                 $response = array(
                                     'metadata' => array(
