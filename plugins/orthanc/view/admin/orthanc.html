@@ -1,0 +1,35 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Bridging PACS</h4>
+</div>
+<div class="modal-body">
+  <h4>Data Bridging PACS</h4>
+  <div class="table-responsive no-margin">
+    <table class="table table-striped table-bordered no-padding" width="100%">
+      <thead>
+        <tr>
+          <th width="20px;">No.RM</th>
+          <th>Patient UUID</th>
+          <th>Studies</th>
+          <th>Series</th>
+          <th>Instances</th>
+          <th>Preview</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{$pacs.data}</td>
+          <td>{$pacs.patientUUID}</td>
+          <td><a href="http://mlite.loc/orthanc/osimis-viewer/app/index.html?study={$pacs.Studies}" target="_blank">{$pacs.Studies}</a></td>
+          <td>{$pacs.Series}</td>
+          <td>{$pacs.Instances}</td>
+          <td><a href="http://mlite.loc/orthanc/osimis-viewer/app/index.html?study=941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3" target="_blank"><img src="{$pacs.url}" width="200"></a><br><br><button type="button" class="btn btn-xs btn-success">Simpan ke SIMRS</button></td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

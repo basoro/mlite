@@ -33,20 +33,15 @@
       <div class="comments-list">
         {loop: $vedika_feedback}
         <div class="media">
-          <p class="pull-right"><small>{$value.tanggal}</small></p>
+          <p class="pull-right"><small>
+            {if: $value.deleteUrl != ''}
+            <a href="{$value.deleteUrl}" onclick="return  confirm('Apakah anda yakin ingin menghapus ?')" class="btn btn-danger btn-sm" style="font-size: 10px;border-radius: 4px;padding: 16px;">Hapus</a><br>{/if}
+            {$value.tanggal}</small></p>
           <a class="media-left" href="#">
-            {if: $value.username == 'bpjs'}
-              <img src="{?=url()?}/assets/img/avatar-bpjs.png" width="30px">
-            {else}
-              <img src="{?=url()?}/{$logo}" width="30px">
-            {/if}
+            <img src="{$value.logo}" width="30px">
           </a>
           <div class="media-body">
-            {if: $value.username == 'bpjs'}
-              <h4 class="media-heading user_name">Verifikator BPJS</h4>
-            {else}
-              <h4 class="media-heading user_name">{$nama_instansi}</h4>
-            {/if}
+            <h4 class="media-heading user_name">{$value.fullname}</h4>
             <div style="font-size:14px;">{$value.catatan}</div>
           </div>
         </div>

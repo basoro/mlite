@@ -1,0 +1,18 @@
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nomor Rawat</th>
+          <th>Diagnosa</th>
+          <th>Prosedur</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{$resume_pasien.no_rawat}</td>
+          <td>{$resume_pasien.diagnosa_utama}</td>
+          <td>{$resume_pasien.prosedur_utama}</td>
+          <td>{if: $resume_pasien.no_rawat !=''}<a href="" class="btn btn-xs btn-danger fa fa-edit edit_resume" data-no_rawat="{$resume_pasien.no_rawat}" data-diagnosa_utama="{$resume_pasien.diagnosa_utama}" data-prosedur_utama="{$resume_pasien.prosedur_utama}"></a>{/if}</td>
+        </tr>
+      </tbody>
+    </table>

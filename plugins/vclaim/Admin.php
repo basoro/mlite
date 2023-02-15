@@ -1366,13 +1366,63 @@ class Admin extends AdminModule
     }
     exit();
   }
-  public function postUpdateTglPlg($data = [])
+
+  public function __postUpdateTglPlg($data = [])
   {
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
 
     $url = $this->api_url . 'Sep/updtglplg';
+    $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function getUpdateTglPlg()
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $data = [
+      'request' => [
+        't_sep' => [
+          'noSep' => $sep,
+          'statusPulang' => '1',
+          'noSuratMeninggal' => '',
+          'tglMeninggal' => '',
+          'tglPulang' => '2023-01-01',
+          'noLPManual' => '',
+          'user' => 'Admin'
+        ]
+      ]
+    ];
+
+    $url = $this->api_url . 'Sep/2.0/updtglplg';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey,  $this->user_key, $tStamp);
     $json = json_decode($output, true);
     //echo json_encode($json);
@@ -2502,6 +2552,19 @@ class Admin extends AdminModule
           	},
           	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
     }
+    exit();
+  }
+
+  public function getDirujuk($no_rawat)
+  {
+    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    if(empty($bridging_sep)) {
+      $bridging_sep = [];
+    }
+    //$dirujuk = $this->core->mysql('dirujuk')->toArray();
+    $dirujuk = [];
+
+    echo $this->draw('dirujuk.html', ['bridging_sep' => $bridging_sep, 'dirujuk' => $dirujuk]);
     exit();
   }
 

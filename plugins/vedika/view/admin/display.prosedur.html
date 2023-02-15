@@ -1,0 +1,20 @@
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Kode</th>
+          <th>Nama Prosedur</th>
+          <th>Prioritas</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {loop: $prosedur_pasien}
+        <tr>
+          <td>{$value.kode}</td>
+          <td>{$value.deskripsi_panjang}</td>
+          <td>{$value.prioritas}</td>
+          <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_prosedur" data-no_rawat="{$value.no_rawat}" data-kode="{$value.kode}" data-prioritas="{$value.prioritas}"></a></td>
+        </tr>
+        {/loop}
+      </tbody>
+    </table>

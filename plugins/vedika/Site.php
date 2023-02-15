@@ -40,6 +40,7 @@ class Site extends SiteModule
         $this->route('veda/createpdf/(:str)', 'getCreatePDF');
         $this->route('veda/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('veda/catatan/(:str)', 'getCatatan');
+        $this->route('veda/delfeed/(:str)/(:str)', 'getDelFeed');
         $this->route('veda/logout', function () {
             $this->logout();
         });
@@ -197,9 +198,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'pengajuan', 'ralan', $page]);
       return $this->draw('pengajuan_ralan.html', ['vedika' => $this->assign]);
     }
@@ -258,7 +256,7 @@ class Site extends SiteModule
         $page = $slug[3];
       }
       // pagination
-      $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date'");
+      $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN '$start_date' AND '$end_date')");
       $totalRecords->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $totalRecords = $totalRecords->fetchAll();
 
@@ -267,7 +265,7 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND tgl_registrasi BETWEEN '$start_date' AND '$end_date' ORDER BY nosep LIMIT $perpage OFFSET $offset");
+      $query = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND (no_rkm_medis LIKE ? OR no_rawat LIKE ? OR nosep LIKE ?) AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar BETWEEN '$start_date' AND '$end_date') ORDER BY nosep LIMIT $perpage OFFSET $offset");
       $query->execute(['%'.$phrase.'%', '%'.$phrase.'%', '%'.$phrase.'%']);
       $rows = $query->fetchAll();
       $this->assign['list'] = [];
@@ -330,9 +328,6 @@ class Site extends SiteModule
               $this->assign['list'][] = $row;
           }
       }
-
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
 
       $this->assign['searchUrl'] =  url(['veda', 'pengajuan', 'ralan', $page]);
       return $this->draw('pengajuan_ranap.html', ['vedika' => $this->assign]);
@@ -460,9 +455,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'perbaikan', $page]);
       return $this->draw('perbaikan.html', ['vedika' => $this->assign]);
     }
@@ -495,10 +487,17 @@ class Site extends SiteModule
         $row['no_peserta'] = $this->core->getPasienInfo('no_peserta', $row['no_rkm_medis']);
         $row['kd_penyakit'] = $this->_getDiagnosa('kd_penyakit', $row['no_rawat'], $row['status_lanjut']);
         $row['kd_prosedur'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
-        $get_feedback_bpjs = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username', 'bpjs')->oneArray();
+
+        $get_feedback_bpjs = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = '{$row['nosep']}' AND username IN (SELECT username FROM mlite_users_vedika) ORDER BY id DESC LIMIT 1");
+        $get_feedback_bpjs->execute();
+        $get_feedback_bpjs = $get_feedback_bpjs->fetch();
         $row['konfirmasi_bpjs'] = $get_feedback_bpjs['catatan'];
-        $get_feedback_rs = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $row['nosep'])->where('username','!=','bpjs')->oneArray();
+
+        $get_feedback_rs = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_vedika_feedback WHERE nosep = '{$row['nosep']}' AND username IN (SELECT username FROM mlite_users) ORDER BY id DESC LIMIT 1");
+        $get_feedback_rs->execute();
+        $get_feedback_rs = $get_feedback_rs->fetch();
         $row['konfirmasi_rs'] = $get_feedback_rs['catatan'];
+
         $display[] = $row;
       }
       $content = $this->draw('perbaikan_excel.html', [
@@ -606,15 +605,39 @@ class Site extends SiteModule
 
     public function _getManage()
     {
-      $this->_addHeaderFiles();
-      $pengajuan_ralan = $this->core->mysql('mlite_vedika')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status', 'Pengajuan')->where('jenis', 2)->oneArray();
-      $pengajuan_ranap = $this->core->mysql('mlite_vedika')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status', 'Pengajuan')->where('jenis', 1)->oneArray();
-      $perbaiki = $this->core->mysql('mlite_vedika')->select(['count' => 'COUNT(DISTINCT no_rawat)'])->where('status', 'Perbaiki')->oneArray();
+      //$this->_addHeaderFiles();
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
-      $stat['pengajuan_ralan'] = $pengajuan_ralan['count'];
-      $stat['pengajuan_ranap'] = $pengajuan_ranap['count'];
-      $stat['perbaiki'] = $perbaiki['count'];
-      return $this->draw('index.html', ['stat' => $stat]);
+	    $date = $this->settings->get('vedika.verifikasi');
+      if(isset($_GET['periode']) && $_GET['periode'] !=''){
+        $date = $_GET['periode'];
+      }
+
+      $PengajuanRalan = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
+      $PengajuanRalan->execute();
+      $PengajuanRalan = $PengajuanRalan->fetchAll();
+      $stat['pengajuan_ralan'] = count($PengajuanRalan);
+
+      $PengajuanRanap = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Pengajuan' AND jenis = '1' AND no_rawat IN (SELECT no_rawat FROM kamar_inap WHERE tgl_keluar LIKE '{$date}%')");
+      $PengajuanRanap->execute();
+      $PengajuanRanap = $PengajuanRanap->fetchAll();
+      $stat['pengajuan_ranap'] = count($PengajuanRanap);
+
+      $PerbaikanRalan = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '2' AND tgl_registrasi LIKE '{$date}%'");
+      $PerbaikanRalan->execute();
+      $PerbaikanRalan = $PerbaikanRalan->fetchAll();
+      $stats['PerbaikanRalan'] = count($PerbaikanRalan);
+
+      $PerbaikanRanap = $this->core->mysql()->pdo()->prepare("SELECT no_rawat FROM mlite_vedika WHERE status = 'Perbaiki' AND jenis = '1' AND tgl_registrasi LIKE '{$date}%'");
+      $PerbaikanRanap->execute();
+      $PerbaikanRanap = $PerbaikanRanap->fetchAll();
+      $stats['PerbaikanRanap'] = count($PerbaikanRanap);
+
+      $stat['perbaiki'] = $stats['PerbaikanRalan'] + $stats['PerbaikanRanap'];
+
+      return $this->draw('index.html', ['stat' => $stat, 'periode' => $date]);
     }
 
     public function _getManageRalan($page = 1)
@@ -684,9 +707,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'ralan', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage_ralan.html', ['vedika' => $this->assign]);
 
@@ -744,9 +764,6 @@ class Site extends SiteModule
           }
       }
 
-      $this->assign['vedika_username'] = $this->settings->get('vedika.username');
-      $this->assign['vedika_password'] = $this->settings->get('vedika.password');
-
       $this->assign['searchUrl'] =  url(['veda', 'ranap', $page.'?start_date='.$start_date.'&end_date='.$end_date]);
       return $this->draw('manage_ranap.html', ['vedika' => $this->assign]);
 
@@ -795,7 +812,6 @@ class Site extends SiteModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
         $this->tpl->set('billing', $rows);
-        //$this->tpl->set('instansi', $instansi);
 
         $print_sep = array();
         if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
@@ -807,6 +823,17 @@ class Site extends SiteModule
 
         $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
         $this->tpl->set('print_sep', $print_sep);
+
+        $cek_spri = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_rawat', $this->revertNorawat($id))->oneArray();
+        $this->tpl->set('cek_spri', $cek_spri);
+
+        $print_spri = array();
+        if (!empty($this->_getSPRIInfo('no_surat', $no_rawat))) {
+          $print_spri['bridging_surat_pri_bpjs'] = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_surat', $this->_getSPRIInfo('no_surat', $no_rawat))->oneArray();
+        }
+        $print_spri['nama_instansi'] = $this->settings->get('settings.nama_instansi');
+        $print_spri['logoURL'] = url(MODULES . '/vclaim/img/bpjslogo.png');
+        $this->tpl->set('print_spri', $print_spri);
 
         $resume_pasien = $this->core->mysql('resume_pasien')
           ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
@@ -915,6 +942,15 @@ class Site extends SiteModule
         $hasil_radiologi = $this->core->mysql('hasil_radiologi')
           ->where('no_rawat', $this->revertNorawat($id))
           ->toArray();
+
+        $klinis_radiologi = $this->core->mysql('diagnosa_pasien_klinis')
+          ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $saran_rad = $this->core->mysql('saran_kesan_rad')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+
         $pemeriksaan_laboratorium = [];
         $rows_pemeriksaan_laboratorium = $this->core->mysql('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -924,6 +960,8 @@ class Site extends SiteModule
           $value['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+            ->where('detail_periksa_lab.jam', $value['jam'])
+            ->where('detail_periksa_lab.tgl_periksa', $value['tgl_periksa'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
             ->toArray();
           $pemeriksaan_laboratorium[] = $value;
@@ -944,6 +982,11 @@ class Site extends SiteModule
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
 
+        $rujukan_internal_poli_detail = $this->core->mysql('rujukan_internal_poli_detail')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+        $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
+
         $this->tpl->set('pasien', $pasien);
         $this->tpl->set('reg_periksa', $reg_periksa);
         $this->tpl->set('rujukan_internal', $rujukan_internal);
@@ -962,6 +1005,8 @@ class Site extends SiteModule
         $this->tpl->set('operasi', $operasi);
         $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
         $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+        $this->tpl->set('klinis_radiologi', $klinis_radiologi);
+    	  $this->tpl->set('saran_rad', $saran_rad);
         $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
         $this->tpl->set('pemberian_obat', $pemberian_obat);
         $this->tpl->set('obat_operasi', $obat_operasi);
@@ -970,7 +1015,7 @@ class Site extends SiteModule
 
         $this->tpl->set('berkas_digital', $berkas_digital);
         $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
-        $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
+        $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
         echo $this->tpl->draw(MODULES.'/vedika/view/pdf.html', true);
@@ -1021,7 +1066,6 @@ class Site extends SiteModule
         $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
         $this->tpl->set('billing', $rows);
-        //$this->tpl->set('instansi', $instansi);
 
         $print_sep = array();
         if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
@@ -1201,15 +1245,34 @@ class Site extends SiteModule
     {
       $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
       $vedika = $this->core->mysql('mlite_vedika')->where('nosep', $id)->asc('id')->toArray();
-      $vedika_feedback = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $id)->asc('id')->toArray();
-      $this->tpl->set('logo', $this->settings->get('settings.logo'));
+      $rows_vedika_feedback = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $id)->asc('id')->toArray();
+      foreach($rows_vedika_feedback as $row) {
+        $users_vedika = $this->core->mysql('mlite_users_vedika')->where('username', $row['username'])->oneArray();
+        $users_login = $this->core->mysql('mlite_users')->where('username', $row['username'])->oneArray();
+        if($users_vedika) {
+          $row['fullname'] = $users_vedika['fullname'];
+          $row['logo'] = url().'/assets/img/avatar-bpjs.png';
+          $row['deleteUrl'] = url(['veda', 'delfeed', $row['nosep'], $row['username']]);
+        } else {
+          $row['fullname'] = $users_login['fullname'];
+          $row['logo'] = url().'/'.$this->settings->get('settings.logo');
+          $row['deleteUrl'] = '';
+        }
+        $vedika_feedback[] = $row;
+      }
       $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
       $this->tpl->set('set_status', $set_status);
       $this->tpl->set('vedika', $vedika);
       $this->tpl->set('vedika_feedback', $vedika_feedback);
-      $this->tpl->set('username', $_SESSION['vedika_user']);
       echo $this->tpl->draw(MODULES.'/vedika/view/catatan.html', true);
       exit();
+    }
+
+  	public function getDelFeed($id,$user)
+    {
+  		$delete = $this->core->mysql('mlite_vedika_feedback')->where('nosep', $id)->where('username',$user)->delete();
+   		if($delete)
+          header('Location: '.$_SERVER['REQUEST_URI']);
     }
 
     public function getDownloadPDF($id)
@@ -1247,6 +1310,12 @@ class Site extends SiteModule
     {
         $row = $this->core->mysql('bridging_sep')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
+    }
+
+  	private function _getSPRIInfo($field, $no_rawat)
+    {
+      $row = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_rawat', $no_rawat)->oneArray();
+      return $row[$field];
     }
 
     private function _getDiagnosa($field, $no_rawat, $status_lanjut)
@@ -1288,23 +1357,26 @@ class Site extends SiteModule
     private function _login($username, $password)
     {
         // Check attempt
-        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->core->mysql('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
             $attempt['expires'] = intval($attempt['expires']);
         }
 
-        $row_username = $this->settings->get('vedika.username');
-        $row_password = $this->settings->get('vedika.password');
+        //$row_username = $this->settings->get('vedika.username');
+        //$row_password = $this->settings->get('vedika.password');
+        $users_vedika = $this->core->mysql('mlite_users_vedika')->where('username', $username)->oneArray();
+        $row_username = $users_vedika['username'];
+        $row_password = $users_vedika['password'];
 
         if ($row_username == $username && $row_password == $password) {
             // Reset fail attempts for this IP
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
             $_SESSION['vedika_user']       = $row_username;
             $_SESSION['vedika_token']      = bin2hex(openssl_random_pseudo_bytes(6));
@@ -1314,12 +1386,12 @@ class Site extends SiteModule
             return true;
         } else {
             // Increase attempt
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                 $attempt['expires'] = strtotime("+10 minutes");
 
                 $this->core->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));

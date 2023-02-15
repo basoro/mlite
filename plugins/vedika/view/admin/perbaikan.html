@@ -148,6 +148,9 @@
                             <tr>
                               <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
                             </tr>
+                            <tr>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahprosedur',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Pros. Utama</a></td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
+                            </tr>
                           </table>
                         </td>
                         <td>

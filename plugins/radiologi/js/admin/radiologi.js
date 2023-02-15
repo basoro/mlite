@@ -596,6 +596,18 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
   event.stopPropagation();
   return false;
 });
+
+$("#rincian").on("click",".hasil_pacs", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam_periksa = $(this).attr("data-jam_periksa");
+  var status = $(this).attr("data-status");
+  alert('PACS');
+});
+
 // ketika tombol hapus ditekan
 $("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
   event.preventDefault();

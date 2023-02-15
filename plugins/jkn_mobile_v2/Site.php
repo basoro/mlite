@@ -182,9 +182,9 @@ class Site extends SiteModule
             if(empty($decode['tanggalperiksa'])) {
                $errors[] = 'Anda belum memilih tanggal periksa';
             }
-            if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] < $h1 || $decode['tanggalperiksa'] > $h7) {
+            /*if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] < $h1 || $decode['tanggalperiksa'] > $h7) {
                $errors[] = 'Tanggal periksa bisa dilakukan tanggal '.$_h1.' hingga tanggal '.$_h7;
-            }
+            }*/
             if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
                $errors[] = 'Format tanggal periksa tidak sesuai';
             }
@@ -1873,6 +1873,9 @@ class Site extends SiteModule
             }
             if (!empty($decode['nopeserta']) && !ctype_digit($decode['nopeserta']) ){
                $errors[] = 'Nomor kartu harus mengandung angka saja!!';
+            }
+            if (!empty($decode['nomorkartu']) && mb_strlen($decode['nomorkartu'], 'UTF-8') < 13){
+               $errors[] = 'Nomor kartu harus 13 digit';
             }
             if(!empty($errors)) {
                 foreach($errors as $error) {
