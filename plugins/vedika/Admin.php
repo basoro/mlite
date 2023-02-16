@@ -2234,9 +2234,9 @@ class Admin extends AdminModule
     }
     $this->assign['list'] = [];
     $no = 1;
-    $eklaim = $this->db('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
+    $eklaim = $this->core->mysql('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
     foreach ($eklaim as $value) {
-      $value['vedika'] = $this->db('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
+      $value['vedika'] = $this->core->mysql('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
       $value['no'] = $no++;
       $this->assign['list'][] = $value;
     }
