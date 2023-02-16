@@ -105,8 +105,10 @@ class Admin extends AdminModule
 
     $stats['totalPerbaikan'] = $stats['PerbaikanRalan'] + $stats['PerbaikanRanap'];
 
-    $stats['rencanaRalan'] = $stats['LengkapRalan'] + $stats['PengajuanRalan'];
-    $stats['rencanaRanap'] = $stats['LengkapRanap'] + $stats['PengajuanRanap'];
+    //$stats['rencanaRalan'] = $stats['LengkapRalan'] + $stats['PengajuanRalan'];
+    //$stats['rencanaRanap'] = $stats['LengkapRanap'] + $stats['PengajuanRanap'];
+    $stats['rencanaRalan'] = $stats['KlaimRalan'];
+    $stats['rencanaRanap'] = $stats['KlaimRanap'];
 
     $sub_modules = [
       ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'index']), 'icon' => 'code', 'desc' => 'Index Vedika'],
@@ -2391,8 +2393,11 @@ class Admin extends AdminModule
       ->oneArray();
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     if($reg_periksa['status_lanjut'] == 'Ranap') {
-      $reg_periksa['tgl_registrasi'] = $this->core->getKamarInapInfo('tgl_keluar', revertNoRawat($no_rawat));
-      $reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', revertNoRawat($no_rawat));
+      //$reg_periksa['tgl_registrasi'] = $this->core->getKamarInapInfo('tgl_keluar', revertNoRawat($no_rawat));
+      //$reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', revertNoRawat($no_rawat));
+      $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
+      $reg_periksa['tgl_registrasi'] = $_get_kamar_inap[0]['tgl_keluar'];
+      $reg_periksa['jam_reg'] = $_get_kamar_inap[0]['jam_keluar'];
     }
 
     $row_diagnosa = $this->core->mysql('diagnosa_pasien')
