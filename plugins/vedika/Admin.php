@@ -351,11 +351,16 @@ class Admin extends AdminModule
         $row['berkasPasien'] = url([ADMIN, 'vedika', 'berkaspasien', $this->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'vedika', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
         if ($type == 'ranap') {
-          $row['tgl_registrasi'] = $row['tgl_keluar'];
-          $row['jam_reg'] = $row['jam_keluar'];
-          $get_kamar = $this->core->mysql('kamar')->where('kd_kamar', $row['kd_kamar'])->oneArray();
+          $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', $row['no_rawat'])->limit(1)->desc('tgl_keluar')->toArray();
+          $row['tgl_registrasi'] = $_get_kamar_inap[0]['tgl_keluar'];
+          $row['jam_reg'] = $_get_kamar_inap[0]['jam_keluar'];
+          $get_kamar = $this->core->mysql('kamar')->where('kd_kamar', $_get_kamar_inap[0]['kd_kamar'])->oneArray();
           $get_bangsal = $this->core->mysql('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
           $row['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
+          $row['nm_dokter'] = $this->core->mysql('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
         }
         $this->assign['list'][] = $row;
       }
@@ -2229,9 +2234,9 @@ class Admin extends AdminModule
     }
     $this->assign['list'] = [];
     $no = 1;
-    $eklaim = $this->db('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
+    $eklaim = $this->core->mysql('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
     foreach ($eklaim as $value) {
-      $value['vedika'] = $this->db('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
+      $value['vedika'] = $this->core->mysql('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
       $value['no'] = $no++;
       $this->assign['list'][] = $value;
     }
