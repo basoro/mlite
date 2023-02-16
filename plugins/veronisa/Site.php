@@ -31,6 +31,8 @@ class Site extends SiteModule
         $this->route('vero/javascript', 'getJavascript');
         $this->route('vero/catatan/(:str)', 'getCatatan');
         $this->route('vero/pdf/(:str)', 'getPDF');
+        $this->route('vero/createpdf/(:str)', 'getCreatePDF');
+        $this->route('vero/downloadpdf/(:str)', 'getDownloadPDF');
         $this->route('vero/logout', function () {
             $this->logout();
         });
@@ -147,6 +149,7 @@ class Site extends SiteModule
               $row['catatanURL'] = url(['vero', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
               $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($row['no_rawat'])]);
+              $row['downloadURL'] = url(['vero', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
           }
       }
@@ -538,6 +541,398 @@ class Site extends SiteModule
       } else {
         redirect(url(['vero', '']));
       }
+    }
+
+    public function getCreatePDF($id)
+    {
+        $berkas_digital = $this->core->mysql('berkas_digital_perawatan')
+          ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
+          ->where('berkas_digital_perawatan.no_rawat', $this->revertNorawat($id))
+          ->asc('master_berkas_digital.nama')
+          ->toArray();
+
+        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
+          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
+          ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+          ->toArray();
+
+        $berkas_digital_pasien = array();
+        if (count($galleri_pasien)) {
+            foreach ($galleri_pasien as $galleri) {
+                $galleri['src'] = unserialize($galleri['src']);
+
+                if (!isset($galleri['src']['sm'])) {
+                    $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
+                }
+
+                $berkas_digital_pasien[] = $galleri;
+            }
+        }
+
+        $no_rawat = $this->revertNorawat($id);
+
+        /** Billing versi mlite */
+
+        $billing_mlite_settings = $this->settings('settings');
+        $this->tpl->set('billing_mlite_settings', $this->tpl->noParse_array(htmlspecialchars_array($billing_mlite_settings)));
+        $billing_mlite_reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        $billing_mlite_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $billing_mlite_reg_periksa['no_rkm_medis'])->oneArray();
+
+        $billing_result = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
+
+        $result_detail['poliklinik'] = $this->core->mysql('poliklinik')
+          ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
+          ->where('reg_periksa.no_rawat', $no_rawat)
+          ->oneArray();
+
+        $result_detail['rawat_jl_dr'] = $this->core->mysql('rawat_jl_dr')
+          ->select('jns_perawatan.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_jl_dr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_jl_dr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_dr' => 'SUM(rawat_jl_dr.biaya_rawat)'])
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_dr.kd_jenis_prw')
+          ->where('rawat_jl_dr.no_rawat', $no_rawat)
+          ->group('jns_perawatan.nm_perawatan')
+          ->toArray();
+
+        $total_rawat_jl_dr = 0;
+        foreach ($result_detail['rawat_jl_dr'] as $row) {
+          $total_rawat_jl_dr += $row['biaya_rawat'];
+        }
+
+        $result_detail['rawat_jl_pr'] = $this->core->mysql('rawat_jl_pr')
+          ->select('jns_perawatan.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_jl_pr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_jl_pr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_pr' => 'SUM(rawat_jl_pr.biaya_rawat)'])
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_pr.kd_jenis_prw')
+          ->where('rawat_jl_pr.no_rawat', $no_rawat)
+          ->group('jns_perawatan.nm_perawatan')
+          ->toArray();
+
+        $total_rawat_jl_pr = 0;
+        foreach ($result_detail['rawat_jl_pr'] as $row) {
+          $total_rawat_jl_pr += $row['biaya_rawat'];
+        }
+
+        $result_detail['rawat_jl_drpr'] = $this->core->mysql('rawat_jl_drpr')
+          ->select('jns_perawatan.nm_perawatan')
+          ->select(['biaya_rawat' => 'rawat_jl_drpr.biaya_rawat'])
+          ->select(['jml' => 'COUNT(rawat_jl_drpr.kd_jenis_prw)'])
+          ->select(['total_biaya_rawat_drpr' => 'SUM(rawat_jl_drpr.biaya_rawat)'])
+          ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw = rawat_jl_drpr.kd_jenis_prw')
+          ->where('rawat_jl_drpr.no_rawat', $no_rawat)
+          ->group('jns_perawatan.nm_perawatan')
+          ->toArray();
+
+        $total_rawat_jl_drpr = 0;
+        foreach ($result_detail['rawat_jl_drpr'] as $row) {
+          $total_rawat_jl_drpr += $row['biaya_rawat'];
+        }
+
+        $result_detail['detail_pemberian_obat'] = $this->core->mysql('detail_pemberian_obat')
+          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+          ->where('no_rawat', $no_rawat)
+          ->where('detail_pemberian_obat.status', 'Ralan')
+          ->toArray();
+
+        $total_detail_pemberian_obat = 0;
+        foreach ($result_detail['detail_pemberian_obat'] as $row) {
+          $total_detail_pemberian_obat += $row['total'];
+        }
+
+        $result_detail['periksa_lab'] = $this->core->mysql('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $no_rawat)
+          ->where('periksa_lab.status', 'Ralan')
+          ->toArray();
+
+        $total_periksa_lab = 0;
+        foreach ($result_detail['periksa_lab'] as $row) {
+          $total_periksa_lab += $row['biaya'];
+        }
+
+        $result_detail['periksa_radiologi'] = $this->core->mysql('periksa_radiologi')
+          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+          ->where('no_rawat', $no_rawat)
+          ->where('periksa_radiologi.status', 'Ralan')
+          ->toArray();
+
+        $total_periksa_radiologi = 0;
+        foreach ($result_detail['periksa_radiologi'] as $row) {
+          $total_periksa_radiologi += $row['biaya'];
+        }
+
+        $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
+          ->where('status', 'ralan')
+          ->where('no_rawat', $no_rawat)
+          ->toArray();
+
+        $total_tambahan_biaya = 0;
+        foreach ($result_detail['tambahan_biaya'] as $row) {
+          $total_tambahan_biaya += $row['besar_biaya'];
+        }
+
+        $jumlah_total_operasi = 0;
+        $operasis = $this->core->mysql('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $no_rawat)->where('operasi.status', 'Ralan')->toArray();
+        $result_detail['operasi'] = [];
+        foreach ($operasis as $operasi) {
+          $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
+          $jumlah_total_operasi += $operasi['jumlah'];
+          $result_detail['operasi'][] = $operasi;
+        }
+        $jumlah_total_obat_operasi = 0;
+        $obat_operasis = $this->core->mysql('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $no_rawat)->toArray();
+        $result_detail['obat_operasi'] = [];
+        foreach ($obat_operasis as $obat_operasi) {
+          $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+          $jumlah_total_obat_operasi += $obat_operasi['harga'];
+          $result_detail['obat_operasi'][] = $obat_operasi;
+        }
+
+        $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+        $im=$qr->createImage(4,4);
+        imagepng($im,BASE_DIR.'/tmp/qrcode.png');
+        imagedestroy($im);
+
+        $image = BASE_DIR."/tmp/qrcode.png";
+        $qrCode = "../../tmp/qrcode.png";
+
+        $this->tpl->set('billing_mlite_detail', $result_detail);
+        $this->tpl->set('billing_mlite', $billing_result);
+        $this->tpl->set('billing_mlite_qrcode', $qrCode);
+        $this->tpl->set('billing_mlite_kasir', $this->core->getUserInfo('fullname', null, true));
+        $this->tpl->set('billing_mlite_pasien', $billing_mlite_pasien);
+        $this->tpl->set('billing_mlite_veronisa', htmlspecialchars_array($this->settings('veronisa')));
+
+        /** End billing versi mlite **/
+
+
+        $print_sep = array();
+        if(!empty($this->_getSEPInfo('no_sep', $no_rawat))) {
+          $print_sep['bridging_sep'] = $this->core->mysql('bridging_sep')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
+          $print_sep['bpjs_prb'] = $this->core->mysql('bpjs_prb')->where('no_sep', $this->_getSEPInfo('no_sep', $no_rawat))->oneArray();
+          $batas_rujukan = $this->core->mysql('bridging_sep')->select('DATE_ADD(tglrujukan , INTERVAL 85 DAY) AS batas_rujukan')->where('no_sep', $id)->oneArray();
+          $print_sep['batas_rujukan'] = $batas_rujukan['batas_rujukan'];
+        }
+
+        $print_sep['logoURL'] = url(MODULES.'/pendaftaran/img/bpjslogo.png');
+        $this->tpl->set('print_sep', $print_sep);
+
+        /*
+        $resume_pasien = $this->core->mysql('resume_pasien')
+          ->join('dokter', 'dokter.kd_dokter = resume_pasien.kd_dokter')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+        $this->tpl->set('resume_pasien', $resume_pasien);
+        */
+
+        $pasien = $this->core->mysql('pasien')
+          ->join('kecamatan', 'kecamatan.kd_kec = pasien.kd_kec')
+          ->join('kabupaten', 'kabupaten.kd_kab = pasien.kd_kab')
+          ->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+          ->oneArray();
+        $reg_periksa = $this->core->mysql('reg_periksa')
+          ->join('dokter', 'dokter.kd_dokter = reg_periksa.kd_dokter')
+          ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
+          ->join('penjab', 'penjab.kd_pj = reg_periksa.kd_pj')
+          ->where('stts', '<>', 'Batal')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+        /*
+        $rujukan_internal = $this->core->mysql('rujukan_internal_poli')
+          ->join('poliklinik', 'poliklinik.kd_poli = rujukan_internal_poli.kd_poli')
+          ->join('dokter', 'dokter.kd_dokter = rujukan_internal_poli.kd_dokter')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+        */
+        $rows_dpjp_ranap = $this->core->mysql('dpjp_ranap')
+          ->join('dokter', 'dokter.kd_dokter = dpjp_ranap.kd_dokter')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $dpjp_i = 1;
+        $dpjp_ranap = [];
+        foreach ($rows_dpjp_ranap as $row) {
+          $row['nomor'] = $dpjp_i++;
+          $dpjp_ranap[] = $row;
+        }
+        $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')
+          ->join('penyakit', 'penyakit.kd_penyakit = diagnosa_pasien.kd_penyakit')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $prosedur_pasien = $this->core->mysql('prosedur_pasien')
+          ->join('icd9', 'icd9.kode = prosedur_pasien.kode')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $pemeriksaan_ralan = $this->core->mysql('pemeriksaan_ralan')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->asc('tgl_perawatan')
+          ->asc('jam_rawat')
+          ->toArray();
+        $pemeriksaan_ranap = $this->core->mysql('pemeriksaan_ranap')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->asc('tgl_perawatan')
+          ->asc('jam_rawat')
+          ->toArray();
+        $rawat_jl_dr = $this->core->mysql('rawat_jl_dr')
+          ->join('jns_perawatan', 'rawat_jl_dr.kd_jenis_prw=jns_perawatan.kd_jenis_prw')
+          ->join('dokter', 'rawat_jl_dr.kd_dokter=dokter.kd_dokter')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $rawat_jl_pr = $this->core->mysql('rawat_jl_pr')
+          ->join('jns_perawatan', 'rawat_jl_pr.kd_jenis_prw=jns_perawatan.kd_jenis_prw')
+          ->join('petugas', 'rawat_jl_pr.nip=petugas.nip')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $rawat_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+          ->join('jns_perawatan', 'rawat_jl_drpr.kd_jenis_prw=jns_perawatan.kd_jenis_prw')
+          ->join('dokter', 'rawat_jl_drpr.kd_dokter=dokter.kd_dokter')
+          ->join('petugas', 'rawat_jl_drpr.nip=petugas.nip')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $rawat_inap_dr = $this->core->mysql('rawat_inap_dr')
+          ->join('jns_perawatan_inap', 'rawat_inap_dr.kd_jenis_prw=jns_perawatan_inap.kd_jenis_prw')
+          ->join('dokter', 'rawat_inap_dr.kd_dokter=dokter.kd_dokter')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $rawat_inap_pr = $this->core->mysql('rawat_inap_pr')
+          ->join('jns_perawatan_inap', 'rawat_inap_pr.kd_jenis_prw=jns_perawatan_inap.kd_jenis_prw')
+          ->join('petugas', 'rawat_inap_pr.nip=petugas.nip')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $rawat_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+          ->join('jns_perawatan_inap', 'rawat_inap_drpr.kd_jenis_prw=jns_perawatan_inap.kd_jenis_prw')
+          ->join('dokter', 'rawat_inap_drpr.kd_dokter=dokter.kd_dokter')
+          ->join('petugas', 'rawat_inap_drpr.nip=petugas.nip')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $kamar_inap = $this->core->mysql('kamar_inap')
+          ->join('kamar', 'kamar_inap.kd_kamar=kamar.kd_kamar')
+          ->join('bangsal', 'kamar.kd_bangsal=bangsal.kd_bangsal')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $operasi = $this->core->mysql('operasi')
+          ->join('paket_operasi', 'operasi.kode_paket=paket_operasi.kode_paket')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $tindakan_radiologi = $this->core->mysql('periksa_radiologi')
+          ->join('jns_perawatan_radiologi', 'periksa_radiologi.kd_jenis_prw=jns_perawatan_radiologi.kd_jenis_prw')
+          ->join('dokter', 'periksa_radiologi.kd_dokter=dokter.kd_dokter')
+          ->join('petugas', 'periksa_radiologi.nip=petugas.nip')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $hasil_radiologi = $this->core->mysql('hasil_radiologi')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $pemeriksaan_laboratorium = [];
+        $rows_pemeriksaan_laboratorium = $this->core->mysql('periksa_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        foreach ($rows_pemeriksaan_laboratorium as $value) {
+          $value['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
+            ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
+            ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
+            ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->toArray();
+          $pemeriksaan_laboratorium[] = $value;
+        }
+        $pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+          ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        $riwayat_obat = [];
+        $list_riwayat = $this->core->mysql('reg_periksa')
+        ->where('no_rkm_medis',$this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
+        ->toArray();
+        foreach($list_riwayat as $list_riw){
+          $beri_obat = $this->core->mysql('detail_pemberian_obat')
+            ->join('databarang', 'detail_pemberian_obat.kode_brng=databarang.kode_brng')
+            ->where('no_rawat', $list_riw['no_rawat'])
+            ->toArray();
+            foreach($beri_obat as $row){
+              $row['resep_obat_ku'] = $this->core->mysql('aturan_pakai')
+              ->where('aturan_pakai.no_rawat',$row['no_rawat'])
+              ->where('aturan_pakai.kode_brng',$row['kode_brng'])
+              ->oneArray();
+              $riwayat_obat[] = $row;
+            }
+        }
+        $obat_operasi = $this->core->mysql('beri_obat_operasi')
+          ->join('obatbhp_ok', 'beri_obat_operasi.kd_obat=obatbhp_ok.kd_obat')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        /*
+        $resep_pulang = $this->core->mysql('resep_pulang')
+          ->join('databarang', 'resep_pulang.kode_brng=databarang.kode_brng')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->toArray();
+        */
+        $laporan_operasi = $this->core->mysql('laporan_operasi')
+          ->where('no_rawat', $this->revertNorawat($id))
+          ->oneArray();
+
+        $this->tpl->set('pasien', $pasien);
+        $this->tpl->set('reg_periksa', $reg_periksa);
+        $this->tpl->set('dpjp_ranap', $dpjp_ranap);
+        $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
+        $this->tpl->set('prosedur_pasien', $prosedur_pasien);
+        $this->tpl->set('pemeriksaan_ralan', $pemeriksaan_ralan);
+        $this->tpl->set('pemeriksaan_ranap', $pemeriksaan_ranap);
+        $this->tpl->set('rawat_jl_dr', $rawat_jl_dr);
+        $this->tpl->set('rawat_jl_pr', $rawat_jl_pr);
+        $this->tpl->set('rawat_jl_drpr', $rawat_jl_drpr);
+        $this->tpl->set('rawat_inap_dr', $rawat_inap_dr);
+        $this->tpl->set('rawat_inap_pr', $rawat_inap_pr);
+        $this->tpl->set('rawat_inap_drpr', $rawat_inap_drpr);
+        $this->tpl->set('kamar_inap', $kamar_inap);
+        $this->tpl->set('operasi', $operasi);
+        $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
+        $this->tpl->set('hasil_radiologi', $hasil_radiologi);
+        $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
+        $this->tpl->set('pemberian_obat', $pemberian_obat);
+        $this->tpl->set('obat_operasi', $obat_operasi);
+        $this->tpl->set('riwayat_obat', $riwayat_obat);
+
+        $this->tpl->set('berkas_digital', $berkas_digital);
+        $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
+        $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
+        $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
+        $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
+        echo $this->tpl->draw(MODULES.'/veronisa/view/pdf.html', true);
+        exit();
+    }
+
+    public function getDownloadPDF($id)
+    {
+      $apikey = 'c811af07-d551-40ec-8e87-9abbf03abe16';
+      $value = url().'/vero/createpdf/'.$id; // can aso be a url, starting with http..
+
+      $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $this->revertNorawat($id))->oneArray();
+
+      // Convert the HTML string to a PDF using those parameters.  Note if you have a very long HTML string use POST rather than get.  See example #5
+      $result = file_get_contents("http://url2pdf.basoro.id/?apikey=" . urlencode($apikey) . "&url=" . urlencode($value));
+
+      // Save to root folder in website
+      //file_put_contents('mypdf-1.pdf', $result);
+
+      // Output headers so that the file is downloaded rather than displayed
+      // Remember that header() must be called before any actual output is sent
+      header('Content-Description: File Transfer');
+      header('Content-Type: application/pdf');
+      header('Expires: 0');
+      header('Cache-Control: must-revalidate');
+      header('Pragma: public');
+      header('Content-Length: ' . strlen($result));
+
+      // Make the file a downloadable attachment - comment this out to show it directly inside the
+      // web browser.  Note that you can give the file any name you want, e.g. alias-name.pdf below:
+      header('Content-Disposition: attachment; filename=' . 'e-veronisa-'.$bridging_sep['tglsep'].'-'.$bridging_sep['no_sep'].'.pdf' );
+
+      // Stream PDF to user
+      echo $result;
+      exit();
     }
 
     private function _login($username, $password)
