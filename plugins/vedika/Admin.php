@@ -124,8 +124,8 @@ class Admin extends AdminModule
 
   public function getPurif(){
     $sub_modules = [
-      ['name' => 'Index', 'url' => url([ADMIN, 'vedika', 'sanding']), 'icon' => 'code', 'desc' => 'Index Vedika'],
-      ['name' => 'Upload File Excel', 'url' => url([ADMIN, 'vedika', 'uploadxl']), 'icon' => 'code', 'desc' => 'Index Lengkap Vedika'],
+      ['name' => 'Purifikasi Penyandingan', 'url' => url([ADMIN, 'vedika', 'sanding']), 'icon' => 'code', 'desc' => 'Purifikasi Penyandingan Vedika'],
+      ['name' => 'Upload File Excel', 'url' => url([ADMIN, 'vedika', 'uploadxl']), 'icon' => 'code', 'desc' => 'Upload File Excel Vedika'],
     ];
     return $this->draw('manage_purif.html', ['sub_modules' => $sub_modules]);
   }
@@ -2228,9 +2228,11 @@ class Admin extends AdminModule
         break;
     }
     $this->assign['list'] = [];
-    $eklaim = $this->core->mysql('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
+    $no = 1;
+    $eklaim = $this->db('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
     foreach ($eklaim as $value) {
-      $value['vedika'] = $this->core->mysql('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
+      $value['vedika'] = $this->db('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
+      $value['no'] = $no++;
       $this->assign['list'][] = $value;
     }
     $this->assign['ym'] = 'Bulan '.$bulan.' Tahun '.$tahun;

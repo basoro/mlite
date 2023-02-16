@@ -44,16 +44,18 @@
                     <table class="table table-responsive table-striped no-padding dataTables" width="100%">
                         <thead>
                             <tr>
+                                <th style="white-space: nowrap;">No</th>
                                 <th style="white-space: nowrap;">No SEP Eklaim</th>
                                 <th style="white-space: nowrap;">No Rekam Medis</th>
                                 <th style="white-space: nowrap;">Nama</th>
                                 <th style="white-space: nowrap;">No SEP Vedika</th>
-                                <th style="white-space: nowrap;">Status</th>
+                                <th style="white-space: nowrap;">Status Vedika</th>
                             </tr>
                         </thead>
                         <tbody>
                             {loop: $sanding.list}
-                            <tr>
+                            <tr {if: $value.vedika.nosep == ''} style="background-color: #ff6666;color: whitesmoke;" {/if}>
+                                <td>{$value.no}</td>
                                 <td>{$value.no_sep}</td>
                                 <td>{$value.no_rkm_medis}</td>
                                 <td>{$value.nama}</td>
