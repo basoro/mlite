@@ -97,7 +97,7 @@
                               {loop: $value.pegawai as $data}
                                 <i class="fa fa-user"></i> {$data.nama}
                               {/loop}
-                            </div>                          
+                            </div>
                           {/if}
                         </td>
       									<td>
@@ -131,10 +131,16 @@
                               <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
-                              {if: $tab == 'ralan'}
+                              {if: $value.status_lanjut == 'Ralan'}
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
-                              {else}
-                              <td width='120px'>Dokter</td><td>: {loop: $value.nm_dokter as $data}- {$data.nm_dokter}<br>{/loop}</td>
+                              {/if}
+                              {if: $value.status_lanjut == 'Ranap'}
+                              <td width='120px'>Dokter</td>
+                              <td>:
+                                {loop: $value.nm_dokter as $data}
+                                  - {$data.nm_dokter}<br>
+                                {/loop}
+                              </td>
                               {/if}
                             </tr>
                             <tr>
