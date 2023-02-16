@@ -60,7 +60,7 @@ return [
           `nama` varchar(100) NOT NULL,
           `no_sep` varchar(20) NOT NULL,
           `tarif` varchar(15) NOT NULL,
-          `yearMonth` varchar(10) NOT NULL,
+          `yearMonth` varchar(10) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
         $core->mysql()->pdo()->exec("ALTER TABLE `mlite_purif`
