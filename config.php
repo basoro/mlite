@@ -5,9 +5,9 @@ if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
 
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
-define('DBUSER', 'mlite_dev');
-define('DBPASS', 'mlite_dev');
-define('DBNAME', 'mlite_dev');
+define('DBUSER', 'mlite');
+define('DBPASS', 'mlite');
+define('DBNAME', 'mlite');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://mlite.loc/webapps');
