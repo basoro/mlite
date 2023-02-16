@@ -129,7 +129,7 @@ class Site extends SiteModule
             if($cek_rujukan > 0) {
               $h7 = strtotime('+90 days', strtotime($cek_rujukan['tglrujukan']));
             } else {
-              $h7 = strtotime('+7 days', strtotime(date('Y-m-d'))) ;
+              $h7 = strtotime('+8 days', strtotime(date('Y-m-d'))) ;
             }
             $h7 = date('Y-m-d', $h7);
             $_h7 = date('d-m-Y', strtotime($h7));
@@ -155,10 +155,10 @@ class Site extends SiteModule
             $cek_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->core->mysql('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
-            if($cek_referensi > 0) {
+            if($cek_referensi) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
             }
-            if($cek_referensi_noka > 0) {
+            if($cek_referensi_noka) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi_noka['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
             }
             if(empty($decode['nomorkartu'])) {
@@ -182,9 +182,9 @@ class Site extends SiteModule
             if(empty($decode['tanggalperiksa'])) {
                $errors[] = 'Anda belum memilih tanggal periksa';
             }
-            /*if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] < $h1 || $decode['tanggalperiksa'] > $h7) {
+            if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] < $h1 || $decode['tanggalperiksa'] > $h7) {
                $errors[] = 'Tanggal periksa bisa dilakukan tanggal '.$_h1.' hingga tanggal '.$_h7;
-            }*/
+            }
             if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
                $errors[] = 'Format tanggal periksa tidak sesuai';
             }
