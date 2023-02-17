@@ -2787,14 +2787,28 @@ class Admin extends AdminModule
       echo json_encode($msg, true);
     }
 
+    $cntr   = 0;
+    $imgTime = time() . $cntr++;
+    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_sep', $nosep)->oneArray();
+    $no_rawat = convertNorawat($bridging_sep['no_rawat']);
     // hasilnya adalah berupa binary string $pdf, untuk disimpan:
-    file_put_contents('tmp/'.$nosep.'.pdf',$pdf);
+    file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
     // atau untuk ditampilkan dengan perintah:
     header("Content-type:application/pdf");
     //header("Content-Disposition:attachment;filename=$nosep.pdf");
     ob_clean();
     flush();
     echo $pdf;
+
+    $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
+
+    $imagick = new \Imagick();
+    $imagick->readImage($image);
+    $imagick->writeImages($image.'.jpg', false);
+    $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $no_rawat, 'kode' => '030', 'lokasi_file' => 'berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
+
+    unlink($image);
+
     exit();
   }
 
@@ -3059,7 +3073,7 @@ class Admin extends AdminModule
                           "nomor_sep":"'.$nomor_sep.'"
                       }
                  }';
-      $msg= Request($request);
+      $msg= $this->Request($request);
       echo $msg['metadata']['message']."";
   }
 
