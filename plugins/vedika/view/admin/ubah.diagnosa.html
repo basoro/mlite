@@ -63,7 +63,7 @@
         <tr>
           <td>{$value.kd_penyakit}</td>
           <td>{$value.nm_penyakit}</td>
-          <td>{$value.prioritas}</td>
+          <td contenteditable="true" data-old_value="{$value.prioritas}" onBlur="savePrioritas(this,'prioritas','{$value.no_rawat}','{$value.kd_penyakit}','{$status_lanjut}')" onClick="highlightEdit(this);">{$value.prioritas}</td>
           <td><a href="" class="btn btn-xs btn-danger fa fa-trash hapus_diagnosa" data-no_rawat="{$value.no_rawat}" data-kd_penyakit="{$value.kd_penyakit}" data-prioritas="{$value.prioritas}"></a></td>
         </tr>
         {/loop}
@@ -176,4 +176,27 @@
       }
     });
   });
+</script>
+<script>
+  function highlightEdit(editableObj) {
+  	$(editableObj).css("background","#FFF");
+  }
+  function savePrioritas(editableObj,column,no_rawat,kd_penyakit,status) {
+  	// no change change made then return false
+  	if($(editableObj).attr('data-old_value') === editableObj.innerHTML)
+  	return false;
+  	// send ajax to update value
+  	$(editableObj).css("background","#FFF url({?=url()?}/assets/img/loader.gif) no-repeat right");
+  	$.ajax({
+  		url: "{?=url([ADMIN,'vedika','saveprioritas'])?}",
+  		cache: false,
+  		data:'column='+column+'&prioritas='+editableObj.innerHTML+'&no_rawat='+no_rawat+'&kd_penyakit='+kd_penyakit+'&status='+status,
+  		success: function(response)  {
+  			console.log(response);
+  			// set updated value as old value
+  			$(editableObj).attr('data-old_value',editableObj.innerHTML);
+  			$(editableObj).css("background","#FDFDFD");
+  		}
+     });
+  }
 </script>

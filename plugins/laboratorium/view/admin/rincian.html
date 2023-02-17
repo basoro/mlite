@@ -158,7 +158,7 @@
   	if($(editableObj).attr('data-old_value') === editableObj.innerHTML)
   	return false;
   	// send ajax to update value
-  	$(editableObj).css("background","#FFF url(loader.gif) no-repeat right");
+  	$(editableObj).css("background","#FFF url({?=url()?}/assets/img/loader.gif) no-repeat right");
   	$.ajax({
   		url: "{?=url([ADMIN,'laboratorium','saveketerangan'])?}",
   		cache: false,

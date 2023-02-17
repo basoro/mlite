@@ -360,6 +360,9 @@
       <button class="btn btn-danger hapusbridging">
           Hapus
       </button>
+      <button class="pull-right btn btn-primary kirimdatacenter">
+          Kirim ke DC
+      </button>
     </div>
     </div>
   </div>
@@ -502,6 +505,29 @@
         } ,function(data) {
           console.log(data);
           alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          //$('#inacbgsModal').modal('toggle');
+        });
+      }
+    });
+  });
+</script>
+
+<script type="text/javascript">
+  $("#bridginginacbgs").on("click", ".kirimdatacenter", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/kirimdatacenter?t=' + mlite.token;
+    var nosep = $('input:text[name=nosep]').val();
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin mengirim ke Data Center?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          nosep: nosep
+        } ,function(data) {
+          console.log(data);
+          alert('Data klaim nomor SEP ' + nosep + ' telah dikirim ke Data Center!!');
           //$('#inacbgsModal').modal('toggle');
         });
       }

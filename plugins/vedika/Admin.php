@@ -2765,6 +2765,55 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function postKirimDataCenter()
+  {
+    $nosep = $_POST['nosep'];
+    $this->KirimKlaimIndividualKeDC($nosep);
+    $cntr   = 0;
+    $imgTime = time() . $cntr++;
+    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_sep', $nosep)->oneArray();
+    $no_rawat = convertNorawat($bridging_sep['no_rawat']);
+    $berkas_digital_perawatan = $this->core->mysql('berkas_digital_perawatan')->where('no_rawat', $bridging_sep['no_rawat'])->where('kode', $this->settings->get('vedika.individual'))->oneArray();
+    if(!$berkas_digital_perawatan) {
+
+      $request ='{
+                      "metadata": {
+                          "method":"claim_print"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nosep.'"
+                      }
+                 }';
+
+      $msg = $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+          $pdf = base64_decode($msg['data']);
+          file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
+      } else {
+        echo json_encode($msg, true);
+      }
+
+      $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
+      $imagick = new \Imagick();
+      $imagick->readImage($image);
+      $imagick->writeImages($image.'.jpg', false);
+
+      $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $bridging_sep['no_rawat'], 'kode' => $this->settings->get('vedika.individual'), 'lokasi_file' => 'pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
+      if($query) {
+        $simpan_status = $this->core->mysql('mlite_vedika')
+          ->where('nosep', $nosep)
+          ->save([
+            'tanggal' => date('Y-m-d'),
+            'status' => 'Pengajuan'
+          ]);
+      }
+      unlink($image);
+
+    }
+
+    exit();
+  }
+
   public function getKlaimPDF($nosep)
   {
     $request ='{
@@ -2777,40 +2826,14 @@ class Admin extends AdminModule
                }';
 
     $msg = $this->Request($request);
-    //$get_claim_data = [];
     if($msg['metadata']['message']=="Ok"){
-        //$get_claim_data = $msg;
-        //echo json_encode($msg, true);
         // variable data adalah base64 dari file pdf
         $pdf = base64_decode($msg['data']);
-        $cntr   = 0;
-        $imgTime = time() . $cntr++;
-        $bridging_sep = $this->core->mysql('bridging_sep')->where('no_sep', $nosep)->oneArray();
-        $no_rawat = convertNorawat($bridging_sep['no_rawat']);
-        $berkas_digital_perawatan = $this->core->mysql('berkas_digital_perawatan')->where('no_rawat', $bridging_sep['no_rawat'])->where('kode', '030')->oneArray();
-
-        // hasilnya adalah berupa binary string $pdf, untuk disimpan:
-        file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
         // atau untuk ditampilkan dengan perintah:
         header("Content-type:application/pdf");
-        //header("Content-Disposition:attachment;filename=$nosep.pdf");
-
         ob_clean();
         flush();
-
         echo $pdf;
-
-        $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
-
-        $imagick = new \Imagick();
-        $imagick->readImage($image);
-        $imagick->writeImages($image.'.jpg', false);
-        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $no_rawat, 'kode' => '030', 'lokasi_file' => 'berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
-
-        unlink($image);
-
-    } else {
-      echo json_encode($msg, true);
     }
 
     exit();
@@ -3079,6 +3102,19 @@ class Admin extends AdminModule
                  }';
       $msg= $this->Request($request);
       echo $msg['metadata']['message']."";
+  }
+
+  public function anySavePrioritas()
+  {
+    $this->core->mysql('diagnosa_pasien')
+      ->where('no_rawat', $_REQUEST['no_rawat'])
+      ->where('kd_penyakit', $_REQUEST['kd_penyakit'])
+      ->where('status', $_REQUEST['status'])
+      ->save([
+        'prioritas' => $_REQUEST['prioritas']
+      ]);
+
+    exit();
   }
 
   public function getJavascript()
