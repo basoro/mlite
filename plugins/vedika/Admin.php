@@ -2400,6 +2400,13 @@ class Admin extends AdminModule
       $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'];
       $reg_periksa['jam_keluar'] = $_get_kamar_inap[0]['jam_keluar'];
       $reg_periksa['stts_pulang'] = $_get_kamar_inap[0]['stts_pulang'];
+      $get_kamar = $this->core->mysql('kamar')->where('kd_kamar', $_get_kamar_inap[0]['kd_kamar'])->oneArray();
+      $get_bangsal = $this->core->mysql('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
+      $reg_periksa['nm_poli'] = $get_bangsal['nm_bangsal'].'/'.$get_kamar['kd_kamar'];
+      $reg_periksa['nm_dokter'] = $this->core->mysql('dpjp_ranap')
+        ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+        ->where('no_rawat', revertNoRawat($no_rawat))
+        ->toArray();
     }
 
     $row_diagnosa = $this->core->mysql('diagnosa_pasien')

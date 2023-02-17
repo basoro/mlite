@@ -61,7 +61,16 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Dokter</label>
-        <input type="text" id="nama_dokter" name="nama_dokter" class="form-control" value="{$reg_periksa.nm_dokter}" readonly>
+        <select class="form-control" name="nama_dokter">
+          {if: $reg_periksa.status_lanjut == 'Ralan'}
+          <option value='{$reg_periksa.nm_dokter}'>{$reg_periksa.nm_dokter}</option>
+          {/if}
+          {if: $reg_periksa.status_lanjut == 'Ranap'}
+            {loop: $reg_periksa.nm_dokter as $data}
+            <option value='{$data.nm_dokter}'>{$data.nm_dokter}</option>
+            {/loop}
+          {/if}
+        </select>
       </div>
     </div>
     <div class="col col-md-3">
