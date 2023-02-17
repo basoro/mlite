@@ -2392,12 +2392,12 @@ class Admin extends AdminModule
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->oneArray();
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
+    $reg_periksa['stts_pulang'] = '';
     if($reg_periksa['status_lanjut'] == 'Ranap') {
-      //$reg_periksa['tgl_registrasi'] = $this->core->getKamarInapInfo('tgl_keluar', revertNoRawat($no_rawat));
-      //$reg_periksa['jam_reg'] = $this->core->getKamarInapInfo('jam_keluar', revertNoRawat($no_rawat));
       $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       $reg_periksa['tgl_registrasi'] = $_get_kamar_inap[0]['tgl_keluar'];
       $reg_periksa['jam_reg'] = $_get_kamar_inap[0]['jam_keluar'];
+      $reg_periksa['stts_pulang'] = $_get_kamar_inap[0]['stts_pulang'];
     }
 
     $row_diagnosa = $this->core->mysql('diagnosa_pasien')
@@ -2761,7 +2761,6 @@ class Admin extends AdminModule
         $radiologi,$laboratorium,$pelayanan_darah,$rehabilitasi,$kamar,$rawat_intensif,$obat,
         $obat_kronis,$obat_kemoterapi,$alkes,$bmhp,$sewa_alat);
 
-    //$this->CekTarif(SEP,NO_PESERTA,'2018-01-01','2018-01-01',$jenis_rawat,$kelas_rawat,'','','0','0','0','0','','0','','0','1',$diagnosa,$prosedur,'0','Dokter Uji Coba',TIPE_RS,'3','JKN','#',NIK_KODER,'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0');
     exit();
   }
 

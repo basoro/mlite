@@ -194,6 +194,36 @@
           <div class="form-group">
             <label for="poli">Status Pulang</label>
             <select name="discharge_status" class="form-control">
+              {if: $reg_periksa.stts_pulang == 'Sembuh'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Sehat'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Rujuk'}
+              <option value='2'>Dirujuk</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'APS'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Pulang Paksa'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Meninggal'}
+              <option value='4'>Meninggal</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == '+'}
+              <option value='4'>Meninggal</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Atas Persetujuan Dokter'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Atas Permintaan Sendiri'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Lain-lain'}
+              <option value='5'>Lain-lain</option>
+              {/if}
               <option value='1'>Atas persetujuan dokter</option>
               <option value='2'>Dirujuk</option>
               <option value='3'>Atas permintaan sendiri</option>
@@ -384,9 +414,9 @@
         </tr>
       </thead>
       <tbody>
-        {if: $get_claim_data}
+        {loop: $get_claim_data}
         <tr>
-          <td>{$get_claim_data.response.data.nama_pasien}</td>
+          <td>{$value.get_claim_data.response.data.nama_pasien}</td>
           <td>{$get_claim_data.response.data.nomor_kartu}</td>
           <td><a href="{?=url([ADMIN,'vedika','klaimpdf','{$get_claim_data.response.data.nomor_sep}'])?}" target="_blank">{$get_claim_data.response.data.nomor_sep}</a></td>
           <td>{$get_claim_data.response.data.nama_dokter}</td>
@@ -397,7 +427,7 @@
           <td>{$get_claim_data.response.data.grouper.response.cbg.tariff}</td>
           <td>{?=$get_claim_data.response.data.tarif_rs.prosedur_non_bedah + $get_claim_data.response.data.tarif_rs.prosedur_bedah + $get_claim_data.response.data.tarif_rs.konsultasi + $get_claim_data.response.data.tarif_rs.tenaga_ahli + $get_claim_data.response.data.tarif_rs.keperawatan + $get_claim_data.response.data.tarif_rs.penunjang + $get_claim_data.response.data.tarif_rs.radiologi + $get_claim_data.response.data.tarif_rs.laboratorium + $get_claim_data.response.data.tarif_rs.pelayanan_darah + $get_claim_data.response.data.tarif_rs.rehabilitasi + $get_claim_data.response.data.tarif_rs.kamar + $get_claim_data.response.data.tarif_rs.rawat_intensif + $get_claim_data.response.data.tarif_rs.obat + $get_claim_data.response.data.tarif_rs.obat_kronis + $get_claim_data.response.data.tarif_rs.obat_kemoterapi + $get_claim_data.response.data.tarif_rs.alkes + $get_claim_data.response.data.tarif_rs.bmhp + $get_claim_data.response.data.tarif_rs.sewa_alat?}</td>
         </tr>
-        {/if}
+        {/loop}
       </tbody>
     </table>
   </div>
