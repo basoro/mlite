@@ -2777,37 +2777,41 @@ class Admin extends AdminModule
                }';
 
     $msg = $this->Request($request);
-    $get_claim_data = [];
+    //$get_claim_data = [];
     if($msg['metadata']['message']=="Ok"){
-         //$get_claim_data = $msg;
-        echo json_encode($msg, true);
+        //$get_claim_data = $msg;
+        //echo json_encode($msg, true);
         // variable data adalah base64 dari file pdf
         $pdf = base64_decode($msg['data']);
+        $cntr   = 0;
+        $imgTime = time() . $cntr++;
+        $bridging_sep = $this->core->mysql('bridging_sep')->where('no_sep', $nosep)->oneArray();
+        $no_rawat = convertNorawat($bridging_sep['no_rawat']);
+        $berkas_digital_perawatan = $this->core->mysql('berkas_digital_perawatan')->where('no_rawat', $bridging_sep['no_rawat'])->where('kode', '030')->oneArray();
+
+        // hasilnya adalah berupa binary string $pdf, untuk disimpan:
+        file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
+        // atau untuk ditampilkan dengan perintah:
+        header("Content-type:application/pdf");
+        //header("Content-Disposition:attachment;filename=$nosep.pdf");
+
+        ob_clean();
+        flush();
+
+        echo $pdf;
+
+        $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
+
+        $imagick = new \Imagick();
+        $imagick->readImage($image);
+        $imagick->writeImages($image.'.jpg', false);
+        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $no_rawat, 'kode' => '030', 'lokasi_file' => 'berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
+
+        unlink($image);
+
     } else {
       echo json_encode($msg, true);
     }
-
-    $cntr   = 0;
-    $imgTime = time() . $cntr++;
-    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_sep', $nosep)->oneArray();
-    $no_rawat = convertNorawat($bridging_sep['no_rawat']);
-    // hasilnya adalah berupa binary string $pdf, untuk disimpan:
-    file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
-    // atau untuk ditampilkan dengan perintah:
-    header("Content-type:application/pdf");
-    //header("Content-Disposition:attachment;filename=$nosep.pdf");
-    ob_clean();
-    flush();
-    echo $pdf;
-
-    $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
-
-    $imagick = new \Imagick();
-    $imagick->readImage($image);
-    $imagick->writeImages($image.'.jpg', false);
-    $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $no_rawat, 'kode' => '030', 'lokasi_file' => 'berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
-
-    unlink($image);
 
     exit();
   }
