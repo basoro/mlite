@@ -2596,21 +2596,21 @@ class Admin extends AdminModule
     }
 
     /* Biaya Tenaga Ahli */
-    $biaya_tenagah_ahli_dr = $this->core->mysql('rawat_inap_dr')
+    $biaya_tenaga_ahli_dr = $this->core->mysql('rawat_inap_dr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
       ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
       ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
 
-    $biaya_tenagah_ahli_pr = $this->core->mysql('rawat_inap_pr')
+    $biaya_tenaga_ahli_pr = $this->core->mysql('rawat_inap_pr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
       ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
       ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
 
-    $biaya_tenagah_ahli_drpr = $this->core->mysql('rawat_inap_drpr')
+    $biaya_tenaga_ahli_drpr = $this->core->mysql('rawat_inap_drpr')
       ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
       ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
       ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_tenaga_ahli'))
@@ -2619,27 +2619,238 @@ class Admin extends AdminModule
     /* End Biaya Tenaga Ahli */
 
     $total_biaya_tenaga_ahli = 0;
-    foreach (array_merge($biaya_tenagah_ahli_dr, $biaya_tenagah_ahli_pr, $biaya_tenagah_ahli_drpr) as $row) {
+    foreach (array_merge($biaya_tenaga_ahli_dr, $biaya_tenaga_ahli_pr, $biaya_tenaga_ahli_drpr) as $row) {
       $total_biaya_tenaga_ahli += $row['biaya_rawat'];
     }
 
+    /* Biaya Keperawatan */
+    $biaya_keperawatan_jl_pr = $this->core->mysql('rawat_jl_pr')
+      ->select(['biaya_rawat' => 'SUM(tarif_tindakanpr)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_keperawatan_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+      ->select(['biaya_rawat' => 'SUM(tarif_tindakanpr)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_keperawatan_inap_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(tarif_tindakanpr)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_keperawatan_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(tarif_tindakanpr)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Keperawatan */
 
     $total_biaya_keperawatan = 0;
+    foreach (array_merge($biaya_keperawatan_jl_pr, $biaya_keperawatan_jl_drpr, $biaya_keperawatan_inap_pr, $biaya_keperawatan_inap_drpr) as $row) {
+      $total_biaya_keperawatan += $row['biaya_rawat'];
+    }
+
+    /* Biaya Penunjang */
+    $biaya_penunjang_jl_dr = $this->core->mysql('rawat_jl_dr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_penunjang_jl_pr = $this->core->mysql('rawat_jl_pr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_penunjang_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_penunjang_inap_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_penunjang_inap_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_penunjang_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Penunjang */
+
     $total_biaya_penunjang = 0;
+    foreach (array_merge($biaya_penunjang_jl_dr, $biaya_penunjang_jl_pr, $biaya_penunjang_jl_drpr, $biaya_penunjang_inap_dr, $biaya_penunjang_inap_pr, $biaya_penunjang_inap_drpr) as $row) {
+      $total_biaya_penunjang += $row['biaya_rawat'];
+    }
+
     $total_biaya_radiologi = 0;
     $total_biaya_laboratorium = 0;
     $total_biaya_pelayanan_darah = 0;
+
+    /* Biaya Rehabilitasi */
+    $biaya_rehabilitasi_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rehabilitasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_rehabilitasi_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rehabilitasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_rehabilitasi_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rehabilitasi'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Rehabilitasi */
+
     $total_biaya_rehabilitasi = 0;
-    //$total_biaya_kamar = 0;
-    $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    $total_biaya_kamar = $piutang_pasien['totalpiutang'];
+    foreach (array_merge($biaya_rehabilitasi_dr, $biaya_rehabilitasi_pr, $biaya_rehabilitasi_drpr) as $row) {
+      $total_biaya_rehabilitasi += $row['biaya_rawat'];
+    }
+
+    $total_biaya_kamar = 0;
+    if($reg_periksa['status_lanjut'] == 'Ralan') {
+      $total_biaya_kamar = $reg_periksa['registrasi'];
+    }
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
+      $__get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
+      foreach ($__get_kamar_inap as $row) {
+        $total_biaya_kamar += $row['ttl_biaya'];
+      }
+
+    }
+
+    /* Biaya Rawat Intensif */
+    $biaya_rawat_intensif_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_dr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rawat_intensif'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_rawat_intensif_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_pr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rawat_intensif'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+
+    $biaya_rawat_intensif_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(biaya_rawat)'])
+      ->join('jns_perawatan', 'jns_perawatan.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
+      ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_rawat_intensif'))
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Rawat Intensif */
+
     $total_biaya_rawat_intensif = 0;
+    foreach (array_merge($biaya_rawat_intensif_dr, $biaya_rawat_intensif_pr, $biaya_rawat_intensif_drpr) as $row) {
+      $total_biaya_rawat_intensif += $row['biaya_rawat'];
+    }
+
     $total_biaya_obat = 0;
     $total_biaya_obat_kronis = 0;
     $total_biaya_obat_kemoterapi = 0;
+
+    /* Biaya Alkes */
+    $biaya_alkes_jl_dr = $this->core->mysql('rawat_jl_dr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_alkes_jl_pr = $this->core->mysql('rawat_jl_pr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_alkes_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_alkes_inap_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_alkes_inap_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_alkes_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(material)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya Alkes */
+
     $total_biaya_alkes = 0;
+    foreach (array_merge($biaya_alkes_jl_dr, $biaya_alkes_jl_pr, $biaya_alkes_jl_drpr, $biaya_alkes_inap_dr, $biaya_alkes_inap_pr, $biaya_alkes_inap_drpr) as $row) {
+      $total_biaya_alkes += $row['biaya_rawat'];
+    }
+
+    /* Biaya BMHP */
+    $biaya_bmhp_jl_dr = $this->core->mysql('rawat_jl_dr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_bmhp_jl_pr = $this->core->mysql('rawat_jl_pr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_bmhp_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_bmhp_inap_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_bmhp_inap_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_bmhp_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(bhp)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya BMHP */
+
     $total_biaya_bmhp = 0;
+    foreach (array_merge($biaya_bmhp_jl_dr, $biaya_bmhp_jl_pr, $biaya_bmhp_jl_drpr, $biaya_bmhp_inap_dr, $biaya_bmhp_inap_pr, $biaya_bmhp_inap_drpr) as $row) {
+      $total_biaya_bmhp += $row['biaya_rawat'];
+    }
+
+    /* Biaya KSO */
+    $biaya_sewa_alat_jl_dr = $this->core->mysql('rawat_jl_dr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_sewa_alat_jl_pr = $this->core->mysql('rawat_jl_pr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_sewa_alat_jl_drpr = $this->core->mysql('rawat_jl_drpr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_sewa_alat_inap_dr = $this->core->mysql('rawat_inap_dr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_sewa_alat_inap_pr = $this->core->mysql('rawat_inap_pr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    $biaya_sewa_alat_inap_drpr = $this->core->mysql('rawat_inap_drpr')
+      ->select(['biaya_rawat' => 'SUM(kso)'])
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->toArray();
+    /* End Biaya KSO */
+
     $total_biaya_sewa_alat = 0;
+    foreach (array_merge($biaya_sewa_alat_jl_dr, $biaya_sewa_alat_jl_pr, $biaya_sewa_alat_jl_drpr, $biaya_sewa_alat_inap_dr, $biaya_sewa_alat_inap_pr, $biaya_sewa_alat_inap_drpr) as $row) {
+      $total_biaya_sewa_alat += $row['biaya_rawat'];
+    }
+
     $total_biaya_tarif_poli_eks = 0;
     $total_biaya_add_payment_pct = 0;
 
