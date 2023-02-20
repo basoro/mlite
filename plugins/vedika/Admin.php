@@ -2394,11 +2394,9 @@ class Admin extends AdminModule
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     $reg_periksa['stts_pulang'] = '';
     $reg_periksa['tgl_keluar'] = $reg_periksa['tgl_registrasi'];
-    $reg_periksa['jam_keluar'] = '00:00:00';
-    if($reg_periksa['status_lanjut'] == 'Ranap') {
+    if($reg_periksa['status_lanjut'] == 'Ranap') { 
       $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
-      $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'];
-      $reg_periksa['jam_keluar'] = $_get_kamar_inap[0]['jam_keluar'];
+      $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'].' '.$_get_kamar_inap[0]['jam_keluar'];
       $reg_periksa['stts_pulang'] = $_get_kamar_inap[0]['stts_pulang'];
       $get_kamar = $this->core->mysql('kamar')->where('kd_kamar', $_get_kamar_inap[0]['kd_kamar'])->oneArray();
       $get_bangsal = $this->core->mysql('bangsal')->where('kd_bangsal', $get_kamar['kd_bangsal'])->oneArray();
