@@ -2394,7 +2394,7 @@ class Admin extends AdminModule
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     $reg_periksa['stts_pulang'] = '';
     $reg_periksa['tgl_keluar'] = $reg_periksa['tgl_registrasi'];
-    if($reg_periksa['status_lanjut'] == 'Ranap') { 
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
       $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'].' '.$_get_kamar_inap[0]['jam_keluar'];
       $reg_periksa['stts_pulang'] = $_get_kamar_inap[0]['stts_pulang'];
@@ -2849,8 +2849,23 @@ class Admin extends AdminModule
       $total_biaya_sewa_alat += $row['biaya_rawat'];
     }
 
+    /* Yang belum
+    ======================
+    radiologi, --> radiologi
+    laboratorium, --> laboratorium
+    pelayanan_darah, --> UTD atau by kategori pelayanan darah
+
+    obat, --> resep dokter by kategori obat
+    obat_kronis, --> resep dokter by kategori obat
+    obat_kemoterapi, --> resep dokter by kategori obat
+    ======================
+    */
+
     $total_biaya_tarif_poli_eks = 0;
     $total_biaya_add_payment_pct = 0;
+
+    $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $total_biaya_kamar = $piutang_pasien['totalpiutang'] - $total_biaya_non_bedah - $total_biaya_bedah - $total_biaya_konsultasi - $total_biaya_keperawatan - $total_biaya_penunjang - $total_biaya_radiologi - $total_biaya_laboratorium - $total_biaya_pelayanan_darah - $total_biaya_rehabilitasi - $total_biaya_rawat_intensif - $total_biaya_obat - $total_biaya_obat_kronis - $total_biaya_obat_kemoterapi - $total_biaya_alkes - $total_biaya_bmhp - $total_biaya_sewa_alat - $total_biaya_tarif_poli_eks - $total_biaya_add_payment_pct;
 
     $request ='{
                      "metadata": {
