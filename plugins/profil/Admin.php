@@ -213,6 +213,7 @@ class Admin extends AdminModule
             }
         }
 
+        /*
         $year = date('Y');
         $month = date('m');
         $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -220,6 +221,7 @@ class Admin extends AdminModule
         for ($i = 1; $i < $day + 1; $i++) {
             $i;
         }
+        */
 
         $this->assign['getStatus'] = isset($_GET['status']);
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
