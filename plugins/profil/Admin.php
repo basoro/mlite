@@ -41,8 +41,12 @@ class Admin extends AdminModule
         $presensi = [];
         $absensi = [];
         if($cek_profil) {
-          $presensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
-          $absensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          $presensi = [];
+          $absensi = [];
+          if($this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->oneArray()){
+            $presensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+            $absensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          }
         }
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
         if (!empty($profil['photo'])) {
