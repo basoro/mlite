@@ -126,10 +126,9 @@ class Site extends SiteModule
             $h1 = strtotime('+1 days' , strtotime(date('Y-m-d'))) ;
             $h1 = date('Y-m-d', $h1);
             $_h1 = date('d-m-Y', strtotime($h1));
-            if($cek_rujukan > 0) {
+            $h7 = strtotime('+8 days', strtotime(date('Y-m-d'))) ;
+            if(!empty($cek_rujukan['tglrujukan'])) {
               $h7 = strtotime('+90 days', strtotime($cek_rujukan['tglrujukan']));
-            } else {
-              $h7 = strtotime('+8 days', strtotime(date('Y-m-d'))) ;
             }
             $h7 = date('Y-m-d', $h7);
             $_h7 = date('d-m-Y', strtotime($h7));
