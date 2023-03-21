@@ -18,6 +18,28 @@ class Site extends SiteModule
 
     public function routes()
     {
+
+        $this->route('jknmobile', 'getIndex');
+        $this->route('jknmobile/token', 'getToken');
+        $this->route('jknmobile/antrian/ambil', 'getAmbilAntrian');
+        $this->route('jknmobile/antrian/status', 'getStatusAntrian');
+        $this->route('jknmobile/antrian/ambilfarmasi', 'getAmbilAntrianFarmasi');
+        $this->route('jknmobile/antrian/statusfarmasi', 'getStatusAntrianFarmasi');
+        $this->route('jknmobile/antrian/sisa', 'getSisaAntrian');
+        $this->route('jknmobile/antrian/batal', 'getBatalAntrian');
+        $this->route('jknmobile/pasien/baru', 'getPasienBaru');
+        $this->route('jknmobile/pasien/checkin', 'getPasienCheckIn');
+        $this->route('jknmobile/operasi/rs', 'getOperasiRS');
+        $this->route('jknmobile/operasi/pasien', 'getOperasiPasien');
+        $this->route('jknmobile/antrian/add', '_getAntreanAdd');
+        $this->route('jknmobile/antrian/add/(:str)', '_getAntreanAdd');
+        $this->route('jknmobile/antrian/updatewaktu', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
+        $this->route('jknmobile/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
+        $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
+        $this->route('jknmobile/jadwal/(:str)/(:str)', '_getJadwal');
+
         $this->route('jknmobile_v2', 'getIndex');
         $this->route('jknmobile_v2/token', 'getToken');
         $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
