@@ -25,7 +25,7 @@ return [
                 `access` text NOT NULL DEFAULT 'dashboard'
             )");
 
-            $core->db()->pdo()->exec("CREATE TABLE `mlite_login_attempts` (
+            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_login_attempts` (
                 `ip` TEXT NOT NULL,
                 `attempts` INTEGER NOT NULL,
                 `expires` INTEGER NOT NULL DEFAULT 0
