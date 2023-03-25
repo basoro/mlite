@@ -175,7 +175,7 @@ function addTokenVeronisa($url)
     return $url;
 }
 
-function url($data = null)
+function url($data = '')
 {
     if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
         return $data;
@@ -200,7 +200,7 @@ function url($data = null)
     if (is_array($data)) {
         $url = $url.'/'.implode('/', $data);
     } elseif ($data) {
-        $data = str_replace(BASE_DIR.'/', null, $data);
+        $data = str_replace(BASE_DIR.'/', '', $data);
         $url = $url.'/'.trim($data, '/');
     }
 
@@ -239,7 +239,7 @@ function domain($with_protocol = true, $cut_www = false)
 
 
 function mlite_dir() {
-    return dirname(str_replace(ADMIN, null, $_SERVER['SCRIPT_NAME']));
+    return dirname(str_replace(ADMIN, '', $_SERVER['SCRIPT_NAME']));
 }
 
 function isset_or(&$var, $alternate = null)
