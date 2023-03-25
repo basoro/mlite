@@ -11,7 +11,7 @@ class Templates
 
     private $tags = [
                 '{\*(.*?)\*}' => 'self::comment',
-                '{noparse}(.*?){\/noparse}' => 'self::noParse',
+                '{noparse}(.*?){\/noparse}' => self::class . '::noParse',
                 '{if: ([^}]*)}' => '<?php if ($1): ?>',
                 '{else}' => '<?php else: ?>',
                 '{elseif: ([^}]*)}' => '<?php elseif ($1): ?>',
