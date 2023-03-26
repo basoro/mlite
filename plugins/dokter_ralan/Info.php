@@ -138,21 +138,6 @@ return [
         ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `pemeriksaan_catatan` (
-        `no_rawat` varchar(17) CHARACTER SET latin1 NOT NULL,
-        `waktu_catatan` datetime NOT NULL,
-        `gambar_catatan` varchar(600) CHARACTER SET latin1 NOT NULL,
-        `nip` varchar(20) CHARACTER SET latin1 NOT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;");
-
-      $core->mysql()->pdo()->exec("ALTER TABLE `pemeriksaan_catatan`
-        ADD PRIMARY KEY (`no_rawat`,`gambar_catatan`) USING BTREE,
-        ADD KEY `nip` (`nip`);");
-
-      $core->mysql()->pdo()->exec("ALTER TABLE `pemeriksaan_catatan`
-        ADD CONSTRAINT `pemeriksaan_catatan_ibfk` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `pemeriksaan_catatan_ibfk2` FOREIGN KEY (`nip`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;");
-
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `resume_pasien` (
         `no_rawat` varchar(17) NOT NULL,
         `kd_dokter` varchar(20) NOT NULL,
@@ -189,11 +174,6 @@ return [
       $core->mysql()->pdo()->exec("ALTER TABLE `resume_pasien`
         ADD CONSTRAINT `resume_pasien_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `resume_pasien_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
-
-
-      if (!is_dir(UPLOADS."/pemeriksaan_catatan")) {
-          mkdir(UPLOADS."/pemeriksaan_catatan", 0777);
-      }
 
     },
     'uninstall'     =>  function() use($core)

@@ -518,36 +518,6 @@
         </td>
       </tr>
       {/if}
-      {if: !empty($value.pemeriksaan_catatan)}
-      <tr class="isi">
-        <td valign="top" width="20%">Gambar Catatan Pemeriksaan</td>
-        <td valign="top" width="1%" align="center">:</td>
-        <td valign="top" width="79%">
-          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-            <tr align="center">
-              <td>
-                <div class="row">
-                    <div class="gallery">
-                    {loop: $value.pemeriksaan_catatan as $data}
-                        <div class="col-sm-6 col-md-6">
-                          <div class="thumbnail" style="margin-bottom: 0; border-radius: 5px 5px 0 0;">
-                            <a href="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" target="_blank" class="images">
-                                <img src="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" class="img-responsive">
-                            </a>
-                          </div>
-                          <div class="caption" style=" background-color: #EEE; border-radius: 0 0 5px 5px;">
-                            {$data.nama} ( {$data.waktu_catatan} )
-                          </div>
-                        </div>
-                    {/loop}
-                    </div>
-                </div>
-              </td>
-            </tr>
-          </table>
-        </td>
-      </tr>
-      {/if}
       {if: $value.periksa_lab}
       <tr class="isi">
         <td valign="top" width="20%">Laboratorium </td>
