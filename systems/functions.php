@@ -458,7 +458,7 @@ function bulan($bln) {
 }
 
 function penyebut($nilai) {
-	$nilai = abs($nilai);
+	$nilai = intval($nilai);
 	$huruf = array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas');
 	$temp = "";
 	if ($nilai < 12) {
