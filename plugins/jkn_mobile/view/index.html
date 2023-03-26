@@ -10,17 +10,17 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-        <link rel="stylesheet" href="{?= url(MODULES.'/jkn_mobile_v2/css/hightlightjs-dark.css')?}">
+        <link rel="stylesheet" href="{?= url(MODULES.'/jkn_mobile/css/hightlightjs-dark.css')?}">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
         <link href="https://fonts.googleapis.com/css?family=Roboto:300,300i,500|Source+Code+Pro:300" rel="stylesheet">
-        <link rel="stylesheet" href="{?= url(MODULES.'/jkn_mobile_v2/css/style.css')?}" media="all">
+        <link rel="stylesheet" href="{?= url(MODULES.'/jkn_mobile/css/style.css')?}" media="all">
         <script>hljs.initHighlightingOnLoad();</script>
     </head>
 
     <body>
         <div class="left-menu">
             <div class="content-logo">
-                <img alt="mLITE JKN Mobile" title="CATALOG mLITE JKN Mobile" src="{?= url(MODULES.'/jkn_mobile_v2/img/logo.png')?}" height="32" />
+                <img alt="mLITE JKN Mobile" title="CATALOG mLITE JKN Mobile" src="{?= url(MODULES.'/jkn_mobile/img/logo.png')?}" height="32" />
                 <span>mLITE JKN API v2</span>
             </div>
             <div class="content-menu">
@@ -62,10 +62,10 @@
                         <a>Kode Pesan</a>
                     </li>
                     <li>
-                        <a href="{?=url('jknmobile_v2/display/antrian')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
+                        <a href="{?=url('jknmobile/display/antrian')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
                     </li>
                     <li>
-                        <a href="{?=url('jknmobile_v2/display/operasi')?}" target="_blank" style="text-decoration:none;">Display Jadwal Operasi</a>
+                        <a href="{?=url('jknmobile/display/operasi')?}" target="_blank" style="text-decoration:none;">Display Jadwal Operasi</a>
                     </li>
                 </ul>
             </div>
@@ -82,7 +82,7 @@
                     <pre>
 API Endpoint
 
-{?= url('jknmobile_v2') ?}
+{?= url('jknmobile') ?}
                 </pre>
                     <p>
                         Untuk menggunakan API ini, dibutuhkan <code class="higlighted">username</code> dan <code class="higlighted">password</code> untuk generate API key dalam bentuk <code class="higlighted">token</code>. Silahkan hubungi kami untuk mendapatkan username dan password.
@@ -92,7 +92,7 @@ API Endpoint
                     <h2 id="get-token">get token</h2>
                     <p>
                         Untuk mendapatkan token, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/token') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/token') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -114,7 +114,7 @@ API Endpoint
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/token') ?}</td>
+                                <td>{?= url('jknmobile/token') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -219,7 +219,7 @@ Response :
                     <h2 id="get-ambilantrian">ambil antrian</h2>
                     <p>
                         Untuk mendapatkan antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/antrian/ambil') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/antrian/ambil') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -241,7 +241,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/antrian') ?}</td>
+                                <td>{?= url('jknmobile/antrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -416,7 +416,7 @@ Response :
                     <h2 id="get-statusantrian">status antrian</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/atrian/status') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/atrian/status') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -438,7 +438,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -577,7 +577,7 @@ Response :
                     <h2 id="get-sisaantrian">sisa antrian</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/antrian/sisa') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/antrian/sisa') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -599,7 +599,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -738,7 +738,7 @@ Response :
                     <h2 id="get-batalantrian">batal antrian</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/antrian/batal') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/antrian/batal') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -760,7 +760,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -899,7 +899,7 @@ Response :
                     <h2 id="get-pasiencheckin">pasien checkin</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/antrian/checkin') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/antrian/checkin') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -921,7 +921,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -1060,7 +1060,7 @@ Response :
                     <h2 id="get-pasienbaru">pasien baru</h2>
                     <p>
                         Untuk mendapatkan rekap antrian, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/pasien/baru') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/pasien/baru') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -1082,7 +1082,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/rekapantrian') ?}</td>
+                                <td>{?= url('jknmobile/rekapantrian') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -1221,7 +1221,7 @@ Response :
                     <h2 id="get-operasi">get booking operasi</h2>
                     <p>
                         Untuk mendapatkan data booking operasi individual, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/operasi/rs') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/operasi/rs') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -1243,7 +1243,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/operasi') ?}</td>
+                                <td>{?= url('jknmobile/operasi') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -1378,7 +1378,7 @@ Response :
                     <h2 id="get-jadwaloperasi">get daftar operasi</h2>
                     <p>
                         Untuk mendapatkan list jadwal operasi, Anda perlu melakukan panggilan POST ke url berikut: :<br>
-                        <code class="higlighted">{?= url('jknmobile_v2/operasi/pasien') ?}</code>
+                        <code class="higlighted">{?= url('jknmobile/operasi/pasien') ?}</code>
                     </p>
                     <br/>
                     <h4>CATALOG</h4>
@@ -1400,7 +1400,7 @@ Response :
                             </tr>
                             <tr>
                                 <td>URL</td>
-                                <td>{?= url('jknmobile_v2/jadwaloperasi') ?}</td>
+                                <td>{?= url('jknmobile/jadwaloperasi') ?}</td>
                             </tr>
                             <tr>
                                 <td>Contoh</td>
@@ -1615,6 +1615,6 @@ Response :
             <div class="content-code"></div>
         </div>
         <script src="{?= url('/assets/jscripts/jquery.min.js')?}"></script>
-        <script src="{?= url(MODULES.'/jkn_mobile_v2/js/scripts.js')?}"></script>
+        <script src="{?= url(MODULES.'/jkn_mobile/js/scripts.js')?}"></script>
     </body>
 </html>

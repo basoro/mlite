@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\JKN_Mobile_V2;
+namespace Plugins\JKN_Mobile;
 
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
@@ -10,10 +10,10 @@ class Admin extends AdminModule
 
     public function init()
     {
-        $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
-        $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
-        $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
-        $this->user_key = $this->settings->get('jkn_mobile_v2.BpjsUserKey');
+        $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');
+        $this->secretkey = $this->settings->get('jkn_mobile.BpjsSecretKey');
+        $this->bpjsurl = $this->settings->get('jkn_mobile.BpjsAntrianUrl');
+        $this->user_key = $this->settings->get('jkn_mobile.BpjsUserKey');
     }
 
     public function navigation()
@@ -36,16 +36,16 @@ class Admin extends AdminModule
     public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile_v2', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile V2'],
-        ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile V2'],
-        ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile V2'],
-        ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile V2'],
-        ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
-        ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
-        ['name' => 'Data Booking Antrol', 'url' => url([ADMIN, 'jkn_mobile_v2', 'bookingantrol']), 'icon' => 'list', 'desc' => 'Booking Antrol JKN Mobile V2'],
-        ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile_v2', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
-        ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
-        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile_v2', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
+        ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile V2'],
+        ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile V2'],
+        ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile V2'],
+        ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile V2'],
+        ['name' => 'Add Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingdokter']), 'icon' => 'tasks', 'desc' => 'Add Mapping Dokter JKN Mobile V2'],
+        ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile V2'],
+        ['name' => 'Data Booking Antrol', 'url' => url([ADMIN, 'jkn_mobile', 'bookingantrol']), 'icon' => 'list', 'desc' => 'Booking Antrol JKN Mobile V2'],
+        ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile V2'],
+        ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile V2'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -106,7 +106,7 @@ class Admin extends AdminModule
     public function postPoliklinik_Save()
     {
 
-        $location = url([ADMIN, 'jkn_mobile_v2', 'addmappingpoli']);
+        $location = url([ADMIN, 'jkn_mobile', 'addmappingpoli']);
 
         unset($_POST['save']);
 
@@ -132,7 +132,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Hapus maping poli bpjs gagal');
         }
-        redirect(url([ADMIN, 'jkn_mobile_v2', 'mappingpoli']));
+        redirect(url([ADMIN, 'jkn_mobile', 'mappingpoli']));
     }
 
     public function getRefDokter()
@@ -187,7 +187,7 @@ class Admin extends AdminModule
     public function postDokter_Save()
     {
 
-        $location = url([ADMIN, 'jkn_mobile_v2', 'addmappingdokter']);
+        $location = url([ADMIN, 'jkn_mobile', 'addmappingdokter']);
 
         unset($_POST['save']);
 
@@ -213,7 +213,7 @@ class Admin extends AdminModule
         } else {
             $this->notify('failure', 'Hapus maping poli bpjs gagal');
         }
-        redirect(url([ADMIN, 'jkn_mobile_v2', 'mappingdokter']));
+        redirect(url([ADMIN, 'jkn_mobile', 'mappingdokter']));
     }
 
     public function getJadwalDokter()
@@ -258,7 +258,7 @@ class Admin extends AdminModule
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
         $date = $_POST['periode_antrol'];
       //$date = '2022-01-20';
-      $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
+      $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
       $query = $this->core->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
       FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
       ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg)");
@@ -318,31 +318,31 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile';
-        $this->assign['propinsi'] = $this->core->mysql('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile_v2.kdprop'))->oneArray();
-        $this->assign['kabupaten'] = $this->core->mysql('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile_v2.kdkab'))->oneArray();
-        $this->assign['kecamatan'] = $this->core->mysql('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile_v2.kdkec'))->oneArray();
-        $this->assign['kelurahan'] = $this->core->mysql('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile_v2.kdkel'))->oneArray();
+        $this->assign['propinsi'] = $this->core->mysql('propinsi')->where('kd_prop', $this->settings->get('jkn_mobile.kdprop'))->oneArray();
+        $this->assign['kabupaten'] = $this->core->mysql('kabupaten')->where('kd_kab', $this->settings->get('jkn_mobile.kdkab'))->oneArray();
+        $this->assign['kecamatan'] = $this->core->mysql('kecamatan')->where('kd_kec', $this->settings->get('jkn_mobile.kdkec'))->oneArray();
+        $this->assign['kelurahan'] = $this->core->mysql('kelurahan')->where('kd_kel', $this->settings->get('jkn_mobile.kdkel'))->oneArray();
         $this->assign['suku_bangsa'] = $this->core->mysql('suku_bangsa')->toArray();
         $this->assign['bahasa_pasien'] = $this->core->mysql('bahasa_pasien')->toArray();
         $this->assign['cacat_fisik'] = $this->core->mysql('cacat_fisik')->toArray();
         $this->assign['perusahaan_pasien'] = $this->core->mysql('perusahaan_pasien')->toArray();
-        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.display'));
-        $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_v2.exclude_taskid'));
+        $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile.display'));
+        $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile.exclude_taskid'));
         $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
 
-        $this->assign['jkn_mobile_v2'] = htmlspecialchars_array($this->settings('jkn_mobile_v2'));
+        $this->assign['jkn_mobile'] = htmlspecialchars_array($this->settings('jkn_mobile'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
 
     public function postSaveSettings()
     {
-        $_POST['jkn_mobile_v2']['display'] = implode(',', $_POST['jkn_mobile_v2']['display']);
-        $_POST['jkn_mobile_v2']['exclude_taskid'] = implode(',', $_POST['jkn_mobile_v2']['exclude_taskid']);
-        foreach ($_POST['jkn_mobile_v2'] as $key => $val) {
-            $this->settings('jkn_mobile_v2', $key, $val);
+        $_POST['jkn_mobile']['display'] = implode(',', $_POST['jkn_mobile']['display']);
+        $_POST['jkn_mobile']['exclude_taskid'] = implode(',', $_POST['jkn_mobile']['exclude_taskid']);
+        foreach ($_POST['jkn_mobile'] as $key => $val) {
+            $this->settings('jkn_mobile', $key, $val);
         }
         $this->notify('success', 'Pengaturan telah disimpan');
-        redirect(url([ADMIN, 'jkn_mobile_v2', 'settings']));
+        redirect(url([ADMIN, 'jkn_mobile', 'settings']));
     }
 
     private function _getPoliklinik($kd_poli = null)
@@ -543,7 +543,7 @@ class Admin extends AdminModule
     public function getModalAntrol($noref)
     {
         $this->tpl->set('noref',$noref);
-        echo $this->tpl->draw(MODULES . '/jkn_mobile_v2/view/admin/batalantrol.html', true);
+        echo $this->tpl->draw(MODULES . '/jkn_mobile/view/admin/batalantrol.html', true);
         exit();
     }
 
@@ -608,7 +608,7 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/jkn_mobile_v2/js/admin/jkn_mobile_v2.js');
+        echo $this->draw(MODULES.'/jkn_mobile/js/admin/jkn_mobile.js');
         exit();
     }
 
@@ -631,7 +631,7 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
         // MODULE SCRIPTS
-        $this->core->addJS(url([ADMIN, 'jkn_mobile_v2', 'javascript']), 'footer');
+        $this->core->addJS(url([ADMIN, 'jkn_mobile', 'javascript']), 'footer');
     }
 
 }

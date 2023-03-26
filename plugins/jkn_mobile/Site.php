@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\JKN_Mobile_V2;
+namespace Plugins\JKN_Mobile;
 
 use Systems\SiteModule;
 use Systems\Lib\BpjsService;
@@ -10,10 +10,10 @@ class Site extends SiteModule
 
     public function init()
     {
-        $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
-        $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
-        $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
-        $this->user_key = $this->settings->get('jkn_mobile_v2.BpjsUserKey');
+        $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');
+        $this->secretkey = $this->settings->get('jkn_mobile.BpjsSecretKey');
+        $this->bpjsurl = $this->settings->get('jkn_mobile.BpjsAntrianUrl');
+        $this->user_key = $this->settings->get('jkn_mobile.BpjsUserKey');
     }
 
     public function routes()
@@ -39,27 +39,6 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile/jadwal/(:str)/(:str)', '_getJadwal');
-
-        $this->route('jknmobile_v2', 'getIndex');
-        $this->route('jknmobile_v2/token', 'getToken');
-        $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
-        $this->route('jknmobile_v2/antrian/status', 'getStatusAntrian');
-        $this->route('jknmobile_v2/antrian/ambilfarmasi', 'getAmbilAntrianFarmasi');
-        $this->route('jknmobile_v2/antrian/statusfarmasi', 'getStatusAntrianFarmasi');
-        $this->route('jknmobile_v2/antrian/sisa', 'getSisaAntrian');
-        $this->route('jknmobile_v2/antrian/batal', 'getBatalAntrian');
-        $this->route('jknmobile_v2/pasien/baru', 'getPasienBaru');
-        $this->route('jknmobile_v2/pasien/checkin', 'getPasienCheckIn');
-        $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
-        $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
-        $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
-        $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
-        $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
-        $this->route('jknmobile_v2/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
-        $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
-        $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
-        $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
-        $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
     }
 
     public function getIndex()
@@ -81,7 +60,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $header = apache_request_headers();
         $response = array();
-        if ($header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username') && $header[$this->settings->get('jkn_mobile_v2.header_password')] == $this->settings->get('jkn_mobile_v2.x_password')) {
+        if ($header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username') && $header[$this->settings->get('jkn_mobile.header_password')] == $this->settings->get('jkn_mobile.x_password')) {
             $response = array(
                 'response' => array(
                     'token' => $this->_getToken()
@@ -121,7 +100,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -129,7 +108,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
 
             $tanggal=$decode['tanggalperiksa'];
             $tentukan_hari=date('D',strtotime($tanggal));
@@ -362,7 +341,7 @@ class Site extends SiteModule
 
         $kdpoli = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray();
         $kddokter = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $decode['kodedokter'])->oneArray();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -370,7 +349,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if(!$this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $decode['kodepoli'])->oneArray()){
                 $response = array(
                     'metadata' => array(
@@ -503,7 +482,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -511,7 +490,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -634,7 +613,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -642,7 +621,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -789,7 +768,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -797,7 +776,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -920,7 +899,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -928,7 +907,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if(empty($decode['kodebooking'])) {
                 $response = array(
                     'metadata' => array(
@@ -1051,7 +1030,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -1059,7 +1038,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             if (empty($decode['nomorkartu'])){
                 $response = array(
                     'metadata' => array(
@@ -1412,21 +1391,21 @@ class Site extends SiteModule
                     $_POST['namakeluarga'] = '-';
                     $_POST['kd_pj'] = 'BPJ';
                     $_POST['no_peserta'] = $decode['nomorkartu'];
-                    $_POST['kd_kel'] = $this->settings->get('jkn_mobile_v2.kdkel');
-                    $_POST['kd_kec'] = $this->settings->get('jkn_mobile_v2.kdkec');
-                    $_POST['kd_kab'] = $this->settings->get('jkn_mobile_v2.kdkab');
+                    $_POST['kd_kel'] = $this->settings->get('jkn_mobile.kdkel');
+                    $_POST['kd_kec'] = $this->settings->get('jkn_mobile.kdkec');
+                    $_POST['kd_kab'] = $this->settings->get('jkn_mobile.kdkab');
                     $_POST['pekerjaanpj'] = '-';
                     $_POST['alamatpj'] = '-';
                     $_POST['kelurahanpj'] = '-';
                     $_POST['kecamatanpj'] = '-';
                     $_POST['kabupatenpj'] = '-';
-                    $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile_v2.perusahaan_pasien');
-                    $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile_v2.suku_bangsa');
-                    $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile_v2.bahasa_pasien');
-                    $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile_v2.cacat_fisik');
+                    $_POST['perusahaan_pasien'] = $this->settings->get('jkn_mobile.perusahaan_pasien');
+                    $_POST['suku_bangsa'] = $this->settings->get('jkn_mobile.suku_bangsa');
+                    $_POST['bahasa_pasien'] = $this->settings->get('jkn_mobile.bahasa_pasien');
+                    $_POST['cacat_fisik'] = $this->settings->get('jkn_mobile.cacat_fisik');
                     $_POST['email'] = '';
                     $_POST['nip'] = '';
-                    $_POST['kd_prop'] = $this->settings->get('jkn_mobile_v2.kdprop');
+                    $_POST['kd_prop'] = $this->settings->get('jkn_mobile.kdprop');
                     $_POST['propinsipj'] = '-';
 
                     $query = $this->core->mysql('pasien')->save($_POST);
@@ -1473,7 +1452,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -1481,7 +1460,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             $tanggal=date("Y-m-d", ($decode['waktu']/1000));
             $jam = date("H:i:s",($decode['waktu']/1000));
             if(empty($decode['kodebooking'])) {
@@ -1775,7 +1754,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -1783,7 +1762,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             $data = array();
             $sql = $this->core->mysql()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan,  maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana, pasien.no_peserta AS nopeserta FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND booking_operasi.tanggal BETWEEN '$decode[tanggalawal]' AND '$decode[tanggalakhir]' GROUP BY booking_operasi.no_rawat");
             $sql->execute();
@@ -1874,7 +1853,7 @@ class Site extends SiteModule
         $konten = trim(file_get_contents("php://input"));
         $decode = json_decode($konten, true);
         $response = array();
-        if($header[$this->settings->get('jkn_mobile_v2.header_token')] == false) {
+        if($header[$this->settings->get('jkn_mobile.header_token')] == false) {
             $response = array(
                 'metadata' => array(
                     'message' => 'Token expired',
@@ -1882,7 +1861,7 @@ class Site extends SiteModule
                 )
             );
             http_response_code(201);
-        } else if ($header[$this->settings->get('jkn_mobile_v2.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile_v2.header_username')] == $this->settings->get('jkn_mobile_v2.x_username')) {
+        } else if ($header[$this->settings->get('jkn_mobile.header_token')] == $this->_getToken() && $header[$this->settings->get('jkn_mobile.header_username')] == $this->settings->get('jkn_mobile.x_username')) {
             $data = array();
             $cek_nopeserta = $this->core->mysql('pasien')->where('no_peserta', $decode['nopeserta'])->oneArray();
             $sql = $this->core->mysql()->pdo()->prepare("SELECT booking_operasi.no_rawat AS kodebooking, booking_operasi.tanggal AS tanggaloperasi, paket_operasi.nm_perawatan AS jenistindakan, maping_poli_bpjs.kd_poli_bpjs AS kodepoli, poliklinik.nm_poli AS namapoli, booking_operasi.status AS terlaksana FROM pasien, booking_operasi, paket_operasi, reg_periksa, jadwal, poliklinik, maping_poli_bpjs WHERE booking_operasi.no_rawat = reg_periksa.no_rawat AND pasien.no_rkm_medis = reg_periksa.no_rkm_medis AND booking_operasi.kode_paket = paket_operasi.kode_paket AND booking_operasi.kd_dokter = jadwal.kd_dokter AND jadwal.kd_poli = poliklinik.kd_poli AND jadwal.kd_poli=maping_poli_bpjs.kd_poli_rs AND pasien.no_peserta = '$decode[nopeserta]'  GROUP BY booking_operasi.no_rawat");
@@ -2058,7 +2037,7 @@ class Site extends SiteModule
         if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
           $date = $_GET['tgl'];
         }
-        $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile_v2.exclude_taskid'));
+        $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
         $query = $this->core->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
         FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
         ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $offset, $perpage");
@@ -2092,7 +2071,7 @@ class Site extends SiteModule
               $minutes = $no_urut_reg * 10;
               $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
               $jenispasien = 'NON JKN';
-              if($q['kd_pj'] == $this->settings->get('jkn_mobile_v2.kd_pj_bpjs')) {
+              if($q['kd_pj'] == $this->settings->get('jkn_mobile.kd_pj_bpjs')) {
                 $jenispasien = 'JKN';
               }
               $pasienbaru = '1';
@@ -2235,27 +2214,27 @@ class Site extends SiteModule
       	$page_ = $page - 1;
         if(isset($slug[3]) && $slug[3] == 1) {
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/>Prev</a> -- ';
           }
         } else if(!isset($slug[3])){
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/>Prev</a> -- ';
           }
         } else {
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$page_.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/add/'.$page_.'>Prev</a> -- ';
           }
         }
         if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'/?tgl='.$date.'>Next</a>';
+          echo '<a href='.url().'/jknmobile/antrian/add/'.$_page.'/?tgl='.$date.'>Next</a>';
         } else {
-          echo '<a href='.url().'/jknmobile_v2/antrian/add/'.$_page.'>Next</a>';
+          echo '<a href='.url().'/jknmobile/antrian/add/'.$_page.'>Next</a>';
         }
         exit();
     }
@@ -2746,27 +2725,27 @@ class Site extends SiteModule
       	$page_ = $page - 1;
         if(isset($slug[3]) && $slug[3] == 1) {
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/>Prev</a> -- ';
           }
         } else if(!isset($slug[3])){
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/>Prev</a> -- ';
           }
         } else {
           if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
           } else {
-            echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
+            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
           }
         }
         if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-          echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'/?tgl='.$date.'>Next</a>';
+          echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$_page.'/?tgl='.$date.'>Next</a>';
         } else {
-          echo '<a href='.url().'/jknmobile_v2/antrian/updatewaktu/'.$_page.'>Next</a>';
+          echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$_page.'>Next</a>';
         }
         exit();
     }
@@ -2809,7 +2788,7 @@ class Site extends SiteModule
     private function _getToken()
     {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
-        $payload = json_encode(['username' => $this->settings->get('jkn_mobile_v2.x_username'), 'password' => $this->settings->get('jkn_mobile_v2.x_password'), 'date' => strtotime(date('Y-m-d')) * 1000]);
+        $payload = json_encode(['username' => $this->settings->get('jkn_mobile.x_username'), 'password' => $this->settings->get('jkn_mobile.x_password'), 'date' => strtotime(date('Y-m-d')) * 1000]);
         $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
         $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
         $signature = hash_hmac('sha256', $base64UrlHeader . "." . $base64UrlPayload, 'abC123!', true);
