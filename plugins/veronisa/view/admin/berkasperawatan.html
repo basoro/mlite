@@ -1,0 +1,48 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Resume Perawatan</h4>
+</div>
+<div class="modal-body">
+  <div class="panel-default">
+      <div class="panel-body">
+          {if: !empty($berkasperawatan.berkas_digital)}
+          <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Berkas Digital Perawatan</h4>
+          <div class="row">
+              <div class="gallery">
+              {loop: $berkasperawatan.berkas_digital}
+                  <div class="col-sm-6 col-md-6">
+                      <div class="thumbnail">
+                          <a href="{?=WEBAPPS_URL?}/berkasrawat/{$value.lokasi_file}" class="images">
+                              <img src="{?=WEBAPPS_URL?}/berkasrawat/{$value.lokasi_file}" class="img-responsive">
+                          </a>
+                      </div>
+                  </div>
+              {/loop}
+              </div>
+          </div>
+          {/if}
+          <form action="" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>Nomor Rawat</label>
+                  <input type="text" class="form-control" name="no_rawat" value="{$berkasperawatan.no_rawat}">
+              </div>
+              <div class="form-group">
+                  <label>Kategori Berkas</label>
+                  <select name="kode" class="form-control">
+                    {loop: $berkasperawatan.master_berkas_digital}
+                      <option value="{$value.kode}">{$value.nama}</option>
+                    {/loop}
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Pilih Berkas</label>
+                  <input type="file" name="files" accept="image/*" class="form-control" />
+              </div>
+              <input type="submit" class="btn btn-primary" name="simpanberkas" value="Unggah" />
+          </form>
+      </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>

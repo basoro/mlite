@@ -388,6 +388,28 @@
                               {/if}
                             </dl>
                         </div>
+                        {if: !empty($value.pemeriksaan_catatan)}
+                        <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Gambar Catatan Pemeriksaan</h4>
+                        <div class="row">
+                            <div class="gallery">
+                            {loop: $value.pemeriksaan_catatan as $data}
+                            <div class="col-sm-6 col-md-6" style="border-radius: 5px;">
+                              <div class="row" style="padding: 0px;">
+                                  <div class="text-info col-sm-12 col-xs-12" style="">
+                                      <h5 style="margin: 0px; padding: 5px; background-color: #EEE; border-radius: 5px 5px 0 0;">{$data.nama} ( {$data.waktu_catatan} )
+                                      </h5>
+                                  </div>
+                              </div>
+                              <div class="thumbnail" style="border-radius : 0 0 5px 5px">
+                                  <a href="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" target="_blank" class="images">
+                                      <img src="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" class="img-responsive">
+                                  </a>
+                              </div>
+                          </div>
+                            {/loop}
+                            </div>
+                        </div>
+                        {/if}
                     </div>
                     {if: !empty($value.detail_pemberian_obat)}
                     <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Pemberian Obat</h4>
@@ -473,6 +495,38 @@
                         </div>
                     </div>
                     {/if}
+                    {if: $value.operasi}
+                    <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Operasi</h4>
+                    <div class="row">
+                        <div class="col-sm-12 col-md-12">
+                            {loop: $value.operasi as $data}
+                            <h4>{$data.nm_perawatan}</h4>
+                            {/loop}
+                        </div>
+                    </div>
+                    {/if}
+                    {if: $value.obat_operasi}
+                    <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Obat dan BHP Operasi</h4>
+                    <div class="table-responsive no-margin">
+                      <table class="table table-striped no-margin">
+                        <thead>
+                          <tr>
+                            <th>Nama Obat</th>
+                            <th>Jumlah</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $value.obat_operasi as $data}
+                            <tr>
+                              <td>{$data.nm_obat}</td>
+                              <td>{$data.jumlah}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                      </table>
+                    </div>
+                    {/if}
+                    
                   {if: !empty($value.berkas_digital)}
                   <h4 style="background-color: #ddd;border-bottom: 2px #ccc solid;padding:5px;">Berkas Digital</h4>
                   <div class="row">
@@ -483,6 +537,9 @@
                                   <a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="images">
                                       <img src="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="img-responsive">
                                   </a>
+                              </div>
+                              <div class="caption">
+                                {$data.nama}
                               </div>
                           </div>
                       {/loop}
@@ -559,7 +616,4 @@ $("input[name=photo]").change(function() {
       });
     });
   });
-</script>
-<script type="text/javascript">
-  $('.images').lightbox();
 </script>

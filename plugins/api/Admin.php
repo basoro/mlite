@@ -13,6 +13,7 @@ class Admin extends AdminModule
             'Notifikasi APAM' => 'notifikasi',
             'Pengaturan APAM' => 'settingsapam',
             'Payment Duitku' => 'paymentduitku',
+            'Pengaturan API Key' => 'settingskey',
         ];
     }
 
@@ -22,6 +23,7 @@ class Admin extends AdminModule
         ['name' => 'Notifikasi APAM', 'url' => url([ADMIN, 'api', 'notifikasi']), 'icon' => 'database', 'desc' => 'Notifikasi APAM API'],
         ['name' => 'Pengaturan APAM', 'url' => url([ADMIN, 'api', 'settingsapam']), 'icon' => 'database', 'desc' => 'Pengaturan APAM API'],
         ['name' => 'Payment Duitku', 'url' => url([ADMIN, 'api', 'paymentduitku']), 'icon' => 'database', 'desc' => 'Pengaturan e-Payment API'],
+        ['name' => 'Pengaturan API Key', 'url' => url([ADMIN, 'api', 'settingskey']), 'icon' => 'database', 'desc' => 'Pengaturan API Key'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -174,12 +176,33 @@ class Admin extends AdminModule
     }
     /* End Settings Farmasi Section */
 
+    /* Settings Section */
+    public function getSettingsKey()
+    {
+        $this->assign['title'] = 'Pengaturan Modul API Key';
+        $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
+        return $this->draw('settings.key.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettingsKey()
+    {
+        foreach ($_POST['api'] as $key => $val) {
+            $this->settings('api', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'api', 'settingskey']));
+    }
+    /* End Settings Farmasi Section */
+
     public function postKirimWA()
     {
         $waapitoken = $this->settings->get('wagateway.token');
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimpesan";
+        if($waapiserver == 'https://waini.id') {
+          $url = $waapiserver."/send-message";
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=text&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&api_key=".$waapitoken);
@@ -200,6 +223,9 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimgambar";
+        if($waapiserver == 'https://waini.id') {
+          $url = $waapiserver."/send-media";
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=image&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);
@@ -220,6 +246,9 @@ class Admin extends AdminModule
         $waapiphonenumber = $this->settings->get('wagateway.phonenumber');
         $waapiserver = $this->settings->get('wagateway.server');
         $url = $waapiserver."/wagateway/kirimfile";
+        if($waapiserver == 'https://waini.id') {
+          $url = $waapiserver."/send-media";
+        }
         $curlHandle = curl_init();
         curl_setopt($curlHandle, CURLOPT_URL, $url);
         curl_setopt($curlHandle, CURLOPT_POSTFIELDS,"type=document&sender=".$waapiphonenumber."&number=".$_POST['number']."&message=".$_POST['message']."&url=".$_POST['file']."&api_key=".$waapitoken);

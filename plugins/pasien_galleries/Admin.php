@@ -277,6 +277,37 @@ class Admin extends AdminModule
     */
     public function postUpload($id)
     {
+      if(MULTI_APP) {
+
+        $_POST['no_rawat'] = revertNorawat($id);
+
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
+      } else {
         $dir    = $this->_uploads.'/'.$id;
         $cntr   = 0;
 
@@ -314,8 +345,8 @@ class Admin extends AdminModule
                 $this->notify('success', 'Sukses menambahkan gambar');
             };
         }
-
-        redirect(url([ADMIN, 'pasien_galleries', 'edit', $id]));
+      }
+      redirect(url([ADMIN, 'pasien_galleries', 'edit', $id]));
     }
 
     /**

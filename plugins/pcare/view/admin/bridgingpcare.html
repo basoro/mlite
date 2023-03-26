@@ -1,0 +1,1108 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Bridging PCare BPJS</h4>
+</div>
+<div class="modal-body">
+  <div class="row" style="margin-top:20px;">
+    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+    <input type="hidden" id="addpendaftaran" name="addpendaftaran" class="form-control" value="">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Rekam Medis</label>
+        <input type="text" id="id_pasien" name="id_pasien_bridging" class="form-control" value="{$pasien.no_rkm_medis}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Pendaftaran</label>
+        <input type="text" id="id_pendaftaran" name="id_pendaftaran_bridging" class="form-control" value="{$pemeriksaan.no_rawat}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Kartu</label>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$pasien.no_peserta}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Kode Provider</label>
+        <input type="text" id="kdProviderPeserta" name="kdProviderPeserta" class="form-control" value="">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Tanggal Daftar</label>
+        <input type="text" id="tglDaftar" name="tglDaftar" class="form-control tanggal" value="{?=date('d-m-Y')?}">
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Poliklinik</label>
+        <input type="text" name="getPoli" id="getPoli" class="form-control" value="">
+        <ul class="list-group" id="poliList" style="z-index:1000;position:absolute;width:100%;"></ul>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Jenis Kunjungan</label>
+        <select class="form-control" name="kunjSakit" id="kunjSakit">
+          <option value="true">Kunjungan Sakit</option>
+          <option value="false">Kunjungan Sehat</option>
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Jenis Layanan</label>
+        <select class="form-control" name="kdTkp" id="kdTkp">
+          <option value="10">Rawat Jalan</option>
+          <option value="20">Rawat Inap</option>
+          <option value="50">Promotif</option>
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <div class="form-group">
+        <label for="poli">Keluhan</label>
+        <textarea name="keluhan" id="keluhan" class="form-control" rows="2" cols="80">{$pemeriksaan.keluhan}</textarea>
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Sistole</label>
+        <input type="text" name="sistole_bridging" class="form-control" placeholder="" value="{?=strtok($pemeriksaan.tensi, '/')?}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Diastole</label>
+        <input type="text" name="diastole_bridging" class="form-control" placeholder="" value="{?=substr($pemeriksaan.tensi, strpos($pemeriksaan.tensi, '/') + 1)?}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Nadi(/menit)</label>
+        <input type="text" name="nadi_bridging" class="form-control" placeholder="" value="{$pemeriksaan.nadi}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">RR(/menit)</label>
+        <input type="text" name="respirasi_bridging" class="form-control" placeholder="" value="{$pemeriksaan.respirasi}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Suhu(C)</label>
+        <input type="text" name="suhu_tubuh_bridging" class="form-control" placeholder="" value="{$pemeriksaan.suhu_tubuh}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Tinggi(cm)</label>
+        <input type="text" name="tinggi_bridging" class="form-control" placeholder="" value="{$pemeriksaan.tinggi}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Berat(Kg)</label>
+        <input type="text" name="berat_bridging" class="form-control" placeholder="" value="{$pemeriksaan.berat}">
+      </div>
+    </div>
+    <div class="col col-sm-3">
+      <div class="form-group">
+        <label for="nama_pasien">Lingkar Perut</label>
+        <input type="text" name="lingkar_perut_bridging" class="form-control" placeholder="" value="">
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <div class="panel-group" id="accordion">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                   <h4 class="panel-title">
+                      <div class="checkbox">
+                      <label data-toggle="collapse" data-target="#collapseOne">
+                          <input type="checkbox" name="kunjungan_bridging" id="kunjungan_bridging"/> Kunjungan
+                      </label>
+                      </div>
+      						 </h4>
+              </div>
+              <div id="collapseOne" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="row">
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Tanggal Kunjungan</label>
+                          <input type="text" id="tglKunjungan" name="tglKunjungan" class="form-control tanggal" value="{?=date('d-m-Y')?}">
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Tanggal Pulang</label>
+                          <input type="text" id="tglPulang" name="tglPulang" class="form-control tanggal" value="{?=date('d-m-Y')?}">
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Dokter</label>
+                          <input type="text" name="getDokter" id="getDokter" class="form-control" value="">
+                          <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-12">
+                        <div class="form-group">
+                          <label for="poli">Terapi</label>
+                          <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{$pemeriksaan.pemeriksaan}</textarea>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Status Pulang</label>
+                          <input type="text" name="getStatusPulang" id="getStatusPulang" class="form-control" value="">
+                          <ul class="list-group" id="statuspulangList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Kesadaran</label>
+                          <input type="text" name="getKesadaran" id="getKesadaran" class="form-control" value="">
+                          <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Diagnosa 1</label>
+                          <input type="text" name="getDiagnosa1" id="getDiagnosa1" class="form-control" value="">
+                          <ul class="list-group" id="diagnosaList1" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Diagnosa 2</label>
+                          <input type="text" name="getDiagnosa2" id="getDiagnosa2" class="form-control" value="">
+                          <ul class="list-group" id="diagnosaList2" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Diagnosa 3</label>
+                          <input type="text" name="getDiagnosa3" id="getDiagnosa3" class="form-control" value="">
+                          <ul class="list-group" id="diagnosaList3" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <div class="panel-group" id="accordion">
+          <div class="panel panel-default">
+              <div class="panel-heading">
+                   <h4 class="panel-title">
+                      <div class="checkbox">
+                      <label data-toggle="collapse" data-target="#collapseTwo">
+                          <input type="checkbox" name="rujukanlanjut" id="rujukanlanjut"/> Rujukan
+                      </label>
+                      <label class="pull-right">
+                          <input type="checkbox" name="rujukankhusus" id="rujukankhusus"/> Khusus
+                      </label>
+                      </div>
+      						 </h4>
+              </div>
+              <div id="collapseTwo" class="panel-collapse collapse in">
+                  <div class="panel-body">
+                    <div class="row">
+
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Spesialis</label>
+                          <input type="text" name="getReferensiSpesialis" id="getReferensiSpesialis" class="form-control" value="">
+                          <ul class="list-group" id="referensispesialisList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Sub Spesialis</label>
+                          <input type="text" name="getReferensiSubSpesialis" id="getReferensiSubSpesialis" class="form-control" value="">
+                          <ul class="list-group" id="referensisubspesialisList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Sarana</label>
+                          <input type="text" name="getReferensiSarana" id="getReferensiSarana" class="form-control" value="">
+                          <ul class="list-group" id="referensisaranaList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Tanggal Rujukan</label>
+                          <input type="text" id="tglEstRujuk" name="tglEstRujuk" class="form-control tanggal" value="{?=date('d-m-Y')?}">
+                        </div>
+                      </div>
+                      <div class="col col-md-12" id="tampilfaskesspesialis">
+                        <div class="form-group">
+                          <label for="poli">Fakskes PPK Spesialis</label>
+                          <input type="text" name="getReferensiFaskesSpesialis" id="getReferensiFaskesSpesialis" class="form-control" value="">
+                          <ul class="list-group" id="referensifaskesspesialisList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+
+                      <div id="tampilfaskesspesialiskhusus">
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Referensi Rujukan Khusus</label>
+                          <input type="text" name="getReferensiKhusus" id="getReferensiKhusus" class="form-control" value="">
+                          <ul class="list-group" id="referensikhususList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-6">
+                        <div class="form-group">
+                          <label for="poli">Faskes Rujukan Khusus</label>
+                          <input type="text" name="getFaskesKhusus" id="getFaskesKhusus" class="form-control" value="">
+                          <ul class="list-group" id="faskeskhususList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-12">
+                        <div class="form-group">
+                          <label for="poli">Catatan</label>
+                          <textarea name="catatan" id="catatan" class="form-control" rows="2" cols="80">{$pemeriksaan.penilaian}</textarea>
+                        </div>
+                      </div>
+                      </div>
+
+                      <div class="col col-md-12">
+                        <div class="form-group">
+                          <label for="poli">TACC</label>
+                          <select class="form-control" name="getTACC" id="getTACC">
+                            <option value="-1: Tanpa TACC">Tanpa TACC</option>
+                            <option value="1: Time">Time: < 3 Hari</option>
+                            <option value="1: Time">Time: >= 3 - 7 Hari</option>
+                            <option value="1: Time">Time: >= 7 Hari</option>
+                            <option value="2: Age">Age: < 1 Bulan</option>
+                            <option value="2: Age">Age: >= 1 Bulan s/d < 12 Bulan</option>
+                            <option value="2: Age">Age: >= 1 Tahun s/d < 5 Tahun</option>
+                            <option value="2: Age">Age: = 5 Tahun s/d < 12 Tahun</option>
+                            <option value="2: Age">Age: >= 12 Tahun s/d < 55 Tahun</option>
+                            <option value="2: Age">Age: >= 55 Tahun</option>
+                            <option value="3: Complication">Complication: A09 - Diarrhoea and gastroenteritis of presumed infectious origin</option>
+                            <option value="4: Comorbidity">Comorbidity: < 3 Hari</option>
+                            <option value="4: Comorbidity">Comorbidity: >= 3 - 7 Hari</option>
+                            <option value="4: Comorbidity">Comorbidity: >= 7 Hari</option>
+                          </select>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+    </div>
+    <div class="col col-md-12">
+      <button class="btn btn-success simpanbridging">
+          Simpan
+      </button>
+      <button class="btn btn-info editbridging">
+          Edit
+      </button>
+      <button class="btn btn-danger hapusbridging">
+          Hapus
+      </button>
+    </div>
+  </div>
+  <ul class="nav nav-tabs" style="margin-top:20px;">
+    <li class="active">
+      <a href="#pendaftaran" data-toggle="tab">
+      Pendaftaran</a>
+    </li>
+    <li>
+      <a href="#kunjungan" data-toggle="tab">
+      Kunjungan</a>
+    </li>
+    <li>
+      <a href="#rujukan" data-toggle="tab">
+      Rujukan</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div class="tab-pane active" id="pendaftaran">
+      <div class="tampildatapendaftaran" style="margin-top:30px;">
+        <h4>Data Pendaftaran</h4>
+        <div class="table-responsive">
+        <table class="table table-bordered table-striped table-hover display nowrap datatablebridgingpcare" width="100%">
+          <thead>
+            <tr>
+              <th>Tgl. Daftar</th>
+              <th>ID. Rawat</th>
+              <th>No. RM</th>
+              <th>Nama Pasien</th>
+              <th>No. Kartu</th>
+              <th>Nama Poli</th>
+              <th>Keluhan</th>
+              <th>Jenis Kunjungan</th>
+              <th>Sis</th>
+              <th>Dias</th>
+              <th>B.B</th>
+              <th>T.B</th>
+              <th>R.R</th>
+              <th>L.P</th>
+              <th>H.R</th>
+              <th>Perawatan</th>
+              <th>No. Urut</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $bridging_pcare}
+            <tr>
+              <td>{$value.tgl_kunjungan}</td>
+              <td>{$value.no_rawat}</td>
+              <td>{$value.no_rkm_medis}</td>
+              <td>{$value.nm_pasien}</td>
+              <td>{$value.nomor_jaminan}</td>
+              <td>{$value.nama_poli}</td>
+              <td>{$value.subyektif}</td>
+              <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
+              <td>{$value.sistole}</td>
+              <td>{$value.diastole}</td>
+              <td>{$value.berat}</td>
+              <td>{$value.tinggi}</td>
+              <td>{$value.respirasi}</td>
+              <td>{$value.lingkar_perut}</td>
+              <td>{$value.nadi}</td>
+              <td>{$value.terapi}</td>
+              <td>{$value.nomor_urut}</td>
+              <td>{$value.status_kirim}</td>
+            </tr>
+            {/loop}
+          </tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+    <div class="tab-pane" id="kunjungan">
+      <div class="tampildatakunjungan" style="margin-top:30px;">
+      </div>
+    </div>
+    <div class="tab-pane" id="rujukan">
+      <div class="tampildatarujukan" style="margin-top:30px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+  $('select').selectator();
+  $('.collapse').collapse();
+  $("#tampilfaskesspesialiskhusus").hide();
+  $("#rujukankhusus").click(function() {
+      if($(this).is(":checked")) {
+          $("#tampilfaskesspesialis").hide();
+          $("#tampilfaskesspesialiskhusus").show();
+      } else {
+          $("#tampilfaskesspesialis").show();
+          $("#tampilfaskesspesialiskhusus").hide();
+      }
+  });
+</script>
+<script type="text/javascript">
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'DD-MM-YYYY',
+         locale: 'id'
+       });
+   });
+</script>
+<script type="text/javascript">
+  $('.datatablebridgingpcare').DataTable();
+</script>
+<script type="text/javascript">
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var nomor_jaminan = $('input:text[name=noKartu]').val();
+  var url = baseURL + '/pcare/peserta/' + nomor_jaminan + '?t=' + mlite.token;
+
+  $.get(url, function(data){
+    //console.log(data);
+    var data = JSON.parse(data);
+    var json_obj = [data];
+    if(!json_obj[0]) {
+      alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+    } else if(json_obj[0].metaData.code == 200) {
+      $('#kdProviderPeserta').val(data.response.kdProviderPst.kdProvider);
+    } else {
+      alert(json_obj[0].metaData.message);
+    }
+  });
+</script>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+      var target = $(e.target).attr("href")
+      if(target == '#pendaftaran') {
+        $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+      if(target == '#kunjungan') {
+        $('.tampildatakunjungan').load(baseURL + '/pcare/bridgingpcarekunjungantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+      if(target == '#rujukan') {
+        $('.tampildatarujukan').load(baseURL + '/pcare/bridgingpcarerujukantampil/' + id_pasien + '?t=' + mlite.token);
+      }
+    });
+  });
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".simpanbridging").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+    var id_pendaftaran = $('input:text[name=id_pendaftaran_bridging]').val();
+    var noKartu = $('input:text[name=noKartu]').val();
+    var kdProviderPeserta = $('input:text[name=kdProviderPeserta]').val();
+    var tglDaftar = $('#tglDaftar').val();
+    var kunjSakit = $('select[name=kunjSakit]').val();
+    var getPoli = $('input:text[name=getPoli]').val();
+    var kode_tkp = $('select[name=kdTkp]').val();
+    var keluhan = $('textarea[name=keluhan]').val();
+    var sistole = $('input:text[name=sistole_bridging]').val();
+    var diastole = $('input:text[name=diastole_bridging]').val();
+    var nadi = $('input:text[name=nadi_bridging]').val();
+    var respirasi = $('input:text[name=respirasi_bridging]').val();
+    var suhu_tubuh = $('input:text[name=suhu_tubuh_bridging]').val();
+    var tinggi = $('input:text[name=tinggi_bridging]').val();
+    var berat = $('input:text[name=berat_bridging]').val();
+    var lingkar_perut = $('input:text[name=lingkar_perut_bridging]').val();
+    if($('#kunjungan_bridging').is(':checked')){
+      var kunjungan = 'true';
+    }
+    else{
+      var kunjungan = 'false';
+    }
+    var tglPulang = $('#tglPulang').val();
+    var tglKunjungan = $('input:text[name=tglKunjungan]').val();
+    var getDokter = $('input:text[name=getDokter]').val();
+    var terapi = $('textarea[name=terapi_bridging]').val();
+    var getStatusPulang = $('input:text[name=getStatusPulang]').val();
+    var getKesadaran = $('input:text[name=getKesadaran]').val();
+    var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
+    var getDiagnosa2 = $('input:text[name=getDiagnosa2]').val();
+    var getDiagnosa3 = $('input:text[name=getDiagnosa3]').val();
+    if($('#rujukanlanjut').is(':checked')){
+      var rujukanlanjut = 'true';
+    }
+    else{
+      var rujukanlanjut = 'false';
+    }
+    if($('#rujukankhusus').is(':checked')){
+      var rujukankhusus = 'true';
+    }
+    else{
+      var rujukankhusus = 'false';
+    }
+    var getReferensiSpesialis = $('input:text[name=getReferensiSpesialis]').val();
+    var getReferensiSubSpesialis = $('input:text[name=getReferensiSubSpesialis]').val();
+    var getReferensiSarana = $('input:text[name=getReferensiSarana]').val();
+    var tglEstRujuk = $('#tglEstRujuk').val();
+    var getReferensiFaskesSpesialis = $('input:text[name=getReferensiFaskesSpesialis]').val();
+    var getReferensiKhusus = $('input:text[name=getReferensiKhusus]').val();
+    var getFaskesKhusus = $('input:text[name=getFaskesKhusus]').val();
+    var catatan = $('textarea[name=catatan]').val();
+    var getTACC = $('select[name=getTACC]').val();
+    var alasanTacc = $('#getTACC option:selected').text();
+    var url = baseURL + '/pcare/bridgingpcaresave/?t=' + mlite.token;
+    //alert(tglPulang + ' - ' + sistole);
+    $.post(url,{
+      id_pasien: id_pasien,
+      id_pendaftaran: id_pendaftaran,
+      noKartu: noKartu,
+      kdProviderPeserta: kdProviderPeserta,
+      tglDaftar: tglDaftar,
+      kunjSakit: kunjSakit,
+      getPoli: getPoli,
+      keluhan: keluhan,
+      kode_tkp: kode_tkp,
+      sistole: sistole,
+      diastole: diastole,
+      nadi: nadi,
+      respirasi: respirasi,
+      suhu_tubuh: suhu_tubuh,
+      tinggi: tinggi,
+      berat: berat,
+      lingkar_perut: lingkar_perut,
+      kunjungan: kunjungan,
+      tglPulang: tglPulang,
+      tglKunjungan: tglKunjungan,
+      getDokter: getDokter,
+      terapi: terapi,
+      getStatusPulang: getStatusPulang,
+      getKesadaran: getKesadaran,
+      getDiagnosa1: getDiagnosa1,
+      getDiagnosa2: getDiagnosa2,
+      getDiagnosa3: getDiagnosa3,
+      rujukanlanjut: rujukanlanjut,
+      rujukankhusus: rujukankhusus,
+      getReferensiSpesialis: getReferensiSpesialis,
+      getReferensiSubSpesialis: getReferensiSubSpesialis,
+      getReferensiSarana: getReferensiSarana,
+      tglEstRujuk: tglEstRujuk,
+      getReferensiFaskesSpesialis: getReferensiFaskesSpesialis,
+      getReferensiKhusus: getReferensiKhusus,
+      getFaskesKhusus: getFaskesKhusus,
+      catatan: catatan,
+      getTACC: getTACC,
+      alasanTacc: alasanTacc
+    } ,function(data) {
+      //console.log(data);
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+  $(".deletependaftaran").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=id_pasien_bridging]').val();
+    var url = baseURL + '/pcare/bridgingpcarependaftarandelete/?t=' + mlite.token;
+    $.post(url,{
+      id_pasien:id_pasien
+    } ,function(data) {
+      $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+});
+</script>
+<script type="text/javascript">
+  $('#getPoli').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/poli?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var poli = json_obj[0].response.list;
+                       for (var i in poli) {
+                         output+='<li class=\"list-group-item link-class\">' + poli[i].kdPoli + ': ' + poli[i].nmPoli + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#poliList').fadeIn();
+                     $('#poliList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#poliList').on('click', 'li', function(){
+       $('#getPoli').val($(this).text());
+       var getPoli = $('#getPoli').val();
+       $('#poliList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getStatusPulang').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/statuspulang/false?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var statuspulang = json_obj[0].response.list;
+                       for (var i in statuspulang) {
+                         output+='<li class=\"list-group-item link-class\">' + statuspulang[i].kdStatusPulang + ': ' + statuspulang[i].nmStatusPulang + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#statuspulangList').fadeIn();
+                     $('#statuspulangList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#statuspulangList').on('click', 'li', function(){
+       $('#getStatusPulang').val($(this).text());
+       var getStatusPulang = $('#getStatusPulang').val();
+       $('#statuspulangList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getKesadaran').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/kesadaran/false?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var kesadaran = json_obj[0].response.list;
+                       for (var i in kesadaran) {
+                         output+='<li class=\"list-group-item link-class\">' + kesadaran[i].kdSadar + ': ' + kesadaran[i].nmSadar + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#kesadaranList').fadeIn();
+                     $('#kesadaranList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#kesadaranList').on('click', 'li', function(){
+       $('#getKesadaran').val($(this).text());
+       var getKesadaran = $('#getKesadaran').val();
+       $('#kesadaranList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#getDiagnosa1').keyup(function(){
+    if($('#getDiagnosa1').val().length >= 3 && $('#getDiagnosa1').val() != ""){
+       var query = $(this).val();
+       var diagnosa = $('#getDiagnosa1').val();
+          $.ajax({
+               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               method:"GET",
+               data:{},
+               success:function(data)
+               {
+                   var data = JSON.parse(data);
+                   var json_obj = [data];
+                   var output='';
+                   if(json_obj[0].metaData.code == 200) {
+                     var diagnosa = json_obj[0].response.list;
+                     for (var i in diagnosa) {
+                       output+='<li class=\"list-group-item link-class\">' + diagnosa[i].kdDiag + ': ' + diagnosa[i].nmDiag + '</li>';
+                     }
+                   } else {
+                     output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                   }
+                   output+='';
+                   //console.log(output);
+                   $('#diagnosaList1').fadeIn();
+                   $('#diagnosaList1').html(output).show();
+               }
+          });
+      }
+  });
+  $('#diagnosaList1').on('click', 'li', function(){
+       $('#getDiagnosa1').val($(this).text());
+       var getDiagnosa1 = $('#getDiagnosa1').val();
+       $('#diagnosaList1').fadeOut();
+  });
+});
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#getDiagnosa2').keyup(function(){
+    if($('#getDiagnosa2').val().length >= 3 && $('#getDiagnosa2').val() != ""){
+       var query = $(this).val();
+       var diagnosa = $('#getDiagnosa2').val();
+          $.ajax({
+               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               method:"GET",
+               data:{},
+               success:function(data)
+               {
+                   var data = JSON.parse(data);
+                   var json_obj = [data];
+                   var output='';
+                   if(json_obj[0].metaData.code == 200) {
+                     var diagnosa = json_obj[0].response.list;
+                     for (var i in diagnosa) {
+                       output+='<li class=\"list-group-item link-class\">' + diagnosa[i].kdDiag + ': ' + diagnosa[i].nmDiag + '</li>';
+                     }
+                   } else {
+                     output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                   }
+                   output+='';
+                   //console.log(output);
+                   $('#diagnosaList2').fadeIn();
+                   $('#diagnosaList2').html(output).show();
+               }
+          });
+      }
+  });
+  $('#diagnosaList2').on('click', 'li', function(){
+       $('#getDiagnosa2').val($(this).text());
+       var getDiagnosa2 = $('#getDiagnosa2').val();
+       $('#diagnosaList2').fadeOut();
+  });
+});
+</script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#getDiagnosa3').keyup(function(){
+    if($('#getDiagnosa3').val().length >= 3 && $('#getDiagnosa3').val() != ""){
+       var query = $(this).val();
+       var diagnosa = $('#getDiagnosa3').val();
+          $.ajax({
+               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               method:"GET",
+               data:{},
+               success:function(data)
+               {
+                   var data = JSON.parse(data);
+                   var json_obj = [data];
+                   var output='';
+                   if(json_obj[0].metaData.code == 200) {
+                     var diagnosa = json_obj[0].response.list;
+                     for (var i in diagnosa) {
+                       output+='<li class=\"list-group-item link-class\">' + diagnosa[i].kdDiag + ': ' + diagnosa[i].nmDiag + '</li>';
+                     }
+                   } else {
+                     output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                   }
+                   output+='';
+                   //console.log(output);
+                   $('#diagnosaList3').fadeIn();
+                   $('#diagnosaList3').html(output).show();
+               }
+          });
+      }
+  });
+  $('#diagnosaList3').on('click', 'li', function(){
+       $('#getDiagnosa3').val($(this).text());
+       var getDiagnosa3 = $('#getDiagnosa3').val();
+       $('#diagnosaList3').fadeOut();
+  });
+});
+</script>
+<script type="text/javascript">
+  $('#getDokter').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/dokter?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var dokter = json_obj[0].response.list;
+                       for (var i in dokter) {
+                         output+='<li class=\"list-group-item link-class\">' + dokter[i].kdDokter + ': ' + dokter[i].nmDokter + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#dokterList').fadeIn();
+                     $('#dokterList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#dokterList').on('click', 'li', function(){
+       $('#getDokter').val($(this).text());
+       var getDokter = $('#getDokter').val();
+       $('#dokterList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getProvider').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/provider?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var provider = json_obj[0].response.list;
+                       for (var i in provider) {
+                         output+='<li class=\"list-group-item link-class\">' + provider[i].kdProvider + ': ' + provider[i].nmProvider + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#providerList').fadeIn();
+                     $('#providerList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#providerList').on('click', 'li', function(){
+       $('#getProvider').val($(this).text());
+       var getProvider = $('#getProvider').val();
+       $('#providerList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getReferensiSpesialis').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/spesialis?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var spesialis = json_obj[0].response.list;
+                       for (var i in spesialis) {
+                         output+='<li class=\"list-group-item link-class\">' + spesialis[i].kdSpesialis + ': ' + spesialis[i].nmSpesialis + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#referensispesialisList').fadeIn();
+                     $('#referensispesialisList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#referensispesialisList').on('click', 'li', function(){
+       $('#getReferensiSpesialis').val($(this).text());
+       var getReferensiSpesialis = $('#getReferensiSpesialis').val();
+       $('#referensispesialisList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getReferensiSubSpesialis').keyup(function(){
+       var query = $(this).val();
+       var kode_spesialis = $('#getReferensiSpesialis').val();
+       //alert(kode_spesialis.split(':')[0]);
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/subspesialis/' + kode_spesialis.split(':')[0] + '?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var subspesialis = json_obj[0].response.list;
+                       //console.log(subspesialis);
+                       for (var i in subspesialis) {
+                         output+='<li class=\"list-group-item link-class\">' + subspesialis[i].kdSubSpesialis + ': ' + subspesialis[i].nmSubSpesialis + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#referensisubspesialisList').fadeIn();
+                     $('#referensisubspesialisList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#referensisubspesialisList').on('click', 'li', function(){
+       $('#getReferensiSubSpesialis').val($(this).text());
+       var getReferensiSubSpesialis = $('#getReferensiSubSpesialis').val();
+       $('#referensisubspesialisList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getReferensiSarana').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/sarana?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var sarana = json_obj[0].response.list;
+                       output+='<li class=\"list-group-item link-class\">1: Rekam Medis</li>';
+                       for (var i in sarana) {
+                         output+='<li class=\"list-group-item link-class\">' + sarana[i].kdSarana + ': ' + sarana[i].nmSarana + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#referensisaranaList').fadeIn();
+                     $('#referensisaranaList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#referensisaranaList').on('click', 'li', function(){
+       $('#getReferensiSarana').val($(this).text());
+       var getReferensiSarana = $('#getReferensiSarana').val();
+       $('#referensisaranaList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getReferensiFaskesSpesialis').keyup(function(){
+       var query = $(this).val();
+       var kode_spesialis = $('#getReferensiSubSpesialis').val();
+       var kode_sarana = $('#getReferensiSarana').val();
+       var tgl_rujuk =  $('#tglEstRujuk').val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/faskesspesialis/' + kode_spesialis.split(':')[0] + '/' + kode_sarana.split(':')[0] + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     //console.log(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var faskespesialis = json_obj[0].response.list;
+                       //console.log(faskespesialis);
+                       for (var i in faskespesialis) {
+                         output+='<li class=\"list-group-item link-class\">' + faskespesialis[i].kdppk + ': ' + faskespesialis[i].nmppk + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#referensifaskesspesialisList').fadeIn();
+                     $('#referensifaskesspesialisList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#referensifaskesspesialisList').on('click', 'li', function(){
+       $('#getReferensiFaskesSpesialis').val($(this).text());
+       var getReferensiFaskesSpesialis = $('#getReferensiFaskesSpesialis').val();
+       $('#referensifaskesspesialisList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getReferensiKhusus').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/khusus?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var khusus = json_obj[0].response.list;
+                       for (var i in khusus) {
+                         output+='<li class=\"list-group-item link-class\">' + khusus[i].kdKhusus + ': ' + khusus[i].nmKhusus + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#referensikhususList').fadeIn();
+                     $('#referensikhususList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#referensikhususList').on('click', 'li', function(){
+       $('#getReferensiKhusus').val($(this).text());
+       var getReferensiKhusus = $('#getReferensiKhusus').val();
+       $('#referensikhususList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getFaskesKhusus').keyup(function(){
+       var query = $(this).val();
+       var kode_khusus = $('#getReferensiKhusus').val();
+       var kode_subspesialis = $('#getReferensiSubSpesialis').val();
+       var nomor_kartu = $('#noKartu').val();
+       var tgl_rujuk = $('#tglEstRujuk').val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/faskeskhusus/' + kode_khusus.split(':')[0] + '/' + kode_subspesialis.split(':')[0] + '/' + nomor_kartu + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var faskeskhusus = json_obj[0].response.list;
+                       for (var i in faskeskhusus) {
+                         output+='<li class=\"list-group-item link-class\">' + faskeskhusus[i].kdppk + ': ' + faskeskhusus[i].nmppk + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#faskeskhususList').fadeIn();
+                     $('#faskeskhususList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#faskeskhususList').on('click', 'li', function(){
+       $('#getFaskesKhusus').val($(this).text());
+       var getFaskesKhusus = $('#getFaskesKhusus').val();
+       $('#faskeskhususList').fadeOut();
+  });
+</script>

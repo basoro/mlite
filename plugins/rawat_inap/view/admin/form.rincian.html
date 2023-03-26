@@ -70,13 +70,13 @@
             <div class="col-sm-9">
               <select class="form-control" name="provider" id="pilih_provider">
                 <option>Pilih provider</option>
-                <option value="rawat_jl_dr">Dokter</option>
-                <option value="rawat_jl_pr">Perawat</option>
-                <option value="rawat_jl_drpr">Dokter & Perawat</option>
+                <option value="rawat_inap_dr">Dokter</option>
+                <option value="rawat_inap_pr">Perawat</option>
+                <option value="rawat_inap_drpr">Dokter & Perawat</option>
               </select>
             </div>
           </div>
-          <div class="form-group" id="rawat_jl_dr">
+          <div class="form-group" id="rawat_inap_dr">
             <label for="" class="col-sm-3 control-label">Nama Dokter</label>
             <div class="col-sm-6">
               <input type="text" name="nama_provider" id="nama_provider" class="form-control" value="">
@@ -87,7 +87,7 @@
               <input type="text" name="kode_provider" id="kode_provider" class="form-control" value="">
             </div>
           </div>
-          <div class="form-group" id="rawat_jl_pr">
+          <div class="form-group" id="rawat_inap_pr">
             <label for="" class="col-sm-3 control-label">Nama Perawat</label>
             <div class="col-sm-6">
               <input type="text" name="nama_provider2" id="nama_provider2" class="form-control" value="">
@@ -199,18 +199,18 @@
 </script>
 <script>
   $(function() {
-      $('#rawat_jl_dr').hide();
-      $('#rawat_jl_pr').hide();
+      $('#rawat_inap_dr').hide();
+      $('#rawat_inap_pr').hide();
       $('#pilih_provider').change(function(){
-          if($('#pilih_provider').val() == 'rawat_jl_dr') {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').hide();
-          } else if($('#pilih_provider').val() == 'rawat_jl_pr') {
-              $('#rawat_jl_dr').hide();
-              $('#rawat_jl_pr').show();
+          if($('#pilih_provider').val() == 'rawat_inap_dr') {
+              $('#rawat_inap_dr').show();
+              $('#rawat_inap_pr').hide();
+          } else if($('#pilih_provider').val() == 'rawat_inap_pr') {
+              $('#rawat_inap_dr').hide();
+              $('#rawat_inap_pr').show();
           } else {
-              $('#rawat_jl_dr').show();
-              $('#rawat_jl_pr').show();
+              $('#rawat_inap_dr').show();
+              $('#rawat_inap_pr').show();
           }
       });
   });

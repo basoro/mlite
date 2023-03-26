@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul kasir rawat inap untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
     },

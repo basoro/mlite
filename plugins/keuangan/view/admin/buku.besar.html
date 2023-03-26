@@ -1,0 +1,74 @@
+<style media="screen">
+  .bukubesar th, .bukubesar td {
+    white-space: nowrap;
+  }
+</style>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <form action="" method="">
+          {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
+          <a href="{?=url()?}/admin/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          {else}
+          <a href="{?=url()?}/admin/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          {/if}
+          <div class="btn-group pull-right" style="margin-top:-8px;">
+            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+              <li style="padding-left:5px;padding-right:5px;">
+                <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=date('Y-m-d')?}" required>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=date('Y-m-d')?}" required>
+              </li>
+              <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                <input type="submit" class="btn btn-primary btn-block" value="Submit">
+                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+              </li>
+            </ul>
+          </div>
+        </form>
+        <h3 class="panel-title">Kelola Buku Besar</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive no-margin">
+          <table class="table table-striped no-margin bukubesar" width="100%">
+            <thead>
+              <tr>
+                <th>No. Jurnal</th>
+                <th>Tanggal</th>
+                <th>Keterangan</th>
+                <th>Debet</th>
+                <th>Kredit</th>
+                <th>Saldo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $bukubesar}
+              <tr>
+                <td>{$value.no_jurnal}</td>
+                <td>{$value.tgl_jurnal}</td>
+                <td>{$value.keterangan}</td>
+                <td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.saldo,2,',','.')?}</span></td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function () {
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+  });
+</script>

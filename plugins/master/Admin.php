@@ -39,6 +39,7 @@ use Plugins\Master\Src\Pendidikan;
 use Plugins\Master\Src\ResikoKerja;
 use Plugins\Master\Src\StatusKerja;
 use Plugins\Master\Src\StatusWP;
+use Plugins\Master\Src\MetodeRacik;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
@@ -82,6 +83,7 @@ class Admin extends AdminModule
         $this->resikokerja = new ResikoKerja();
         $this->statuskerja = new StatusKerja();
         $this->statuswp = new StatusWP();
+        $this->metoderacik = new MetodeRacik();
     }
 
     public function navigation()
@@ -124,6 +126,7 @@ class Admin extends AdminModule
             'Resiko Kerja' => 'resikokerja',
             'Status Kerja' => 'statuskerja',
             'Status WP' => 'statuswp',
+            'Metode Racik' => 'metoderacik',
         ];
     }
 
@@ -166,6 +169,7 @@ class Admin extends AdminModule
         ['name' => 'Resiko Kerja', 'url' => url([ADMIN, 'master', 'resikokerja']), 'icon' => 'cubes', 'desc' => 'Master resiko kerja'],
         ['name' => 'Status Kerja', 'url' => url([ADMIN, 'master', 'statuskerja']), 'icon' => 'cubes', 'desc' => 'Master status kerja'],
         ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
+        ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -437,6 +441,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postDataBarangMaxId()
+    {
+      $this->databarang->postMaxId();
+      exit();
+    }
+
     public function getDataBarangJS()
     {
         header('Content-type: text/javascript');
@@ -482,6 +492,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postJnsPerawatanMaxId()
+    {
+      $this->jnsperawatan->postMaxId();
+      exit();
+    }
+
     public function getJnsPerawatanJS()
     {
         header('Content-type: text/javascript');
@@ -524,6 +540,12 @@ class Admin extends AdminModule
     public function postJnsPerawatanInapHapus()
     {
       $this->jnsperawataninap->postHapus();
+      exit();
+    }
+
+    public function postJnsPerawatanInapMaxId()
+    {
+      $this->jnsperawataninap->postMaxId();
       exit();
     }
 
@@ -597,6 +619,12 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postJnsPerawatanLabMaxId()
+    {
+      $this->jnsperawatanlab->postMaxId();
+      exit();
+    }
+
     public function getJnsPerawatanLabJS()
     {
         header('Content-type: text/javascript');
@@ -639,6 +667,12 @@ class Admin extends AdminModule
     public function postJnsPerawatanRadiologiHapus()
     {
       $this->jnsperawatanradiologi->postHapus();
+      exit();
+    }
+
+    public function postJnsPerawatanRadiologiMaxId()
+    {
+      $this->jnsperawatanradiologi->postMaxId();
       exit();
     }
 
@@ -1819,6 +1853,51 @@ class Admin extends AdminModule
         exit();
     }
     /* End Pendidikan Section */
+
+    /* Start MetodeRacik Section */
+    public function getMetodeRacik()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'metoderacikjs']), 'footer');
+      $return = $this->metoderacik->getIndex();
+      return $this->draw('metoderacik.html', [
+        'metoderacik' => $return
+      ]);
+
+    }
+
+    public function anyMetodeRacikForm()
+    {
+        $return = $this->metoderacik->anyForm();
+        echo $this->draw('metoderacik.form.html', ['metoderacik' => $return]);
+        exit();
+    }
+
+    public function anyMetodeRacikDisplay()
+    {
+        $return = $this->metoderacik->anyDisplay();
+        echo $this->draw('metoderacik.display.html', ['metoderacik' => $return]);
+        exit();
+    }
+
+    public function postMetodeRacikSave()
+    {
+      $this->metoderacik->postSave();
+      exit();
+    }
+
+    public function postMetodeRacikHapus()
+    {
+      $this->metoderacik->postHapus();
+      exit();
+    }
+
+    public function getMetodeRacikJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/metoderacik.js');
+        exit();
+    }
+    /* End MetodeRacik Section */
 
 
     public function getCSS()

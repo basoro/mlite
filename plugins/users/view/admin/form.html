@@ -11,6 +11,7 @@
     	                <label>Pengguna</label>
     	                <input type="text" name="username" class="form-control" required value="{$users.form.username}" />
     	            </div>-->
+                  {if: !empty($users.user)}
                   <div class="form-group">
                       <label>Pengguna</label>
                       <select name="username" id="username" class="form-control" data-use-search="true" onchange="document.getElementById('fullname').value=this.options[this.selectedIndex].text">
@@ -19,6 +20,12 @@
                           {/loop}
                       </select>
                   </div>
+                  {else}
+                  <div class="form-group">
+    	                <label>Pengguna</label>
+    	                <input type="text" name="username" id="username" class="form-control" placeholder="Nama Pengguna" value="{$users.form.username}" />
+    	            </div>
+                  {/if}
     	            <div class="form-group">
     	                <label>Nama lengkap</label>
     	                <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Nama lengkap (optional)" value="{$users.form.fullname}" />
@@ -45,11 +52,17 @@
                   <div class="form-group">
                       <label>Role</label>
                       <select name="role" class="form-control">
+                        {if: !empty($users.user)}
                         {loop: $users.role}
                           <option value="{$value}"{if: $value == $users.form.role} selected{/if}>{$value}</option>
                         {/loop}
+                        {else}
+                          <option value="pengguna"{if: $users.form.role == 'pengguna'} selected{/if}>Pengguna</option>
+                          <option value="admin"{if: $users.form.role == 'admin'} selected{/if}>Admin</option>
+                        {/if}
                       </select>
                   </div>
+                  {if: !empty($users.cap)}
                   <div class="form-group">
                       <label>Capability</label>
                       <select name="cap[]" multiple class="form-control">
@@ -58,6 +71,7 @@
                         {/loop}
                       </select>
                   </div>
+                  {/if}
     	            <div class="form-group">
     	                <label>Akses</label>
     	                <select name="access[]" multiple class="form-control" data-keep-open="true" data-use-search="true" data-use-dimmer="false" data-options-height="126px" {if: isset_or($users.form.id, 0) == 1}disabled{/if} required>

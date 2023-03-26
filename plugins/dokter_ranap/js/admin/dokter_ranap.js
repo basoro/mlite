@@ -143,7 +143,7 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
 
 // ketika tombol simpan diklik
 $("#form_soap").on("click", "#simpan_soap", function(event){
-  {if: !$this->core->getPegawaiInfo('nik', $this->core->getUserInfo('username', $_SESSION['mlite_user']))}
+  {if: !$cek_role}
     bootbox.alert({
         title: "Pemberitahuan penggunaan!",
         message: "Silahkan login dengan akun non administrator (akun yang berelasi dengan modul kepegawaian)!"
@@ -169,6 +169,9 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     var pemeriksaan     = $('textarea[name=pemeriksaan]').val();
     var penilaian       = $('textarea[name=penilaian]').val();
     var rtl             = $('textarea[name=rtl]').val();
+    var instruksi       = $('textarea[name=instruksi]').val();
+    var evaluasi        = $('textarea[name=evaluasi]').val();
+    var spo2            = $('input:text[name=spo2]').val();
 
     var url = baseURL + '/dokter_ranap/savesoap?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
@@ -186,7 +189,10 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
     keluhan : keluhan,
     pemeriksaan : pemeriksaan,
     penilaian : penilaian,
-    rtl : rtl
+    rtl : rtl,
+    instruksi : instruksi,
+    evaluasi : evaluasi,
+    spo2 : spo2
     }, function(data) {
       // tampilkan data
       $("#display").hide();
@@ -205,11 +211,14 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=gcs]').val("");
       $('input:text[name=kesadaran]').val("");
       $('input:text[name=alergi]').val("");
-      $('input:text[name=imun_ke]').val("");
+      $('input:text[name=lingkar_perut]').val("");
       $('textarea[name=keluhan]').val("");
       $('textarea[name=pemeriksaan]').val("");
       $('textarea[name=penilaian]').val("");
       $('textarea[name=rtl]').val("");
+      $('textarea[name=instruksi]').val("");
+      $('textarea[name=evaluasi]').val("");
+      $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
       $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
@@ -237,11 +246,14 @@ $("#soap").on("click",".edit_soap", function(event){
   var gcs             = $(this).attr("data-gcs");
   var kesadaran       = $(this).attr("data-kesadaran");
   var alergi          = $(this).attr("data-alergi");
-  var imun_ke         = $(this).attr("data-imun_ke");
+  var lingkar_perut   = $(this).attr("data-lingkar_perut");
   var keluhan         = $(this).attr("data-keluhan");
   var pemeriksaan     = $(this).attr("data-pemeriksaan");
   var penilaian       = $(this).attr("data-penilaian");
   var rtl             = $(this).attr("data-rtl");
+  var instruksi       = $(this).attr("data-instruksi");
+  var evaluasi        = $(this).attr("data-evaluasi");
+  var spo2            = $(this).attr("data-spo2");
 
   $('input:text[name=tgl_perawatan]').val(tgl_perawatan);
   $('input:text[name=jam_rawat]').val(jam_rawat);
@@ -254,11 +266,14 @@ $("#soap").on("click",".edit_soap", function(event){
   $('input:text[name=gcs]').val(gcs);
   $('input:text[name=kesadaran]').val(kesadaran);
   $('input:text[name=alergi]').val(alergi);
-  $('input:text[name=imun_ke]').val(imun_ke);
+  $('input:text[name=lingkar_perut]').val(lingkar_perut);
   $('textarea[name=keluhan]').val(keluhan);
   $('textarea[name=pemeriksaan]').val(pemeriksaan);
   $('textarea[name=penilaian]').val(penilaian);
   $('textarea[name=rtl]').val(rtl);
+  $('textarea[name=instruksi]').val(instruksi);
+  $('textarea[name=evaluasi]').val(evaluasi);
+  $('input:text[name=spo2]').val(spo2);
 
 });
 
@@ -296,11 +311,14 @@ $("#soap").on("click",".hapus_soap", function(event){
         $('input:text[name=gcs]').val("");
         $('input:text[name=kesadaran]').val("");
         $('input:text[name=alergi]').val("");
-        $('input:text[name=imun_ke]').val("");
+        $('input:text[name=lingkar_perut]').val("");
         $('textarea[name=keluhan]').val("");
         $('textarea[name=pemeriksaan]').val("");
         $('textarea[name=penilaian]').val("");
         $('textarea[name=rtl]').val("");
+        $('textarea[name=instruksi]').val("");
+        $('textarea[name=evaluasi]').val("");
+        $('input:text[name=spo2]').val("");
         $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
         $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
         $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");

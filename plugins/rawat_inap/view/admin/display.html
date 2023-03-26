@@ -32,6 +32,7 @@
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#set_dpjp" data-no_rawat="{$value.no_rawat}">Set DPJP</a></li>
+              <li><a href="#ubah_penjab" data-no_rawat="{$value.no_rawat}">Ubah Penjamin</a></li>
               {/if}
             </ul>
           </td>
@@ -269,6 +270,57 @@
   });
   var t = $(".dataTables").DataTable().rows().count();
   $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  //$("#display").on("click",".set_dpjp", function(event){
+  $('a[href="#ubah_penjab"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_inap/ubahpenjab?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+
+    var ubah_penjab = ''
+        + '<div class="form-group">'
+        + '<label for="status_keluar">Pilih Penjamin</label>'
+        + '<select name="kd_pj" id="kd_pj" class="form-control" data-use-dimmer="false">'
+        + '{loop: $rawat_inap.penjab}'
+        + '<option value="{$value.kd_pj}">{$value.png_jawab}</option>'
+        + '{/loop}'
+        + '</select>'
+        + '</div>'
+        + '';
+
+    // tampilkan dialog konfirmasi
+    bootbox.dialog({
+      message: ubah_penjab,
+      title: 'Ubah Penjamin',
+      buttons: {
+        main: {
+          label: 'Simpan',
+          className: 'btn-primary',
+          callback() {
+            var kd_pj = $('#kd_pj').val();
+            //console.log(tgl_keluar);
+            $.post(url, {
+              no_rawat: no_rawat,
+              kd_pj: kd_pj
+            } ,function(data) {
+              // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+              $("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+              $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+              "Ubah penjamin telah disimpan!"+
+              "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+              "</div>").show();
+            });
+          }
+        }
+      }
+    });
+    $('select').selectator();
+    event.stopPropagation();
+    return false;
+  });
 </script>
 <script type="text/javascript">
    $(function () {

@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul mLITE JKN Mobile API Versi 2',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile' => 'jknmobile_v2'],
     'install'       =>  function () use ($core) {
@@ -34,6 +34,7 @@ return [
         `tanggal_periksa` date NOT NULL,
         `nomor_kartu` varchar(50) NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL PRIMARY KEY,
+        `kodebooking` varchar(100) NOT NULL,
         `jenis_kunjungan` varchar(10) NOT NULL,
         `status_kirim` varchar(20) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
@@ -41,7 +42,8 @@ return [
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
         `tanggal_batal` date NOT NULL,
         `nomor_referensi` varchar(50) NOT NULL,
-        `keterangan` varchar(250) NOT NULL PRIMARY KEY
+        `kodebooking` varchar(100) NOT NULL,
+        `keterangan` varchar(250) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (

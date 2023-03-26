@@ -162,7 +162,20 @@ function addTokenVedika($url)
     return $url;
 }
 
-function url($data = null)
+function addTokenVeronisa($url)
+{
+    if (isset($_SESSION['veronisa_token'])) {
+        if (parse_url($url, PHP_URL_QUERY)) {
+            return $url.'&t='.$_SESSION['veronisa_token'];
+        } else {
+            return $url.'?t='.$_SESSION['veronisa_token'];
+        }
+    }
+
+    return $url;
+}
+
+function url($data = '')
 {
     if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
         return $data;
@@ -187,7 +200,7 @@ function url($data = null)
     if (is_array($data)) {
         $url = $url.'/'.implode('/', $data);
     } elseif ($data) {
-        $data = str_replace(BASE_DIR.'/', null, $data);
+        $data = str_replace(BASE_DIR.'/', '', $data);
         $url = $url.'/'.trim($data, '/');
     }
 
@@ -197,6 +210,10 @@ function url($data = null)
 
     if (strpos($url, '/veda/') !== false) {
         $url = addTokenVedika($url);
+    }
+
+    if (strpos($url, '/vero/') !== false) {
+        $url = addTokenVeronisa($url);
     }
 
     return $url;
@@ -222,7 +239,7 @@ function domain($with_protocol = true, $cut_www = false)
 
 
 function mlite_dir() {
-    return dirname(str_replace(ADMIN, null, $_SERVER['SCRIPT_NAME']));
+    return dirname(str_replace(ADMIN, '', $_SERVER['SCRIPT_NAME']));
 }
 
 function isset_or(&$var, $alternate = null)

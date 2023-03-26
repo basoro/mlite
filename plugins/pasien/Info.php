@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul data pasien untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'users',
     'install'       =>  function () use ($core) {
 
@@ -19,12 +19,12 @@ return [
           `nm_ibu` varchar(40) NOT NULL,
           `alamat` varchar(200) DEFAULT NULL,
           `gol_darah` enum('A','B','O','AB','-') DEFAULT NULL,
-          `pekerjaan` varchar(35) DEFAULT NULL,
+          `pekerjaan` varchar(60) DEFAULT NULL,
           `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
           `agama` varchar(12) DEFAULT NULL,
           `tgl_daftar` date DEFAULT NULL,
           `no_tlp` varchar(40) DEFAULT NULL,
-          `umur` varchar(20) NOT NULL,
+          `umur` varchar(30) NOT NULL,
           `pnd` enum('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-') NOT NULL,
           `keluarga` enum('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK') DEFAULT NULL,
           `namakeluarga` varchar(50) NOT NULL,

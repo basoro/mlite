@@ -107,6 +107,22 @@ $("#display").on("click",".antrian", function(event){
   window.open(baseURL + '/radiologi/antrian?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
+$("#rincian").on("click","#cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click","#cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
 $("#display").on("click",".riwayat_perawatan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -241,6 +257,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
   var url    = baseURL + '/radiologi/display?t=' + mlite.token;
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -249,7 +266,7 @@ $('#manage').on('click', '#submit_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -272,6 +289,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'belum';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -280,7 +298,7 @@ $('#manage').on('click', '#belum_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -303,6 +321,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'selesai';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -311,7 +330,7 @@ $('#manage').on('click', '#selesai_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -334,6 +353,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
   var periode_rawat_jalan  = $('input:text[name=periode_rawat_jalan]').val();
   var periode_rawat_jalan_akhir  = $('input:text[name=periode_rawat_jalan_akhir]').val();
   var status_periksa = 'lunas';
+  var status  = $('input:hidden[name=status]').val();
 
   if(periode_rawat_jalan == '') {
     alert('Tanggal awal masih kosong!')
@@ -342,7 +362,7 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_jalan: periode_rawat_jalan, periode_rawat_jalan_akhir: periode_rawat_jalan_akhir, status_periksa: status_periksa, status: status} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();
@@ -435,6 +455,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
+  var status          = $('input:text[name=status]').val();
 
   var url = baseURL + '/radiologi/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
@@ -446,15 +467,17 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  status         : status
   }, function(data) {
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
+    $.post(url, {no_rawat : no_rawat, status : status
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
+      bersih();
     });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
@@ -469,6 +492,163 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   });
 });
 
+$("#rincian").on("click",".hasil_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam_periksa = $(this).attr("data-jam_periksa");
+  var status = $(this).attr("data-status");
+
+  var set_stok = ''
+      + '<div class="form-group">'
+      + '<div class="form-group">'
+      + '<label>Hasil</label>'
+      + '<textarea name="hasil" id="hasil" rows="4" class="form-control""></textarea>'
+      + '</div>'
+      + '<div class="form-group">'
+      + '<label>Upload</label>'
+      + '<form method="post" action="" enctype="multipart/form-data">'
+      + '  Select file : <input type="file" name="file" id="file" class="form-control"><br>'
+      + '  <input type="button" class="btn btn-info" value="Upload" id="btn_upload">'
+      + '</form>'
+      + '<div id="preview"></div>'
+      + '</div>'
+      + '';
+
+  // tampilkan dialog konfirmasi
+  var box = bootbox.dialog({
+    message: set_stok,
+    title: 'Input Hasil Radiologi',
+    buttons: {
+      main: {
+        label: 'Simpan',
+        className: 'btn-primary',
+        callback() {
+          var hasil = $('#hasil').val();
+          //console.log(tgl_keluar);
+          $.post(url, {
+            no_rawat: no_rawat,
+            tgl_periksa: tgl_periksa,
+            jam_periksa: jam_periksa,
+            hasil: hasil
+          } ,function(data) {
+            // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+            //$("#display").load(baseURL + '/rawat_inap/display?t=' + mlite.token);
+            var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+            $.post(url, {no_rawat : no_rawat, status : status
+            }, function(data) {
+              // tampilkan data
+              $("#rincian").html(data).show();
+            });
+            $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+            "Hasil radiologi telah disimpan!"+
+            "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+            "</div>").show();
+          });
+        }
+      },
+      cancel: {
+        label: "Cancel",
+        className: "btn-default"
+      }
+    }
+  });
+  box.on("shown.bs.modal", function() {
+    $('#btn_upload').click(function(){
+
+      var baseURL = mlite.url + '/' + mlite.admin;
+      event.preventDefault();
+      var url= baseURL + '/radiologi/uploadhasil?t=' + mlite.token;
+
+      var fd = new FormData();
+      var files = $('#file')[0].files[0];
+      fd.append('file',files);
+      fd.append('no_rawat',no_rawat);
+      fd.append('tgl_periksa',tgl_periksa);
+      fd.append('jam_periksa',jam_periksa);
+      // AJAX request
+      $.ajax({
+        url: url,
+        type: 'post',
+        data: fd,
+        contentType: false,
+        processData: false,
+        dataType: 'json',
+        success: function(data)
+        {
+            if(data.status == 'success')
+            {
+                $('#preview').append("<img src='"+data.result+"' width='100' height='100' style='display: inline-block;'>");
+            }
+            else if(data.status == 'failure')
+            {
+                bootbox.alert(data.result);
+            }
+        }
+      });
+    });
+  });
+
+  box.modal('show');
+  //$('select').selectator();
+  event.stopPropagation();
+  return false;
+});
+
+$("#rincian").on("click",".hasil_pacs", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam_periksa = $(this).attr("data-jam_periksa");
+  var status = $(this).attr("data-status");
+  alert('PACS');
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".validasi_permintaan_radiologi", function(event){
+  event.preventDefault();
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url = baseURL + '/radiologi/validasipermintaanradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_permintaan = $(this).attr("data-tgl_permintaan");
+  var jam_permintaan = $(this).attr("data-jam_permintaan");
+  var noorder = $(this).attr("data-noorder");
+  var status  = $('input:text[name=status]').val();
+
+  //console.log(no_rawat + ' - ' + noorder + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menvalidasi data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_permintaan: tgl_permintaan,
+        jam_permintaan: jam_permintaan,
+        noorder: noorder,
+        status: status
+      } ,function(data) {
+        console.log(data);
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status: status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Validasi permintaan laboratorium telah selesai!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+$(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+
 // ketika tombol hapus ditekan
 $("#rincian").on("click",".hapus_radiologi", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
@@ -479,6 +659,7 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
   var tgl_perawatan = $(this).attr("data-tgl_periksa");
   var jam_rawat = $(this).attr("data-jam_periksa");
   var provider = $(this).attr("data-provider");
+  var status          = $('input:text[name=status]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
@@ -493,13 +674,48 @@ $("#rincian").on("click",".hapus_radiologi", function(event){
         provider: provider
       } ,function(data) {
         var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
-        $.post(url, {no_rawat : no_rawat,
+        $.post(url, {no_rawat : no_rawat, status : status
         }, function(data) {
           // tampilkan data
           $("#rincian").html(data).show();
         });
         $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-        "Data rincian rawat jalan telah dihapus!"+
+        "Data rincian radiologi telah dihapus!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+      });
+    }
+  });
+});
+
+// ketika tombol hapus ditekan
+$("#rincian").on("click",".hapus_hasil_radiologi", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/radiologi/hapushasilradiologi?t=' + mlite.token;
+  var no_rawat = $(this).attr("data-no_rawat");
+  var tgl_perawatan = $(this).attr("data-tgl_periksa");
+  var jam_rawat = $(this).attr("data-jam_periksa");
+  var status          = $('input:text[name=status]').val();
+
+  // tampilkan dialog konfirmasi
+  bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+    // ketika ditekan tombol ok
+    if (result){
+      // mengirimkan perintah penghapusan
+      $.post(url, {
+        no_rawat: no_rawat,
+        tgl_perawatan: tgl_perawatan,
+        jam_rawat: jam_rawat
+      } ,function(data) {
+        var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+        $.post(url, {no_rawat : no_rawat, status : status
+        }, function(data) {
+          // tampilkan data
+          $("#rincian").html(data).show();
+        });
+        $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data rincian hasil radiologi telah dihapus!"+
         "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
         "</div>").show();
       });

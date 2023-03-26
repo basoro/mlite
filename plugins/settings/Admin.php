@@ -48,6 +48,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $settings = $this->settings('settings');
+        $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
         $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
         $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
@@ -260,7 +261,7 @@ class Admin extends AdminModule
                 $this->tpl->set('error', $obj);
             } else {
                 if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2022-01-01 00:00:00');
+                  $this->settings('settings', 'version', '2023-01-01 00:00:00');
                 }
                 $this->settings('settings', 'update_version', $new_date_format);
                 $this->settings('settings', 'update_changelog', $obj['commit']['message']);
@@ -306,16 +307,16 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
             // Unzip latest update
-            $zip = new ZipArchive;
+            $zip = new \ZipArchive;
             $zip->open(BASE_DIR.'/tmp/latest.zip');
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/themes', BASE_DIR.'/themes');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-mlite/vendor', BASE_DIR.'/vendor');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/vendor', BASE_DIR.'/vendor');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');

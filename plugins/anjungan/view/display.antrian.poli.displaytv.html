@@ -1,0 +1,49 @@
+<div class="col-md-12" id="">
+  <div class="card bg-primary" style="border:2px solid #ddd;border-radius: 15px;height: 75vh;">
+    <div class="card-body" style="padding-left: 15px;padding-right: 15px;">
+      {loop: $display}
+      <h1 class="text-center">{$value.nm_poli}</h1><h3 class="text-center">{$value.nm_dokter}</h3><br>
+      <div class="row">
+        <div class="col-md-6 text-center">
+          <div class="panel text-danger" style="background-color: #FFCC00;">
+            <div class="pane-header">
+              <h3 class="header-title">Antrian</h3>
+            </div>
+            <div class="panel-body">
+              <div style="font-size:64px;">{$value.dalam_antrian.jumlah}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 text-center">
+          <div class="panel text-danger" style="background-color: #FFCC00;">
+            <div class="pane-header">
+              <h3 class="header-title">Terlayani</h3>
+            </div>
+            <div class="panel-body">
+              <div style="font-size:64px;">{$value.sudah_dilayani.jumlah}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {if: isset($slug[4])}
+      <marquee scrollamount="3" direction="up" height="350px">
+      {/if}
+      <div style="font-size:22px;">
+        {if: !empty($value.selanjutnya)}
+        <ul class="list-unstyled">
+          {loop: $value.selanjutnya as $data}
+          <li>
+            {$data.no_reg} - {?=substr($data.nm_pasien, 0, 20)?} ...<br>
+          </li>
+          {/loop}
+        </ul>
+        {/if}
+      </div>
+      {if: isset($slug[4])}
+      </marquee>
+      {/if}
+      {/loop}
+    </div>
+  </div>
+</div>
+<div style="display:none">{$powered}</div>

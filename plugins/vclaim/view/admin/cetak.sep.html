@@ -321,7 +321,7 @@ function printContent(el){
                 :
               </td>
               <td width="550" valign="top">
-                -
+                {$data_sep.catatan}
               </td>
               <td width="200" halign="center" valign="bottom">
                 Pasien/Keluarga Pasien
@@ -394,6 +394,8 @@ function printContent(el){
                 $("#carisep pre").text(JSON.stringify(data, null, '\t'));
                 var json_obj = [data];
                 if(!json_obj[0]) {
+                  // console.log("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}");
+
                   alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
                 } else if(json_obj[0].metaData.code == 200) {
 
@@ -404,8 +406,8 @@ function printContent(el){
                     if(!json_obj2[0]) {
                       alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
                     } else if(json_obj2[0].metaData.code == 200) {
-                      alert(json_obj2[0].metaData.message);
-
+                      // alert(json_obj2[0].metaData.message);
+                      alert(json_obj[0].response.noSep);
                       var no_sep = json_obj[0].response.noSep;
                       var no_rawat = '';
                       var tglsep = json_obj[0].response.tglSep;

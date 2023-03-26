@@ -156,7 +156,7 @@
               {if: is_array($sep_response)}
               <u class="list-unstyled">
               {loop: $sep_response.rujukan as $key => $val }
-                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase">{$val.poliRujukan.nama}</a></li>
+                <li><a href="{?=url('anjungan/sep/bikin')?}/{$val.noKunjungan}/{$no_rkm_medis}/{$val.poliRujukan.kode}" class="nav-link btn btn-lg btn-dark btn-block shadow text-uppercase">{$val.poliRujukan.nama}</a></li>
               {/loop}
               </ul>
               {else}

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Laporan</title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body { max-width:1600px; margin-left: 20px; margin-right: 20px; }
+	table, tr, td, th { border-collapse:collapse; border:1px solid black;}
+	th,td {padding:0px 10px 0px 10px;}
+  table th {white-space: nowrap;font-size:12px;}
+  table td {font-size:11px;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		bottom:40px;
+		right:40px;
+		background-color:#4C9A2A;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="laporan">
+			<center>
+				<header>
+					<h3>{$settings.nama_instansi}</h3>
+					<p style="margin-top:-10px;">{$settings.alamat}</p>
+					<hr style="margin-top:0;">
+					<p>
+            <b>Laporan Jurnal Harian</b><br>
+            {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
+            Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
+            {else}
+            Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}
+            {/if}
+          </p>
+				</header>
+				<div class="">
+          <table class="table table-striped no-margin dataTables" width="100%">
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>No. Jurnal</th>
+                <th>No. Bukti</th>
+                <th>Rekening</th>
+                <th>Keterangan</th>
+                <th>Jenis</th>
+                <th>Debet</th>
+                <th>Kredit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $jurnalharian}
+              <tr>
+                <td>{$value.tgl_jurnal}</td>
+                <td>{$value.no_jurnal}</td>
+                <td>{$value.no_bukti}</td>
+                <td>{$value.kd_rek} - {$value.nm_rek}</td>
+                <td>{$value.keterangan}</td>
+                <td>{$value.jenis}</td>
+								<td><span class="pull-right">{?= number_format($value.debet,2,',','.')?}</span></td>
+                <td><span class="pull-right">{?= number_format($value.kredit,2,',','.')?}</span></td>
+              </tr>
+              {/loop}
+            </tbody>
+          </table>
+        </div>
+      </center>
+		</div>
+
+	 	<button onclick="printContent('laporan')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+
+  </body>
+</html>

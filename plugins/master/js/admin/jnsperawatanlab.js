@@ -56,7 +56,7 @@ $("#form").on("click", "#simpan", function(event){
     total_byr: total_byr,
     kd_pj: kd_pj,
     kelas: kelas,
-    kategori: kategori, 
+    kategori: kategori,
     status: status
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/jnsperawatanlabdisplay?t=' + mlite.token);
@@ -184,6 +184,16 @@ $("#display").on("click", ".halaman",function(event){
 
 });
 // end halaman
+
+$("#form").on("click","#kd_jenis_prw", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/master/jnsperawatanlabmaxid?t=' + mlite.token;
+  $.post(url, {
+  } ,function(data) {
+    $("#kd_jenis_prw").val(data);
+  });
+});
 
 function bersih(){
   $('input:text[name=id]').val("").removeAttr('disabled');

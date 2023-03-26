@@ -84,7 +84,7 @@ $("#form").on("click","#hapus", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var url = baseURL + '/master/petugashapus?t=' + mlite.token;
-  var nip = $('input:text[name=nip]').val();
+  var nip = $('select[name=nip]').val();
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){

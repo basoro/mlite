@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Laporan</title>
+		<meta charset="UTF-8">
+    <link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+	<style>
+	body { max-width:1600px; margin-left: 20px; margin-right: 20px; }
+	table, tr, td, th { border-collapse:collapse; border:1px solid black;}
+	th,td {padding:0px 10px 0px 10px;}
+  table th {white-space: nowrap;font-size:12px;}
+  table td {font-size:11px;}
+	.float{
+		position:fixed;
+		width:120px;
+		height:40px;
+		top:20px;
+		right:40px;
+		background-color:#4C9A2A;
+		color:#FFF;
+		text-align:center;
+		box-shadow: 2px 2px 3px #999;
+	}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+    <button onclick="printContent('laporan')" type="button" class="btn btn-danger center-block float"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+		<div id="laporan">
+			<center>
+				<header>
+					<h3>{$settings.nama_instansi}</h3>
+					<p style="margin-top:-10px;">{$settings.alamat}</p>
+					<hr style="margin-top:0;">
+					<p>
+            <b>Laporan Arus Kas</b><br>
+            Tahun Anggaran {?=date('Y')?}
+          </p>
+				</header>
+				<div class="">
+          <table class="table table-striped table-condensed no-padding">
+            <thead>
+              <tr>
+                <th width="50px">No.</th>
+                <th>Uraian Arus Kas</th>
+                <th width="160px"><span class="pull-right">{?=date('Y')?}</span></th>
+                <th width="160px"><span class="pull-right">{?=date('Y')-1?}</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              {loop: $aruskas}
+              <tr>
+                <td><b>{$value.nomor}</b></td>
+                <td colspan="3"><b>
+                  {?=strtoupper($value.arus_kas)?}
+                </b></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="3">Arus Masuk Kas</td>
+              </tr>
+                {loop: $value.jurnal_masuk as $data}
+                <tr>
+                  <td></td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+                  <td><span class="pull-right">{?= number_format($data.kredit_all,2,',','.')?}</span></td>
+                  <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
+                </tr>
+                {/loop}
+                <tr>
+                  <td></td>
+                  <td align="right">Jumlah Arus Masuk Kas</td>
+                  <td><span class="pull-right">{?= number_format($value.total_masuk,2,',','.')?}</span></td>
+                  <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk,2,',','.')?}</span></td>
+                </tr>
+              <tr>
+                <td></td>
+                <td colspan="3">Arus Keluar Kas</td>
+              </tr>
+                {loop: $value.jurnal_keluar as $data}
+                <tr>
+                  <td></td>
+                  <td>&nbsp;&nbsp;&nbsp;&nbsp;{$data.nm_rek}</td>
+                  <td><span class="pull-right">{?= number_format($data.debet_all,2,',','.')?}</span></td>
+                  <td><span class="pull-right">{?= number_format($data.saldo_awal,2,',','.')?}</span></td>
+                </tr>
+                {/loop}
+                <tr>
+                  <td></td>
+                  <td align="right">Jumlah Arus Keluar Kas</td>
+                  <td><span class="pull-right">{?= number_format($value.total_keluar,2,',','.')?}</span></td>
+                  <td><span class="pull-right">{?= number_format($value.total_saldo_awal_keluar,2,',','.')?}</span></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td align="right"><b>Netto {$value.arus_kas} ({$value.nomor})</b></td>
+                  <td><span class="pull-right">{?= number_format($value.total_masuk - $value.total_keluar,2,',','.')?}</span></td>
+                  <td><span class="pull-right">{?= number_format($value.total_saldo_awal_masuk - $value.total_saldo_awal_keluar,2,',','.')?}</span></td>
+                </tr>
+              {/loop}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th></th>
+                <th style="text-align:right">Jumlah Arus Kas Bersih (1+2+3)</th>
+                <th><span class="pull-right">{?= number_format($masuk_all - $keluar_all,2,',','.')?}</span></th>
+                <th><span class="pull-right">{?= number_format($saldo_masuk - $saldo_keluar,2,',','.')?}</span></th>
+              </tr>
+              <tr>
+                <th></th>
+                <th style="text-align:right">Saldo Awal Kas dan Setara Kas</th>
+                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+                <th><span class="pull-right">{?= number_format($jumlah_total_saldo,2,',','.')?}</span></th>
+              </tr>
+              <tr>
+                <th></th>
+                <th style="text-align:right">Saldo Akhir Kas dan Setara Kas</th>
+                <th><span class="pull-right">{?= number_format(($masuk_all - $keluar_all) + ($jumlah_total_saldo + $saldo_keluar),2,',','.')?}</span></th>
+                <th><span class="pull-right">{?= number_format($jumlah_total_saldo + $saldo_keluar,2,',','.')?}</span></th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </center>
+    </div>
+  </body>
+</html>

@@ -5,9 +5,23 @@ return [
     'description'   =>  'Modul Keuangan untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
+      
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekening` (
+          `kd_rek` varchar(15) NOT NULL DEFAULT '',
+          `nm_rek` varchar(100) DEFAULT NULL,
+          `tipe` enum('N','M','R') DEFAULT NULL,
+          `balance` enum('D','K') DEFAULT NULL,
+          `level` enum('0','1') DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_rekening`
+          ADD PRIMARY KEY (`kd_rek`),
+          ADD KEY `nm_rek` (`nm_rek`),
+          ADD KEY `tipe` (`tipe`),
+          ADD KEY `balance` (`balance`);");
 
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
           `no_jurnal` varchar(20) NOT NULL,
@@ -41,20 +55,6 @@ return [
           ADD CONSTRAINT `mlite_detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite_jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
           ADD CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekening` (
-          `kd_rek` varchar(15) NOT NULL DEFAULT '',
-          `nm_rek` varchar(100) DEFAULT NULL,
-          `tipe` enum('N','M','R') DEFAULT NULL,
-          `balance` enum('D','K') DEFAULT NULL,
-          `level` enum('0','1') DEFAULT NULL
-        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-
-        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_rekening`
-          ADD PRIMARY KEY (`kd_rek`),
-          ADD KEY `nm_rek` (`nm_rek`),
-          ADD KEY `tipe` (`tipe`),
-          ADD KEY `balance` (`balance`);");
-
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekeningtahun` (
           `thn` year(4) NOT NULL,
           `kd_rek` varchar(15) NOT NULL DEFAULT '',
@@ -82,10 +82,21 @@ return [
           ADD CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
           ADD CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_akun_kegiatan` (
+          `id` int(11) NOT NULL,
+          `kegiatan` varchar(200) DEFAULT NULL,
+          `kd_rek` varchar(20) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
+          ADD PRIMARY KEY (`id`);");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `mlite_akun_kegiatan`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'jurnal_kasir', '0')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_pendaftaran', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan_ralan', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_tindakan', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_obat_bhp', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_laboratorium', '')");
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('keuangan', 'akun_kredit_radiologi', '')");

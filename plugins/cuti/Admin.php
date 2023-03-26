@@ -11,22 +11,22 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola' => 'index',
-            'Pengajuan Cuti' => 'manage',
+            'Kelola' => 'Manage',
+            'Pengajuan Cuti' => 'index',
             'Rekap Cuti' => 'rekap_cuti'
         ];
     }
 
-    public function getIndex()
+    public function getManage()
     {
       $sub_modules = [
-        ['name' => 'Pengajuan Cuti', 'url' => url([ADMIN, 'cuti', 'manage']), 'icon' => 'calendar-check-o', 'desc' => 'Pengajuan Cuti Pegawai'],
+        ['name' => 'Pengajuan Cuti', 'url' => url([ADMIN, 'cuti', 'index']), 'icon' => 'calendar-check-o', 'desc' => 'Pengajuan Cuti Pegawai'],
         ['name' => 'Rekap Cuti', 'url' => url([ADMIN, 'cuti', 'rekap_cuti']), 'icon' => 'calendar', 'desc' => 'Rekap Cuti Pegawai'],
       ];
-      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
+      return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
 
-    public function anyManage()
+    public function anyIndex()
     {
         $tgl_pengajuan = date('Y-m-d');
         $tgl_pengajuan_akhir = date('Y-m-d');
@@ -42,8 +42,25 @@ class Admin extends AdminModule
           $status_cuti = $_POST['status_cuti'];
         }
 
+        $this->assign['urgensi'] = array("Tahunan","Besar","Sakit","Bersalin","Alasan Penting","Keterangan Lainnya");
+        $this->assign['pj'] = $this->mysql('pegawai')->where('stts_aktif', '!=', 'KELUAR')->toArray();
+
+        $this->assign['pengajuan_cuti'] = [
+          'no_pengajuan' => '',
+          'tanggal' => '',
+          'tanggal_awal' => '',
+          'tanggal_akhir' => '',
+          'nik' => '',
+          'urgensi' => '',
+          'alamat' => '',
+          'jumlah' => '',
+          'kepentingan' => '',
+          'nik_pj' => '',
+          'status' => ''
+         ];
+
         $this->_Display($tgl_pengajuan, $tgl_pengajuan_akhir, $status_cuti);
-        return $this->draw('manage.html',['cuti' => $this->assign]);
+        return $this->draw('index.html',['cuti' => $this->assign]);
     }
 
     public function anyDisplay()
@@ -84,10 +101,10 @@ class Admin extends AdminModule
         pengajuan_cuti.kepentingan,
         pengajuan_cuti.nik_pj,
         peg2.nama AS namapj,
-        pengajuan_cuti.status 
-        FROM pengajuan_cuti 
-        INNER JOIN pegawai AS peg1 ON pengajuan_cuti.nik=peg1.nik 
-        INNER JOIN pegawai AS peg2 ON pengajuan_cuti.nik_pj=peg2.nik 
+        pengajuan_cuti.status
+        FROM pengajuan_cuti
+        INNER JOIN pegawai AS peg1 ON pengajuan_cuti.nik=peg1.nik
+        INNER JOIN pegawai AS peg2 ON pengajuan_cuti.nik_pj=peg2.nik
         WHERE pengajuan_cuti.tanggal BETWEEN '$tgl_pengajuan' AND '$tgl_pengajuan_akhir'";
 
         if ($this->core->getUserInfo('role') != 'admin') {
@@ -123,20 +140,20 @@ class Admin extends AdminModule
       $this->assign['tgl_akhir']= date('Y-m-d');
       if (isset($_POST['no_pengajuan'])){
         $this->assign['pengajuan_cuti'] = $this->mysql('pengajuan_cuti')
-        ->select([
-          'no_pengajuan' => 'pengajuan_cuti.no_pengajuan',
-          'tanggal' => 'pengajuan_cuti.tanggal',
-          'tanggal_awal' => 'pengajuan_cuti.tanggal_awal',
-          'tanggal_akhir' => 'pengajuan_cuti.tanggal_akhir',
-          'nik' => 'pengajuan_cuti.nik',
-          'urgensi' => 'pengajuan_cuti.urgensi',
-          'alamat' => 'pengajuan_cuti.alamat',
-          'jumlah' => 'pengajuan_cuti.jumlah',
-          'kepentingan' => 'pengajuan_cuti.kepentingan',
-          'nik_pj' => 'pengajuan_cuti.nik_pj',
-          'status' => 'pengajuan_cuti.status',
-          'nama' => 'pegawai.nama',
-      ])
+          ->select([
+            'no_pengajuan' => 'pengajuan_cuti.no_pengajuan',
+            'tanggal' => 'pengajuan_cuti.tanggal',
+            'tanggal_awal' => 'pengajuan_cuti.tanggal_awal',
+            'tanggal_akhir' => 'pengajuan_cuti.tanggal_akhir',
+            'nik' => 'pengajuan_cuti.nik',
+            'urgensi' => 'pengajuan_cuti.urgensi',
+            'alamat' => 'pengajuan_cuti.alamat',
+            'jumlah' => 'pengajuan_cuti.jumlah',
+            'kepentingan' => 'pengajuan_cuti.kepentingan',
+            'nik_pj' => 'pengajuan_cuti.nik_pj',
+            'status' => 'pengajuan_cuti.status',
+            'nama' => 'pegawai.nama',
+          ])
           ->join('pegawai', 'pengajuan_cuti.nik_pj=pegawai.nik')
           ->where('no_pengajuan', $_POST['no_pengajuan'])
           ->oneArray();
@@ -162,7 +179,7 @@ class Admin extends AdminModule
         ]);
       }
       exit();
-    }    
+    }
     public function postMaxid()
     {
       $max_id = $this->mysql('pengajuan_cuti')->select(['no_pengajuan' => 'ifnull(MAX(CONVERT(RIGHT(no_pengajuan,3),signed)),0)'])->where('tanggal', date('Y-m-d'))->oneArray();
@@ -178,7 +195,7 @@ class Admin extends AdminModule
     public function postSave()
     {
       $username = $this->core->getUserInfo('username', null, true);
-      
+
       $awal  = new \DateTime($_POST['tgl_pengajuan']);
       $akhir = new \DateTime($_POST['tgl_akhir']);
       $diff = $akhir->diff($awal, true); // to make the difference to be always positive.
@@ -201,7 +218,7 @@ class Admin extends AdminModule
         ]);
         $dada = 'sukses';
         echo $dada;
-      } else if ($this->mysql('pengajuan_cuti')->where('no_pengajuan', $_POST['no_pengajuan'])->where('status', 'Disetujui')->oneArray()) { 
+      } else if ($this->mysql('pengajuan_cuti')->where('no_pengajuan', $_POST['no_pengajuan'])->where('status', 'Disetujui')->oneArray()) {
         $dada = 'gagal';
         echo $dada;
       }
@@ -217,10 +234,10 @@ class Admin extends AdminModule
         ]);
         $dada = 'sukses';
         echo $dada;
-      }    
+      }
 
       exit();
-    }    
+    }
     public function postStatusCuti()
     {
       if($_POST['statusct'] == 'Ditolak') {
@@ -263,7 +280,7 @@ class Admin extends AdminModule
 
         if (isset($_GET['awal'])) {
             $tgl_pengajuan = $_GET['awal'];
-        }       
+        }
 
         $username = $this->core->getUserInfo('username', null, true);
         $totalRecords = $this->mysql('pengajuan_cuti')
@@ -273,7 +290,7 @@ class Admin extends AdminModule
         ->where('pengajuan_cuti.nik', $username)
         ->where('YEAR(tanggal)', $tgl_pengajuan)
         ->oneArray();
-        
+
         $totalan = $this->mysql('pengajuan_cuti')
         ->like('kepentingan', '%' . $phrase . '%')
         ->where('nik', $username)
@@ -303,10 +320,10 @@ class Admin extends AdminModule
         pengajuan_cuti.kepentingan,
         pengajuan_cuti.nik_pj,
         peg2.nama AS namapj,
-        pengajuan_cuti.status 
-        FROM pengajuan_cuti 
-        INNER JOIN pegawai AS peg1 ON pengajuan_cuti.nik=peg1.nik 
-        INNER JOIN pegawai AS peg2 ON pengajuan_cuti.nik_pj=peg2.nik 
+        pengajuan_cuti.status
+        FROM pengajuan_cuti
+        INNER JOIN pegawai AS peg1 ON pengajuan_cuti.nik=peg1.nik
+        INNER JOIN pegawai AS peg2 ON pengajuan_cuti.nik_pj=peg2.nik
         WHERE pengajuan_cuti.nik='$username' AND YEAR(tanggal) = '$tgl_pengajuan' AND pengajuan_cuti.kepentingan like '%$phrase%' ORDER BY pengajuan_cuti.tanggal DESC LIMIT $offset , $perpage";
 
         $stmt = $this->mysql()->pdo()->prepare($sql);
@@ -329,7 +346,7 @@ class Admin extends AdminModule
 
         $this->assign['totalsisa'] = $sisaRecords;
         return $this->draw('rekap_cuti.html', ['rekap' => $this->assign]);
-    }    
+    }
 
     public function getJavascript()
     {
@@ -355,10 +372,10 @@ class Admin extends AdminModule
     {
         return new DB_ICD($table);
     }
-  
+
 	protected function mysql($table = NULL)
     {
         return new MySQL($table);
-    }  
+    }
 
 }

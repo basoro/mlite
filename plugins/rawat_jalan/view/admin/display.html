@@ -36,6 +36,7 @@
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
+              <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
               {/if}
             </ul>
           </td>
@@ -63,13 +64,25 @@
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
             {/if}
+            {if: $cek_pcare}
+              <button type="button" name="button" class="btn btn-xs btn-info bridgingpcare"
+                data-no_rkm_medis="{$value.no_rkm_medis}"
+                data-nm_pasien="{$value.nm_pasien}"
+                data-no_rawat="{$value.no_rawat}"
+                data-no_peserta="{$value.no_peserta}"
+                data-tgl_registrasi="{$value.tgl_registrasi}"
+                {if: $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
+                disabled
+                {/if}
+              ><span class="fa fa-refresh"></span> BPJS</button>
+            {/if}
           {else}
             {$value.png_jawab}
           {/if}
           </td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.no_peserta}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.tgl_registrasi} {$value.jam_reg}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.stts}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{if: $value.stts == 'Dirujuk'}<a href="#" class="btn btn-xs btn-danger dirujuk" data-no_rawat="{?=convertNorawat($value.no_rawat)?}"><span class="fa fa-ambulance"></span> {$value.stts}</a>{else}{$value.stts}{/if}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_lanjut}</td>
           <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.status_bayar}</td>
         </tr>
@@ -94,6 +107,27 @@
 </div>
 <div class="modal fade" id="printModal" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bridgingpcareModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="bridgingpcaretindakanobatModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="dirujukModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
         </div>
@@ -229,7 +263,7 @@
         }
         ],
         callback: function (result) {
-            console.log(result);
+            //console.log(result);
             // ketika ditekan tombol ok
             if (result){
               // mengirimkan perintah penghapusan
@@ -255,6 +289,29 @@
     var no_rawat = $(this).attr("data-no_rawat");
     // tampilkan dialog konfirmasi
     bootbox.confirm("Apakah pasien dimasukkan dalam kamar inap?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rawat: no_rawat
+        } ,function(data) {
+          // sembunyikan form, tampilkan data yang sudah di perbaharui, tampilkan notif
+          $("#display").load(baseURL + '/rawat_jalan/display?t=' + mlite.token);
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Status periksa pasien telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+  $('a[href="#obat_kronis"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/rawat_jalan/obatkronis?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah pasien dimasukkan sebagai pasien dengan obat kronis?", function(result){
       // ketika ditekan tombol ok
       if (result){
         // mengirimkan perintah penghapusan
@@ -347,13 +404,49 @@
     var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
     $.post(url, {no_rkm_medis : no_rkm_medis,
     }, function(data) {
+      //console.log(data);
       // tampilkan data
       $("#form_rincian").hide();
       $("#form").hide();
       $("#notif").hide();
       $("#form_soap").hide();
       $("#form_kontrol").show();
-      $("#kontrol").html(data).show();
+      $("#surat_kontrol").html(data).show();
     });
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".bridgingpcare", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var id_pasien = $(this).attr("data-no_rkm_medis");
+    var tgl_pendaftaran = $(this).attr("data-tgl_registrasi");
+    var loadURL =  baseURL + '/pcare/bridgingpcare/' + id_pasien + '/' + tgl_pendaftaran + '?t=' + mlite.token;
+
+    var modal = $('#bridgingpcareModal');
+    var modalContent = $('#bridgingpcareModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#display").on("click",".dirujuk", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat");
+    var loadURL =  baseURL + '/vclaim/dirujuk/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#dirujukModal');
+    var modalContent = $('#dirujukModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
   });
 </script>

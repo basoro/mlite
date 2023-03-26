@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul pendaftaran layanan untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'wheelchair',
     'install'       =>  function () use ($core) {
 
@@ -22,7 +22,7 @@ return [
         `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
         `kd_sps` char(5) DEFAULT NULL,
         `alumni` varchar(60) DEFAULT NULL,
-        `no_ijn_praktek` varchar(40) DEFAULT NULL,
+        `no_ijn_praktek` varchar(120) DEFAULT NULL,
         `status` enum('0','1') NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -197,7 +197,7 @@ return [
       $core->mysql()->pdo()->exec("ALTER TABLE `reg_periksa`
         ADD CONSTRAINT `reg_periksa_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `reg_periksa_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `reg_periksa_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE NO ACTION ON UPDATE CASCADE,
+        ADD CONSTRAINT `reg_periksa_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE RESTRICT ON UPDATE CASCADE,
         ADD CONSTRAINT `reg_periksa_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `petugas` (
@@ -237,23 +237,23 @@ return [
         `no_rawat` varchar(17) NOT NULL,
         `tgl_perawatan` date NOT NULL,
         `jam_rawat` time NOT NULL,
-        `suhu_tubuh` char(5) DEFAULT NULL,
-        `tensi` char(8) NOT NULL,
-        `nadi` char(3) DEFAULT NULL,
-        `respirasi` char(3) DEFAULT NULL,
-        `tinggi` char(5) DEFAULT NULL,
-        `berat` char(5) DEFAULT NULL,
-        `spo2` char(3) NOT NULL,
+        `suhu_tubuh` varchar(5) NULL DEFAULT NULL,
+        `tensi` varchar(8) NOT NULL,
+        `nadi` varchar(3) NULL DEFAULT NULL,
+        `respirasi` varchar(3) NULL DEFAULT NULL,
+        `tinggi` varchar(5) NULL DEFAULT NULL,
+        `berat` varchar(5) NULL DEFAULT NULL,
+        `spo2` varchar(3) NOT NULL,
         `gcs` varchar(10) DEFAULT NULL,
         `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
-        `keluhan` varchar(400) DEFAULT NULL,
-        `pemeriksaan` varchar(400) DEFAULT NULL,
+        `keluhan` varchar(2000) NULL DEFAULT NULL,
+        `pemeriksaan` varchar(2000) NULL DEFAULT NULL,
         `alergi` varchar(50) DEFAULT NULL,
-        `imun_ke` enum('-','1','2','3','4','5','6','7','8','10','11','12','13') DEFAULT NULL,
-        `rtl` varchar(400) NOT NULL,
-        `penilaian` varchar(400) NOT NULL,
-        `instruksi` varchar(400) NOT NULL,
-        `evaluasi` varchar(400) NOT NULL,
+        `lingkar_perut` varchar(5) DEFAULT NULL,
+        `rtl` varchar(2000) NOT NULL,
+        `penilaian` varchar(2000) NOT NULL,
+        `instruksi` varchar(2000) NOT NULL,
+        `evaluasi` varchar(2000) NOT NULL,
         `nip` varchar(20) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
@@ -375,20 +375,20 @@ return [
         ADD KEY `biaya_rawat` (`biaya_rawat`);");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `rawat_jl_dr`
-        ADD CONSTRAINT `rawat_jl_dr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `rawat_jl_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `rawat_jl_dr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `rawat_jl_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
         ADD CONSTRAINT `rawat_jl_dr_ibfk_5` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `rawat_jl_drpr`
         ADD CONSTRAINT `rawat_jl_drpr_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-        ADD CONSTRAINT `rawat_jl_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `rawat_jl_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `rawat_jl_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        ADD CONSTRAINT `rawat_jl_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `rawat_jl_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `rawat_jl_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `rawat_jl_pr`
-        ADD CONSTRAINT `rawat_jl_pr_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `rawat_jl_pr_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
         ADD CONSTRAINT `rawat_jl_pr_ibfk_8` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-        ADD CONSTRAINT `rawat_jl_pr_ibfk_9` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        ADD CONSTRAINT `rawat_jl_pr_ibfk_9` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `diagnosa_pasien` (
         `no_rawat` varchar(17) NOT NULL,
@@ -438,7 +438,7 @@ return [
         `kd_pj` char(3) NOT NULL,
         `status` enum('0','1') NOT NULL,
         `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL,
-        `kategori` enum('PK','PA') NOT NULL
+        `kategori` enum('PK','PA','MB') NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `jns_perawatan_radiologi` (
@@ -594,18 +594,18 @@ return [
         ADD CONSTRAINT `jns_perawatan_radiologi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `periksa_lab`
-        ADD CONSTRAINT `periksa_lab_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_lab_ibfk_12` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_lab_ibfk_13` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_lab_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_lab_ibfk_12` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_lab_ibfk_13` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
         ADD CONSTRAINT `periksa_lab_ibfk_9` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `periksa_radiologi`
         ADD CONSTRAINT `periksa_radiologi_ibfk_4` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_radiologi_ibfk_5` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_radiologi_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_radiologi_ibfk_7` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `periksa_radiologi_ibfk_8` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        ADD CONSTRAINT `periksa_radiologi_ibfk_5` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_radiologi_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_radiologi_ibfk_7` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `periksa_radiologi_ibfk_8` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `template_laboratorium`
         ADD CONSTRAINT `template_laboratorium_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;");
@@ -616,7 +616,7 @@ return [
         `tgl_periksa` date NOT NULL,
         `jam` time NOT NULL,
         `id_template` int(11) NOT NULL,
-        `nilai` varchar(60) NOT NULL,
+        `nilai` varchar(200) NOT NULL,
         `nilai_rujukan` varchar(30) NOT NULL,
         `keterangan` varchar(60) NOT NULL,
         `bagian_rs` double NOT NULL,
@@ -649,8 +649,8 @@ return [
 
       $core->mysql()->pdo()->exec("ALTER TABLE `detail_periksa_lab`
         ADD CONSTRAINT `detail_periksa_lab_ibfk_10` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-        ADD CONSTRAINT `detail_periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
-        ADD CONSTRAINT `detail_periksa_lab_ibfk_12` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE;");
+        ADD CONSTRAINT `detail_periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `detail_periksa_lab_ibfk_12` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `hasil_radiologi` (
         `no_rawat` varchar(17) NOT NULL,
@@ -671,7 +671,7 @@ return [
         `nama_brng` varchar(80) DEFAULT NULL,
         `kode_satbesar` char(4) NOT NULL,
         `kode_sat` char(4) DEFAULT NULL,
-        `letak_barang` varchar(50) DEFAULT NULL,
+        `letak_barang` varchar(100) DEFAULT NULL,
         `dasar` double NOT NULL,
         `h_beli` double DEFAULT NULL,
         `ralan` double DEFAULT NULL,
@@ -979,7 +979,7 @@ return [
         ADD CONSTRAINT `booking_registrasi_ibfk_3` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `booking_registrasi_ibfk_4` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE `booking_periksa` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_periksa` (
         `no_booking` varchar(17) NOT NULL,
         `tanggal` date DEFAULT NULL,
         `nama` varchar(40) DEFAULT NULL,
@@ -1000,7 +1000,7 @@ return [
       $core->mysql()->pdo()->exec("ALTER TABLE `booking_periksa`
         ADD CONSTRAINT `booking_periksa_ibfk_1` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE `booking_periksa_balasan` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_periksa_balasan` (
         `no_booking` varchar(17) NOT NULL,
         `balasan` text DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -1011,7 +1011,7 @@ return [
       $core->mysql()->pdo()->exec("ALTER TABLE `booking_periksa_balasan`
         ADD CONSTRAINT `booking_periksa_balasan_ibfk_1` FOREIGN KEY (`no_booking`) REFERENCES `booking_periksa` (`no_booking`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE `booking_periksa_diterima` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_periksa_diterima` (
         `no_booking` varchar(17) NOT NULL,
         `no_rkm_medis` varchar(15) DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -1039,6 +1039,179 @@ return [
 
       $core->mysql()->pdo()->exec("ALTER TABLE `mutasi_berkas`
         ADD CONSTRAINT `mutasi_berkas_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `paket_operasi` (
+        `kode_paket` varchar(15) NOT NULL,
+        `nm_perawatan` varchar(80) NOT NULL,
+        `kategori` enum('Kebidanan','Operasi') DEFAULT NULL,
+        `operator1` double NOT NULL,
+        `operator2` double NOT NULL,
+        `operator3` double NOT NULL,
+        `asisten_operator1` double DEFAULT NULL,
+        `asisten_operator2` double NOT NULL,
+        `asisten_operator3` double DEFAULT NULL,
+        `instrumen` double DEFAULT NULL,
+        `dokter_anak` double NOT NULL,
+        `perawaat_resusitas` double NOT NULL,
+        `dokter_anestesi` double NOT NULL,
+        `asisten_anestesi` double NOT NULL,
+        `asisten_anestesi2` double DEFAULT NULL,
+        `bidan` double NOT NULL,
+        `bidan2` double DEFAULT NULL,
+        `bidan3` double DEFAULT NULL,
+        `perawat_luar` double NOT NULL,
+        `sewa_ok` double NOT NULL,
+        `alat` double NOT NULL,
+        `akomodasi` double DEFAULT NULL,
+        `bagian_rs` double NOT NULL,
+        `omloop` double NOT NULL,
+        `omloop2` double DEFAULT NULL,
+        `omloop3` double DEFAULT NULL,
+        `omloop4` double DEFAULT NULL,
+        `omloop5` double DEFAULT NULL,
+        `sarpras` double DEFAULT NULL,
+        `dokter_pjanak` double DEFAULT NULL,
+        `dokter_umum` double DEFAULT NULL,
+        `kd_pj` char(3) DEFAULT NULL,
+        `status` enum('0','1') DEFAULT NULL,
+        `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `paket_operasi`
+        ADD PRIMARY KEY (`kode_paket`),
+        ADD KEY `nm_perawatan` (`nm_perawatan`),
+        ADD KEY `operator1` (`operator1`),
+        ADD KEY `operator2` (`operator2`),
+        ADD KEY `operator3` (`operator3`),
+        ADD KEY `asisten_operator1` (`asisten_operator1`),
+        ADD KEY `asisten_operator2` (`asisten_operator2`),
+        ADD KEY `asisten_operator3` (`instrumen`),
+        ADD KEY `dokter_anak` (`dokter_anak`),
+        ADD KEY `perawat_resusitas` (`perawaat_resusitas`),
+        ADD KEY `dokter_anestasi` (`dokter_anestesi`),
+        ADD KEY `asisten_anastesi` (`asisten_anestesi`),
+        ADD KEY `bidan` (`bidan`),
+        ADD KEY `perawat_luar` (`perawat_luar`),
+        ADD KEY `sewa_ok` (`sewa_ok`),
+        ADD KEY `alat` (`alat`),
+        ADD KEY `sewa_vk` (`akomodasi`),
+        ADD KEY `bagian_rs` (`bagian_rs`),
+        ADD KEY `omloop` (`omloop`),
+        ADD KEY `kd_pj` (`kd_pj`),
+        ADD KEY `asisten_anestesi2` (`asisten_anestesi2`),
+        ADD KEY `omloop2` (`omloop2`),
+        ADD KEY `omloop3` (`omloop3`),
+        ADD KEY `omloop4` (`omloop4`),
+        ADD KEY `omloop5` (`omloop5`),
+        ADD KEY `status` (`status`),
+        ADD KEY `kategori` (`kategori`),
+        ADD KEY `bidan2` (`bidan2`),
+        ADD KEY `bidan3` (`bidan3`),
+        ADD KEY `asisten_operator3_2` (`asisten_operator3`);");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `paket_operasi`
+        ADD CONSTRAINT `paket_operasi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `operasi` (
+        `no_rawat` varchar(17) NOT NULL,
+        `tgl_operasi` datetime NOT NULL,
+        `jenis_anasthesi` varchar(8) NOT NULL,
+        `kategori` enum('-','Khusus','Besar','Sedang','Kecil','Elektive','Emergency') DEFAULT NULL,
+        `operator1` varchar(20) NOT NULL,
+        `operator2` varchar(20) NOT NULL,
+        `operator3` varchar(20) NOT NULL,
+        `asisten_operator1` varchar(20) NOT NULL,
+        `asisten_operator2` varchar(20) NOT NULL,
+        `asisten_operator3` varchar(20) DEFAULT NULL,
+        `instrumen` varchar(20) DEFAULT NULL,
+        `dokter_anak` varchar(20) NOT NULL,
+        `perawaat_resusitas` varchar(20) NOT NULL,
+        `dokter_anestesi` varchar(20) NOT NULL,
+        `asisten_anestesi` varchar(20) NOT NULL,
+        `asisten_anestesi2` varchar(20) DEFAULT NULL,
+        `bidan` varchar(20) NOT NULL,
+        `bidan2` varchar(20) DEFAULT NULL,
+        `bidan3` varchar(20) DEFAULT NULL,
+        `perawat_luar` varchar(20) NOT NULL,
+        `omloop` varchar(20) DEFAULT NULL,
+        `omloop2` varchar(20) DEFAULT NULL,
+        `omloop3` varchar(20) DEFAULT NULL,
+        `omloop4` varchar(20) DEFAULT NULL,
+        `omloop5` varchar(20) DEFAULT NULL,
+        `dokter_pjanak` varchar(20) DEFAULT NULL,
+        `dokter_umum` varchar(20) DEFAULT NULL,
+        `kode_paket` varchar(15) NOT NULL,
+        `biayaoperator1` double NOT NULL,
+        `biayaoperator2` double NOT NULL,
+        `biayaoperator3` double NOT NULL,
+        `biayaasisten_operator1` double NOT NULL,
+        `biayaasisten_operator2` double NOT NULL,
+        `biayaasisten_operator3` double DEFAULT NULL,
+        `biayainstrumen` double DEFAULT NULL,
+        `biayadokter_anak` double NOT NULL,
+        `biayaperawaat_resusitas` double NOT NULL,
+        `biayadokter_anestesi` double NOT NULL,
+        `biayaasisten_anestesi` double NOT NULL,
+        `biayaasisten_anestesi2` double DEFAULT NULL,
+        `biayabidan` double NOT NULL,
+        `biayabidan2` double DEFAULT NULL,
+        `biayabidan3` double DEFAULT NULL,
+        `biayaperawat_luar` double NOT NULL,
+        `biayaalat` double NOT NULL,
+        `biayasewaok` double NOT NULL,
+        `akomodasi` double DEFAULT NULL,
+        `bagian_rs` double NOT NULL,
+        `biaya_omloop` double DEFAULT NULL,
+        `biaya_omloop2` double DEFAULT NULL,
+        `biaya_omloop3` double DEFAULT NULL,
+        `biaya_omloop4` double DEFAULT NULL,
+        `biaya_omloop5` double DEFAULT NULL,
+        `biayasarpras` double DEFAULT NULL,
+        `biaya_dokter_pjanak` double DEFAULT NULL,
+        `biaya_dokter_umum` double DEFAULT NULL,
+        `status` enum('Ranap','Ralan') DEFAULT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `operasi`
+        ADD PRIMARY KEY (`no_rawat`,`tgl_operasi`,`kode_paket`) USING BTREE,
+        ADD KEY `no_rawat` (`no_rawat`),
+        ADD KEY `operator1` (`operator1`),
+        ADD KEY `operator2` (`operator2`),
+        ADD KEY `operator3` (`operator3`),
+        ADD KEY `asisten_operator1` (`asisten_operator1`),
+        ADD KEY `asisten_operator2` (`asisten_operator2`),
+        ADD KEY `dokter_anak` (`dokter_anak`),
+        ADD KEY `perawaat_resusitas` (`perawaat_resusitas`),
+        ADD KEY `dokter_anestesi` (`dokter_anestesi`),
+        ADD KEY `asisten_anestesi` (`asisten_anestesi`),
+        ADD KEY `bidan` (`bidan`),
+        ADD KEY `perawat_luar` (`perawat_luar`),
+        ADD KEY `kode_paket` (`kode_paket`);");
+
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
+        `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        `no_rkm_medis` TEXT NOT NULL,
+        `pemeriksaan` TEXT DEFAULT NULL,
+        `kondisi` TEXT DEFAULT NULL,
+        `catatan` TEXT DEFAULT NULL,
+        `id_user` TEXT NOT NULL,
+        `tgl_input` TEXT NOT NULL
+      )");
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `operasi`
+        ADD CONSTRAINT `operasi_ibfk_31` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE RESTRICT ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_32` FOREIGN KEY (`operator1`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_33` FOREIGN KEY (`operator2`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_34` FOREIGN KEY (`operator3`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_35` FOREIGN KEY (`asisten_operator1`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_36` FOREIGN KEY (`asisten_operator2`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_38` FOREIGN KEY (`dokter_anak`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_39` FOREIGN KEY (`perawaat_resusitas`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_40` FOREIGN KEY (`dokter_anestesi`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_41` FOREIGN KEY (`asisten_anestesi`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_42` FOREIGN KEY (`bidan`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_43` FOREIGN KEY (`perawat_luar`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+        ADD CONSTRAINT `operasi_ibfk_44` FOREIGN KEY (`kode_paket`) REFERENCES `paket_operasi` (`kode_paket`) ON DELETE RESTRICT ON UPDATE CASCADE;");
 
     },
     'uninstall'     =>  function() use($core)

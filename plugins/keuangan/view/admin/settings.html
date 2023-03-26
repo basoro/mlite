@@ -17,7 +17,19 @@
                             </label>
                         </div>
                     </div>
-                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    <div style="{if: $settings.keuangan.jurnal_kasir == '0'}display:none;{/if}">
+                      {loop: $akunkegiatan}
+                      <div class="form-group">
+                          <label class="kegiatan">{?=ucwords(str_replace('_',' ',$value.field))?}</label>
+                          <select name="keuangan[{$value.field}]" class="form-control" data-use-search="true">
+                            {loop: $akunrekening as $data}
+                              <option value="{$data.kd_rek}" {if: $data.kd_rek == $value.value}selected{/if}>{$data.kd_rek} - {$data.nm_rek}</option>
+                            {/loop}
+                          </select>
+                      </div>
+                      {/loop}
+                    </div>
+                    <input type="submit" name="save" class="btn btn-success" value="Simpan" />
                 </div>
             </div>
         </div>

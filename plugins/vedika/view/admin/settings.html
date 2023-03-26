@@ -7,12 +7,20 @@
                 </div>
             	  <div class="panel-body">
                     <div class="form-group">
-                        <label>Username</label>
-                        <input type="text" name="vedika[username]" class="form-control" value="{$settings.vedika.username}" />
+                        <label>Periode Klaim</label>
+                        <input type="text" name="vedika[periode]" class="form-control tanggal" value="{$settings.vedika.periode}" />
                     </div>
                     <div class="form-group">
-                        <label>Password</label>
-                        <input type="text" name="vedika[password]" class="form-control" value="{$settings.vedika.password}" />
+                        <label>Periode Verivikasi</label>
+                        <input type="text" name="vedika[verifikasi]" class="form-control tanggal" value="{$settings.vedika.verifikasi}" />
+                    </div>
+                    <div class="form-group">
+                        <label>Cara Bayar</label>
+                        <select name="vedika[carabayar][]" class="form-control" multiple>
+                          {loop: $settings.penjab}
+                            <option value="{$value.kd_pj}" {$value.attr}>{$value.png_jawab}</option>
+                          {/loop}
+                        </select>
                     </div>
                     <div class="form-group">
                         <label>Berkas SEP</label>
@@ -38,9 +46,33 @@
                           {/loop}
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label>Berkas Individual E-Klaim</label>
+                        <select name="vedika[individual]" class="form-control">
+                          {loop: $settings.master_berkas_digital}
+                            <option value="{$value.kode}" {if: $value.kode == $settings.vedika.individual}selected{/if}>{$value.nama}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Jenis Billing</label>
+                      <select name="vedika[billing]" class="form-control">
+                        <option value="mlite" {if: $settings.vedika.billing == 'mlite'}selected{/if}>mLITE</option>
+                        <option value="desktop" {if: $settings.vedika.billing == 'desktop'}selected{/if}>Desktop</option>
+                      </select>
+                    </div>
                     <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
         </div>
     </form>
 </article>
+<script>
+  $( function() {
+    $('.tanggal').datetimepicker({
+      defaultDate: '{?=date('Y-m')?}',
+      format: 'YYYY-MM',
+      locale: 'id'
+    });
+  } );
+</script>

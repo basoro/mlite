@@ -1,9 +1,9 @@
 <div id="display">
   <div class="table-responsive no-margin">
-    <table class="table table-striped no-padding">
+    <table class="table table-striped table-bordered no-padding">
       <thead>
         <tr>
-          <th width="200px">Kode Rekening</th>
+          <th width="100px">Kode</th>
           <th>Nama Rekening</th>
           <th>Tipe</th>
           <th>Balance</th>
@@ -13,7 +13,7 @@
         {if: $akunrekening.list}
         {loop: $akunrekening.list}
         <tr class="edit" data-kd_rek="{$value.kd_rek}">
-          <td>{if: strlen($value.kd_rek) == 1}{elseif: strlen($value.kd_rek) == 2}&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 3}&nbsp;&nbsp;&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 4}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{/if}{$value.kd_rek}</td>
+          <td>{if: strlen($value.kd_rek) == 1}{elseif: strlen($value.kd_rek) == 3}&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 5}&nbsp;&nbsp;&nbsp;&nbsp;{elseif: strlen($value.kd_rek) == 7}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{/if}{$value.kd_rek}</td>
           <td>{$value.nm_rek}</td>
           <td>{$value.tipe}</td>
           <td>{$value.balance}</td>
@@ -21,7 +21,7 @@
         {/loop}
         {else}
         <tr>
-          <td colspan="4" class="text-center">Tidak ada data bahasa.</td>
+          <td colspan="4" class="text-center">Tidak ada data rekening.</td>
         </tr>
         {/if}
       </tbody>

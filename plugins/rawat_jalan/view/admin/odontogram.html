@@ -1,0 +1,362 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+  .table-odontogram {
+  	width: 100%;
+  	overflow-y: auto;
+  	_overflow: auto;
+  	margin: 0 0 1em;
+  	padding-right: 0px;
+  }
+  .gigi_posterior{
+      background: url("{?=url()?}/plugins/rawat_jalan/images/posterior.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+  }
+  .gigi_anterior{
+      background: url("{?=url()?}/plugins/rawat_jalan/images/anterior.png");
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+  }
+  td.name { font-weight: bold; font-size: 14px; }
+  input.odont_input, .odont_color {
+  	width: 25px;
+  	height: 25px;
+  	padding: 6px 6px;
+  	font-weight: bold;
+  	font-size: 14px;
+  	text-align: center;
+  }
+
+
+  /* Form styles */
+  div.form-container { margin: 10px; padding: 5px; background-color: #FFF; }
+
+  p.legend { margin-bottom: 1em; }
+  p.legend em { color: #C00; font-style: normal; }
+
+  div.form-container div.controlset {display: block; float:left; width: 100%; padding: 0.25em 0;}
+
+  div.form-container div.controlset label,
+  div.form-container div.controlset input,
+  div.form-container div.controlset div { display: inline; float: left; }
+
+  div.form-container div.controlset label { width: 100px;}
+
+  div.color_picker {
+  	height: 25px;
+  	width: 25px;
+  	padding: 0 !important;
+  	border: 1px solid #ccc;
+  	background: url(arrow.gif) no-repeat top right;
+  	cursor: pointer;
+  	line-height: 16px;
+  }
+
+  div#color_selector {
+  	width: 106px;
+  	position: absolute;
+  	border: 1px solid #598FEF;
+  	background-color: #EFEFEF;
+  	padding: 2px;
+  }
+  div#color_custom {width: 100%; float:left }
+  div#color_custom label {font-size: 95%; color: #2F2F2F; margin: 5px 2px; width: 25%}
+  div#color_custom input {margin: 5px 2px; padding: 0; font-size: 95%; border: 1px solid #000; width: 65%; }
+
+  div.color_swatch {
+  	height: 20px;
+  	width: 20px;
+  	border: 1px solid #000;
+  	margin: 2px;
+  	float: left;
+  	cursor: pointer;
+  	line-height: 12px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Riwayat Odontogram</h4>
+</div>
+<div class="modal-body">
+  <h4>Odontogram</h4>
+  <div class="table-odontogram">
+    <table style="margin: 0 auto; width: 450px; text-align: center;">
+       <tr>
+       <td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td>
+      </tr>
+      <tr>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      </tr>
+      <tr>
+        <td style="height: 5px;"> </td>
+      </tr>
+      <tr>
+      <td> </td>
+      <td> </td>
+      <td> </td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+      <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td> </td>
+        <td> </td>
+        <td> </td>
+
+        </tr>
+      <tr>
+        <td> </td><td> </td><td> </td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td> </td><td> </td><td> </td>
+      </tr>
+      <tr>
+        <td> </td>
+        <td> </td>
+        <td> </td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td> </td>
+        <td> </td>
+        <td> </td>
+        </tr>
+        <tr>
+          <td style="height: 5px;"> </td>
+        </tr>
+        <tr>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_anterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        <td class="gigi_posterior" style="height: 25px; width: 25px;"></td>
+        </tr>
+
+      <tr>
+        <td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td>
+      </tr>
+    </table>
+    <br/><br/>
+    <!--
+    <table style="margin: 0 auto; width: 450px;">
+      <tr>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Erupsi.png"></td>
+        <td> = Erupsi</td>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Tanggal.png"></td>
+        <td> = Hilang</td>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Karies.png"></td>
+        <td> = Karies</td>
+      </tr>
+      <tr>
+        <td style="height: 5px;"> </td>
+      </tr>
+      <tr>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Akar.png"></td>
+        <td> = Sisa Akar</td>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Tumpat.png"></td>
+        <td> = Tumpatan</td>
+        <td><img src="{?=url()?}/plugins/pendaftaran/images/Goyang.png"></td>
+        <td> = Goyang</td>
+      </tr>
+    </table>
+    <br/><br/>
+    -->
+  </div>
+  <div class="row clearfix">
+    <div class="form-odontogram">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="hasil">Elemen Pemeriksaan</label>
+          <select name="gg_xx" id="gg_xx" class="form-control">
+            <option value="">------------</option>
+            <option value="gg_18">Gigi 18</option>
+            <option value="gg_17">Gigi 17</option>
+            <option value="gg_16">Gigi 16</option>
+            <option value="gg_15">Gigi 15</option>
+            <option value="gg_14">Gigi 14</option>
+            <option value="gg_13">Gigi 13</option>
+            <option value="gg_12">Gigi 12</option>
+            <option value="gg_11">Gigi 11</option>
+            <option value="gg_21">Gigi 21</option>
+            <option value="gg_22">Gigi 22</option>
+            <option value="gg_23">Gigi 23</option>
+            <option value="gg_24">Gigi 24</option>
+            <option value="gg_25">Gigi 25</option>
+            <option value="gg_26">Gigi 26</option>
+            <option value="gg_27">Gigi 27</option>
+            <option value="gg_28">Gigi 28</option>
+            <option value="gg_38">Gigi 38</option>
+            <option value="gg_37">Gigi 37</option>
+            <option value="gg_36">Gigi 36</option>
+            <option value="gg_35">Gigi 35</option>
+            <option value="gg_34">Gigi 34</option>
+            <option value="gg_33">Gigi 33</option>
+            <option value="gg_32">Gigi 32</option>
+            <option value="gg_41">Gigi 31</option>
+            <option value="gg_41">Gigi 41</option>
+            <option value="gg_42">Gigi 42</option>
+            <option value="gg_43">Gigi 43</option>
+            <option value="gg_44">Gigi 44</option>
+            <option value="gg_45">Gigi 45</option>
+            <option value="gg_46">Gigi 46</option>
+            <option value="gg_47">Gigi 47</option>
+            <option value="gg_48">Gigi 48</option>
+            <option value="gg_55">Gigi 55</option>
+            <option value="gg_54">Gigi 54</option>
+            <option value="gg_53">Gigi 53</option>
+            <option value="gg_52">Gigi 52</option>
+            <option value="gg_51">Gigi 51</option>
+            <option value="gg_61">Gigi 61</option>
+            <option value="gg_62">Gigi 62</option>
+            <option value="gg_63">Gigi 63</option>
+            <option value="gg_64">Gigi 64</option>
+            <option value="gg_65">Gigi 65</option>
+            <option value="gg_75">Gigi 75</option>
+            <option value="gg_74">Gigi 74</option>
+            <option value="gg_73">Gigi 73</option>
+            <option value="gg_72">Gigi 72</option>
+            <option value="gg_71">Gigi 71</option>
+            <option value="gg_81">Gigi 81</option>
+            <option value="gg_82">Gigi 82</option>
+            <option value="gg_83">Gigi 83</option>
+            <option value="gg_84">Gigi 84</option>
+            <option value="gg_85">Gigi 85</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="hasil">Kondisi Pemeriksaan</label>
+          <select name="kondisi" id="kondisi" class="form-control">
+            <option value="">------------</option>
+            <option value="Erupsi">Erupsi</option>
+            <option value="Tanggal">Tanggal</option>
+            <option value="Karies">Karies</option>
+            <option value="Akar">Sisa Akar</option>
+            <option value="Tumpat">Tumpatan</option>
+            <option value="Goyang">Goyang</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <div class="form-group">
+          <label for="jenis">Catatan Pemeriksaan</label>
+          <textarea name="catatan" id="catatan" class="form-control" col="4" row="4"></textarea>
+        </div>
+      </div>
+      <div class="col-md-12">
+          <button class="btn btn-success simpan">Simpan</button>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="tampildata">
+    <h4>History Odontogram</h4>
+    <table class="table table-bordered table-striped table-hover display nowrap" width="100%">
+      <thead>
+        <tr>
+          <th>Tanggal</th>
+          <th>Elemen</th>
+          <th>Kondisi</th>
+          <th>Catatan</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {loop: $odontogram}
+          <tr>
+            <td>{$value.tgl_input}</td>
+            <td>{?=str_replace('gg_','Gigi ',$value.pemeriksaan)?}</td>
+            <td>{$value.kondisi}</td>
+            <td>{$value.catatan}</td>
+            <td><a href="#" class="btn btn-xs btn-danger delete" data-tgl_input="{$value.tgl_input}" data-pemeriksaan="{$value.pemeriksaan}" data-kondisi="{$value.kondisi}" data-catatan="{$value.catatan}"><span class="fa fa-trash"></span><span class="hidden-xs">Hapus</span></a></td>
+          </tr>
+        {/loop}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".simpan").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=no_rkm_medis]').val();
+    var gg_xx = $('select[name=gg_xx]').val();
+    var kondisi = $('select[name=kondisi]').val();
+    var catatan = $('textarea[name=catatan]').val();
+    var url = baseURL + '/rawat_jalan/odontogramsave/?t=' + mlite.token;
+    $.post(url,{
+      no_rkm_medis:id_pasien,
+      pemeriksaan:gg_xx,
+      kondisi:kondisi,
+      catatan: catatan
+    } ,function(data) {
+      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+  $(".delete").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=no_rkm_medis]').val();
+    var gg_xx  = $(this).attr("data-pemeriksaan");
+    var kondisi  = $(this).attr("data-kondisi");
+    var catatan  = $(this).attr("data-catatan");
+    var tgl_input  = $(this).attr("data-tgl_input");
+    var url = baseURL + '/rawat_jalan/odontogramdelete/?t=' + mlite.token;
+    $.post(url,{
+      no_rkm_medis:id_pasien,
+      pemeriksaan:gg_xx,
+      kondisi:kondisi,
+      catatan: catatan,
+      tgl_input: tgl_input
+    } ,function(data) {
+      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+});
+</script>

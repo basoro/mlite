@@ -35,7 +35,9 @@
       .wrapper {
           text-align: center;
       }
-
+      .text_color {
+        color: {$text_color} !important;
+      }
       .button {
           position: absolute;
           top: 50%;
@@ -61,7 +63,7 @@
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Presensi Pegawai {$settings.nama_instansi}</h1>
+  <h1 class="display-3 text-center m-3 text_color"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Presensi Pegawai {$settings.nama_instansi}</h1>
   <div class="btn-group">
     <button class="btn btn-lg btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
         <i class="fa fa-plus"></i> Presensi

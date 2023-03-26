@@ -1,0 +1,51 @@
+<article class="row">
+    <div class="col-md-6">
+        <form action="{?=url(ADMIN.'/keuangan/saveAkunKegiatan')?}" method="POST">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Input Kegiatan</h3>
+                </div>
+                <div class="panel-body">
+                  <div class="form-group">
+                      <label>Nama Kegiatan</label>
+                      <input type="text" name="nama_kegiatan" class="form-control" value="" required />
+                  </div>
+                  <div class="form-group">
+                      <label>Akun Rekening</label>
+                      <select name="kd_rek" class="form-control" data-use-search="true">
+                        {loop: $akunrekening as $akun}
+                          <option value="{$akun.kd_rek}">{$akun.kd_rek} - {$akun.nm_rek}</option>
+                        {/loop}
+                      </select>
+                  </div>
+                  <input type="hidden" name="id" class="form-control" value="" required />
+                  <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                  <input type="submit" name="update" class="btn btn-info" value="Update" />
+                  <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6" id="jenis_kegiatan">
+        <form action="{?=url(ADMIN.'/keuangan/saveSettingsRekening')?}" method="POST">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Akun Rekening</h3>
+                </div>
+            	  <div class="panel-body">
+                    {loop: $akunkegiatan}
+                    <div class="form-group">
+                        <label class="kegiatan" data-id="{$value.id}" data-kegiatan="{$value.kegiatan}">{?=ucwords(str_replace('_',' ',$value.kegiatan))?}</label>
+                        <select name="kegiatan[{$value.id}]" class="form-control" data-use-search="true">
+                          {loop: $akunrekening as $data}
+                            <option value="{$data.kd_rek}" {if: $data.kd_rek == $value.kd_rek}selected{/if}>{$data.kd_rek} - {$data.nm_rek}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    {/loop}
+                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+            </div>
+        </form>
+    </div>
+</article>

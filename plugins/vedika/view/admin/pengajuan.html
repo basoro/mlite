@@ -32,7 +32,11 @@
             <div class="panel-body">
                 <div class="row clearfix">
                   <div class="col col-md-6">
-                    <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}</h3>
+                    <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
+                      <a href="{?=url()?}/admin/vedika/pengajuanexcel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+                      <a href="{?=url()?}/admin/vedika/pengajuanexcel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+                      <a href="{?=url()?}/admin/vedika/pengajuanexcel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+                    </h3>
                   </div>
                   <div class="col col-md-6">
                     <form action="{$vedika.searchUrl}" class="searchbox-input form-inline pull-right padding-bottom-lg" style="margin-top:5px;margin-bottom:15px;">
@@ -82,16 +86,19 @@
         											<i class="fa fa-check"></i> Status
         										</button><br>
                           {else}
-                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+                            <a href="{$value.setstatusURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#statusModal">
         											<i class="fa fa-check"></i> Status
-        										</a><br>
-                            <a href="{?=url([ADMIN,'vedika', 'hapus', $value.no_sep])?}" target="_blank" class="btn btn-danger btn-xs">
-                              <i class="fa fa-trash"></i> Hapus
-                            </a>
+        										</a>
+                            {loop: $value.status_pengajuan as $data}
+                            <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
+                            {/loop}
+                            <br><br><br>
+                            <div class="">
+                              {loop: $value.pegawai as $data}
+                                <i class="fa fa-user"></i> {$data.nama}
+                              {/loop}
+                            </div>
                           {/if}
-                          {loop: $value.status_pengajuan as $data}
-                          <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
-                          {/loop}
                         </td>
       									<td>
                           <table>
@@ -118,13 +125,23 @@
                         <td>
                           <table>
                             <tr>
-                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Tgl.Registrasi{else}Tgl.Pulang{/if}</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
+                              {if: $value.status_lanjut == 'Ralan'}
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                              {/if}
+                              {if: $value.status_lanjut == 'Ranap'}
+                              <td width='120px'>Dokter</td>
+                              <td>:
+                                {loop: $value.nm_dokter as $data}
+                                  - {$data.nm_dokter}<br>
+                                {/loop}
+                              </td>
+                              {/if}
                             </tr>
                             <tr>
                               <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
@@ -141,6 +158,9 @@
                             </tr>
                             <tr>
                               <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'>Pros. Utama</td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
                             </tr>
                           </table>
                         </td>
@@ -165,7 +185,7 @@
       								</tr>
       								{/loop}
       								{else}
-      								<tr><td colspan="4" class="text-center">Data pasien tidak ditemukan</td></tr>
+      								<tr><td colspan="5" class="text-center">Data pasien tidak ditemukan</td></tr>
       							{/if}
       							</tbody>
       						</table>

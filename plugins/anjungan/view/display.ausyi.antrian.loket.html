@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <style media="screen">
+      body {
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+        color: #fff;
+      	background: #1260b9;
+        background: radial-gradient(ellipse at center, #1260b9 1%, #163556 100%);
+      	height:calc(100vh);
+      	min-width:100%;
+        padding: 0;
+        margin: 0;
+      }
+      .antrian_judul {
+        font-size:56px;
+        padding-bottom:20px;
+        text-transform: uppercase;
+      }
+      .loket {
+        padding: 0px; margin: -15px; margin: 50px 0; font-weight: bold;
+      }
+      .no_loket {
+        font-weight: normal;
+      }
+      .loket a {
+        text-decoration: none;
+      }
+      .kiri {
+        float: left;
+        width:75%;
+        padding: 10px;
+      }
+      .kanan {
+        width:100%;
+        padding: 0px;
+        margin: 0;
+      }
+
+      .panel {
+        border: 2px solid lightgreen;
+      }
+
+      .panel .panel-body {
+        border-bottom: 2px solid lightgreen;
+      }
+
+      .panel-body .no_antrian {
+        font-size:150px;
+        font-weight:lighter;
+        padding:0;
+        margin-top:-45px;
+        margin-bottom:-45px;
+        width: 100%;
+        color: #12b960;
+      }
+      .panel-footer .no_loket {
+        font-size:65px;
+        color: #000;
+        padding-top:0;
+        padding-bottom:0;
+      }
+      .panel-body .date {
+        font-size:24px;
+        color: #ffffff;
+        font-weight:lighter;
+        padding-top:5px;
+        padding-bottom:5px;
+        margin-top:-20px;
+        margin-bottom:-25px;
+      }
+      .panel-footer .clock {
+        font-size:32px;
+        color: #000;
+      }
+      .panel-title.marquee {
+         font-size:36px;
+         padding-top: 10px;
+         padding-bottom: 0px;
+         bottom: 0;
+         width: 100%;
+         position: fixed;
+         color: #ffffff;
+         background-color: #006ce7;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+    </style>
+</head>
+<body>
+  <div class="container-fluid">
+    {if: !$show}
+    <h1 class="text-center text-white antrian_judul"><img class="logo" style="margin: 20px;" src="{?=url()?}/{$logo}" alt="" width="80px"> <br> Antrian Loket {$settings.nama_instansi}</h1>
+    <div class="loket">
+      <div class="kanan row">
+        <div  class="col-md-4">
+          <a href="{?=url()?}/anjungan/ausyi/loket?show=pilih_loket" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body">
+                <div class="no_antrian">A<span class="antrian_Loket"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_Loket"><span></div>
+              </div>
+            </div>
+          </a>
+        </div>
+        <div  class="col-md-4">
+          <a href="{?=url()?}/anjungan/ausyi/loket?show=pilih_loket" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body">
+                <div class="no_antrian">B<span class="antrian_CS"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_CS"><span></div>
+                </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4">
+          <a href="{?=url()?}/anjungan/ausyi/loket?show=pilih_loket" target="_blank" class="col-4">
+            <div class="panel border-success">
+              <div class="panel-body">
+                <div class="no_antrian">C<span class="antrian_IGD"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Loket <span class="get_IGD"><span></div>
+                </div>
+            </div>
+          </a>
+        </div>
+        <div class="col-md-4"></div>
+          <div class="border-success text-center col-md-4" style="margin-bottom: 30px;">
+            <div class="panel-body text-success" style="background-color: rgb(225, 69, 69);
+            border-radius: 5px 5px 0 0;">
+              <div class="date" style=" padding: 15px 15px;">
+                <span id="dtloket"></span>
+              </div>
+            </div>
+            <div class="panel-footer border-success" style="background-color:#ffcc00; padding: 0px; font-weight: normal;">
+              <div class="clock"><span id="clock"><span></div>
+            </div>
+          </div>
+      </div>
+  </div>
+  <div class="row">
+    <div class="panel-title marquee">
+      <marquee>{$running_text}</marquee>
+    </div>
+  </div>
+  {/if}
+
+  {? $loket=[1,2,3,4] ?}
+  {? $no=1 ?}
+
+  {if: $show == 'pilih_loket'}
+  <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000; margin: 30px 0;" class="mt-2 mb-5">Pilih Loket Pemanggilan Antrian</div>
+  <div class="container-fluid text-center" style="margin-top: 100px;">
+      <div class="row">
+          {loop: $loket}
+              <div class="col-xs-12 col-sm-6 col-md-3 col-lg-3 mb-5">
+                  <div class="card">
+                      <div class="card-body" style="background-color: rgb(243, 243, 243); padding: 50px 0; border-radius: 5px 5px 0 0;">
+                          <h5 class="card-title" style="font-size:52px; color: #000;">Loket {$no}</h5>
+                      </div>
+                      <div class="card-footer p-0">
+                          <div class="btn-group btn-group-justified">
+                              <a href="{?=url()?}/anjungan/ausyi/loket?show=loket_{$no}" class="btn btn-primary" style="font-size:32px;"> Pilih Loket </a>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              {? $no++ ?}
+          {/loop}
+      </div>
+  </div>
+  {/if}
+  {if: $show == 'loket_1' || $show == 'loket_2' || $show == 'loket_3' || $show == 'loket_4' }
+  <div align="center" style="font-size: 52px;color:white; text-shadow: 2px 2px 4px #000000; margin: 30px 0;">Pemanggil Antrian <br>
+    {? $noloket = str_replace('loket_', '', $show) ?}
+    {?= strtoupper(str_replace('_', ' ', $show)) ?}
+  </div>
+<audio id="antrian" src="{?=url()?}/plugins/anjungan/suara/antrian.wav"></audio>
+<audio id="notif" src="{?=url()?}/plugins/anjungan/suara/notification.wav"></audio>
+<audio id="counter" src="{?=url()?}/plugins/anjungan/suara/counter.wav"></audio>
+<audio id="nol" src="{?=url()?}/plugins/anjungan/suara/nol.wav"></audio>
+<audio id="belas" src="{?=url()?}/plugins/anjungan/suara/belas.wav"></audio>
+<audio id="sebelas" src="{?=url()?}/plugins/anjungan/suara/sebelas.wav"></audio>
+<audio id="puluh" src="{?=url()?}/plugins/anjungan/suara/puluh.wav"></audio>
+<audio id="sepuluh" src="{?=url()?}/plugins/anjungan/suara/sepuluh.wav"></audio>
+<audio id="ratus" src="{?=url()?}/plugins/anjungan/suara/ratus.wav"></audio>
+<audio id="seratus" src="{?=url()?}/plugins/anjungan/suara/seratus.wav"></audio>
+<audio id="suarabelloket" src="{?=url()?}/plugins/anjungan/suara/{?= $noloket ?}.wav"></audio>
+<div id="audioantrian"></div>
+<div class="container text-center">
+    <div class="row">
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom: 10px;">
+            <div class="card" style="background-color: white; color: #000; border-radius: 5px; border: 1px solid #fff;">
+                <div class="card-header"
+                style="font-size:32px; background: rgb(227, 227, 227); border-radius: 5px 5px 0 0; padding: 10px 0;" id="loading">Antrian A</div>
+                <div class="card-body">
+                    <h5 class="card-title" style="font-size:72px; margin: 35px;" id="antrianA">A0</h5>
+                </div>
+                <div class="card-footer" style="background-color: rgb(148, 148, 148); border-radius: 0 0 5px 5px;">
+                    <div class="btn-group btn-group-justified">
+                        <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" id="allAntrianA">0</a>
+                        <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="getAudioA()"><i class="fa fa-bullhorn"></i>
+                        </a>
+                        <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="nextA()"><i class="fa fa-forward"></i></a>
+                    </div>
+                    <div class="text-center">
+                      <div class="row" style="margin: 15px 0; padding: 0px;">
+                        <div class="col-md-8" style="padding: 0;">
+                          <input type="number" class="form-control form-control-lg" id="inputantriana" name="antrian" placeholder="Input No. Urut" style="font-size: 24px; height:50px;">
+                        </div>
+                        <div class="col-md-4" style="padding: 0;">
+                            <button class="form-control btn btn-danger" style="font-size: 18px; height:50px;" onclick="resetAntrianA()">RESET</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom: 10px;">
+          <div class="card" style="background-color: white; color: #000; border-radius: 5px; border: 1px solid #fff;">
+              <div class="card-header"
+              style="font-size:32px; background: rgb(227, 227, 227); border-radius: 5px 5px 0 0; padding: 10px 0;" id="loading">Antrian B</div>
+              <div class="card-body">
+                  <h5 class="card-title" style="font-size:72px; margin: 35px;" id="antrianB">B0</h5>
+              </div>
+              <div class="card-footer" style="background-color: rgb(148, 148, 148); border-radius: 0 0 5px 5px;">
+                  <div class="btn-group btn-group-justified">
+                      <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" id="allAntrianB">0</a>
+                      <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="getAudioB()"><i class="fa fa-bullhorn"></i>
+                      </a>
+                      <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="nextB()"><i class="fa fa-forward"></i></a>
+                  </div>
+                  <div class="text-center">
+                    <div class="row" style="margin: 15px 0; padding: 0px;">
+                      <div class="col-md-8" style="padding: 0;">
+                        <input type="number" class="form-control form-control-lg" id="inputantrianb" name="antrian" placeholder="Input No. Urut" style="font-size: 24px; height:50px;">
+                      </div>
+                      <div class="col-md-4" style="padding: 0;">
+                          <button class="form-control btn btn-danger" style="font-size: 18px; height:50px;" onclick="resetAntrianB()">RESET</button>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-6 col-md-4 col-lg-4" style="margin-bottom: 10px;">
+        <div class="card" style="background-color: white; color: #000; border-radius: 5px; border: 1px solid #fff;">
+            <div class="card-header"
+            style="font-size:32px; background: rgb(227, 227, 227); border-radius: 5px 5px 0 0; padding: 10px 0;" id="loading">Antrian C</div>
+            <div class="card-body">
+                <h5 class="card-title" style="font-size:72px; margin: 35px;" id="antrianC">C0</h5>
+            </div>
+            <div class="card-footer" style="background-color: rgb(148, 148, 148); border-radius: 0 0 5px 5px;">
+                <div class="btn-group btn-group-justified">
+                    <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" id="allAntrianC">0</a>
+                    <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="getAudioC()"><i class="fa fa-bullhorn"></i>
+                    </a>
+                    <a href="javascript:void(0)" class="btn btn-primary" style="font-size:32px;" onclick="nextC()"><i class="fa fa-forward"></i></a>
+                </div>
+                <div class="text-center">
+                  <div class="row" style="margin: 15px 0; padding: 0px;">
+                    <div class="col-md-8" style="padding: 0;">
+                      <input type="number" class="form-control form-control-lg" id="inputantrianc" name="antrian" placeholder="Input No. Urut" style="font-size: 24px; height:50px;">
+                    </div>
+                    <div class="col-md-4" style="padding: 0;">
+                        <button class="form-control btn btn-danger" style="font-size: 18px; height:50px;" onclick="resetAntrianC()">RESET</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="margin-bottom: 50px;">
+      <div class="card" style="background-color: white; color: #000; border-radius: 5px;">
+        <div class="card-header"
+            style="font-size:32px; background: rgb(255, 255, 255); border-radius: 5px 5px 0 0; padding: 5px 0;" id="loading">Form Pasien Baru</div>
+        <div class="card-footer" style="background-color: rgb(148, 148, 148); border-radius: 0 0 5px 5px; padding: 5px;">
+            <div class="text-center">
+                <div class="row" style="margin: 5px 0; padding: 0px;" id="savenorm">
+                  <div class="col-md-8" style="padding-left: 0;">
+                    <div class="row">
+                      <div class="col-md-2" style="padding-right: 0;">
+                        <select name="jenis_antrian" id="jantrian" class="form-control" style="font-size: 24px; height: 50px; border-radius: 5px 0 0 5px;">
+                          <option value="loket">A</option>
+                          <option value="cs">B</option>
+                          <option value="igd">C</option>
+                        </select>
+                      </div>
+
+                      <div class="col-md-4" style="padding-left: 0;">
+                        <input type="number" class="form-control form-control-lg " name="noantrian" placeholder="No Antrian"
+                            style="font-size: 24px; height: 50px; border-radius: 0px 5px 5px 0px;">
+                        </div>
+
+                      <div class="col-md-6" style="padding-right: 10px;">
+                        <input type="text" maxlength="6" class="form-control form-control-lg " name="norm" placeholder="No Rekam Medis"
+                            style="font-size: 24px; height: 50px;">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4" style="padding-right: 0;" align="center">
+                        <button class="form-control btn btn-primary" style="font-size: 18px; height:50px;" onclick="simpanNoRM()">SIMPAN</button>
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    </div>
+</div>
+
+<div class="text-center text-white">
+    # Klik 1X Tombol <i class="fa fa-forward"></i> Untuk Antrian Nomor Urut Selanjutnya dan Klik Tombol <i class="fa fa-bullhorn"></i> Untuk Memanggil </br>
+    # Untuk Menyesuaikan Urutan, Masukan Nomor Urut Yang Akan dipanggil kemudian Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
+    # Untuk Reset Nomor Antrian Counter Menjadi 0 Klik RESET 1X dan Tombol <i class="fa fa-forward"></i> 1X</br>
+    # Angka di Sebelah Kiri Tombol Pemanggil Menunjukan Jumlah Nomor Antrian Yang Telah diambil Pasien</br>
+</div>
+  {/if}
+
+  <footer class="visible-lg visible-md bg-primary" style="padding:0;z-index:-1; display:none; background-color: #00000000;">
+    <div class="canvas" style="display: none;">
+      <p class="pull-right">
+        Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+        {$powered}.
+      </p>
+      {if: $show}
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
+      {/if}
+    </div>
+  </footer>
+
+  <script type="text/javascript">
+
+  function showDate(){
+      var months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+      var myDays = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jum&#39;at', 'Sabtu'];
+      var date = new Date();
+      var day = date.getDate();
+      var month = date.getMonth();
+      var thisDay = date.getDay(),
+          thisDay = myDays[thisDay];
+      var yy = date.getYear();
+      var year = (yy < 1000) ? yy + 1900 : yy;
+      document.getElementById('dtloket').innerHTML = thisDay + ', ' + day + ' ' + months[month] + ' ' + year;
+    }
+  setInterval(showDate, 500);
+
+  function showTime() {
+      var a_p = "";
+      var today = new Date();
+      var curr_hour = today.getHours();
+      var curr_minute = today.getMinutes();
+      var curr_second = today.getSeconds();
+      if (curr_hour < 12) {
+          a_p = "AM";
+      } else {
+          a_p = "PM";
+      }
+      if (curr_hour == 0) {
+          curr_hour = 12;
+      }
+      if (curr_hour > 12) {
+          curr_hour = curr_hour - 12;
+      }
+      curr_hour = checkTime(curr_hour);
+      curr_minute = checkTime(curr_minute);
+      curr_second = checkTime(curr_second);
+      document.getElementById('clock').innerHTML = curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+      }
+
+  function checkTime(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+  }
+  setInterval(showTime, 500);
+  </script>
+
+  {if: !$show}
+  <script>
+  //action tampil antrian ke layar utama
+  function getLoket(){
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyiantrianloket",
+      success: function(data){
+        $(".antrian_Loket").html(data);
+      }
+    })
+
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyikonterloket",
+      success: function(data){
+        $(".get_Loket").html(data);
+      }
+    })
+  }
+  setInterval(getLoket, 2000);
+
+  function getCS(){
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyiantriancs",
+      success: function(data){
+        $(".antrian_CS").html(data);
+      }
+    })
+
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyikontercs",
+      success: function(data){
+        $(".get_CS").html(data);
+      }
+    })
+  }
+  setInterval(getCS, 2000);
+
+  function getIGD(){
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyiantrianigd",
+      success: function(data){
+        $(".antrian_IGD").html(data);
+      }
+    })
+
+    $.ajax({
+      type: "GET",
+      url: "{?=url()?}/anjungan/ajax?show=ausyikonterigd",
+      success: function(data){
+        $(".get_IGD").html(data);
+      }
+    })
+  }
+  setInterval(getIGD, 2000);
+
+  </script>
+  {/if}
+  {if: $show == 'loket_1' || $show == 'loket_2' || $show == 'loket_3' || $show == 'loket_4'}
+  <script>
+      function resetAntrianA() {
+        var noantrian = $('#inputantriana').val()
+        var url = "{?=url()?}/anjungan/ausyi/aksiloket?act=reseta&antrian="+noantrian+"&loket={?= $noloket ?}"
+
+        if (noantrian == '' || noantrian == null) {
+          url = "{?=url()?}/anjungan/ausyi/aksiloket?act=reseta&loket={?= $noloket ?}"
+        }
+
+        $.ajax({
+          type: "GET",
+              url: url,
+              success: function() {
+                  alert('Berhasil Ubah/Reset Antrian A')
+                  $('#inputantriana').val('')
+              }
+        })
+      }
+
+      function resetAntrianB() {
+        var noantrian = $('#inputantrianb').val()
+        var url = "{?=url()?}/anjungan/ausyi/aksiloket?act=resetb&antrian="+noantrian+"&loket={?= $noloket ?}"
+
+        if (noantrian == '' || noantrian == null) {
+          url = "{?=url()?}/anjungan/ausyi/aksiloket?act=resetb&loket={?= $noloket ?}"
+        }
+
+        $.ajax({
+          type: "GET",
+              url: url,
+              success: function() {
+                  alert('Berhasil Ubah/Reset Antrian B')
+                  $('#inputantrianb').val('')
+              }
+        })
+      }
+
+      function resetAntrianC() {
+        var noantrian = $('#inputantrianc').val()
+        var url = "{?=url()?}/anjungan/ausyi/aksiloket?act=resetc&antrian="+noantrian+"&loket={?= $noloket ?}"
+
+        if (noantrian == '' || noantrian == null) {
+          url = "{?=url()?}/anjungan/ausyi/aksiloket?act=resetc&loket={?= $noloket ?}"
+        }
+
+        $.ajax({
+          type: "GET",
+              url: url,
+              success: function() {
+                  alert('Berhasil Ubah/Reset Antrian C')
+                  $('#inputantrianc').val('')
+              }
+        })
+      }
+
+      function getAntrianA() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantriana",
+              success: function(data) {
+                  $("#antrianA").html(data);
+              }
+          })
+      }
+      setInterval(getAntrianA, 1000);
+
+      function nextA() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantriana&loket={?= $noloket ?}",
+              success: function(data) {
+                  $("#antrianA").html(data);
+              }
+          })
+      }
+
+      function getAntrianB() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantrianb",
+              success: function(data) {
+                  $("#antrianB").html(data);
+              }
+          })
+      }
+      setInterval(getAntrianB, 1000);
+
+      function nextB() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantrianb&loket={?= $noloket ?}",
+              success: function(data) {
+                  $("#antrianB").html(data);
+              }
+          })
+      }
+
+      function getAntrianC() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantrianc",
+              success: function(data) {
+                  $("#antrianC").html(data);
+              }
+          })
+      }
+      setInterval(getAntrianC, 1000);
+
+      function nextC() {
+          $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getantrianc&loket={?= $noloket ?}",
+              success: function(data) {
+                  $("#antrianC").html(data);
+              }
+          })
+      }
+
+      function getAllAntrianA(){
+        $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getallantriana",
+              success: function(data) {
+                  $("#allAntrianA").html(data);
+              }
+          })
+      }
+      setInterval(getAllAntrianA, 1000);
+
+      function getAllAntrianB(){
+        $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getallantrianb",
+              success: function(data) {
+                  $("#allAntrianB").html(data);
+              }
+          })
+      }
+      setInterval(getAllAntrianB, 1000);
+
+      function getAllAntrianC(){
+        $.ajax({
+              type: "GET",
+              url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getallantrianc",
+              success: function(data) {
+                  $("#allAntrianC").html(data);
+              }
+          })
+      }
+      setInterval(getAllAntrianC, 1000);
+
+      function getAudioA() {
+      $.ajax({
+            type: "GET",
+            url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getaudioa",
+            success: function(data) {
+                $("#audioantrian").html(data);
+            }
+        })
+        playA();
+      }
+
+      function getAudioB() {
+      $.ajax({
+            type: "GET",
+            url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getaudiob",
+            success: function(data) {
+                $("#audioantrian").html(data);
+            }
+        })
+        playB();
+      }
+
+      function getAudioC() {
+      $.ajax({
+            type: "GET",
+            url: "{?=url()?}/anjungan/ausyi/aksiloket?act=getaudioc",
+            success: function(data) {
+                $("#audioantrian").html(data);
+            }
+        })
+        playC();
+      }
+
+      function simpanNoRM() {
+        var no_rkm_medis = $('#savenorm').find('input[name=norm]').val()
+        var type = $('#savenorm').find('select[name=jenis_antrian]').val()
+        var noantrian = $('#savenorm').find('input[name=noantrian]').val()
+        $.ajax({
+          type : "GET",
+          url : "{?=url()?}/anjungan/simpannorm?type="+type+"&noantrian="+noantrian+"&no_rkm_medis="+no_rkm_medis,
+          success: function(data){
+            var result = JSON.parse(data)
+            if (result.status == true) {
+              $('#savenorm').find('input[name=norm]').val('')
+              $('#savenorm').find('select[name=jenis_antrian] option:eq(0)').prop('selected', true)
+              $('#savenorm').find('input[name=noantrian]').val('')
+            }
+            alert(result.message)
+          }
+        })
+      }
+
+</script>
+  <script src="{?=url()?}/plugins/anjungan/js/antrian.js"></script>
+  {/if}
+</body>
+</html>

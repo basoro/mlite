@@ -1,0 +1,70 @@
+<div id="form_rincian">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="tgl_perawatan" class="col-sm-3 control-label">Tanggal</label>
+            <div class="col-sm-4">
+              <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
+            </div>
+            <label for="pnd" class="col-sm-1 control-label">Jam</label>
+            <div class="col-sm-4">
+              <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{?=date('H:i:s')?}">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="taid_pendaftarannggal" class="col-sm-3 control-label">Id Rawat</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rawat" placeholder="ID Rawat Jalan" class="form-control" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="obat" class="col-sm-3 control-label">Obat dan BHP</label>
+            <div class="col-sm-9">
+              <input type="text" name="obat" class="form-control" placeholder="Input obat/BHP" value="">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div id="layanan"></div>
+    <div id="obat"></div>
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="id_pasien" class="col-sm-3 control-label">Nomor RM</label>
+            <div class="col-sm-9">
+              <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor Rekam Medik" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="nama_pasien" class="col-sm-3 control-label">Nama Pasien</label>
+            <div class="col-sm-9">
+              <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tgl_perawatan" class="col-sm-3 control-label">Nama Obat</label>
+            <div class="col-sm-5">
+              <input type="text" name="nm_obat" class="form-control" placeholder="Nama obat/BHP" value="" readonly>
+              <input type="hidden" name="kd_obat" id="kd_obat" class="form-control" value="" readonly>
+              <input type="hidden" name="hargasatuan" id="hargasatuan" class="form-control" value="" readonly>
+            </div>
+            <label for="" class="col-sm-2 control-label">Jml</label>
+            <div class="col-sm-2">
+              <input type="text" name="jumlah" id="jumlah" class="form-control" value="">
+            </div>
+          </div>
+          <div class="m-t-xl">
+            <button type="button" name="button" class="btn btn-primary" id="simpan_rincian"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+            <button type="button" name="button" class="btn btn-success" id="selesai"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

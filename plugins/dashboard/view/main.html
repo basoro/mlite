@@ -59,10 +59,10 @@
         position: fixed; bottom: 120px; left: 80px;width:100%;color: {$settings.text_color} !important;
       }
       p.title {
-        position: absolute; bottom: 30px;left: 140px;font-size:32px;
+        position: absolute; bottom: 30px;left: 140px;font-size:32px; text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
       }
       p.alamat {
-        position: absolute; bottom: 0px;left: 140px;font-size:16px;
+        position: absolute; bottom: 0px;left: 140px;font-size:16px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
       }
       @media (max-width: 768px) {
         .dashboard_wall {
@@ -72,10 +72,10 @@
           width: 80px;
         }
         p.title {
-          position: absolute; bottom: 10px;left: 80px;font-size:18px;
+          position: absolute; bottom: 10px;left: 80px;font-size:18px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
         }
         p.alamat {
-          position: absolute; bottom: 0px;left: 80px;font-size:10px;
+          position: absolute; bottom: 0px;left: 80px;font-size:10px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
         }
       }
     </style>
@@ -105,11 +105,15 @@
         <div class="container-fluid">
           <ul class="nav navbar-nav">
             <li><a href="#" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
+            {if: $mlite.module_pasien}
             <li><a href="#" class="btn disabled"><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
+            {/if}
             {if: $mlite.module_igd}
             <li><a href="#" class="btn disabled"><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> IGD</a></li>
             {/if}
+            {if: $mlite.module_rawat_jalan}
             <li><a href="#" class="btn disabled"><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Rawat Jalan</a></li>
+            {/if}
             {if: $mlite.module_rawat_inap}
             <li><a href="#" class="btn disabled"><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Rawat Inap</a></li>
             {/if}
@@ -129,10 +133,21 @@
                 <li><a href="{?=url()?}/anjungan/bed" target="_blank">Ketersediaan Kamar</a></li>
                 <li role="separator" class="divider"></li>
                 <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
+                <li><a href="{?=url()?}/anjungan/sep" target="_blank">Anjungan Cetak SEP</a></li>
                 <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
-                <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
                 <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
                 <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
+                <li><a href="{?=url()?}/anjungan/poli" target="_blank">Antrian Poliklinik</a></li>
+                <li role="separator" class="divider"></li>
+                <li><a href="{?=url()?}/anjungan/poli/all" target="_blank">Antrian Poliklinik Alternatif</a></li>
+                {loop: $mlite.poliklinik}
+                  {if: $value.attr == 'selected'}
+                    <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
+                  {/if}
+                {/loop}
+                <li role="separator" class="divider"></li>
+                <li><a href="{?=url()?}/anjungan/ausyi/loket" target="_blank">Antrian Loket Ausyi</a></li>
+                <li><a href="{?=url()?}/anjungan/ausyi/pasien" target="_blank">Antrian Pasien Ausyi</a></li>
               </ul>
             </li>
             {/if}

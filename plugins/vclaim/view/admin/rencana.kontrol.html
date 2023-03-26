@@ -56,7 +56,7 @@
   <div class="col-sm-9">
     <div class="panel panel-default">
       <div class="panel-heading">
-        <h3 class="panel-title">Cari Rujukan</h3>
+        <h3 class="panel-title">Rencana Kontrol/SPRI</h3>
       </div>
       <div class="panel-body">
           <div class="row">
@@ -65,7 +65,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Rujukan Berdasarkan Nomor Rujukan</a>
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Insert Rencana Kontrol</a>
                             </h4>
                         </div>
                         <div id="collapseOne" class="panel-collapse collapse">
@@ -183,7 +183,7 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#RJKNOKA">Rujukan Berdasarkan Nomor Kartu (Multi Record)</a>
+                                <a data-toggle="collapse" data-parent="#accordion" href="#RJKNOKA">Hapus Rencana Kontrol</a>
                             </h4>
                         </div>
                         <div id="RJKNOKA" class="panel-collapse collapse">
@@ -244,54 +244,30 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#TGLRJK">Rujukan Berdasarkan Tanggal Rujukan</a>
+                                <a data-toggle="collapse" data-parent="#accordion" href="#surkoncari">Cari Surat Kontrol Berdasarkan No Kartu</a>
                             </h4>
                         </div>
-                        <div id="TGLRJK" class="panel-collapse collapse">
+                        <div id="surkoncari" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <ul class="nav nav-pills">
-                                    <li class="active">
-                                        <a href="#pcare4-pills" data-toggle="tab">Pcare</a>
-                                    </li>
-                                    <li>
-                                        <a href="#rs4-pills" data-toggle="tab">Rumah Sakit</a>
-                                    </li>
-                                </ul>
                                 <!-- Tab panes -->
                                 <div class="tab-content">
                                     <div class="tab-pane fade in active" id="pcare4-pills">
                                       <form class="" action="" method="">
                                         <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                                        <input type="hidden" name="searchBy" value="PCare">
+                                        <input type="hidden" name="searchBy" value="kontrolcari">
                                         <div class="form-group">
                                           <label for="poli">Tanggal Rujukan</label>
                                           <input type="text" id="tgl_rujukan" name="tgl_rujukan" class="form-control tanggal" value="">
                                         </div>
-                                        <button type="submit" class="btn btn-danger">
-                                            Kirim Parameter
-                                        </button>
-                                      </form>
-                                      {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='PCare'}
-                                      <h4 class="m-t-xl">Respons result</h4>
-                                      <div class="table-responsive no-margin m-b-xl" id="showData">
-                                      </div>
-                                      <pre>
-                                      </pre>
-                                      {/if}
-                                    </div>
-                                    <div class="tab-pane fade" id="rs4-pills">
-                                      <form class="" action="" method="">
-                                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
-                                        <input type="hidden" name="searchBy" value="RS">
                                         <div class="form-group">
-                                          <label for="poli">Tanggal Rujukan</label>
-                                          <input type="text" id="tgl_rujukan" name="tgl_rujukan" class="form-control tanggal" value="">
-                                        </div>
+                                            <label for="poli">No Kartu</label>
+                                            <input type="text" id="no_kartu" name="no_kartu" class="form-control" value="">
+                                          </div>
                                         <button type="submit" class="btn btn-danger">
                                             Kirim Parameter
                                         </button>
                                       </form>
-                                      {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='RS'}
+                                      {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='kontrolcari'}
                                       <h4 class="m-t-xl">Respons result</h4>
                                       <div class="table-responsive no-margin m-b-xl" id="showData">
                                       </div>
@@ -1649,4 +1625,11 @@
          divContainer.appendChild(table);
        });
   {/if}
+    {if: isset($_GET['tgl_rujukan']) && $_GET['tgl_rujukan']!='' && isset($_GET['no_kartu']) && $_GET['no_kartu']!='' && isset($_GET['searchBy']) && $_GET['searchBy']=='kontrolcari'}
+        $.get("{?=url([ADMIN, 'vclaim', 'datakontrol', $_GET['no_kartu'], $_GET['tgl_rujukan']])?}", function(data){
+            var data = JSON.parse(data);
+            var data = JSON.stringify(data, null, '\t');
+            $("pre").text(data);
+        });
+    {/if}
 </script>

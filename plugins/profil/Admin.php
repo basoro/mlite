@@ -29,10 +29,25 @@ class Admin extends AdminModule
             ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
         ];
         $username = $this->core->getUserInfo('username', null, true);
-        $profil = $this->core->mysql('pegawai')->where('nik', $username)->oneArray();
+        $cek_profil = $this->core->mysql('pegawai')->where('nik', $username)->oneArray();
+        if(!$cek_profil) {
+          $profil['nama'] = 'Admin Utama';
+          $profil['nik'] = 'admin';
+        } else {
+          $profil['nama'] = $cek_profil['nama'];
+          $profil['nik'] = $cek_profil['nik'];
+        }
         $tanggal = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-        $presensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
-        $absensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+        $presensi = [];
+        $absensi = [];
+        if($cek_profil) {
+          $presensi = [];
+          $absensi = [];
+          if($this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->oneArray()){
+            $presensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+            $absensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          }
+        }
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
         if (!empty($profil['photo'])) {
             $fotoURL = WEBAPPS_URL . '/penggajian/' . $profil['photo'];
@@ -202,6 +217,7 @@ class Admin extends AdminModule
             }
         }
 
+        /*
         $year = date('Y');
         $month = date('m');
         $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -209,6 +225,7 @@ class Admin extends AdminModule
         for ($i = 1; $i < $day + 1; $i++) {
             $i;
         }
+        */
 
         $this->assign['getStatus'] = isset($_GET['status']);
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);

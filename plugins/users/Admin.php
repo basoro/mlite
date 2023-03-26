@@ -51,7 +51,9 @@ class Admin extends AdminModule
     */
     public function getAdd()
     {
-        $this->_addInfoUser();
+        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+          $this->_addInfoUser();
+        }
         $this->_getInfoRole();
         if (!empty($redirectData = getRedirectData())) {
             $this->assign['form'] = filter_var_array($redirectData, FILTER_SANITIZE_STRING);
@@ -61,7 +63,10 @@ class Admin extends AdminModule
 
         $this->assign['title'] = 'Pengguna baru';
         $this->assign['modules'] = $this->_getModules('all');
-        $this->assign['cap'] = $this->_getInfoCap();
+        $this->assign['cap'] = [];
+        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+          $this->assign['cap'] = $this->_getInfoCap();
+        }
         $this->assign['avatarURL'] = url(MODULES.'/users/img/default.png');
 
         return $this->draw('form.html', ['users' => $this->assign]);
@@ -72,7 +77,9 @@ class Admin extends AdminModule
     */
     public function getEdit($id)
     {
-        $this->_addInfoUser();
+        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+          $this->_addInfoUser();
+        }
         $this->_getInfoRole();
         $user = $this->db('mlite_users')->oneArray($id);
 
@@ -80,7 +87,10 @@ class Admin extends AdminModule
             $this->assign['form'] = $user;
             $this->assign['title'] = 'Sunting pengguna';
             $this->assign['modules'] = $this->_getModules($user['access']);
-            $this->assign['cap'] = $this->_getInfoCap($user['cap']);
+            $this->assign['cap'] = [];
+            if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+              $this->assign['cap'] = $this->_getInfoCap($user['cap']);
+            }
             $this->assign['avatarURL'] = url(UPLOADS.'/users/'.$user['avatar']);
 
             return $this->draw('form.html', ['users' => $this->assign]);
@@ -138,6 +148,10 @@ class Admin extends AdminModule
             $_POST['access'] = implode(',', $_POST['access']);
         }
 
+        if($_POST['cap'] == '') {
+          $_POST['cap'] = [];
+        }
+        
         $_POST['cap'] = implode(',', $_POST['cap']);
 
         // CREATE / EDIT

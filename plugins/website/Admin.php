@@ -365,7 +365,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/logo_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['logo'] = 'website/logo_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_logo'] = 'website/logo_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['logo_icon']['tmp_name'], false))) {
@@ -373,7 +373,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/logo_icon_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['logo_icon'] = 'website/logo_icon_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_logo_icon'] = 'website/logo_icon_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['slider_bg']['tmp_name'], false))) {
@@ -381,7 +381,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/slider_bg_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['slider_bg'] = 'website/slider_bg_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_slider_bg'] = 'website/slider_bg_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['about_12']['tmp_name'], false))) {
@@ -389,7 +389,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/about_12_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['about_12'] = 'website/about_12_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_about_12'] = 'website/about_12_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['about_22']['tmp_name'], false))) {
@@ -397,7 +397,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/about_22_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['about_22'] = 'website/about_22_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_about_22'] = 'website/about_22_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['about_32']['tmp_name'], false))) {
@@ -405,7 +405,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/about_32_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['about_32'] = 'website/about_32_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_about_32'] = 'website/about_32_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['about_42']['tmp_name'], false))) {
@@ -413,7 +413,7 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/about_42_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['about_42'] = 'website/about_42_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_about_42'] = 'website/about_42_'.$imgName.'.'.$img->getInfos('type');
             }
         }
         if ($img->load(isset_or($_FILES['about_bg']['tmp_name'], false))) {
@@ -421,55 +421,55 @@ class Admin extends AdminModule
                 $imgName = time().$cntr++;
                 $imgPath = $dir.'/about_bg_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['about_bg'] = 'website/about_bg_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_about_bg'] = 'website/about_bg_'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_13']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_13']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_13_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_13'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_13'] = 'website/services_13_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_13'] = 'website/homepage_services_13'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_23']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_23']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_23_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_23_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_23'] = 'website/services_23_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_23'] = 'website/homepage_services_23_'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_33']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_33']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_33_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_33_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_33'] = 'website/services_33_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_33'] = 'website/homepage_services_33_'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_43']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_43']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_43_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_43_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_43'] = 'website/services_43_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_43'] = 'website/homepage_services_43_'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_53']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_53']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_53_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_53_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_53'] = 'website/services_53_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_53'] = 'website/homepage_services_53_'.$imgName.'.'.$img->getInfos('type');
             }
         }
-        if ($img->load(isset_or($_FILES['services_63']['tmp_name'], false))) {
+        if ($img->load(isset_or($_FILES['homepage_services_63']['tmp_name'], false))) {
             if (isset($img)) {
                 $imgName = time().$cntr++;
-                $imgPath = $dir.'/services_63_'.$imgName.'.'.$img->getInfos('type');
+                $imgPath = $dir.'/homepage_services_63_'.$imgName.'.'.$img->getInfos('type');
                 $img->save($imgPath);
-                $_POST['website']['services_63'] = 'website/services_63_'.$imgName.'.'.$img->getInfos('type');
+                $_POST['website']['homepage_services_63'] = 'website/homepage_services_63_'.$imgName.'.'.$img->getInfos('type');
             }
         }
 

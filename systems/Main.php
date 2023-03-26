@@ -356,9 +356,12 @@ abstract class Main
         return $_next_no_reg;
     }
 
-    public function setNoBooking($kd_dokter, $date)
+    public function setNoBooking($kd_dokter, $date, $kd_poli = null)
     {
-        $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
+          $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        }
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
         if(empty($last_no_reg[0])) {
@@ -376,9 +379,9 @@ abstract class Main
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
-          $last_no_resep[0] = '000000';
+          $last_no_resep[0] = '0000';
         }
-        $next_no_resep = sprintf('%06s', ($last_no_resep[0] + 1));
+        $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
         $next_no_resep = date('Ymd').''.$next_no_resep;
 
         return $next_no_resep;
@@ -402,7 +405,7 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -439,6 +442,21 @@ abstract class Main
         $next_no = sprintf('%06s', ($last_no[0] + 1));
         $next_no = date('Y').'/'.date('m').'/RJ/'.$next_no;
         return $next_no;
+    }
+
+    public function setNoJurnal()
+    {
+        $date = date('Y-m-d');
+        $last_no_jurnal = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
+        $last_no_jurnal->execute();
+        $last_no_jurnal = $last_no_jurnal->fetch();
+        if(empty($last_no_jurnal[0])) {
+          $last_no_jurnal[0] = '000000';
+        }
+        $next_no_jurnal = sprintf('%06s', ($last_no_jurnal[0] + 1));
+        $next_no_jurnal = 'JR'.date('Ymd').''.$next_no_jurnal;
+
+        return $next_no_jurnal;
     }
 
     public function loadModules()

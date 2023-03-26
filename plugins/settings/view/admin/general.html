@@ -67,6 +67,7 @@
                         <label>Tema Admin</label>
                         <select name="theme_admin" class="form-control" onchange="change_theme(this,'theme_admin');" >
                             <option value="">Pilih tema</option>
+                            <option value="ataaka"{if: $settings.theme_admin == 'ataaka'} selected{/if}>Ataaka</option>
                             <option value="bootstrap"{if: $settings.theme_admin == 'bootstrap'} selected{/if}>Default</option>
                             <option value="cerulean"{if: $settings.theme_admin == 'cerulean'} selected{/if}>Cerulean</option>
                             <option value="cosmo"{if: $settings.theme_admin == 'cosmo'} selected{/if}>Cosmo</option>
@@ -176,6 +177,7 @@
                          </div>
                     </div>
                     {/if}
+                    {if: $settings.module_pasien}
                     <div class="form-group">
                         <label>Aktifkan Cek Status Bayar</label>
                         <div class="radio">
@@ -198,6 +200,7 @@
                             </label>
                         </div>
                     </div>
+                    {/if}
                     {if: $settings.presensi}
                     <div class="form-group">
                         <label>Aktifkan Notifikasi Presensi</label>
@@ -233,6 +236,7 @@
                         <input type="text" name="BpjsUserKey" class="form-control" value="{$settings.BpjsUserKey}" />
                     </div>
                     {/if}
+                    {if: $settings.module_pasien}
                     <div class="form-group">
                          <label>Mode Input Admin</label>
                          <div class="radio">
@@ -255,11 +259,12 @@
                              </label>
                          </div>
                     </div>
-                    <!--
+                    {/if}
                     <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />
                     </div>
+                    <!--
                     <div class="form-group">
                          <label>Editor</label>
                          <div class="radio">
@@ -402,7 +407,7 @@
   });
 
   var path='{?=url()?}/assets/img/';
-  var img_array=new Array('','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
+  var img_array=new Array('','ataaka.png','bootstrap.png','cerulean.png','cosmo.png','cyborg.png','darkly.png','flatly.png','journal.png','lumen.png','mlite.png','paper.png','readable.png','sandstone.png','simplex.png','slate.png','spacelab.png','superhero.png','united.png','yeti.png');
 
   function change_theme(obj,id){
    var i=obj.selectedIndex;

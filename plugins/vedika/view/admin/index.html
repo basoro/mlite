@@ -1,4 +1,4 @@
-<article class="row">
+<article class="row" id="display">
     <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
@@ -82,16 +82,17 @@
         											<i class="fa fa-check"></i> Status
         										</button><br>
                           {else}
-                            <a href="{$value.setstatusURL}" class="btn btn-warning btn-xs" data-toggle="modal" data-target="#statusModal">
+                            <a href="{$value.setstatusURL}" class="btn btn-success btn-xs" data-toggle="modal" data-target="#statusModal">
         											<i class="fa fa-check"></i> Status
-        										</a><br>
-                            <a href="{?=url([ADMIN,'vedika', 'hapus', $value.no_sep])?}" target="_blank" class="btn btn-danger btn-xs">
+        										</a>
+                            {loop: $value.status_pengajuan as $data}
+                            <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
+                            {/loop}
+                            <br><br><br>
+                            <a href="#" class="btn btn-danger btn-xs hapus_vedika" data-no_sep="{$value.no_sep}">
                               <i class="fa fa-trash"></i> Hapus
                             </a>
                           {/if}
-                          {loop: $value.status_pengajuan as $data}
-                          <span class="badge badge-{if: $data.status == 'Setuju'}success{elseif: $data.status == 'Perbaiki'}error{else}warning{/if}">{$data.status}</span>
-                          {/loop}
                         </td>
       									<td>
                           <table>
@@ -118,13 +119,23 @@
                         <td>
                           <table>
                             <tr>
-                              <td width='120px'>Tgl.Registrasi</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Tgl.Registrasi{else}Tgl.Pulang{/if}</td><td>: {$value.tgl_registrasi} {$value.jam_reg}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Poliklinik</td><td>: {$value.nm_poli}</td>
+                              <td width='120px'>{if: $tab == 'ralan'}Poliklinik{else}Bangsal/kamar{/if}</td><td>: {$value.nm_poli}</td>
                             </tr>
                             <tr>
+                              {if: $value.status_lanjut == 'Ralan'}
                               <td width='120px'>Dokter</td><td>: {$value.nm_dokter}</td>
+                              {/if}
+                              {if: $value.status_lanjut == 'Ranap'}
+                              <td width='120px'>Dokter</td>
+                              <td>:
+                                {loop: $value.nm_dokter as $data}
+                                  - {$data.nm_dokter}<br>
+                                {/loop}
+                              </td>
+                              {/if}
                             </tr>
                             <tr>
                               <td width='120px'>Status</td><td>: {$value.status_lanjut} ({$value.png_jawab})</td>
@@ -140,7 +151,10 @@
                               <td width='120px'>No. Kartu</td><td>: {$value.no_peserta}</td>
                             </tr>
                             <tr>
-                              <td width='120px'>Dx. Utama</td><td>: {$value.kd_penyakit} - {?=substr($value.nm_penyakit, 0, strrpos(substr($value.nm_penyakit, 0, 20), ' '))?}</td>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahdiagnosa',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Dx. Utama</a></td><td>: {$value.kd_penyakit} - {$value.nm_penyakit}</td>
+                            </tr>
+                            <tr>
+                              <td width='120px'><a href="{?=url([ADMIN,'vedika','ubahprosedur',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#statusModal">Pros. Utama</a></td><td>: {$value.kode} - {$value.deskripsi_panjang}</td>
                             </tr>
                           </table>
                         </td>
@@ -157,15 +171,20 @@
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>
-                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
+                              <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat={?=convertNorawat($value.no_rawat)?} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
                             </tr>
                             {/loop}
+                            {*if: $_SESSION['mlite_user'] == '4'*}
+                            {if: $value.status_lanjut == 'Ralan'}
+                            <tr><td><br><br><a href="{?=url([ADMIN,'vedika','resume',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#statusModal">Resume</a></td></tr>
+                            {*/if*}
+                            {/if}
                           </table>
                         </td>
       								</tr>
       								{/loop}
       								{else}
-      								<tr><td colspan="4" class="text-center">Data pasien tidak ditemukan</td></tr>
+      								<tr><td colspan="5" class="text-center">Data pasien tidak ditemukan</td></tr>
       							{/if}
       							</tbody>
       						</table>
@@ -190,6 +209,10 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+  var no_rawat = $(this).attr("data-no_rawat");
+  $('input:text[name=no_rawat]').val(no_rawat);
+</script>
 <script>
   $( function() {
     $('.tanggal').datetimepicker({
@@ -199,4 +222,41 @@
     });
   } );
   $('.gallery').lightbox();
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  $("#display").on("click",".hapus_vedika", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/hapus?t=' + mlite.token;
+    var no_sep = $(this).attr("data-no_sep");
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        window.open(baseURL + '/vedika/hapus/' + no_sep + '?t=' + mlite.token, '_blank');
+      }
+    });
+    event.stopPropagation();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  // ketika tombol hapus ditekan
+  $("#display").on("click",".hapus_berkas", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/hapusberkas?t=' + mlite.token;
+    var no_rawat = $(this).attr("data-no_rawat");
+    var nama_file = $(this).attr("data-nama_file");
+
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        window.open(baseURL + '/vedika/hapusberkas/' + no_rawat + '/' + nama_file + '?t=' + mlite.token, '_blank');
+      }
+    });
+    event.stopPropagation();
+    return false;
+  });
 </script>

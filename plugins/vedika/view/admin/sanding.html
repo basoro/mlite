@@ -1,0 +1,90 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Purifikasi</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row clearfix">
+                    <div class="col col-md-6">
+                        <div id="notif"></div>
+                        <h3>{$sanding.ym}</h3>
+                    </div>
+                    <div class="col col-md-6">
+                        <form action="" class="searchbox-input form-inline pull-right padding-bottom-lg"
+                            style="margin-top:5px;margin-bottom:15px;" method="GET">
+                            <div class="input-group">
+                                <select name="y" id="tahun" data-use-search="true" data-options-height="10px"
+                                    class="form-control" placeholder="Tahun">
+                                    <option value="2021">2021</option>
+                                    <option value="2022">2022</option>
+                                    <option value="2023" selected>2023</option>
+                                    <option value="2024">2024</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <select name="bln" id="bln" data-use-search="true" data-options-height="10px"
+                                    class="form-control" placeholder="Bulan">
+                                    {loop: $sanding.bulan}
+                                        <option value="{$value}">{$value}</option>
+                                    {/loop}
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="submit"><span
+                                            class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="display">
+                    <table class="table table-responsive table-striped no-padding dataTables" width="100%">
+                        <thead>
+                            <tr>
+                                <th style="white-space: nowrap;">No</th>
+                                <th style="white-space: nowrap;">No SEP Eklaim</th>
+                                <th style="white-space: nowrap;">No Rekam Medis</th>
+                                <th style="white-space: nowrap;">Nama</th>
+                                <th style="white-space: nowrap;">No SEP Vedika</th>
+                                <th style="white-space: nowrap;">Status Vedika</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {loop: $sanding.list}
+                            <tr {if: $value.vedika.nosep == ''} style="background-color: #ff6666;color: whitesmoke;" {/if}>
+                                <td>{$value.no}</td>
+                                <td>{$value.no_sep}</td>
+                                <td>{$value.no_rkm_medis}</td>
+                                <td>{$value.nama}</td>
+                                <td>{$value.vedika.nosep}</td>
+                                <td>{$value.vedika.status}</td>
+                            </tr>
+                            {/loop}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('.dataTables').DataTable({
+        "order": [[3, "desc"]],
+        "pagingType": "full",
+        "language": {
+            "paginate": {
+                "first": "&laquo;",
+                "last": "&raquo;",
+                "previous": "‹",
+                "next": "›"
+            },
+            "search": false
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+    });
+</script>

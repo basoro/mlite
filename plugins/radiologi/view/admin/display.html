@@ -6,7 +6,10 @@
           <th style="white-space: nowrap;">No. RM</th>
           <th style="white-space: nowrap;">Nama Pasien</th>
           <th style="white-space: nowrap;">ID Kunjungan</th>
+          {if: $type == 'ranap'}
+          {else}
           <th style="white-space: nowrap;">Antrian</th>
+          {/if}
           <th style="white-space: nowrap;">Poliklinik</th>
           <th style="white-space: nowrap;">Dokter</th>
           <th style="white-space: nowrap;">Penjamin</th>
@@ -36,6 +39,8 @@
           </td>
           <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
           <td class="edit" data-no_rawat="{$value.no_rawat}">{$value.no_rawat}</td>
+          {if: $type == 'ranap'}
+          {else}
           <td style="white-space: nowrap;">
             <button type="button" name="button" class="btn btn-xs btn-warning antrian"
               data-no_rawat="{$value.no_rawat}"
@@ -43,8 +48,25 @@
               disabled
               {/if}
             ><span class="fa fa-print"></span> {$value.no_reg}</button></td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_poli}</td>
-          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{$value.nm_dokter}</td>
+          {/if}
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">{if: $type == 'ranap'}{$value.nm_bangsal} - {$value.kd_kamar}{else}{$value.nm_poli}{/if}</td>
+          <td class="edit" data-no_rawat="{$value.no_rawat}" style="white-space: nowrap;">
+            {if: $type == 'ranap'}
+            <ul class="list-unstyled">
+              {if: $value.dokter}
+              {loop: $value.dokter as $data_dokter}
+              <li>
+                <span class="fa fa-minus-square-o"></span> {$data_dokter.nm_dokter}
+              </li>
+              {/loop}
+              {else}
+              <li>-----</li>
+              {/if}
+            </ul>
+            {else}
+            {$value.nm_dokter}
+            {/if}
+          </td>
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}
@@ -95,14 +117,15 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
-
+    var status = $('input:text[name=status]').val();
+    
     $('input:text[name=no_rawat]').val(no_rawat);
     $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
     $('input:text[name=nm_pasien]').val(nm_pasien);
     $("#display").hide();
 
     var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
-    $.post(url, {no_rawat : no_rawat,
+    $.post(url, {no_rawat : no_rawat, status : status
     }, function(data) {
       // tampilkan data
       $("#form_rincian").show();

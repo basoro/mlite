@@ -152,12 +152,12 @@
         </td>
       </tr>
       {/if}
-      {if: $value.pemeriksaan_ralan}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan</td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            {if: $value.pemeriksaan_ralan}
              <tr align="center">
                 <td valign="top" width="14%" bgcolor="#eee">Unit</td>
                 <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
@@ -206,6 +206,8 @@
                   <td valign="top" colspan="9"> : {$data.rtl}</td>
                </tr>
              {/loop}
+             {/if}
+             {if: $value.pemeriksaan_ranap}
              <tr align="center">
                 <td valign="top" width="14%" bgcolor="#eee">Unit</td>
                 <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
@@ -217,7 +219,8 @@
                 <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
-                <td valign="top" width="9%" bgcolor="#eee" colspan="2">Alergi</td>
+                <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
+                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
              </tr>
              {loop: $value.pemeriksaan_ranap as $data}
                <tr>
@@ -233,7 +236,8 @@
                   <td valign="top">{$data.tinggi}</td>
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
-                  <td valign="top" colspan="2">{$data.alergi}</td>
+                  <td valign="top">{$data.alergi}</td>
+                  <td valign="top">{$data.kesadaran}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
@@ -252,10 +256,10 @@
                   <td valign="top" colspan="9"> : {$data.rtl}</td>
                </tr>
              {/loop}
+             {/if}
           </table>
         </td>
       </tr>
-      {/if}
       {if: $value.rawat_jl_dr || $value.rawat_jl_pr || $value.rawat_jl_drpr}
       <tr class="isi">
         <td valign="top" width="20%">
@@ -514,6 +518,36 @@
         </td>
       </tr>
       {/if}
+      {if: !empty($value.pemeriksaan_catatan)}
+      <tr class="isi">
+        <td valign="top" width="20%">Gambar Catatan Pemeriksaan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td>
+                <div class="row">
+                    <div class="gallery">
+                    {loop: $value.pemeriksaan_catatan as $data}
+                        <div class="col-sm-6 col-md-6">
+                          <div class="thumbnail" style="margin-bottom: 0; border-radius: 5px 5px 0 0;">
+                            <a href="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" target="_blank" class="images">
+                                <img src="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" class="img-responsive">
+                            </a>
+                          </div>
+                          <div class="caption" style=" background-color: #EEE; border-radius: 0 0 5px 5px;">
+                            {$data.nama} ( {$data.waktu_catatan} )
+                          </div>
+                        </div>
+                    {/loop}
+                    </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      {/if}
       {if: $value.periksa_lab}
       <tr class="isi">
         <td valign="top" width="20%">Laboratorium </td>
@@ -564,6 +598,78 @@
               <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td>
             </tr>
             {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.operasi}
+      <tr class="isi">
+        <td valign="top" width="20%">Operasi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="30%" bgcolor="#eee">Nama Tindakan</td>
+            </tr>
+            {loop: $value.operasi as $data}
+            <tr>
+              <td valign="top" width="20%">{$data.tgl_operasi}</td>
+              <td valign="top" width="30%">{$data.nm_perawatan}</td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.obat_operasi}
+      <tr class="isi">
+        <td valign="top" width="20%">Obat dan BHP Operasi</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
+              <td valign="top" width="30%" bgcolor="#eee">Nama Tindakan</td>
+              <td valign="top" width="50%" bgcolor="#eee">Jumlah</td>
+            </tr>
+            {loop: $value.obat_operasi as $data}
+            <tr>
+              <td valign="top" width="20%">{$data.tanggal}</td>
+              <td valign="top" width="30%">{$data.nm_obat}</td>
+              <td valign="top" width="50%">{$data.jumlah}</td>
+            </tr>
+            {/loop}
+          </table>
+        </td>
+      </tr>
+      {/if}
+      {if: $value.berkas_digital}
+      <tr class="isi">
+        <td valign="top" width="20%">Berkas Digital</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr align="center">
+              <td>
+                <div class="row">
+                    <div class="gallery">
+                    {loop: $value.berkas_digital as $data}
+                        <div class="col-sm-6 col-md-6">
+                            <div class="thumbnail">
+                                <a href="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="images">
+                                    <img src="{?=url(WEBAPPS_URL.'/berkasrawat/'.$data.lokasi_file)?}" class="img-responsive">
+                                </a>
+                            </div>
+                            <div class="caption">
+                              {$data.nama}
+                            </div>
+                        </div>
+                    {/loop}
+                    </div>
+                </div>
+              </td>
+            </tr>
           </table>
         </td>
       </tr>

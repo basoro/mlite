@@ -26,9 +26,9 @@
     <div class="row clearfix">
       <div class="col col-md-6">
         <h3 style="margin-top:5px;margin-bottom:15px;">Jumlah: {?=count($vedika.totalRecords)?}
-          <a href="{?=url()?}/veda/perbaikan/excel?start_date={?=$_GET['start_date']?}&end_date={?=$_GET['end_date']?}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
-          <a href="{?=url()?}/veda/perbaikan/excel?jenis=2&start_date={?=$_GET['start_date']?}&end_date={?=$_GET['end_date']?}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
-          <a href="{?=url()?}/veda/perbaikan/excel?jenis=1&start_date={?=$_GET['start_date']?}&end_date={?=$_GET['end_date']?}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Semua</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?jenis=2&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ralan</a>
+          <a href="{?=url()?}/veda/perbaikan/excel?jenis=1&start_date={if: isset($_GET['start_date'])}{?=$_GET['start_date']?}{else}{?=date('Y-m-d')?}{/if}&end_date={if: isset($_GET['end_date'])}{?=$_GET['end_date']?}{else}{?=date('Y-m-d')?}{/if}&t={?=$_GET['t']?}" class="btn btn-sm btn-success" style="margin:0;padding:1px 4px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Ranap</a>
         </h3>
       </div>
       <div class="col col-md-6">
@@ -162,7 +162,7 @@
                   {/if}
                   {loop: $value.berkas_digital as $data}
                   <tr>
-                    <td>- <a href="{?=url(WEBAPPS_PATH)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a></td>
+                    <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" target="_blank" class="gallery">{$data.nama}</a></td>
                   </tr>
                   {/loop}
                 </table>

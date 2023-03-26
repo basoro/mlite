@@ -2,10 +2,10 @@
 
     return [
         'name'          =>  'Cuti',
-        'description'   =>  'Modul Cuti Pegawai untuk KhanzaLITE',
+        'description'   =>  'Modul Cuti Pegawai untuk mLITE',
         'author'        =>  'Adit',
         'version'       =>  '1.0',
-        'compatibility' =>  '2022',
+        'compatibility' =>  '2023',
         'icon'          =>  'calendar-check-o',
         'install'       =>  function () use ($core) {
 

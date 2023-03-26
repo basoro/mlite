@@ -4,7 +4,7 @@ return [
     'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'database',
     'pages'         =>  ['API mLITE' => 'api'],
     'install'       =>  function () use ($core) {
@@ -108,6 +108,7 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'duitku_productDetails', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'duitku_expiryPeriod', '')");
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'duitku_kdpj', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'berkasdigital_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341')");
     },
     'uninstall'     =>  function () use ($core) {
       $core->mysql()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'api'");

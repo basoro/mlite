@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul vclaim api untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
-    'compatibility' =>  '2022',
+    'compatibility' =>  '2023',
     'icon'          =>  'database',
     'install'       =>  function () use ($core) {
 
@@ -26,7 +26,7 @@ return [
         `kdpolitujuan` varchar(15) DEFAULT NULL,
         `nmpolitujuan` varchar(50) DEFAULT NULL,
         `klsrawat` enum('1','2','3') DEFAULT NULL,
-        `klsnaik` enum('','1','2') NOT NULL,
+        `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
         `pembiayaan` enum('','1','2','3') NOT NULL,
         `pjnaikkelas` varchar(100) NOT NULL,
         `lakalantas` enum('0','1') DEFAULT NULL,
@@ -59,7 +59,7 @@ return [
         `tujuankunjungan` enum('0','1','2') NOT NULL,
         `flagprosedur` enum('','0','1') NOT NULL,
         `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-        `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+        `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
         `kddpjplayanan` varchar(10) NOT NULL,
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
@@ -88,10 +88,10 @@ return [
         `kdpolitujuan` varchar(15) DEFAULT NULL,
         `nmpolitujuan` varchar(50) DEFAULT NULL,
         `klsrawat` enum('1','2','3') DEFAULT NULL,
-        `klsnaik` enum('','1','2') NOT NULL,
+        `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
         `pembiayaan` enum('','1','2','3') NOT NULL,
         `pjnaikkelas` varchar(100) NOT NULL,
-        `lakalantas` enum('0','1') DEFAULT NULL,
+        `lakalantas` enum('0','1','2','3') DEFAULT NULL,
         `user` varchar(25) DEFAULT NULL,
         `nomr` varchar(15) DEFAULT NULL,
         `nama_pasien` varchar(100) DEFAULT NULL,
@@ -121,7 +121,7 @@ return [
         `tujuankunjungan` enum('0','1','2') NOT NULL,
         `flagprosedur` enum('','0','1') NOT NULL,
         `penunjang` enum('','1','2','3','4','5','6','7','8','9','10','11','12') NOT NULL,
-        `asesmenpelayanan` enum('','1','2','3','4') NOT NULL,
+        `asesmenpelayanan` enum('','1','2','3','4','5') NOT NULL,
         `kddpjplayanan` varchar(10) NOT NULL,
         `nmdpjplayanan` varchar(100) NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");

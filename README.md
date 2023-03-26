@@ -8,7 +8,8 @@
 <pre>
 Disclaimer
 ==========
-Aplikasi SIMRS Khanza versi web (selanjutnya akan disebut mLITE),
+mLITE tidak berafiliasi langsung dengan SIMRS Khanza ataupun YASKI
+Aplikasi SIMRS Khanza versi web ini (selanjutnya akan disebut mLITE),
 saya kembangkan untuk kebutuhan pribadi sebagai Dokter Keluarga
 dan diterapkan di Rumah Sakit tempat saya bekerja sebagai Dokter.
 Silahkan gunakan sewajarnya.
@@ -66,20 +67,22 @@ $ composer create-project basoro/khanza-lite
 ### Pemasangan Manual
 1. Unduh versi terbaru [mLITE] (https://github.com/basoro/khanza-lite).
 
-2. Jalankan perintah composer untuk pemasangan independensi
+2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
+
+3. Jalankan perintah composer untuk pemasangan independensi
 ```
 $ composer install
 ```
 
-3. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
-
 4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
 
-5. Sesuaikan pengaturan di config.php
+5. Buat database lalu sesuaikan pengaturan di config.php
 
-6. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+6. Import mlite.sql ke database yang sudah dibuat di point 5
 
-7. Silahkan login dengan Username: admin dan Password: admin
+7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+
+8. Silahkan login dengan Username: admin dan Password: admin
 
 
 ### Untuk pengembangan
@@ -156,4 +159,12 @@ Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL.
 #### Login: `admin` Kata sandi: `admin`
 Ini harus diubah segera setelah login untuk alasan keamanan. Juga dapat mengganti nama direktori dengan panel administrasi.  (Anda perlu mengubahnya pada `config.php`)
 
+
+# Some Screenshot
+| ![frame_generic_light](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/1.png) | ![frame_generic_light (1)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/2.png) | ![frame_generic_light (2)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/3.png) |
+| :---: | :---: | :---: |
+| ![frame_generic_light (3)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/4.png) | ![frame_generic_light (4)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/5.png) | ![frame_generic_light (5)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/6.png) |
+| ![frame_generic_light (6)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/7.png) | ![frame_generic_light (7)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/8.png) | ![frame_generic_light (8)](https://raw.githubusercontent.com/basoro/khanza-lite/mlite/docs/9.png) |
+
+## Demo
 Demo dan Info lebih lanjut di https://mlite.id

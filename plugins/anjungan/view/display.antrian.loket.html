@@ -5,7 +5,6 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="{if: $page.desc}{$page.desc}{else}{$settings.description}{/if}">
     <title>{$title} - {$settings.nama_instansi}</title>
     <link rel="icon" href="{{?=url()?}/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
@@ -41,7 +40,7 @@
         padding: 10px;
       }
       .panel-body .no_antrian {
-        font-size:100px;
+        font-size:90px;
         font-weight:lighter;
         padding:0;
         margin-top:-45px;
@@ -54,25 +53,25 @@
         padding-bottom:0;
       }
       .panel-body .date {
-        font-size:21px;
+        font-size:20px;
         color: #FF0000;
         font-weight:lighter;
         padding-top:5px;
         padding-bottom:5px;
-        margin-top:-20px;
-        margin-bottom:-25px;
+        margin-top:-10px;
+        margin-bottom:-10px;
       }
       .panel-footer .clock {
-        font-size:26px;
+        font-size:36px;
         color: #000;
         padding-top:0;
         padding-bottom:0;
       }
       .panel-title.marquee {
          font-size:36px;
-         padding-top: 10px;
+         padding-top: 5px;
          padding-bottom: 0px;
-         margin-top: 10px;
+         margin-top: 0px;
          margin-bottom: 10px;
          color: #FF0000;
          background-color: #fff;
@@ -124,6 +123,16 @@
                 </div>
             </div>
           </a>
+          <a href="{?=url()?}/anjungan/loket?show=panggil_apotek" target="_blank">
+            <div class="panel border-success">
+              <div class="panel-body text-success">
+                <div class="no_antrian">F<span class="antrian_Apotek"><span></div>
+              </div>
+              <div class="panel-footer bg-transparent border-success">
+                <div class="no_loket">Konter <span class="get_Apotek"><span></div>
+                </div>
+            </div>
+          </a>
           <div class="panel border-success">
             <div class="panel-body text-success">
               <div class="date">
@@ -155,7 +164,7 @@
     </div>
   </div>
   {/if}
-  {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
+  {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_apotek'}
   <div align="center" style="font-size: 64px;color:white; text-shadow: 2px 2px 4px #000000;margin:30px;"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="80px"> Pemanggil Antrian Loket</div>
   <div class="container text-center">
     <div class="row">
@@ -224,9 +233,7 @@
         Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
         {$powered}.
       </p>
-      {if: $show}
-      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
-      {/if}
+      <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="jam"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
     </div>
   </footer>
 
@@ -261,6 +268,38 @@
       return i;
   }
   setInterval(showTime, 500);
+  </script>
+  <script type="text/javascript">
+  function showTime2() {
+      var a_p = "";
+      var today = new Date();
+      var curr_hour = today.getHours();
+      var curr_minute = today.getMinutes();
+      var curr_second = today.getSeconds();
+      if (curr_hour < 12) {
+          a_p = "AM";
+      } else {
+          a_p = "PM";
+      }
+      if (curr_hour == 0) {
+          curr_hour = 12;
+      }
+      if (curr_hour > 12) {
+          curr_hour = curr_hour - 12;
+      }
+      curr_hour = checkTime2(curr_hour);
+      curr_minute = checkTime2(curr_minute);
+      curr_second = checkTime2(curr_second);
+      document.getElementById('jam').innerHTML = curr_hour + ":" + curr_minute + ":" + curr_second + " " + a_p;
+      }
+
+  function checkTime2(i) {
+      if (i < 10) {
+          i = "0" + i;
+      }
+      return i;
+  }
+  setInterval(showTime2, 500);
   </script>
   {if: !$show}
   <script>
@@ -373,7 +412,7 @@
   }
   </script>
   {/if}
-  {if: $show == 'panggil_loket' || $show == 'panggil_cs'}
+  {if: $show == 'panggil_loket' || $show == 'panggil_cs' || $show == 'panggil_apotek'}
   <script>
   function panggil(noantrian) {
     var loket = '';

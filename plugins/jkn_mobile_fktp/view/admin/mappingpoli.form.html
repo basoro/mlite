@@ -1,0 +1,71 @@
+<div id="form">
+  <div class="row col-md-5 m-r-md">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div class="form-horizontal">
+          <div class="form-group">
+            <label for="kd_poli_rs" class="col-sm-3 control-label">Poli RS</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="kd_poli_rs">
+                {loop: $poliklinik}
+                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="kd_poli_rs" class="col-sm-3 control-label">Poli PCare</label>
+            <div class="col-sm-9">
+              <input type="text" name="getPoli" id="getPoli" class="form-control" value="{if: $mappingpoli.kd_poli_pcare !=''}{$mappingpoli.kd_poli_pcare}: {$mappingpoli.nm_poli_pcare}{/if}">
+              <ul class="list-group" id="poliList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="m-b-xl clearfix">
+      <button type="button" name="button" class="btn btn-primary" id="simpan"><i class="fa fa-save"></i><span class="hidden-xs"> Simpan</span></button>
+      <button type="button" name="button" class="btn btn-danger" id="hapus"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+      <button type="button" name="button" class="btn btn-warning" id="batal"><i class="fa fa-close"></i><span class="hidden-xs"> Batal</span></button>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+  $('#getPoli').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/admin/pcare/poli?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var poli = json_obj[0].response.list;
+                       for (var i in poli) {
+                         output+='<li class=\"list-group-item link-class\">' + poli[i].kdPoli + ': ' + poli[i].nmPoli + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#poliList').fadeIn();
+                     $('#poliList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#poliList').on('click', 'li', function(){
+       $('#getPoli').val($(this).text());
+       var getPoli = $('#getPoli').val();
+       $('#poliList').fadeOut();
+  });
+</script>

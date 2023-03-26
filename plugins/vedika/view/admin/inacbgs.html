@@ -1,0 +1,573 @@
+<style media="screen">
+  .panel-heading-nav {
+    border-bottom: 0;
+    padding: 10px 0 0;
+  }
+
+  .panel-heading-nav .nav {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .nowrap th, td {
+    white-space: nowrap;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Bridging Inacbgs</h4>
+</div>
+<div class="modal-body" id="bridginginacbgs">
+  <div style="margin-top:20px;">
+    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+    <div class="row">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nama Pasien/JK</label>
+        <input type="text" id="nm_pasien" name="nm_pasien" class="form-control" value="{$reg_periksa.nm_pasien}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor RM</label>
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.no_rkm_medis}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Rawat</label>
+        <input type="text" id="no_rawat" name="no_rawat" class="form-control" value="{$reg_periksa.no_rawat}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Nomor Kartu</label>
+        <input type="text" id="nokartu" name="nokartu" class="form-control" value="{$reg_periksa.no_peserta}" readonly>
+      </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Tanggal Registrasi</label>
+        <input type="text" id="tgl_registrasi" name="tgl_registrasi" class="form-control" value="{$reg_periksa.tgl_registrasi}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Poliklinik/Unit</label>
+        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.nm_poli}" readonly>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Dokter</label>
+        <select class="form-control" name="nama_dokter">
+          {if: $reg_periksa.status_lanjut == 'Ralan'}
+          <option value='{$reg_periksa.nm_dokter}'>{$reg_periksa.nm_dokter}</option>
+          {/if}
+          {if: $reg_periksa.status_lanjut == 'Ranap'}
+            {loop: $reg_periksa.nm_dokter as $data}
+            <option value='{$data.nm_dokter}'>{$data.nm_dokter}</option>
+            {/loop}
+          {/if}
+        </select>
+      </div>
+    </div>
+    <div class="col col-md-3">
+      <div class="form-group">
+        <label for="poli">Cara Bayar</label>
+        <input type="text" id="noKartu" name="noKartu" class="form-control" value="{$reg_periksa.png_jawab}" readonly>
+      </div>
+    </div>
+    </div>
+    <div class="row">
+    <div class="col col-md-12" style="margin: 20px 0;">
+      <ul class="nav nav-tabs">
+        <li role="presentation" class="active">
+          <a href="#one" aria-controls="one" role="tab" data-toggle="tab">Data Umum</a>
+        </li>
+        <li role="presentation">
+          <a href="#two" aria-controls="two" role="tab" data-toggle="tab">Data Biaya</a>
+        </li>
+      </ul>
+    </div>
+    </div>
+
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane fade in active" id="one">
+      <div class="row">
+        <div class="col col-md-6">
+          <div class="form-group">
+            <label for="poli">Nomor SEP</label>
+            <input type="text" id="nosep" name="nosep" class="form-control" value="{$reg_periksa.no_sep}">
+          </div>
+        </div>
+        <div class="col col-md-6">
+          <div class="form-group">
+            <label for="poli">Tanggal Keluar</label>
+            <input type="text" id="keluar" name="keluar" class="form-control" value="{$reg_periksa.tgl_keluar}">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Kelas Rawat</label>
+            <select name="kelas_rawat" class="form-control">
+            {if: $reg_periksa.status_lanjut == 'Ralan'}
+              <option value='3'>Kelas Reguler</option>
+              <option value='1'>Kelas Eksekutif</option>
+            {else}
+              <option value='1'>Kelas 1</option>
+              <option value='2'>Kelas 2</option>
+              <option value='3'>Kelas 3</option>
+            {/if}
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Upgrade Kelas</label>
+            <select name="upgrade_class_ind" class="form-control">
+               <option value="0">0</option>
+               <option value="1">1</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Naik ke Kelas</label>
+            <select name="upgrade_class_class" class="form-control">
+               <option value=""></option>
+               <option value="kelas_1">Kelas 1</option>
+               <option value="kelas_2">Kelas 2</option>
+               <option value="vip">Kelas VIP</option>
+               <option value="vvip">Kelas VVIP</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Lama Hari Naik Kelas</label>
+            <input type="text" id="upgrade_class_los" name="upgrade_class_los" class="form-control" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ADL Sub Acute</label>
+            <select name="adl_sub_acute" class="form-control">
+                <option value=""></option>
+                {loop: $adl}
+                <option value="{$value}">{$value}</option>
+                {/loop}
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ADL Chronic</label>
+            <select name="adl_chronic" class="form-control">
+                <option value=""></option>
+                {loop: $adl}
+                <option value="{$value}">{$value}</option>
+                {/loop}
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ICU Indikator</label>
+            <select name="icu_indikator" class="form-control">
+               <option value="0">0</option>
+               <option value="1">1</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">ICU Los</label>
+            <input type="text" id="icu_los" name="icu_los" class="form-control" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Berat Saat Lahir</label>
+            <input type="text" id="birth_weight" name="birth_weight" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Status Pulang</label>
+            <select name="discharge_status" class="form-control">
+              {if: $reg_periksa.stts_pulang == 'Sembuh'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Sehat'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Rujuk'}
+              <option value='2'>Dirujuk</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'APS'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Pulang Paksa'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Meninggal'}
+              <option value='4'>Meninggal</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == '+'}
+              <option value='4'>Meninggal</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Atas Persetujuan Dokter'}
+              <option value='1'>Atas persetujuan dokter</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Atas Permintaan Sendiri'}
+              <option value='3'>Atas permintaan sendiri</option>
+              {/if}
+              {if: $reg_periksa.stts_pulang == 'Lain-lain'}
+              <option value='5'>Lain-lain</option>
+              {/if}
+              <option value='1'>Atas persetujuan dokter</option>
+              <option value='2'>Dirujuk</option>
+              <option value='3'>Atas permintaan sendiri</option>
+              <option value='4'>Meninggal</option>
+              <option value='5'>Lain-lain</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Diagnosa</label>
+            <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{$penyakit}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur</label>
+            <input type="text" id="procedure" name="procedure" class="form-control" value="{$prosedur}">
+          </div>
+        </div>
+      </div>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="two">
+        <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur Non Bedah</label>
+            <input type="text" id="prosedur_non_bedah" name="prosedur_non_bedah" class="form-control" value="{$biaya_non_bedah}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Prosedur Bedah</label>
+            <input type="text" id="prosedur_bedah" name="prosedur_bedah" class="form-control" value="{$biaya_bedah}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Konsultasi</label>
+            <input type="text" id="konsultasi" name="konsultasi" class="form-control" value="{$biaya_konsultasi}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Tenaga Ahli</label>
+            <input type="text" id="tenaga_ahli" name="tenaga_ahli" class="form-control" value="{$biaya_tenaga_ahli}">
+          </div>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Keperawatan</label>
+            <input type="text" id="keperawatan" name="keperawatan" class="form-control" value="{$biaya_keperawatan}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Penunjang</label>
+            <input type="text" id="penunjang" name="penunjang" class="form-control" value="{$biaya_penunjang}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Radiologi</label>
+            <input type="text" id="radiologi" name="radiologi" class="form-control" value="{$biaya_radiologi}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Laboratorium</label>
+            <input type="text" id="laboratorium" name="laboratorium" class="form-control" value="{$biaya_laboratorium}">
+          </div>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Pelayanan Darah</label>
+            <input type="text" id="pelayanan_darah" name="pelayanan_darah" class="form-control" value="{$biaya_pelayanan_darah}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Rehabilitasi</label>
+            <input type="text" id="rehabilitasi" name="rehabilitasi" class="form-control" value="{$biaya_rehabilitasi}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Kamar</label>
+            <input type="text" id="kamar" name="kamar" class="form-control" value="{$biaya_kamar}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Rawat Intensif</label>
+            <input type="text" id="rawat_intensif" name="rawat_intensif" class="form-control" value="{$biaya_rawat_intensif}">
+          </div>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat</label>
+            <input type="text" id="obat" name="obat" class="form-control" value="{$biaya_obat}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat Kronis</label>
+            <input type="text" id="obat_kronis" name="obat_kronis" class="form-control" value="{$biaya_obat_kronis}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Obat Kemoterapi</label>
+            <input type="text" id="obat_kemoterapi" name="obat_kemoterapi" class="form-control" value="{$biaya_obat_kemoterapi}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Alkes</label>
+            <input type="text" id="alkes" name="alkes" class="form-control" value="{$biaya_alkes}">
+          </div>
+        </div>
+        </div>
+        <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">BMHP</label>
+            <input type="text" id="bmhp" name="bmhp" class="form-control" value="{$biaya_bmhp}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Sewa Alat</label>
+            <input type="text" id="sewa_alat" name="sewa_alat" class="form-control" value="{$biaya_sewa_alat}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Poli Eksekutif</label>
+            <input type="text" id="tarif_poli_eks" name="tarif_poli_eks" class="form-control" value="{$biaya_tarif_poli_eks}">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="poli">Biaya Tambahan</label>
+            <input type="text" id="add_payment_pct" name="add_payment_pct" class="form-control" value="{$biaya_add_payment_pct}">
+          </div>
+        </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+    <div class="col col-md-12" style="margin: 20px 0;">
+      <button class="btn btn-success simpanbridging">
+          Simpan
+      </button>
+      <button class="btn btn-info editbridging">
+          Edit
+      </button>
+      <button class="btn btn-danger hapusbridging">
+          Hapus
+      </button>
+      <button class="pull-right btn btn-primary kirimdatacenter">
+          Kirim ke DC
+      </button>
+    </div>
+    </div>
+  </div>
+  <h3>Data Claim</h3>
+  <div class="table-responsive">
+    <table class="table nowrap" width="100%">
+      <thead>
+        <tr>
+          <th>Nama Pasien</th>
+          <th>Nomor Kartu</th>
+          <th>Nomor SEP</th>
+          <th>Nama Dokter</th>
+          <th>Diagnosa</th>
+          <th>Prosedur</th>
+          <th>Kode CBG</th>
+          <th>Deskripsi</th>
+          <th>Tarif Klaim</th>
+          <th>Tarif RS</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{$get_claim_data.response.data.nama_pasien}</td>
+          <td>{$get_claim_data.response.data.nomor_kartu}</td>
+          <td><a href="{?=url([ADMIN,'vedika','klaimpdf','{$get_claim_data.response.data.nomor_sep}'])?}" target="_blank">{$get_claim_data.response.data.nomor_sep}</a></td>
+          <td>{$get_claim_data.response.data.nama_dokter}</td>
+          <td>{$get_claim_data.response.data.diagnosa}</td>
+          <td>{$get_claim_data.response.data.procedure}</td>
+          <td>{$get_claim_data.response.data.grouper.response.cbg.code}</td>
+          <td>{$get_claim_data.response.data.grouper.response.cbg.description}</td>
+          <td>{$get_claim_data.response.data.grouper.response.cbg.tariff}</td>
+          <td>{?=$get_claim_data.response.data.tarif_rs.prosedur_non_bedah + $get_claim_data.response.data.tarif_rs.prosedur_bedah + $get_claim_data.response.data.tarif_rs.konsultasi + $get_claim_data.response.data.tarif_rs.tenaga_ahli + $get_claim_data.response.data.tarif_rs.keperawatan + $get_claim_data.response.data.tarif_rs.penunjang + $get_claim_data.response.data.tarif_rs.radiologi + $get_claim_data.response.data.tarif_rs.laboratorium + $get_claim_data.response.data.tarif_rs.pelayanan_darah + $get_claim_data.response.data.tarif_rs.rehabilitasi + $get_claim_data.response.data.tarif_rs.kamar + $get_claim_data.response.data.tarif_rs.rawat_intensif + $get_claim_data.response.data.tarif_rs.obat + $get_claim_data.response.data.tarif_rs.obat_kronis + $get_claim_data.response.data.tarif_rs.obat_kemoterapi + $get_claim_data.response.data.tarif_rs.alkes + $get_claim_data.response.data.tarif_rs.bmhp + $get_claim_data.response.data.tarif_rs.sewa_alat?}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+  $("#bridginginacbgs").on("click", ".simpanbridging", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/kiriminacbgs?t=' + mlite.token;
+    var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var tgl_registrasi = $('input:text[name=tgl_registrasi]').val();
+    var nosep = $('input:text[name=nosep]').val();
+    var nokartu = $('input:text[name=nokartu]').val();
+    var keluar = $('input:text[name=keluar]').val();
+    var kelas_rawat = $('select[name=kelas_rawat]').val();
+    var nm_pasien = $('input:text[name=nm_pasien]').val();
+    var nama_dokter = $('select[name=nama_dokter]').val();
+    var diagnosa = $('input:text[name=diagnosa]').val();
+    var procedure = $('input:text[name=procedure]').val();
+    var adl_sub_acute = $('select[name=adl_sub_acute]').val();
+    var adl_chronic = $('select[name=adl_chronic]').val();
+    var icu_indikator = $('select[name=icu_indikator]').val();
+    var icu_los = $('input:text[name=icu_los]').val();
+    var upgrade_class_ind = $('select[name=upgrade_class_ind]').val();
+    var upgrade_class_class = $('select[name=upgrade_class_class]').val();
+    var upgrade_class_los = $('input:text[name=upgrade_class_los]').val();
+    var add_payment_pct = $('input:text[name=add_payment_pct]').val();
+    var birth_weight = $('input:text[name=birth_weight]').val();
+    var discharge_status = $('select[name=discharge_status]').val();
+    var prosedur_bedah = $('input:text[name=prosedur_bedah]').val();
+    var prosedur_non_bedah = $('input:text[name=prosedur_non_bedah]').val();
+    var konsultasi = $('input:text[name=konsultasi]').val();
+    var tenaga_ahli = $('input:text[name=tenaga_ahli]').val();
+    var keperawatan = $('input:text[name=keperawatan]').val();
+    var penunjang = $('input:text[name=penunjang]').val();
+    var radiologi = $('input:text[name=radiologi]').val();
+    var laboratorium = $('input:text[name=laboratorium]').val();
+    var pelayanan_darah = $('input:text[name=pelayanan_darah]').val();
+    var rehabilitasi = $('input:text[name=rehabilitasi]').val();
+    var kamar = $('input:text[name=kamar]').val();
+    var rawat_intensif = $('input:text[name=rawat_intensif]').val();
+    var obat = $('input:text[name=obat]').val();
+    var obat_kronis = $('input:text[name=obat_kronis]').val();
+    var obat_kemoterapi = $('input:text[name=obat_kemoterapi]').val();
+    var alkes = $('input:text[name=alkes]').val();
+    var bmhp = $('input:text[name=bmhp]').val();
+    var sewa_alat = $('input:text[name=sewa_alat]').val();
+    var tarif_poli_eks = $('input:text[name=tarif_poli_eks]').val();
+
+    //alert(bmhp + ' - ' + sewa_alat + ' - ' + tarif_poli_eks + ' - ' + obat_kronis + ' - ' + obat_kemoterapi + ' - ' + alkes);
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin mengirim data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_rkm_medis: no_rkm_medis,
+          no_rawat: no_rawat,
+          tgl_registrasi: tgl_registrasi,
+          nosep: nosep,
+          nokartu: nokartu,
+          keluar: keluar,
+          kelas_rawat: kelas_rawat,
+          nm_pasien: nm_pasien,
+          nama_dokter: nama_dokter,
+          diagnosa: diagnosa,
+          procedure: procedure,
+          adl_sub_acute: adl_sub_acute,
+          adl_chronic: adl_chronic,
+          icu_indikator: icu_indikator,
+          icu_los: icu_los,
+          upgrade_class_ind: upgrade_class_ind,
+          upgrade_class_class: upgrade_class_class,
+          upgrade_class_los: upgrade_class_los,
+          add_payment_pct: add_payment_pct,
+          birth_weight: birth_weight,
+          discharge_status: discharge_status,
+          prosedur_bedah: prosedur_bedah,
+          prosedur_non_bedah: prosedur_non_bedah,
+          konsultasi: konsultasi,
+          tenaga_ahli: tenaga_ahli,
+          keperawatan: keperawatan,
+          penunjang: penunjang,
+          radiologi: radiologi,
+          laboratorium: laboratorium,
+          pelayanan_darah: pelayanan_darah,
+          rehabilitasi: rehabilitasi,
+          kamar: kamar,
+          rawat_intensif: rawat_intensif,
+          obat: obat,
+          obat_kronis: obat_kronis,
+          obat_kemoterapi: obat_kemoterapi,
+          alkes: alkes,
+          bmhp: bmhp,
+          sewa_alat: sewa_alat,
+          tarif_poli_eks: tarif_poli_eks
+        } ,function(data) {
+          console.log(data);
+          alert('Data klaim nomor SEP ' + nosep + ' telah disimpan!!');
+          //$('#inacbgsModal').modal('toggle');
+        });
+      }
+    });
+  });
+</script>
+
+<script type="text/javascript">
+  $("#bridginginacbgs").on("click", ".kirimdatacenter", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/vedika/kirimdatacenter?t=' + mlite.token;
+    var nosep = $('input:text[name=nosep]').val();
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin mengirim ke Data Center?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          nosep: nosep
+        } ,function(data) {
+          console.log(data);
+          alert('Data klaim nomor SEP ' + nosep + ' telah dikirim ke Data Center!!');
+          //$('#inacbgsModal').modal('toggle');
+        });
+      }
+    });
+  });
+</script>

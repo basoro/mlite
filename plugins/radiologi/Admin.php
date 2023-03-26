@@ -3,6 +3,11 @@ namespace Plugins\Radiologi;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
+use Systems\Lib\QRCode;
+use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\PHPMailer\PHPMailer;
+use Systems\Lib\PHPMailer\SMTP;
+use Systems\Lib\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
@@ -14,12 +19,13 @@ class Admin extends AdminModule
         ];
     }
 
-    public function anyManage()
+    public function anyManage($type = "ralan")
     {
         $tgl_kunjungan = date('Y-m-d');
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
         $status_bayar = '';
+        $status_pulang = '';
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -34,8 +40,8 @@ class Admin extends AdminModule
           $status_bayar = $_POST['status_bayar'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+        return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
     }
 
     public function anyDisplay()
@@ -43,6 +49,9 @@ class Admin extends AdminModule
         $tgl_kunjungan = date('Y-m-d');
         $tgl_kunjungan_akhir = date('Y-m-d');
         $status_periksa = '';
+        $status_bayar = '';
+        $status_pulang = '';
+        $type = $_POST['status'];
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -54,12 +63,12 @@ class Admin extends AdminModule
           $status_periksa = $_POST['status_periksa'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
+        $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='')
+    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar='', $type='')
     {
         $this->_addHeaderFiles();
 
@@ -93,12 +102,58 @@ class Admin extends AdminModule
           $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar'";
         }
 
+        if($type == 'ranap') {
+          $sql = "SELECT
+              kamar_inap.*,
+              reg_periksa.*,
+              pasien.*,
+              kamar.*,
+              bangsal.*,
+              penjab.*
+            FROM
+              kamar_inap,
+              reg_periksa,
+              pasien,
+              kamar,
+              bangsal,
+              penjab
+            WHERE
+              kamar_inap.no_rawat=reg_periksa.no_rawat
+            AND
+              reg_periksa.no_rkm_medis=pasien.no_rkm_medis
+            AND
+              kamar_inap.kd_kamar=kamar.kd_kamar
+            AND
+              bangsal.kd_bangsal=kamar.kd_bangsal
+            AND
+              reg_periksa.kd_pj=penjab.kd_pj";
+
+          if($status_periksa == '') {
+            $sql .= " AND kamar_inap.stts_pulang = '-'";
+          }
+          if($status_periksa == 'belum') {
+            $sql .= " AND kamar_inap.stts_pulang = '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+          if($status_periksa == 'selesai') {
+            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_masuk BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+          if($status_periksa == 'lunas') {
+            $sql .= " AND kamar_inap.stts_pulang != '-' AND kamar_inap.tgl_keluar BETWEEN '$tgl_kunjungan' AND '$tgl_kunjungan_akhir'";
+          }
+
+        }
+
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $dpjp_ranap = $this->core->mysql('dpjp_ranap')
+            ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+            ->where('no_rawat', $row['no_rawat'])
+            ->toArray();
+          $row['dokter'] = $dpjp_ranap;
           $this->assign['list'][] = $row;
         }
 
@@ -110,6 +165,17 @@ class Admin extends AdminModule
             ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
             ->where('no_rawat', $_POST['no_rawat'])
             ->oneArray();
+          if($type == 'ranap') {
+            $this->assign['kamar_inap'] = $this->core->mysql('kamar_inap')
+              ->join('reg_periksa', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+              ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+              ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+              ->join('dpjp_ranap', 'dpjp_ranap.no_rawat=kamar_inap.no_rawat')
+              ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
+              ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+              ->where('kamar_inap.no_rawat', $_POST['no_rawat'])
+              ->oneArray();
+          }
         } else {
           $this->assign['reg_periksa'] = [
             'no_rkm_medis' => '',
@@ -140,6 +206,24 @@ class Admin extends AdminModule
             'no_tlp' => '',
             'pekerjaan' => ''
           ];
+          if($type == 'ranap') {
+            $this->assign['reg_periksa'] = [
+              'tgl_masuk' => date('Y-m-d'),
+              'jam_masuk' => date('H:i:s'),
+              'tgl_keluar' => date('Y-m-d'),
+              'jam_keluar' => date('H:i:s'),
+              'no_rkm_medis' => '',
+              'nm_pasien' => '',
+              'no_rawat' => '',
+              'kd_dokter' => '',
+              'kd_kamar' => '',
+              'kd_pj' => '',
+              'diagnosa_awal' => '',
+              'diagnosa_akhir' => '',
+              'stts_pulang' => '',
+              'lama' => ''
+            ];
+          }
         }
     }
 
@@ -313,6 +397,208 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getCetakHasil()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $pj_radiologi = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_radiologi'))->oneArray();
+      $qr = QRCode::getMinimumQRCode($pj_radiologi['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
+      $im = $qr->createImage(4, 4);
+      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
+      imagedestroy($im);
+      $qrCode = "../../admin/tmp/qrcode.png";
+
+      $pasien = $this->core->mysql('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+      $dokter_perujuk = $this->core->mysql('periksa_radiologi')
+        ->join('pegawai', 'pegawai.nik=periksa_radiologi.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->group('no_rawat')
+        ->oneArray();
+
+      $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
+      ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+      ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
+      ->where('periksa_radiologi.no_rawat', $_GET['no_rawat'])
+      ->where('periksa_radiologi.status', $_GET['status'])
+      ->toArray();
+
+      $periksa_radiologi = [];
+      $jumlah_total_radiologi = 0;
+      $no_radiologi = 1;
+      foreach ($rows_periksa_radiologi as $row) {
+        $jumlah_total_radiologi += $row['biaya'];
+        $row['nomor'] = $no_radiologi++;
+        $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')
+          ->where('no_rawat', $_GET['no_rawat'])
+          ->toArray();
+        $periksa_radiologi[] = $row;
+      }
+
+      $pdf = new PDF_MC_Table('P','mm','Legal');
+      $pdf->AddPage();
+      $pdf->SetAutoPageBreak(true, 10);
+      $pdf->SetTopMargin(10);
+      $pdf->SetLeftMargin(10);
+      $pdf->SetRightMargin(10);
+
+      $pdf->Image('../'.$this->settings->get('settings.logo'), 10, 8, '18', '18', 'png');
+      $pdf->SetFont('Arial', '', 24);
+      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+      $pdf->SetFont('Arial', '', 10);
+      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+      $pdf->Line(10, 30, 205, 30);
+      $pdf->Line(10, 31, 205, 31);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(189 ,30,'',0,1);//end of line
+
+      //billing address
+      $pdf->SetFont('Arial','',12);
+      $pdf->Cell(45 ,6,'Nama',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_pasien'],0,1);
+      $pdf->Cell(45 ,6,'Umur',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['umur'],0,1);
+      $pdf->Cell(45 ,6,'Poli/Ruangan',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['nm_poli'],0,1);
+      $pdf->Cell(45 ,6,'Dokter PJ',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pj_radiologi['nm_dokter'],0,1);
+      $pdf->Cell(45 ,6,'Dokter Pengirim',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$dokter_perujuk['nama'],0,1);
+      $pdf->Cell(45 ,6,'Tanggal',0,0);//end of line
+      $pdf->Cell(5 ,6,':',0,0);//end of line
+      $pdf->Cell(150 ,6,$pasien['tgl_registrasi'],0,1);
+
+      $pdf->SetXY(10, 85);
+      $pdf->SetFont('Arial','B',14);
+      $pdf->Cell(0, 4, 'Hasil Pemeriksaan Radiologi', 0, 1, 'C', false);
+
+      //make a dummy empty cell as a vertical spacer
+      $pdf->Cell(205 ,10,'',0,1);//end of line
+      $pdf->SetFont('Arial', '', 11);
+      $no_radiologi_pdf = 1;
+      foreach ($rows_periksa_radiologi as $row) {
+        $row['nomor'] = $no_radiologi_pdf++;
+        $rows2 = $this->core->mysql('gambar_radiologi')
+          ->where('no_rawat', $_GET['no_rawat'])
+          ->toArray();
+        $pdf->Cell(45 ,4,'Pemeriksaan',0,0);//end of line
+        $pdf->Cell(5 ,4,':',0,0);//end of line
+        $pdf->Cell(150, 4,$row['nm_perawatan'],0,0);//end of line
+        $pdf->Cell(10 ,6,'',0,1);//end of line
+        $pdf->Cell(45 ,4,'Interpretasi',0,0);//end of line
+        $pdf->Cell(5 ,4,':',0,0);//end of line
+        $pdf->Cell(150, 4,$row['hasil'],0,0);//end of line
+        foreach ($rows2 as $row2) {
+          $pdf->Cell(10 ,4,'',0,1);//end of line
+          $pdf->Cell(0, 4, $pdf->Image(WEBAPPS_PATH.'/radiologi/'.$row2['lokasi_gambar'], $pdf->GetX(), $pdf->GetY(),160,0,'png'), 0, 0, 'C', false);
+        }
+      }
+
+      $pdf->Cell(189 ,10,'',0,1);//end of line
+
+      $pdf->SetFont('Arial','',11);
+
+      $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
+      $im=$qr->createImage(4,4);
+      imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+      imagedestroy($im);
+
+      $image = BASE_DIR."/admin/tmp/qrcode.png";
+
+      $pdf->Text(140,290,$settings['kota'].', '.date('Y-m-d'));//end of line
+      $pdf->Image($image, 140, 295, '30', '30', 'png');
+      $pdf->Text(140,330,'('.$this->core->getUserInfo('fullname', null, true).')');//end of line
+
+      $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
+      if (file_exists(UPLOADS.'/radiologi/'.$filename.'.pdf')) {
+        unlink(UPLOADS.'/radiologi/'.$filename.'.pdf');
+      }
+
+      $pdf->Output('F', UPLOADS.'/radiologi/'.$filename.'.pdf', true);
+      //$pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+
+      echo $this->draw('cetakhasil.html', [
+        'periksa_radiologi' => $periksa_radiologi,
+        'jumlah_total_radiologi' => $jumlah_total_radiologi,
+        'qrCode' => $qrCode,
+        'pj_radiologi' => $pj_radiologi['nm_dokter'],
+        'dokter_perujuk' => $dokter_perujuk['nama'],
+        'pasien' => $pasien,
+        'filename' => $filename,
+        'no_rawat' => $_GET['no_rawat']
+      ]);
+      exit();
+    }
+
+    public function getCetakPermintaan()
+    {
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      $pj_radiologi = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_radiologi'))->oneArray();
+
+      $qr = QRCode::getMinimumQRCode($pj_radiologi['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
+      $im = $qr->createImage(4, 4);
+      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
+      imagedestroy($im);
+      $qrCode = "../../admin/tmp/qrcode.png";
+
+      $pasien = $this->core->mysql('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->oneArray();
+      $dokter_perujuk = $this->core->mysql('permintaan_radiologi')
+        ->join('pegawai', 'pegawai.nik=permintaan_radiologi.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('permintaan_radiologi.status', strtolower($_GET['status']))
+        ->group('no_rawat')
+        ->oneArray();
+
+      $rows_permintaan_radiologi = $this->core->mysql('permintaan_radiologi')
+        ->join('dokter', 'dokter.kd_dokter=permintaan_radiologi.dokter_perujuk')
+        ->where('no_rawat', $_GET['no_rawat'])
+        ->where('permintaan_radiologi.status', strtolower($_GET['status']))
+        ->toArray();
+      $permintaan_radiologi = [];
+      foreach ($rows_permintaan_radiologi as $row) {
+        $rows2 = $this->core->mysql('permintaan_pemeriksaan_radiologi')
+          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=permintaan_pemeriksaan_radiologi.kd_jenis_prw')
+          ->where('permintaan_pemeriksaan_radiologi.noorder', $row['noorder'])
+          ->toArray();
+          foreach ($rows2 as $row2) {
+            $row2['noorder'] = $row2['noorder'];
+            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+            $row2['stts_bayar'] = $row2['stts_bayar'];
+            $row2['nm_perawatan'] = $row2['nm_perawatan'];
+            $row2['kd_pj'] = $row2['kd_pj'];
+            $row2['status'] = $row2['status'];
+            $row2['kelas'] = $row2['kelas'];
+            $row['permintaan_pemeriksaan_radiologi'][] = $row2;
+          }
+        $permintaan_radiologi[] = $row;
+      }
+
+      echo $this->draw('cetakpermintaan.html', [
+        'permintaan_radiologi' => $permintaan_radiologi,
+        'qrCode' => $qrCode,
+        'pj_radiologi' => $pj_radiologi['nm_dokter'],
+        'dokter_perujuk' => $dokter_perujuk['nama'],
+        'pasien' => $pasien,
+        'no_rawat' => $_GET['no_rawat']
+      ]);
+      exit();
+    }
+
     public function postHapus()
     {
       $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->delete();
@@ -341,7 +627,7 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_radiologi'),
-            'status' => 'Ralan',
+            'status' => $_POST['status'],
             'proyeksi' => '',
             'kV' => '',
             'mAS' => '',
@@ -368,11 +654,59 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusHasilRadiologi()
+    {
+      $this->core->mysql('hasil_radiologi')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_periksa', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam_rawat'])
+      ->delete();
+      $this->core->mysql('gambar_radiologi')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('tgl_periksa', $_POST['tgl_perawatan'])
+      ->where('jam', $_POST['jam_rawat'])
+      ->delete();
+      exit();
+    }
+
     public function anyRincian()
     {
 
+      $check_db = $this->core->mysql()->pdo()->query("SHOW TABLES LIKE 'permintaan_radiologi'");
+      $check_db->execute();
+      $check_db = $check_db->fetch();
+
+      $radiologi = [];
+      if($check_db) {
+        $rows = $this->core->mysql('permintaan_radiologi')
+          ->join('dokter', 'dokter.kd_dokter=permintaan_radiologi.dokter_perujuk')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('permintaan_radiologi.status', strtolower($_POST['status']))
+          ->toArray();
+        $radiologi = [];
+        foreach ($rows as $row) {
+          $rows2 = $this->core->mysql('permintaan_pemeriksaan_radiologi')
+            ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=permintaan_pemeriksaan_radiologi.kd_jenis_prw')
+            ->where('permintaan_pemeriksaan_radiologi.noorder', $row['noorder'])
+            ->toArray();
+            $row['permintaan_pemeriksaan_radiologi'] = [];
+            foreach ($rows2 as $row2) {
+              $row2['noorder'] = $row2['noorder'];
+              $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+              $row2['stts_bayar'] = $row2['stts_bayar'];
+              $row2['nm_perawatan'] = $row2['nm_perawatan'];
+              $row2['kd_pj'] = $row2['kd_pj'];
+              $row2['status'] = $row2['status'];
+              $row2['kelas'] = $row2['kelas'];
+              $row['permintaan_pemeriksaan_radiologi'][] = $row2;
+            }
+          $radiologi[] = $row;
+        }
+      }
+
       $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
       ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+      ->where('periksa_radiologi.status', $_POST['status'])
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
 
@@ -382,10 +716,50 @@ class Admin extends AdminModule
       foreach ($rows_periksa_radiologi as $row) {
         $jumlah_total_radiologi += $row['biaya'];
         $row['nomor'] = $no_radiologi++;
+        $row['status_periksa'] = $_POST['status'];
+        $row['hasil_radiologi'] = $this->core->mysql('hasil_radiologi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+        $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')->where('no_rawat', $_POST['no_rawat'])->toArray();
         $periksa_radiologi[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['periksa_radiologi' => $periksa_radiologi, 'jumlah_total_radiologi' => $jumlah_total_radiologi, 'no_rawat' => $_POST['no_rawat']]);
+      echo $this->draw('rincian.html', ['periksa_radiologi' => $periksa_radiologi, 'jumlah_total_radiologi' => $jumlah_total_radiologi, 'no_rawat' => $_POST['no_rawat'], 'radiologi' => $radiologi, 'check_permintaan_radiologi' => $check_db]);
+      exit();
+    }
+
+    public function postValidasiPermintaanRadiologi()
+    {
+      $permintaan_radiologi = $this->core->mysql('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+      $permintaan_pemeriksaan_radiologi = $this->core->mysql('permintaan_pemeriksaan_radiologi')->where('noorder', $_POST['noorder'])->toArray();
+      foreach ($permintaan_pemeriksaan_radiologi as $row) {
+        $jns_perawatan = $this->core->mysql('jns_perawatan_radiologi')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+        $periksa_radiologi = $this->core->mysql('periksa_radiologi')
+          ->save([
+            'no_rawat' => $_POST['no_rawat'],
+            'nip' => $this->core->getUserInfo('username', null, true),
+            'kd_jenis_prw' => $row['kd_jenis_prw'],
+            'tgl_periksa' => $_POST['tgl_permintaan'],
+            'jam' => $_POST['jam_permintaan'],
+            'dokter_perujuk' => $permintaan_radiologi['dokter_perujuk'],
+            'bagian_rs' => $jns_perawatan['bagian_rs'],
+            'bhp' => $jns_perawatan['bhp'],
+            'tarif_perujuk' => $jns_perawatan['tarif_perujuk'],
+            'tarif_tindakan_dokter' => $jns_perawatan['tarif_tindakan_dokter'],
+            'tarif_tindakan_petugas' => $jns_perawatan['tarif_tindakan_petugas'],
+            'kso' => $jns_perawatan['kso'],
+            'menejemen' => $jns_perawatan['menejemen'],
+            'biaya' => $jns_perawatan['total_byr'],
+            'kd_dokter' => $this->settings->get('settings.pj_radiologi'),
+            'status' => $_POST['status'],
+            'proyeksi' => '',
+            'kV' => '',
+            'mAS' => '',
+            'FFD' => '',
+            'BSF' => '',
+            'inak' => '',
+            'jml_penyinaran' => '',
+            'dosis' => ''
+          ]);
+      }
       exit();
     }
 

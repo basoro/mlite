@@ -37,14 +37,17 @@ class Admin extends AdminModule
     $pengaturan_presensi = '';
     $teks = array('');
     if ($presensi) {
-      $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
+      } else {
+        $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       }
       $idpeg = $this->core->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
-      $cek_presensi = $this->core->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
-      $cek_rekap = $this->core->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
-      $jam_jaga = $this->core->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      if($idpeg) {
+        $cek_presensi = $this->core->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+        $cek_rekap = $this->core->mysql('rekap_presensi')->where('id', $idpeg['id'])->like('jam_datang', '%' . date('Y-m-d') . '%')->oneArray();
+        $jam_jaga = $this->core->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->toArray();
+      }
       $teks = explode(';', $this->settings->get('presensi.helloworld'));
       $pengaturan_presensi = $this->settings('presensi');
     }
@@ -128,7 +131,7 @@ class Admin extends AdminModule
       }
 
       if (isset($img) && $img->getInfos('width')) {
-        date_default_timezone_set('Asia/Makassar');
+        date_default_timezone_set($this->settings->get('settings.timezone'));
         $img->save(WEBAPPS_PATH . "/presensi/" . $gambar);
 
         $urlnya         = WEBAPPS_URL . '/presensi/' . $gambar;
