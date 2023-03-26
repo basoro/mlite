@@ -59,7 +59,7 @@ function htmlspecialchars_array(array $array)
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
         } else {
-            $array[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $array[$key] = htmlspecialchars($value ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 
