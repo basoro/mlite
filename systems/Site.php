@@ -58,8 +58,6 @@ class Site extends Main
           $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
 
-        $assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
-
         $assign['header']   = isset_or($this->appends['header'], ['']);
         $assign['footer']   = isset_or($this->appends['footer'], ['']);
 

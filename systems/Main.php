@@ -65,10 +65,6 @@ abstract class Main
             mkdir(WEBAPPS_PATH."/berkasrawat/pages/upload", 0777);
         }
 
-        if (!is_dir(WEBAPPS_PATH."/presensi")) {
-            mkdir(WEBAPPS_PATH."/presensi", 0777);
-        }
-
         if (!is_dir(WEBAPPS_PATH."/penggajian")) {
             mkdir(WEBAPPS_PATH."/penggajian", 0777);
         }

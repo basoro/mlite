@@ -108,8 +108,6 @@ systems\srv\startServer.bat
   - Laboratorium
   - Radiologi
   - ICD 9 - 10 Request
-  - Presensi
-  - Profil
   - Dan seterusnya....
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
