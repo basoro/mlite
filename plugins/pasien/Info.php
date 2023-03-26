@@ -92,7 +92,7 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `personal_pasien`
           ADD CONSTRAINT `personal_pasien_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_temporary` (
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite__temporary` (
           `temp1` text DEFAULT NULL,
           `temp2` text DEFAULT NULL,
           `temp3` text DEFAULT NULL,

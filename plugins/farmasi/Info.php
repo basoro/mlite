@@ -40,12 +40,12 @@ return [
           ADD CONSTRAINT `opname_ibfk_1` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE,
           ADD CONSTRAINT `opname_ibfk_2` FOREIGN KEY (`kd_bangsal`) REFERENCES `bangsal` (`kd_bangsal`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporalan', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'igd', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporanap', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'gudang', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporalan', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('farmasi', 'igd', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporanap', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('farmasi', 'gudang', '-')");
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'farmasi'");
+        $core->db()->pdo()->exec("DELETE FROM `mlite__settings` WHERE `module` = 'farmasi'");
     }
 ];

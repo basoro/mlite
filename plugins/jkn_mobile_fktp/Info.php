@@ -8,14 +8,14 @@ return [
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile FKTP' => 'jknmobilefktp'],
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'username', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'password', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header', 'X-Token')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_username', 'X-Username')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_password', 'X-Password')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kd_pj', '')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'hari', '3')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'display', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'username', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'password', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header', 'X-Token')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_username', 'X-Username')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'header_password', 'X-Password')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'kd_pj', '')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'hari', '3')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('jkn_mobile_fktp', 'display', '')");
 
         $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `maping_poliklinik_pcare` (
           `kd_poli_rs` char(5) NOT NULL,
@@ -31,6 +31,6 @@ return [
 
     },
     'uninstall'     =>  function () use ($core) {
-        $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'jkn_mobile_fktp'");
+        $core->db()->pdo()->exec("DELETE FROM `mlite__settings` WHERE `module` = 'jkn_mobile_fktp'");
     }
 ];

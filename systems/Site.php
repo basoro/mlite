@@ -51,7 +51,7 @@ class Site extends Main
         $assign['wallpaper'] = $this->settings->get('settings.wallpaper');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $assign['version']       = $this->settings->get('settings.version');
-        $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
+        $assign['cek_anjungan'] = $this->db('mlite__modules')->where('dir', 'anjungan')->oneArray();
 
         $assign['poliklinik'] = '';
         if($assign['cek_anjungan']) {

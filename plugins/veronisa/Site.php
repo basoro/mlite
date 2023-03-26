@@ -47,13 +47,13 @@ class Site extends SiteModule
                 'content' => $this->_getManage()
             ];
             if(isset($_POST['perbaiki'])) {
-              $simpan_status = $this->core->mysql('mlite_veronisa')
+              $simpan_status = $this->core->mysql('mlite__veronisa')
               ->where('nosep', $_POST['nosep'])
               ->save([
                 'status' => 'Perbaiki'
               ]);
               if($simpan_status) {
-                $this->core->mysql('mlite_veronisa_feedback')->save([
+                $this->core->mysql('mlite__veronisa_feedback')->save([
                   'id' => NULL,
                   'nosep' => $_POST['nosep'],
                   'tanggal' => date('Y-m-d'),
@@ -104,7 +104,7 @@ class Site extends SiteModule
       }
 
       // pagination
-      $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+      $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite__veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite__veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
       $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
       $totalRecords = $totalRecords->fetchAll();
 
@@ -113,7 +113,7 @@ class Site extends SiteModule
       $this->assign['totalRecords'] = $totalRecords;
 
       $offset = $pagination->offset();
-      $query = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.no_rawat, mlite_veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+      $query = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite__veronisa.no_rawat, mlite__veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite__veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite__veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
       $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
       $rows = $query->fetchAll();
 
@@ -125,29 +125,11 @@ class Site extends SiteModule
                 ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
                 ->asc('master_berkas_digital.nama')
                 ->toArray();
-              $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-                ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-                ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-                ->toArray();
-
-              $berkas_digital_pasien = array();
-              if (count($galleri_pasien)) {
-                  foreach ($galleri_pasien as $galleri) {
-                      $galleri['src'] = unserialize($galleri['src']);
-
-                      if (!isset($galleri['src']['sm'])) {
-                          $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-                      }
-
-                      $berkas_digital_pasien[] = $galleri;
-                  }
-              }
 
               $row = htmlspecialchars_array($row);
               $row['berkas_digital'] = $berkas_digital;
-              $row['berkas_digital_pasien'] = $berkas_digital_pasien;
               $row['catatanURL'] = url(['vero', 'catatan', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
-              $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+              $row['status_pengajuan'] = $this->core->mysql('mlite__veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
               $row['pdfURL'] = url(['vero', 'pdf', $this->convertNorawat($row['no_rawat'])]);
               $row['downloadURL'] = url(['vero', 'downloadpdf', $this->convertNorawat($row['no_rawat'])]);
               $this->assign['list'][] = $row;
@@ -165,8 +147,8 @@ class Site extends SiteModule
     public function getCatatan($id)
     {
       $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
-      $veronisa = $this->core->mysql('mlite_veronisa')->where('nosep', $id)->asc('id')->toArray();
-      $veronisa_feedback = $this->core->mysql('mlite_veronisa_feedback')->where('nosep', $id)->asc('id')->toArray();
+      $veronisa = $this->core->mysql('mlite__veronisa')->where('nosep', $id)->asc('id')->toArray();
+      $veronisa_feedback = $this->core->mysql('mlite__veronisa_feedback')->where('nosep', $id)->asc('id')->toArray();
       $this->tpl->set('logo', $this->settings->get('settings.logo'));
       $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
       $this->tpl->set('set_status', $set_status);
@@ -187,24 +169,6 @@ class Site extends SiteModule
           ->asc('master_berkas_digital.nama')
           ->toArray();
 
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-            foreach ($galleri_pasien as $galleri) {
-                $galleri['src'] = unserialize($galleri['src']);
-
-                if (!isset($galleri['src']['sm'])) {
-                    $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-                }
-
-                $berkas_digital_pasien[] = $galleri;
-            }
-        }
-
         $no_rawat = $this->revertNorawat($id);
 
         /** Billing versi mlite */
@@ -214,7 +178,7 @@ class Site extends SiteModule
         $billing_mlite_reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
         $billing_mlite_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $billing_mlite_reg_periksa['no_rkm_medis'])->oneArray();
 
-        $billing_result = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
+        $billing_result = $this->core->mysql('mlite__billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
         $result_detail['poliklinik'] = $this->core->mysql('poliklinik')
           ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -532,7 +496,6 @@ class Site extends SiteModule
         $this->tpl->set('riwayat_obat', $riwayat_obat);
 
         $this->tpl->set('berkas_digital', $berkas_digital);
-        $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
         $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
         $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
@@ -551,24 +514,6 @@ class Site extends SiteModule
           ->asc('master_berkas_digital.nama')
           ->toArray();
 
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-            foreach ($galleri_pasien as $galleri) {
-                $galleri['src'] = unserialize($galleri['src']);
-
-                if (!isset($galleri['src']['sm'])) {
-                    $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-                }
-
-                $berkas_digital_pasien[] = $galleri;
-            }
-        }
-
         $no_rawat = $this->revertNorawat($id);
 
         /** Billing versi mlite */
@@ -578,7 +523,7 @@ class Site extends SiteModule
         $billing_mlite_reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
         $billing_mlite_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $billing_mlite_reg_periksa['no_rkm_medis'])->oneArray();
 
-        $billing_result = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
+        $billing_result = $this->core->mysql('mlite__billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
         $result_detail['poliklinik'] = $this->core->mysql('poliklinik')
           ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -896,7 +841,6 @@ class Site extends SiteModule
         $this->tpl->set('riwayat_obat', $riwayat_obat);
 
         $this->tpl->set('berkas_digital', $berkas_digital);
-        $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
         $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->oneArray());
         $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
         $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));
@@ -938,11 +882,11 @@ class Site extends SiteModule
     private function _login($username, $password)
     {
         // Check attempt
-        $attempt = $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->core->mysql('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->core->mysql('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->core->mysql('mlite__login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
@@ -954,7 +898,7 @@ class Site extends SiteModule
 
         if ($row_username == $username && $row_password == $password) {
             // Reset fail attempts for this IP
-            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->core->mysql('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
             $_SESSION['veronisa_user']       = $row_username;
             $_SESSION['veronisa_token']      = bin2hex(openssl_random_pseudo_bytes(6));
@@ -964,12 +908,12 @@ class Site extends SiteModule
             return true;
         } else {
             // Increase attempt
-            $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->core->mysql('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->core->mysql('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                $this->core->mysql('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                 $attempt['expires'] = strtotime("+10 minutes");
 
                 $this->core->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));

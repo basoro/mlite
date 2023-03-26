@@ -31,7 +31,7 @@ class Admin extends AdminModule
     */
     public function getManage()
     {
-        $rows = $this->db('mlite_users')->toArray();
+        $rows = $this->db('mlite__users')->toArray();
         foreach ($rows as &$row) {
             if (empty($row['fullname'])) {
                 $row['fullname'] = '----';
@@ -51,7 +51,7 @@ class Admin extends AdminModule
     */
     public function getAdd()
     {
-        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+        if($this->db('mlite__modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
         $this->_getInfoRole();
@@ -64,7 +64,7 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Pengguna baru';
         $this->assign['modules'] = $this->_getModules('all');
         $this->assign['cap'] = [];
-        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+        if($this->db('mlite__modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->assign['cap'] = $this->_getInfoCap();
         }
         $this->assign['avatarURL'] = url(MODULES.'/users/img/default.png');
@@ -77,18 +77,18 @@ class Admin extends AdminModule
     */
     public function getEdit($id)
     {
-        if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+        if($this->db('mlite__modules')->where('dir', 'kepegawaian')->oneArray()) {
           $this->_addInfoUser();
         }
         $this->_getInfoRole();
-        $user = $this->db('mlite_users')->oneArray($id);
+        $user = $this->db('mlite__users')->oneArray($id);
 
         if (!empty($user)) {
             $this->assign['form'] = $user;
             $this->assign['title'] = 'Sunting pengguna';
             $this->assign['modules'] = $this->_getModules($user['access']);
             $this->assign['cap'] = [];
-            if($this->db('mlite_modules')->where('dir', 'kepegawaian')->oneArray()) {
+            if($this->db('mlite__modules')->where('dir', 'kepegawaian')->oneArray()) {
               $this->assign['cap'] = $this->_getInfoCap($user['cap']);
             }
             $this->assign['avatarURL'] = url(UPLOADS.'/users/'.$user['avatar']);
@@ -151,7 +151,7 @@ class Admin extends AdminModule
         if($_POST['cap'] == '') {
           $_POST['cap'] = [];
         }
-        
+
         $_POST['cap'] = implode(',', $_POST['cap']);
 
         // CREATE / EDIT
@@ -180,7 +180,7 @@ class Admin extends AdminModule
                     }
 
                     if ($id) {
-                        $user = $this->db('mlite_users')->oneArray($id);
+                        $user = $this->db('mlite__users')->oneArray($id);
                     }
 
                     $_POST['avatar'] = uniqid('avatar').".".$img->getInfos('type');
@@ -188,9 +188,9 @@ class Admin extends AdminModule
             }
 
             if (!$id) {    // new
-                $query = $this->db('mlite_users')->save($_POST);
+                $query = $this->db('mlite__users')->save($_POST);
             } else {        // edit
-                $query = $this->db('mlite_users')->where('id', $id)->save($_POST);
+                $query = $this->db('mlite__users')->where('id', $id)->save($_POST);
             }
 
             if ($query) {
@@ -218,8 +218,8 @@ class Admin extends AdminModule
     */
     public function getDelete($id)
     {
-        if ($id != 1 && $this->core->getUserInfo('id') != $id && ($user = $this->db('mlite_users')->oneArray($id))) {
-            if ($this->db('mlite_users')->delete($id)) {
+        if ($id != 1 && $this->core->getUserInfo('id') != $id && ($user = $this->db('mlite__users')->oneArray($id))) {
+            if ($this->db('mlite__users')->delete($id)) {
                 if (!empty($user['avatar'])) {
                     unlink(UPLOADS."/users/".$user['avatar']);
                 }
@@ -294,7 +294,7 @@ class Admin extends AdminModule
     private function _getModules($access = null)
     {
         $result = [];
-        $rows = $this->db('mlite_modules')->toArray();
+        $rows = $this->db('mlite__modules')->toArray();
 
         if (!$access) {
             $accessArray = [];
@@ -328,9 +328,9 @@ class Admin extends AdminModule
     private function _userAlreadyExists($id = null)
     {
         if (!$id) {    // new
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->count();
+            $count = $this->db('mlite__users')->where('username', $_POST['username'])->count();
         } else {        // edit
-            $count = $this->db('mlite_users')->where('username', $_POST['username'])->where('id', '<>', $id)->count();
+            $count = $this->db('mlite__users')->where('username', $_POST['username'])->where('id', '<>', $id)->count();
         }
         if ($count > 0) {
             return true;

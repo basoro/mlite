@@ -122,14 +122,6 @@
                         </td>
                         <td>
                           <table>
-                            <tr><td><form action="{?=url(ADMIN.'/pasien_galleries/add')?}" method="POST" target="_blank"><input type="hidden" name="name" value="{$value.no_rkm_medis}"><input type="submit" class="btn btn-info btn-xs" value="Unggah Berkas Pasien" /></form></td></tr>
-                            {if: !empty($value.berkas_digital_pasien)}
-                            {loop: $value.berkas_digital_pasien as $data}
-                            <tr>
-                              <td>- <a href="{?=url($data.src.lg)?}" class="gallery">{if: $data.title=='bpjs'}Kartu BPJS{elseif: $data.title=='inhealth'}Kartu Inhealth{elseif: $data.title=='ktp'}KTP{else}Kartu Keluarga{/if}</a></td>
-                            </tr>
-                            {/loop}
-                            {/if}
                             <tr><td><br><a href="{$value.berkasPerawatan}"  data-toggle="modal" data-target="#moduleModal" class="btn btn-info btn-xs" target="_blank">Unggah Berkas Perawatan</a></td></tr>
                             {loop: $value.berkas_digital as $data}
                             <tr>

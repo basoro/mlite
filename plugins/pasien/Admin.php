@@ -44,7 +44,7 @@ class Admin extends AdminModule
           $pasien[] = $row;
         }
 
-        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
 
         return $this->draw('manage.html', [
           'pasien' => $pasien,
@@ -170,7 +170,7 @@ class Admin extends AdminModule
           $pasien[] = $row;
         }
 
-        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
 
         echo $this->draw('display.html', [
           'pasien' => $pasien,
@@ -187,7 +187,7 @@ class Admin extends AdminModule
 
     public function anyForm()
     {
-      $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
+      $cek_pcare = $this->db('mlite__modules')->where('dir', 'pcare')->oneArray();
       $usernamePcare = '';
       if($cek_pcare) {
         $usernamePcare = $this->settings('pcare', 'usernamePcare');
@@ -465,7 +465,7 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getResumePerawatan($no_rkm_medis)
+    public function getRiwayatPerawatan($no_rkm_medis)
     {
       $riwayat['settings'] = $this->settings('settings');
       $riwayat['pasien'] = $this->core->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
@@ -916,9 +916,9 @@ class Admin extends AdminModule
 
     public function postCetak()
     {
-      $this->core->mysql()->pdo()->exec("DELETE FROM `mlite_temporary`");
+      $this->core->mysql()->pdo()->exec("DELETE FROM `mlite__temporary`");
       $cari = $_POST['cari'];
-      $this->core->mysql()->pdo()->exec("INSERT INTO `mlite_temporary` (
+      $this->core->mysql()->pdo()->exec("INSERT INTO `mlite__temporary` (
         `temp1`,
         `temp2`,
         `temp3`,
@@ -965,7 +965,7 @@ class Admin extends AdminModule
 
     public function getCetakPdf()
     {
-      $tmp = $this->core->mysql('mlite_temporary')->toArray();
+      $tmp = $this->core->mysql('mlite__temporary')->toArray();
       $logo = $this->settings->get('settings.logo');
 
       $pdf = new PDF_MC_Table('L','mm','Legal');

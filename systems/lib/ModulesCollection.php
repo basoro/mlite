@@ -9,7 +9,7 @@ class ModulesCollection
 
     public function __construct($core)
     {
-        $modules = array_column($core->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
+        $modules = array_column($core->db('mlite__modules')->asc('sequence')->toArray(), 'dir');
         if ($core instanceof \Systems\Admin) {
             $clsName = 'Admin';
         } else {

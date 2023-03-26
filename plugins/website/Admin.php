@@ -36,8 +36,8 @@ class Admin extends AdminModule
         if (isset($_POST['delete'])) {
             if (isset($_POST['post-list']) && !empty($_POST['post-list'])) {
                 foreach ($_POST['post-list'] as $item) {
-                    $row = $this->db('mlite_news')->where('id', $item)->oneArray();
-                    if ($this->db('mlite_news')->delete($item) === 1) {
+                    $row = $this->db('mlite__news')->where('id', $item)->oneArray();
+                    if ($this->db('mlite__news')->delete($item) === 1) {
                         if (!empty($row['cover_photo']) && file_exists(UPLOADS."/website/news/".$row['cover_photo'])) {
                             unlink(UPLOADS."/website/news/".$row['cover_photo']);
                         }
@@ -53,14 +53,14 @@ class Admin extends AdminModule
         }
 
         // pagination
-        $totalRecords = count($this->db('mlite_news')->toArray());
+        $totalRecords = count($this->db('mlite__news')->toArray());
         $pagination = new \Systems\Lib\Pagination($page, $totalRecords, 10, url([ADMIN, 'website', 'managenews', '%d']));
         $this->assign['pagination'] = $pagination->nav();
 
         // list
         $this->assign['newURL'] = url([ADMIN, 'website', 'addnews']);
         $this->assign['postCount'] = 0;
-        $rows = $this->db('mlite_news')
+        $rows = $this->db('mlite__news')
                 ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
                 ->desc('published_at')->desc('created_at')
                 ->toArray();
@@ -134,7 +134,7 @@ class Admin extends AdminModule
                 'published_at' => time(),
             ];
         } else {
-            $news = $this->db('mlite_news')->where('id', $id)->oneArray();
+            $news = $this->db('mlite__news')->where('id', $id)->oneArray();
         }
 
         if (!empty($news)) {
@@ -142,10 +142,10 @@ class Admin extends AdminModule
             $this->assign['form']['content'] =  $this->tpl->noParse($this->assign['form']['content']);
             $this->assign['form']['date'] = date("Y-m-d\TH:i", $news['published_at']);
 
-            $tags_array = $this->db('mlite_news_tags')->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')->where('mlite_news_tags_relationship.news_id', $news['id'])->select(['mlite_news_tags.name'])->toArray();
+            $tags_array = $this->db('mlite__news_tags')->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')->where('mlite__news_tags_relationship.news_id', $news['id'])->select(['mlite__news_tags.name'])->toArray();
 
             $this->assign['form']['tags'] = $tags_array;
-            $this->assign['users'] = $this->db('mlite_users')->toArray();
+            $this->assign['users'] = $this->db('mlite__users')->toArray();
             $this->assign['author'] = $this->core->getUserInfo('id', $news['user_id'], true);
 
             $this->assign['title'] = ($news['id'] === null) ? 'Tambah baru' : 'Sunting Artikel';
@@ -197,7 +197,7 @@ class Admin extends AdminModule
             $id = 0;
         }
 
-        while ($this->db('mlite_news')->where('slug', $_POST['slug'])->where('id', '!=', $id)->oneArray()) {
+        while ($this->db('mlite__news')->where('slug', $_POST['slug'])->where('id', '!=', $id)->oneArray()) {
             $_POST['slug'] = $oldSlug.'-'.($i++);
         }
 
@@ -228,15 +228,15 @@ class Admin extends AdminModule
         if (!$id) { // new
             $_POST['created_at'] = strtotime(date('Y-m-d H:i:s'));
 
-            $query = $this->db('mlite_news')->save($_POST);
+            $query = $this->db('mlite__news')->save($_POST);
             $location = url([ADMIN, 'website', 'editnews', $this->db()->pdo()->lastInsertId()]);
         } else {    // edit
-            $query = $this->db('mlite_news')->where('id', $id)->save($_POST);
+            $query = $this->db('mlite__news')->where('id', $id)->save($_POST);
         }
 
         // detach tags from post
         if ($id) {
-            $this->db('mlite_news_tags_relationship')->delete('news_id', $id);
+            $this->db('mlite__news_tags_relationship')->delete('news_id', $id);
             $newsId = $id;
         } else {
             $newsId = $id ? $id : $this->db()->pdo()->lastInsertId();
@@ -250,11 +250,11 @@ class Admin extends AdminModule
             }
 
             $slug = createSlug($tag);
-            if ($e = $this->db('mlite_news_tags')->like('slug', $slug)->oneArray()) {
-                $this->db('mlite_news_tags_relationship')->save(['news_id' => $newsId, 'tag_id' => $e['id']]);
+            if ($e = $this->db('mlite__news_tags')->like('slug', $slug)->oneArray()) {
+                $this->db('mlite__news_tags_relationship')->save(['news_id' => $newsId, 'tag_id' => $e['id']]);
             } else {
-                $tagId = $this->db('mlite_news_tags')->save(['name' => $tag, 'slug' => $slug]);
-                $this->db('mlite_news_tags_relationship')->save(['news_id' => $newsId, 'tag_id' => $tagId]);
+                $tagId = $this->db('mlite__news_tags')->save(['name' => $tag, 'slug' => $slug]);
+                $this->db('mlite__news_tags_relationship')->save(['news_id' => $newsId, 'tag_id' => $tagId]);
             }
         }
 
@@ -281,7 +281,7 @@ class Admin extends AdminModule
 
     public function getDeleteNews($id)
     {
-        if ($post = $this->db('mlite_news')->where('id', $id)->oneArray() && $this->db('mlite_news')->delete($id)) {
+        if ($post = $this->db('mlite__news')->where('id', $id)->oneArray() && $this->db('mlite__news')->delete($id)) {
             if ($post['cover_photo']) {
                 unlink(UPLOADS."/website/news/".$post['cover_photo']);
             }
@@ -295,9 +295,9 @@ class Admin extends AdminModule
 
     public function getDeleteCoverNews($id)
     {
-        if ($post = $this->db('mlite_news')->where('id', $id)->oneArray()) {
+        if ($post = $this->db('mlite__news')->where('id', $id)->oneArray()) {
             unlink(UPLOADS."/website/news/".$post['cover_photo']);
-            $this->db('mlite_news')->where('id', $id)->save(['cover_photo' => null]);
+            $this->db('mlite__news')->where('id', $id)->save(['cover_photo' => null]);
             $this->notify('success', 'Foto cover sudah dihapus.');
 
             redirect(url([ADMIN, 'website', 'editnews', $id]));
@@ -524,7 +524,7 @@ class Admin extends AdminModule
         }
 
         $query = urldecode($query);
-        $tags = $this->db('mlite_news_tags')->like('name', $query.'%')->toArray();
+        $tags = $this->db('mlite__news_tags')->like('name', $query.'%')->toArray();
 
         if (array_search($query, array_column($tags, 'name')) === false) {
             $tags[] = ['id' => 0, 'slug' => createSlug($query), 'name' => $query];

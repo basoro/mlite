@@ -51,8 +51,8 @@ class Site extends SiteModule
               $email = trim($_REQUEST['email']);
               $nomor_ktp = trim($_REQUEST['nomor_ktp']);
               $nomor_telepon = trim($_REQUEST['nomor_telepon']);
-              $this->core->mysql('mlite_apamregister')->where('email', $email)->delete();
-              $pasien = $this->core->mysql('mlite_apamregister')->save([
+              $this->core->mysql('mlite__apamregister')->where('email', $email)->delete();
+              $pasien = $this->core->mysql('mlite__apamregister')->save([
                 'nama_lengkap' => $nama_lengkap,
                 'email' => $email,
                 'nomor_ktp' => $nomor_ktp,
@@ -76,7 +76,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['email'] = '000009';
               $email = trim($_REQUEST['email']);
-              $sql = "SELECT * FROM mlite_apamregister WHERE email = '$email'";
+              $sql = "SELECT * FROM mlite__apamregister WHERE email = '$email'";
               $query = $this->core->mysql()->pdo()->prepare($sql);
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -147,7 +147,7 @@ class Site extends SiteModule
                   $this->core->mysql()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
                 }
 
-                $this->core->mysql('mlite_apamregister')->where('email', $_POST['email'])->delete();
+                $this->core->mysql('mlite__apamregister')->where('email', $_POST['email'])->delete();
 
                 $data['state'] = 'valid';
                 $data['no_rkm_medis'] = $_POST['no_rkm_medis'];
@@ -162,7 +162,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT * FROM mlite_notifications WHERE no_rkm_medis = '$no_rkm_medis' AND status = 'unread'";
+              $sql = "SELECT * FROM mlite__notifications WHERE no_rkm_medis = '$no_rkm_medis' AND status = 'unread'";
               $query = $this->core->mysql()->pdo()->prepare($sql);
               $query->execute();
               $result = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -176,7 +176,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $result = $this->core->mysql('mlite_notifications')
+              $result = $this->core->mysql('mlite__notifications')
                 ->where('no_rkm_medis', $no_rkm_medis)
                 ->desc('id')
                 ->toArray();
@@ -187,7 +187,7 @@ class Site extends SiteModule
             break;
             case "tandaisudahdibaca":
               $id = trim($_REQUEST['id']);
-              $this->core->mysql('mlite_notifications')->where('id', $id)->update('status', 'read');
+              $this->core->mysql('mlite__notifications')->where('id', $id)->update('status', 'read');
             break;
             case "notifbooking":
               $data = array();
@@ -396,7 +396,7 @@ class Site extends SiteModule
               $results = array();
               //$_REQUEST['no_rkm_medis'] = '000009';
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $query = $this->core->mysql()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite_billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
+              $query = $this->core->mysql()->pdo()->prepare("SELECT a.tgl_registrasi, a.no_rawat, a.no_reg, b.nm_poli, c.nm_dokter, d.png_jawab, e.kd_billing, e.jumlah_harus_bayar FROM reg_periksa a LEFT JOIN poliklinik b ON a.kd_poli = b.kd_poli LEFT JOIN dokter c ON a.kd_dokter = c.kd_dokter LEFT JOIN penjab d ON a.kd_pj = d.kd_pj INNER JOIN mlite__billing e ON a.no_rawat = e.no_rawat WHERE a.no_rkm_medis = '$no_rkm_medis' AND a.stts = 'Sudah' ORDER BY e.tgl_billing, e.jam_billing DESC");
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
@@ -597,7 +597,7 @@ class Site extends SiteModule
               $results = array();
               $petugas_array = explode(',', $this->settings->get('api.apam_normpetugas'));
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
-              $sql = "SELECT a.*, b.nm_pasien, b.jk FROM mlite_pengaduan a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis";
+              $sql = "SELECT a.*, b.nm_pasien, b.jk FROM mlite__pengaduan a, pasien b WHERE a.no_rkm_medis = b.no_rkm_medis";
               if(in_array($no_rkm_medis, $petugas_array)) {
                 $sql .= "";
               } else {
@@ -616,7 +616,7 @@ class Site extends SiteModule
               $results = array();
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $pengaduan_id = trim($_REQUEST['pengaduan_id']);
-              $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_pengaduan_detail WHERE pengaduan_id = '$pengaduan_id'");
+              $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite__pengaduan_detail WHERE pengaduan_id = '$pengaduan_id'");
               $sql->execute();
               $result = $sql->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -634,7 +634,7 @@ class Site extends SiteModule
             break;
             case "simpanpengaduan":
               $send_data = array();
-              $max_id = $this->core->mysql('mlite_pengaduan')->select(['id' => 'ifnull(MAX(CONVERT(RIGHT(id,6),signed)),0)'])->like('tanggal', ''.date('Y-m-d').'%')->oneArray();
+              $max_id = $this->core->mysql('mlite__pengaduan')->select(['id' => 'ifnull(MAX(CONVERT(RIGHT(id,6),signed)),0)'])->like('tanggal', ''.date('Y-m-d').'%')->oneArray();
               if(empty($max_id['id'])) {
                 $max_id['id'] = '000000';
               }
@@ -647,7 +647,7 @@ class Site extends SiteModule
               $_POST['pesan'] = $message;
               $_POST['tanggal'] = date('Y-m-d H:i:s');
 
-              $this->core->mysql('mlite_pengaduan')->save($_POST);
+              $this->core->mysql('mlite__pengaduan')->save($_POST);
 
               $send_data['state'] = 'success';
               echo json_encode($send_data);
@@ -663,7 +663,7 @@ class Site extends SiteModule
               $_POST['no_rkm_medis'] = $no_rkm_medis;
               $_POST['pesan'] = $message;
               $_POST['tanggal'] = date('Y-m-d H:i:s');
-              $this->core->mysql('mlite_pengaduan_detail')->save($_POST);
+              $this->core->mysql('mlite__pengaduan_detail')->save($_POST);
 
               $send_data['state'] = 'success';
               echo json_encode($send_data);
@@ -731,26 +731,26 @@ class Site extends SiteModule
               echo $hitung['count'];
             break;
             case "layananunggulan":
-              $data[] = array_column($this->db('mlite_settings')->where('module', 'website')->toArray(), 'value', 'field');
+              $data[] = array_column($this->db('mlite__settings')->where('module', 'website')->toArray(), 'value', 'field');
               echo json_encode($data);
             break;
             case "lastnews":
               $limit = $this->settings->get('website.latestPostsCount');
               $results = [];
-              $rows = $this->db('mlite_news')
-                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
+              $rows = $this->db('mlite__news')
+                      ->leftJoin('mlite__users', 'mlite__users.id = mlite__news.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
                       ->desc('published_at')
                       ->limit($limit)
-                      ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.cover_photo', 'mlite_news.published_at', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
+                      ->select(['mlite__news.id', 'mlite__news.title', 'mlite__news.cover_photo', 'mlite__news.published_at', 'mlite__news.slug', 'mlite__news.intro', 'mlite__news.content', 'mlite__users.username', 'mlite__users.fullname'])
                       ->toArray();
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->db('mlite_news_tags')
-                      ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
-                      ->where('mlite_news_tags_relationship.news_id', $row['id'])
+                  $tags = $this->db('mlite__news_tags')
+                      ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
+                      ->where('mlite__news_tags_relationship.news_id', $row['id'])
                       ->select('name')
                       ->oneArray();
                   $row['tag'] = $tags['name'];
@@ -761,19 +761,19 @@ class Site extends SiteModule
             break;
             case "news":
               $results = [];
-              $rows = $this->db('mlite_news')
-                      ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
+              $rows = $this->db('mlite__news')
+                      ->leftJoin('mlite__users', 'mlite__users.id = mlite__news.user_id')
                       ->where('status', 2)
                       ->where('published_at', '<=', time())
                       ->desc('published_at')
-                      ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.cover_photo', 'mlite_news.published_at', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
+                      ->select(['mlite__news.id', 'mlite__news.title', 'mlite__news.cover_photo', 'mlite__news.published_at', 'mlite__news.slug', 'mlite__news.intro', 'mlite__news.content', 'mlite__users.username', 'mlite__users.fullname'])
                       ->toArray();
 
               foreach ($rows as &$row) {
                   //$this->filterRecord($row);
-                  $tags = $this->db('mlite_news_tags')
-                      ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
-                      ->where('mlite_news_tags_relationship.news_id', $row['id'])
+                  $tags = $this->db('mlite__news_tags')
+                      ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
+                      ->where('mlite__news_tags_relationship.news_id', $row['id'])
                       ->select('name')
                       ->oneArray();
                   $row['tag'] = $tags['name'];
@@ -785,7 +785,7 @@ class Site extends SiteModule
             case "newsdetail":
               $id = trim($_REQUEST['id']);
               $results = [];
-              $rows = $this->db('mlite_news')
+              $rows = $this->db('mlite__news')
                       ->where('id', $id)
                       ->select(['id','title','cover_photo', 'content', 'published_at'])
                       ->oneArray();
@@ -1008,7 +1008,7 @@ class Site extends SiteModule
 
                   if($httpCode == 200) {
                     $result_duitku = json_decode($request, true);
-                    $this->core->mysql('mlite_duitku')->save([
+                    $this->core->mysql('mlite__duitku')->save([
                       'tanggal' => $waktu_kunjungan,
                       'no_rkm_medis' => $pasien['no_rkm_medis'],
                       'paymentUrl' => $result_duitku['paymentUrl'],
@@ -1053,7 +1053,7 @@ class Site extends SiteModule
               $query->execute();
               $rows = $query->fetchAll(\PDO::FETCH_ASSOC);
               foreach ($rows as $row) {
-                $mlite_duitku = $this->core->mysql('mlite_duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
+                $mlite_duitku = $this->core->mysql('mlite__duitku')->where('no_rkm_medis', $no_rkm_medis)->where('tanggal', $row['tanggal_booking'].' '.$row['jam_booking'])->oneArray();
                 $row['paymentUrl'] = $mlite_duitku['paymentUrl'];
                 $results[] = $row;
               }

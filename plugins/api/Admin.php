@@ -31,7 +31,7 @@ class Admin extends AdminModule
     public function getNotifikasi()
     {
 
-      $totalRecords = $this->core->mysql('mlite_notifications')
+      $totalRecords = $this->core->mysql('mlite__notifications')
         ->select('id')
         ->toArray();
       $offset         = 10;
@@ -39,8 +39,8 @@ class Admin extends AdminModule
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->core->mysql('mlite_notifications')
-        ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
+      $return['list'] = $this->core->mysql('mlite__notifications')
+        ->join('pasien', 'pasien.no_rkm_medis=mlite__notifications.no_rkm_medis')
         ->desc('id')
         ->limit(10)
         ->toArray();
@@ -59,7 +59,7 @@ class Admin extends AdminModule
     public function anyNotifikasiForm()
     {
         if (isset($_POST['id'])){
-          $return['form'] = $this->core->mysql('mlite_notifications')->where('id', $_POST['id'])->oneArray();
+          $return['form'] = $this->core->mysql('mlite__notifications')->where('id', $_POST['id'])->oneArray();
         } else {
           $return['form'] = [
             'id' => '',
@@ -79,7 +79,7 @@ class Admin extends AdminModule
     {
 
         $perpage = '10';
-        $totalRecords = $this->core->mysql('mlite_notifications')
+        $totalRecords = $this->core->mysql('mlite__notifications')
           ->select('id')
           ->toArray();
         $offset         = 10;
@@ -87,16 +87,16 @@ class Admin extends AdminModule
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->core->mysql('mlite_notifications')
-          ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
+        $return['list'] = $this->core->mysql('mlite__notifications')
+          ->join('pasien', 'pasien.no_rkm_medis=mlite__notifications.no_rkm_medis')
           ->desc('id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->core->mysql('mlite_notifications')
-            ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
+          $return['list'] = $this->core->mysql('mlite__notifications')
+            ->join('pasien', 'pasien.no_rkm_medis=mlite__notifications.no_rkm_medis')
             ->like('id', '%'.$_POST['cari'].'%')
             ->orLike('judul', '%'.$_POST['cari'].'%')
             ->desc('id')
@@ -108,8 +108,8 @@ class Admin extends AdminModule
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->core->mysql('mlite_notifications')
-            ->join('pasien', 'pasien.no_rkm_medis=mlite_notifications.no_rkm_medis')
+          $return['list'] = $this->core->mysql('mlite__notifications')
+            ->join('pasien', 'pasien.no_rkm_medis=mlite__notifications.no_rkm_medis')
             ->desc('id')
             ->offset($offset)
             ->limit($perpage)
@@ -123,18 +123,18 @@ class Admin extends AdminModule
 
     public function postNotifikasiSave()
     {
-      if (!$this->core->mysql('mlite_notifications')->where('id', $_POST['id'])->oneArray()) {
+      if (!$this->core->mysql('mlite__notifications')->where('id', $_POST['id'])->oneArray()) {
         $_POST['status'] = 'unread';
-        $query = $this->core->mysql('mlite_notifications')->save($_POST);
+        $query = $this->core->mysql('mlite__notifications')->save($_POST);
       } else {
-        $query = $this->core->mysql('mlite_notifications')->where('id', $_POST['id'])->save($_POST);
+        $query = $this->core->mysql('mlite__notifications')->where('id', $_POST['id'])->save($_POST);
       }
       return $query;
     }
 
     public function postNotifikasiHapus()
     {
-      return $this->core->mysql('mlite_notifications')->where('id', $_POST['id'])->delete();
+      return $this->core->mysql('mlite__notifications')->where('id', $_POST['id'])->delete();
     }
 
     public function getNotifikasiJS()
@@ -270,8 +270,8 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'), 'footer');
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'), 'footer');
 
-      $return['list'] = $this->core->mysql('mlite_duitku')
-        ->join('pasien', 'pasien.no_rkm_medis=mlite_duitku.no_rkm_medis')
+      $return['list'] = $this->core->mysql('mlite__duitku')
+        ->join('pasien', 'pasien.no_rkm_medis=mlite__duitku.no_rkm_medis')
         ->desc('id')
         ->limit(10)
         ->toArray();

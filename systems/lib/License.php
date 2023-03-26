@@ -30,7 +30,7 @@ class License
     private static function update($license)
     {
         $core = $GLOBALS['core'];
-        $core->db('mlite_settings')->where('module', 'settings')->where('field', 'license')->save(['value' => $license]);
+        $core->db('mlite__settings')->where('module', 'settings')->where('field', 'license')->save(['value' => $license]);
     }
 
     private static function remoteCheck($license)

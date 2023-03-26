@@ -8,9 +8,9 @@ return [
     'compatibility' =>  '2023',
     'icon'          =>  'whatsapp',
     'install'       =>  function () use ($core) {
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('wagateway', 'server', 'https://mlite.id')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('wagateway', 'token', '-')");
-        $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('wagateway', 'phonenumber', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('wagateway', 'server', 'https://mlite.id')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('wagateway', 'token', '-')");
+        $core->db()->pdo()->exec("INSERT INTO `mlite__settings` (`module`, `field`, `value`) VALUES ('wagateway', 'phonenumber', '-')");
     },
     'uninstall'     =>  function() use($core)
     {

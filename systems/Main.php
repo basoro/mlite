@@ -36,7 +36,7 @@ abstract class Main
         } else {
           QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
 
-          $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
+          $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite__modules'");
           $check_db->execute();
           $check_db = $check_db->fetch();
 
@@ -220,18 +220,18 @@ abstract class Main
         } elseif (isset($_COOKIE['mlite_remember'])) {
             $token = explode(":", $_COOKIE['mlite_remember']);
             if (count($token) == 2) {
-                $row = $this->db('mlite_users')->leftJoin('remember_me', 'remember_me.user_id = mlite_users.id')->where('mlite_users.id', $token[0])->where('remember_me.token', $token[1])->select(['mlite_users.*', 'remember_me.expiry', 'token_id' => 'remember_me.id'])->oneArray();
+                $row = $this->db('mlite__users')->leftJoin('remember_me', 'remember_me.user_id = mlite__users.id')->where('mlite__users.id', $token[0])->where('remember_me.token', $token[1])->select(['mlite__users.*', 'remember_me.expiry', 'token_id' => 'remember_me.id'])->oneArray();
 
                 if ($row) {
                     if (time() - $row['expiry'] > 0) {
-                        $this->db('mlite_remember_me')->delete(['id' => $row['token_id']]);
+                        $this->db('mlite__remember_me')->delete(['id' => $row['token_id']]);
                     } else {
                         $_SESSION['mlite_user']= $row['id'];
                         $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
                         $_SESSION['userAgent']  = $_SERVER['HTTP_USER_AGENT'];
                         $_SESSION['IPaddress']  = $_SERVER['REMOTE_ADDR'];
 
-                        $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
+                        $this->db('mlite__remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
                             redirect(url([ADMIN, 'dashboard', 'main']));
@@ -254,7 +254,7 @@ abstract class Main
         }
 
         if (empty(self::$userCache) || $refresh) {
-            self::$userCache = $this->db('mlite_users')->where('id', $id)->oneArray();
+            self::$userCache = $this->db('mlite__users')->where('id', $id)->oneArray();
         }
 
         return self::$userCache[$field];
@@ -443,7 +443,7 @@ abstract class Main
     public function setNoJurnal()
     {
         $date = date('Y-m-d');
-        $last_no_jurnal = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
+        $last_no_jurnal = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite__jurnal WHERE tgl_jurnal = '$date'");
         $last_no_jurnal->execute();
         $last_no_jurnal = $last_no_jurnal->fetch();
         if(empty($last_no_jurnal[0])) {
@@ -489,7 +489,7 @@ abstract class Main
         }
 
         foreach ($modules as $order => $name) {
-            $core->db('mlite_modules')->save(['dir' => $name, 'sequence' => $order]);
+            $core->db('mlite__modules')->save(['dir' => $name, 'sequence' => $order]);
         }
 
         redirect(url());

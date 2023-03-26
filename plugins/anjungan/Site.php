@@ -111,34 +111,34 @@ class Site extends SiteModule
       switch (isset($_GET['act'])) {
         case 'reseta':
           if (!isset($_GET['antrian'])){
-              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',0);
-              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',0);
+              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',0);
+              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',0);
           }
           else {
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',$_GET['antrian']);
-              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',$_GET['loket']);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',$_GET['antrian']);
+              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',$_GET['loket']);
           }
           break;
 
         case 'resetb':
           if (!isset($_GET['antrian'])){
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',0);
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',0);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',0);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',0);
           }
           else {
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',$_GET['antrian']);
-              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',$_GET['loket']);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',$_GET['antrian']);
+              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',$_GET['loket']);
           }
           break;
 
         case 'resetc':
           if (!isset($_GET['antrian'])){
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',0);
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',0);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',0);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',0);
           }
           else {
-            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',$_GET['antrian']);
-              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',$_GET['loket']);
+            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',$_GET['antrian']);
+              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',$_GET['loket']);
           }
           break;
 
@@ -147,18 +147,18 @@ class Site extends SiteModule
           $_tcounter = $tcounter + 1;
 
           if (isset($_GET['loket'])) {
-            $this->core->db('mlite_antrian_loket')
+            $this->core->db('mlite__antrian_loket')
             ->where('noantrian',$_tcounter)
             ->where('type','Loket')
             ->where('postdate', date('Y-m-d'))
             ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-            $this->core->db('mlite_settings')
+            $this->core->db('mlite__settings')
             ->where('module','anjungan')
             ->where('field','no_antrian_loket')
             ->update('value',$_tcounter);
 
-            $this->core->db('mlite_settings')
+            $this->core->db('mlite__settings')
             ->where('module','anjungan')
             ->where('field','konter_antrian_loket')
             ->update('value',$_GET['loket']);
@@ -174,7 +174,7 @@ class Site extends SiteModule
             echo '<audio id="suarabela' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
           }
 
-          $this->core->db('mlite_antrian_loket')
+          $this->core->db('mlite__antrian_loket')
             ->where('noantrian',$tcounter)
             ->where('type','Loket')
             ->where('postdate', date('Y-m-d'))
@@ -188,18 +188,18 @@ class Site extends SiteModule
             $_tcounter = $tcounter + 1;
 
             if (isset($_GET['loket'])) {
-              $this->core->db('mlite_antrian_loket')
+              $this->core->db('mlite__antrian_loket')
               ->where('noantrian',$_tcounter)
               ->where('type','CS')
               ->where('postdate', date('Y-m-d'))
               ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-              $this->core->db('mlite_settings')
+              $this->core->db('mlite__settings')
               ->where('module','anjungan')
               ->where('field','no_antrian_cs')
               ->update('value',$_tcounter);
 
-              $this->core->db('mlite_settings')
+              $this->core->db('mlite__settings')
               ->where('module','anjungan')
               ->where('field','konter_antrian_cs')
               ->update('value',$_GET['loket']);
@@ -215,7 +215,7 @@ class Site extends SiteModule
               echo '<audio id="suarabelb' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
             }
 
-            $this->core->db('mlite_antrian_loket')
+            $this->core->db('mlite__antrian_loket')
               ->where('noantrian',$tcounter)
               ->where('type','CS')
               ->where('postdate', date('Y-m-d'))
@@ -229,18 +229,18 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
 
               if (isset($_GET['loket'])) {
-                $this->core->db('mlite_antrian_loket')
+                $this->core->db('mlite__antrian_loket')
                 ->where('noantrian',$_tcounter)
                 ->where('type','IGD')
                 ->where('postdate', date('Y-m-d'))
                 ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-                $this->core->db('mlite_settings')
+                $this->core->db('mlite__settings')
                 ->where('module','anjungan')
                 ->where('field','no_antrian_igd')
                 ->update('value',$_tcounter);
 
-                $this->core->db('mlite_settings')
+                $this->core->db('mlite__settings')
                 ->where('module','anjungan')
                 ->where('field','konter_antrian_igd')
                 ->update('value',$_GET['loket']);
@@ -256,7 +256,7 @@ class Site extends SiteModule
                 echo '<audio id="suarabelc' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
               }
 
-              $this->core->db('mlite_antrian_loket')
+              $this->core->db('mlite__antrian_loket')
                 ->where('noantrian',$tcounter)
                 ->where('type','IGD')
                 ->where('postdate', date('Y-m-d'))
@@ -266,7 +266,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantriana' :
-              $max = $this->core->db('mlite_antrian_loket')->where('type','Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite__antrian_loket')->where('type','Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -278,7 +278,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantrianb' :
-              $max = $this->core->db('mlite_antrian_loket')->where('type','CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite__antrian_loket')->where('type','CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -290,7 +290,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantrianc' :
-              $max = $this->core->db('mlite_antrian_loket')->where('type','IGD')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite__antrian_loket')->where('type','IGD')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -1167,7 +1167,7 @@ class Site extends SiteModule
 
             $setting_antrian_loket = str_replace(",","','", $this->settings->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->settings->get('anjungan.antrian_loket'));
-            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1180,22 +1180,22 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite_antrian_loket')
+              $this->core->mysql('mlite__antrian_loket')
                 ->where('type', 'Loket')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
             }
             if(isset($_GET['no_rkm_medis'])) {
-              $this->core->mysql('mlite_antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
+              $this->core->mysql('mlite__antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
               ->where('type', 'Loket')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1225,7 +1225,7 @@ class Site extends SiteModule
           case "panggil_cs":
             $display = 'Panggil CS';
             $loket = explode(",", $this->settings->get('anjungan.antrian_cs'));
-            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1238,19 +1238,19 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite_antrian_loket')
+              $this->core->mysql('mlite__antrian_loket')
                 ->where('type', 'CS')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
               ->where('type', 'CS')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1280,7 +1280,7 @@ class Site extends SiteModule
           case "panggil_apotek":
             $display = 'Panggil Apotek';
             $loket = explode(",", $this->settings->get('anjungan.antrian_apotek'));
-            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1293,19 +1293,19 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite_antrian_loket')
+              $this->core->mysql('mlite__antrian_loket')
                 ->where('type', 'Apotek')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['loket']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['loket']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['reset']]);
-              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['reset']]);
+              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_GET['antrian']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
               ->where('type', 'Apotek')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1531,7 +1531,7 @@ class Site extends SiteModule
       $res = [];
 
       $date = date('Y-m-d');
-      $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
+      $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite__antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
 
       if($sql) {
           //$data  = $query->fetch_object();
@@ -1584,7 +1584,7 @@ class Site extends SiteModule
     {
       if(!isset($_GET['id']) || $_GET['id'] == '') die(json_encode(array('status' => false)));
       $kode  = $_GET['id'];
-      $query = $this->core->mysql('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
+      $query = $this->core->mysql('mlite__antrian_loket')->where('kd', $kode)->update('status', 2);
       if($query) {
           $res = [
               'status' => true,
@@ -1614,7 +1614,7 @@ class Site extends SiteModule
       $noantrian  = $_GET['noantrian'];
       $loket  = $_GET['loket'];
       $date = date('Y-m-d');
-      $query = $this->core->mysql('mlite_antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
+      $query = $this->core->mysql('mlite__antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
       if($query) {
           $res = [
               'status' => true,
@@ -1652,7 +1652,7 @@ class Site extends SiteModule
 
       $noantrian  = $_GET['noantrian'];
       $no_rkm_medis = $_GET['no_rkm_medis'];
-      $query = $this->core->mysql('mlite_antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      $query = $this->core->mysql('mlite__antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
       if($query) {
           $res = [
               'status' => true,
@@ -1773,8 +1773,8 @@ class Site extends SiteModule
 
     public function _resultDisplayAntrianFarmasi2()
     {
-         $rows = $this->core->mysql('mlite_antrian_loket')
-           ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_loket.no_rkm_medis')
+         $rows = $this->core->mysql('mlite__antrian_loket')
+           ->join('pasien', 'pasien.no_rkm_medis=mlite__antrian_loket.no_rkm_medis')
            ->where('postdate', date('Y-m-d'))
            ->where('type', 'Apotek')
            ->where('status', 0)
@@ -1855,7 +1855,7 @@ class Site extends SiteModule
        default:
         break;
         case "tampilloket":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1874,7 +1874,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printloket":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1915,7 +1915,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpanloket":
-          $this->core->mysql('mlite_antrian_loket')
+          $this->core->mysql('mlite__antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'Loket',
@@ -1927,7 +1927,7 @@ class Site extends SiteModule
           //redirect(url('anjungan/pasien'));
         break;
         case "tampilcs":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1946,7 +1946,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printcs":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1987,7 +1987,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpancs":
-          $this->core->mysql('mlite_antrian_loket')
+          $this->core->mysql('mlite__antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'CS',
@@ -2000,7 +2000,7 @@ class Site extends SiteModule
         break;
 
         case "tampilapotek":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -2019,7 +2019,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printapotek":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -2062,7 +2062,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpanapotek":
-          $this->core->mysql('mlite_antrian_loket')
+          $this->core->mysql('mlite__antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'Apotek',
@@ -3058,7 +3058,7 @@ class Site extends SiteModule
       $username      = !empty($_username) ? $_username : $__username;
 
       //echo 'Checkin';
-      $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $referensi)->oneArray();
+      $referensi = $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', $referensi)->oneArray();
       $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
       $no_peserta = $referensi['nomor_kartu'];
       $no_rkm_medis = $pasien['no_rkm_medis'];

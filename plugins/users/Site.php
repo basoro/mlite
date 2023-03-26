@@ -10,7 +10,7 @@ class Site extends SiteModule
     {
         $this->tpl->set('users', function () {
             $result = [];
-            $users = $this->db('mlite_users')->select(['id', 'username', 'fullname', 'description', 'avatar', 'email'])->toArray();
+            $users = $this->db('mlite__users')->select(['id', 'username', 'fullname', 'description', 'avatar', 'email'])->toArray();
 
             foreach ($users as $key => $value) {
                 $result[$value['id']] = $users[$key];
