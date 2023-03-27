@@ -132,7 +132,7 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `jadwal_pegawai`
           ADD CONSTRAINT `jadwal_pegawai_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;");
 
-        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `jadwal_tambahan` (
+        $core->mysql()->pdo()->exec("CREATE TABLE `jadwal_tambahan` (
           `id` int(11) NOT NULL,
           `tahun` year(4) NOT NULL,
           `bulan` enum('01','02','03','04','05','06','07','08','09','10','11','12') NOT NULL,

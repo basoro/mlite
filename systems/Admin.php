@@ -23,14 +23,8 @@ class Admin extends Main
         $access = '';
         $this->assign['username'] = '';
 
-        if($_SESSION['mlite_user'] == '') {
-          $id = 1;
-        } else {
-          $id = $_SESSION['mlite_user'];
-        }
-
-        if($this->db('mlite_users')->where('id', $id)->oneArray()) {
-          $username = $this->getUserInfo('fullname', $id, true);
+        if($this->db('mlite_users')->where('id', $_SESSION['mlite_user'])->oneArray()) {
+          $username = $this->getUserInfo('fullname', null, true);
           $access = $this->getUserInfo('access');
           $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
         }
@@ -109,13 +103,7 @@ class Admin extends Main
         $nav = [];
         $modules = $this->module->getArray();
 
-        if($_SESSION['mlite_user'] == '') {
-          $id = 1;
-        } else {
-          $id = $_SESSION['mlite_user'];
-        }
-
-        if ($this->getUserInfo('access', $id, $refresh = false) != 'all') {
+        if ($this->getUserInfo('access') != 'all') {
             $modules = array_intersect_key($modules, array_fill_keys(explode(',', $this->getUserInfo('access')), null));
         }
 

@@ -356,7 +356,7 @@ abstract class Main
         return $_next_no_reg;
     }
 
-    public function setNoBooking($kd_dokter, $date, $kd_poli = null)
+    public function setNoBooking($kd_dokter, $kd_poli = null, $date)
     {
         $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
         if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {

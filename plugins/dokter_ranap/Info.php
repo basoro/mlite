@@ -8,7 +8,7 @@ return [
     'compatibility' =>  '2023',
     'icon'          =>  'user-md',
     'install'       =>  function () use ($core) {
-      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `resume_pasien_ranap` (
+      $core->mysql()->pdo()->exec("CREATE TABLE `resume_pasien_ranap` (
         `no_rawat` varchar(17) NOT NULL,
         `kd_dokter` varchar(20) NOT NULL,
         `diagnosa_awal` varchar(100) NOT NULL,
@@ -60,7 +60,7 @@ return [
         ADD CONSTRAINT `resume_pasien_ranap_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `resume_pasien_ranap_ibfk_2` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `resep_pulang` (
+      $core->mysql()->pdo()->exec("CREATE TABLE `resep_pulang` (
         `no_rawat` varchar(17) NOT NULL,
         `kode_brng` varchar(15) NOT NULL,
         `jml_barang` double NOT NULL,

@@ -158,8 +158,7 @@ CREATE TABLE `booking_operasi` (
   `jam_mulai` time DEFAULT NULL,
   `jam_selesai` time DEFAULT NULL,
   `status` enum('Menunggu','Proses Operasi','Selesai') DEFAULT NULL,
-  `kd_dokter` varchar(20) DEFAULT NULL,
-  `kd_ruang_ok` varchar(3) DEFAULT NULL
+  `kd_dokter` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -257,7 +256,7 @@ CREATE TABLE `bridging_sep` (
   `kdpolitujuan` varchar(15) DEFAULT NULL,
   `nmpolitujuan` varchar(50) DEFAULT NULL,
   `klsrawat` enum('1','2','3') DEFAULT NULL,
-  `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
+  `klsnaik` enum('','1','2') NOT NULL,
   `pembiayaan` enum('','1','2','3') NOT NULL,
   `pjnaikkelas` varchar(100) NOT NULL,
   `lakalantas` enum('0','1') DEFAULT NULL,
@@ -318,7 +317,7 @@ CREATE TABLE `bridging_sep_internal` (
   `kdpolitujuan` varchar(15) DEFAULT NULL,
   `nmpolitujuan` varchar(50) DEFAULT NULL,
   `klsrawat` enum('1','2','3') DEFAULT NULL,
-  `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
+  `klsnaik` enum('','1','2') NOT NULL,
   `pembiayaan` enum('','1','2','3') NOT NULL,
   `pjnaikkelas` varchar(100) NOT NULL,
   `lakalantas` enum('0','1') DEFAULT NULL,
@@ -436,7 +435,7 @@ CREATE TABLE `databarang` (
   `nama_brng` varchar(80) DEFAULT NULL,
   `kode_satbesar` char(4) NOT NULL,
   `kode_sat` char(4) DEFAULT NULL,
-  `letak_barang` varchar(100) DEFAULT NULL,
+  `letak_barang` varchar(50) DEFAULT NULL,
   `dasar` double NOT NULL,
   `h_beli` double DEFAULT NULL,
   `ralan` double DEFAULT NULL,
@@ -520,7 +519,7 @@ CREATE TABLE `detail_periksa_lab` (
   `tgl_periksa` date NOT NULL,
   `jam` time NOT NULL,
   `id_template` int(11) NOT NULL,
-  `nilai` varchar(200) NOT NULL,
+  `nilai` varchar(60) NOT NULL,
   `nilai_rujukan` varchar(30) NOT NULL,
   `keterangan` varchar(60) NOT NULL,
   `bagian_rs` double NOT NULL,
@@ -566,7 +565,7 @@ CREATE TABLE `dokter` (
   `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
   `kd_sps` char(5) DEFAULT NULL,
   `alumni` varchar(60) DEFAULT NULL,
-  `no_ijn_praktek` varchar(120) DEFAULT NULL,
+  `no_ijn_praktek` varchar(40) DEFAULT NULL,
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -968,7 +967,7 @@ CREATE TABLE `jns_perawatan_lab` (
   `kd_pj` char(3) NOT NULL,
   `status` enum('0','1') NOT NULL,
   `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL,
-  `kategori` enum('PK','PA','MB') NOT NULL
+  `kategori` enum('PK','PA') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1044,7 +1043,7 @@ CREATE TABLE `kamar_inap` (
   `jam_keluar` time DEFAULT NULL,
   `lama` double DEFAULT NULL,
   `ttl_biaya` double DEFAULT NULL,
-  `stts_pulang` enum('Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Isoman','Lain-lain') NOT NULL
+  `stts_pulang` enum('Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2391,12 +2390,12 @@ CREATE TABLE `pasien` (
   `nm_ibu` varchar(40) NOT NULL,
   `alamat` varchar(200) DEFAULT NULL,
   `gol_darah` enum('A','B','O','AB','-') DEFAULT NULL,
-  `pekerjaan` varchar(60) DEFAULT NULL,
+  `pekerjaan` varchar(35) DEFAULT NULL,
   `stts_nikah` enum('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO') DEFAULT NULL,
   `agama` varchar(12) DEFAULT NULL,
   `tgl_daftar` date DEFAULT NULL,
   `no_tlp` varchar(40) DEFAULT NULL,
-  `umur` varchar(30) NOT NULL,
+  `umur` varchar(20) NOT NULL,
   `pnd` enum('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-') NOT NULL,
   `keluarga` enum('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK') DEFAULT NULL,
   `namakeluarga` varchar(50) NOT NULL,
@@ -2493,23 +2492,23 @@ CREATE TABLE `pemeriksaan_ralan` (
   `no_rawat` varchar(17) NOT NULL,
   `tgl_perawatan` date NOT NULL,
   `jam_rawat` time NOT NULL,
-  `suhu_tubuh` varchar(5) NULL DEFAULT NULL,
-  `tensi` varchar(8) NOT NULL,
-  `nadi` varchar(3) NULL DEFAULT NULL,
-  `respirasi` varchar(3) NULL DEFAULT NULL,
-  `tinggi` varchar(5) NULL DEFAULT NULL,
-  `berat` varchar(5) NULL DEFAULT NULL,
-  `spo2` varchar(3) NOT NULL,
+  `suhu_tubuh` char(5) DEFAULT NULL,
+  `tensi` char(8) NOT NULL,
+  `nadi` char(3) DEFAULT NULL,
+  `respirasi` char(3) DEFAULT NULL,
+  `tinggi` char(5) DEFAULT NULL,
+  `berat` char(5) DEFAULT NULL,
+  `spo2` char(3) NOT NULL,
   `gcs` varchar(10) DEFAULT NULL,
   `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
-  `keluhan` varchar(2000) NULL DEFAULT NULL,
-  `pemeriksaan` varchar(2000) NULL DEFAULT NULL,
+  `keluhan` varchar(400) DEFAULT NULL,
+  `pemeriksaan` varchar(400) DEFAULT NULL,
   `alergi` varchar(50) DEFAULT NULL,
   `lingkar_perut` varchar(5) DEFAULT NULL,
-  `rtl` varchar(2000) NOT NULL,
-  `penilaian` varchar(2000) NOT NULL,
-  `instruksi` varchar(2000) NOT NULL,
-  `evaluasi` varchar(2000) NOT NULL,
+  `rtl` varchar(400) NOT NULL,
+  `penilaian` varchar(400) NOT NULL,
+  `instruksi` varchar(400) NOT NULL,
+  `evaluasi` varchar(400) NOT NULL,
   `nip` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -2523,17 +2522,17 @@ CREATE TABLE `pemeriksaan_ranap` (
   `no_rawat` varchar(17) NOT NULL,
   `tgl_perawatan` date NOT NULL,
   `jam_rawat` time NOT NULL,
-  `suhu_tubuh` varchar(5) NULL DEFAULT NULL,
-  `tensi` varchar(8) NOT NULL,
-  `nadi` varchar(3) NULL DEFAULT NULL,
-  `respirasi` varchar(3) NULL DEFAULT NULL,
-  `tinggi` varchar(5) NULL DEFAULT NULL,
-  `berat` varchar(5) NULL DEFAULT NULL,
-  `spo2` varchar(3) NOT NULL,
+  `suhu_tubuh` char(5) DEFAULT NULL,
+  `tensi` char(8) NOT NULL,
+  `nadi` char(3) DEFAULT NULL,
+  `respirasi` char(3) DEFAULT NULL,
+  `tinggi` char(5) DEFAULT NULL,
+  `berat` char(5) DEFAULT NULL,
+  `spo2` char(3) NOT NULL,
   `gcs` varchar(10) DEFAULT NULL,
   `kesadaran` enum('Compos Mentis','Somnolence','Sopor','Coma') NOT NULL,
-  `keluhan` varchar(2000) NULL DEFAULT NULL,
-  `pemeriksaan` varchar(2000) NULL DEFAULT NULL,
+  `keluhan` varchar(400) DEFAULT NULL,
+  `pemeriksaan` varchar(400) DEFAULT NULL,
   `alergi` varchar(50) DEFAULT NULL,
   `penilaian` varchar(400) NOT NULL,
   `rtl` varchar(400) NOT NULL,
@@ -3502,8 +3501,7 @@ ALTER TABLE `bidang`
 ALTER TABLE `booking_operasi`
   ADD KEY `no_rawat` (`no_rawat`),
   ADD KEY `kode_paket` (`kode_paket`),
-  ADD KEY `kd_dokter` (`kd_dokter`),
-  ADD KEY `kd_ruang_ok` (`kd_ruang_ok`);");
+  ADD KEY `kd_dokter` (`kd_dokter`);
 
 --
 -- Indexes for table `booking_periksa`
@@ -4935,8 +4933,7 @@ ALTER TABLE `berkas_digital_perawatan`
 ALTER TABLE `booking_operasi`
   ADD CONSTRAINT `booking_operasi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
   ADD CONSTRAINT `booking_operasi_ibfk_2` FOREIGN KEY (`kode_paket`) REFERENCES `paket_operasi` (`kode_paket`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `booking_operasi_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `booking_operasi_ibfk_4` FOREIGN KEY (`kd_ruang_ok`) REFERENCES `ruang_ok` (`kd_ruang_ok`) ON DELETE CASCADE ON UPDATE CASCADE;");
+  ADD CONSTRAINT `booking_operasi_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `booking_periksa`
@@ -5028,8 +5025,8 @@ ALTER TABLE `detail_pemberian_obat`
 --
 ALTER TABLE `detail_periksa_lab`
   ADD CONSTRAINT `detail_periksa_lab_ibfk_10` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `detail_periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `detail_periksa_lab_ibfk_12` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `detail_periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `detail_periksa_lab_ibfk_12` FOREIGN KEY (`id_template`) REFERENCES `template_laboratorium` (`id_template`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `diagnosa_pasien`
@@ -5238,24 +5235,6 @@ ALTER TABLE `paket_operasi`
   ADD CONSTRAINT `paket_operasi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `operasi`
---
-ALTER TABLE `operasi`
-  ADD CONSTRAINT `operasi_ibfk_31` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_32` FOREIGN KEY (`operator1`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_33` FOREIGN KEY (`operator2`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_34` FOREIGN KEY (`operator3`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_35` FOREIGN KEY (`asisten_operator1`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_36` FOREIGN KEY (`asisten_operator2`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_38` FOREIGN KEY (`dokter_anak`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_39` FOREIGN KEY (`perawaat_resusitas`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_40` FOREIGN KEY (`dokter_anestesi`) REFERENCES `dokter` (`kd_dokter`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_41` FOREIGN KEY (`asisten_anestesi`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_42` FOREIGN KEY (`bidan`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_43` FOREIGN KEY (`perawat_luar`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `operasi_ibfk_44` FOREIGN KEY (`kode_paket`) REFERENCES `paket_operasi` (`kode_paket`) ON DELETE RESTRICT ON UPDATE CASCADE;
-
---
 -- Constraints for table `pasien`
 --
 ALTER TABLE `pasien`
@@ -5322,10 +5301,10 @@ ALTER TABLE `penyakit`
 -- Constraints for table `periksa_lab`
 --
 ALTER TABLE `periksa_lab`
-  ADD CONSTRAINT `periksa_lab_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_lab_ibfk_12` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_lab_ibfk_13` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_lab_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_lab_ibfk_11` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_lab_ibfk_12` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_lab_ibfk_13` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `periksa_lab_ibfk_9` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;
 
 --
@@ -5333,10 +5312,10 @@ ALTER TABLE `periksa_lab`
 --
 ALTER TABLE `periksa_radiologi`
   ADD CONSTRAINT `periksa_radiologi_ibfk_4` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_radiologi_ibfk_5` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_radiologi_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_radiologi_ibfk_7` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `periksa_radiologi_ibfk_8` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `periksa_radiologi_ibfk_5` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_radiologi_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_radiologi_ibfk_7` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `periksa_radiologi_ibfk_8` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `permintaan_detail_permintaan_lab`
@@ -5398,8 +5377,8 @@ ALTER TABLE `prosedur_pasien`
 -- Constraints for table `rawat_inap_dr`
 --
 ALTER TABLE `rawat_inap_dr`
-  ADD CONSTRAINT `rawat_inap_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_inap_dr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_dr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `rawat_inap_dr_ibfk_7` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;
 
 --
@@ -5407,24 +5386,24 @@ ALTER TABLE `rawat_inap_dr`
 --
 ALTER TABLE `rawat_inap_drpr`
   ADD CONSTRAINT `rawat_inap_drpr_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_inap_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_inap_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_inap_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `rawat_inap_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `rawat_inap_pr`
 --
 ALTER TABLE `rawat_inap_pr`
-  ADD CONSTRAINT `rawat_inap_pr_ibfk_3` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_inap_pr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_pr_ibfk_3` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_inap_pr_ibfk_6` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_inap` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `rawat_inap_pr_ibfk_7` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `rawat_jl_dr`
 --
 ALTER TABLE `rawat_jl_dr`
-  ADD CONSTRAINT `rawat_jl_dr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_jl_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_jl_dr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_jl_dr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `rawat_jl_dr_ibfk_5` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE;
 
 --
@@ -5432,17 +5411,17 @@ ALTER TABLE `rawat_jl_dr`
 --
 ALTER TABLE `rawat_jl_drpr`
   ADD CONSTRAINT `rawat_jl_drpr_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_jl_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_jl_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_jl_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `rawat_jl_drpr_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_jl_drpr_ibfk_3` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_jl_drpr_ibfk_4` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `rawat_jl_pr`
 --
 ALTER TABLE `rawat_jl_pr`
-  ADD CONSTRAINT `rawat_jl_pr_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `rawat_jl_pr_ibfk_10` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `rawat_jl_pr_ibfk_8` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `rawat_jl_pr_ibfk_9` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE RESTRICT ON UPDATE CASCADE;
+  ADD CONSTRAINT `rawat_jl_pr_ibfk_9` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `reg_periksa`
@@ -5450,7 +5429,7 @@ ALTER TABLE `rawat_jl_pr`
 ALTER TABLE `reg_periksa`
   ADD CONSTRAINT `reg_periksa_ibfk_3` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `reg_periksa_ibfk_4` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `reg_periksa_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  ADD CONSTRAINT `reg_periksa_ibfk_6` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE NO ACTION ON UPDATE CASCADE,
   ADD CONSTRAINT `reg_periksa_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE;
 
 --

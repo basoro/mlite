@@ -59,7 +59,7 @@ function htmlspecialchars_array(array $array)
         if (is_array($value)) {
             $array[$key] = htmlspecialchars_array($value);
         } else {
-            $array[$key] = htmlspecialchars($value ?? '', ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $array[$key] = htmlspecialchars($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
         }
     }
 
@@ -175,7 +175,7 @@ function addTokenVeronisa($url)
     return $url;
 }
 
-function url($data = '')
+function url($data = null)
 {
     if (filter_var($data, FILTER_VALIDATE_URL) !== false) {
         return $data;
@@ -200,7 +200,7 @@ function url($data = '')
     if (is_array($data)) {
         $url = $url.'/'.implode('/', $data);
     } elseif ($data) {
-        $data = str_replace(BASE_DIR.'/', '', $data);
+        $data = str_replace(BASE_DIR.'/', null, $data);
         $url = $url.'/'.trim($data, '/');
     }
 
@@ -239,7 +239,7 @@ function domain($with_protocol = true, $cut_www = false)
 
 
 function mlite_dir() {
-    return dirname(str_replace(ADMIN, '', $_SERVER['SCRIPT_NAME']));
+    return dirname(str_replace(ADMIN, null, $_SERVER['SCRIPT_NAME']));
 }
 
 function isset_or(&$var, $alternate = null)
@@ -458,7 +458,7 @@ function bulan($bln) {
 }
 
 function penyebut($nilai) {
-	$nilai = intval($nilai);
+	$nilai = abs($nilai);
 	$huruf = array('','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas');
 	$temp = "";
 	if ($nilai < 12) {

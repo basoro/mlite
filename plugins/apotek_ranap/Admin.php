@@ -183,6 +183,7 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
+      $get_resep_obat = $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->oneArray();
       $get_resep_dokter = $this->core->mysql('resep_dokter')->where('no_resep', $_POST['no_resep'])->toArray();
       foreach ($get_resep_dokter as $item) {
 
@@ -204,8 +205,8 @@ class Admin extends AdminModule
             'keluar' => $item['jml'],
             'stok_akhir' => $get_gudangbarang['stok'] - $item['jml'],
             'posisi' => 'Pemberian Obat',
-            'tanggal' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tanggal' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
             'petugas' => $this->core->getUserInfo('fullname', null, true),
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'status' => 'Simpan',
@@ -215,8 +216,8 @@ class Admin extends AdminModule
 
         $this->core->mysql('detail_pemberian_obat')
           ->save([
-            'tgl_perawatan' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
             'no_rawat' => $get_resep_obat['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
@@ -233,8 +234,8 @@ class Admin extends AdminModule
 
         $this->core->mysql('aturan_pakai')
           ->save([
-            'tgl_perawatan' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
+            'jam' => $get_resep_obat['jam'],
             'no_rawat' => $get_resep_obat['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'aturan' => $item['aturan_pakai']
