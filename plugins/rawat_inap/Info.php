@@ -16,7 +16,7 @@ return [
           `suhu_tubuh` varchar(5) NULL DEFAULT NULL,
           `tensi` varchar(8) NOT NULL,
           `nadi` varchar(3) NULL DEFAULT NULL,
-          `respirasi` char(3) NULL DEFAULT NULL,
+          `respirasi` varchar(3) NULL DEFAULT NULL,
           `tinggi` varchar(5) NULL DEFAULT NULL,
           `berat` varchar(5) NULL DEFAULT NULL,
           `spo2` varchar(3) NOT NULL,
@@ -239,6 +239,14 @@ return [
         $core->mysql()->pdo()->exec("ALTER TABLE `paket_operasi`
           ADD CONSTRAINT `paket_operasi_ibfk_1` FOREIGN KEY (`kd_pj`) REFERENCES `penjab` (`kd_pj`) ON DELETE CASCADE ON UPDATE CASCADE;");
 
+        $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `ruang_ok` (
+          `kd_ruang_ok` varchar(3) NOT NULL,
+          `nm_ruang_ok` varchar(50) DEFAULT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
+        $core->mysql()->pdo()->exec("ALTER TABLE `ruang_ok`
+          ADD PRIMARY KEY (`kd_ruang_ok`);");
+
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_operasi` (
           `no_rawat` varchar(17) DEFAULT NULL,
           `kode_paket` varchar(15) DEFAULT NULL,
@@ -247,7 +255,7 @@ return [
           `jam_selesai` time DEFAULT NULL,
           `status` enum('Menunggu','Proses Operasi','Selesai') DEFAULT NULL,
           `kd_dokter` varchar(20) DEFAULT NULL,
-          `kd_ruang_ok` varchar(3) DEFAULT NULL
+          `kd_ruang_ok` varchar(3) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
         $core->mysql()->pdo()->exec("ALTER TABLE `booking_operasi`

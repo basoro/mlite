@@ -473,7 +473,8 @@ return [
         `menejemen` double DEFAULT NULL,
         `biaya` double NOT NULL,
         `kd_dokter` varchar(20) NOT NULL,
-        `status` enum('Ralan','Ranap') DEFAULT NULL
+        `status` enum('Ralan','Ranap') DEFAULT NULL,
+        `kategori` enum('PK','PA','MB') NOT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `periksa_radiologi` (
@@ -1002,7 +1003,7 @@ return [
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `booking_periksa_balasan` (
         `no_booking` varchar(17) NOT NULL,
-        `balasan` text DEFAULT NULL
+        `balasan` varchar(200) NULL DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `booking_periksa_balasan`

@@ -102,12 +102,18 @@ systems\srv\startServer.bat
 ### Peringatan!
 
 + Aktifasi modul-modul yang belum diaktifkan jika diperlukan, misalnya...
-  - IGD
   - Apotek Ralan
   - Dokter Ralan
+  - IGD
+  - Dokter IGD
   - Laboratorium
   - Radiologi
   - ICD 9 - 10 Request
+  - Rawat Inap
+  - Dokter Ranap
+  - Apotek Tanap
+  - Kasir Ranap
+  - Operasi
   - Dan seterusnya....
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.

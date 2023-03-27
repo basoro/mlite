@@ -29,7 +29,7 @@ return [
         `klsnaik` enum('','1','2','3','4','5','6','7') NOT NULL,
         `pembiayaan` enum('','1','2','3') NOT NULL,
         `pjnaikkelas` varchar(100) NOT NULL,
-        `lakalantas` enum('0','1') DEFAULT NULL,
+        `lakalantas` enum('0','1','2','3') DEFAULT NULL,
         `user` varchar(25) DEFAULT NULL,
         `nomr` varchar(15) DEFAULT NULL,
         `nama_pasien` varchar(100) DEFAULT NULL,
