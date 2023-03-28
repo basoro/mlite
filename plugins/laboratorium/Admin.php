@@ -809,6 +809,7 @@ class Admin extends AdminModule
     public function postValidasiPermintaanLab()
     {
       $permintaan_lab = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+      $validasi_permintaan = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
       $permintaan_pemeriksaan_lab = $this->core->mysql('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->toArray();
       //var_dump($permintaan_lab);
       foreach ($permintaan_pemeriksaan_lab as $row) {
