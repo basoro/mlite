@@ -1510,7 +1510,7 @@ INSERT INTO `mlite__settings` (`id`, `module`, `field`, `value`) VALUES
 (24, 'settings', 'BpjsConsID', '-'),
 (25, 'settings', 'BpjsSecretKey', '-'),
 (26, 'settings', 'BpjsUserKey', '-'),
-(27, 'settings', 'timezone', 'Pacific/Niue'),
+(27, 'settings', 'timezone', 'Asia/Makassar'),
 (28, 'settings', 'theme', 'default'),
 (29, 'settings', 'theme_admin', 'ataaka'),
 (30, 'settings', 'admin_mode', 'simple'),
