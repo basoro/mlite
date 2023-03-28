@@ -5,22 +5,22 @@ class BpjsService
 {
     protected static $lastStatus = null;
 
-    public static function get($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
+    public static function get($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::request('GET', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function post($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
+    public static function post($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::request2('POST', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function put($url, $datafields = [], $consid, $secretkey, $user_key, $time_stamp)
+    public static function put($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::request2('PUT', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
 
-    public static function delete($url, $datafields = [],  $consid, $secretkey, $user_key, $time_stamp)
+    public static function delete($url, $datafields = [], $consid = '', $secretkey = '', $user_key = '', $time_stamp = '')
     {
         return self::request2('DELETE', $url, $datafields, $consid, $secretkey, $user_key, $time_stamp);
     }
