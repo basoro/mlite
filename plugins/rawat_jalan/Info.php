@@ -697,7 +697,7 @@ return [
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
       $core->mysql()->pdo()->exec("INSERT INTO `databarang` (`kode_brng`, `nama_brng`, `kode_satbesar`, `kode_sat`, `letak_barang`, `dasar`, `h_beli`, `ralan`, `kelas1`, `kelas2`, `kelas3`, `utama`, `vip`, `vvip`, `beliluar`, `jualbebas`, `karyawan`, `stokminimal`, `kdjns`, `isi`, `kapasitas`, `expire`, `status`, `kode_industri`, `kode_kategori`, `kode_golongan`) VALUES
-      ('B000000001', '-', '-', '-', '-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-', 0, 0, '2019-09-19', '1', '-', '-', '-');");
+      ('B00001', '-', '-', '-', '-', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '-', 0, 0, '2019-09-19', '1', '-', '-', '-');");
 
       $core->mysql()->pdo()->exec("ALTER TABLE `databarang`
         ADD PRIMARY KEY (`kode_brng`),
