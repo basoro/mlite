@@ -567,6 +567,8 @@ class Admin extends AdminModule
 
         $detail_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
           ->where('no_rawat', $row['no_rawat'])
+          ->group('tgl_perawatan')
+          ->group('jam')
           ->toArray();
 
         $row['pemberian_obat'] = [];
