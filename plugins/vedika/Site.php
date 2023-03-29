@@ -40,6 +40,7 @@ class Site extends SiteModule
     $this->route('veda/createpdf/(:str)', 'getCreatePDF');
     $this->route('veda/downloadpdf/(:str)', 'getDownloadPDF');
     $this->route('veda/catatan/(:str)', 'getCatatan');
+    $this->route('veda/tarik','getDataSep');
     $this->route('veda/delfeed/(:str)/(:str)', 'getDelFeed');
     $this->route('veda/logout', function () {
       $this->logout();
@@ -1321,6 +1322,218 @@ class Site extends SiteModule
     // Stream PDF to user
     echo $result;
     exit();
+  }
+
+  public function getDataSep(){
+    $sep = $this->core->mysql('temp_individu')->where('status','Belum')->limit(25)->toArray();
+    if ($sep) {
+      foreach ($sep as $value) {
+        # code...
+        $send = $this->getKirimDataCenterCrontab($value['no_sep'],$value['no_rawat']);
+        echo $send.' | ';
+        if ($send == 'Ok') {
+          $this->core->mysql('temp_individu')->where('no_rawat',$value['no_rawat'])->save([
+            'status' => 'Sukses',
+          ]);
+        } else {
+          $this->core->mysql('temp_individu')->where('no_rawat',$value['no_rawat'])->save([
+            'status' => $send,
+          ]);
+        }
+      }
+    } else {
+      $begin = new \DateTime('2023-01-01');
+      $end = new \DateTime('2023-01-02');
+
+      $interval = \DateInterval::createFromDateString('1 day');
+      $period = new \DatePeriod($begin, $interval, $end);
+      foreach ($period as $dt) {
+        $start_date = $dt->format("Y-m-d");
+        // if(isset($_GET['startdate']) && $_GET['startdate'] !='')
+        //   $start_date = $_GET['startdate'];
+        $sep = $this->core->mysql('bridging_sep')->where('tglsep',$start_date)->toArray();
+        foreach ($sep as $value) {
+          $carisep = $this->core->mysql('temp_individu')->where('no_rawat',$value['no_rawat'])->oneArray();
+          if (!$carisep) {
+            $this->core->mysql('temp_individu')->save([
+              'no_rawat' => $value['no_rawat'],
+              'no_sep' => $value['no_sep'],
+              'tglsep' => $value['tglsep'],
+              'status' => 'Belum',
+            ]);
+          }
+        }
+        $sep = $this->core->mysql('temp_individu')->where('status','Belum')->limit(2)->toArray();
+        foreach ($sep as $value) {
+          # code...
+          $send = $this->getKirimDataCenterCrontab($value['no_sep'],$value['no_rawat']);
+          echo $send.' | ';
+          if ($send == 'Ok') {
+            $this->core->mysql('temp_individu')->where('no_rawat',$value['no_rawat'])->save([
+              'status' => 'Sukses',
+            ]);
+          } else {
+            $this->core->mysql('temp_individu')->where('no_rawat',$value['no_rawat'])->save([
+              'status' => $send,
+            ]);
+          }
+        }
+      }
+    }
+    exit();
+  }
+
+  public function getKirimDataCenterCrontab($nosep,$norawat)
+  {
+    $status = 'Not Ok';
+    $cntr   = 0;
+    $imgTime = time() . $cntr++;
+    $no_rawat = convertNorawat($norawat);
+    $berkas_digital_perawatan = $this->core->mysql('berkas_digital_perawatan')->where('no_rawat', $norawat)->where('kode', '030')->oneArray();
+    if(!$berkas_digital_perawatan) {
+
+      $request = '{
+                    "metadata": {
+                      "method":"claim_print"
+                    },
+                    "data": {
+                      "nomor_sep":"'.$nosep.'"
+                    }
+                  }';
+
+      $msg = $this->Request($request);
+      // print_r($msg);
+      if($msg['metadata']['message']=="Ok"){
+          $pdf = base64_decode($msg['data']);
+          file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
+          $status = 'Ok';
+          $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          unlink($image);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $norawat, 'kode' => '030', 'lokasi_file' => 'pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
+      } else {
+        // echo json_encode($msg, true);
+        $status = $msg['metadata']['message'];
+      }
+    } else {
+      $cek = false;
+      $filename = WEBAPPS_URL.'/berkasrawat/'.$berkas_digital_perawatan['lokasi_file'];
+      $file_headers = @get_headers($filename);
+      //print_r($file_headers);
+      if($file_headers[0] == 'HTTP/1.1 502 Bad Gateway'){
+        $cek = false;
+      } else if($file_headers[0] == 'HTTP/1.1 404 Not Found'){
+        $cek = false;
+      } else if($file_headers[0] == 'HTTP/1.1 503 Service Unavailable'){
+        $cek = false;
+      } else if($file_headers[0] == 'HTTP/1.1 200 OK'){
+        $cek = true;
+      }
+      if ($cek == true) {
+        $request = '{
+          "metadata": {
+            "method":"claim_print"
+          },
+          "data": {
+            "nomor_sep":"'.$nosep.'"
+          }
+        }';
+
+        $msg = $this->Request($request);
+        // print_r($msg);
+        if($msg['metadata']['message']=="Ok"){
+          $pdf = base64_decode($msg['data']);
+          file_put_contents(WEBAPPS_PATH.'/berkasrawat/pages/upload/'.$no_rawat.'_'.$imgTime,$pdf);
+          $status = 'Ok';
+          $image = WEBAPPS_PATH.'/berkasrawat/pages/upload/' . $no_rawat . '_' . $imgTime;
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          unlink($image);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $norawat, 'kode' => '030', 'lokasi_file' => 'pages/upload/' . $no_rawat . '_' . $imgTime . '.jpg']);
+        } else {
+          $status = $msg['metadata']['message'];
+        }
+      } else {
+        $status = 'Sudah Ditarik';
+      }
+    }
+    return $status;
+    exit();
+  }
+
+  private function Request($request)
+  {
+    $json = $this->mc_encrypt($request, $this->settings->get('vedika.eklaim_key'));
+    $header = array("Content-Type: application/x-www-form-urlencoded");
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $this->settings->get('vedika.eklaim_url'));
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $json);
+    $response = curl_exec($ch);
+    $first = strpos($response, "\n") + 1;
+    $last = strrpos($response, "\n") - 1;
+    $hasilresponse = substr($response, $first, strlen($response) - $first - $last);
+    $hasildecrypt = $this->mc_decrypt($hasilresponse, $this->settings->get('vedika.eklaim_key'));
+    //echo $hasildecrypt;
+    $msg = json_decode($hasildecrypt, true);
+    return $msg;
+  }
+
+  private function mc_encrypt($data, $strkey)
+  {
+    $key = hex2bin($strkey);
+    if (mb_strlen($key, "8bit") !== 32) {
+      throw new Exception("Needs a 256-bit key!");
+    }
+
+    $iv_size = openssl_cipher_iv_length("aes-256-cbc");
+    $iv = openssl_random_pseudo_bytes($iv_size);
+    $encrypted = openssl_encrypt($data, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv);
+    $signature = mb_substr(hash_hmac("sha256", $encrypted, $key, true), 0, 10, "8bit");
+    $encoded = chunk_split(base64_encode($signature . $iv . $encrypted));
+    return $encoded;
+  }
+
+  private function mc_decrypt($str, $strkey)
+  {
+    $key = hex2bin($strkey);
+    if (mb_strlen($key, "8bit") !== 32) {
+      throw new Exception("Needs a 256-bit key!");
+    }
+
+    $iv_size = openssl_cipher_iv_length("aes-256-cbc");
+    $decoded = base64_decode($str);
+    $signature = mb_substr($decoded, 0, 10, "8bit");
+    $iv = mb_substr($decoded, 10, $iv_size, "8bit");
+    $encrypted = mb_substr($decoded, $iv_size + 10, NULL, "8bit");
+    $calc_signature = mb_substr(hash_hmac("sha256", $encrypted, $key, true), 0, 10, "8bit");
+    if (!$this->mc_compare($signature, $calc_signature)) {
+      return "SIGNATURE_NOT_MATCH";
+    }
+
+    $decrypted = openssl_decrypt($encrypted, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv);
+    return $decrypted;
+  }
+
+  private function mc_compare($a, $b)
+  {
+    if (strlen($a) !== strlen($b)) {
+      return false;
+    }
+
+    $result = 0;
+
+    for ($i = 0; $i < strlen($a); $i++) {
+      $result |= ord($a[$i]) ^ ord($b[$i]);
+    }
+
+    return $result == 0;
   }
 
   private function _getSEPInfo($field, $no_rawat)
