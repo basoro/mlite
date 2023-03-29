@@ -565,21 +565,20 @@ class Admin extends AdminModule
           ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
           ->toArray();
 
-        $row['detail_pemberian_obat__'] = $this->core->mysql('aturan_pakai')
-          ->join('databarang', 'databarang.kode_brng = aturan_pakai.kode_brng')
-          ->join('detail_pemberian_obat', 'detail_pemberian_obat.no_rawat = aturan_pakai.no_rawat')
-          //->join('resep_dokter', 'resep_dokter.no_resep = resep_obat.no_resep')
-          ->where('aturan_pakai.no_rawat', $row['no_rawat'])
-          //->where('resep_dokter.kode_brng', 'detail_pemberian_obat.kode_brng')
-          ->group('aturan_pakai.kode_brng')
-          //->select('databarang.nama_brng')
-          //->select('detail_pemberian_obat.jml')
-          //->select('resep_dokter.aturan_pakai')
-          ->toArray();
-        $row['detail_pemberian_obat'] = $this->core->mysql('detail_pemberian_obat')
-          ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+        $detail_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
+
+        $row['pemberian_obat'] = [];
+        foreach ($detail_pemberian_obat as $row_pemberian_obat) {
+          $row_pemberian_obat['data_pemberian_obat'] = $this->core->mysql('detail_pemberian_obat')
+            ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+            ->where('detail_pemberian_obat.no_rawat', $row_pemberian_obat['no_rawat'])
+            ->where('detail_pemberian_obat.tgl_perawatan', $row_pemberian_obat['tgl_perawatan'])
+            ->where('detail_pemberian_obat.jam', $row_pemberian_obat['jam'])
+            ->toArray();
+          $row['pemberian_obat'][] = $row_pemberian_obat;
+        }
 
         $row['operasi'] = $this->core->mysql('operasi')
           ->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')
@@ -591,10 +590,6 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
-        //$row['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
-        //  ->join('template_laboratorium', 'template_laboratorium.id_template = detail_periksa_lab.id_template')
-        //  ->where('no_rawat', $row['no_rawat'])->toArray();
-        //$row['hasil_radiologi'] = $this->core->mysql('hasil_radiologi')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->core->mysql('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['berkas_digital'] = $this->core->mysql('berkas_digital_perawatan')

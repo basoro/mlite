@@ -518,6 +518,42 @@
         </td>
       </tr>
       {/if}
+
+      {if: !empty($value.pemberian_obat)}
+      <tr class="isi">
+        <td valign="top" width="20%">Pemberian Obat </td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+           <tr align="center">
+             <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+             <td valign="top" width="75%" bgcolor="#eee">Detail Resep</td>
+           </tr>
+           {loop: $value.pemberian_obat as $data1}
+           <tr>
+             <td valign="top" width="25%">{$data1.tgl_perawatan} {$data1.jam}<br>{$data1.status}</td>
+             <td valign="top" width="75%">
+               <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0">
+                 <tr>
+                   <td valign="top" width="75%" bgcolor="#eee">Nama Obat</td>
+                   <td valign="top" width="25%" bgcolor="#eee">Jumlah</td>
+                 </tr>
+                 {loop: $data1.data_pemberian_obat as $data2}
+                 <tr>
+                   <td>{$data2.nama_brng}</td>
+                   <td>{$data2.jml}</td>
+                 </tr>
+                 {/loop}
+               </table>
+             </td>
+           </tr>
+           {/loop}
+          </table>
+        </td>
+      </tr>
+
+      {/if}
+
       {if: $value.periksa_lab}
       <tr class="isi">
         <td valign="top" width="20%">Laboratorium </td>

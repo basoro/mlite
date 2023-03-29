@@ -155,10 +155,10 @@ class Site extends SiteModule
             $cek_referensi = $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->core->mysql('mlite__antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
-            if($cek_referensi) {
+            if(!empty($cek_referensi['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
             }
-            if($cek_referensi_noka) {
+            if(!empty($cek_referensi_noka['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi_noka['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
             }
             if(empty($decode['nomorkartu'])) {
