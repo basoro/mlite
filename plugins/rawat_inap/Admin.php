@@ -213,7 +213,7 @@ class Admin extends AdminModule
             $bg_status = 'text-danger';
           } else {
             $result = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
-            if($result >= 1) {
+            if(!empty($result['no_rawat'])) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
             } else {
