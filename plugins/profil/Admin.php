@@ -41,8 +41,12 @@ class Admin extends AdminModule
         $presensi = [];
         $absensi = [];
         if($cek_profil) {
-          $presensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
-          $absensi = $this->core->mysql('rekap_presensi')->where('id', $profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          $presensi = [];
+          $absensi = [];
+          if($this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->oneArray()){
+            $presensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+            $absensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          }
         }
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
         if (!empty($profil['photo'])) {
@@ -213,6 +217,7 @@ class Admin extends AdminModule
             }
         }
 
+        /*
         $year = date('Y');
         $month = date('m');
         $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
@@ -220,6 +225,7 @@ class Admin extends AdminModule
         for ($i = 1; $i < $day + 1; $i++) {
             $i;
         }
+        */
 
         $this->assign['getStatus'] = isset($_GET['status']);
         // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);

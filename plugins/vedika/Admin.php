@@ -196,29 +196,66 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      $image = $_FILES['files']['tmp_name'];
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $filePath = $image.'.jpg';
+        }
 
-      $file_type = $_FILES['files']['type'];
-      if($file_type=='application/pdf'){
-        $imagick = new \Imagick();
-        $imagick->readImage($image);
-        $imagick->writeImages($image.'.jpg', false);
-        $image = $image.'.jpg';
-      }
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
 
-      $img = new \Systems\Lib\Image();
-      $id = convertNorawat($_POST['no_rawat']);
-      if ($img->load($image)) {
-        $imgName = time() . $cntr++;
-        $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $img->save($imgPath);
-        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-        if ($query) {
-          $this->notify('success', 'Simpan berkas digital perawatan sukses.');
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
+      } else {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $image = $image.'.jpg';
+        }
+
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+          $imgName = time() . $cntr++;
+          $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if ($query) {
+            $this->notify('success', 'Simpan berkas digital perawatan sukses.');
+          }
         }
       }
     }
@@ -412,29 +449,66 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      $image = $_FILES['files']['tmp_name'];
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $filePath = $image.'.jpg';
+        }
 
-      $file_type = $_FILES['files']['type'];
-      if($file_type=='application/pdf'){
-        $imagick = new \Imagick();
-        $imagick->readImage($image);
-        $imagick->writeImages($image.'.jpg', false);
-        $image = $image.'.jpg';
-      }
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
 
-      $img = new \Systems\Lib\Image();
-      $id = convertNorawat($_POST['no_rawat']);
-      if ($img->load($image)) {
-        $imgName = time() . $cntr++;
-        $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $img->save($imgPath);
-        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-        if ($query) {
-          $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
+      } else {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $image = $image.'.jpg';
+        }
+
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+          $imgName = time() . $cntr++;
+          $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if ($query) {
+            $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+          }
         }
       }
     }
@@ -624,29 +698,66 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      $image = $_FILES['files']['tmp_name'];
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $filePath = $image.'.jpg';
+        }
 
-      $file_type = $_FILES['files']['type'];
-      if($file_type=='application/pdf'){
-        $imagick = new \Imagick();
-        $imagick->readImage($image);
-        $imagick->writeImages($image.'.jpg', false);
-        $image = $image.'.jpg';
-      }
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
 
-      $img = new \Systems\Lib\Image();
-      $id = convertNorawat($_POST['no_rawat']);
-      if ($img->load($image)) {
-        $imgName = time() . $cntr++;
-        $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $img->save($imgPath);
-        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-        if ($query) {
-          $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
+      } else {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $image = $image.'.jpg';
+        }
+
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+          $imgName = time() . $cntr++;
+          $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if ($query) {
+            $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+          }
         }
       }
     }
@@ -959,29 +1070,66 @@ class Admin extends AdminModule
     }
 
     if (isset($_POST['simpanberkas'])) {
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      $image = $_FILES['files']['tmp_name'];
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $filePath = $image.'.jpg';
+        }
 
-      $file_type = $_FILES['files']['type'];
-      if($file_type=='application/pdf'){
-        $imagick = new \Imagick();
-        $imagick->readImage($image);
-        $imagick->writeImages($image.'.jpg', false);
-        $image = $image.'.jpg';
-      }
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
 
-      $img = new \Systems\Lib\Image();
-      $id = convertNorawat($_POST['no_rawat']);
-      if ($img->load($image)) {
-        $imgName = time() . $cntr++;
-        $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-        $img->save($imgPath);
-        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-        if ($query) {
-          $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
+      } else {
+        $dir    = $this->_uploads;
+        $cntr   = 0;
+
+        $image = $_FILES['files']['tmp_name'];
+
+        $file_type = $_FILES['files']['type'];
+        if($file_type=='application/pdf'){
+          $imagick = new \Imagick();
+          $imagick->readImage($image);
+          $imagick->writeImages($image.'.jpg', false);
+          $image = $image.'.jpg';
+        }
+
+        $img = new \Systems\Lib\Image();
+        $id = convertNorawat($_POST['no_rawat']);
+        if ($img->load($image)) {
+          $imgName = time() . $cntr++;
+          $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+          $img->save($imgPath);
+          $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+          if ($query) {
+            $this->notify('success', 'Simpan berkar digital perawatan sukses.');
+          }
         }
       }
     }
@@ -1897,24 +2045,50 @@ class Admin extends AdminModule
 
   public function postSaveBerkasDigital()
   {
+    if(MULTI_APP) {
 
-    $dir    = $this->_uploads;
-    $cntr   = 0;
+      $curl = curl_init();
+      $filePath = $_FILES['files']['tmp_name'];
 
-    $image = $_FILES['files']['tmp_name'];
-    $img = new \Systems\Lib\Image();
-    $id = convertNorawat($_POST['no_rawat']);
-    if ($img->load($image)) {
-      $imgName = time() . $cntr++;
-      $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-      $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
-      $img->save($imgPath);
-      $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-      if ($query) {
-        echo '<br><img src="' . WEBAPPS_URL . '/berkasrawat/' . $lokasi_file . '" width="150" />';
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+        CURLOPT_HTTPHEADER => array(),
+      ));
+
+      $response = curl_exec($curl);
+
+      curl_close($curl);
+      //echo $response;
+      if($response == 'Success') {
+        echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+      }
+
+    } else {
+      $dir    = $this->_uploads;
+      $cntr   = 0;
+
+      $image = $_FILES['files']['tmp_name'];
+      $img = new \Systems\Lib\Image();
+      $id = convertNorawat($_POST['no_rawat']);
+      if ($img->load($image)) {
+        $imgName = time() . $cntr++;
+        $imgPath = $dir . '/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+        $lokasi_file = 'pages/upload/' . $id . '_' . $imgName . '.' . $img->getInfos('type');
+        $img->save($imgPath);
+        $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+        if ($query) {
+          echo '<br><img src="' . WEBAPPS_URL . '/berkasrawat/' . $lokasi_file . '" width="150" />';
+        }
       }
     }
-
     exit();
   }
 
@@ -2394,7 +2568,7 @@ class Admin extends AdminModule
     $reg_periksa['no_sep'] = $this->_getSEPInfo('no_sep', revertNoRawat($no_rawat));
     $reg_periksa['stts_pulang'] = '';
     $reg_periksa['tgl_keluar'] = $reg_periksa['tgl_registrasi'];
-    if($reg_periksa['status_lanjut'] == 'Ranap') { 
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
       $_get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       $reg_periksa['tgl_keluar'] = $_get_kamar_inap[0]['tgl_keluar'].' '.$_get_kamar_inap[0]['jam_keluar'];
       $reg_periksa['stts_pulang'] = $_get_kamar_inap[0]['stts_pulang'];
@@ -2849,8 +3023,23 @@ class Admin extends AdminModule
       $total_biaya_sewa_alat += $row['biaya_rawat'];
     }
 
+    /* Yang belum
+    ======================
+    radiologi, --> radiologi
+    laboratorium, --> laboratorium
+    pelayanan_darah, --> UTD atau by kategori pelayanan darah
+
+    obat, --> resep dokter by kategori obat
+    obat_kronis, --> resep dokter by kategori obat
+    obat_kemoterapi, --> resep dokter by kategori obat
+    ======================
+    */
+
     $total_biaya_tarif_poli_eks = 0;
     $total_biaya_add_payment_pct = 0;
+
+    $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $total_biaya_kamar = $piutang_pasien['totalpiutang'] - $total_biaya_non_bedah - $total_biaya_bedah - $total_biaya_konsultasi - $total_biaya_keperawatan - $total_biaya_penunjang - $total_biaya_radiologi - $total_biaya_laboratorium - $total_biaya_pelayanan_darah - $total_biaya_rehabilitasi - $total_biaya_rawat_intensif - $total_biaya_obat - $total_biaya_obat_kronis - $total_biaya_obat_kemoterapi - $total_biaya_alkes - $total_biaya_bmhp - $total_biaya_sewa_alat - $total_biaya_tarif_poli_eks - $total_biaya_add_payment_pct;
 
     $request ='{
                      "metadata": {
