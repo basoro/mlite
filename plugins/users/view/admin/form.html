@@ -14,7 +14,7 @@
                   {if: !empty($users.user)}
                   <div class="form-group">
                       <label>Pengguna</label>
-                      <select name="username" id="username" class="form-control" data-use-search="true" onchange="document.getElementById('fullname').value=this.options[this.selectedIndex].text">
+                      <select name="username" id="username" class="form-control" data-use-search="true" onchange="document.getElementById('fullname').value=this.options[this.selectedIndex].text.split(' -')[0]">
                           {loop: $users.user}
                               <option value="{$value.nik}"{if: $users.form.username == $value.nik} selected{/if}>{$value.nama} - {$value.nik}</option>
                           {/loop}
