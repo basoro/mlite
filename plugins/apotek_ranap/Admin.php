@@ -217,7 +217,7 @@ class Admin extends AdminModule
           ->save([
             'tgl_perawatan' => $_POST['tgl_peresepan'],
             'jam' => $_POST['jam_peresepan'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
             'biaya_obat' => $get_databarang['h_beli'],
@@ -235,7 +235,7 @@ class Admin extends AdminModule
           ->save([
             'tgl_perawatan' => $_POST['tgl_peresepan'],
             'jam' => $_POST['jam_peresepan'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'aturan' => $item['aturan_pakai']
           ]);
