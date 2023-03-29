@@ -98,7 +98,6 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
-          $row['viewURL'] = url([ADMIN, 'dokter_igd', 'view', convertNorawat($row['no_rawat'])]);
           $this->assign['list'][] = $row;
         }
 

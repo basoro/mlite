@@ -1447,6 +1447,9 @@
   $('#sep_spesialis_kode').keyup(function(){
        var query = $(this).val();
        var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+       if($('#sep_spesialis_kode').val() == 'IGD') {
+         var sep_pelayanan_kode = '1';         
+       }
        var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
 
        if(query != '')
