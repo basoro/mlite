@@ -1842,29 +1842,61 @@ class Admin extends AdminModule
     }
 
     public function postUploadDigital($id = null) {
-      $dir    = $this->_uploads;
-      $cntr   = 0;
+      if(MULTI_APP) {
 
-      if (!is_uploaded_file($_FILES['files']['tmp_name'][0])) {
-          $this->notify('failure', 'Tidak ada berkas');
+        $_POST['no_rawat'] = revertNorawat($id);
+
+        $curl = curl_init();
+        $filePath = $_FILES['files']['tmp_name'];
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => str_replace('webapps','',WEBAPPS_URL).'api/berkasdigital',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => 'POST',
+          CURLOPT_POSTFIELDS => array('file'=> new \CURLFILE($filePath),'token' => $this->settings->get('api.berkasdigital_key'), 'no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode']),
+          CURLOPT_HTTPHEADER => array(),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        if($response == 'Success') {
+          $this->notify('success', 'Sukses menambahkan gambar');
+        } else {
+          $this->notify('failure', 'Gagal menambahkan gambar');
+        }
+
       } else {
-          foreach ($_FILES['files']['tmp_name'] as $image) {
-              $img = new \Systems\Lib\Image();
+        $dir    = $this->_uploads;
+        $cntr   = 0;
 
-              if ($img->load($image)) {
-                  $imgName = time().$cntr++;
-                  $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
-                  $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
-                  $img->save($imgPath);
-                  $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => revertNorawat($id), 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
-              } else {
-                  $this->notify('failure', 'Exstensi berkas salah', 'jpg, png, gif');
-              }
-          }
+        if (!is_uploaded_file($_FILES['files']['tmp_name'][0])) {
+            $this->notify('failure', 'Tidak ada berkas');
+        } else {
+            foreach ($_FILES['files']['tmp_name'] as $image) {
+                $img = new \Systems\Lib\Image();
 
-          if ($query) {
-              $this->notify('success', 'Sukses menambahkan gambar');
-          };
+                if ($img->load($image)) {
+                    $imgName = time().$cntr++;
+                    $imgPath = $dir.'/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+                    $lokasi_file = 'pages/upload/'.$id.'_'.$imgName.'.'.$img->getInfos('type');
+                    $img->save($imgPath);
+                    $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => revertNorawat($id), 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
+                } else {
+                    $this->notify('failure', 'Exstensi berkas salah', 'jpg, png, gif');
+                }
+            }
+
+            if ($query) {
+                $this->notify('success', 'Sukses menambahkan gambar');
+            };
+        }
       }
       redirect(url([ADMIN, 'dokter_ralan', 'view', $id]));
     }

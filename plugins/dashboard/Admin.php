@@ -37,9 +37,10 @@ class Admin extends AdminModule
     $pengaturan_presensi = '';
     $teks = array('');
     if ($presensi) {
-      $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
+      } else {
+        $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));        
       }
       $idpeg = $this->core->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
       if($idpeg) {

@@ -1088,7 +1088,10 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
-        echo $response;
+        //echo $response;
+        if($response == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+        }
 
       } else {
         $dir    = $this->_uploads;

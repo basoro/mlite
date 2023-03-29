@@ -167,14 +167,10 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
         $perpage = '10';
         $phrase = '';
-        $bulan = '';
+        $bulan = date('m');
 
         if (isset($_GET['s']))
             $phrase = $_GET['s'];
-
-        if ($_GET['b'] == "") {
-            $bulan = date('m');
-        }
 
         if (isset($_GET['b'])) {
             $bulan = $_GET['b'];
