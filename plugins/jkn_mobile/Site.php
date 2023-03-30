@@ -2102,6 +2102,8 @@ class Site extends SiteModule
                 $nohp = '';
               }
 
+              $jeniskunjungan = 1;
+
               $nomorreferensi = '';
               if($jenispasien == 'JKN') {
                 $nomorreferensi = $referensi['nomor_referensi'];
@@ -2109,22 +2111,19 @@ class Site extends SiteModule
                   $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $q['no_rawat'])->oneArray();
                   $nomorreferensi = $bridging_sep['no_rujukan'];
                   if(!empty($bridging_sep['noskdp'])) {
+                    $jeniskunjungan = 3;
                     $nomorreferensi = $bridging_sep['noskdp'];
                   }
                   if(!$bridging_sep) {
                     $bridging_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_rawat', $q['no_rawat'])->oneArray();
                     $nomorreferensi = $bridging_sep_internal['no_rujukan'];
+                    $jeniskunjungan = 2;
                     if(!empty($bridging_sep_internal['noskdp'])) {
                       $nomorreferensi = $bridging_sep_internal['noskdp'];
                     }
                   }
                 }
               }
-
-              $jeniskunjungan = 3;
-              //if($referensi['jenis_kunjungan'] !='') {
-              //  $jeniskunjungan = $referensi['jenis_kunjungan'];
-              //}
 
               $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
               if($jenispasien == 'JKN') {
