@@ -176,10 +176,10 @@ class Site extends SiteModule
             $cek_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
             $cek_referensi_noka = $this->core->mysql('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
-            if($cek_referensi) {
+            if(!empty($cek_referensi['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
             }
-            if($cek_referensi_noka) {
+            if(!empty($cek_referensi_noka['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$cek_referensi_noka['tanggal_periksa'].'. Silahkan pilih tanggal lain.';
             }
             if(empty($decode['nomorkartu'])) {
@@ -706,7 +706,7 @@ class Site extends SiteModule
                         ])
                         ->where('type', 'Apotek')
                         ->where('postdate', $booking_registrasi['tanggal_periksa'])
-                        ->toArray();
+                        ->oneArray();
 
                         $mlite_antrian_loket_sisaantrean = $this->core->mysql('mlite_antrian_loket')
                         ->select([
@@ -715,7 +715,7 @@ class Site extends SiteModule
                         ->where('type', 'Apotek')
                         ->where('postdate', $booking_registrasi['tanggal_periksa'])
                         ->where('end_time', '<>', '00:00:00')
-                        ->toArray();
+                        ->oneArray();
 
                         $get_mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
 
