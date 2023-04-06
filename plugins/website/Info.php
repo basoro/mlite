@@ -92,7 +92,7 @@ return [
             ('website', 'perpage', '5'),
             ('website', 'disqus', ''),
             ('website', 'dateformat', 'M d, Y'),
-            ('website', 'title', 'Berita Internal'),
+            ('website', 'title', 'mLITE Indonesia'),
             ('website', 'desc', '... RS Masa Gitu ...'),
             ('website', 'latestPostsCount', '5')
         ");
