@@ -2384,7 +2384,8 @@ class Site extends SiteModule
 
     public function _resultDisplayBed()
     {
-        $query = $this->core->mysql()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal , b.kelas");
+
+        $query = $this->core->mysql()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal, b.kelas");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -2400,6 +2401,9 @@ class Site extends SiteModule
                   ->where('kamar.statusdata','1')
                   ->group(array('kamar.kd_bangsal','kamar.kelas'))
                   ->oneArray();
+                if(empty($row['kosong']['jumlah'])) {
+                  $row['kosong']['jumlah'] = 0;
+                }
                 $row['isi'] = $this->core->mysql('kamar')
                   ->select(['jumlah' => 'COUNT(kamar.status)'])
                   ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
@@ -2409,6 +2413,9 @@ class Site extends SiteModule
                   ->where('kamar.statusdata','1')
                   ->group(array('kamar.kd_bangsal','kamar.kelas'))
                   ->oneArray();
+                if(empty($row['isi']['jumlah'])) {
+                  $row['isi']['jumlah'] = 0;
+                }
                 $result[] = $row;
             }
         }

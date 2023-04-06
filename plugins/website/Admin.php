@@ -71,7 +71,7 @@ class Admin extends AdminModule
             foreach ($rows as $row) {
                 $row['editURL'] = url([ADMIN, 'website', 'editnews', $row['id']]);
                 $row['delURL']  = url([ADMIN, 'website', 'deletenews', $row['id']]);
-                $row['viewURL'] = url(['website', 'postnews', $row['slug']]);
+                $row['viewURL'] = url(['news', 'post', $row['slug']]);
 
 
                 $fullname = $this->core->getUserInfo('fullname', $row['user_id'], true);
