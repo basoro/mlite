@@ -14,5 +14,6 @@ return [
     },
     'uninstall'     =>  function() use($core)
     {
+      $core->db()->pdo()->exec("DELETE FROM `mlite__settings` WHERE `module` = 'wagateway'");
     }
 ];
