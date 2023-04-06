@@ -20,10 +20,10 @@
         <tr>
           <td>{$pacs.data}</td>
           <td>{$pacs.patientUUID}</td>
-          <td><a href="http://mlite.loc/orthanc/osimis-viewer/app/index.html?study={$pacs.Studies}" target="_blank">{$pacs.Studies}</a></td>
+          <td>{$pacs.Studies}</td>
           <td>{$pacs.Series}</td>
           <td>{$pacs.Instances}</td>
-          <td><a href="http://mlite.loc/orthanc/osimis-viewer/app/index.html?study=941a16e6-2b969e8a-d3e9e31a-1bbc74f6-abcad8c3" target="_blank"><img src="{$pacs.url}" width="200"></a><br><br><button type="button" class="btn btn-xs btn-success">Simpan ke SIMRS</button></td>
+          <td><a href="{$orthanc}/web-viewer/app/viewer.html?series={$pacs.Series}" target="_blank"><img src="{$pacs.url}" width="200"></a><br><br><button type="button" class="btn btn-xs btn-success">Simpan ke SIMRS</button></td>
         </tr>
 
       </tbody>
