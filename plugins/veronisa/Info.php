@@ -2,7 +2,7 @@
 
 return [
     'name'          =>  'Veronisa',
-    'description'   =>  'Modul Verifikasi Obat Kronis Aura Syifa',
+    'description'   =>  'Modul Verifikasi Obat Kronis',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '2023',
