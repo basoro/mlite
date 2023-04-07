@@ -862,6 +862,7 @@ class Admin extends AdminModule
         if (!file_exists($dir)) {
             mkdir(WEBAPPS_PATH."/radiologi", 0777);
             mkdir(WEBAPPS_PATH."/radiologi/pages", 0777);
+            mkdir(WEBAPPS_PATH."/radiologi/pages/upload", 0777);
             mkdir($dir, 0777, true);
         }
 
