@@ -9,6 +9,8 @@
       {loop: $pacs.Instances}
   		<div class="col-md-6">
         <a href="{$orthanc}/web-viewer/app/viewer.html?series={$value.ID}" target="_blank"><img class="img-responsive" src="{$orthanc}/instances/{$value.Instances[0]}/rendered/?width=600"></a><br>
+        <div class="title">Tanggal: {?=date('Y-m-d', strtotime($value.MainDicomTags.SeriesDate))?}</div>
+        Deskripsi: {$value.MainDicomTags.AcquisitionDeviceProcessingDescription}<br>
         <button type="button" class="btn btn-xs btn-success simpansimrs" data-image_url="{$orthanc}/instances/{$value.Instances[0]}/rendered">Simpan ke SIMRS</button><br><br>
       </div>
       {/loop}
