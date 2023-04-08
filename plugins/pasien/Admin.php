@@ -555,15 +555,22 @@ class Admin extends AdminModule
             ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
             ->where('detail_periksa_lab.no_rawat', $value['no_rawat'])
             ->where('detail_periksa_lab.kd_jenis_prw', $value['kd_jenis_prw'])
+            ->where('tgl_periksa', $value['tgl_periksa'])
             ->toArray();
           $row['periksa_lab'][] = $value;
         }
 
-        $row['periksa_radiologi'] = $this->core->mysql('periksa_radiologi')
+        $row['periksa_radiologi'] = [];
+        $rows_radiologi = $this->core->mysql('periksa_radiologi')
           ->join('hasil_radiologi', 'hasil_radiologi.no_rawat=periksa_radiologi.no_rawat')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
           ->where('periksa_radiologi.no_rawat', $row['no_rawat'])
           ->toArray();
+
+        foreach ($rows_radiologi as $value) {
+          $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
+          $row['periksa_radiologi'][] = $value;
+        }
 
         $detail_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
           ->where('no_rawat', $row['no_rawat'])
@@ -592,7 +599,6 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
-        $row['gambar_radiologi'] = $this->core->mysql('gambar_radiologi')->where('no_rawat', $row['no_rawat'])->toArray();
         $row['catatan_perawatan'] = $this->core->mysql('catatan_perawatan')->where('no_rawat', $row['no_rawat'])->oneArray();
         $row['berkas_digital'] = $this->core->mysql('berkas_digital_perawatan')
           ->join('master_berkas_digital', 'master_berkas_digital.kode=berkas_digital_perawatan.kode')
