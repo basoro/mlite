@@ -152,8 +152,8 @@ class Site extends SiteModule
                 ->where('jam_selesai', substr($decode['jampraktek'], strpos($decode['jampraktek'], "-") + 1).':00')
                 ->oneArray();
 
-            $cek_referensi = $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
-            $cek_referensi_noka = $this->core->mysql('mlite__antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
+            $cek_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $decode['nomorreferensi'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
+            $cek_referensi_noka = $this->core->mysql('mlite_antrian_referensi')->where('nomor_kartu', $decode['nomorkartu'])->where('tanggal_periksa', $decode['tanggalperiksa'])->oneArray();
 
             if(!empty($cek_referensi['tanggal_periksa'])) {
                $errors[] = 'Anda sudah terdaftar dalam antrian menggunakan nomor rujukan yang sama ditanggal '.$decode['tanggalperiksa'];
@@ -274,7 +274,7 @@ class Site extends SiteModule
                             http_response_code(200);
 
                             if(!empty($decode['nomorreferensi'])) {
-                              $this->core->mysql('mlite__antrian_referensi')->save([
+                              $this->core->mysql('mlite_antrian_referensi')->save([
                                   'tanggal_periksa' => $decode['tanggalperiksa'],
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
@@ -508,7 +508,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -548,7 +548,7 @@ class Site extends SiteModule
                         $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
                         $resep = $this->core->mysql('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
 
-                        $mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')
+                        $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')
                         ->select([
                             'count' => 'COUNT(DISTINCT noantrian)',
                         ])
@@ -556,7 +556,7 @@ class Site extends SiteModule
                         ->where('postdate', $booking_registrasi['tanggal_periksa'])
                         ->toArray();
 
-                        $get_mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+                        $get_mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
 
                         if(!$resep){
                             $response = array(
@@ -639,7 +639,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -679,7 +679,7 @@ class Site extends SiteModule
                         $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tgl_registrasi', $booking_registrasi['tanggal_periksa'])->oneArray();
                         $resep = $this->core->mysql('resep_obat')->where('no_rawat', $reg_periksa['no_rawat'])->where('status', 'ralan')->oneArray();
 
-                        $mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')
+                        $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')
                         ->select([
                             'count' => 'COUNT(DISTINCT noantrian)',
                         ])
@@ -687,7 +687,7 @@ class Site extends SiteModule
                         ->where('postdate', $booking_registrasi['tanggal_periksa'])
                         ->toArray();
 
-                        $mlite_antrian_loket_sisaantrean = $this->core->mysql('mlite__antrian_loket')
+                        $mlite_antrian_loket_sisaantrean = $this->core->mysql('mlite_antrian_loket')
                         ->select([
                             'count' => 'COUNT(DISTINCT noantrian)',
                         ])
@@ -696,7 +696,7 @@ class Site extends SiteModule
                         ->where('end_time', '<>', '00:00:00')
                         ->toArray();
 
-                        $get_mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
+                        $get_mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('type', 'Apotek')->where('postdate', $booking_registrasi['tanggal_periksa'])->where('no_rkm_medis', $pasien['no_rkm_medis'])->oneArray();
 
                         if(!$resep){
                             $response = array(
@@ -794,7 +794,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -941,7 +941,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -985,13 +985,13 @@ class Site extends SiteModule
                                     'code' => 200
                                 )
                             );
-                            $this->core->mysql('mlite__antrian_referensi_batal')->save([
+                            $this->core->mysql('mlite_antrian_referensi_batal')->save([
                                 'tanggal_batal' => date('Y-m-d'),
                                 'nomor_referensi' => $referensi['nomor_referensi'],
                                 'kodebooking' => $decode['kodebooking'],
                                 'keterangan' => $decode['keterangan']
                             ]);
-                            $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->delete();
+                            $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->delete();
                             http_response_code(200);
                         }else{
                             $response = array(
@@ -1504,7 +1504,7 @@ class Site extends SiteModule
                 );
                 http_response_code(201);
             }else{
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $decode['kodebooking'])->oneArray();
                 $booking_registrasi = [];
                 $pasien = [];
                 if($referensi) {
@@ -2062,7 +2062,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
               $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
               $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
               $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
@@ -2079,9 +2079,9 @@ class Site extends SiteModule
                 $pasienbaru = '0';
               }
 
-              $referensi = $this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
+              $referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray();
               if($jenispasien == 'NON JKN') {
-                $referensi = $this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+                $referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
               }
 
               $nomorkartu = $q['no_peserta'];
@@ -2171,8 +2171,8 @@ class Site extends SiteModule
                 echo $data['metadata']['code'];
                 if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
                   if($jenispasien == 'JKN') {
-                    if(!$this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
-                      $this->core->mysql('mlite__antrian_referensi')->save([
+                    if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                      $this->core->mysql('mlite_antrian_referensi')->save([
                           'tanggal_periksa' => $q['tgl_registrasi'],
                           'nomor_kartu' => $q['no_peserta'],
                           'nomor_referensi' => $nomorreferensi,
@@ -2181,14 +2181,14 @@ class Site extends SiteModule
                           'status_kirim' => 'Sudah'
                       ]);
                     } else {
-                      $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
+                      $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
                           'status_kirim' => 'Sudah'
                       ]);
                     }
                   }
                   if($jenispasien == 'NON JKN') {
-                    if(!$this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
-                      $this->core->mysql('mlite__antrian_referensi')->save([
+                    if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+                      $this->core->mysql('mlite_antrian_referensi')->save([
                           'tanggal_periksa' => $q['tgl_registrasi'],
                           'nomor_kartu' => $q['no_rkm_medis'],
                           'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
@@ -2197,7 +2197,7 @@ class Site extends SiteModule
                           'status_kirim' => 'Sudah'
                       ]);
                     } else {
-                      $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'])->save([
+                      $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'])->save([
                           'status_kirim' => 'Sudah'
                       ]);
                     }
@@ -2241,7 +2241,7 @@ class Site extends SiteModule
     public function _getAntreanBatal()
     {
         $date = date('Y-m-d');
-        $query = $this->core->mysql('mlite__antrian_referensi_batal')
+        $query = $this->core->mysql('mlite_antrian_referensi_batal')
           ->where('tanggal_batal', $date)
           ->toArray();
 
@@ -2286,7 +2286,7 @@ class Site extends SiteModule
           $offset = ($page - 1) * $perpage;
         }
 
-        $query = $this->core->mysql('mlite__antrian_referensi')
+        $query = $this->core->mysql('mlite_antrian_referensi')
           ->where('tanggal_periksa', $date)
           ->where('status_kirim', 'Sudah')
           ->limit($perpage)
@@ -2297,14 +2297,14 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 1)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
@@ -2323,7 +2323,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2340,14 +2340,14 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 2)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
+                $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->where('postdate', $date)->oneArray();
                 if($mlite_antrian_loket){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
@@ -2366,7 +2366,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2383,7 +2383,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 3)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2409,7 +2409,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2426,7 +2426,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 4)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2452,7 +2452,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2469,7 +2469,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 5)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2495,7 +2495,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2512,7 +2512,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 6)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2539,7 +2539,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2556,7 +2556,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 7)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2582,7 +2582,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],
@@ -2599,7 +2599,7 @@ class Site extends SiteModule
         echo '-------------------------------------<br>';
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite__antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 99)->oneArray()) {
+            if(!$this->core->mysql('mlite_antrian_referensi_taskid')->where('tanggal_periksa', $date)->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', 99)->oneArray()) {
                 $pasien = $this->core->mysql('pasien')->where('no_peserta', $q['nomor_kartu'])->oneArray();
                 $q['no_rkm_medis'] = $q['nomor_kartu'];
                 if($pasien) {
@@ -2623,7 +2623,7 @@ class Site extends SiteModule
                     echo 'Response:<br>';
                     echo json_encode($json);
                     if($json['metadata']['code'] == 200){
-                      $this->core->mysql('mlite__antrian_referensi_taskid')
+                      $this->core->mysql('mlite_antrian_referensi_taskid')
                       ->save([
                         'tanggal_periksa' => $date,
                         'nomor_referensi' => $q['nomor_referensi'],

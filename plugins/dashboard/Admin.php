@@ -43,7 +43,7 @@ class Admin extends AdminModule
 
   private function _modulesList()
   {
-    $modules = array_column($this->db('mlite__modules')->asc('sequence')->toArray(), 'dir');
+    $modules = array_column($this->db('mlite_modules')->asc('sequence')->toArray(), 'dir');
     $result = [];
 
     if ($this->core->getUserInfo('access') != 'all') {
@@ -76,7 +76,7 @@ class Admin extends AdminModule
   public function postChangeOrderOfNavItem()
   {
     foreach ($_POST as $module => $order) {
-      $this->db('mlite__modules')->where('dir', $module)->save(['sequence' => $order]);
+      $this->db('mlite_modules')->where('dir', $module)->save(['sequence' => $order]);
     }
     exit();
   }

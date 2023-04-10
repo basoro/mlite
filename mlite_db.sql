@@ -1163,10 +1163,10 @@ INSERT INTO `metode_racik` (`kd_racik`, `nm_racik`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__akun_kegiatan`
+-- Table structure for table `mlite_akun_kegiatan`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__akun_kegiatan` (
+CREATE TABLE IF NOT EXISTS `mlite_akun_kegiatan` (
   `id` int(11) NOT NULL,
   `kegiatan` varchar(200) DEFAULT NULL,
   `kd_rek` varchar(20) DEFAULT NULL
@@ -1175,10 +1175,10 @@ CREATE TABLE IF NOT EXISTS `mlite__akun_kegiatan` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_loket`
+-- Table structure for table `mlite_antrian_loket`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_loket` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
   `kd` int(50) NOT NULL,
   `type` varchar(50) NOT NULL,
   `noantrian` varchar(50) NOT NULL,
@@ -1193,10 +1193,10 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_loket` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi`
+-- Table structure for table `mlite_antrian_referensi`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
   `tanggal_periksa` date NOT NULL,
   `nomor_kartu` varchar(50) NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
@@ -1208,10 +1208,10 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi_batal`
+-- Table structure for table `mlite_antrian_referensi_batal`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_batal` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
   `tanggal_batal` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
@@ -1221,10 +1221,10 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_batal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi_taskid`
+-- Table structure for table `mlite_antrian_referensi_taskid`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_taskid` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
   `tanggal_periksa` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `taskid` varchar(50) NOT NULL,
@@ -1234,10 +1234,10 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_taskid` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__apamregister`
+-- Table structure for table `mlite_apamregister`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__apamregister` (
+CREATE TABLE IF NOT EXISTS `mlite_apamregister` (
   `nama_lengkap` varchar(225) NOT NULL,
   `email` varchar(225) NOT NULL,
   `nomor_ktp` varchar(225) NOT NULL,
@@ -1247,10 +1247,10 @@ CREATE TABLE IF NOT EXISTS `mlite__apamregister` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__billing`
+-- Table structure for table `mlite_billing`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__billing` (
+CREATE TABLE IF NOT EXISTS `mlite_billing` (
   `id_billing` int(11) NOT NULL,
   `kd_billing` varchar(100) NOT NULL,
   `no_rawat` varchar(17) NOT NULL,
@@ -1267,10 +1267,10 @@ CREATE TABLE IF NOT EXISTS `mlite__billing` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__detailjurnal`
+-- Table structure for table `mlite_detailjurnal`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__detailjurnal` (
+CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
   `no_jurnal` varchar(20) DEFAULT NULL,
   `kd_rek` varchar(15) DEFAULT NULL,
   `debet` double DEFAULT NULL,
@@ -1280,10 +1280,10 @@ CREATE TABLE IF NOT EXISTS `mlite__detailjurnal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__duitku`
+-- Table structure for table `mlite_duitku`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__duitku` (
+CREATE TABLE IF NOT EXISTS `mlite_duitku` (
   `id` int(10) NOT NULL,
   `tanggal` datetime NOT NULL,
   `no_rkm_medis` varchar(15) NOT NULL,
@@ -1299,10 +1299,10 @@ CREATE TABLE IF NOT EXISTS `mlite__duitku` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__jurnal`
+-- Table structure for table `mlite_jurnal`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__jurnal` (
+CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
   `no_jurnal` varchar(20) NOT NULL,
   `no_bukti` varchar(20) DEFAULT NULL,
   `tgl_jurnal` date DEFAULT NULL,
@@ -1313,10 +1313,10 @@ CREATE TABLE IF NOT EXISTS `mlite__jurnal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__login_attempts`
+-- Table structure for table `mlite_login_attempts`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__login_attempts` (
+CREATE TABLE IF NOT EXISTS `mlite_login_attempts` (
   `ip` text,
   `attempts` int(100) NOT NULL,
   `expires` int(100) NOT NULL DEFAULT '0'
@@ -1325,20 +1325,20 @@ CREATE TABLE IF NOT EXISTS `mlite__login_attempts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__modules`
+-- Table structure for table `mlite_modules`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__modules` (
+CREATE TABLE IF NOT EXISTS `mlite_modules` (
   `id` int(11) NOT NULL,
   `dir` text,
   `sequence` text
 ) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__modules`
+-- Dumping data for table `mlite_modules`
 --
 
-INSERT INTO `mlite__modules` (`id`, `dir`, `sequence`) VALUES
+INSERT INTO `mlite_modules` (`id`, `dir`, `sequence`) VALUES
 (1, 'settings', '9'),
 (2, 'dashboard', '0'),
 (3, 'master', '1'),
@@ -1372,10 +1372,10 @@ INSERT INTO `mlite__modules` (`id`, `dir`, `sequence`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__notifications`
+-- Table structure for table `mlite_notifications`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__notifications` (
+CREATE TABLE IF NOT EXISTS `mlite_notifications` (
   `id` int(11) NOT NULL,
   `judul` varchar(250) NOT NULL,
   `pesan` text NOT NULL,
@@ -1387,10 +1387,10 @@ CREATE TABLE IF NOT EXISTS `mlite__notifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__odontogram`
+-- Table structure for table `mlite_odontogram`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__odontogram` (
+CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
   `id` int(11) NOT NULL,
   `no_rkm_medis` text NOT NULL,
   `pemeriksaan` text,
@@ -1403,10 +1403,10 @@ CREATE TABLE IF NOT EXISTS `mlite__odontogram` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__pengaduan`
+-- Table structure for table `mlite_pengaduan`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__pengaduan` (
+CREATE TABLE IF NOT EXISTS `mlite_pengaduan` (
   `id` varchar(15) NOT NULL,
   `tanggal` datetime NOT NULL,
   `no_rkm_medis` varchar(15) NOT NULL,
@@ -1416,10 +1416,10 @@ CREATE TABLE IF NOT EXISTS `mlite__pengaduan` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__pengaduan_detail`
+-- Table structure for table `mlite_pengaduan_detail`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__pengaduan_detail` (
+CREATE TABLE IF NOT EXISTS `mlite_pengaduan_detail` (
   `id` int(10) NOT NULL,
   `pengaduan_id` varchar(15) NOT NULL,
   `tanggal` datetime NOT NULL,
@@ -1430,10 +1430,10 @@ CREATE TABLE IF NOT EXISTS `mlite__pengaduan_detail` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__rekening`
+-- Table structure for table `mlite_rekening`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__rekening` (
+CREATE TABLE IF NOT EXISTS `mlite_rekening` (
   `kd_rek` varchar(15) NOT NULL DEFAULT '',
   `nm_rek` varchar(100) DEFAULT NULL,
   `tipe` enum('N','M','R') DEFAULT NULL,
@@ -1444,10 +1444,10 @@ CREATE TABLE IF NOT EXISTS `mlite__rekening` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__rekeningtahun`
+-- Table structure for table `mlite_rekeningtahun`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__rekeningtahun` (
+CREATE TABLE IF NOT EXISTS `mlite_rekeningtahun` (
   `thn` year(4) NOT NULL,
   `kd_rek` varchar(15) NOT NULL DEFAULT '',
   `saldo_awal` double NOT NULL
@@ -1456,10 +1456,10 @@ CREATE TABLE IF NOT EXISTS `mlite__rekeningtahun` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__remember_me`
+-- Table structure for table `mlite_remember_me`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__remember_me` (
+CREATE TABLE IF NOT EXISTS `mlite_remember_me` (
   `id` int(11) NOT NULL,
   `token` text,
   `user_id` int(10) NOT NULL,
@@ -1469,10 +1469,10 @@ CREATE TABLE IF NOT EXISTS `mlite__remember_me` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__settings`
+-- Table structure for table `mlite_settings`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__settings` (
+CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `id` int(11) NOT NULL,
   `module` text,
   `field` text,
@@ -1480,10 +1480,10 @@ CREATE TABLE IF NOT EXISTS `mlite__settings` (
 ) ENGINE=MyISAM AUTO_INCREMENT=114 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__settings`
+-- Dumping data for table `mlite_settings`
 --
 
-INSERT INTO `mlite__settings` (`id`, `module`, `field`, `value`) VALUES
+INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (1, 'settings', 'logo', 'uploads/settings/logo.png'),
 (2, 'settings', 'nama_instansi', 'mLITE Indonesia'),
 (3, 'settings', 'alamat', 'Jl. Perintis Kemerdekaan 45'),
@@ -1601,10 +1601,10 @@ INSERT INTO `mlite__settings` (`id`, `module`, `field`, `value`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__subrekening`
+-- Table structure for table `mlite_subrekening`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__subrekening` (
+CREATE TABLE IF NOT EXISTS `mlite_subrekening` (
   `kd_rek` varchar(15) NOT NULL,
   `kd_rek2` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1612,10 +1612,10 @@ CREATE TABLE IF NOT EXISTS `mlite__subrekening` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__temporary`
+-- Table structure for table `mlite_temporary`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__temporary` (
+CREATE TABLE IF NOT EXISTS `mlite_temporary` (
   `temp1` text,
   `temp2` text,
   `temp3` text,
@@ -1721,10 +1721,10 @@ CREATE TABLE IF NOT EXISTS `mlite__temporary` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__users`
+-- Table structure for table `mlite_users`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__users` (
+CREATE TABLE IF NOT EXISTS `mlite_users` (
   `id` int(11) NOT NULL,
   `username` text,
   `fullname` text,
@@ -1738,10 +1738,10 @@ CREATE TABLE IF NOT EXISTS `mlite__users` (
 ) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__users`
+-- Dumping data for table `mlite_users`
 --
 
-INSERT INTO `mlite__users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
+INSERT INTO `mlite_users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
 (1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar6422cb573b50c.png', 'info@mlite.id', 'admin', '', 'all');
 
 -- --------------------------------------------------------
@@ -3432,50 +3432,50 @@ ALTER TABLE `metode_racik`
   ADD PRIMARY KEY (`kd_racik`) USING BTREE;
 
 --
--- Indexes for table `mlite__akun_kegiatan`
+-- Indexes for table `mlite_akun_kegiatan`
 --
-ALTER TABLE `mlite__akun_kegiatan`
+ALTER TABLE `mlite_akun_kegiatan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__antrian_loket`
+-- Indexes for table `mlite_antrian_loket`
 --
-ALTER TABLE `mlite__antrian_loket`
+ALTER TABLE `mlite_antrian_loket`
   ADD PRIMARY KEY (`kd`);
 
 --
--- Indexes for table `mlite__antrian_referensi`
+-- Indexes for table `mlite_antrian_referensi`
 --
-ALTER TABLE `mlite__antrian_referensi`
+ALTER TABLE `mlite_antrian_referensi`
   ADD PRIMARY KEY (`nomor_referensi`);
 
 --
--- Indexes for table `mlite__billing`
+-- Indexes for table `mlite_billing`
 --
-ALTER TABLE `mlite__billing`
+ALTER TABLE `mlite_billing`
   ADD PRIMARY KEY (`id_billing`);
 
 --
--- Indexes for table `mlite__detailjurnal`
+-- Indexes for table `mlite_detailjurnal`
 --
-ALTER TABLE `mlite__detailjurnal`
+ALTER TABLE `mlite_detailjurnal`
   ADD KEY `no_jurnal` (`no_jurnal`),
   ADD KEY `kd_rek` (`kd_rek`),
   ADD KEY `debet` (`debet`),
   ADD KEY `kredit` (`kredit`);
 
 --
--- Indexes for table `mlite__duitku`
+-- Indexes for table `mlite_duitku`
 --
-ALTER TABLE `mlite__duitku`
+ALTER TABLE `mlite_duitku`
   ADD PRIMARY KEY (`id`),
   ADD KEY `reference` (`reference`),
-  ADD KEY `mlite__duitku_ibfk_1` (`no_rkm_medis`);
+  ADD KEY `mlite_duitku_ibfk_1` (`no_rkm_medis`);
 
 --
--- Indexes for table `mlite__jurnal`
+-- Indexes for table `mlite_jurnal`
 --
-ALTER TABLE `mlite__jurnal`
+ALTER TABLE `mlite_jurnal`
   ADD PRIMARY KEY (`no_jurnal`),
   ADD KEY `no_bukti` (`no_bukti`),
   ADD KEY `tgl_jurnal` (`tgl_jurnal`),
@@ -3483,78 +3483,78 @@ ALTER TABLE `mlite__jurnal`
   ADD KEY `keterangan` (`keterangan`);
 
 --
--- Indexes for table `mlite__modules`
+-- Indexes for table `mlite_modules`
 --
-ALTER TABLE `mlite__modules`
+ALTER TABLE `mlite_modules`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__notifications`
+-- Indexes for table `mlite_notifications`
 --
-ALTER TABLE `mlite__notifications`
+ALTER TABLE `mlite_notifications`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__odontogram`
+-- Indexes for table `mlite_odontogram`
 --
-ALTER TABLE `mlite__odontogram`
+ALTER TABLE `mlite_odontogram`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__pengaduan`
+-- Indexes for table `mlite_pengaduan`
 --
-ALTER TABLE `mlite__pengaduan`
+ALTER TABLE `mlite_pengaduan`
   ADD PRIMARY KEY (`id`),
   ADD KEY `no_rkm_medis` (`no_rkm_medis`);
 
 --
--- Indexes for table `mlite__pengaduan_detail`
+-- Indexes for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__pengaduan_detail`
+ALTER TABLE `mlite_pengaduan_detail`
   ADD PRIMARY KEY (`id`) USING BTREE,
   ADD KEY `pengaduan_detail_ibfk_1` (`pengaduan_id`);
 
 --
--- Indexes for table `mlite__rekening`
+-- Indexes for table `mlite_rekening`
 --
-ALTER TABLE `mlite__rekening`
+ALTER TABLE `mlite_rekening`
   ADD PRIMARY KEY (`kd_rek`),
   ADD KEY `nm_rek` (`nm_rek`),
   ADD KEY `tipe` (`tipe`),
   ADD KEY `balance` (`balance`);
 
 --
--- Indexes for table `mlite__rekeningtahun`
+-- Indexes for table `mlite_rekeningtahun`
 --
-ALTER TABLE `mlite__rekeningtahun`
+ALTER TABLE `mlite_rekeningtahun`
   ADD PRIMARY KEY (`thn`,`kd_rek`),
   ADD KEY `kd_rek` (`kd_rek`),
   ADD KEY `saldo_awal` (`saldo_awal`);
 
 --
--- Indexes for table `mlite__remember_me`
+-- Indexes for table `mlite_remember_me`
 --
-ALTER TABLE `mlite__remember_me`
+ALTER TABLE `mlite_remember_me`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `mlite__remember_me_ibfk_1` (`user_id`);
+  ADD KEY `mlite_remember_me_ibfk_1` (`user_id`);
 
 --
--- Indexes for table `mlite__settings`
+-- Indexes for table `mlite_settings`
 --
-ALTER TABLE `mlite__settings`
+ALTER TABLE `mlite_settings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__subrekening`
+-- Indexes for table `mlite_subrekening`
 --
-ALTER TABLE `mlite__subrekening`
+ALTER TABLE `mlite_subrekening`
   ADD PRIMARY KEY (`kd_rek2`),
   ADD KEY `kd_rek` (`kd_rek`);
 
 --
--- Indexes for table `mlite__users`
+-- Indexes for table `mlite_users`
 --
-ALTER TABLE `mlite__users`
+ALTER TABLE `mlite_users`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4070,59 +4070,59 @@ ALTER TABLE `kabupaten`
 ALTER TABLE `kecamatan`
   MODIFY `kd_kec` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `mlite__akun_kegiatan`
+-- AUTO_INCREMENT for table `mlite_akun_kegiatan`
 --
-ALTER TABLE `mlite__akun_kegiatan`
+ALTER TABLE `mlite_akun_kegiatan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__antrian_loket`
+-- AUTO_INCREMENT for table `mlite_antrian_loket`
 --
-ALTER TABLE `mlite__antrian_loket`
+ALTER TABLE `mlite_antrian_loket`
   MODIFY `kd` int(50) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__billing`
+-- AUTO_INCREMENT for table `mlite_billing`
 --
-ALTER TABLE `mlite__billing`
+ALTER TABLE `mlite_billing`
   MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__duitku`
+-- AUTO_INCREMENT for table `mlite_duitku`
 --
-ALTER TABLE `mlite__duitku`
+ALTER TABLE `mlite_duitku`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__modules`
+-- AUTO_INCREMENT for table `mlite_modules`
 --
-ALTER TABLE `mlite__modules`
+ALTER TABLE `mlite_modules`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=30;
 --
--- AUTO_INCREMENT for table `mlite__notifications`
+-- AUTO_INCREMENT for table `mlite_notifications`
 --
-ALTER TABLE `mlite__notifications`
+ALTER TABLE `mlite_notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__odontogram`
+-- AUTO_INCREMENT for table `mlite_odontogram`
 --
-ALTER TABLE `mlite__odontogram`
+ALTER TABLE `mlite_odontogram`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__pengaduan_detail`
+-- AUTO_INCREMENT for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__pengaduan_detail`
+ALTER TABLE `mlite_pengaduan_detail`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__remember_me`
+-- AUTO_INCREMENT for table `mlite_remember_me`
 --
-ALTER TABLE `mlite__remember_me`
+ALTER TABLE `mlite_remember_me`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__settings`
+-- AUTO_INCREMENT for table `mlite_settings`
 --
-ALTER TABLE `mlite__settings`
+ALTER TABLE `mlite_settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=114;
 --
--- AUTO_INCREMENT for table `mlite__users`
+-- AUTO_INCREMENT for table `mlite_users`
 --
-ALTER TABLE `mlite__users`
+ALTER TABLE `mlite_users`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `pegawai`
@@ -4378,42 +4378,42 @@ ALTER TABLE `maping_poli_bpjs`
   ADD CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__detailjurnal`
+-- Constraints for table `mlite_detailjurnal`
 --
-ALTER TABLE `mlite__detailjurnal`
-  ADD CONSTRAINT `mlite__detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite__jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `mlite__detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_detailjurnal`
+  ADD CONSTRAINT `mlite_detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite_jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__duitku`
+-- Constraints for table `mlite_duitku`
 --
-ALTER TABLE `mlite__duitku`
-  ADD CONSTRAINT `mlite__duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_duitku`
+  ADD CONSTRAINT `mlite_duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__pengaduan`
+-- Constraints for table `mlite_pengaduan`
 --
-ALTER TABLE `mlite__pengaduan`
-  ADD CONSTRAINT `mlite__pengaduan_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_pengaduan`
+  ADD CONSTRAINT `mlite_pengaduan_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__pengaduan_detail`
+-- Constraints for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__pengaduan_detail`
-  ADD CONSTRAINT `mlite__pengaduan_detail_ibfk_1` FOREIGN KEY (`pengaduan_id`) REFERENCES `mlite__pengaduan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_pengaduan_detail`
+  ADD CONSTRAINT `mlite_pengaduan_detail_ibfk_1` FOREIGN KEY (`pengaduan_id`) REFERENCES `mlite_pengaduan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__rekeningtahun`
+-- Constraints for table `mlite_rekeningtahun`
 --
-ALTER TABLE `mlite__rekeningtahun`
-  ADD CONSTRAINT `mlite__rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON UPDATE CASCADE;
+ALTER TABLE `mlite_rekeningtahun`
+  ADD CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__subrekening`
+-- Constraints for table `mlite_subrekening`
 --
-ALTER TABLE `mlite__subrekening`
-  ADD CONSTRAINT `mlite__subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `mlite__subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite__rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_subrekening`
+  ADD CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `mutasi_berkas`

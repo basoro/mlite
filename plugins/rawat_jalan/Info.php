@@ -1189,7 +1189,7 @@ return [
         ADD KEY `perawat_luar` (`perawat_luar`),
         ADD KEY `kode_paket` (`kode_paket`);");
 
-      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite__odontogram` (
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
         `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
         `no_rkm_medis` TEXT NOT NULL,
         `pemeriksaan` TEXT DEFAULT NULL,

@@ -10,7 +10,7 @@ class Site extends SiteModule
     {
         $slug = parseURL();
         if (count($slug) == 3 && $slug[0] == 'news' && $slug[1] == 'post') {
-            $row = $this->db('mlite__news')->where('status', '>=', 1)->where('published_at', '<=', time())->where('slug', $slug[2])->oneArray();
+            $row = $this->db('mlite_news')->where('status', '>=', 1)->where('published_at', '<=', time())->where('slug', $slug[2])->oneArray();
         }
 
         $this->tpl->set('latestPosts', function () {
@@ -90,13 +90,13 @@ class Site extends SiteModule
     public function _getLatestPosts()
     {
         $limit = $this->settings('website.latestPostsCount');
-        $rows = $this->db('mlite__news')
-                ->leftJoin('mlite__users', 'mlite__users.id = mlite__news.user_id')
+        $rows = $this->db('mlite_news')
+                ->leftJoin('mlite_users', 'mlite_users.id = mlite_news.user_id')
                 ->where('status', 2)
                 ->where('published_at', '<=', time())
                 ->desc('published_at')
                 ->limit($limit)
-                ->select(['mlite__news.id', 'mlite__news.title', 'mlite__news.slug', 'mlite__news.intro', 'mlite__news.content', 'mlite__users.username', 'mlite__users.fullname'])
+                ->select(['mlite_news.id', 'mlite_news.title', 'mlite_news.slug', 'mlite_news.intro', 'mlite_news.content', 'mlite_users.username', 'mlite_users.fullname'])
                 ->toArray();
 
         foreach ($rows as &$row) {
@@ -108,13 +108,13 @@ class Site extends SiteModule
 
     public function _getAllTags()
     {
-        $rows = $this->db('mlite__news_tags')
-                ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
-                ->leftJoin('mlite__news', 'mlite__news.id = mlite__news_tags_relationship.news_id')
-                ->where('mlite__news.status', 2)
-                ->where('mlite__news.published_at', '<=', time())
-                ->select(['mlite__news_tags.name', 'mlite__news_tags.slug', 'count' => 'COUNT(mlite__news_tags.name)'])
-                ->group('mlite__news_tags.name')
+        $rows = $this->db('mlite_news_tags')
+                ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                ->leftJoin('mlite_news', 'mlite_news.id = mlite_news_tags_relationship.news_id')
+                ->where('mlite_news.status', 2)
+                ->where('mlite_news.published_at', '<=', time())
+                ->select(['mlite_news_tags.name', 'mlite_news_tags.slug', 'count' => 'COUNT(mlite_news_tags.name)'])
+                ->group('mlite_news_tags.name')
                 ->toArray();
 
         return $rows;
@@ -128,14 +128,14 @@ class Site extends SiteModule
         $assign = [];
         if (!empty($slug)) {
             if ($this->core->loginCheck()) {
-                $row = $this->db('mlite__news')->where('slug', $slug)->oneArray();
+                $row = $this->db('mlite_news')->where('slug', $slug)->oneArray();
             } else {
-                $row = $this->db('mlite__news')->where('status', '>=', 1)->where('published_at', '<=', time())->where('slug', $slug)->oneArray();
+                $row = $this->db('mlite_news')->where('status', '>=', 1)->where('published_at', '<=', time())->where('slug', $slug)->oneArray();
             }
 
             if (!empty($row)) {
                 // get dependences
-                $row['author'] = $this->db('mlite__users')->where('id', $row['user_id'])->oneArray();
+                $row['author'] = $this->db('mlite_users')->where('id', $row['user_id'])->oneArray();
                 $row['author']['name'] = !empty($row['author']['fullname']) ? $row['author']['fullname'] : $row['author']['username'];
                 $row['author']['avatar'] = url(UPLOADS.'/users/'.$row['author']['avatar']);
                 $row['cover_url'] = url(UPLOADS.'/website/news/'.$row['cover_photo']).'?'.$row['published_at'];
@@ -144,9 +144,9 @@ class Site extends SiteModule
                 $row['disqus_identifier'] = md5($row['id'].$row['url']);
 
                 // tags
-                $row['tags'] = $this->db('mlite__news_tags')
-                                    ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
-                                    ->where('mlite__news_tags_relationship.news_id', $row['id'])
+                $row['tags'] = $this->db('mlite_news_tags')
+                                    ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                                    ->where('mlite_news_tags_relationship.news_id', $row['id'])
                                     ->toArray();
                 if ($row['tags']) {
                     array_walk($row['tags'], function (&$tag) {
@@ -211,7 +211,7 @@ class Site extends SiteModule
     {
         $page = max($page, 1);
         $perpage = $this->settings('website.perpage');
-        $rows = $this->db('mlite__news')
+        $rows = $this->db('mlite_news')
                             ->where('status', 2)
                             ->where('published_at', '<=', time())
                             ->limit($perpage)->offset(($page-1)*$perpage)
@@ -225,14 +225,14 @@ class Site extends SiteModule
         ];
         foreach ($rows as $row) {
             // get dependences
-            $row['author'] = $this->db('mlite__users')->where('id', $row['user_id'])->oneArray();
+            $row['author'] = $this->db('mlite_users')->where('id', $row['user_id'])->oneArray();
             $row['author']['name'] = !empty($row['author']['fullname']) ? $row['author']['fullname'] : $row['author']['username'];
             $row['cover_url'] = url(UPLOADS.'/website/news/'.$row['cover_photo']).'?'.$row['published_at'];
 
             // tags
-            $row['tags'] = $this->db('mlite__news_tags')
-                                ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
-                                ->where('mlite__news_tags_relationship.news_id', $row['id'])
+            $row['tags'] = $this->db('mlite_news_tags')
+                                ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                                ->where('mlite_news_tags_relationship.news_id', $row['id'])
                                 ->toArray();
 
             if ($row['tags']) {
@@ -266,7 +266,7 @@ class Site extends SiteModule
             $assign['posts'][$row['id']] = $row;
         }
 
-        $count = $this->db('mlite__news')->where('status', 2)->where('published_at', '<=', time())->count();
+        $count = $this->db('mlite_news')->where('status', 2)->where('published_at', '<=', time())->count();
 
         if ($page > 1) {
             $prev['url'] = url('news/'.($page-1));
@@ -294,13 +294,13 @@ class Site extends SiteModule
         $page = max($page, 1);
         $perpage = $this->settings('website.perpage');
 
-        if (!($tag = $this->db('mlite__news_tags')->oneArray('slug', $slug))) {
+        if (!($tag = $this->db('mlite_news_tags')->oneArray('slug', $slug))) {
             return $this->core->module->pages->get404();
         }
 
-        $rows = $this->db('mlite__news')
-                        ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags_relationship.news_id = mlite__news.id')
-                        ->where('mlite__news_tags_relationship.tag_id', $tag['id'])
+        $rows = $this->db('mlite_news')
+                        ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags_relationship.news_id = mlite_news.id')
+                        ->where('mlite_news_tags_relationship.tag_id', $tag['id'])
                         ->where('status', 2)->where('published_at', '<=', time())
                         ->limit($perpage)
                         ->offset(($page-1)*$perpage)
@@ -314,15 +314,15 @@ class Site extends SiteModule
         ];
         foreach ($rows as $row) {
             // get dependences
-            $row['author'] = $this->db('mlite__users')->where('id', $row['user_id'])->oneArray();
+            $row['author'] = $this->db('mlite_users')->where('id', $row['user_id'])->oneArray();
             $row['author']['name'] = !empty($row['author']['fullname']) ? $row['author']['fullname'] : $row['author']['username'];
 
             $row['cover_url'] = url(UPLOADS.'/website/news/'.$row['cover_photo']).'?'.$row['published_at'];
 
             // tags
-            $row['tags'] = $this->db('mlite__news_tags')
-                                ->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags.id = mlite__news_tags_relationship.tag_id')
-                                ->where('mlite__news_tags_relationship.news_id', $row['id'])
+            $row['tags'] = $this->db('mlite_news_tags')
+                                ->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags.id = mlite_news_tags_relationship.tag_id')
+                                ->where('mlite_news_tags_relationship.news_id', $row['id'])
                                 ->toArray();
 
             if ($row['tags']) {
@@ -356,7 +356,7 @@ class Site extends SiteModule
             $assign['posts'][$row['id']] = $row;
         }
 
-        $count = $this->db('mlite__news')->leftJoin('mlite__news_tags_relationship', 'mlite__news_tags_relationship.news_id = mlite__news.id')->where('status', 2)->where('published_at', '<=', time())->where('mlite__news_tags_relationship.tag_id', $tag['id'])->count();
+        $count = $this->db('mlite_news')->leftJoin('mlite_news_tags_relationship', 'mlite_news_tags_relationship.news_id = mlite_news.id')->where('status', 2)->where('published_at', '<=', time())->where('mlite_news_tags_relationship.tag_id', $tag['id'])->count();
 
         if ($page > 1) {
             $prev['url'] = url('news/tag/'.$slug.'/'.($page-1));
@@ -380,7 +380,7 @@ class Site extends SiteModule
         header('Content-type: application/xml');
         $this->setTemplate(false);
 
-        $rows = $this->db('mlite__news')
+        $rows = $this->db('mlite_news')
                     ->where('status', 2)
                     ->where('published_at', '<=', time())
                     ->limit(5)

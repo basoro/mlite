@@ -42,7 +42,7 @@ class Admin extends AdminModule
       if(isset($_POST['periode_rawat_akhir'])) {
         $tgl_masuk_akhir = $_POST['periode_rawat_akhir'];
       }
-      $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+      $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
       $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
       $this->_Display($tgl_masuk, $tgl_masuk_akhir);
       return $this->draw('pasienoperasi.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
@@ -59,7 +59,7 @@ class Admin extends AdminModule
         if(isset($_POST['periode_rawat_akhir'])) {
           $tgl_masuk_akhir = $_POST['periode_rawat_akhir'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir);
         echo $this->draw('display.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);

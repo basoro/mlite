@@ -44,7 +44,7 @@ class Admin extends AdminModule
           $pasien[] = $row;
         }
 
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
 
         return $this->draw('manage.html', [
           'pasien' => $pasien,
@@ -170,7 +170,7 @@ class Admin extends AdminModule
           $pasien[] = $row;
         }
 
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
 
         echo $this->draw('display.html', [
           'pasien' => $pasien,
@@ -187,7 +187,7 @@ class Admin extends AdminModule
 
     public function anyForm()
     {
-      $cek_pcare = $this->db('mlite__modules')->where('dir', 'pcare')->oneArray();
+      $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
       $usernamePcare = '';
       if($cek_pcare) {
         $usernamePcare = $this->settings('pcare', 'usernamePcare');
@@ -919,9 +919,9 @@ class Admin extends AdminModule
 
     public function postCetak()
     {
-      $this->core->mysql()->pdo()->exec("DELETE FROM `mlite__temporary`");
+      $this->core->mysql()->pdo()->exec("DELETE FROM `mlite_temporary`");
       $cari = $_POST['cari'];
-      $this->core->mysql()->pdo()->exec("INSERT INTO `mlite__temporary` (
+      $this->core->mysql()->pdo()->exec("INSERT INTO `mlite_temporary` (
         `temp1`,
         `temp2`,
         `temp3`,
@@ -968,7 +968,7 @@ class Admin extends AdminModule
 
     public function getCetakPdf()
     {
-      $tmp = $this->core->mysql('mlite__temporary')->toArray();
+      $tmp = $this->core->mysql('mlite_temporary')->toArray();
       $logo = $this->settings->get('settings.logo');
 
       $pdf = new PDF_MC_Table('L','mm','Legal');

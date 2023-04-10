@@ -39,7 +39,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_bayar'])) {
           $status_bayar = $_POST['status_bayar'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
         return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
     }
@@ -62,7 +62,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_pulang, $status_bayar, $type);
         echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'type' => $type]);
         exit();
@@ -961,7 +961,7 @@ class Admin extends AdminModule
     public function getHasilPdf()
     {
 
-      $tmp = $this->core->mysql('mlite__temporary')->toArray();
+      $tmp = $this->core->mysql('mlite_temporary')->toArray();
       $settings = $this->settings('settings');
       $logo = $this->settings->get('settings.logo');
       $pj_lab = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_laboratorium'))->oneArray();

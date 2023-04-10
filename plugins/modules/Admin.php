@@ -96,7 +96,7 @@ class Admin extends AdminModule
             $info = include($files['info']);
             if (!$this->checkCompatibility(isset_or($info['compatibility']))) {
                 $this->notify('failure', 'Tidak dapat memasang modul %s karena sudah lawas. Silahkan update modul dan coba lagi.', $dir);
-            } elseif ($this->db('mlite__modules')->save(['dir' => $dir, 'sequence' => $this->db('mlite__modules')->count()])) {
+            } elseif ($this->db('mlite_modules')->save(['dir' => $dir, 'sequence' => $this->db('mlite_modules')->count()])) {
                 if (isset($info['install'])) {
                     $info['install']();
                 }
@@ -119,7 +119,7 @@ class Admin extends AdminModule
             redirect(url([ADMIN, 'modules', 'manage', 'active']));
         }
 
-        if ($this->db('mlite__modules')->delete('dir', $dir)) {
+        if ($this->db('mlite_modules')->delete('dir', $dir)) {
             $core = $this->core;
             $info = include(MODULES.'/'.$dir.'/Info.php');
 
@@ -177,7 +177,7 @@ class Admin extends AdminModule
 
     private function _modulesList($type)
     {
-        $dbModules = array_column($this->db('mlite__modules')->toArray(), 'dir');
+        $dbModules = array_column($this->db('mlite_modules')->toArray(), 'dir');
         $result = [];
 
         foreach (glob(MODULES.'/*', GLOB_ONLYDIR) as $dir) {

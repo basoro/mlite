@@ -39,8 +39,8 @@ class Admin extends AdminModule
   public function anyIndex($page = 1)
   {
     if (isset($_POST['submit'])) {
-      if (!$this->core->mysql('mlite__veronisa')->where('nosep', $_POST['nosep'])->oneArray()) {
-        $simpan_status = $this->core->mysql('mlite__veronisa')->save([
+      if (!$this->core->mysql('mlite_veronisa')->where('nosep', $_POST['nosep'])->oneArray()) {
+        $simpan_status = $this->core->mysql('mlite_veronisa')->save([
           'id' => NULL,
           'tanggal' => date('Y-m-d'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
@@ -50,7 +50,7 @@ class Admin extends AdminModule
           'username' => $this->core->getUserInfo('username', null, true)
         ]);
       } else {
-        $simpan_status = $this->core->mysql('mlite__veronisa')
+        $simpan_status = $this->core->mysql('mlite_veronisa')
           ->where('nosep', $_POST['nosep'])
           ->save([
             'tanggal' => date('Y-m-d'),
@@ -58,7 +58,7 @@ class Admin extends AdminModule
           ]);
       }
       if ($simpan_status) {
-        $this->core->mysql('mlite__veronisa_feedback')->save([
+        $this->core->mysql('mlite_veronisa_feedback')->save([
           'id' => NULL,
           'nosep' => $_POST['nosep'],
           'tanggal' => date('Y-m-d'),
@@ -160,7 +160,7 @@ class Admin extends AdminModule
       $phrase = $_GET['s'];
 
     // pagination
-    $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite__veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite__veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
+    $totalRecords = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, pasien, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan'");
     $totalRecords->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
     $totalRecords = $totalRecords->fetchAll();
 
@@ -169,7 +169,7 @@ class Admin extends AdminModule
     $this->assign['totalRecords'] = $totalRecords;
 
     $offset = $pagination->offset();
-    $query = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite__veronisa.no_rawat, mlite__veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite__veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite__veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
+    $query = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.*, pasien.*, dokter.nm_dokter, poliklinik.nm_poli, mlite_veronisa.no_rawat, mlite_veronisa.nosep FROM reg_periksa, pasien, dokter, poliklinik, mlite_veronisa WHERE reg_periksa.no_rkm_medis = pasien.no_rkm_medis AND reg_periksa.kd_dokter = dokter.kd_dokter AND reg_periksa.kd_poli = poliklinik.kd_poli AND reg_periksa.no_rawat = mlite_veronisa.no_rawat AND (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ?) AND reg_periksa.tgl_registrasi BETWEEN '$start_date' AND '$end_date' AND reg_periksa.status_lanjut = 'Ralan' LIMIT $perpage OFFSET $offset");
     $query->execute(['%' . $phrase . '%', '%' . $phrase . '%', '%' . $phrase . '%']);
     $rows = $query->fetchAll();
 
@@ -188,7 +188,7 @@ class Admin extends AdminModule
         $row['berkas_digital'] = $berkas_digital;
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
-        $row['status_pengajuan'] = $this->core->mysql('mlite__veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
+        $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
         $row['berkasPasien'] = url([ADMIN, 'veronisa', 'berkaspasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat'])]);
         $row['berkasPerawatan'] = url([ADMIN, 'veronisa', 'berkasperawatan', $this->convertNorawat($row['no_rawat'])]);
         $this->assign['list'][] = $row;
@@ -388,7 +388,7 @@ class Admin extends AdminModule
 
   public function getBatal($id)
   {
-    $delete = $this->core->mysql('mlite__veronisa')->where('no_rawat', $this->revertNorawat($id))->delete();
+    $delete = $this->core->mysql('mlite_veronisa')->where('no_rawat', $this->revertNorawat($id))->delete();
     redirect(url([ADMIN, 'veronisa', 'index']));
   }
 
@@ -409,7 +409,7 @@ class Admin extends AdminModule
     $billing_mlite_reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
     $billing_mlite_pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $billing_mlite_reg_periksa['no_rkm_medis'])->oneArray();
 
-    $billing_result = $this->core->mysql('mlite__billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
+    $billing_result = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->like('kd_billing', 'RJ%')->desc('id_billing')->oneArray();
 
     $result_detail['poliklinik'] = $this->core->mysql('poliklinik')
       ->join('reg_periksa', 'reg_periksa.kd_poli = poliklinik.kd_poli')
@@ -762,7 +762,7 @@ class Admin extends AdminModule
   public function getSetStatus($id)
   {
     $set_status = $this->core->mysql('bridging_sep')->where('no_sep', $id)->oneArray();
-    $veronisa = $this->core->mysql('mlite__veronisa')->join('mlite__veronisa_feedback','mlite__veronisa_feedback.nosep=mlite__veronisa.nosep')->where('status','<>','')->where('mlite__veronisa.nosep', $id)->asc('mlite__veronisa.id')->toArray();
+    $veronisa = $this->core->mysql('mlite_veronisa')->join('mlite_veronisa_feedback','mlite_veronisa_feedback.nosep=mlite_veronisa.nosep')->where('status','<>','')->where('mlite_veronisa.nosep', $id)->asc('mlite_veronisa.id')->toArray();
     $this->tpl->set('logo', $this->settings->get('settings.logo'));
     $this->tpl->set('nama_instansi', $this->settings->get('settings.nama_instansi'));
     $this->tpl->set('set_status', $set_status);

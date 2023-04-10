@@ -30,7 +30,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
         return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
@@ -51,7 +51,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
         echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
@@ -776,7 +776,7 @@ class Admin extends AdminModule
       }
 
       $result_ranap = [];
-      if($this->db('mlite__settings')->where('module', 'rawat_inap')->oneArray()) {
+      if($this->db('mlite_settings')->where('module', 'rawat_inap')->oneArray()) {
         $rows_ranap = $this->core->mysql('pemeriksaan_ranap')
          ->where('no_rawat', $_POST['no_rawat'])
          ->toArray();

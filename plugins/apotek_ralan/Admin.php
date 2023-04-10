@@ -28,7 +28,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
         return $this->draw('manage.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
     }
@@ -48,7 +48,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_periksa'])) {
           $status_periksa = $_POST['status_periksa'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa);
         echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
         exit();
@@ -160,7 +160,10 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
-      $get_resep_dokter = $this->core->mysql('resep_dokter')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter_nonracikan = $this->core->mysql('resep_dokter')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
+
       foreach ($get_resep_dokter as $item) {
 
         $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -217,6 +220,8 @@ class Admin extends AdminModule
             'aturan' => $item['aturan_pakai']
           ]);
       }
+
+      //if()
 
       $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
 

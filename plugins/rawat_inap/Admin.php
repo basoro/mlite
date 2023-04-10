@@ -31,7 +31,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_pulang'])) {
           $status_pulang = $_POST['status_pulang'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
         return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
@@ -53,7 +53,7 @@ class Admin extends AdminModule
         if(isset($_POST['status_pulang'])) {
           $status_pulang = $_POST['status_pulang'];
         }
-        $cek_vclaim = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
+        $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
         echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
         exit();
@@ -118,7 +118,7 @@ class Admin extends AdminModule
         $this->assign['list'] = [];
         foreach ($rows as $row) {
           $row['status_billing'] = 'Sudah Bayar';
-          $get_billing = $this->core->mysql('mlite__billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
+          $get_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
           if(empty($get_billing['kd_billing'])) {
             $row['kd_billing'] = 'RI.'.date('d.m.Y.H.i.s');
             $row['tgl_billing'] = date('Y-m-d H:i');

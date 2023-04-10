@@ -26,11 +26,11 @@ class Site extends SiteModule
         $assign['logo']         = $this->settings->get('settings.logo');
         $assign['wallpaper']         = $this->settings->get('settings.wallpaper');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
-        $assign['module_pasien'] = $this->db('mlite__modules')->where('dir', 'pasien')->oneArray();
-        $assign['module_rawat_jalan'] = $this->db('mlite__modules')->where('dir', 'rawat_jalan')->oneArray();
-        $assign['module_igd'] = $this->db('mlite__modules')->where('dir', 'igd')->oneArray();
-        $assign['module_rawat_inap'] = $this->db('mlite__modules')->where('dir', 'rawat_inap')->oneArray();
-        $assign['cek_anjungan'] = $this->db('mlite__modules')->where('dir', 'anjungan')->oneArray();
+        $assign['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
+        $assign['module_rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
+        $assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
+        $assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
+        $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
         $assign['poliklinik'] = '';
         if($assign['cek_anjungan']) {
           $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));

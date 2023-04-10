@@ -273,9 +273,9 @@ class Admin extends AdminModule
           if($reg_periksa2) {
             $batal = $q['tgl_registrasi'].' '.date('H:i:s');
           }
-          $mlite_antrian_referensi = $this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
+          $mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray();
           if(!$mlite_antrian_referensi) {
-              $mlite_antrian_referensi = $this->core->mysql('mlite__antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
+              $mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray();
           }
           $mutasi_berkas = $this->core->mysql('mutasi_berkas')->select('dikirim')->where('no_rawat', $reg_periksa['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
           $mutasi_berkas2 = $this->core->mysql('mutasi_berkas')->select('diterima')->where('no_rawat', $reg_periksa['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
@@ -283,7 +283,7 @@ class Admin extends AdminModule
           $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $resep_obat2 = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
 
-          $mlite_antrian_loket = $this->core->mysql('mlite__antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
+          $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')->where('postdate', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
           $task1 = '';
           $task2 = '';
           if($mlite_antrian_loket) {
@@ -537,7 +537,7 @@ class Admin extends AdminModule
     public function getBookingAntrol()
     {
         $this->_addHeaderFiles();
-        return $this->draw('bookingantrol.html', ['row' => $this->core->mysql('mlite__antrian_referensi')->toArray()]);
+        return $this->draw('bookingantrol.html', ['row' => $this->core->mysql('mlite_antrian_referensi')->toArray()]);
     }
 
     public function getModalAntrol($noref)
@@ -549,7 +549,7 @@ class Admin extends AdminModule
 
     public function postHapusAntrol()
     {
-        $referensi = $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray();
+        $referensi = $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray();
         $booking_registrasi = [];
         $pasien = [];
         if($referensi) {
@@ -569,14 +569,14 @@ class Admin extends AdminModule
             }else if($booking_registrasi['status']=='Belum'){
                 $batal = $this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->delete();
                 if(!$this->core->mysql('booking_registrasi')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('tanggal_periksa', $referensi['tanggal_periksa'])->oneArray()){
-                    $this->core->mysql('mlite__antrian_referensi_batal')->save([
+                    $this->core->mysql('mlite_antrian_referensi_batal')->save([
                         'tanggal_batal' => date('Y-m-d'),
                         'nomor_referensi' => $referensi['nomor_referensi'],
                         'kodebooking' => $_POST['kodebooking'],
                         'keterangan' => $_POST['keterangan']
                     ]);
-                    $this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->delete();
-                    if (!$this->core->mysql('mlite__antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray()) {
+                    $this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->delete();
+                    if (!$this->core->mysql('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray()) {
                         date_default_timezone_set('UTC');
                         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
                         $key = $this->consid.$this->secretkey.$tStamp;
@@ -602,7 +602,7 @@ class Admin extends AdminModule
             }
         }
         //exit();
-        return $this->draw('hapusantrol.html', ['row' => $this->core->mysql('mlite__antrian_referensi')->toArray(), 'notif' => $notif]);
+        return $this->draw('hapusantrol.html', ['row' => $this->core->mysql('mlite_antrian_referensi')->toArray(), 'notif' => $notif]);
     }
 
     public function getJavascript()
