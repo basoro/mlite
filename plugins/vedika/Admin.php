@@ -2993,6 +2993,16 @@ class Admin extends AdminModule
             'tanggal' => date('Y-m-d'),
             'status' => 'Pengajuan'
           ]);
+        if ($simpan_status) {
+          $this->core->mysql('mlite_vedika_feedback')->save([
+            'id' => NULL,
+            'nosep' => $nosep,
+            'tanggal' => date('Y-m-d'),
+            'catatan' => 'Pengajuan - Kirim ke Data Center',
+            'username' => $this->core->getUserInfo('username', null, true)
+          ]);
+        }
+
       }
       unlink($image);
 
