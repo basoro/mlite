@@ -124,8 +124,9 @@ class Site extends SiteModule
             $hari=$day[$tentukan_hari];
             $cek_rujukan = $this->core->mysql('bridging_sep')->where('no_rujukan', $decode['nomorreferensi'])->group('tglrujukan')->oneArray();
 
-            $h1 = strtotime('+1 days' , strtotime(date('Y-m-d'))) ;
-            $h1 = date('Y-m-d', $h1);
+            //$h1 = strtotime('+1 days' , strtotime(date('Y-m-d'))) ;
+            //$h1 = date('Y-m-d', $h1);
+            $h1 = date('Y-m-d');
             $_h1 = date('d-m-Y', strtotime($h1));
             $h7 = strtotime('+8 days', strtotime(date('Y-m-d'))) ;
             if(!empty($cek_rujukan['tglrujukan'])) {
@@ -235,19 +236,88 @@ class Site extends SiteModule
                         $minutes = $no_urut_reg * 10;
                         $cek_kouta['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kouta['jam_mulai'])));
                         $keterangan = 'Peserta harap datang 30 menit lebih awal.';
-                        $query = $this->core->mysql('booking_registrasi')->save([
-                            'tanggal_booking' => date('Y-m-d'),
-                            'jam_booking' => date('H:i:s'),
-                            'no_rkm_medis' => $data_pasien['no_rkm_medis'],
-                            'tanggal_periksa' => $decode['tanggalperiksa'],
-                            'kd_dokter' => $jadwal['kd_dokter'],
-                            'kd_poli' => $jadwal['kd_poli'],
+
+                        if($decode['tanggalperiksa'] == date('Y-m-d')) {
+
+                          $no_reg = $this->core->setNoReg($jadwal['kd_dokter'], $jadwal['kd_poli']);
+
+                          $cek_stts_daftar = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->count();
+                          $_POST['stts_daftar'] = 'Baru';
+                          if($cek_stts_daftar > 0) {
+                            $_POST['stts_daftar'] = 'Lama';
+                          }
+
+                          $biaya_reg = $this->core->mysql('poliklinik')->where('kd_poli', $jadwal['kd_poli'])->oneArray();
+                          $_POST['biaya_reg'] = $biaya_reg['registrasi'];
+                          if($_POST['stts_daftar'] == 'Lama') {
+                            $_POST['biaya_reg'] = $biaya_reg['registrasilama'];
+                          }
+
+                          $cek_status_poli = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $data_pasien['no_rkm_medis'])->where('kd_poli', $jadwal['kd_poli'])->count();
+                          $_POST['status_poli'] = 'Baru';
+                          if($cek_status_poli > 0) {
+                            $_POST['status_poli'] = 'Lama';
+                          }
+
+                          // set umur
+                          $tanggal = new \DateTime($this->core->getPasienInfo('tgl_lahir', $data_pasien['no_rkm_medis']));
+                          $today = new \DateTime(date('Y-m-d'));
+                          $y = $today->diff($tanggal)->y;
+                          $m = $today->diff($tanggal)->m;
+                          $d = $today->diff($tanggal)->d;
+
+                          $umur="0";
+                          $sttsumur="Th";
+                          if($y>0){
+                              $umur=$y;
+                              $sttsumur="Th";
+                          }else if($y==0){
+                              if($m>0){
+                                  $umur=$m;
+                                  $sttsumur="Bl";
+                              }else if($m==0){
+                                  $umur=$d;
+                                  $sttsumur="Hr";
+                              }
+                          }
+
+                          $insert = $this->core->mysql('reg_periksa')
+                          ->save([
                             'no_reg' => $no_reg,
-                            'kd_pj' => 'BPJ',
-                            'limit_reg' => 1,
-                            'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
-                            'status' => 'Belum'
-                        ]);
+                            'no_rawat' => $this->setNoRawat(),
+                            'tgl_registrasi' => date('Y-m-d'),
+                            'jam_reg' => date('H:i:s'),
+                            'kd_dokter' => $jadwal['kd_dokter'],
+                            'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                            'kd_poli' => $jadwal['kd_poli'],
+                            'p_jawab' => $this->core->getPasienInfo('namakeluarga', $data_pasien['no_rkm_medis']),
+                            'almt_pj' => $this->core->getPasienInfo('alamatpj', $data_pasien['no_rkm_medis']),
+                            'hubunganpj' => $this->core->getPasienInfo('keluarga', $data_pasien['no_rkm_medis']),
+                            'biaya_reg' => $_POST['biaya_reg'],
+                            'stts' => 'Belum',
+                            'stts_daftar' => $_POST['stts_daftar'],
+                            'status_lanjut' => 'Ralan',
+                            'kd_pj' => $jadwal['kd_pj'],
+                            'umurdaftar' => $umur,
+                            'sttsumur' => $sttsumur,
+                            'status_bayar' => 'Belum Bayar',
+                            'status_poli' => $_POST['status_poli']
+                          ]);
+                        } else (
+                          $query = $this->core->mysql('booking_registrasi')->save([
+                              'tanggal_booking' => date('Y-m-d'),
+                              'jam_booking' => date('H:i:s'),
+                              'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                              'tanggal_periksa' => $decode['tanggalperiksa'],
+                              'kd_dokter' => $jadwal['kd_dokter'],
+                              'kd_poli' => $jadwal['kd_poli'],
+                              'no_reg' => $no_reg,
+                              'kd_pj' => 'BPJ',
+                              'limit_reg' => 1,
+                              'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
+                              'status' => 'Belum'
+                          ]);
+                        )
                         if ($query) {
                             $kodebooking = date('Ymdhis').''.$decode['kodepoli'].''.$no_reg;
                             $response = array(
