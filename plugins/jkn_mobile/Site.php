@@ -39,6 +39,30 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile/jadwal/(:str)/(:str)', '_getJadwal');
+
+        /* Start Old school routing */
+        $this->route('jknmobile_v2', 'getIndex');
+        $this->route('jknmobile_v2/token', 'getToken');
+        $this->route('jknmobile_v2/antrian/ambil', 'getAmbilAntrian');
+        $this->route('jknmobile_v2/antrian/status', 'getStatusAntrian');
+        $this->route('jknmobile_v2/antrian/ambilfarmasi', 'getAmbilAntrianFarmasi');
+        $this->route('jknmobile_v2/antrian/statusfarmasi', 'getStatusAntrianFarmasi');
+        $this->route('jknmobile_v2/antrian/sisa', 'getSisaAntrian');
+        $this->route('jknmobile_v2/antrian/batal', 'getBatalAntrian');
+        $this->route('jknmobile_v2/pasien/baru', 'getPasienBaru');
+        $this->route('jknmobile_v2/pasien/checkin', 'getPasienCheckIn');
+        $this->route('jknmobile_v2/operasi/rs', 'getOperasiRS');
+        $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
+        $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
+        $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
+        $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile_v2/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
+        $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
+        $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
+        $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
+        $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
+        /* End Old school routing */
+
     }
 
     public function getIndex()
