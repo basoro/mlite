@@ -303,7 +303,7 @@ class Site extends SiteModule
                             'status_bayar' => 'Belum Bayar',
                             'status_poli' => $_POST['status_poli']
                           ]);
-                        } else (
+                        } else {
                           $query = $this->core->mysql('booking_registrasi')->save([
                               'tanggal_booking' => date('Y-m-d'),
                               'jam_booking' => date('H:i:s'),
@@ -312,12 +312,12 @@ class Site extends SiteModule
                               'kd_dokter' => $jadwal['kd_dokter'],
                               'kd_poli' => $jadwal['kd_poli'],
                               'no_reg' => $no_reg,
-                              'kd_pj' => 'BPJ',
+                              'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
                               'limit_reg' => 1,
                               'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kouta['jam_mulai'],
                               'status' => 'Belum'
                           ]);
-                        )
+                        }
                         if ($query) {
                             $kodebooking = date('Ymdhis').''.$decode['kodepoli'].''.$no_reg;
                             $response = array(
