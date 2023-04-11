@@ -284,7 +284,7 @@ class Site extends SiteModule
                           $insert = $this->core->mysql('reg_periksa')
                           ->save([
                             'no_reg' => $no_reg,
-                            'no_rawat' => $this->setNoRawat(),
+                            'no_rawat' => $this->core->setNoRawat(),
                             'tgl_registrasi' => date('Y-m-d'),
                             'jam_reg' => date('H:i:s'),
                             'kd_dokter' => $jadwal['kd_dokter'],
@@ -297,7 +297,7 @@ class Site extends SiteModule
                             'stts' => 'Belum',
                             'stts_daftar' => $_POST['stts_daftar'],
                             'status_lanjut' => 'Ralan',
-                            'kd_pj' => $jadwal['kd_pj'],
+                            'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
                             'umurdaftar' => $umur,
                             'sttsumur' => $sttsumur,
                             'status_bayar' => 'Belum Bayar',
