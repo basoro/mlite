@@ -1115,6 +1115,12 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getEresep($no_rawat)
+    {
+      echo $this->draw('eresep.html');
+      exit();
+    }
+
     public function postCekWaktu()
     {
       echo date('H:i:s');

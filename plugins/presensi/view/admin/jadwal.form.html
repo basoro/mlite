@@ -1,0 +1,411 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Tambah Jadwal Presensi</h3>
+                <ul class="nav nav-tabs">
+                    <li>
+                        <a href="{?=url(ADMIN.'/presensi/jadwal')?}" role="tab">Jadwal</a>
+                    </li>
+                    <li class="active">
+                        <a href="#" role="tab">Tambah</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="panel-body">
+              <form name="jadwalaadd" action="{?=url(ADMIN.'/presensi/jadwalsave/'.@$jadwal.form.id)?}" method="POST">
+                <div class="row clearfix">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nama</label>
+                            <select name="id" id="id" data-use-search="true" data-options-height="10px" data-use-dimmer="false" class="form-control">
+                              {loop: $jadwal.id}
+                                <option value="{$value.id}"{if: $value.id == $jadwal.form.id} selected{/if}>{$value.nama}</option>
+                              {/loop}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Tahun</label>
+                            <!-- <input type="text" name="tahun" class="form-control" value="{$jadwal.tahun}"/> -->
+                            <select name="tahun" id="tahun" data-use-search="true" class="form-control">
+                              {loop: $jadwal.tahun}
+                                <option value="{$value}"{if: $value == $jadwal.form.tahun} selected{/if}>{$value}</option>
+                              {/loop}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Bulan</label>
+                            <select name="bulan" id="bulan" data-use-search="true" class="form-control">
+                              {loop: $jadwal.bulan}
+                                <option value="{$value}"{if: $value == $jadwal.form.bulan} selected{/if}>{$value}</option>
+                              {/loop}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <label for="">TANGGAL</label>
+                <div class="row clearfix">
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>01</label>
+                      <select name="h1" id="h1" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h1} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>02</label>
+                      <select name="h2" id="h2" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                        <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h2} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>03</label>
+                      <select name="h3" id="h3" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                        <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h3} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>04</label>
+                      <select name="h4" id="h4" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                        <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h4} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>05</label>
+                      <select name="h5" id="h5" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                        <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h5} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-2">
+                    <div class="form-group">
+                      <label>06</label>
+                      <select name="h6" id="h6" data-use-search="true" data-options-height="10px" class="form-control">
+                        <option value=""></option>
+                        {loop: $jadwal.h1}
+                        <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h6} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                        {/loop}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>07</label>
+                        <select name="h7" id="h7" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h7} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>08</label>
+                        <select name="h8" id="h8" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h8} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>09</label>
+                        <select name="h9" id="h9" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h9} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>10</label>
+                        <select name="h10" id="h10" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h10} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>11</label>
+                        <select name="h11" id="h11" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h11} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>12</label>
+                        <select name="h12" id="h12" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h12} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>13</label>
+                        <select name="h13" id="h13" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h13} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>14</label>
+                        <select name="h14" id="h14" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h14} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>15</label>
+                        <select name="h15" id="h15" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h15} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>16</label>
+                        <select name="h16" id="h16" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h16} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>17</label>
+                        <select name="h17" id="h17" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h17} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>18</label>
+                        <select name="h18" id="h18" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h18} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>19</label>
+                        <select name="h19" id="h19" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h19} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>20</label>
+                        <select name="h20" id="h20" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h20} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>21</label>
+                        <select name="h21" id="h21" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h21} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>22</label>
+                        <select name="h22" id="h22" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h22} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>23</label>
+                        <select name="h23" id="h23" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h23} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>24</label>
+                        <select name="h24" id="h24" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h24} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>25</label>
+                        <select name="h25" id="h25" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h25} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>26</label>
+                        <select name="h26" id="h26" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h26} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>27</label>
+                        <select name="h27" id="h27" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h27} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>28</label>
+                        <select name="h28" id="h28" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h28} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>29</label>
+                        <select name="h29" id="h29" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h29} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>30</label>
+                        <select name="h30" id="h30" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h30} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-md-2">
+                      <div class="form-group">
+                        <label>31</label>
+                        <select name="h31" id="h31" data-use-search="true" data-options-height="10px" class="form-control">
+                          <option value=""></option>
+                          {loop: $jadwal.h1}
+                          <option value="{$value.shift}"{if: $value.shift == $jadwal.form.h31} selected{/if}>{$value.shift} {$value.jam_masuk} {$value.jam_pulang}</option>
+                          {/loop}
+                        </select>
+                      </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                  <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                </div>
+              </form>
+            </div>
+        </div>
+    </div>
+</article>

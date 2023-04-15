@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="refresh" content="180">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>{$title} - {$settings.nama_instansi}</title>
+    <link rel="icon" href="{?=url()?}/favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap.min.css">
+    <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+    <script src="{?=url()?}/plugins/dashboard/js/admin/webcam.js"></script>
+    <style media="screen">
+      body {
+        position: absolute;
+        top: 0; bottom: 0; left: 0; right: 0;
+        height: 100%;
+      }
+      body:before {
+        content: "";
+        position: absolute;
+        background: url('{?=url()?}/{$wallpaper}');
+        background-size: cover;
+        z-index: -1; /* Keep the background behind the content */
+        height: 20%; width: 20%; /* Using Glen Maddern's trick /via @mente */
+
+        /* don't forget to use the prefixes you need */
+        transform: scale(5);
+        transform-origin: top left;
+        filter: blur(2px);
+      }
+      .wrapper {
+          text-align: center;
+      }
+      .text_color {
+        color: {$text_color} !important;
+      }
+      .button {
+          position: absolute;
+          top: 50%;
+      }
+      footer {
+          position: fixed;
+          right: 0px;
+          bottom: 0px;
+          height: 40px;
+          width: calc(100% - 0px);
+          font-size: 14px;
+          color: #fff;
+      }
+      footer a, footer a:hover {
+        color: #fff;
+      }
+      .btn-group .btn-fab{
+          position: fixed !important;
+          right: 20px;
+          bottom: 60px;
+      }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+  <h1 class="display-3 text-center m-3 text_color"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Presensi Pegawai {$settings.nama_instansi}</h1>
+  <div class="btn-group">
+    <button class="btn btn-lg btn-danger btn-fab" id="main" data-toggle="modal" data-target="#myModal">
+        <i class="fa fa-plus"></i> Presensi
+    </button>
+  </div>
+  {if: $notify}
+  <div id="notify" class="alert alert-{$notify.type} alert-dismissible fade in" role="alert">
+      {$notify.text}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+      </button>
+  </div>
+  {/if}
+  <!--<div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
+    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+  </div>-->
+</div>
+<footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
+  <div class="canvas">
+    <p class="pull-right">
+      Made with <i class="fa fa-heart text-danger"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b>.</a>
+      {$powered}.
+    </p>
+    <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span></p>
+  </div>
+</footer>
+<!-- The Modal -->
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+          <button type="button" class="close"><a href="{?=url()?}/anjungan/presensi">Close <span aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <select class="form-control input-lg" id="shift" style="width:160px;">
+            <option value="">Jam Masuk</option>
+            {loop: $jam_jaga}
+            <option value="{$value.shift}">{$value.jam_masuk} - {$value.jam_pulang}</option>
+            {/loop}
+          </select><br>
+          <div class="row" style="margin-bottom:30px;">
+            <div class="col-md-3"></div>
+            <div class="col-md-6">
+              <input type="text" name="barcode" class="form-control input-lg" placeholder="Nomor Kartu" value="">
+            </div>
+            <div class="col-md-3"></div>
+          </div>
+          <input type="button" class="btn btn-info btn-lg" value="Simpan" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+
+      $('#shift').on('change', function() {
+        var shift = this.text;
+      });
+
+      $('#myModal').on('show.bs.modal', function() {
+
+          if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(function success(pos) {}, function error(err) {}, {enableHighAccuracy: true, timeout: 5000});
+          } else {
+              //Geolocation is not supported by this browser
+              alert('Geolocation is not supported by this browser');
+          }
+
+          Webcam.set({
+              width:240,
+              height:240,
+              image_format:'jpeg',
+              jpeg_quality:90,
+              facingMode: {
+                exact: 'environment'
+              }
+          });
+          Webcam.attach('#camera');
+      });
+      $("#myModal").on("hidden.bs.modal", function () {
+
+          var barcode = $('input:text[name=barcode]').val();
+          var getshift = shift.value;
+          var shutter = new Audio();
+          shutter.autoplay = false;
+          shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
+          shutter.play();
+
+          Webcam.snap(function(data_uri){
+              document.getElementById('results').innerHTML = '<img id="imageprev" src="'+data_uri+'"/>';
+          });
+
+          var base64image = document.getElementById("imageprev").src;
+
+          Webcam.upload(base64image, '{?=url()?}/anjungan/presensi/upload/?barcode=' + barcode + '&shift=' + getshift, function(code, text) {
+          });
+
+          Webcam.reset();
+
+          navigator.geolocation.getCurrentPosition(
+              function(position) {
+                $.get('{?=url(ADMIN.'/dashboard/geolocation/')?}', {lat: position.coords.latitude, lng: position.coords.longitude});
+              },
+              function error(err) {},
+              {enableHighAccuracy: true, timeout: 5000}
+          );
+
+          window.location.href = '{?=url()?}/anjungan/presensi';
+
+      });
+
+      function showTime() {
+          var today = new Date();
+          var curr_hour = today.getHours();
+          var curr_minute = today.getMinutes();
+          var curr_second = today.getSeconds();
+          curr_hour = checkTime(curr_hour);
+          curr_minute = checkTime(curr_minute);
+          curr_second = checkTime(curr_second);
+          document.getElementById('clock').innerHTML=curr_hour + ":" + curr_minute + ":" + curr_second;
+      }
+
+      function checkTime(i) {
+          if (i < 10) {
+              i = "0" + i;
+          }
+          return i;
+      }
+
+      setInterval(showTime, 500);
+
+  });
+</script>
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>
+</body>
+</html>

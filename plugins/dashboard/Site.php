@@ -35,6 +35,7 @@ class Site extends SiteModule
         if($assign['cek_anjungan']) {
           $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
+        $assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         echo $this->draw('main.html', ['mlite' => $assign]);
         exit();
     }

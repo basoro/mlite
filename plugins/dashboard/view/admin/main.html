@@ -184,3 +184,171 @@
   <p class="title">{$settings.nama_instansi}</p>
   <p class="alamat">{$settings.alamat} - {$settings.kota} - {$settings.propinsi}</p>
 </div>
+{if: $presensi}
+<div class="btn-group">
+  <a href="javascript:void(0)" onclick="getDistanceFromLatLonInKm()" class="btn btn-danger btn-fab">
+    <i class="fa fa-camera"></i> Presensi Online
+  </a>
+</div>
+  {if: $notif_presensi == 'true'}
+    {if: $cek_presensi}
+    <div class="alert alert-success coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-thumbs-up"></i> Anda Sudah Presensi Masuk
+      <br>
+      <i>* {$teks} *</i>
+    </div>
+    {elseif: $cek_rekap}
+    <div class="alert alert-info coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-check-square"></i> Anda Sudah Presensi Pulang<br>
+      <i>* {$teks} *</i>
+    </div>
+    {else}
+    <div class="alert alert-warning coba" role="alert">
+      <div class="halo">
+        <b>Halo {$nama}</b>
+      </div>
+      <i class="fa fa-exclamation-triangle"></i> Anda Belum Presensi<br>
+      <i>* {$teks} *</i>
+    </div>
+    {/if}
+  {/if}
+{/if}
+<!-- The Modal -->
+<div class="modal" id="myModal" data-keyboard="false" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close"><a href="{?=url(ADMIN)?}">Close <span
+              aria-hidden="true">&times;</span></a></button>
+      </div>
+      <!-- Modal body -->
+      <div class="modal-body">
+        <center>
+          <div id="camera"></div><br>
+          <select class="form-control" id="shift" style="width:240px;">
+            <option>Pilih Shift</option>
+            {loop: $jam_jaga}
+            <option value="{$value.shift}"><i>{$value.shift}</i> : {$value.jam_masuk} - {$value.jam_pulang}</option>
+            {/loop}
+          </select><br><br>
+          <input type="button" class="btn btn-info"
+            value="{if: empty($cek_presensi)}Presensi Masuk{else}Presensi Pulang{/if}" data-dismiss="modal">
+          <input type="hidden" name="image" id="image-tag">
+          <div id="results"></div>
+        </center>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  {if: $presensi}
+  function getDistanceFromLatLonInKm() {
+    window.navigator.geolocation.getCurrentPosition(function(pos) {
+      console.log(pos);
+      var units = 'm';
+      var latitude2 = '{$pengaturan_presensi.lat}';
+      var longitude2 = '{$pengaturan_presensi.lon}';
+      var latitude1 = pos.coords.latitude;
+      var longitude1 = pos.coords.longitude;
+      var theta = longitude1 - longitude2;
+      var p = Math.PI;
+      var degradlat1 = latitude1 * p / 180;
+      var degradlat2 = latitude2 * p / 180;
+      var degradtheta = theta * p / 180;
+      var c = Math.cos;
+      var s = Math.sin;
+      var a = (s(degradlat1) * s(degradlat2)) + (c(degradlat1) * c(degradlat2) * c(degradtheta));
+      var a = Math.acos(a);
+      var a = a * 180 / p;
+      var a = a * 60 * 1.1515;
+      var kilometers = a * 1.609344;
+      var meters = kilometers * 1000;
+
+      if(meters > {$pengaturan_presensi.distance}) {
+        alert('Presensi harus di area Rumah Sakit!!')
+      } else {
+        $('#myModal').modal('show', function () {
+        });
+      }
+    },
+   	function handleError(error) {
+      // Display error based on the error code.
+      const { code } = error;
+      switch (code) {
+        case GeolocationPositionError.TIMEOUT:
+          // Handle timeout.
+          alert('Koneksi Terputus')
+          break;
+        case GeolocationPositionError.PERMISSION_DENIED:
+          // User denied the request.
+        alert('Aktifkan GPS dan Izin Lokasi!!')
+          break;
+        case GeolocationPositionError.POSITION_UNAVAILABLE:
+          // Position not available.
+              alert('Lokasi Tidak Ditemukan!!')
+          break;
+      }
+    },
+    {timeout: 5000 , maximumAge: 0});
+  }
+  {/if}
+
+  $(document).ready(function () {
+
+    $('#shift').selectator('destroy');
+
+    $('#shift').on('change', function () {
+      var shift = this.value;
+    });
+
+    $('#myModal').on('show.bs.modal', function () {
+      Webcam.set({
+        width: 240,
+        height: 240,
+        image_format: 'jpeg',
+        jpeg_quality: 90,
+        facingMode: {
+          exact: 'environment'
+        }
+      });
+      Webcam.attach('#camera');
+      getDistanceFromLatLonInKm();
+    });
+    $("#myModal").on("hidden.bs.modal", function () {
+
+      var getshift = shift.value;
+      var shutter = new Audio();
+      shutter.autoplay = false;
+      shutter.src = navigator.userAgent.match(/Firefox/) ? '{?=url()?}/plugins/dashboard/audio/shutter.ogg' : '{?=url()?}/plugins/dashboard/audio/shutter.mp3';
+      shutter.play();
+
+      Webcam.snap(function (data_uri) {
+        document.getElementById('results').innerHTML = '<img id="imageprev" src="' + data_uri + '"/>';
+      });
+
+      var base64image = document.getElementById("imageprev").src;
+
+      Webcam.upload(base64image, '{?=url(ADMIN.'/dashboard/upload/')?}&shift=' + getshift, function (code, text) {
+      });
+
+      Webcam.reset();
+
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          $.post('{?=url(ADMIN.'/dashboard/geolocation/')?}', { lat: position.coords.latitude, lng: position.coords.longitude });
+        },
+        function error(err) { },
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+
+      window.location.href = '{?=url(ADMIN)?}';
+
+    });
+  });
+</script>

@@ -201,6 +201,19 @@
                         </div>
                     </div>
                     {/if}
+                    {if: $settings.presensi}
+                    <div class="form-group">
+                        <label>Aktifkan Notifikasi Presensi</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="true" {if: $settings.notif_presensi == 'true'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    {/if}
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>

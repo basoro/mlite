@@ -1,0 +1,205 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Jadwal Presensi</h3>
+            </div>
+            <div class="panel-body">
+        				<div class="timeline">
+                    <div class="timeline__wrap">
+                        <div class="timeline__items">
+                           {loop: $jadwal.list}
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-01')))]?}, 01 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h1)}{$value.h1}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-02')))]?}, 02 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h2)}{$value.h2}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-03')))]?}, 03 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h3)}{$value.h3}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-04')))]?}, 04 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h4)}{$value.h4}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-05')))]?}, 05 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h5)}{$value.h5}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-06')))]?}, 06 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h6)}{$value.h6}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-07')))]?}, 07 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h7)}{$value.h7}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-08')))]?}, 08 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h8)}{$value.h8}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-09')))]?}, 09 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h9)}{$value.h9}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-10')))]?}, 10 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h10)}{$value.h10}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-11')))]?}, 11 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h11)}{$value.h11}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-12')))]?}, 12 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h12)}{$value.h12}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-13')))]?}, 13 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h13)}{$value.h13}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-14')))]?}, 14 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h14)}{$value.h14}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-15')))]?}, 15 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h15)}{$value.h15}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-16')))]?}, 16 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h16)}{$value.h16}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-17')))]?}, 17 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h17)}{$value.h17}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-18')))]?}, 18 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h18)}{$value.h18}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left timeline__item--left timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-19')))]?}, 19 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h19)}{$value.h19}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-20')))]?}, 20 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h20)}{$value.h20}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-21')))]?}, 21 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h21)}{$value.h21}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-22')))]?}, 22 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h22)}{$value.h22}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-23')))]?}, 23 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h23)}{$value.h23}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-24')))]?}, 24 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h24)}{$value.h24}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-25')))]?}, 25 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h25)}{$value.h25}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-26')))]?}, 26 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h26)}{$value.h26}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-27')))]?}, 27 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h27)}{$value.h27}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-28')))]?}, 28 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h28)}{$value.h28}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-29')))]?}, 29 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h29)}{$value.h29}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--right">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-30')))]?}, 30 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h30)}{$value.h30}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                                <div class="timeline__item timeline__item--left">
+                                    <div class="timeline__content">
+                                        <h2>{?=$array_hari[date('N', strtotime(date('Y-m-31')))]?}, 31 {?=$array_bulan[date('n')]?} {?=date('Y')?}</h2>
+                                        <p>Shift: {if: !empty($value.h31)}{$value.h31}{else}Tidak ada jadwal{/if}</p>
+                                    </div>
+                                </div>
+                            {/loop}
+                        </div>
+                    </div>
+        				</div>
+            </div>
+        </div>
+    </div>
+</article>

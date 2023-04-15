@@ -161,6 +161,30 @@ class Admin extends AdminModule
         return $record['count'];
     }
 
+    public function countCurrentTempPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->core->mysql('temporary_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getTotalAbsen(){
+        $total=$this->countCurrentTempPresensi()+$this->countRkpPresensi() ;
+        return $total;
+    }
+
+    public function getBelumAbsen(){
+        $total=$this->getJadwalJaga()-$this->getTotalAbsen() ;
+        echo $total;
+        return $total;
+    }
+
     public function countPegawai()
     {
         $status = 'AKTIF';
@@ -171,6 +195,47 @@ class Admin extends AdminModule
             ->where ('stts_aktif', $status)
             ->oneArray();
 
+        return $record['count'];
+    }
+
+    public function countRkpPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->core->mysql('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getJadwalJaga()
+    {
+      $date = date('j');
+      $bulan = date('m');
+      $tahun = date('y');
+      $data = array_column($this->core->mysql('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
+    //   //print_r($data);
+    //   print("<pre>".print_r($data,true)."</pre>");
+       $hasil = count($data);
+    //   echo $hasil;
+    //   exit();
+      return $hasil;
+    }
+
+    public function getIjin()
+    {
+        $record = $this->core->mysql('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->where ('keterangan', '!=' , '')
+            ->where ('keterangan', '!=' , '-')
+          	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
+            ->oneArray();
+        //echo $record;
         return $record['count'];
     }
 
@@ -360,6 +425,17 @@ class Admin extends AdminModule
                 $return['labels'][] = $value['nm_poli'];
                 $return['visits'][] = $value['count'];
             }
+
+        return $return;
+    }
+
+    public function presensiChartHari()
+    {
+            $return = [
+                'labels'  => 'Belum Absen',
+                'visits'  => $this->getBelumAbsen(),
+            ];
+
 
         return $return;
     }
@@ -962,6 +1038,84 @@ class Admin extends AdminModule
             'settings' => $settings,
             'stats' => $stats,
         ]);
+    }
+
+    public function getPresensi()
+    {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+      $settings = htmlspecialchars_array($this->settings('manajemen'));
+      $stats['getVisities'] = number_format($this->getTotalAbsen(),0,'','.');
+      $stats['getBelumAbsen'] = number_format($this->getBelumAbsen(),0,'','.');
+      $stats['getHarusAbsen'] = number_format($this->getJadwalJaga(),0,'','.');
+      $stats['presensiChart'] = $this->presensiChart(15);
+
+      $stats['getIjin'] = number_format($this->getIjin(),0,'','.');
+
+      $stats['percentTotal'] = 0;
+        if($this->getTotalAbsen() != 0) {
+            $stats['percentTotal'] = number_format((($this->getTotalAbsen()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+
+      return $this->draw('presensi.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+        ]);
+    }
+
+  	public function presensiChart($days = 14, $offset = 0)
+    {
+        $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
+        $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+        $query = $this->core->mysql()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
+        $query->execute();
+
+        $data = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+                'visits2'  => [],
+            ];
+
+            while ($time < (time() - ($offset * 86400))) {
+                $return['labels'][] = '"'.date("Y-m-d", $time).'"';
+                $return['readable'][] = '"'.date("d M Y", $time).'"';
+                $return['visits'][] = 0;
+                $return['visits2'][] = 0;
+
+                $time = strtotime('+1 day', $time);
+            }
+
+            foreach ($data as $day) {
+                $index = array_search('"'.$day['jam'].'"', $return['labels']);
+                if ($index === false) {
+                    continue;
+                }
+
+                $return['visits'][$index] = $day['count'];
+                $return['visits2'][$index] = $day['count2'];
+            }
+
+        return $return;
+    }
+
+    public function getCoba($days = 14, $offset = 0)
+    {
+      $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+      $query = $this->core->mysql('rekap_presensi')
+          ->select([
+            'count' => 'COUNT(photo)',
+            'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
+          ])
+          ->where('jam_datang', '>=', $date.' 00:00:00');
+
+
+      $data = $query->toArray();
+      print_r($data);
+      exit();
     }
 
     public function getSettings()

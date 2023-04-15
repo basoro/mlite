@@ -68,6 +68,8 @@ class Admin extends Main
           $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
 
+        $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
+
         $this->tpl->set('mlite', $this->assign);
         echo $this->tpl->draw(THEMES.'/admin/'.$file, true);
     }
