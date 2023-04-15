@@ -66,7 +66,7 @@ $("#form").on("click", "#simpan", function(event){
       $("#tutupform").val("Buka Form");
       $("#tutupform").attr("id", "bukaform");
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
-      "Data bahasa telah disimpan!"+
+      "Data telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
       "</div>").show();
   });

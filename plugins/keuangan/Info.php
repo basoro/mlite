@@ -8,7 +8,7 @@ return [
     'compatibility' =>  '2023',
     'icon'          =>  'money',
     'install'       =>  function () use ($core) {
-      
+
         $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_rekening` (
           `kd_rek` varchar(15) NOT NULL DEFAULT '',
           `nm_rek` varchar(100) DEFAULT NULL,

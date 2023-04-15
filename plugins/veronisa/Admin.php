@@ -181,29 +181,11 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-          foreach ($galleri_pasien as $galleri) {
-            $galleri['src'] = unserialize($galleri['src']);
-
-            if (!isset($galleri['src']['sm'])) {
-              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-            }
-
-            $berkas_digital_pasien[] = $galleri;
-          }
-        }
 
         $row = htmlspecialchars_array($row);
         $row['pdfURL'] = url([ADMIN, 'veronisa', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['batalURL'] = url([ADMIN, 'veronisa', 'batal', $this->convertNorawat($row['no_rawat'])]);
         $row['berkas_digital'] = $berkas_digital;
-        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'veronisa', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['setstatusURL']  = url([ADMIN, 'veronisa', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
         $row['status_pengajuan'] = $this->core->mysql('mlite_veronisa')->where('nosep', $this->_getSEPInfo('no_sep', $row['no_rawat']))->desc('id')->limit(1)->toArray();
@@ -417,23 +399,6 @@ class Admin extends AdminModule
       ->where('berkas_digital_perawatan.no_rawat', $this->revertNorawat($id))
       ->asc('master_berkas_digital.nama')
       ->toArray();
-
-    $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-      ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-      ->where('mlite_pasien_galleries.slug', $this->core->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
-      ->toArray();
-    $berkas_digital_pasien = array();
-    if (count($galleri_pasien)) {
-      foreach ($galleri_pasien as $galleri) {
-        $galleri['src'] = unserialize($galleri['src']);
-
-        if (!isset($galleri['src']['sm'])) {
-          $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-        }
-
-        $berkas_digital_pasien[] = $galleri;
-      }
-    }
 
     $no_rawat = $this->revertNorawat($id);
 
@@ -787,7 +752,6 @@ class Admin extends AdminModule
     $this->tpl->set('riwayat_obat', $riwayat_obat);
 
     $this->tpl->set('berkas_digital', $berkas_digital);
-    $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
     $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('veronisa', htmlspecialchars_array($this->settings('veronisa')));

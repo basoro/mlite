@@ -518,36 +518,42 @@
         </td>
       </tr>
       {/if}
-      {if: !empty($value.pemeriksaan_catatan)}
+
+      {if: !empty($value.pemberian_obat)}
       <tr class="isi">
-        <td valign="top" width="20%">Gambar Catatan Pemeriksaan</td>
+        <td valign="top" width="20%">Pemberian Obat </td>
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-            <tr align="center">
-              <td>
-                <div class="row">
-                    <div class="gallery">
-                    {loop: $value.pemeriksaan_catatan as $data}
-                        <div class="col-sm-6 col-md-6">
-                          <div class="thumbnail" style="margin-bottom: 0; border-radius: 5px 5px 0 0;">
-                            <a href="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" target="_blank" class="images">
-                                <img src="{?=url(UPLOADS) ?}/catatan_pemeriksaan/{$data.gambar_catatan}" class="img-responsive">
-                            </a>
-                          </div>
-                          <div class="caption" style=" background-color: #EEE; border-radius: 0 0 5px 5px;">
-                            {$data.nama} ( {$data.waktu_catatan} )
-                          </div>
-                        </div>
-                    {/loop}
-                    </div>
-                </div>
-              </td>
-            </tr>
+           <tr align="center">
+             <td valign="top" width="25%" bgcolor="#eee">Tanggal</td>
+             <td valign="top" width="75%" bgcolor="#eee">Detail Resep</td>
+           </tr>
+           {loop: $value.pemberian_obat as $data1}
+           <tr>
+             <td valign="top" width="25%">{$data1.tgl_perawatan} {$data1.jam}<br>{$data1.status}</td>
+             <td valign="top" width="75%">
+               <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0">
+                 <tr>
+                   <td valign="top" width="75%" bgcolor="#eee">Nama Obat</td>
+                   <td valign="top" width="25%" bgcolor="#eee">Jumlah</td>
+                 </tr>
+                 {loop: $data1.data_pemberian_obat as $data2}
+                 <tr>
+                   <td>{$data2.nama_brng}</td>
+                   <td>{$data2.jml}</td>
+                 </tr>
+                 {/loop}
+               </table>
+             </td>
+           </tr>
+           {/loop}
           </table>
         </td>
       </tr>
+
       {/if}
+
       {if: $value.periksa_lab}
       <tr class="isi">
         <td valign="top" width="20%">Laboratorium </td>
@@ -563,8 +569,8 @@
            </tr>
            {loop: $value.periksa_lab as $data1}
            <tr>
-             <th valign="top" width="20%">{$data1.tgl_periksa}</th>
-             <th colspan="4" valign="top" width="80%">{$data1.nm_perawatan}</th>
+             <td valign="top" width="20%">{$data1.tgl_periksa}</td>
+             <td colspan="4" valign="top" width="80%">{$data1.nm_perawatan}</td>
            </tr>
              {loop: $data1.detail_periksa_lab as $data2}
              <tr>
@@ -596,6 +602,29 @@
               <td valign="top" width="20%">{$data.tgl_periksa}</td>
               <td valign="top" width="30%">{$data.nm_perawatan}</td>
               <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td>
+            </tr>
+            <tr>
+              <td colspan="3">
+                <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+                  <tr align="center">
+                    <td>
+                      <div class="row">
+                          <div class="gallery">
+                          {loop: $value.gambar_radiologi as $data}
+                              <div class="col-sm-6 col-md-6">
+                                  <div class="thumbnail" style="padding:10px;">
+                                      <a href="{?=url(WEBAPPS_URL.'/radiologi/'.$data.lokasi_gambar)?}" class="images">
+                                          <img src="{?=url(WEBAPPS_URL.'/radiologi/'.$data.lokasi_gambar)?}" width="100%" class="img-responsive">
+                                      </a>
+                                  </div>
+                              </div>
+                          {/loop}
+                          </div>
+                      </div>
+                    </td>
+                  </tr>
+                </table>
+              </td>
             </tr>
             {/loop}
           </table>

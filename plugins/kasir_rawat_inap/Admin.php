@@ -113,10 +113,12 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $row['status_billing'] = 'Sudah Bayar';
           $get_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
-          if(empty($get_faktur)) {
+          if(empty($get_billing['kd_billing'])) {
             $row['kd_billing'] = 'RI.'.date('d.m.Y.H.i.s');
             $row['tgl_billing'] = date('Y-m-d H:i');
+            $row['status_billing'] = 'Belum Bayar';
           }
           $dpjp_ranap = $this->core->mysql('dpjp_ranap')
             ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')

@@ -82,6 +82,11 @@
 				<td></td>
 				<td></td>
 			</tr>
+			{if: $billing_besar_detail.detail_pemberian_obat}
+			<tr>
+				<td colspan="5">Non Racikan</td>
+			</tr>
+			{/if}
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>

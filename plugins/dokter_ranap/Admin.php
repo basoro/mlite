@@ -119,6 +119,13 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $row['status_billing'] = 'Sudah Bayar';
+          $get_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
+          if(empty($get_billing['kd_billing'])) {
+            $row['kd_billing'] = 'RI.'.date('d.m.Y.H.i.s');
+            $row['tgl_billing'] = date('Y-m-d H:i');
+            $row['status_billing'] = 'Belum Bayar';
+          }
           $dpjp_ranap = $this->core->mysql('dpjp_ranap')
             ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
             ->where('no_rawat', $row['no_rawat'])
@@ -149,7 +156,7 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('status', 'ranap')->oneArray();
+        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('jam_peresepan', $_POST['jam_rawat'])->where('status', 'ranap')->oneArray();
         if(!$cek_resep) {
           $max_id = $this->core->mysql('resep_obat')->select(['no_resep' => 'ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0)'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->oneArray();
           if(empty($max_id['no_resep'])) {

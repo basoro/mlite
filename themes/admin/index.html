@@ -72,7 +72,7 @@
               {if: $mlite.module_pasien}
               <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
               {/if}
-              {if: $this->core->getUserInfo('role') == 'medis'}
+              {if: $this->core->getUserInfo('role', !empty($_SESSION['mlite_user']) ? $_SESSION['mlite_user'] : 1) == 'medis'}
                 <li><a href="{?=url([ADMIN, 'dokter_igd', 'manage'])?}"{if: !$mlite.dokter_igd_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-igd.png') ?}" alt=""> Dokter IGD</a></li>
                 <li><a href="{?=url([ADMIN, 'dokter_ralan', 'manage'])?}"{if: !$mlite.dokter_ralan_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ralan.png') ?}" alt=""> Dokter Ralan</a></li>
                 <li><a href="{?=url([ADMIN, 'dokter_ranap', 'manage'])?}"{if: !$mlite.dokter_ranap_access} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-ranap.png') ?}" alt=""> Dokter Ranap</a></li>
@@ -115,9 +115,6 @@
                       <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
                     {/if}
                   {/loop}
-                  <li role="separator" class="divider"></li>
-                  <li><a href="{?=url()?}/anjungan/ausyi/loket" target="_blank">Antrian Loket Ausyi</a></li>
-                  <li><a href="{?=url()?}/anjungan/ausyi/pasien" target="_blank">Antrian Pasien Ausyi</a></li>
                 </ul>
               </li>
               {/if}

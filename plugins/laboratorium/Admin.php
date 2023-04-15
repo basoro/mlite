@@ -68,7 +68,7 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar, $type)
+    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar ='', $type ='')
     {
         $this->_addHeaderFiles();
 
@@ -214,7 +214,12 @@ class Admin extends AdminModule
               'jam_keluar' => date('H:i:s'),
               'no_rkm_medis' => '',
               'nm_pasien' => '',
+              'tgl_lahir' => '',
+              'jk' => '',
+              'alamat' => '',
+              'no_tlp' => '',
               'no_rawat' => '',
+              'no_reg' => '',
               'kd_dokter' => '',
               'kd_kamar' => '',
               'kd_pj' => '',
@@ -809,6 +814,7 @@ class Admin extends AdminModule
     public function postValidasiPermintaanLab()
     {
       $permintaan_lab = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+      $validasi_permintaan = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
       $permintaan_pemeriksaan_lab = $this->core->mysql('permintaan_pemeriksaan_lab')->where('noorder', $_POST['noorder'])->toArray();
       //var_dump($permintaan_lab);
       foreach ($permintaan_pemeriksaan_lab as $row) {

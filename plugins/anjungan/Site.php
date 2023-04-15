@@ -25,12 +25,6 @@ class Site extends SiteModule
         $this->route('anjungan/loket2', 'getDisplayAntrianLoket2');
         $this->route('anjungan/poli', 'getDisplayAntrianPoli');
 
-        // Start Ausyi Anjungan & Loket
-        $this->route('anjungan/ausyi/pasien', 'getDisplayAusyiAPM');
-        $this->route('anjungan/ausyi/loket', 'getDisplayAusyiAntrianLoket');
-        $this->route('anjungan/ausyi/aksiloket', 'getAksiLoket');
-        // End Ausyi Anjungan & Loket
-
         /* Sumbangan Mbak Kiki Sagira RS Bhayangkara Makassar */
         $this->route('anjungan/display/poli/(:str)', 'getDisplayAntrianPoliSatu');
     		$this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDua');
@@ -112,90 +106,6 @@ class Site extends SiteModule
 
         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
 
-    }
-
-    public function getDisplayAusyiAPM()
-    {
-        $title = 'Display Antrian Poliklinik';
-        $logo  = $this->settings->get('settings.logo');
-        $poliklinik = $this->core->mysql('poliklinik')->toArray();
-        $carabayar = str_replace(",","','", $this->settings->get('anjungan.carabayar'));
-        $penjab = $this->core->mysql()->pdo()->prepare("SELECT * FROM penjab WHERE kd_pj IN ('$carabayar')");
-        $penjab->execute();
-        $penjab = $penjab->fetchAll(\PDO::FETCH_ASSOC);;
-
-        $_username = '';
-        $__username = 'Tamu';
-        if(isset($_SESSION['mlite_user'])) {
-          $_username = $this->core->getUserInfo('fullname', null, true);
-          $__username = $this->core->getUserInfo('username');
-        }
-        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $__username;
-
-        $content = $this->draw('display.ausyi.antrian.html', [
-          'title' => $title,
-          'logo' => $logo,
-          'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-          'username' => $username,
-          'tanggal' => $tanggal,
-          'running_text' => $this->settings->get('anjungan.text_anjungan'),
-          'poliklinik' => $poliklinik,
-          'penjab' => $penjab
-        ]);
-
-        $assign = [
-            'title' => $this->settings->get('settings.nama_instansi'),
-            'desc' => $this->settings->get('settings.alamat'),
-            'content' => $content
-        ];
-
-        $this->setTemplate("canvas.html");
-
-        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-    }
-
-    public function getDisplayAusyiAntrianLoket()
-    {
-        $title = 'Display Antrian Loket';
-        $logo  = $this->settings->get('settings.logo');
-        $display = '';
-
-        $_username = '';
-        $__username = 'Tamu';
-        if(isset($_SESSION['mlite_user'])) {
-          $_username = $this->core->getUserInfo('fullname', null, true);
-          $__username = $this->core->getUserInfo('username');
-        }
-        $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-        $username      = !empty($_username) ? $_username : $__username;
-
-        $show = isset($_GET['show']) ? $_GET['show'] : "";
-        $display = 'Depan';
-        $content = $this->draw('display.ausyi.antrian.loket.html', [
-            'title' => $title,
-            'logo' => $logo,
-            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-            'username' => $username,
-            'tanggal' => $tanggal,
-            'show' => $show,
-            'vidio' => $this->settings->get('anjungan.vidio'),
-            'running_text' => $this->settings->get('anjungan.text_loket'),
-            'display' => $display
-          ]);
-
-        $assign = [
-            'title' => $this->settings->get('settings.nama_instansi'),
-            'desc' => $this->settings->get('settings.alamat'),
-            'content' => $content
-        ];
-
-        $this->setTemplate("canvas.html");
-
-        $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-        //exit();
     }
 
     public function getAksiLoket()
@@ -1740,14 +1650,6 @@ class Site extends SiteModule
         $type = 'Apotek';
       }
 
-      //Ausyi Type Antrian
-
-      if($_GET['type'] == 'igd'){
-        $type = 'IGD';
-      }
-
-      //------------------
-
       if(strlen($_GET['no_rkm_medis']) != 6) die(json_encode(array('status' => false,'message' => 'Gagal! Nomor Rekam Medis Tidak Valid')));
 
       $noantrian  = $_GET['noantrian'];
@@ -2098,105 +2000,6 @@ class Site extends SiteModule
             ]);
           //redirect(url('anjungan/pasien'));
         break;
-
-        //Ausyi 3 Antrian
-        case "tampiligd":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'IGD')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-          $noantrian = '';
-          if($result) {
-            $noantrian = $result['noantrian'];
-          }
-        	if($noantrian > 0) {
-        		$next_antrian = $noantrian + 1;
-        	} else {
-        		$next_antrian = 1;
-        	}
-        	echo '<div id="nomernya" align="center">';
-          echo '<h1 class="display-1">';
-          echo 'C'.$next_antrian;
-          echo '</h1>';
-          echo '['.date('Y-m-d').']';
-          echo '</div>';
-          echo '<br>';
-        break;
-        case "printigd":
-          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'IGD')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
-          $noantrian = '';
-          if($result) {
-            $noantrian = $result['noantrian'];
-          }
-        	if($noantrian > 0) {
-        		$next_antrian = $noantrian + 1;
-        	} else {
-        		$next_antrian = 1;
-        	}
-        	echo '<div id="nomernya" align="center">';
-          echo '<h1 class="display-1">';
-          echo 'C'.$next_antrian;
-          echo '</h1>';
-          echo '['.date('Y-m-d').']';
-          echo '</div>';
-          echo '<br>';
-          ?>
-          <script>
-        	$(document).ready(function(){
-        		$("#btnKRMIGD").on('click', function(){
-        			$("#formigd").submit(function(e){
-                e.preventDefault();
-                e.stopImmediatePropagation();
-        				$.ajax({
-        					url: "<?php echo url().'/anjungan/ajax?show=simpanigd&noantrian='.$next_antrian; ?>",
-        					type:"POST",
-        					data:$(this).serialize(),
-        					success:function(data){
-        						setTimeout('$("#loading").hide()',1000);
-        						//window.location.href = "{?=url('anjungan/pasien')?}";
-        						}
-        					});
-        				return false;
-        			});
-        		});
-        	})
-        	</script>
-          <?php
-        break;
-        case "simpanigd":
-          $this->core->mysql('mlite_antrian_loket')
-            ->save([
-              'kd' => NULL,
-              'type' => 'IGD',
-              'noantrian' => $_GET['noantrian'],
-              'postdate' => date('Y-m-d'),
-              'start_time' => date('H:i:s'),
-              'end_time' => '00:00:00'
-            ]);
-          //redirect(url('anjungan/pasien'));
-        break;
-        // End Ausyi 3 Antrian
-
-        // Start Ausyi Loket Action
-        case "ausyiantrianloket" :
-          echo $this->settings->get('anjungan.no_antrian_loket');
-        break;
-        case "ausyikonterloket" :
-          echo $this->settings->get('anjungan.konter_antrian_loket');
-        break;
-
-        case "ausyiantriancs" :
-          echo $this->settings->get('anjungan.no_antrian_cs');
-        break;
-        case "ausyikontercs" :
-          echo $this->settings->get('anjungan.konter_antrian_cs');
-        break;
-
-        case "ausyiantrianigd" :
-          echo $this->settings->get('anjungan.no_antrian_igd');
-        break;
-        case "ausyikonterigd" :
-          echo $this->settings->get('anjungan.konter_antrian_igd');
-        break;
-
-        // END Ausyi Loket Action
 
         case "tampilapotek":
           $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
@@ -2767,7 +2570,8 @@ class Site extends SiteModule
 
     public function _resultDisplayBed()
     {
-        $query = $this->core->mysql()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal , b.kelas");
+
+        $query = $this->core->mysql()->pdo()->prepare("SELECT a.nm_bangsal, b.kelas , a.kd_bangsal FROM bangsal a, kamar b WHERE a.kd_bangsal = b.kd_bangsal AND b.statusdata = '1' GROUP BY b.kd_bangsal, b.kelas");
         $query->execute();
         $rows = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -2783,6 +2587,9 @@ class Site extends SiteModule
                   ->where('kamar.statusdata','1')
                   ->group(array('kamar.kd_bangsal','kamar.kelas'))
                   ->oneArray();
+                if(empty($row['kosong']['jumlah'])) {
+                  $row['kosong']['jumlah'] = 0;
+                }
                 $row['isi'] = $this->core->mysql('kamar')
                   ->select(['jumlah' => 'COUNT(kamar.status)'])
                   ->join('bangsal', 'bangsal.kd_bangsal = kamar.kd_bangsal')
@@ -2792,6 +2599,9 @@ class Site extends SiteModule
                   ->where('kamar.statusdata','1')
                   ->group(array('kamar.kd_bangsal','kamar.kelas'))
                   ->oneArray();
+                if(empty($row['isi']['jumlah'])) {
+                  $row['isi']['jumlah'] = 0;
+                }
                 $result[] = $row;
             }
         }

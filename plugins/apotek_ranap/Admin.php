@@ -186,6 +186,7 @@ class Admin extends AdminModule
       $get_resep_dokter_nonracikan = $this->core->mysql('resep_dokter')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
       $get_resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
       $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
+
       foreach ($get_resep_dokter as $item) {
 
         $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
@@ -206,8 +207,8 @@ class Admin extends AdminModule
             'keluar' => $item['jml'],
             'stok_akhir' => $get_gudangbarang['stok'] - $item['jml'],
             'posisi' => 'Pemberian Obat',
-            'tanggal' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
+            'tanggal' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
             'petugas' => $this->core->getUserInfo('fullname', null, true),
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'status' => 'Simpan',
@@ -217,9 +218,9 @@ class Admin extends AdminModule
 
         $this->core->mysql('detail_pemberian_obat')
           ->save([
-            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'tgl_perawatan' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
             'biaya_obat' => $get_databarang['h_beli'],
@@ -235,9 +236,9 @@ class Admin extends AdminModule
 
         $this->core->mysql('aturan_pakai')
           ->save([
-            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'tgl_perawatan' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'aturan' => $item['aturan_pakai']
           ]);

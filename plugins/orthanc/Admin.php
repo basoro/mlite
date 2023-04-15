@@ -53,7 +53,6 @@ class Admin extends AdminModule
       curl_close($curl);
 
       $patient = json_decode($resp, TRUE);
-      //var_dump($patient);
 
       $pacs['patientUUID'] = $patient[0]["ID"];
 
@@ -68,6 +67,7 @@ class Admin extends AdminModule
         curl_close($curl);
 
         $study = json_decode($resp, TRUE);
+        //echo json_encode($study);
 
         $pacs['Studies'] = $study["Studies"][0];
 
@@ -81,34 +81,48 @@ class Admin extends AdminModule
           curl_close($curl);
 
           $series = json_decode($resp, TRUE);
+          //echo json_encode($series);
 
-          $pacs['Series'] = $series["Series"][0];
+          $pacs['Series'] = json_encode($series["Series"]);
+
+          //echo $pacs['Series'];
 
           if($pacs['Series'] != "") {
-            $curl = curl_init();
-            curl_setopt ($curl, CURLOPT_URL, $orthanc . '/series/' . $pacs['Series']);
-            curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
-            curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
-            $resp = curl_exec($curl);
-            curl_close($curl);
-
-            $Instances = json_decode($resp, TRUE);
-
-            $pacs['Instances'] = $Instances["Instances"][0];
-
-            if($pacs['Instances'] != "") {
+            foreach (json_decode($pacs['Series'], true) as $series) {
               $curl = curl_init();
-              curl_setopt ($curl, CURLOPT_URL, $orthanc . '/instances/' . $pacs['Instances']);
+              curl_setopt ($curl, CURLOPT_URL, $orthanc . '/series/' . $series);
               curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
               curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
               curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
               $resp = curl_exec($curl);
               curl_close($curl);
 
-              $pacs['instances'] = json_decode($resp, TRUE);
+              $Instances = json_decode($resp, TRUE);
+              //echo json_encode($Instances);
 
-              $pacs['url'] = $orthanc . '/instances/' . $pacs['Instances'] . '/preview';
+              $pacs['Instances'][] = $Instances;
+              //echo $pacs['Instances'];
+              /*
+              if($pacs['Instances'] != "") {
+                foreach ($pacs['Instances'] as $instances) {
+                  $curl = curl_init();
+                  curl_setopt ($curl, CURLOPT_URL, $orthanc . '/instances/' . $instances);
+                  curl_setopt ($curl, CURLOPT_RETURNTRANSFER, 1);
+                  curl_setopt ($curl, CURLOPT_USERPWD, $this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+                  curl_setopt ($curl, CURLOPT_TIMEOUT, 30);
+                  $resp = curl_exec($curl);
+                  curl_close($curl);
+
+                  $pacs['instances'] = json_decode($resp, TRUE);
+                  //echo json_encode($pacs['instances']);
+
+                  //$pacs['url'] = '';
+                  //$pacs['url'] = $orthanc . '/instances/' . $pacs['instances']['ID'] . '/rendered/?width=200';
+
+                }
+
+              }
+              */
 
             }
 
@@ -116,14 +130,53 @@ class Admin extends AdminModule
 
         }
 
-      } else {
-        echo "Patient Not Found";
       }
 
       $this->tpl->set('pacs', $pacs);
       $this->tpl->set('orthanc', $orthanc);
 
       echo $this->tpl->draw(MODULES.'/orthanc/view/admin/orthanc.html', true);
+      exit();
+    }
+
+    public function postSavePACS()
+    {
+      if(isset($_POST["image_url"]))
+      {
+       $message = '';
+       $image = '';
+       if(filter_var($_POST["image_url"], FILTER_VALIDATE_URL))
+       {
+         $auth = base64_encode($this->settings->get('orthanc.username').":".$this->settings->get('orthanc.password'));
+         $context = stream_context_create([
+             "http" => [
+                 "header" => "Authorization: Basic $auth"
+             ]
+         ]);
+         $image_data = file_get_contents($_POST["image_url"], false, $context);
+         $filename = time().'.png';
+         $new_image_path = WEBAPPS_PATH.'/radiologi/pages/upload/'.$filename;
+         file_put_contents($new_image_path, $image_data);
+         $message = 'Hasil PACS telah disimpan ke server SIMRS';
+         $result = $this->core->mysql('gambar_radiologi')
+           ->save([
+             'no_rawat' => $_POST['no_rawat'],
+             'tgl_periksa' => $_POST['tgl_periksa'],
+             'jam' => $_POST['jam_periksa'],
+             'lokasi_gambar' => 'pages/upload/'.$filename
+           ]);
+
+       }
+       else
+       {
+        $message = 'Invalid Url';
+       }
+       $output = array(
+        'message' => $message,
+        'image'  => $image
+       );
+       echo json_encode($output);
+      }
       exit();
     }
 

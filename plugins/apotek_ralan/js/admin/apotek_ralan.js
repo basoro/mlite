@@ -338,6 +338,7 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
   var no_rawat = $(this).attr("data-no_rawat");
   var tgl_peresepan = $(this).attr("data-tgl_peresepan");
   var jam_peresepan = $(this).attr("data-jam_peresepan");
+  var jenis_racikan = $(this).attr("data-racikan");
 
   // tampilkan dialog konfirmasi
   bootbox.confirm("Apakah Anda yakin ingin menvalidasi data resep ini?", function(result){
@@ -348,7 +349,8 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         no_resep: no_resep,
         no_rawat: no_rawat,
         tgl_peresepan: tgl_peresepan,
-        jam_peresepan: jam_peresepan
+        jam_peresepan: jam_peresepan,
+        jenis_racikan: jenis_racikan
       } ,function(data) {
         var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,

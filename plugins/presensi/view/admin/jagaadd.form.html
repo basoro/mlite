@@ -4,18 +4,12 @@
           <div class="panel-heading">
               <h3 class="panel-title">Tambah Data Jam Jaga</h3>
               <ul class="nav nav-tabs">
-                  <li class="{if: empty($jamjaga.getStatus)}{/if}">
+                  <li class="{if: !empty($jamjaga.getStatus)}{/if}">
                       <a href="{?=url(ADMIN.'/presensi/jamjaga')?}" role="tab">Jam Jaga</a>
                   </li>
-                  <!-- <li class="{if: !empty($jamjaga.getStatus)}active{/if}">
-                      <a href="{?=url(ADMIN.'/master/petugas?status=0')?}" role="tab">Tidak Aktif</a>
-                  </li> -->
-                  <!-- <li>
-                      <a href="{$jamjaga.printURL}" target="_blank" role="tab">Cetak</a>
-                  </li> -->
-                  <!-- <li class="{if: $jamjaga.addUrl}active{/if}">
+                  <li class="{if: empty($jamjaga.addUrl)}active{/if}">
                       <a href="{$jamjaga.addURL}" role="tab">Tambah</a>
-                  </li> -->
+                  </li>
               </ul>
           </div>
           <div class="panel-body">
@@ -61,7 +55,7 @@
               </div>
               <div class="form-group">
                 <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
-              </div>                
+              </div>
             </form>
           </div>
       </div>

@@ -68,7 +68,7 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar, $type)
+    public function _Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa='', $status_pulang='', $status_bayar='', $type='')
     {
         $this->_addHeaderFiles();
 
@@ -214,7 +214,12 @@ class Admin extends AdminModule
               'jam_keluar' => date('H:i:s'),
               'no_rkm_medis' => '',
               'nm_pasien' => '',
+              'tgl_lahir' => '',
+              'jk' => '',
+              'alamat' => '',
+              'no_tlp' => '',
               'no_rawat' => '',
+              'no_reg' => '',
               'kd_dokter' => '',
               'kd_kamar' => '',
               'kd_pj' => '',
@@ -857,6 +862,7 @@ class Admin extends AdminModule
         if (!file_exists($dir)) {
             mkdir(WEBAPPS_PATH."/radiologi", 0777);
             mkdir(WEBAPPS_PATH."/radiologi/pages", 0777);
+            mkdir(WEBAPPS_PATH."/radiologi/pages/upload", 0777);
             mkdir($dir, 0777, true);
         }
 

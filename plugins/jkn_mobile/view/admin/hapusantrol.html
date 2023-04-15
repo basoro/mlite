@@ -1,0 +1,22 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Booking Antrian Online</h3>
+            </div>
+            <div class="panel-body">
+              <br>
+              <div class="alert alert-danger alert-dismissible fade in" role="alert" style="border-radius:0px;margin-top:-15px;">{$notif}<button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $(function () {
+    setTimeout(function() {
+      window.location.replace("{?=url([ADMIN,'jkn_mobile','bookingantrol'])?}");
+    }, 1000);
+  });
+</script>
