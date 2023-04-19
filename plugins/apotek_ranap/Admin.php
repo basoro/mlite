@@ -244,9 +244,26 @@ class Admin extends AdminModule
           ]);
       }
 
+      $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $_POST['no_resep'])->oneArray();
+
+      if(!empty($resep_dokter_racikan)) {
+        $this->core->mysql('obat_racikan')->save(
+          [
+              'tgl_perawatan' => date('Y-m-d'),
+              'jam' => date('H:i:s'),
+              'no_rawat' => $_POST['no_rawat'],
+              'no_racik' => $resep_dokter_racikan['no_racik'],
+              'nama_racik' => $resep_dokter_racikan['nama_racik'],
+              'kd_racik' => $resep_dokter_racikan['kd_racik'],
+              'jml_dr' => $resep_dokter_racikan['jml_dr'],
+              'aturan_pakai' => $resep_dokter_racikan['aturan_pakai'],
+              'keterangan' => $resep_dokter_racikan['keterangan']
+          ]
+        );
+      }
+      
       $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
 
-      //var_dump($get_resep);
       exit();
     }
 

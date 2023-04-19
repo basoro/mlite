@@ -78,6 +78,18 @@ return [
         `jml` double DEFAULT NULL
       ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
 
+      $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `obat_racikan` (
+        `tgl_perawatan` date NOT NULL,
+        `jam` time NOT NULL,
+        `no_rawat` varchar(17) NOT NULL,
+        `no_racik` varchar(2) NOT NULL,
+        `nama_racik` varchar(100) NOT NULL,
+        `kd_racik` varchar(3) NOT NULL,
+        `jml_dr` int(11) NOT NULL,
+        `aturan_pakai` varchar(150) NOT NULL,
+        `keterangan` varchar(50) NOT NULL
+      ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
+
       $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_lab`
         ADD PRIMARY KEY (`noorder`),
         ADD KEY `dokter_perujuk` (`dokter_perujuk`),
@@ -109,6 +121,12 @@ return [
         ADD PRIMARY KEY (`no_resep`,`no_racik`,`kode_brng`),
         ADD KEY `kode_brng` (`kode_brng`);");
 
+      $core->mysql()->pdo()->exec("ALTER TABLE `obat_racikan`
+        ADD PRIMARY KEY (`tgl_perawatan`,`jam`,`no_rawat`,`no_racik`) USING BTREE,
+        ADD KEY `kd_racik` (`kd_racik`) USING BTREE,
+        ADD KEY `no_rawat` (`no_rawat`) USING BTREE,
+        ADD KEY `no_racik` (`no_racik`) USING BTREE;");
+
       $core->mysql()->pdo()->exec("ALTER TABLE `permintaan_lab`
         ADD CONSTRAINT `permintaan_lab_ibfk_2` FOREIGN KEY (`dokter_perujuk`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `permintaan_lab_ibfk_3` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;");
@@ -137,6 +155,11 @@ return [
       $core->mysql()->pdo()->exec("ALTER TABLE `resep_dokter_racikan_detail`
         ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_1` FOREIGN KEY (`no_resep`) REFERENCES `resep_obat` (`no_resep`) ON DELETE CASCADE ON UPDATE CASCADE,
         ADD CONSTRAINT `resep_dokter_racikan_detail_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE;");
+
+
+      $core->mysql()->pdo()->exec("ALTER TABLE `obat_racikan`
+        ADD CONSTRAINT `obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
+        ADD CONSTRAINT `obat_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON UPDATE CASCADE;");
 
       $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `resume_pasien` (
         `no_rawat` varchar(17) NOT NULL,
