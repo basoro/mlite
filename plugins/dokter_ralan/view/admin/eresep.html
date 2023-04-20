@@ -283,7 +283,7 @@
       var kd_racik = $(this).attr("data-kd_racik");
       var nm_racik = $(this).attr("data-nm_racik");
 
-      $('input:hidden[name=kd_jenis_prw]').val(kd_racik);
+      $('input:hidden[name=kd_jenis_prw_eresep]').val(kd_racik);
       $('input:text[name=nm_perawatan_eresep]').val(nm_racik);
       $('input:text[name=biaya_eresep]').val('');
 
@@ -442,7 +442,11 @@
     var keterangan      = $('textarea[name=keterangan_eresep]').val();
     var kode_brng       = JSON.stringify($('select[name=kode_brng_eresep]').serializeArray());
     var kandungan       = JSON.stringify($('input:text[name=kandungan_eresep]').serializeArray());
-    /*
+    var kat             = 'obat';
+    if(typeof nama_racik !== 'undefined' && nama_racik != ''){
+      var kat           = 'racikan';
+    }
+
     console.log(
       'No Rawat: ' + no_rawat + '\n' +
       'Kd Jenis Prw: ' + kd_jenis_prw + '\n' +
@@ -453,10 +457,11 @@
       'Aturan Pakai: ' + aturan_pakai + '\n' +
       'Nama Racik: ' + nama_racik + '\n' +
       'Keterangan: ' + keterangan + '\n' +
+      'Kategori: ' + kat + '\n' +
       'Kode Barang: ' + kode_brng + '\n' +
       'Kandungan: ' + kandungan + '\n'
     );
-    */
+
     var url = baseURL + '/dokter_ralan/savedetail?t=' + mlite.token;
     $.post(url, {
       no_rawat : no_rawat,
@@ -470,7 +475,7 @@
       keterangan     : keterangan,
       kode_brng      : kode_brng,
       kandungan      : kandungan,
-      kat            : 'obat'
+      kat            : kat
     }, function(data) {
       console.log(data);
       // tampilkan data
