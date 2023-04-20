@@ -413,7 +413,7 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rawat = $('input:text[name=no_rawat]').val();
-    var loadURL =  baseURL + '/dokter_ralan/eresep/' + no_rawat.replace('/','') + '?t=' + mlite.token;
+    var loadURL =  baseURL + '/dokter_ralan/eresep/' + no_rawat.replaceAll('/','') + '?t=' + mlite.token;
 
     var modal = $('#eresepModal');
     var modalContent = $('#eresepModal .modal-content');
