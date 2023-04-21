@@ -33,8 +33,7 @@ Pertama unduh versi terbaru [mLITE](https://github.com/basoro/khanza-lite).
 
 Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Untuk server cloud, sambungkan melalui klien (S)FTP, seperti program [FileZilla](https://filezilla-project.org) gratis. Biasanya, file harus diunggah ke `www`, `htdocs` atau `public_html`.
 
-**Peringatan!** 
-Pastikan file `.htaccess` juga ada di server. Tanpa itu mLITE tidak akan berfungsi.
+**Peringatan!** Pastikan file `.htaccess` juga ada di server. Tanpa itu mLITE tidak akan berfungsi.
 
 Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file berikut:
 
@@ -46,46 +45,44 @@ Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan
 
 Buka browser Anda dan arahkan ke alamat tempat file mLITE berada. Tunggu beberapa saat sampai proses instalasi dibelakang layar (background) selesai.
 
-Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL. 
-**Login dan kata sandi awal adalah *"admin"*.
-** Ini harus diubah segera setelah login untuk alasan keamanan. Kami juga merekomendasikan mengganti nama direktori dengan panel administrasi. *(Anda perlu mengubah nilai konstanta dalam file definisi di config.php)*.
+Untuk masuk ke panel administrasi, tambahkan `/admin/` di akhir URL. **Login dan kata sandi awal adalah *"admin"*.** Ini harus diubah segera setelah login untuk alasan keamanan. Kami juga merekomendasikan mengganti nama direktori dengan panel administrasi. *(Anda perlu mengubah nilai konstanta dalam file definisi di config.php)*.
 
 
 Konfigurasi
--------------
+-----------
 
-mLITE dapat dikonfigurasi dengan mengedit pengaturan di panel administrasi dan melalui file definisi. Namun, kami tidak menyarankan mengubah konfigurasi dalam file jika Anda adalah orang yang tidak berpengalaman.
+mLITE dapat dikonfigurasi dengan mengedit pengaturan di panel administrasi dan melalui file config.php. Namun, kami menyarankan mengubah beberapa konfigurasi dalam file jika Anda adalah orang yang tidak berpengalaman. Seperti informasi nama database, user, pengguna dan host.
 
 ### Panel Administrasi
-Untuk mengubah konfigurasi dasar di panel admin, pilih tab `Pengaturan`. Anda dapat memasukkan nama instansi, deskripsi atau kata kunci di tag meta, serta di tempat lain di template default, seperti di header. Anda juga dapat mengubah default tampilan beranda.
+Untuk mengubah konfigurasi dasar di panel admin, pilih tab `Pengaturan`. Anda dapat memasukkan nama instansi, deskripsi dan lain sebagainya, serta di tempat lain di template default, seperti di header. Anda juga dapat mengubah default tampilan beranda.
 
-Anda akan mengubah konfigurasi modul yang tersisa di tab yang sesuai dengan namanya.
+Anda juga bisa mengaktifkan modul yang belum aktif di tab yang sesuai dengan namanya.
 
-### Defines file
-More advanced things you can change in the `config.php` file, which contains definitions of constant variables.
+### Konfigurasi file
+Hal-hal lebih lanjut yang dapat Anda ubah di file `config.php`, yang berisi definisi variabel konstanta.
 
-+ `ADMIN` — the directory name that contains the administration panel
-+ `MULTI_APP` — mode multiple app with storing setting to SqLITE
-+ `THEMES` — path to the directory containing the themes
-+ `MODULES` — path to the directory containing the modules
-+ `UPLOADS` — path to the directory containing the uploaded files
-+ `FILE_LOCK` — lock the ability to edit files through the administration panel
-+ `BASIC_MODULES` — list of basic modules that can not be removed
-+ `DEV_MODE` — developer mode, where PHP errors and notes are displayed
++ `ADMIN` — nama direktori yang berisi panel administrasi
++ `MULTI_APP` — mode beberapa aplikasi dengan pengaturan penyimpanan ke SqLITE
++ `THEMES` — path ke direktori yang berisi tema
++ `MODULES` — path ke direktori yang berisi modul
++ `UPLOADS` — path ke direktori yang berisi file yang diunggah
++ `FILE_LOCK` — membatasi untuk mengedit file melalui panel administrasi
++ `BASIC_MODULES` — daftar modul dasar yang tidak dapat dihapus
++ `DEV_MODE` — mode pengembang, di mana kesalahan dan catatan PHP ditampilkan
 
 
-Update
-------
+Pembaruan (Update)
+------------------
 
-Jika Anda ingin tetap up to date dengan semua berita terbaru, perbaikan bug dan masalah keamanan, Anda harus secara teratur memeriksa pembaruan mLITE. Anda dapat melakukannya di tab `Pengaturan -> Pembaruan`. Sistem akan memeriksa versi baru skrip dan secara otomatis mengunduh paket baru dari server kami dan memperbarui file dan modul inti.
+Jika Anda ingin tetap up to date dengan semua berita terbaru, perbaikan bug dan masalah keamanan, Anda harus secara teratur memeriksa pembaruan mLITE. Anda dapat melakukannya di tab `Pengaturan -> Pembaruan`. Sistem akan memeriksa versi baru skrip dan secara otomatis mengunduh paket baru dari server Github dan memperbarui file dan modul inti.
 
-Jika terjadi komplikasi, Anda dapat menggunakan mode manual. Untuk melakukannya, unduh mLITE versi terbaru, unggah ke direktori aplikasi utama, lalu tambahkan parameter `&manual` di akhir URL bookmark pembaruan. CMS akan mendeteksi paket zip dan ketika Anda mengklik tombol update, proses mengekstrak dan menimpa file akan dilakukan.
+Jika terjadi kesalahan atau kesulitan update otomatis, Anda dapat menggunakan mode update manual. Untuk melakukannya, unduh mLITE versi terbaru, unggah ke direktori aplikasi utama, lalu tambahkan parameter `&manual` di akhir URL bookmark pembaruan. CMS akan mendeteksi paket zip dan ketika Anda mengklik tombol update, proses mengekstrak dan menimpa file akan dilakukan.
 
 Sebelum setiap pembaruan, mLITE membuat cadangan. Anda akan menemukannya di direktori skrip, di folder `backup/`. Jika pembaruan gagal, Anda dapat memulihkannya kapan saja.
 
 
-Themes
-======
+Tema (Themes)
+============
 
 Struktur
 --------
@@ -96,14 +93,14 @@ Struktur tema dalam mLITE sangat sederhana. Cukup buat folder baru di direktori 
 + `manifest.json` — informasi tema
 + `preview.png` — tangkapan layar yang menunjukkan tema *(opsional)*
 
-Setiap subhalaman dapat menggunakan template lain, jadi selain file yang disebutkan, Anda juga dapat membuat yang lain, misalnya `xyz.html`. Pemilihan template tersedia di panel admin saat membuat halaman. Tidak ada aturan tentang file CSS dan JS. Ada kebebasan penuh.
+Setiap sub halaman dapat menggunakan template lain, jadi selain file yang disebutkan, Anda juga dapat membuat yang lain, misalnya `xyz.html`. Pemilihan template tersedia di panel admin saat membuat halaman. Tidak ada aturan tentang file CSS dan JS. Ada kebebasan penuh.
 
-Di folder tema Anda juga dapat membuat tampilan modul Anda sendiri. Untuk melakukan ini, Anda perlu membuat direktori `plugins/plugin_name` dan file `*.html` dengan nama yang sesuai dengan nama tampilan asli. Misalnya, tampilan formulir kontak harus dimuat dalam jalur berikut: `themes/theme_name/plugins/contact/form.html`. mLITE secara otomatis mendeteksi tampilan baru dan menggunakannya sebagai ganti tampilan default modul.
+Di folder tema Anda juga dapat membuat tampilan modul Anda sendiri. Untuk melakukan ini, Anda perlu membuat direktori `plugins/nama_plugin` dan file `*.html` dengan nama yang sesuai dengan nama tampilan asli. Misalnya, tampilan formulir kontak harus dimuat dalam jalur berikut: `themes/nama_tema/plugins/kontak/form.html`. mLITE secara otomatis mendeteksi tampilan baru dan menggunakannya sebagai ganti tampilan default modul.
 
 Tag template
--------------
+------------
 
-mLITE menggunakan sistem templat sederhana yang menyertakan tag berikut:
+mLITE menggunakan sistem template sederhana yang menyertakan tag berikut:
 
 ### Variables
 ```php
@@ -143,7 +140,7 @@ Akses ke elemen array dilakukan oleh karakter titik.
 ```
 Tag loop memiliki 3 tahap ekspansi. Yang pertama adalah variabel array yang sistem template akan pecah menjadi tiga variabel bernama `$key`,` $value` dan `$counter`, yang menghitung iterasi berturut-turut mulai dari nol. Langkah kedua memungkinkan Anda menentukan nama variabel yang menyimpan nilai, dan langkah ketiga juga merupakan nama variabel indeks.
 
-### Include template files
+### Menyisipkan berkas template
 ```html
 <html>
     <body>
@@ -156,7 +153,7 @@ Tag loop memiliki 3 tahap ekspansi. Yang pertama adalah variabel array yang sist
 </html>
 ```
 
-### PHP code
+### Menyisipkan kode PHP
 ```php
 Today&grave;s date: {?= date('Y-m-d') ?}
 ```
@@ -165,15 +162,15 @@ Jika Anda membiarkan karakter `=`, kode hanya akan dijalankan dan tidak ada yang
 {? $foo = 5 ?}
 ```
 
-### Disable parsing
+### Mengabaikan (disable) parsing
 ```
-{noparse}Use the {$ contact.form} tag to display contact form.{/noparse}
+{noparse}Gunakan tag {$ contact.form} tuntuk menampiljan formulir kontak.{/noparse}
 ```
 Tag apa pun di dalam ekspresi *noparse* akan tetap tidak berubah.
 
-### Comments
+### Komentar (comments)
 ```
-{* this is a comment *}
+{* ini adalah komentar *}
 ```
 Komentar tidak terlihat di file sumber setelah mengkompilasi template.
 
@@ -184,7 +181,6 @@ mLITE, seperti pluginnya, menyediakan banyak variabel *(biasanya array)* yang be
 + `{$settings.pole}` — elemen larik yang berisi nilai bidang pengaturan mLITE yang diberikan
 + `{$settings.moduł.pole}` — elemen larik yang berisi nilai bidang pengaturan modul
 + `{$mlite.path}` — menyimpan jalur tempat sistem berada
-+ `{$mlite.lang}` — menampilkan bahasa yang sedang digunakan
 + `{$mlite.notify}` — pemberitahuan terakhir
 + `{$mlite.notify.text}` - teks notifikasi
 + `{$mlite.notify.type}` - jenis pesan yang sesuai dengan kelas Bootstrap *(bahaya, sukses)*
@@ -262,7 +258,7 @@ Saat membuat plugin, Anda perlu memikirkan jenis plugin apa yang ingin Anda guna
 + `Admin.php` — konten file ini dapat diakses melalui panel admin
 + `Site.php` — konten file ini akan tersedia untuk pengunjung situs ini
 
-File keempat tetapi opsional adalah `ReadMe.md` yang seharusnya berisi informasi tambahan untuk pengguna mendatang di [Penurunan harga](https://en.wikipedia.org/wiki/Markdown), mis. cara menggunakan plugin.
+File keempat tetapi opsional adalah `ReadMe.md` yang seharusnya berisi informasi tambahan untuk pengguna mendatang di [Penurunan harga](https://en.wikipedia.org/wiki/Markdown), misalnya cara menggunakan plugin.
 
 Jika Anda berencana untuk menulis plugin yang akan menggunakan HTML, sebaiknya pastikan kode PHP terpisah dari bahasa markup hypertext. Untuk melakukan ini, Anda perlu membuat direktori `views` di dalam folder modul. Sertakan file tampilan apa pun di dalamnya.
 
@@ -294,16 +290,14 @@ File paling penting untuk setiap modul. Ini berisi informasi dasar dan instruksi
         'description'   =>  'Lorem ipsum....',
         'author'        =>  'Basoro',
         'version'       =>  '1.0',
-        'compatibility' =>  '2022*',                    // Compatibility with mLITE version
+        'compatibility' =>  '2022*',                  // Kesesuaian dengan versi mLITE
         'icon'          =>  'bolt',
-
-        'pages'         =>  ['Contoh' => 'contoh'],   // Registration as a page (optional)
-
-        'install'       =>  function() use($core)       // Install commands
+        'pages'         =>  ['Contoh' => 'contoh'],   // Berfungsi sebagai halaman (opsional)
+        'install'       =>  function() use($core)     // Perintah install
         {
             // lorem ipsum...
         },
-        'uninstall'     =>  function() use($core)       // Uninstall commands
+        'uninstall'     =>  function() use($core)     // Perintah uninstall
         {
             // lorem ipsum...    
         }
@@ -329,7 +323,7 @@ Isi file ini akan digunakan di panel admin.
     {
         public function init()
         {
-            // Procedures invoked at module initialization
+            // Prosedur dipanggil pada inisialisasi modul
         }
 
         public function navigation()
@@ -352,25 +346,25 @@ Isi file ini akan digunakan di panel admin.
     }
 ```
 
-Dalam metode `navigasi`, sertakan larik dengan subhalaman modul. Setiap halaman harus diberi metode *(tanpa awalan)*. Item larik ini akan ditampilkan di menu panel administrasi.
+Dalam metode `navigasi`, sertakan baris dengan subhalaman modul. Setiap halaman harus diberi metode *(tanpa awalan)*. Item baris ini akan ditampilkan di menu panel administrasi.
 
-Metode juga dapat menerima argumen yang diteruskan melalui URL. Misalnya, setelah memasukkan alamat `/example/foo/abc`, metode `getFoo` akan mengembalikan *"Foo abc!"*.
+Metode juga dapat menerima argumen yang diteruskan melalui URL. Misalnya, setelah memasukkan alamat `/contoh/foo/abc`, metode `getFoo` akan mengembalikan *"Foo abc!"*.
 
-Seperti yang Anda lihat dalam daftar di atas, setiap metode yang mewakili subhalaman modul harus memiliki awalan yang menentukan jenis permintaan. Dalam kebanyakan kasus, kita akan menggunakan nomenklatur `getFoo`, dan pengiriman formulir `postFoo`. Jika metode mendukung semua jenis, metode tersebut harus mendahului awalan `any` *(misalnya, `anyFoo`)*. Ini penting karena halaman tanpa awalan tidak akan ditangani. Metode yang didukung diterjemahkan oleh perutean dinamis sebagai berikut:
+Seperti yang Anda lihat dalam daftar di atas, setiap metode yang mewakili subhalaman modul harus memiliki awalan yang menentukan jenis permintaan. Dalam kebanyakan kasus, kita akan menggunakan nomenklatur `getFoo`, dan pengiriman formulir `postFoo`. Jika metode mendukung semua jenis, metode tersebut harus mendahului awalan `any` *(misalnya, `anyFoo`)*. Ini penting karena halaman tanpa awalan tidak akan direspon. Metode yang didukung diterjemahkan oleh perutean dinamis sebagai berikut:
 
-+ `getFoo()` — sebagai `/example/foo` untuk permintaan GET
-+ `getFoo($parm)` — sebagai `/example/foo/abc` untuk permintaan GET
-+ `postBar()` — sebagai `example/bar` untuk permintaan POST *(pengiriman formulir)*
-+ `anyFoo()` — sebagai `/example/foo` untuk setiap jenis permintaan
++ `getFoo()` — sebagai `/contoh/foo` untuk permintaan GET
++ `getFoo($parm)` — sebagai `/contoh/foo/abc` untuk permintaan GET
++ `postBar()` — sebagai `/contoh/bar` untuk permintaan POST *(pengiriman formulir)*
++ `anyFoo()` — sebagai `/contoh/foo` untuk setiap jenis permintaan
 
-### Site file
+### Berkas (file) halaman umum (site)
 
 File ini bertanggung jawab atas tampilah yang dilihat oleh pengguna. Jika plugins cukup komplek, yang baik adalah mendaftarkannya sebagai halaman dan menerapkan perutean.
 
 ```php
 <?php
 
-    namespace Plugins\Example;
+    namespace Plugins\Contoh;
 
     use Systems\SiteModule
 
@@ -383,14 +377,14 @@ File ini bertanggung jawab atas tampilah yang dilihat oleh pengguna. Jika plugin
 
         public function routes()
         {
-            $this->route('example', 'mySite');
+            $this->route('contoh', 'mySite');
         }
 
         public function mySite()
         {
             $page = [
-                'title' => 'Sample title..',
-                'desc' => 'Site description',
+                'title' => 'Contoh judul halaman..',
+                'desc' => 'Deskripsi halaman',
                 'content' => 'Lorem ipsum dolor...'
             ];
 
@@ -400,12 +394,12 @@ File ini bertanggung jawab atas tampilah yang dilihat oleh pengguna. Jika plugin
 
         private function _foo()
         {            
-            $this->tpl->set('bar', 'Why So Serious?');
+            $this->tpl->set('bar', 'Bisa kan bro?');
         }
     }
 ```
 
-Dalam contoh di atas, variabel template `bar` baru telah dibuat yang, dengan memanggil metode `_foo()` dalam penginisialisasi plugin, dapat digunakan dalam file tema sebagai `{$bar}`. Selain itu, metode `routes()` telah membuat subrutin `/example` yang menunjuk ke pemanggilan metode `mySite()`. Jika Anda membuka `http://example.com/example`, Anda akan memanggil metode `mySite()`.
+Dalam contoh di atas, variabel template `bar` baru telah dibuat yang, dengan memanggil metode `_foo()` dalam penginisialisasi plugin, dapat digunakan dalam file tema sebagai `{$bar}`. Selain itu, metode `routes()` telah membuat subrutin `/contoh` yang menunjuk ke pemanggilan metode `mySite()`. Jika Anda membuka `http://contoh.com/contoh`, Anda akan memanggil metode `mySite()`.
 
 Routing
 -------
@@ -424,11 +418,11 @@ Parameter pertama dari metode `route` adalah ekspresi reguler. Beberapa ekspresi
 
 Parameter kedua adalah nama metode atau fungsi anonim yang melewati sejumlah argumen yang ditentukan dalam ekspresi reguler.
 
-#### Example
+#### Contoh
 ```php
 public function routes()
 {
-    // URL: http://example.com/news
+    // URL: http://contoh.com/news
 
     // - by calling the method inside the module:
     $this->route('news', 'importAllPosts');
@@ -438,17 +432,17 @@ public function routes()
         $this->importAllPosts();
     });
 
-    // URL: http://example.com/news/2
+    // URL: http://contoh.com/news/2
     $this->route('news/(:int)', function($page) {
         $this->importAllPosts($page);
     });
 
-    // URL: http://example.com/news/post/lorem-ipsum
+    // URL: http://contoh.com/news/post/lorem-ipsum
     $this->route('news/post/(:str)', function($slug) {
         $this->importPost($slug);
     });
 
-    // URL: http://example.com/news/post/lorem-ipsum/4
+    // URL: http://contoh.com/news/post/lorem-ipsum/4
     $this->route('news/post/(:str)/(:int)', function($slug, $page) {
         $this->importPost($slug, $page);
     });
@@ -469,10 +463,10 @@ void mysql([string $table])
 
 Memungkinkan Anda untuk beroperasi pada database. Rincian dijelaskan di bagian inti.
 
-#### Arguments
-+ `table` — Database table name *(optional)*
+#### Argumen
++ `table` — Nama tabel database *(optional)*
 
-#### Example
+#### Contoh
 ```php
 $this->core->mysql('table')->where('age', 20)->delete();
 ```
@@ -490,16 +484,16 @@ Mengembalikan kode tampilan terkompilasi yang sebelumnya menggunakan tag sistem 
 + `file` — nama file dengan tampilan di dalam plugin atau ke file di luarnya
 + `variabel` — definisi variabel yang dapat digunakan sebagai tag *(opsional)*
 
-#### Example
+#### Contoh
 ```php
-// Compilation of the view inside the module
+// Kompilasi tampilan di dalam modul
 $this->draw('form.html', ['form' => $this->formFields]);
 
-// Compilation of the view outside the module
+// Kompilasi tampilan di luar modul
 $this->draw('../path/to/view.html', ['foo' => 'bar']);
 ```
 
-### notify
+### notifikasi
 
 ```php
 void notify(string $type, string $text [, mixed $args [, mixed $... ]])
@@ -507,12 +501,12 @@ void notify(string $type, string $text [, mixed $args [, mixed $... ]])
 
 Ini memungkinkan Anda untuk memanggil pemberitahuan kepada pengguna.
 
-#### Arguments
+#### Argumen
 + `type` — type of notification: *success* or *failure*
 + `text` — notyfication content
 + `args` — additional arguments *(optional)*
 
-#### Example
+#### Contoh
 ```php
 $foo = 'Bar';
 $this->notify('success', 'This is %s!', $foo); // $this->core->setNotify('success', 'This is %s!', $foo);
@@ -528,20 +522,20 @@ mixed settings(string $module [, string $field [, string $value]])
 
 Mendapat atau menetapkan nilai pengaturan modul.
 
-#### Arguments
-+ `module` — module name and optionally field separated by a period
-+ `field` — module field name *(optional)*
-+ `value` — the value to which module field will be changed *(optional)*
+#### Argumen
++ `module` — nama modul dan bidang opsional yang dipisahkan oleh titik
++ `field` — nama kolom modul *(opsional)*
++ `value` — nilai bidang modul mana yang akan diubah *(opsional)*
 
-#### Example
+#### Contoh
 ```php
-// Select the "desc" field from the "website" plugin
+// Pilih bidang "desc" dari plugin "website".
 $this->settings('website.desc');    // $this->core->getSettings('website', 'desc');
 
-// Select the "desc" field from the "website" plugin
+// Pilih bidang "desc" dari plugin "situs web".
 $this->settings('website', 'desc'); // $this->core->getSettings('website', 'desc');
 
-// Set the content of the "desc" field from the "website" plugin
+// Setel konten bidang "desc" dari plugin "website".
 $this->settings('website', 'desc', 'Lorem ipsum...');
 ```
 
@@ -551,12 +545,12 @@ $this->settings('website', 'desc', 'Lorem ipsum...');
 void setTemplate(string $file)
 ```
 
-Memungkinkan Anda untuk mengubah file template di bagian depan. Metode ini hanya berfungsi di kelas `Site`.
+Memungkinkan Anda untuk mengubah file template di bagian depan. Metode ini hanya berfungsi di Site class.
 
-#### Arguments
-+ `file` — The name of the template file
+#### Argumen
++ `file` — Nama file template
 
-#### Example
+#### Contoh
 ```php
 $this->setTemplate('index.html'); // $this->core->template = 'index.html';
 ```
