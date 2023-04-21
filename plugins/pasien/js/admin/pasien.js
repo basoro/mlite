@@ -241,6 +241,14 @@ $("#form").on("click","#kartu", function(event){
   window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
 });
 
+// ketika tombol cetak ditekan
+$("#btn_cetak_jasper").click(function(event) {
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var cari = $('input:text[name=cari]').val();
+  window.open(baseURL + '/jasper/pasien?cari=' + cari + '&t=' + mlite.token);
+});
+
 // reset form
 function bersih(){
   $('input:text[name=no_rkm_medis]').val("").removeAttr('disabled');
