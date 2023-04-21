@@ -809,7 +809,7 @@ class Site extends SiteModule
                             $response = array(
                                 'response' => array(
                                     'jenisresep' => $jenis_resep,
-                                    'nomorantrean' => substr($resep['no_resep'], -3),
+                                    'nomorantrean' => $get_mlite_antrian_loket['noantrian'],
                                     'keterangan' => "Resep dibuat secara elektronik di poli"
                                 ),
                                 'metadata' => array(
@@ -2118,23 +2118,24 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        $slug = parseURL();
+        echo '
+        <head>
+         <meta http-equiv="refresh" content="30">
+        </head>
+        <title>This page is moved to new location</title>
+        </head>
+        <body>
+        ';
         $date = date('Y-m-d');
-        $page = 0;
-        $offset = 1;
       	$perpage = 10;
-        if(!empty($slug['3'])) {
-          $page = $slug['3'];
-          $offset = ($page - 1) * $perpage;
-        }
         //$date = '2022-01-21';
         if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
           $date = $_GET['tgl'];
         }
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
         $query = $this->core->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
-        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $offset, $perpage");
+        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE NOT EXISTS (SELECT * FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis)) AND reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
+        ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $perpage");
         $query->execute();
         $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -2156,7 +2157,7 @@ class Site extends SiteModule
         $hari=$day[$tentukan_hari];
 
         foreach ($query as $q) {
-            if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+           if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_peserta'])->oneArray() || !$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
               $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
               $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
               $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
@@ -2222,119 +2223,147 @@ class Site extends SiteModule
               $kodebooking = convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
               if($jenispasien == 'JKN') {
                 if ($referensi['kodebooking'] == '') {
-                    # code...
                     $kodebooking = $nomorreferensi;
                 } else {
                     $kodebooking = $referensi['kodebooking'];
                 }
               }
-              //if(!$referensi) {
-                $data = [
+              $data = [
+                  'kodebooking' => $kodebooking,
+                  'jenispasien' => $jenispasien,
+                  'nomorkartu' => $nomorkartu,
+                  'nik' => $nik,
+                  'nohp' => $nohp,
+                  'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+                  'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+                  'pasienbaru' => $pasienbaru,
+                  'norm' => $q['no_rkm_medis'],
+                  'tanggalperiksa' => $q['tgl_registrasi'],
+                  'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+                  'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+                  'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+                  'jeniskunjungan' => $jeniskunjungan,
+                  'nomorreferensi' => $nomorreferensi,
+                  'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+                  'angkaantrean' => $reg_periksa['no_reg'],
+                  'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
+                  'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                  'kuotajkn' => intval($jadwaldokter['kuota']),
+                  'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+                  'kuotanonjkn' => intval($jadwaldokter['kuota']),
+                  'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+              ];
+              echo 'Request:<br>';
+              echo "<pre>".print_r($data,true)."</pre>";
+              $data = json_encode($data);
+              $url = $this->bpjsurl.'antrean/add';
+              $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+              $data = json_decode($output, true);
+              echo 'Response:<br>';
+              echo json_encode($data);
+              echo $data['metadata']['code'];
+              if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
+
+                $resep_obat = $this->core->mysql('resep_obat')
+                  ->where('tgl_peresepan', $q['tgl_registrasi'])
+                  ->where('no_rawat', $q['no_rawat'])
+                  ->where('status', 'ralan')
+                  ->oneArray();
+
+                $jenisresep = 'No Racikan';
+
+                $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                if(!empty($resep_dokter_racikan)) {
+                  $jenisresep = 'Racikan';
+                }
+
+                $mlite_antrian_loket = $this->core->mysql('mlite_antrian_loket')
+                  ->where('type', 'Apotek')
+                  ->where('postdate', $q['tgl_registrasi'])
+                  ->where('no_rkm_medis', $q['no_rkm_medis'])
+                  ->where('end_time', '<>', '00:00:00')
+                  ->oneArray();
+
+                $data_antrian_farmasi = [
                     'kodebooking' => $kodebooking,
-                    'jenispasien' => $jenispasien,
-                    'nomorkartu' => $nomorkartu,
-                    'nik' => $nik,
-                    'nohp' => $nohp,
-                    'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
-                    'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
-                    'pasienbaru' => $pasienbaru,
-                    'norm' => $q['no_rkm_medis'],
-                    'tanggalperiksa' => $q['tgl_registrasi'],
-                    'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
-                    'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
-                    'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
-                    'jeniskunjungan' => $jeniskunjungan,
-                    'nomorreferensi' => $nomorreferensi,
-                    'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
-                    'angkaantrean' => $reg_periksa['no_reg'],
-                    'estimasidilayani' => strtotime($q['tgl_registrasi'].' '.$cek_kouta['jam_mulai']) * 1000,
-                    'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                    'kuotajkn' => intval($jadwaldokter['kuota']),
-                    'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
-                    'kuotanonjkn' => intval($jadwaldokter['kuota']),
-                    'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+                    'jenisresep' => $jenisresep,
+                    'nomorantrean' => $mlite_antrian_loket['noantrian'],
+                    'keterangan' => 'Resep dibuat secara elektronik di poli'
                 ];
+
                 echo 'Request:<br>';
-                echo "<pre>".print_r($data,true)."</pre>";
-                $data = json_encode($data);
-                $url = $this->bpjsurl.'antrean/add';
-                $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-                $data = json_decode($output, true);
+                echo "<pre>".print_r($data_antrian_farmasi,true)."</pre>";
+                $data_antrian_farmasi = json_encode($data_antrian_farmasi);
+                $url = $this->bpjsurl.'antrean/farmasi/add';
+                $output_farmasi = BpjsService::post($url, $data_antrian_farmasi, $this->consid, $this->secretkey, $this->user_key, NULL);
+                $data_farmasi = json_decode($output_farmasi, true);
                 echo 'Response:<br>';
-                echo json_encode($data);
-                echo $data['metadata']['code'];
-                if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208){
-                  if($jenispasien == 'JKN') {
-                    if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
-                      $this->core->mysql('mlite_antrian_referensi')->save([
-                          'tanggal_periksa' => $q['tgl_registrasi'],
-                          'nomor_kartu' => $q['no_peserta'],
-                          'nomor_referensi' => $nomorreferensi,
-                          'kodebooking' => $kodebooking,
-                          'jenis_kunjungan' => $jeniskunjungan,
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    } else {
-                      $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    }
-                  }
-                  if($jenispasien == 'NON JKN') {
-                    if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
-                      $this->core->mysql('mlite_antrian_referensi')->save([
-                          'tanggal_periksa' => $q['tgl_registrasi'],
-                          'nomor_kartu' => $q['no_rkm_medis'],
-                          'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
-                          'kodebooking' => $kodebooking,
-                          'jenis_kunjungan' => $jeniskunjungan,
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    } else {
-                      $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'])->save([
-                          'status_kirim' => 'Sudah'
-                      ]);
-                    }
+                echo json_encode($data_farmasi);
+                echo $data_farmasi['metadata']['code'];
+                if($data_farmasi['metadata']['code'] == 200 || $data_farmasi['metadata']['code'] == 208){
+                  echo 'Sukses kirim antrian farmasi';
+                }
+
+                if($jenispasien == 'JKN') {
+                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                    $this->core->mysql('mlite_antrian_referensi')->save([
+                        'tanggal_periksa' => $q['tgl_registrasi'],
+                        'nomor_kartu' => $q['no_peserta'],
+                        'nomor_referensi' => $nomorreferensi,
+                        'kodebooking' => $kodebooking,
+                        'jenis_kunjungan' => $jeniskunjungan,
+                        'status_kirim' => 'Sudah'
+                    ]);
+                  } else {
+                    $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
+                        'status_kirim' => 'Sudah'
+                    ]);
                   }
                 }
-                echo '<br>-------------------------------------<br><br>';
-              //}
-            }
+                if($jenispasien == 'NON JKN') {
+                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
+                    $this->core->mysql('mlite_antrian_referensi')->save([
+                        'tanggal_periksa' => $q['tgl_registrasi'],
+                        'nomor_kartu' => $q['no_rkm_medis'],
+                        'nomor_referensi' => convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'],
+                        'kodebooking' => $kodebooking,
+                        'jenis_kunjungan' => $jeniskunjungan,
+                        'status_kirim' => 'Sudah'
+                    ]);
+                  } else {
+                    $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'])->save([
+                        'status_kirim' => 'Sudah'
+                    ]);
+                  }
+                }
+              }
+              echo '<br>-------------------------------------<br><br>';
+           }
         }
-      	//echo print_r($slug);
-      	//echo $slug[3];
-      	$_page = $page + 1;
-      	$page_ = $page - 1;
-        if(isset($slug[3]) && $slug[3] == 1) {
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/add/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/add/>Prev</a> -- ';
-          }
-        } else if(!isset($slug[3])){
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/add/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/add/>Prev</a> -- ';
-          }
-        } else {
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/add/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/add/'.$page_.'>Prev</a> -- ';
-          }
-        }
-        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-          echo '<a href='.url().'/jknmobile/antrian/add/'.$_page.'/?tgl='.$date.'>Next</a>';
-        } else {
-          echo '<a href='.url().'/jknmobile/antrian/add/'.$_page.'>Next</a>';
-        }
+
+        echo '
+        </body>
+        </html>
+        ';
         exit();
     }
 
     public function _getAntreanBatal()
     {
+        echo '
+        <head>
+         <meta http-equiv="refresh" content="30">
+        </head>
+        <title>This page is moved to new location</title>
+        </head>
+        <body>
+        ';
+
         $date = date('Y-m-d');
+        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
+          $date = $_GET['tgl'];
+        }
+
         $query = $this->core->mysql('mlite_antrian_referensi_batal')
           ->where('tanggal_batal', $date)
           ->toArray();
@@ -2361,30 +2390,36 @@ class Site extends SiteModule
             echo '<br>-------------------------------------<br><br>';
         }
 
+        echo '
+        </body>
+        </html>
+        ';
+
         exit();
     }
 
-    public function _getAntreanUpdateWaktu($page = 1)
+    public function _getAntreanUpdateWaktu()
     {
+        echo '
+        <head>
+         <meta http-equiv="refresh" content="30">
+        </head>
+        <title>This page is moved to new location</title>
+        </head>
+        <body>
+        ';
+
         $date = date('Y-m-d');
         if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
           $date = $_GET['tgl'];
         }
 
-        $slug = parseURL();
-        $page = '';
-        $offset = 1;
-      	$perpage = 10;
-        if(!empty($slug['3'])) {
-          $page = $slug['3'];
-          $offset = ($page - 1) * $perpage;
-        }
+      	$perpage = 5;
 
         $query = $this->core->mysql('mlite_antrian_referensi')
           ->where('tanggal_periksa', $date)
           ->where('status_kirim', 'Sudah')
           ->limit($perpage)
-          ->offset(($page-1)*$perpage)
           ->toArray();
 
         echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
@@ -2404,7 +2439,8 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 1,
-                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000
+                        'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
+                        'jenisresep' => 'Tidak ada'
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2447,7 +2483,8 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 2,
-                        'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000
+                        'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000,
+                        'jenisresep' => 'Tidak ada'
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2490,7 +2527,8 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 3,
-                        'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000
+                        'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
+                        'jenisresep' => 'Tidak ada'
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2533,7 +2571,8 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 4,
-                        'waktu' => strtotime($mutasi_berkas['diterima']) * 1000
+                        'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
+                        'jenisresep' => 'Tidak ada'
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2576,7 +2615,8 @@ class Site extends SiteModule
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 5,
-                        'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000
+                        'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000,
+                        'jenisresep' => 'Tidak ada'
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2614,13 +2654,19 @@ class Site extends SiteModule
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                $jenisresep = 'Non racikan';
+                $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                if(!empty($resep_dokter_racikan)) {
+                  $jenisresep = 'Racikan';
+                }
 
                 if($resep_obat){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 6,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
+                        'waktu' => strtotime($resep_obat['datajam']) * 1000,
+                        'jenisresep' => $jenisresep
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2658,12 +2704,19 @@ class Site extends SiteModule
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
                 $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                $jenisresep = 'Non racikan';
+                $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+                if(!empty($resep_dokter_racikan)) {
+                  $jenisresep = 'Racikan';
+                }
+
                 if($resep_obat){
                     date_default_timezone_set($this->settings->get('settings.timezone'));
                     $data = [
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 7,
-                        'waktu' => strtotime($resep_obat['datajam']) * 1000
+                        'waktu' => strtotime($resep_obat['datajam']) * 1000,
+                        'jenisresep' => $jenisresep
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2730,32 +2783,11 @@ class Site extends SiteModule
             }
         }
 
-        $_page = $page + 1;
-      	$page_ = $page - 1;
-        if(isset($slug[3]) && $slug[3] == 1) {
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/>Prev</a> -- ';
-          }
-        } else if(!isset($slug[3])){
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/>Prev</a> -- ';
-          }
-        } else {
-          if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$page_.'/?tgl='.$date.'>Prev</a> -- ';
-          } else {
-            echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$page_.'>Prev</a> -- ';
-          }
-        }
-        if(isset($_GET['tgl']) && $_GET['tgl'] !='') {
-          echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$_page.'/?tgl='.$date.'>Next</a>';
-        } else {
-          echo '<a href='.url().'/jknmobile/antrian/updatewaktu/'.$_page.'>Next</a>';
-        }
+        echo '
+        </body>
+        </html>
+        ';
+
         exit();
     }
 
