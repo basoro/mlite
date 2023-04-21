@@ -372,9 +372,8 @@ abstract class Main
         return $next_no_reg;
     }
 
-    public function setNoResep()
+    public function setNoResep($date)
     {
-        $date = date('Y-m-d');
         $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
@@ -382,7 +381,7 @@ abstract class Main
           $last_no_resep[0] = '0000';
         }
         $next_no_resep = sprintf('%04s', ($last_no_resep[0] + 1));
-        $next_no_resep = date('Ymd').''.$next_no_resep;
+        $next_no_resep = date('Ymd', strtotime($date)).''.$next_no_resep;
 
         return $next_no_resep;
     }

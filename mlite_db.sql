@@ -2878,7 +2878,9 @@ CREATE TABLE IF NOT EXISTS `resep_obat` (
   `kd_dokter` varchar(20) NOT NULL,
   `tgl_peresepan` date DEFAULT NULL,
   `jam_peresepan` time DEFAULT NULL,
-  `status` enum('ralan','ranap') DEFAULT NULL
+  `status` enum('ralan','ranap') DEFAULT NULL,
+  `tgl_penyerahan` date NOT NULL,
+  `jam_penyerahan` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -4349,7 +4351,6 @@ ALTER TABLE `resep_dokter_racikan_detail`
 --
 ALTER TABLE `resep_obat`
   ADD PRIMARY KEY (`no_resep`),
-  ADD UNIQUE KEY `tgl_perawatan` (`tgl_perawatan`,`jam`,`no_rawat`),
   ADD KEY `no_rawat` (`no_rawat`),
   ADD KEY `kd_dokter` (`kd_dokter`);
 
