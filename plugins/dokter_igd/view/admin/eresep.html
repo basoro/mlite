@@ -447,6 +447,7 @@
       var kat           = 'racikan';
     }
 
+    /*
     console.log(
       'No Rawat: ' + no_rawat + '\n' +
       'Kd Jenis Prw: ' + kd_jenis_prw + '\n' +
@@ -461,7 +462,7 @@
       'Kode Barang: ' + kode_brng + '\n' +
       'Kandungan: ' + kandungan + '\n'
     );
-
+    */
 
     var url = baseURL + '/dokter_igd/savedetail?t=' + mlite.token;
     $.post(url, {
@@ -478,7 +479,7 @@
       kandungan      : kandungan,
       kat            : kat
     }, function(data) {
-      console.log(data);
+      //console.log(data);
       // tampilkan data
       $("#display").hide();
       var url = baseURL + '/dokter_igd/rincianeresep?t=' + mlite.token;
