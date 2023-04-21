@@ -178,8 +178,8 @@ Variabel sistem
 ----------------
 mLITE, seperti pluginnya, menyediakan banyak variabel *(biasanya array)* yang berfungsi untuk menampilkan setiap elemen halaman. Berikut adalah yang paling penting:
 
-+ `{$settings.pole}` — elemen larik yang berisi nilai bidang pengaturan mLITE yang diberikan
-+ `{$settings.moduł.pole}` — elemen larik yang berisi nilai bidang pengaturan modul
++ `{$settings.pole}` — elemen yang berisi nilai bidang pengaturan mLITE yang diberikan
++ `{$settings.moduł.pole}` — elemen yang berisi nilai bidang pengaturan modul
 + `{$mlite.path}` — menyimpan jalur tempat sistem berada
 + `{$mlite.notify}` — pemberitahuan terakhir
 + `{$mlite.notify.text}` - teks notifikasi
@@ -620,7 +620,7 @@ $rows = $this->core->mysql('table')->notLike('foo', '%bar%')->orNotLike('foo', '
 
 WHERE IN:
 ```php
-// Ambil baris yang nilai kolomnya 'foo' BERISI dalam larik [1,2,3] ATAU [7,8,9]
+// Ambil baris yang nilai kolomnya 'foo' BERISI dalam baris [1,2,3] ATAU [7,8,9]
 $rows = $this->core->mysql('table')->in('foo', [1,2,3])->orIn('foo', [7,8,9])->toArray();
 ```
 
@@ -828,7 +828,7 @@ $this->tpl->noParse('Letakkan tag ini di situs web: {$contact.form}');
 array noParse_array(array $array)
 ```
 
-Melindungi dari kompilasi tag sistem template di dalam larik.
+Melindungi dari kompilasi tag sistem template di dalam array.
 
 #### Arguments
 + `array` — array dibiarkan tidak berubah
