@@ -670,7 +670,7 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Tambah Jadwal Dokter';
         $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
         $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->toArray();
-        $this->assign['hari_kerja'] = $this->getEnum('jadwal', 'hari_kerja');
+        $this->assign['hari_kerja'] = $this->core->getEnum('jadwal', 'hari_kerja');
         $this->assign['postUrl'] = url([ADMIN, 'rawat_jalan', 'jadwalsave', $this->assign['form']['kd_dokter'], $this->assign['form']['hari_kerja']]);
         return $this->draw('jadwal.form.html', ['pendaftaran' => $this->assign]);
     }
@@ -688,7 +688,7 @@ class Admin extends AdminModule
         if (!empty($row)) {
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit Jadwal';
-            $this->assign['hari_kerja'] = $this->getEnum('jadwal', 'hari_kerja');
+            $this->assign['hari_kerja'] = $this->core->getEnum('jadwal', 'hari_kerja');
             $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
             $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->toArray();
 
@@ -1012,25 +1012,7 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'evaluasi'");
-      $check_db->execute();
-      $check_db = $check_db->fetch();
-
-      $check_db2 = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-      $check_db2->execute();
-      $check_db2 = $check_db2->fetch();
-
-      if($check_db) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-      } else if($check_db2) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-        unset($_POST['spo2']);
-        unset($_POST['evaluasi']);
-      } else {
-        unset($_POST['spo2']);
-        unset($_POST['evaluasi']);
-        unset($_POST['instruksi']);
-      }
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
 
       if(!$this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->core->mysql('pemeriksaan_ralan')->save($_POST);
@@ -1240,21 +1222,6 @@ class Admin extends AdminModule
         $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
 
         return $next_no_rawat;
-    }
-
-    public function getEnum($table_name, $column_name) {
-      $result = $this->core->mysql()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
-      $result->execute();
-      $result = $result->fetch();
-      $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
-      return $result;
-    }
-
-    public function convertNorawat($text)
-    {
-        setlocale(LC_ALL, 'en_EN');
-        $text = str_replace('/', '', trim($text));
-        return $text;
     }
 
     public function postCetak()
