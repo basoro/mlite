@@ -35,6 +35,11 @@
       footer a, footer a:hover {
         color: #fff;
       }
+      span.noantrian {
+        color: white;
+        background-color: red;
+        padding: 5px 10px;
+      }
     </style>
 </head>
 <body>
@@ -49,7 +54,7 @@
               <ul class="list-unstyled">
                 {loop: $display}
                 <li style="padding:10px;">
-                  {$value.nm_pasien} - [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} <span class="pull-right">Status: <b {if: $value.status_resep == 'Sudah'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
+                  <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
                 </li>
                 {/loop}
               </ul>

@@ -38,9 +38,7 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
         $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
-        $this->route('anjungan/farmasi', 'getDisplayAntrianFarmasi');
-        $this->route('anjungan/farmasi2', 'getDisplayAntrianFarmasi2');
-        $this->route('anjungan/farmasi2/ambilantrian', 'getDisplayAntrianFarmasiAmbil');
+        $this->route('anjungan/apotek/ambilantrian', 'getDisplayAntrianApotekAmbil');
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
         $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
@@ -1509,23 +1507,81 @@ class Site extends SiteModule
 
     public function _resultDisplayAntrianApotek()
     {
-        $query = $this->core->mysql('reg_periksa')
-          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-          ->where('tgl_registrasi', date('Y-m-d'))
-          ->where('stts', 'Sudah')
-          ->asc('resep_obat.jam_peresepan')
+        $query = $this->core->mysql('mlite_antrian_loket')
+          ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_loket.no_rkm_medis')
+          ->where('type', 'Apotek')
+          ->where('postdate', date('Y-m-d'))
+          ->where('status', '<>', '3')
           ->toArray();
+
         $rows=[];
         foreach ($query as $row) {
-          $row['status_resep'] = 'Sudah';
-          if($row['jam'] == $row['jam_peresepan']) {
-            $row['status_resep'] = 'Belum';
+          $row['status_resep'] = 'Belum';
+          $row['jenis_resep'] = 'Non Racikan';
+
+          $reg_periksa = $this->core->mysql('reg_periksa')
+            ->where('tgl_registrasi', date('Y-m-d'))
+            ->where('kd_poli', '<>', 'IGDK')
+            ->where('no_rkm_medis', $row['no_rkm_medis'])
+            ->oneArray();
+
+          $resep_obat = $this->core->mysql('resep_obat')
+            ->where('tgl_peresepan', date('Y-m-d'))
+            ->where('no_rawat', $reg_periksa['no_rawat'])
+            ->where('status', 'ralan')
+            ->oneArray();
+
+          $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+
+          if($resep_obat['tgl_perawatan'] != '0000-00-00' && $resep_obat['jam'] != '00:00:00') {
+            $row['status_resep'] = 'Disiapkan';
           }
+
+          if(!empty($resep_dokter_racikan)) {
+            $row['jenis_resep'] = 'Racikan';
+          }
+
           $rows[] = $row;
         }
 
         return $rows;
+    }
+
+    public function getDisplayAntrianApotekAmbil()
+    {
+          $logo  = $this->settings->get('settings.logo');
+          $title = 'Display Antrian Farmasi';
+          $display = '';
+
+          $_username = '';
+          if(isset($_SESSION['mlite_user'])) {
+            $_username = $this->core->getUserInfo('fullname', null, true);
+          }
+          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+          $content = $this->draw('display.antrian.apotek.ambil.html', [
+            'logo' => $logo,
+            'title' => $title,
+            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+            'username' => $username,
+            'vidio' => $this->settings->get('anjungan.vidio'),
+            'tanggal' => $tanggal,
+            'running_text' => $this->settings->get('anjungan.text_farmasi'),
+            'display' => $display
+          ]);
+
+          $assign = [
+              'title' => $this->settings->get('settings.nama_instansi'),
+              'desc' => $this->settings->get('settings.alamat'),
+              'content' => $content
+          ];
+
+          $this->setTemplate("canvas.html");
+
+          $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+          //exit();
     }
 
     public function getPanggilAntrian()
@@ -1660,6 +1716,20 @@ class Site extends SiteModule
               'status' => true,
               'message' => 'Berhasil menyimpan No RM :'.$no_rkm_medis,
           ];
+          if($type == 'Apotek') {
+            $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('kd_poli', '<>', 'IGDK')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+            $this->core->mysql('resep_obat')
+              ->where('tgl_peresepan', date('Y-m-d'))
+              ->where('no_rawat', $reg_periksa['no_rawat'])
+              ->where('tgl_perawatan', '<>', '0000-00-00')
+              ->where('jam', '<>', '00:00:00')
+              ->where('status', 'ralan')
+              ->save([
+                'tgl_penyerahan' => date('Y-m-d'),
+                'jam_penyerahan' => date('H:i:s')
+              ]);
+            $this->core->mysql('mlite_antrian_loket')->where('type', $type)->where('postdate', date('Y-m-d'))->where('no_rkm_medis', $no_rkm_medis)->update('status', 3);
+          }
       } else {
           $res = [
               'status' => false,
@@ -1669,185 +1739,6 @@ class Site extends SiteModule
 
       die(json_encode($res));
       exit();
-    }
-
-    public function getDisplayAntrianFarmasi()
-    {
-         $logo  = $this->settings->get('settings.logo');
-         $title = 'Display Antrian Farmasi';
-         $display = $this->_resultDisplayAntrianFarmasi();
-
-         $_username = '';
-         if(isset($_SESSION['mlite_user'])) {
-           $_username = $this->core->getUserInfo('fullname', null, true);
-         }
-
-         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-         $content = $this->draw('display.antrian.farmasi.html', [
-           'logo' => $logo,
-           'title' => $title,
-           'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-           'username' => $username,
-           'vidio' => $this->settings->get('anjungan.vidio'),
-           'tanggal' => $tanggal,
-           'running_text' => $this->settings->get('anjungan.text_farmasi'),
-           'display' => $display
-         ]);
-
-         $assign = [
-             'title' => $this->settings->get('settings.nama_instansi'),
-             'desc' => $this->settings->get('settings.alamat'),
-             'content' => $content
-         ];
-
-         $this->setTemplate("canvas.html");
-
-         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-         //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasi()
-    {
-         $date = date('Y-m-d');
-         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-         $day = array(
-           'Sun' => 'AKHAD',
-           'Mon' => 'SENIN',
-           'Tue' => 'SELASA',
-           'Wed' => 'RABU',
-           'Thu' => 'KAMIS',
-           'Fri' => 'JUMAT',
-           'Sat' => 'SABTU'
-         );
-         $hari=$day[$tentukan_hari];
-         $rows = $this->core->mysql('reg_periksa')
-           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-           ->where('tgl_peresepan', date('Y-m-d'))
-           ->where('status', 'ralan')
-           ->where('jam=jam_peresepan',true)
-           ->asc('jam')
-           ->toArray();
-
-         return $rows;
-    }
-
-
-    public function getDisplayAntrianFarmasi2()
-    {
-         $logo  = $this->settings->get('settings.logo');
-         $title = 'Display Antrian Farmasi';
-         $display = $this->_resultDisplayAntrianFarmasi2();
-
-         $_username = '';
-         if(isset($_SESSION['mlite_user'])) {
-           $_username = $this->core->getUserInfo('fullname', null, true);
-         }
-         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-         $content = $this->draw('display.antrian.farmasi2.html', [
-           'logo' => $logo,
-           'title' => $title,
-           'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-           'username' => $username,
-           'vidio' => $this->settings->get('anjungan.vidio'),
-           'tanggal' => $tanggal,
-           'running_text' => $this->settings->get('anjungan.text_farmasi'),
-           'display' => $display
-         ]);
-
-         $assign = [
-             'title' => $this->settings->get('settings.nama_instansi'),
-             'desc' => $this->settings->get('settings.alamat'),
-             'content' => $content
-         ];
-
-         $this->setTemplate("canvas.html");
-
-         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-         //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasi2()
-    {
-         $rows = $this->core->mysql('mlite_antrian_loket')
-           ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_loket.no_rkm_medis')
-           ->where('postdate', date('Y-m-d'))
-           ->where('type', 'Apotek')
-           ->where('status', 0)
-           ->asc('noantrian')
-           ->toArray();
-
-         return $rows;
-    }
-
-
-    public function getDisplayAntrianFarmasiAmbil()
-    {
-          $logo  = $this->settings->get('settings.logo');
-          $title = 'Display Antrian Farmasi';
-          $display = $this->_resultDisplayAntrianFarmasiAmbil();
-
-          $_username = '';
-          if(isset($_SESSION['mlite_user'])) {
-            $_username = $this->core->getUserInfo('fullname', null, true);
-          }
-          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-          $content = $this->draw('display.antrian.farmasi.ambil.html', [
-            'logo' => $logo,
-            'title' => $title,
-            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-            'username' => $username,
-            'vidio' => $this->settings->get('anjungan.vidio'),
-            'tanggal' => $tanggal,
-            'running_text' => $this->settings->get('anjungan.text_farmasi'),
-            'display' => $display
-          ]);
-
-          $assign = [
-              'title' => $this->settings->get('settings.nama_instansi'),
-              'desc' => $this->settings->get('settings.alamat'),
-              'content' => $content
-          ];
-
-          $this->setTemplate("canvas.html");
-
-          $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-          //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasiAmbil()
-    {
-         $date = date('Y-m-d');
-         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-         $day = array(
-           'Sun' => 'AKHAD',
-           'Mon' => 'SENIN',
-           'Tue' => 'SELASA',
-           'Wed' => 'RABU',
-           'Thu' => 'KAMIS',
-           'Fri' => 'JUMAT',
-           'Sat' => 'SABTU'
-         );
-         $hari=$day[$tentukan_hari];
-         $rows = $this->core->mysql('reg_periksa')
-           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-           ->where('tgl_peresepan', date('Y-m-d'))
-           ->where('status', 'ralan')
-           ->where('jam=jam_peresepan',true)
-           ->asc('jam')
-           ->toArray();
-
-         return 'Test';
     }
 
     public function getAjax()
