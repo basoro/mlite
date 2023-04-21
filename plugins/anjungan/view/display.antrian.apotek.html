@@ -52,11 +52,15 @@
           <marquee direction="up" scrollamount="3" height="700">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
               <ul class="list-unstyled">
+                {if: $display}
                 {loop: $display}
                 <li style="padding:10px;">
                   <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
                 </li>
                 {/loop}
+                {else}
+                <center><b style="color:white;">Belum ada data antrian!</b></center>
+                {/if}
               </ul>
             </div>
           </marquee>
