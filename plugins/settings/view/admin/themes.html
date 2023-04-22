@@ -14,7 +14,7 @@
                 {if: $settings.theme == $value.dir}
                 <a href="#" class="btn btn-primary btn-block btn-xs disabled">Aktif</a>
                 {else}
-                <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Tidak Aktif</a>
+                <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Aktifkan</a>
                 {/if}
                 <a href="{?= url([ADMIN, 'settings', 'theme', $value.dir]) ?}" class="btn btn-warning btn-block btn-xs">Sunting</a>
             </div>
