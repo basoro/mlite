@@ -192,7 +192,7 @@ class Admin extends AdminModule
       if($cek_pcare) {
         $usernamePcare = $this->settings('pcare', 'usernamePcare');
       }
-      $penjab = $this->core->mysql('penjab')->toArray();
+      $penjab = $this->core->mysql('penjab')->where('status', '1')->toArray();
       $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
       $agama = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
       $pnd = array('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-');

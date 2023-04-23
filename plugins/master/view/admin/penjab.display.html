@@ -9,6 +9,7 @@
           <th>Alamay</th>
           <th>No. Telp</th>
           <th>Attn</th>
+          <th>Status</th>
         </tr>
       </thead>
       <tbody>
@@ -21,6 +22,7 @@
           <td>{$value.alamat_asuransi}</td>
           <td>{$value.no_telp}</td>
           <td>{$value.attn}</td>
+          <td>{if: $value.status == '1'}Aktif{else}Tidak Aktif{/if}</td>
         </tr>
         {/loop}
         {else}

@@ -328,7 +328,7 @@ class Admin extends AdminModule
         $this->assign['perusahaan_pasien'] = $this->core->mysql('perusahaan_pasien')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile.display'));
         $this->assign['exclude_taskid'] = $this->_getPoliklinik($this->settings->get('jkn_mobile.exclude_taskid'));
-        $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
 
         $this->assign['jkn_mobile'] = htmlspecialchars_array($this->settings('jkn_mobile'));
         return $this->draw('settings.html', ['settings' => $this->assign]);

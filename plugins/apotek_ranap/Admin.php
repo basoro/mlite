@@ -60,7 +60,7 @@ class Admin extends AdminModule
 
         $this->assign['kamar'] = $this->core->mysql('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
@@ -148,7 +148,8 @@ class Admin extends AdminModule
           'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
           'status' => 'Simpan',
           'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur']
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
       $this->core->mysql('detail_pemberian_obat')
@@ -213,7 +214,8 @@ class Admin extends AdminModule
             'kd_bangsal' => $this->settings->get('farmasi.deporanap'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
         $this->core->mysql('detail_pemberian_obat')
@@ -261,7 +263,7 @@ class Admin extends AdminModule
           ]
         );
       }
-      
+
       $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
 
       exit();

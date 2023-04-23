@@ -1550,16 +1550,6 @@ class Admin extends AdminModule
             $total_periksa_radiologi += $row['biaya'];
           }
 
-          $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
-            ->where('status', 'ralan')
-            ->where('no_rawat', $no_rawat)
-            ->toArray();
-
-          $total_tambahan_biaya = 0;
-          foreach ($result_detail['tambahan_biaya'] as $row) {
-            $total_tambahan_biaya += $row['besar_biaya'];
-          }
-
           $jumlah_total_operasi = 0;
           $operasis = $this->core->mysql('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $no_rawat)->where('operasi.status', 'Ralan')->toArray();
           $result_detail['operasi'] = [];
@@ -2169,7 +2159,7 @@ class Admin extends AdminModule
   private function _getPenjab($kd_pj = null)
   {
       $result = [];
-      $rows = $this->core->mysql('penjab')->toArray();
+      $rows = $this->core->mysql('penjab')->where('status', '1')->toArray();
 
       if (!$kd_pj) {
           $kd_pjArray = [];

@@ -74,7 +74,7 @@ class Admin extends AdminModule
         $this->assign['kd_billing'] = 'RJ.'.date('d.m.Y.H.i.s');
         $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -199,7 +199,8 @@ class Admin extends AdminModule
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
         $this->core->mysql('detail_pemberian_obat')
@@ -229,15 +230,6 @@ class Admin extends AdminModule
             'aturan' => $_POST['aturan_pakai']
           ]);
 
-      }
-      if($_POST['kat'] == 'tambahan_biaya') {
-        $this->core->mysql('tambahan_biaya')
-          ->save([
-            'no_rawat' => $_POST['no_rawat'],
-            'nama_biaya' => $_POST['nm_perawatan'],
-            'besar_biaya' => $_POST['biaya'],
-            'status' => 'ralan'
-          ]);
       }
 
       if($_POST['kat'] == 'laboratorium') {
@@ -342,16 +334,6 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function postHapusTambahanBiaya()
-    {
-      $this->core->mysql('tambahan_biaya')
-      ->where('no_rawat', $_POST['no_rawat'])
-      ->where('nama_biaya', $_POST['nama_biaya'])
-      ->where('status', 'ralan')
-      ->delete();
-      exit();
-    }
-
     public function postHapusObat()
     {
       $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -377,7 +359,8 @@ class Admin extends AdminModule
           'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
           'status' => 'Hapus',
           'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur']
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
       $this->core->mysql('detail_pemberian_obat')
@@ -499,19 +482,6 @@ class Admin extends AdminModule
         $periksa_radiologi[] = $row;
       }
 
-      $rows_tambahan_biaya = $this->core->mysql('tambahan_biaya')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('status', 'ralan')
-        ->toArray();
-      $tambahan_biaya = [];
-      $no_tambahan_biaya = 1;
-      $jumlah_total_tambahan = 0;
-      foreach ($rows_tambahan_biaya as $row) {
-        $row['nomor'] = $no_tambahan_biaya++;
-        $jumlah_total_tambahan += $row['besar_biaya'];
-        $tambahan_biaya[] = $row;
-      }
-
       $jumlah_total_operasi = 0;
       $operasis = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('status', 'Ralan')->toArray();
       foreach ($operasis as $operasi) {
@@ -539,8 +509,6 @@ class Admin extends AdminModule
         'jumlah_total_lab' => $jumlah_total_lab,
         'periksa_radiologi' => $periksa_radiologi,
         'jumlah_total_radiologi' => $jumlah_total_radiologi,
-        'tambahan_biaya' => $tambahan_biaya,
-        'jumlah_total_tambahan' => $jumlah_total_tambahan,
         'jumlah_total_operasi' => $jumlah_total_operasi,
         'jumlah_total_obat_operasi' => $jumlah_total_obat_operasi,
         'no_rawat' => $_POST['no_rawat']
@@ -569,16 +537,6 @@ class Admin extends AdminModule
         ->limit(10)
         ->toArray();
       echo $this->draw('obat.html', ['obat' => $obat]);
-      exit();
-    }
-
-    public function anyTambahanBiaya()
-    {
-      $tambahan_biaya = $this->core->mysql('tambahan_biaya')
-        ->like('nama_biaya', '%'.$_POST['tambahan_biaya'].'%')
-        ->limit(10)
-        ->toArray();
-      echo $this->draw('tambahan_biaya.html', ['tambahan_biaya' => $tambahan_biaya]);
       exit();
     }
 
@@ -803,33 +761,6 @@ class Admin extends AdminModule
             unset($_POST['jurnal_radiologi']);
           }
           // End jurnal_radiologi //
-
-          // jurnal_tambahan_biaya //
-          if($_POST['jurnal_tambahan_biaya'] != 0) {
-            $no_jurnal_tambahan_biaya = $this->core->setNoJurnal();
-            $keterangan = $this->core->mysql('mlite_rekening')
-            ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_tambahan_biaya'))
-            ->oneArray();
-            $query_jurnal_tambahan_biaya =  $this->core->mysql('mlite_jurnal')->save([
-                'no_jurnal' => $no_jurnal_tambahan_biaya,
-                'no_bukti' => $_POST['no_rawat'],
-                'tgl_jurnal' => date('Y-m-d'),
-                'jenis' => 'U',
-                'kegiatan' => 'Tambahan biaya'.$_POST['no_rawat'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'.',
-                'keterangan' => $keterangan['nm_rek']
-              ]);
-            if($query_jurnal_tambahan_biaya) {
-              $this->core->mysql('mlite_detailjurnal')->save([
-                'no_jurnal' => $no_jurnal_tambahan_biaya,
-                'kd_rek' => $this->settings('keuangan', 'akun_kredit_tambahan_biaya'),
-                'arus_kas' => '1',
-                'debet' => '0',
-                'kredit' => str_replace(".", "", $_POST['jurnal_tambahan_biaya'])
-              ]);
-            }
-            unset($_POST['jurnal_tambahan_biaya']);
-          }
-          // End jurnal_tambahan_biaya //
       }
 
       unset($_POST['jurnal_pendaftaran']);
@@ -837,7 +768,6 @@ class Admin extends AdminModule
       unset($_POST['jurnal_obat_bhp']);
       unset($_POST['jurnal_laboratorium']);
       unset($_POST['jurnal_radiologi']);
-      unset($_POST['jurnal_tambahan_biaya']);
 
       $query = $this->core->mysql('mlite_billing')->save($_POST);
       if($query) {
@@ -941,16 +871,6 @@ class Admin extends AdminModule
         $total_periksa_radiologi = 0;
         foreach ($result_detail['periksa_radiologi'] as $row) {
           $total_periksa_radiologi += $row['biaya'];
-        }
-
-        $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
-          ->where('status', 'ralan')
-          ->where('no_rawat', $_GET['no_rawat'])
-          ->toArray();
-
-        $total_tambahan_biaya = 0;
-        foreach ($result_detail['tambahan_biaya'] as $row) {
-          $total_tambahan_biaya += $row['besar_biaya'];
         }
 
         $jumlah_total_operasi = 0;
@@ -1084,11 +1004,6 @@ class Admin extends AdminModule
         $pdf->Cell(25 ,5,count($result_detail['obat_operasi']),1,0, 'C');
         $pdf->Cell(44 ,5,number_format($jumlah_total_obat_operasi,2,',','.'),1,1,'R');//end of line
 
-        $pdf->Cell(10 ,5,'10',1,0);
-        $pdf->Cell(110 ,5,'Biaya Tambahan',1,0);
-        $pdf->Cell(25 ,5,count($result_detail['tambahan_biaya']),1,0, 'C');
-        $pdf->Cell(44 ,5,number_format($total_tambahan_biaya,2,',','.'),1,1,'R');//end of line
-
         $pdf->SetFont('Arial','B',14);
 
         //summary
@@ -1106,7 +1021,7 @@ class Admin extends AdminModule
 
         $pdf->Cell(120 ,15,'',0,0);
         $pdf->Cell(25 ,15,'Total',0,0);
-        $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$jumlah_total_operasi+$jumlah_total_obat_operasi+$total_tambahan_biaya,2,',','.'),0,0,'R');//end of line
+        $pdf->Cell(44 ,15,'Rp. '.number_format($result_detail['poliklinik']['registrasi']+$total_detail_pemberian_obat+$total_rawat_jl_dr+$total_rawat_jl_pr+$total_rawat_jl_drpr+$total_periksa_lab+$total_periksa_radiologi+$jumlah_total_operasi+$jumlah_total_obat_operasi,2,',','.'),0,0,'R');//end of line
 
         $pdf->Cell(189 ,20,'',0,1);//end of line
 

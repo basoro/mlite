@@ -149,7 +149,7 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul API';
         $this->assign['api'] = htmlspecialchars_array($this->settings('api'));
-        $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
         return $this->draw('settings.apam.html', ['settings' => $this->assign]);
     }
 

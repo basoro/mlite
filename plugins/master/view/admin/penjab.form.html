@@ -39,6 +39,15 @@
               <input type="text" name="attn" class="form-control" value="{$penjab.form.attn}">
             </div>
           </div>
+          <div class="form-group">
+            <label for="" class="col-sm-3 control-label">Status</label>
+            <div class="col-sm-9">
+              <select class="form-control" name="status">
+                <option value="1"{if: $penjab.form.status == '1'} selected{/if}>Aktif</option>
+                <option value="0"{if: $penjab.form.status == '0'} selected{/if}>Tidak Aktif</option>
+              </select>
+            </div>
+          </div>
         </div>
       </div>
     </div>

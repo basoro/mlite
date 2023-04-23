@@ -2366,17 +2366,18 @@ CREATE TABLE IF NOT EXISTS `penjab` (
   `nama_perusahaan` varchar(60) NOT NULL,
   `alamat_asuransi` varchar(130) NOT NULL,
   `no_telp` varchar(40) NOT NULL,
-  `attn` varchar(60) NOT NULL
+  `attn` varchar(60) NOT NULL,
+  `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `penjab`
 --
 
-INSERT INTO `penjab` (`kd_pj`, `png_jawab`, `nama_perusahaan`, `alamat_asuransi`, `no_telp`, `attn`) VALUES
-('-', '-', '-', '-', '0', '0'),
-('BPJ', 'BPJS Kesehatan', '-', '-', '0', '0'),
-('UMU', 'Umum', '-', '-', '0', '0');
+INSERT INTO `penjab` (`kd_pj`, `png_jawab`, `nama_perusahaan`, `alamat_asuransi`, `no_telp`, `attn`, `status`) VALUES
+('-', '-', '-', '-', '0', '0', '1'),
+('BPJ', 'BPJS Kesehatan', '-', '-', '0', '0', '1'),
+('UMU', 'Umum', '-', '-', '0', '0', '1');
 
 -- --------------------------------------------------------
 
@@ -2416,7 +2417,7 @@ CREATE TABLE IF NOT EXISTS `periksa_lab` (
   `biaya` double NOT NULL,
   `kd_dokter` varchar(20) NOT NULL,
   `status` enum('Ralan','Ranap') DEFAULT NULL,
-  `kategori` enum('PK','PA','MB') NOT NULL
+  `kategori` enum('PA','PK','MB') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2623,7 +2624,7 @@ INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, 
 
 CREATE TABLE IF NOT EXISTS `propinsi` (
   `kd_prop` int(11) NOT NULL,
-  `nm_prop` varchar(60) NOT NULL
+  `nm_prop` varchar(30) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
@@ -3026,7 +3027,8 @@ CREATE TABLE IF NOT EXISTS `riwayat_barang_medis` (
   `kd_bangsal` char(5) DEFAULT NULL,
   `status` enum('Simpan','Hapus') DEFAULT NULL,
   `no_batch` varchar(20) NOT NULL,
-  `no_faktur` varchar(20) NOT NULL
+  `no_faktur` varchar(20) NOT NULL,
+  `keterangan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
@@ -3084,8 +3086,8 @@ CREATE TABLE IF NOT EXISTS `skdp_bpjs` (
   `alasan2` varchar(50) DEFAULT NULL,
   `rtl1` varchar(50) DEFAULT NULL,
   `rtl2` varchar(50) DEFAULT NULL,
-  `tanggal_datang` date DEFAULT NULL,
-  `tanggal_rujukan` date NOT NULL,
+  `tanggal_datang` datetime DEFAULT NULL,
+  `tanggal_rujukan` datetime NOT NULL,
   `no_antrian` varchar(6) NOT NULL,
   `kd_dokter` varchar(20) DEFAULT NULL,
   `status` enum('Menunggu','Sudah Periksa','Batal Periksa') NOT NULL
@@ -3173,8 +3175,7 @@ INSERT INTO `suku_bangsa` (`id`, `nama_suku_bangsa`) VALUES
 CREATE TABLE IF NOT EXISTS `tambahan_biaya` (
   `no_rawat` varchar(17) NOT NULL,
   `nama_biaya` varchar(60) NOT NULL,
-  `besar_biaya` double NOT NULL,
-  `status` enum('ralan','ranap') NOT NULL
+  `besar_biaya` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -3781,7 +3782,8 @@ ALTER TABLE `maping_dokter_dpjpvclaim`
 -- Indexes for table `maping_poli_bpjs`
 --
 ALTER TABLE `maping_poli_bpjs`
-  ADD PRIMARY KEY (`kd_poli_rs`);
+  ADD PRIMARY KEY (`kd_poli_rs`),
+  ADD UNIQUE KEY `kd_poli_bpjs` (`kd_poli_bpjs`) USING BTREE;
 
 --
 -- Indexes for table `master_aturan_pakai`

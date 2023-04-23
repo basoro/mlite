@@ -62,7 +62,7 @@ class Admin extends AdminModule
 
         $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');

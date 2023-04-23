@@ -313,7 +313,7 @@ class Site extends SiteModule
     private function _getPenjab($kd_pj = null)
     {
         $result = [];
-        $rows = $this->core->mysql('penjab')->toArray();
+        $rows = $this->core->mysql('penjab')->where('status', '1')->toArray();
 
         if (!$kd_pj) {
             $kd_pjArray = [];

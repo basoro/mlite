@@ -36,7 +36,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
-        $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_fktp.display'));
         $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->settings('jkn_mobile_fktp'));
         return $this->draw('settings.html', ['settings' => $this->assign]);

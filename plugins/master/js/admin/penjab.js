@@ -30,6 +30,7 @@ $("#form").on("click", "#simpan", function(event){
   var alamat_asuransi = $('textarea[name=alamat_asuransi]').val();
   var no_telp = $('input:text[name=no_telp]').val();
   var attn = $('input:text[name=attn]').val();
+  var status = $('select[name=status]').val();
 
   var url = baseURL + '/master/penjabsave?t=' + mlite.token;
 
@@ -39,7 +40,8 @@ $("#form").on("click", "#simpan", function(event){
     nama_perusahaan: nama_perusahaan,
     alamat_asuransi: alamat_asuransi,
     no_telp: no_telp,
-    attn: attn
+    attn: attn,
+    status: status
   } ,function(data) {
       $("#display").show().load(baseURL + '/master/penjabdisplay?t=' + mlite.token);
       $("#form").hide();
@@ -60,7 +62,7 @@ $("#display").on("click", ".edit", function(event){
   var kd_pj  = $(this).attr("data-kd_pj");
 
   $.post(url, {kd_pj: kd_pj} ,function(data) {
-    console.log(data);
+    //console.log(data);
     // tampilkan data
     $("#form").html(data).show();
     $("#bukaform").val("Tutup Form");
@@ -137,4 +139,5 @@ function bersih(){
   $('input:text[name=nama_perusahaan]').val("");
   $('input:text[name=no_telp]').val("");
   $('input:text[name=attn]').val("");
+  $('select[name=penjab]').val("");
 }

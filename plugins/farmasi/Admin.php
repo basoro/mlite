@@ -91,7 +91,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
             if($query2) {
               $this->core->mysql('gudangbarang')
@@ -117,7 +118,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
 
           $query2 = $this->core->mysql('riwayat_barang_medis')
@@ -134,7 +136,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $_POST['kd_bangsal'],
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
         }
 
@@ -176,7 +179,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
             if($query) {
               $this->core->mysql('gudangbarang')->save([
@@ -204,7 +208,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
 
           $query2 = $this->core->mysql('riwayat_barang_medis')
@@ -221,7 +226,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $_POST['kd_bangsal'],
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
           if($query) {
             $this->core->mysql('gudangbarang')

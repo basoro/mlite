@@ -60,7 +60,7 @@ class Admin extends AdminModule
 
         $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -103,6 +103,7 @@ class Admin extends AdminModule
     {
 
       $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+      $no_rkm_medis =
 
       $this->core->mysql('gudangbarang')
         ->where('kode_brng', $_POST['kd_jenis_prw'])
@@ -125,7 +126,8 @@ class Admin extends AdminModule
           'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
           'status' => 'Simpan',
           'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur']
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
       $this->core->mysql('detail_pemberian_obat')
@@ -190,7 +192,8 @@ class Admin extends AdminModule
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
         $this->core->mysql('detail_pemberian_obat')

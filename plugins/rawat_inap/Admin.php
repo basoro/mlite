@@ -65,7 +65,7 @@ class Admin extends AdminModule
 
         $this->assign['kamar'] = $this->core->mysql('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
@@ -168,7 +168,7 @@ class Admin extends AdminModule
 
       $this->assign['kamar'] = $this->core->mysql('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
       $this->assign['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+      $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
       $this->assign['stts_pulang'] = ['Sehat','Rujuk','APS','+','Meninggal','Sembuh','Membaik','Pulang Paksa','-','Pindah Kamar','Status Belum Lengkap','Atas Persetujuan Dokter','Atas Permintaan Sendiri','Lain-lain'];
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
