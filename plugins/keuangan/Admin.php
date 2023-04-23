@@ -271,8 +271,11 @@ class Admin extends AdminModule
             $row_kredit['kredit_all'] += $kredit['kredit'];
           }
           $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_kredit['kd_rek'])->oneArray();
-          $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
-          $row['total_saldo_awal_masuk'] += $saldo_awal['saldo_awal'];
+          $row_kredit['saldo_awal'] = 0;
+          if(!empty($saldo_awal)) {
+            $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
+            $row['total_saldo_awal_masuk'] += $saldo_awal['saldo_awal'];
+          }
           $row['jurnal_masuk'][] = $row_kredit;
           $total_saldo_kredit += $row['total_saldo_awal_masuk'];
           $total_kredit += $row_kredit['kredit_all'];
@@ -293,8 +296,11 @@ class Admin extends AdminModule
             $row_debet['debet_all'] += $debet['debet'];
           }
           $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
-          $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
-          $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
+          $row_kredit['saldo_awal'] = 0;
+          if(!empty($saldo_awal)) {
+            $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
+            $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
+          }
           $row['jurnal_keluar'][] = $row_debet;
           $total_saldo_debet += $row['total_saldo_awal_keluar'];
           $total_debet += $row_debet['debet_all'];
