@@ -296,9 +296,9 @@ class Admin extends AdminModule
             $row_debet['debet_all'] += $debet['debet'];
           }
           $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
-          $row_kredit['saldo_awal'] = 0;
+          $row_debet['saldo_awal'] = 0;
           if(!empty($saldo_awal)) {
-            $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
+            $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
             $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
           }
           $row['jurnal_keluar'][] = $row_debet;
