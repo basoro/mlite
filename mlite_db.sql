@@ -1418,7 +1418,8 @@ CREATE TABLE IF NOT EXISTS `mlite_billing` (
 
 CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
   `no_jurnal` varchar(20) DEFAULT NULL,
-  `kd_rek` varchar(15) DEFAULT NULL,
+  `kd_rek` varchar(15) DEFAULT NULL,,
+  `arus_kas` int(10) NOT NULL,
   `debet` double DEFAULT NULL,
   `kredit` double DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1465,7 +1466,8 @@ CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
   `no_jurnal` varchar(20) NOT NULL,
   `no_bukti` varchar(20) DEFAULT NULL,
   `tgl_jurnal` date DEFAULT NULL,
-  `jenis` enum('U','P') DEFAULT NULL,
+  `jenis` enum('U','P') DEFAULT NULL,,
+  `kegiatan` varchar(250) NOT NULL,
   `keterangan` varchar(350) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

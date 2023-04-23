@@ -628,7 +628,7 @@ class Admin extends AdminModule
 
       if($this->settings('keuangan', 'jurnal_kasir') == 1) {
           // jurnal_pendaftaran //
-          if($_POST['jurnal_pendaftaran'] != 0) {
+          if($_POST['jurnal_pendaftaran'] != '0,00') {
             $no_jurnal_pendaftaran = $this->core->setNoJurnal();
             $keterangan = $this->core->mysql('mlite_rekening')
             ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_pendaftaran'))
@@ -655,7 +655,7 @@ class Admin extends AdminModule
           // End jurnal_pendaftaran //
 
           // jurnal_tindakan_ralan //
-          if($_POST['jurnal_tindakan_ralan'] != 0) {
+          if($_POST['jurnal_tindakan_ralan'] != '0,00') {
             $no_jurnal_tindakan_ralan = $this->core->setNoJurnal();
             $keterangan = $this->core->mysql('mlite_rekening')
             ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_tindakan'))
@@ -682,7 +682,7 @@ class Admin extends AdminModule
           // End jurnal_tindakan_ralan //
 
           // jurnal_obat_bhp //
-          if($_POST['jurnal_obat_bhp'] != 0) {
+          if($_POST['jurnal_obat_bhp'] != '0,00') {
             $no_jurnal_obat_bhp = $this->core->setNoJurnal();
             $keterangan = $this->core->mysql('mlite_rekening')
             ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_obat_bhp'))
@@ -709,7 +709,7 @@ class Admin extends AdminModule
           // End jurnal_obat_bhp //
 
           // jurnal_laboratorium //
-          if($_POST['jurnal_laboratorium'] != 0) {
+          if($_POST['jurnal_laboratorium'] != '0,00') {
             $no_jurnal_laboratorium = $this->core->setNoJurnal();
             $keterangan = $this->core->mysql('mlite_rekening')
             ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_laboratorium'))
@@ -736,7 +736,7 @@ class Admin extends AdminModule
           // End jurnal_laboratorium //
 
           // jurnal_radiologi//
-          if($_POST['jurnal_radiologi'] != 0) {
+          if($_POST['jurnal_radiologi'] != '0,00') {
             $no_jurnal_radiologi = $this->core->setNoJurnal();
             $keterangan = $this->core->mysql('mlite_rekening')
             ->where('kd_rek', $this->settings('keuangan', 'akun_kredit_radiologi'))
