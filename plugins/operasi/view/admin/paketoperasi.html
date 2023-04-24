@@ -1,0 +1,393 @@
+<style>
+  .nowrap th, .nowrap td {
+    white-space: nowrap;
+  }
+</style>
+<form action="{?=url(ADMIN.'/operasi/savepaketoperasi')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data Paket Operasi</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Kode Paket</label>
+                        <input type="text" name="kode_paket" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Perawatan</label>
+                        <input type="text" name="nm_perawatan" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ketegori</label>
+                        <select name="kategori" id="kategori" class="form-control" data-use-search="true">
+                          {loop: $kategori}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Penanggung Jawab</label>
+                        <select name="kd_pj" id="kd_pj" class="form-control" data-use-search="true">
+                          {loop: $penjab}
+                            <option value="{$value.kd_pj}">{$value.png_jawab}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Kelas</label>
+                        <select name="kelas" id="kelas" class="form-control" data-use-search="true">
+                          {loop: $kelas}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" id="status" class="form-control" data-use-search="true">
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Operator 1</label>
+                        <input type="text" name="operator1" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Operator 2</label>
+                        <input type="text" name="operator2" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Operator 3</label>
+                        <input type="text" name="operator3" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Asisten Operator 1</label>
+                        <input type="text" name="asisten_operator1" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Asisten Operator 2</label>
+                        <input type="text" name="asisten_operator2" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Asisten Operator 3</label>
+                        <input type="text" name="asisten_operator3" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Instrumen</label>
+                        <input type="text" name="instrumen" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Dokter PJ Anak</label>
+                        <input type="text" name="dokter_pjanak" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Dokter Anak</label>
+                        <input type="text" name="dokter_anak" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Perawaat Resusitasi</label>
+                        <input type="text" name="perawaat_resusitas" class="form-control" value="0" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Dokter Anastesi</label>
+                        <input type="text" name="dokter_anestesi" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Asisten Anastesi</label>
+                        <input type="text" name="asisten_anestesi" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Asisten Anastesi 2</label>
+                        <input type="text" name="asisten_anestesi2" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Bidan</label>
+                        <input type="text" name="bidan" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Bidan 2</label>
+                        <input type="text" name="bidan2" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Bidan 3</label>
+                        <input type="text" name="bidan3" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Perawat Luar</label>
+                        <input type="text" name="perawat_luar" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Sewa OK</label>
+                        <input type="text" name="sewa_ok" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Alat</label>
+                        <input type="text" name="alat" class="form-control" value="0" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label>Akomodasi</label>
+                        <input type="text" name="akomodasi" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Bagian RS</label>
+                        <input type="text" name="bagian_rs" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Omloop</label>
+                        <input type="text" name="omloop" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Omloop 2</label>
+                        <input type="text" name="omloop2" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Omloop 3</label>
+                        <input type="text" name="omloop3" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Omloop 4</label>
+                        <input type="text" name="omloop4" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Omloop 5</label>
+                        <input type="text" name="omloop5" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Sarpras</label>
+                        <input type="text" name="sarpras" class="form-control" value="0" />
+                    </div>
+                    <div class="form-group">
+                        <label>Dokter Umum</label>
+                        <input type="text" name="dokter_umum" class="form-control" value="0" />
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="paketoperasi">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Kode Paket</th>
+            <th>Nama Perawatan</th>
+            <th>Kategori</th>
+            <th>Kelas</th>
+            <th>Penanggung Jawab</th>
+            <th>Status</th>
+            <th>Operator 1</th>
+            <th>Operator 2</th>
+            <th>Operator 3</th>
+            <th>Asisten Operator 1</th>
+            <th>Asisten Operator 2</th>
+            <th>Asisten Operator 3</th>
+            <th>Instrumen</th>
+            <th>Dokter PJ Anakn</th>
+            <th>Dokter Anak</th>
+            <th>Perawat Resusitasi</th>
+            <th>Dokter Anastesi</th>
+            <th>Asisten Anastesi 1</th>
+            <th>Asisten Anastesi 2</th>
+            <th>Bidan 1</th>
+            <th>Bidan 2</th>
+            <th>Bidan 3</th>
+            <th>Perawat Luar</th>
+            <th>Sewa OK</th>
+            <th>Alat</th>
+            <th>Akomodasi</th>
+            <th>Bagian RS</th>
+            <th>Omloop 1</th>
+            <th>Omloop 2</th>
+            <th>Omloop 3</th>
+            <th>Omloop 4</th>
+            <th>Omloop 5</th>
+            <th>Sarpras</th>
+            <th>Dokter Umum</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $paketoperasi}
+          <tr class="paketoperasi"
+          data-kode_paket="{$value.kode_paket}"
+          data-nm_perawatan="{$value.nm_perawatan}"
+          data-kategori="{$value.kategori}"
+          data-kd_pj="{$value.kd_pj}"
+          data-kelas="{$value.kelas}"
+          data-status="{$value.status}"
+          data-operator1="{$value.operator1}"
+          data-operator2="{$value.operator2}"
+          data-operator3="{$value.operator3}"
+          data-asisten_operator1="{$value.asisten_operator1}"
+          data-asisten_operator2="{$value.asisten_operator2}"
+          data-asisten_operator3="{$value.asisten_operator3}"
+          data-instrumen="{$value.instrumen}"
+          data-dokter_pjanak="{$value.dokter_pjanak}"
+          data-dokter_anak="{$value.dokter_anak}"
+          data-perawaat_resusitas="{$value.perawaat_resusitas}"
+          data-dokter_anestesi="{$value.dokter_anestesi}"
+          data-asisten_anestesi="{$value.asisten_anestesi}"
+          data-asisten_anestesi2="{$value.asisten_anestesi2}"
+          data-bidan="{$value.bidan}"
+          data-bidan2="{$value.bidan2}"
+          data-bidan3="{$value.bidan3}"
+          data-perawat_luar="{$value.perawat_luar}"
+          data-sewa_ok="{$value.sewa_ok}"
+          data-alat="{$value.alat}"
+          data-akomodasi="{$value.akomodasi}"
+          data-bagian_rs="{$value.bagian_rs}"
+          data-omloop="{$value.omloop}"
+          data-omloop2="{$value.omloop2}"
+          data-omloop3="{$value.omloop3}"
+          data-omloop4="{$value.omloop4}"
+          data-omloop5="{$value.omloop5}"
+          data-sarpras="{$value.sarpras}"
+          data-dokter_umum="{$value.dokter_umum}"
+          >
+            <td>{$value.kode_paket}</td>
+            <td>{$value.nm_perawatan}</td>
+            <td>{$value.kategori}</td>
+            <td>{$value.kelas}</td>
+            <td>{$value.png_jawab}</td>
+            <td>{if: $value.status == '1'}Aktif{else}Non Aktif{/if}</td>
+            <td>{$value.operator1}</td>
+            <td>{$value.operator2}</td>
+            <td>{$value.operator3}</td>
+            <td>{$value.asisten_operator1}</td>
+            <td>{$value.asisten_operator2}</td>
+            <td>{$value.asisten_operator3}</td>
+            <td>{$value.instrumen}</td>
+            <td>{$value.dokter_pjanak}</td>
+            <td>{$value.dokter_anak}</td>
+            <td>{$value.perawaat_resusitas}</td>
+            <td>{$value.dokter_anestesi}</td>
+            <td>{$value.asisten_anestesi}</td>
+            <td>{$value.asisten_anestesi2}</td>
+            <td>{$value.bidan}</td>
+            <td>{$value.bidan2}</td>
+            <td>{$value.bidan3}</td>
+            <td>{$value.perawat_luar}</td>
+            <td>{$value.sewa_ok}</td>
+            <td>{$value.alat}</td>
+            <td>{$value.akomodasi}</td>
+            <td>{$value.bagian_rs}</td>
+            <td>{$value.omloop}</td>
+            <td>{$value.omloop2}</td>
+            <td>{$value.omloop3}</td>
+            <td>{$value.omloop4}</td>
+            <td>{$value.omloop5}</td>
+            <td>{$value.sarpras}</td>
+            <td>{$value.dokter_umum}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('.dataTables').DataTable({
+    "order": [[ 3, "desc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  // ketika baris data diklik
+  $("#paketoperasi").on("click", ".paketoperasi", function(event){
+    var kode_paket  = $(this).attr("data-kode_paket");
+    var nm_perawatan  = $(this).attr("data-nm_perawatan");
+    var kategori  = $(this).attr("data-kategori");
+    var kd_pj  = $(this).attr("data-kd_pj");
+    var kelas  = $(this).attr("data-kelas");
+    var status  = $(this).attr("data-status");
+    var operator1  = $(this).attr("data-operator1");
+    var operator2  = $(this).attr("data-operator2");
+    var operator3  = $(this).attr("data-operator3");
+    var asisten_operator1  = $(this).attr("data-asisten_operator1");
+    var asisten_operator2  = $(this).attr("data-asisten_operator2");
+    var asisten_operator3  = $(this).attr("data-asisten_operator3");
+    var instrumen  = $(this).attr("data-instrumen");
+    var dokter_pjanak  = $(this).attr("data-dokter_pjanak");
+    var dokter_anak  = $(this).attr("data-dokter_anak");
+    var perawaat_resusitas  = $(this).attr("data-perawaat_resusitas");
+    var dokter_anestesi  = $(this).attr("data-dokter_anestesi");
+    var asisten_anestesi  = $(this).attr("data-asisten_anestesi");
+    var asisten_anestesi2  = $(this).attr("data-asisten_anestesi2");
+    var bidan  = $(this).attr("data-bidan");
+    var bidan2  = $(this).attr("data-bidan2");
+    var bidan3  = $(this).attr("data-bidan3");
+    var perawat_luar  = $(this).attr("data-perawat_luar");
+    var sewa_ok  = $(this).attr("data-sewa_ok");
+    var alat  = $(this).attr("data-alat");
+    var akomodasi  = $(this).attr("data-akomodasi");
+    var bagian_rs  = $(this).attr("data-bagian_rs");
+    var omloop  = $(this).attr("data-omloop");
+    var omloop2  = $(this).attr("data-omloop2");
+    var omloop3  = $(this).attr("data-omloop3");
+    var omloop4  = $(this).attr("data-omloop4");
+    var omloop5  = $(this).attr("data-omloop5");
+    var sarpras  = $(this).attr("data-sarpras");
+    var dokter_umum  = $(this).attr("data-dokter_umum");
+    $('input:text[name=kode_paket]').val(kode_paket);
+    $('input:text[name=nm_perawatan]').val(nm_perawatan);
+    $('#kategori').val(kategori).change();
+    $('#kd_pj').val(kd_pj).change();
+    $('#kelas').val(kelas).change();
+    $('#status').val(status).change();
+    $('input:text[name=operator1]').val(operator1);
+    $('input:text[name=operator2]').val(operator2);
+    $('input:text[name=operator3]').val(operator3);
+    $('input:text[name=asisten_operator1]').val(asisten_operator1);
+    $('input:text[name=asisten_operator2]').val(asisten_operator2);
+    $('input:text[name=asisten_operator3]').val(asisten_operator3);
+    $('input:text[name=instrumen]').val(instrumen);
+    $('input:text[name=dokter_pjanak]').val(dokter_pjanak);
+    $('input:text[name=dokter_anak]').val(dokter_anak);
+    $('input:text[name=perawaat_resusitas]').val(perawaat_resusitas);
+    $('input:text[name=dokter_anestesi]').val(dokter_anestesi);
+    $('input:text[name=asisten_anestesi]').val(asisten_anestesi);
+    $('input:text[name=asisten_anestesi2]').val(asisten_anestesi2);
+    $('input:text[name=bidan]').val(bidan);
+    $('input:text[name=bidan2]').val(bidan2);
+    $('input:text[name=bidan3]').val(bidan3);
+    $('input:text[name=perawat_luar]').val(perawat_luar);
+    $('input:text[name=sewa_ok]').val(sewa_ok);
+    $('input:text[name=alat]').val(alat);
+    $('input:text[name=akomodasi]').val(akomodasi);
+    $('input:text[name=bagian_rs]').val(bagian_rs);
+    $('input:text[name=omloop]').val(omloop);
+    $('input:text[name=omloop2]').val(omloop2);
+    $('input:text[name=omloop3]').val(omloop3);
+    $('input:text[name=omloop4]').val(omloop4);
+    $('input:text[name=omloop5]').val(omloop5);
+    $('input:text[name=sarpras]').val(sarpras);
+    $('input:text[name=dokter_umum]').val(dokter_umum);
+  });
+</script>

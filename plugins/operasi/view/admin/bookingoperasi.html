@@ -1,0 +1,225 @@
+<style>
+  .nowrap th, .nowrap td {
+    white-space: nowrap;
+  }
+</style>
+<form action="{?=url(ADMIN.'/operasi/savebookingoperasi')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data Booking Operasi</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group" id="cari_pasien">
+                      <label>Pasien</label>
+                      <input type="text" name="pasien" class="form-control" placeholder="Cari nama pasien/nomor rekam medik/nomor rawat" value="">
+                    </div>
+                    <div id="pasien">
+                    </div>
+                    <div class="form-group">
+                      <label>Nomor RM</label>
+                      <input type="text" name="no_rkm_medis" class="form-control" placeholder="Nomor rekam medik" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                      <label>Nama Pasien</label>
+                      <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Rawat</label>
+                        <input type="text" name="no_rawat" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Dokter</label>
+                        <select name="kd_dokter" id="kd_dokter" class="form-control" data-use-search="true">
+                          {loop: $dokter}
+                            <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ruang OK</label>
+                        <select name="kd_ruang_ok" id="kd_ruang_ok" class="form-control" data-use-search="true">
+                          {loop: $ruang_ok}
+                            <option value="{$value.kd_ruang_ok}">{$value.nm_ruang_ok}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Paket Operasi</label>
+                        <select name="kode_paket" id="kode_paket" class="form-control" data-use-search="true">
+                          {loop: $paket_operasi}
+                            <option value="{$value.kode_paket}">{$value.nm_perawatan}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal</label>
+                        <input type="text" name="tanggal" class="form-control tanggal" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Mulai</label>
+                        <input type="text" name="jam_mulai" class="form-control jam" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Jam Selesai</label>
+                        <input type="text" name="jam_selesai" class="form-control jam" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status" id="status" class="form-control" data-use-search="true">
+                          {loop: $status}
+                            <option value="{$value}">{$value}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="bookingoperasi">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor Rawat</th>
+            <th>Nomor RM</th>
+            <th>Nama Pasien</th>
+            <th>Paket Operasi</th>
+            <th>Tanggal</th>
+            <th>Jam Mulai</th>
+            <th>Jam Selesai</th>
+            <th>Status</th>
+            <th>Dokter</th>
+            <th>Ruang OK</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $bookingoperasi}
+          <tr class="bookingoperasi"
+          data-no_rkm_medis="{$value.no_rkm_medis}"
+          data-nm_pasien="{$value.nm_pasien}"
+          data-no_rawat="{$value.no_rawat}"
+          data-kode_paket="{$value.kode_paket}"
+          data-tanggal="{$value.tanggal}"
+          data-jam_mulai="{$value.jam_mulai}"
+          data-jam_selesai="{$value.jam_selesai}"
+          data-status="{$value.status}"
+          data-kd_dokter="{$value.kd_dokter}"
+          data-kd_ruang_ok="{$value.kd_ruang_ok}"
+          >
+            <td>{$value.no_rawat}</td>
+            <td>{$value.no_rkm_medis}</td>
+            <td>{$value.nm_pasien}</td>
+            <td>{$value.kode_paket}</td>
+            <td>{$value.tanggal}</td>
+            <td>{$value.jam_mulai}</td>
+            <td>{$value.jam_selesai}</td>
+            <td>{$value.status}</td>
+            <td>{$value.nm_dokter}</td>
+            <td>{$value.nm_ruang_ok}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $(function () {
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+      $('.jam').datetimepicker({
+        format: 'HH:mm:ss',
+        locale: 'id'
+      });
+  });
+</script>
+<script type="text/javascript">
+  $('.dataTables').DataTable({
+    "order": [[ 3, "desc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  // ketika baris data diklik
+  $("#bookingoperasi").on("click", ".bookingoperasi", function(event){
+    var no_rkm_medis  = $(this).attr("data-no_rkm_medis");
+    var nm_pasien  = $(this).attr("data-nm_pasien");
+    var no_rawat  = $(this).attr("data-no_rawat");
+    var kode_paket  = $(this).attr("data-kode_paket");
+    var tanggal  = $(this).attr("data-tanggal");
+    var jam_mulai  = $(this).attr("data-jam_mulai");
+    var jam_selesai  = $(this).attr("data-jam_selesai");
+    var status  = $(this).attr("data-status");
+    var kd_dokter  = $(this).attr("data-kd_dokter");
+    var kd_ruang_ok  = $(this).attr("data-kd_ruang_ok");
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=no_rawat]').val(no_rawat);
+    $('input:text[name=kode_paket]').val(kode_paket);
+    $('input:text[name=tanggal]').val(tanggal);
+    $('input:text[name=jam_mulai]').val(jam_mulai);
+    $('input:text[name=jam_selesai]').val(jam_selesai);
+    $('#status').val(status).change();
+    $('#kd_dokter').val(kd_dokter).change();
+    $('#kd_ruang_ok').val(kd_ruang_ok).change();
+    $('#cari_pasien').hide();
+  });
+
+  $('input:text[name=pasien]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/operasi/pasien?t=' + mlite.token;
+    var cari = $('input:text[name=pasien]').val();
+
+    if(cari!="") {
+        $.post(url, {cari: cari} ,function(data) {
+        // tampilkan data yang sudah di perbaharui
+          console.log(data);
+          $("#pasien").html(data).show();
+        });
+    }
+  });
+  // ketika baris data diklik
+  $("#pasien").on("click", ".pilih", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var no_rkm_medis		   = $(this).attr("data-no_rkm_medis");
+    var nm_pasien    = $(this).attr("data-nm_pasien");
+    var no_rawat      = $(this).attr("data-no_rawat");
+
+    $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
+    $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=no_rawat]').val(no_rawat);
+
+    $("#pasien").hide();
+    $("#cari_pasien").hide();
+
+  });
+
+</script>
