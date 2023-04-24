@@ -379,6 +379,47 @@ class Admin extends AdminModule
       }
       */
 
+      /////// ******* ///////
+      /*
+      PENJELASAN AKTIVA PASIVA
+      
+      Rumus aktiva dan pasiva neraca keuangan
+
+      Aktiva dan pasiva adalah dua hal yang tidak boleh terlewatkan saat Anda membuat neraca keuangan. Dalam menghitung aktiva dan pasiva tidak bisa dilakukan sembarangan. Ada rumus hitungnya, yaitu:
+
+      Aktiva = Kewajiban (Pasiva) + Modal
+
+      Pada dasarnya jumlah aktiva dan pasiva adalah sama. Artinya jika ada penambahan atau pengurangan pada nilai aktiva, hal ini akan berpengaruh pada penambahan dan pengurangan nilai pasiva. Keduanya harus berjumlah sama agar neraca keuangan bisa seimbang.
+
+      Contoh perhitungan aktiva dan pasiva adalah sebagai berikut:
+
+      1. Jika Anda mendapatkan setoran modal dari investor sebesar Rp1.5 miliar, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah sebesar Rp1.5 miliar
+
+      Nilai pasiva berupa modal bertambah sebesar Rp1.5 miliar
+
+      2. Jika Anda membeli perlengkapan kantor sebesar Rp5 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah sebesar Rp5 juta
+
+      Nilai pasiva berupa kas atau modal berkurang Rp5 juta
+
+      3. Jika Anda meminjam uang ke bank sebesar Rp15 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah Rp15 juta
+
+      Nilai pasiva berupa utang bertambah Rp15 juta
+
+      4. Jika Anda mendapatkan penghasilan dari penjualan produk sebesar Rp10 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah Rp10 juta
+
+      Nilai pasiva berupa modal bertambah Rp10 juta
+
+      */
+
+
       $kas = 0;
       $persediaan = 0;
       $hutang = 0;
