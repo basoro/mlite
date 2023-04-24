@@ -322,7 +322,70 @@ class Admin extends AdminModule
 
     public function getNeraca()
     {
-      return $this->draw('blank.html');
+      $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+
+      /*
+      $pjl=mysql_fetch_array(mysql_query("select sum(total) as total from kd_penj where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' ")) or die (mysql_error());
+      $pbl=mysql_fetch_array(mysql_query("select sum(total) as total from kd_pemb where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' ")) or die (mysql_error());
+      $psd=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='113'"));
+      $ret=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='511'"));
+      $biaya=mysql_fetch_array(mysql_query("select sum(jumlah) as jumlah from rekening where kd_rek between '611' and '699'"));
+      $pot=mysql_fetch_array(mysql_query("select sum(disc) as pot from kd_pemb where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' "));
+      $kas=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='111'"));
+      $hut=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='211'"));
+      $pemilik=mysql_fetch_array(mysql_query("select nm_perusahaan,alamat from bigbook_perusahaan")) or die ("gagal");
+      $modal=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='311'"));
+
+      $tampil=mysql_query("SELECT * FROM barang ORDER BY nama");
+      while($r = mysql_fetch_array($tampil)){
+          $jml=$r[stok];
+          $hrg=$r[hrg_beli];
+          $subtotal= $jml * $hrg;
+          $total1= $total1 + $subtotal; //persediaan akhir
+      }
+      $jmlretpo = $ret[jumlah]+$pot[pot];
+      $pblbersih = $pbl[total]- $jmlretpo; //pembelian bersih
+      $x2 = $pblbersih + $psd[jumlah]; //barang siap jual
+      $hpp = $x2 - $total1; //barang siap jual di kurangi persediaan akhir
+      $kotor = $pjl[total]-$hpp;
+      $pajak= $kotor * 10/100;
+      $beban= $biaya[jumlah]+$pajak;
+      $laba = $kotor-$beban;
+
+      $total = $laba - $prive[jumlah];
+      $modalakhir = $modal[jumlah] + $total;
+
+      $aktiva = $psd2[jumlah] + $kas[jumlah];
+      $passiva = $modalakhir + $hut[jumlah];
+
+      $tampil= mysql_query("SELECT * FROM barang ORDER BY nama");
+      while($r = mysql_fetch_array($tampil)){
+          $stok=$r[stok];
+          $hrg_beli=$r[hrg_beli];
+          $sub_total= $stok * $hrg_beli;
+          $persedian_akhir = $persedian_akhir + $sub_total;
+      }
+      */
+
+      $kas = 0;
+      $persediaan = 0;
+      $hutang = 0;
+      $modal = 0;
+      $aktiva = 0;
+      $pasiva = 0;
+      return $this->draw('neraca.html', ['kas' => $kas, 'persediaan' => $persediaan, 'hutang' => $hutang, 'modal' => $modal, 'aktiva' => $aktiva, 'pasiva' => $pasiva]);
     }
 
     public function getSettings()
