@@ -34,7 +34,7 @@ class Admin extends AdminModule
         redirect(url([ADMIN, 'orthanc', 'manage']));
     }
 
-    public function getBridgingOrthanc($no_rawat)
+    public function getBridgingOrthanc($no_rawat, $status='')
     {
       $this->_addHeaderFiles();
 
@@ -134,6 +134,7 @@ class Admin extends AdminModule
 
       $this->tpl->set('pacs', $pacs);
       $this->tpl->set('orthanc', $orthanc);
+      $this->tpl->set('status', $status);
 
       echo $this->tpl->draw(MODULES.'/orthanc/view/admin/orthanc.html', true);
       exit();
@@ -177,6 +178,35 @@ class Admin extends AdminModule
        );
        echo json_encode($output);
       }
+      exit();
+    }
+
+    public function postSaveHasilBaca()
+    {
+      if(isset($_POST['hasil']) && $_POST['hasil'] != '') {
+        $result = $this->core->mysql('hasil_radiologi')
+          ->save([
+            'no_rawat' => $_POST['no_rawat'],
+            'tgl_periksa' => $_POST['tgl_periksa'],
+            'jam' => $_POST['jam_periksa'],
+            'hasil' => $_POST['hasil']
+          ]);
+        if($result) {
+          $message = 'sukses';
+          $code = '200';
+        } else {
+          $message = 'error';
+          $code = '201';
+        }
+      } else {
+        $message = 'error';
+        $code = '201';
+      }
+      $output = array(
+       'message' => $message,
+       'code'  => $code
+      );
+      echo json_encode($output);
       exit();
     }
 

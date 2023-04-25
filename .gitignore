@@ -14,3 +14,5 @@ config.php
 themes/mlite
 systems/lib/jasperphp
 plugins/jasper
+plugins/apam
+plugins/lisensi

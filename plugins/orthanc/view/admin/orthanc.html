@@ -3,6 +3,18 @@
     <h4 class="modal-title">Bridging PACS</h4>
 </div>
 <div class="modal-body" id="orthanc">
+  <h4>Input hasil pemeriksaan radiologi</h4>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <textarea name="hasil" class="form-control" rows="8" cols="80"></textarea>
+      </div>
+      <div class="col-md-12" style="padding-top:20px; padding-bottom: 20px;">
+        <button class="btn btn-primary" id="simpan_hasil">Simpan</button>
+      </div>
+      <hr>
+    </div>
+  </div>
   <h4>Data Bridging PACS</h4>
   <div class="container-fluid">
   	<div class="row">
@@ -22,6 +34,45 @@
 </div>
 
 <script type="text/javascript">
+  $("#orthanc").on("click", "#simpan_hasil", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/orthanc/savehasilbaca?t=' + mlite.token;
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var tgl_periksa = $('input:text[name=tgl_perawatan]').val();
+    var jam_periksa = $('input:text[name=jam_reg]').val();
+    var hasil = $('textarea[name=hasil]').val();
+    var status = '{$status}';
+
+    alert("Proses simpan ke server SIMRS...!! Tunggu sejenak..");
+    $('#simpan_hasil').attr("disabled", "disabled");
+    $.ajax({
+     url:url,
+     method:"POST",
+     data:{
+       no_rawat:no_rawat,
+       tgl_periksa:tgl_periksa,
+       jam_periksa:jam_periksa,
+       hasil:hasil
+     },
+     dataType:"JSON",
+     beforeSend:function(){
+      $('#simpan_hasil').val("Processing...");
+     },
+     success:function(data)
+     {
+      console.log(data);
+      $('#simpan_hasil').attr("disabled", false);
+      var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat, status : status
+      }, function(data) {
+        // tampilkan data
+        $("#rincian").html(data).show();
+      });
+     }
+   });
+  });
+
   $("#orthanc").on("click", ".simpansimrs", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -30,6 +81,7 @@
     var tgl_periksa = $('input:text[name=tgl_perawatan]').val();
     var jam_periksa = $('input:text[name=jam_reg]').val();
     var image_url = $(this).attr("data-image_url");
+    var status = '{$status}';
     alert("Proses simpan ke server SIMRS...!! Tunggu sejenak..");
     $('.simpansimrs').attr("disabled", "disabled");
     $.ajax({
@@ -51,6 +103,12 @@
       $('.simpansimrs').val('Upload');
       $('.simpansimrs').attr("disabled", false);
       alert(data.message);
+      var url = baseURL + '/radiologi/rincian?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat, status : status
+      }, function(data) {
+        // tampilkan data
+        $("#rincian").html(data).show();
+      });
      }
     })
   });

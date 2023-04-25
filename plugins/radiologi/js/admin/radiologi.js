@@ -515,11 +515,14 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
       + '</form>'
       + '<div id="preview"></div>'
       + '</div>'
+      + '<div id="preview_hasil"></div>'
+      + '</div>'
       + '';
 
   // tampilkan dialog konfirmasi
   var box = bootbox.dialog({
     message: set_stok,
+    size: 'large',
     title: 'Input Hasil Radiologi',
     buttons: {
       main: {
