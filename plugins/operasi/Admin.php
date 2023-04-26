@@ -323,11 +323,11 @@ class Admin extends AdminModule
           WHERE
             reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR reg_periksa.stts LIKE ? OR reg_periksa.stts LIKE ?)
+            reg_periksa.no_rawat = '$cari'
           LIMIT 10";
 
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
-        $stmt->execute(['%'.$cari.'%', '%'.$cari.'%', '%'.$cari.'%', 'Belum', 'Dirawat']);
+        $stmt->execute();
         $pasien = $stmt->fetchAll();
 
       }
