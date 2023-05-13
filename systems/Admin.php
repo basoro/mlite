@@ -23,7 +23,7 @@ class Admin extends Main
         $access = '';
         $this->assign['username'] = '';
 
-        if($_SESSION['mlite_user'] == '') {
+        if(isset_or($_SESSION['mlite_user']) == '') {
           $id = 1;
         } else {
           $id = $_SESSION['mlite_user'];
