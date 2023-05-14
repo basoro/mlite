@@ -61,7 +61,7 @@ $ composer create-project basoro/khanza-lite
 3. Buat database lalu sesuaikan pengaturan di config.php
 
 4. Import file mlite_db.sql ke database yang sudah dibuat di point 3
-   * Untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql
+* Untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql
 
 5. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada
 
@@ -82,7 +82,7 @@ $ composer install
 5. Buat database lalu sesuaikan pengaturan di config.php
 
 6. Import file mlite_db.sql ke database yang sudah dibuat di point 5
-   * Untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql 
+* Untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql
 
 7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada
 
