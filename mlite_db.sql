@@ -1348,7 +1348,8 @@ CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
   `jenis_kunjungan` varchar(10) NOT NULL,
-  `status_kirim` varchar(20) DEFAULT NULL
+  `status_kirim` varchar(20) DEFAULT NULL,
+  `keterangan` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1374,7 +1375,9 @@ CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
   `tanggal_periksa` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `taskid` varchar(50) NOT NULL,
-  `waktu` varchar(50) NOT NULL
+  `waktu` varchar(50) NOT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `keterangan` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -1418,10 +1421,10 @@ CREATE TABLE IF NOT EXISTS `mlite_billing` (
 
 CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
   `no_jurnal` varchar(20) DEFAULT NULL,
-  `kd_rek` varchar(15) DEFAULT NULL,,
+  `kd_rek` varchar(15) DEFAULT NULL,
   `arus_kas` int(10) NOT NULL,
-  `debet` double DEFAULT NULL,
-  `kredit` double DEFAULT NULL
+  `debet` double NOT NULL,
+  `kredit` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -1466,7 +1469,7 @@ CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
   `no_jurnal` varchar(20) NOT NULL,
   `no_bukti` varchar(20) DEFAULT NULL,
   `tgl_jurnal` date DEFAULT NULL,
-  `jenis` enum('U','P') DEFAULT NULL,,
+  `jenis` enum('U','P') DEFAULT NULL,
   `kegiatan` varchar(250) NOT NULL,
   `keterangan` varchar(350) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
