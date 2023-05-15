@@ -74,6 +74,10 @@ class Admin extends AdminModule
         $status_periksa = '';
         $status_bayar = '';
 
+        $waapitoken =  $this->settings->get('wagateway.token');
+        $waapiphonenumber =  $this->settings->get('wagateway.phonenumber');
+        $nama_instansi =  $this->settings->get('settings.nama_instansi');
+
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
         }
@@ -90,7 +94,7 @@ class Admin extends AdminModule
         $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_pcare' => $cek_pcare, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_pcare' => $cek_pcare, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode'), 'waapitoken' => $waapitoken, 'waapiphonenumber' => $waapiphonenumber, 'nama_instansi' => $nama_instansi]);
         exit();
     }
 
