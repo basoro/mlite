@@ -284,7 +284,7 @@ class Admin extends Main
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
