@@ -11,7 +11,7 @@ class Templates
 
     private $tags = [
                 '{\*(.*?)\*}' => 'self::comment',
-                '{noparse}(.*?){\/noparse}' => 'self::noParse',
+                '{noparse}(.*?){\/noparse}' => self::class . '::noParse',
                 '{if: ([^}]*)}' => '<?php if ($1): ?>',
                 '{else}' => '<?php else: ?>',
                 '{elseif: ([^}]*)}' => '<?php elseif ($1): ?>',
@@ -25,8 +25,8 @@ class Templates
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|e}' => '<?php echo htmlspecialchars(%%$1, ENT_QUOTES | ENT_HTML5, "UTF-8"); ?>',
                 '{(\$[a-zA-Z\-\._\[\]\'"0-9]+)\|cut:([0-9]+)}' => '<?php echo str_limit(strip_tags(%%$1), $2); ?>',
                 '{widget: ([\.\-a-zA-Z0-9]+)}' => '<?php echo \Systems\Lib\Widget::call(\'$1\'); ?>',
-                '{include: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", null, "$1")); ?>',
-                '{template: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", null, $mlite["theme"]."/$1")); ?>',
+                '{include: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", "$1")); ?>',
+                '{template: (.+?\.[a-z]{2,4})}' => '<?php include_once(str_replace(url()."/", "", $mlite["theme"]."/$1")); ?>',
             ];
 
     public $core;

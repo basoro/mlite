@@ -323,11 +323,11 @@ class Admin extends AdminModule
           WHERE
             reg_periksa.no_rkm_medis=pasien.no_rkm_medis
           AND
-            (reg_periksa.no_rkm_medis LIKE ? OR reg_periksa.no_rawat LIKE ? OR pasien.nm_pasien LIKE ? OR reg_periksa.stts LIKE ? OR reg_periksa.stts LIKE ?)
+            reg_periksa.no_rawat = '$cari'
           LIMIT 10";
 
         $stmt = $this->core->mysql()->pdo()->prepare($sql);
-        $stmt->execute(['%'.$cari.'%', '%'.$cari.'%', '%'.$cari.'%', 'Belum', 'Dirawat']);
+        $stmt->execute();
         $pasien = $stmt->fetchAll();
 
       }
@@ -397,29 +397,179 @@ class Admin extends AdminModule
 
     public function getBookingOperasi()
     {
-      return $this->draw('bookingoperasi.html');
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+      $status = $this->core->getEnum('booking_operasi','status');
+      $dokter = $this->core->mysql('dokter')->where('status', '1')->toArray();
+      $ruang_ok = $this->core->mysql('ruang_ok')->toArray();
+      $paket_operasi = $this->core->mysql('paket_operasi')->toArray();
+      $rows = $this->core->mysql('booking_operasi')->join('ruang_ok', 'ruang_ok.kd_ruang_ok=booking_operasi.kd_ruang_ok')->toArray();
+      $booking_operasi = [];
+      foreach ($rows as $row) {
+        $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
+        $row['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
+        $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']));
+        $booking_operasi[] = $row;
+      }
+      return $this->draw('bookingoperasi.html', ['bookingoperasi' => $booking_operasi, 'status' => $status, 'dokter' => $dokter, 'ruang_ok' => $ruang_ok, 'paket_operasi' => $paket_operasi]);
+    }
+
+    public function postSaveBookingOperasi()
+    {
+      if($_POST['simpan']) {
+        unset($_POST['simpan']);
+        unset($_POST['no_rkm_medis']);
+        unset($_POST['pasien']);
+        unset($_POST['nm_pasien']);
+        $this->core->mysql('booking_operasi')->save($_POST);
+        $this->notify('success', 'Booking operasi telah disimpan');
+      } else if ($_POST['update']) {
+        $no_rawat = $_POST['no_rawat'];
+        unset($_POST['update']);
+        unset($_POST['no_rawat']);
+        unset($_POST['no_rkm_medis']);
+        unset($_POST['pasien']);
+        unset($_POST['nm_pasien']);
+        $this->core->mysql('booking_operasi')
+          ->where('no_rawat', $no_rawat)
+          ->save($_POST);
+        $this->notify('failure', 'Booking operasi telah diubah');
+      } else if ($_POST['hapus']) {
+        $this->core->mysql('booking_operasi')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->delete();
+        $this->notify('failure', 'Booking operasi telah dihapus');
+      }
+      redirect(url([ADMIN, 'operasi', 'bookingoperasi']));
     }
 
     public function getPaketOperasi()
     {
-      return $this->draw('paketoperasi.html');
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $kategori = $this->core->getEnum('paket_operasi','kategori');
+      $penjab = $this->core->mysql('penjab')->where('status', '1')->toArray();
+      $kelas = $this->core->getEnum('paket_operasi','kelas');
+      $rows_paketoperasi = $this->core->mysql('paket_operasi')->toArray();
+      $paketoperasi = [];
+      foreach ($rows_paketoperasi as $row) {
+        $rows = $this->core->mysql('penjab')->where('kd_pj', $row['kd_pj'])->oneArray();
+        $row['png_jawab'] = $rows['png_jawab'];
+        $paketoperasi[] = $row;
+      }
+      return $this->draw('paketoperasi.html', ['paketoperasi' => $paketoperasi, 'kategori' => $kategori, 'penjab' => $penjab, 'kelas' => $kelas]);
+    }
+
+    public function postSavePaketOperasi()
+    {
+      if($_POST['simpan']) {
+        unset($_POST['simpan']);
+        $this->core->mysql('paket_operasi')->save($_POST);
+        $this->notify('success', 'Paket operasi telah disimpan');
+      } else if ($_POST['update']) {
+        $kode_paket = $_POST['kode_paket'];
+        unset($_POST['update']);
+        unset($_POST['kode_paket']);
+        $this->core->mysql('paket_operasi')
+          ->where('kode_paket', $kode_paket)
+          ->save($_POST);
+        $this->notify('failure', 'Paket operasi telah diubah');
+      } else if ($_POST['hapus']) {
+        $this->core->mysql('paket_operasi')
+          ->where('kode_paket', $_POST['kode_paket'])
+          ->delete();
+        $this->notify('failure', 'Paket operasi telah dihapus');
+      }
+      redirect(url([ADMIN, 'operasi', 'paketoperasi']));
     }
 
     public function getObatOperasi()
     {
-      return $this->draw('obatoperasi.html');
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $satuan = $this->core->mysql('kodesatuan')->toArray();
+      $obatoperasi = $this->core->mysql('obatbhp_ok')
+        ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
+        ->toArray();
+      return $this->draw('obatoperasi.html', ['obatoperasi' => $obatoperasi, 'satuan' => $satuan]);
+    }
+
+    public function postSaveObatOperasi()
+    {
+      if($_POST['simpan']) {
+        unset($_POST['simpan']);
+        $this->core->mysql('obatbhp_ok')->save($_POST);
+        $this->notify('success', 'Obat operasi telah disimpan');
+      } else if ($_POST['update']) {
+        $kd_obat = $_POST['kd_obat'];
+        unset($_POST['update']);
+        unset($_POST['kd_obat']);
+        $this->core->mysql('obatbhp_ok')
+          ->where('kd_obat', $kd_obat)
+          ->save($_POST);
+        $this->notify('failure', 'Obat operasi telah diubah');
+      } else if ($_POST['hapus']) {
+        $this->core->mysql('obatbhp_ok')
+          ->where('kd_obat', $_POST['kd_obat'])
+          ->delete();
+        $this->notify('failure', 'Obat operasi telah dihapus');
+      }
+      redirect(url([ADMIN, 'operasi', 'obatoperasi']));
     }
 
     public function getLaporanOperasi()
     {
-      return $this->draw('laporanoperasi.html');
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+      $permintaan_pa = $this->core->getEnum('laporan_operasi','permintaan_pa');
+      $rows = $this->core->mysql('laporan_operasi')->toArray();
+      $laporanoperasi = [];
+      foreach ($rows as $row) {
+        $row['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
+        $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']));
+        $laporanoperasi[] = $row;
+      }
+
+      return $this->draw('laporanoperasi.html', ['laporanoperasi' => $laporanoperasi, 'permintaan_pa' => $permintaan_pa]);
     }
 
-    public function convertNorawat($text)
+    public function postSaveLaporanOperasi()
     {
-        setlocale(LC_ALL, 'en_EN');
-        $text = str_replace('/', '', trim($text));
-        return $text;
+      if($_POST['simpan']) {
+        unset($_POST['simpan']);
+        unset($_POST['no_rkm_medis']);
+        unset($_POST['pasien']);
+        unset($_POST['nm_pasien']);
+        $this->core->mysql('laporan_operasi')->save($_POST);
+        $this->notify('success', 'Laporan operasi telah disimpan');
+      } else if ($_POST['update']) {
+        $no_rawat = $_POST['no_rawat'];
+        unset($_POST['update']);
+        unset($_POST['no_rawat']);
+        unset($_POST['no_rkm_medis']);
+        unset($_POST['pasien']);
+        unset($_POST['nm_pasien']);
+        $this->core->mysql('laporan_operasi')
+          ->where('no_rawat', $no_rawat)
+          ->save($_POST);
+        $this->notify('failure', 'Laporan operasi telah diubah');
+      } else if ($_POST['hapus']) {
+        $this->core->mysql('laporan_operasi')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->delete();
+        $this->notify('failure', 'Laporan operasi telah dihapus');
+      }
+      redirect(url([ADMIN, 'operasi', 'laporanoperasi']));
     }
 
     public function getJavascript()

@@ -156,11 +156,6 @@
 
     var no_rkm_medis		   = $(this).attr("data-no_rkm_medis");
     var nm_pasien    = $(this).attr("data-nm_pasien");
-    var tgl_lahir      = $(this).attr("data-tgl_lahir");
-    var jk  = $(this).attr("data-jk");
-    var alamat         = $(this).attr("data-alamat");
-    var no_tlp	       = $(this).attr("data-no_tlp");
-    var pekerjaan      = $(this).attr("data-pekerjaan");
     var no_rawat      = $(this).attr("data-no_rawat");
 
     var url    				= baseURL + '/rawat_inap/statusdaftar?t=' + mlite.token;
@@ -172,11 +167,6 @@
 
     $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
     $('input:text[name=nm_pasien]').val(nm_pasien);
-    $('input:text[name=tgl_lahir]').val(tgl_lahir);
-    $('input:text[name=jk]').val(jk);
-    $('input:text[name=alamat]').val(alamat);
-    $('input:text[name=no_tlp]').val(no_tlp);
-    $('input:text[name=pekerjaan]').val(pekerjaan);
     $('input:text[name=no_rawat]').val(no_rawat);
 
     $("#pasien").hide();

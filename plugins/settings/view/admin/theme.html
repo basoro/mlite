@@ -23,7 +23,7 @@
                 {if: $settings.theme == $theme.dir}
                 <a href="#" class="btn btn-primary btn-block btn-xs disabled">Aktif</a>
                 {else}
-                <a href="{?= url([ADMIN, 'settings', 'theme', $theme.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Tidak Aktif</a>
+                <a href="{?= url([ADMIN, 'settings', 'theme', $theme.dir, 'activate']) ?}" class="btn btn-primary btn-block btn-xs">Aktifkan</a>
                 {/if}
             </div>
         </div>

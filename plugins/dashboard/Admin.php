@@ -40,7 +40,7 @@ class Admin extends AdminModule
       if ($this->core->getUserInfo('username', null, true) == 'admin') {
         $nama_pegawai = 'Administrator';
       } else {
-        $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));        
+        $nama_pegawai = $this->core->getPegawaiInfo('nama', $this->core->getUserInfo('username', null, true));
       }
       $idpeg = $this->core->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
       if($idpeg) {

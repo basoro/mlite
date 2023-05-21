@@ -59,10 +59,10 @@
         position: fixed; bottom: 120px; left: 80px;width:100%;color: {$settings.text_color} !important;
       }
       p.title {
-        position: absolute; bottom: 30px;left: 140px;font-size:32px;
+        position: absolute; bottom: 30px;left: 140px;font-size:32px; text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
       }
       p.alamat {
-        position: absolute; bottom: 0px;left: 140px;font-size:16px;
+        position: absolute; bottom: 0px;left: 140px;font-size:16px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
       }
       @media (max-width: 768px) {
         .dashboard_wall {
@@ -72,10 +72,10 @@
           width: 80px;
         }
         p.title {
-          position: absolute; bottom: 10px;left: 80px;font-size:18px;
+          position: absolute; bottom: 10px;left: 80px;font-size:18px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
         }
         p.alamat {
-          position: absolute; bottom: 0px;left: 80px;font-size:10px;
+          position: absolute; bottom: 0px;left: 80px;font-size:10px;text-shadow: -1px -1px 0 #ffffff, 1px -1px 0 #ffffff, -1px 1px 0 #ffffff, 1px 1px 0 #ffffff;
         }
       }
     </style>
@@ -145,9 +145,6 @@
                     <li><a href="{?=url()?}/anjungan/poli/{$value.kd_poli}" target="_blank">Antrian {$value.nm_poli}</a></li>
                   {/if}
                 {/loop}
-                <li role="separator" class="divider"></li>
-                <li><a href="{?=url()?}/anjungan/ausyi/loket" target="_blank">Antrian Loket Ausyi</a></li>
-                <li><a href="{?=url()?}/anjungan/ausyi/pasien" target="_blank">Antrian Pasien Ausyi</a></li>
               </ul>
             </li>
             {/if}
@@ -262,8 +259,7 @@
                     </small>
                   </div>
                 </h4>
-                <p>The awesome SIMRS Khanza alternate<br>
-                  <b>Successor of KhanzaLITE</b><br>
+                <p>The awesome HIS alternate<br>
                   Clean, Light and Modular Medical Management Systems</p>
                 <p>Made with <i class="fa fa-heart text-danger"></i> and <i class="fa fa-coffee text-primary"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a> & Friends.</p>
                 <p>Thank you to our main sponsors <span class="badge badge-info badge-style-light">RSUD H. Damanhuri Barabai</span> and <span class="badge badge-warning badge-style-light">RS Aura Syifa Kediri</span>. Also the Klinik Utama Cahaya Imani Kandangan, RSIA Muntilan Magelang, RSU Ceria Kandangan, RSUD Datu Sanggul Rantau, RSUD Daha Sejahtera Kandangan and other hospitals that we cannot mention one by one. Also contributors who have been involved in development.</p>

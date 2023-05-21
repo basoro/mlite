@@ -27,8 +27,7 @@
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynokartu', $value.no_peserta, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor Kartu</a></li>
                 <li><a href="{?=url([ADMIN, 'pasien', 'vclaim_bynik', $value.no_ktp, date('Y-m-d')])?}" data-toggle="modal" data-target="#asuransiModal">[BPJS] Cek Nomor KTP</a></li>
               {/if}
-              <li><a href="{?=url([ADMIN, 'pasien', 'resumeperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Resume Perawatan</a></li>
-              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Riwayat Perawatan</a></li>
+              <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
               <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Tindakan</a></li>
@@ -37,6 +36,7 @@
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
               <li><a href="#obat_kronis" data-no_rawat="{$value.no_rawat}">Obat Kronis</a></li>
+              <li><a href="#kirimwaModal" data-toggle="modal" data-no_tlp="{$value.no_tlp}" data-nm_pasien="Yang terhormat {$value.nm_pasien} dengan nomor rekam medik {$value.no_rkm_medis}.&#013;&#010;&#013;&#010;-------------------&#013;&#010; Pesan WhatsApp ini dikirim otomatis oleh {$nama_instansi} &#013;&#010;Terima Kasih">Kirim WhatsApp</a></li>
               {/if}
             </ul>
           </td>
@@ -133,6 +133,30 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="kirimwaModal" tabindex="-1" role="dialog" aria-labelledby="kirimwaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimPesanWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script type="text/javascript">
   $('a[href="#soap"]').click(function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -449,4 +473,37 @@
     }).modal();
     return false;
   });
+</script>
+<script>
+  $('#kirimwaModal').on('show.bs.modal', function(e) {
+      //get data-id attribute of the clicked element
+      var no_tlp = $(e.relatedTarget).data('no_tlp');
+      var nm_pasien = $(e.relatedTarget).data('nm_pasien');
+      //populate the textbox
+      $(e.currentTarget).find('input[name="number"]').val(no_tlp);
+      $(e.currentTarget).find('textarea[name="message"]').val(nm_pasien);
+  });
+
+  function KirimPesanWA() {
+  	var xhttp = new XMLHttpRequest();
+    var api_key = '{$waapitoken}';
+  	var sender = '{$waapiphonenumber}';
+  	var number = document.getElementById("number").value;
+  	var message = document.getElementById("message").value;
+  	console.log(api_key + " - " + number + " - " + message);
+  	xhttp.onreadystatechange = function() {
+  		if (this.readyState == 4 && this.status == 200) {
+  			var data=xhttp.responseText;
+  			var jsonResponse = JSON.parse(data);
+  			if(jsonResponse["status"] == true) {
+  				alert('Sukses mengirim pesan.');
+  			} else {
+          alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+  			}
+  		}
+  	};
+  	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
+  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
+  }
 </script>

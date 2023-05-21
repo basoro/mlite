@@ -35,11 +35,43 @@
       footer a, footer a:hover {
         color: #fff;
       }
+      span.noantrian {
+        color: white;
+        background-color: red;
+        padding: 5px 10px;
+      }
+      .kanan {
+        position: absolute;
+        right: 10px;
+        top: 0px;
+        padding: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
+
+      .panel-footer .no_antrian {
+        /* font-size: 65px; */
+        color: #000;
+        padding-top: 0;
+        padding-bottom: 0;
+      }
     </style>
 </head>
 <body>
 <div class="container-fluid">
   <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Apotek {$settings.nama_instansi}</h1>
+  {if: isset($_GET['status']) && $_GET['status'] == '1'}
+  <h1 class="display-3 text-center kanan">
+    <div class="panel border-success">
+      <div class="panel-footer bg-transparent border-success">
+        <div class="no_antrian">
+          <p style="font-size: 20px; font-weight:bold;">ANTRIAN</p><b
+            style="font-size: 55px;">F1</b>
+        </div>
+      </div>
+    </div>
+  </h1>
+  {/if}
   <table class="table table-bordered text-primary">
     <tbody class="bg-primary">
       <tr>
@@ -47,11 +79,15 @@
           <marquee direction="up" scrollamount="3" height="700">
             <div id="list_lab" style="font-size: 24px; font-weight:bold;">
               <ul class="list-unstyled">
+                {if: $display}
                 {loop: $display}
                 <li style="padding:10px;">
-                  {$value.nm_pasien} - [{$value.no_rkm_medis}], Jam: {$value.jam_peresepan} <span class="pull-right">Status: <b {if: $value.status_resep == 'Sudah'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
+                  <span class="noantrian"><b>{$value.noantrian}</b></span> {$value.nm_pasien} - [{$value.no_rkm_medis}], Resep: {$value.jenis_resep} <span class="pull-right">Status: <b {if: $value.status_resep == 'Disiapkan'}style="color:red;"{/if}>{$value.status_resep}</b></span><br>
                 </li>
                 {/loop}
+                {else}
+                <center><b style="color:white;">Belum ada data antrian!</b></center>
+                {/if}
               </ul>
             </div>
           </marquee>
@@ -72,5 +108,116 @@
     <p><i class="fa fa-fw fa-calendar"></i> <span>{$tanggal}</span> <i class="fa fa-fw fa-clock-o"></i><span id="clock"></span> <i class="fa fa-fw fa-user"></i> <span>{?= sprintf('Login sebagai <strong>%s</strong>', $username) ?}</span></p>
   </div>
 </footer>
+{if: isset($_GET['status']) && $_GET['status'] == '1'}
+<script>
+$(document).ready(function(){
+  setTimeout(function(){
+    getAntrian();
+  }, 4000);
+});
+
+function getAntrian() {
+  $.ajax({
+      url: '{?=url()?}/anjungan/panggilantrian',
+      dataType: 'json',
+      success: function(data) {
+          if(data.status == true && data.type !== null) {
+              //console.log(data.type);
+              updateLayar(data.type, data.noantrian, data.loket);
+              panggil(data.panggil);
+              setSelesai(data.id);
+          } else {
+              setTimeout(function(){
+                  getAntrian();
+              }, 3000);
+          }
+      },
+      error: function(xhr) {
+          console.log('An error occured.');
+          console.log(xhr.status);
+          setTimeout(function(){
+              getAntrian();
+          }, 3000);
+      }
+  });
+}
+
+function updateLayar(type, nomor, loket) {
+  $('.antrian_' + type).html(nomor);
+  $('.get_' + type).html(loket);
+}
+
+function panggil(data) {
+  var ass = new Array();
+
+  $.each(data, function(key, value){
+      var filename = "{?=url()?}/plugins/anjungan/suara/" + value + ".wav";
+      var auau = new Audio(filename);
+      ass.push(auau);
+  });
+
+  console.log(ass);
+  play_sound_queue(ass);
+}
+
+function play(audio, callback) {
+  var akhir = true;
+
+  audio.playbackRate = 1.0;
+
+  const playPromise = audio.play();
+  //if (playPromise !== null){
+  //    playPromise.catch(() => { audio.play(); })
+  //}
+
+  if (callback) {
+      //When the audio object completes it's playback, call the callback
+      //provided
+      audio.addEventListener('ended', callback);
+      var akhir = false;
+  }
+
+  if(akhir == true) {
+      audio.addEventListener('ended', function(){
+          getAntrian();
+      });
+  }
+}
+
+//Changed the name to better reflect the functionality
+function play_sound_queue(sounds) {
+  var index = 0;
+  function recursive_play() {
+      //If the index is the last of the table, play the sound
+      //without running a callback after
+      if (index + 1 === sounds.length) {
+          play(sounds[index], null);
+      } else {
+          //Else, play the sound, and when the playing is complete
+          //increment index by one and play the sound in the
+          //indexth position of the array
+          play(sounds[index], function() {
+              index++;
+              recursive_play();
+          });
+      }
+  }
+  //Call the recursive_play for the first time
+  recursive_play();
+}
+
+function setSelesai(id) {
+  $.ajax({
+      url: '{?=url()?}/anjungan/panggilselesai',
+      dataType: 'json',
+      data: { id: id },
+      error: function(xhr) {
+          console.log(xhr.status);
+      }
+  });
+
+}
+</script>
+{/if}
 </body>
 </html>

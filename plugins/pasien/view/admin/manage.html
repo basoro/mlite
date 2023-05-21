@@ -4,8 +4,16 @@
       <div class="panel-heading">
         <div class="btn-group pull-right" style="margin-top:-8px;">
           <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
-            <div id="btn_cetak" data-toggle="modal"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></div>
+            <i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span>
           </span>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="btn_cetak_jasper" class="btn btn-primary btn-block" data-toggle="modal">Cetak Versi Jasper</div>
+            </li>
+            <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+              <div id="btn_cetak_fpdf" class="btn btn-primary btn-block" data-toggle="modal">Cetak Versi FPDF</div>
+            </li>
+          </ul>
         </div>
         <h3 class="panel-title">Kelola Pasien</h3>
       </div>

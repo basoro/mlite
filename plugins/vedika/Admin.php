@@ -44,7 +44,6 @@ class Admin extends AdminModule
     }
 
     $KlaimRalan = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, penjab WHERE reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND reg_periksa.tgl_registrasi LIKE '{$date}%' AND reg_periksa.status_lanjut = 'Ralan'");
-    //$KlaimRalan = $this->core->mysql()->pdo()->prepare("SELECT nosep FROM mlite_umbal_sep WHERE tanggal LIKE '{$date}%' AND rirj = 'RJ'");
     $KlaimRalan->execute();
     $KlaimRalan = $KlaimRalan->fetchAll();
     $stats['KlaimRalan'] = 0;
@@ -53,7 +52,6 @@ class Admin extends AdminModule
     }
 
     $KlaimRanap = $this->core->mysql()->pdo()->prepare("SELECT reg_periksa.no_rawat FROM reg_periksa, penjab, kamar_inap WHERE reg_periksa.no_rawat = kamar_inap.no_rawat AND reg_periksa.kd_pj = penjab.kd_pj AND penjab.kd_pj IN ('$carabayar') AND kamar_inap.tgl_keluar LIKE '{$date}%' AND reg_periksa.status_lanjut = 'Ranap'");
-    //$KlaimRanap = $this->core->mysql()->pdo()->prepare("SELECT nosep FROM mlite_umbal_sep WHERE tanggal LIKE '{$date}%' AND rirj = 'RI'");
     $KlaimRanap->execute();
     $KlaimRanap = $KlaimRanap->fetchAll();
     $stats['KlaimRanap'] = 0;
@@ -117,19 +115,10 @@ class Admin extends AdminModule
       ['name' => 'Perbaikan', 'url' => url([ADMIN, 'vedika', 'perbaikan']), 'icon' => 'code', 'desc' => 'Index Perbaikan Vedika'],
       ['name' => 'Mapping Inacbgs', 'url' => url([ADMIN, 'vedika', 'mappinginacbgs']), 'icon' => 'code', 'desc' => 'Pengaturan Mapping Inacbgs'],
       ['name' => 'Bridging Eklaim', 'url' => url([ADMIN, 'vedika', 'bridgingeklaim']), 'icon' => 'code', 'desc' => 'Bridging Eklaim'],
-      ['name' => 'Purifikasi', 'url' => url([ADMIN, 'vedika', 'purif']), 'icon' => 'code', 'desc' => 'Purifikasi Vedika'],
       ['name' => 'User Vedika', 'url' => url([ADMIN, 'vedika', 'users']), 'icon' => 'code', 'desc' => 'User Vedika'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'vedika', 'settings']), 'icon' => 'code', 'desc' => 'Pengaturan Vedika'],
     ];
     return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'stats' => $stats, 'periode' => $date]);
-  }
-
-  public function getPurif(){
-    $sub_modules = [
-      ['name' => 'Purifikasi Penyandingan', 'url' => url([ADMIN, 'vedika', 'sanding']), 'icon' => 'code', 'desc' => 'Purifikasi Penyandingan Vedika'],
-      ['name' => 'Upload File Excel', 'url' => url([ADMIN, 'vedika', 'uploadxl']), 'icon' => 'code', 'desc' => 'Upload File Excel Vedika'],
-    ];
-    return $this->draw('manage_purif.html', ['sub_modules' => $sub_modules]);
   }
 
   public function Chart()
@@ -355,23 +344,6 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-          foreach ($galleri_pasien as $galleri) {
-            $galleri['src'] = unserialize($galleri['src']);
-
-            if (!isset($galleri['src']['sm'])) {
-              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-            }
-
-            $berkas_digital_pasien[] = $galleri;
-          }
-        }
 
         $row = htmlspecialchars_array($row);
         $row['no_sep'] = $this->_getSEPInfo('no_sep', $row['no_rawat']);
@@ -382,7 +354,6 @@ class Admin extends AdminModule
         $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
         $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
         $row['berkas_digital'] = $berkas_digital;
-        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
@@ -591,23 +562,6 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-          foreach ($galleri_pasien as $galleri) {
-            $galleri['src'] = unserialize($galleri['src']);
-
-            if (!isset($galleri['src']['sm'])) {
-              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-            }
-
-            $berkas_digital_pasien[] = $galleri;
-          }
-        }
 
         $row = htmlspecialchars_array($row);
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
@@ -629,7 +583,6 @@ class Admin extends AdminModule
         $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
         $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
         $row['berkas_digital'] = $berkas_digital;
-        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
@@ -840,24 +793,6 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-          foreach ($galleri_pasien as $galleri) {
-            $galleri['src'] = unserialize($galleri['src']);
-
-            if (!isset($galleri['src']['sm'])) {
-              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-            }
-
-            $berkas_digital_pasien[] = $galleri;
-          }
-        }
-
         $row = htmlspecialchars_array($row);
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
         $row['almt_pj'] = $this->core->getPasienInfo('alamat', $row['no_rkm_medis']);
@@ -878,7 +813,6 @@ class Admin extends AdminModule
         $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
         $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
         $row['berkas_digital'] = $berkas_digital;
-        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
@@ -1212,24 +1146,6 @@ class Admin extends AdminModule
           ->where('berkas_digital_perawatan.no_rawat', $row['no_rawat'])
           ->asc('master_berkas_digital.nama')
           ->toArray();
-        $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-          ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-          ->where('mlite_pasien_galleries.slug', $row['no_rkm_medis'])
-          ->toArray();
-
-        $berkas_digital_pasien = array();
-        if (count($galleri_pasien)) {
-          foreach ($galleri_pasien as $galleri) {
-            $galleri['src'] = unserialize($galleri['src']);
-
-            if (!isset($galleri['src']['sm'])) {
-              $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-            }
-
-            $berkas_digital_pasien[] = $galleri;
-          }
-        }
-
         $row = htmlspecialchars_array($row);
         $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
         $row['almt_pj'] = $this->core->getPasienInfo('alamat', $row['no_rkm_medis']);
@@ -1250,7 +1166,6 @@ class Admin extends AdminModule
         $row['kode'] = $this->_getProsedur('kode', $row['no_rawat'], $row['status_lanjut']);
         $row['deskripsi_panjang'] = $this->_getProsedur('deskripsi_panjang', $row['no_rawat'], $row['status_lanjut']);
         $row['berkas_digital'] = $berkas_digital;
-        $row['berkas_digital_pasien'] = $berkas_digital_pasien;
         $row['formSepURL'] = url([ADMIN, 'vedika', 'formsepvclaim', '?no_rawat=' . $row['no_rawat']]);
         $row['pdfURL'] = url([ADMIN, 'vedika', 'pdf', $this->convertNorawat($row['no_rawat'])]);
         $row['setstatusURL']  = url([ADMIN, 'vedika', 'setstatus', $this->_getSEPInfo('no_sep', $row['no_rawat'])]);
@@ -1509,23 +1424,6 @@ class Admin extends AdminModule
       ->asc('master_berkas_digital.nama')
       ->toArray();
 
-    $galleri_pasien = $this->core->mysql('mlite_pasien_galleries_items')
-      ->join('mlite_pasien_galleries', 'mlite_pasien_galleries.id = mlite_pasien_galleries_items.gallery')
-      ->where('mlite_pasien_galleries.slug', $this->getRegPeriksaInfo('no_rkm_medis', $this->revertNorawat($id)))
-      ->toArray();
-    $berkas_digital_pasien = array();
-    if (count($galleri_pasien)) {
-      foreach ($galleri_pasien as $galleri) {
-        $galleri['src'] = unserialize($galleri['src']);
-
-        if (!isset($galleri['src']['sm'])) {
-          $galleri['src']['sm'] = isset($galleri['src']['xs']) ? $galleri['src']['xs'] : $galleri['src']['lg'];
-        }
-
-        $berkas_digital_pasien[] = $galleri;
-      }
-    }
-
     $no_rawat = $this->revertNorawat($id);
 
     $check_billing = $this->core->mysql()->pdo()->query("SHOW TABLES LIKE 'billing'");
@@ -1650,16 +1548,6 @@ class Admin extends AdminModule
           $total_periksa_radiologi = 0;
           foreach ($result_detail['periksa_radiologi'] as $row) {
             $total_periksa_radiologi += $row['biaya'];
-          }
-
-          $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
-            ->where('status', 'ralan')
-            ->where('no_rawat', $no_rawat)
-            ->toArray();
-
-          $total_tambahan_biaya = 0;
-          foreach ($result_detail['tambahan_biaya'] as $row) {
-            $total_tambahan_biaya += $row['besar_biaya'];
           }
 
           $jumlah_total_operasi = 0;
@@ -1998,7 +1886,6 @@ class Admin extends AdminModule
     $this->tpl->set('laporan_operasi', $laporan_operasi);
 
     $this->tpl->set('berkas_digital', $berkas_digital);
-    $this->tpl->set('berkas_digital_pasien', $berkas_digital_pasien);
     $this->tpl->set('hasil_radiologi', $this->core->mysql('hasil_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('gambar_radiologi', $this->core->mysql('gambar_radiologi')->where('no_rawat', $this->revertNorawat($id))->toArray());
     $this->tpl->set('vedika', htmlspecialchars_array($this->settings('vedika')));
@@ -2272,7 +2159,7 @@ class Admin extends AdminModule
   private function _getPenjab($kd_pj = null)
   {
       $result = [];
-      $rows = $this->core->mysql('penjab')->toArray();
+      $rows = $this->core->mysql('penjab')->where('status', '1')->toArray();
 
       if (!$kd_pj) {
           $kd_pjArray = [];
@@ -2389,122 +2276,6 @@ class Admin extends AdminModule
       ]);
     }
     exit();
-  }
-
-  public function getSanding(){
-    if (isset($_GET['y'])) {
-      $tahun = $_GET['y'];
-    } else {
-      $tahun = date('Y');
-    }
-    if (isset($_GET['bln'])) {
-      $bln = $_GET['bln'];
-    } else {
-      $bln = date('m');
-    }
-    switch ($bln) {
-      case 'Des':
-        $bulan = '12';
-        break;
-      case 'Nov':
-        $bulan = '11';
-        break;
-      case 'Jan':
-        $bulan = '01';
-        break;
-
-      default:
-        $bulan = $bln;
-        break;
-    }
-    $this->assign['list'] = [];
-    $no = 1;
-    $eklaim = $this->core->mysql('mlite_purif')->like('yearMonth','%'.$tahun.'-'.$bulan.'%')->toArray();
-    foreach ($eklaim as $value) {
-      $value['vedika'] = $this->core->mysql('mlite_vedika')->where('nosep',$value['no_sep'])->oneArray();
-      $value['no'] = $no++;
-      $this->assign['list'][] = $value;
-    }
-    $this->assign['ym'] = 'Bulan '.$bulan.' Tahun '.$tahun;
-    $this->assign['bulan'] = ['Jan','Peb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-    return $this->draw('sanding.html',['sanding' => $this->assign]);
-  }
-
-  public function getUploadXl(){
-    return $this->draw('uploadxl.html');
-  }
-
-  public function postUploadFileXl(){
-    if(isset($_FILES['xls_file']['tmp_name'])){
-      $file_type = $_FILES['xls_file']['name'];
-      $FileType = strtolower(pathinfo($file_type,PATHINFO_EXTENSION));
-      $target = UPLOADS.'/purif/sanding.'.$FileType;
-      if ($FileType != "xls" && $FileType != "xlsx") {
-        echo "<script>alert('Salah File Bro!! ini bukan ".$FileType."');history.go(-1);</script>";
-      } else {
-        include(BASE_DIR. "/vendor/php-excel-reader-master/src/PHPExcelReader/SpreadsheetReader.php"); //better use autoloading
-        move_uploaded_file($_FILES['xls_file']['tmp_name'], $target);
-        $data = new \PHPExcelReader\SpreadsheetReader($target);
-        $jumlah_baris = $data->rowcount($sheet_index=0);
-        $berhasil = 0;
-        $sukses = false;
-        $bulans = ['Jan','Peb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
-        for ($i=5; $i<=$jumlah_baris; $i++){
-          $bulanTahun = $data->val($i,3);
-          foreach ($bulans as $bln) {
-            if (strpos($bulanTahun, $bln) !== false) {
-              switch ($bln) {
-                case 'Des':
-                  $bulan = '12';
-                  break;
-                case 'Nov':
-                  $bulan = '11';
-                  break;
-                case 'Jan':
-                  $bulan = '01';
-                  break;
-
-                default:
-                  $bulan = '00';
-                  break;
-              }
-            }
-          }
-          $tahun = substr($bulanTahun,-4);
-          $ym = $tahun.'-'.$bulan;
-          $no_sep     = $data->val($i, 6);
-          $no_rm   = $data->val($i, 4);
-          $nama  = $data->val($i, 5);
-          $biaya  = $data->val($i, 9);
-          $biaya = ltrim($biaya , '* ');
-          $biaya = str_replace([',','.'],'',$biaya);
-          $cek = $this->core->mysql('mlite_purif')->where('no_sep',$no_sep)->oneArray();
-
-            // menangkap data dan memasukkan ke variabel sesuai dengan kolumnya masing-masing
-
-          if($no_sep != "" && $no_rm != "" && $nama != ""){
-            if (!$cek) {
-                # code...
-                $this->core->mysql('mlite_purif')->save([
-                  'no_sep' => $no_sep,
-                  'no_rkm_medis' => $no_rm,
-                  'nama' => $nama,
-                  'tarif' => $biaya,
-                  'yearMonth' => $ym
-                ]);
-                $berhasil++;
-            }
-              // input data ke database (table data_pegawai)
-          }
-          $sukses = true;
-        }
-        if ($sukses == true) {
-          # code...
-          $this->notify('success', 'Upload telah berhasil disimpan');
-        }
-      }
-    }
-    redirect(url([ADMIN, 'vedika', 'purif']));
   }
 
   public function getDisplayResume($no_rawat)
@@ -3212,6 +2983,16 @@ class Admin extends AdminModule
             'tanggal' => date('Y-m-d'),
             'status' => 'Pengajuan'
           ]);
+        if ($simpan_status) {
+          $this->core->mysql('mlite_vedika_feedback')->save([
+            'id' => NULL,
+            'nosep' => $nosep,
+            'tanggal' => date('Y-m-d'),
+            'catatan' => 'Pengajuan - Kirim ke Data Center',
+            'username' => $this->core->getUserInfo('username', null, true)
+          ]);
+        }
+
       }
       unlink($image);
 

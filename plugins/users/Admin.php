@@ -148,6 +148,10 @@ class Admin extends AdminModule
             $_POST['access'] = implode(',', $_POST['access']);
         }
 
+        if($_POST['cap'] == '') {
+          $_POST['cap'] = [];
+        }
+
         $_POST['cap'] = implode(',', $_POST['cap']);
 
         // CREATE / EDIT

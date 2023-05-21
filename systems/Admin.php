@@ -23,8 +23,14 @@ class Admin extends Main
         $access = '';
         $this->assign['username'] = '';
 
-        if($this->db('mlite_users')->where('id', $_SESSION['mlite_user'])->oneArray()) {
-          $username = $this->getUserInfo('fullname', null, true);
+        if(isset_or($_SESSION['mlite_user']) == '') {
+          $id = 1;
+        } else {
+          $id = $_SESSION['mlite_user'];
+        }
+
+        if($this->db('mlite_users')->where('id', $id)->oneArray()) {
+          $username = $this->getUserInfo('fullname', $id, true);
           $access = $this->getUserInfo('access');
           $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
         }
@@ -103,7 +109,13 @@ class Admin extends Main
         $nav = [];
         $modules = $this->module->getArray();
 
-        if ($this->getUserInfo('access') != 'all') {
+        if($_SESSION['mlite_user'] == '') {
+          $id = 1;
+        } else {
+          $id = $_SESSION['mlite_user'];
+        }
+
+        if ($this->getUserInfo('access', $id, $refresh = false) != 'all') {
             $modules = array_intersect_key($modules, array_fill_keys(explode(',', $this->getUserInfo('access')), null));
         }
 
@@ -272,7 +284,7 @@ class Admin extends Main
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];

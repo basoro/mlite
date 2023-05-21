@@ -56,16 +56,18 @@ Pemasangan
 $ composer create-project basoro/khanza-lite
 ```
 
-2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut
 
-3. Sesuaikan pengaturan di config.php
+3. Buat database lalu sesuaikan pengaturan di config.php
 
-4. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+4. Import file mlite_db.sql ke database yang sudah dibuat di point 3 (untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql)
 
-5. Silahkan login dengan Username: admin dan Password: admin
+5. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada
+
+6. Silahkan login dengan Username: admin dan Password: admin
 
 ### Pemasangan Manual
-1. Unduh versi terbaru [mLITE] (https://github.com/basoro/khanza-lite).
+1. Unduh versi terbaru [mLITE] (https://github.com/basoro/khanza-lite)
 
 2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
 
@@ -74,13 +76,13 @@ $ composer create-project basoro/khanza-lite
 $ composer install
 ```
 
-4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut
 
 5. Buat database lalu sesuaikan pengaturan di config.php
 
-6. Import mlite.sql ke database yang sudah dibuat di point 5
+6. Import file mlite_db.sql ke database yang sudah dibuat di point 5 (untuk pengguna SIMRS Khanza silahkan import database di file mlite_only.sql)
 
-7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+7. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada
 
 8. Silahkan login dengan Username: admin dan Password: admin
 
@@ -100,17 +102,6 @@ systems\srv\startServer.bat
 ```
 
 ### Peringatan!
-
-+ Aktifasi modul-modul yang belum diaktifkan jika diperlukan, misalnya...
-  - IGD
-  - Apotek Ralan
-  - Dokter Ralan
-  - Laboratorium
-  - Radiologi
-  - ICD 9 - 10 Request
-  - Presensi
-  - Profil
-  - Dan seterusnya....
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
 + Untuk pengguna Nginx, tambahkan konfigurasi berikut di pengaturan nginx.conf (atau sejenisnya)

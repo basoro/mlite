@@ -515,11 +515,14 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
       + '</form>'
       + '<div id="preview"></div>'
       + '</div>'
+      + '<div id="preview_hasil"></div>'
+      + '</div>'
       + '';
 
   // tampilkan dialog konfirmasi
   var box = bootbox.dialog({
     message: set_stok,
+    size: 'large',
     title: 'Input Hasil Radiologi',
     buttons: {
       main: {
@@ -595,17 +598,6 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
   //$('select').selectator();
   event.stopPropagation();
   return false;
-});
-
-$("#rincian").on("click",".hasil_pacs", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var url = baseURL + '/radiologi/savehasil?t=' + mlite.token;
-  var no_rawat = $(this).attr("data-no_rawat");
-  var tgl_periksa = $(this).attr("data-tgl_periksa");
-  var jam_periksa = $(this).attr("data-jam_periksa");
-  var status = $(this).attr("data-status");
-  alert('PACS');
 });
 
 // ketika tombol hapus ditekan

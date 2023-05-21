@@ -4,8 +4,11 @@
             <div class="panel-heading">
                 <h3 class="panel-title">Tambah Jadwal Presensi</h3>
                 <ul class="nav nav-tabs">
-                    <li class="{if: empty($jamjaga.getStatus)}{/if}">
+                    <li>
                         <a href="{?=url(ADMIN.'/presensi/jadwal')?}" role="tab">Jadwal</a>
+                    </li>
+                    <li class="active">
+                        <a href="#" role="tab">Tambah</a>
                     </li>
                 </ul>
             </div>

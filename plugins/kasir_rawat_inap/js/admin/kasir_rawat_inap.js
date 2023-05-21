@@ -482,7 +482,7 @@ $("#rincian").on("click",".hapus_obat", function(event){
   event.preventDefault();
   var url = baseURL + '/kasir_rawat_inap/hapusobat?t=' + mlite.token;
   var kode_brng = $(this).attr("data-kode_brng");
-  var no_resep = $(this).attr("data-no_resep");
+  //var no_resep = $(this).attr("data-no_resep");
   var no_rawat = $(this).attr("data-no_rawat");
   var tgl_peresepan = $(this).attr("data-tgl_peresepan");
   var jam_peresepan = $(this).attr("data-jam_peresepan");
@@ -495,7 +495,7 @@ $("#rincian").on("click",".hapus_obat", function(event){
       // mengirimkan perintah penghapusan
       $.post(url, {
         kode_brng: kode_brng,
-        no_resep: no_resep,
+        //no_resep: no_resep,
         no_rawat: no_rawat,
         tgl_peresepan: tgl_peresepan,
         jam_peresepan: jam_peresepan,

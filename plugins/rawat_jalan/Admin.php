@@ -74,6 +74,10 @@ class Admin extends AdminModule
         $status_periksa = '';
         $status_bayar = '';
 
+        $waapitoken =  $this->settings->get('wagateway.token');
+        $waapiphonenumber =  $this->settings->get('wagateway.phonenumber');
+        $nama_instansi =  $this->settings->get('settings.nama_instansi');
+
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
         }
@@ -90,7 +94,7 @@ class Admin extends AdminModule
         $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
         $responsivevoice =  $this->settings->get('settings.responsivevoice');
         $this->_Display($tgl_kunjungan, $tgl_kunjungan_akhir, $status_periksa, $status_bayar);
-        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_pcare' => $cek_pcare, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode')]);
+        echo $this->draw('display.html', ['rawat_jalan' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'cek_pcare' => $cek_pcare, 'responsivevoice' => $responsivevoice, 'admin_mode' => $this->settings->get('settings.admin_mode'), 'waapitoken' => $waapitoken, 'waapiphonenumber' => $waapiphonenumber, 'nama_instansi' => $nama_instansi]);
         exit();
     }
 
@@ -104,7 +108,7 @@ class Admin extends AdminModule
 
         $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -193,7 +197,7 @@ class Admin extends AdminModule
 
       $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->where('kd_poli', '<>', $this->settings->get('settings.igd'))->where('status', '1')->toArray();
       $this->assign['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
-      $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+      $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
       $date = date('Y-m-d');
       $jam = date('H:i:s');
       if (isset($_POST['no_rawat'])){
@@ -273,7 +277,7 @@ class Admin extends AdminModule
             $bg_status = 'has-error';
           } else {
             $result = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
-            if($result >= 1) {
+            if(!empty($result['no_rawat'])) {
               $stts_daftar = 'Lama';
               $bg_status = 'has-info';
               $stts_daftar_hidden = $stts_daftar;
@@ -670,7 +674,7 @@ class Admin extends AdminModule
         $this->assign['title'] = 'Tambah Jadwal Dokter';
         $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
         $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->toArray();
-        $this->assign['hari_kerja'] = $this->getEnum('jadwal', 'hari_kerja');
+        $this->assign['hari_kerja'] = $this->core->getEnum('jadwal', 'hari_kerja');
         $this->assign['postUrl'] = url([ADMIN, 'rawat_jalan', 'jadwalsave', $this->assign['form']['kd_dokter'], $this->assign['form']['hari_kerja']]);
         return $this->draw('jadwal.form.html', ['pendaftaran' => $this->assign]);
     }
@@ -688,7 +692,7 @@ class Admin extends AdminModule
         if (!empty($row)) {
             $this->assign['form'] = $row;
             $this->assign['title'] = 'Edit Jadwal';
-            $this->assign['hari_kerja'] = $this->getEnum('jadwal', 'hari_kerja');
+            $this->assign['hari_kerja'] = $this->core->getEnum('jadwal', 'hari_kerja');
             $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
             $this->assign['poliklinik'] = $this->core->mysql('poliklinik')->toArray();
 
@@ -1012,25 +1016,7 @@ class Admin extends AdminModule
 
     public function postSaveSOAP()
     {
-      $check_db = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'evaluasi'");
-      $check_db->execute();
-      $check_db = $check_db->fetch();
-
-      $check_db2 = $this->core->mysql()->pdo()->query("SHOW COLUMNS FROM `pemeriksaan_ralan` LIKE 'instruksi'");
-      $check_db2->execute();
-      $check_db2 = $check_db2->fetch();
-
-      if($check_db) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-      } else if($check_db2) {
-        $_POST['nip'] = $this->core->getUserInfo('username', null, true);
-        unset($_POST['spo2']);
-        unset($_POST['evaluasi']);
-      } else {
-        unset($_POST['spo2']);
-        unset($_POST['evaluasi']);
-        unset($_POST['instruksi']);
-      }
+      $_POST['nip'] = $this->core->getUserInfo('username', null, true);
 
       if(!$this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->core->mysql('pemeriksaan_ralan')->save($_POST);
@@ -1240,21 +1226,6 @@ class Admin extends AdminModule
         $next_no_rawat = date('Y/m/d').'/'.$next_no_rawat;
 
         return $next_no_rawat;
-    }
-
-    public function getEnum($table_name, $column_name) {
-      $result = $this->core->mysql()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
-      $result->execute();
-      $result = $result->fetch();
-      $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
-      return $result;
-    }
-
-    public function convertNorawat($text)
-    {
-        setlocale(LC_ALL, 'en_EN');
-        $text = str_replace('/', '', trim($text));
-        return $text;
     }
 
     public function postCetak()

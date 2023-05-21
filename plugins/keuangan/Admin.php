@@ -271,8 +271,11 @@ class Admin extends AdminModule
             $row_kredit['kredit_all'] += $kredit['kredit'];
           }
           $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_kredit['kd_rek'])->oneArray();
-          $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
-          $row['total_saldo_awal_masuk'] += $saldo_awal['saldo_awal'];
+          $row_kredit['saldo_awal'] = 0;
+          if(!empty($saldo_awal)) {
+            $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
+            $row['total_saldo_awal_masuk'] += $saldo_awal['saldo_awal'];
+          }
           $row['jurnal_masuk'][] = $row_kredit;
           $total_saldo_kredit += $row['total_saldo_awal_masuk'];
           $total_kredit += $row_kredit['kredit_all'];
@@ -293,8 +296,11 @@ class Admin extends AdminModule
             $row_debet['debet_all'] += $debet['debet'];
           }
           $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
-          $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
-          $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
+          $row_debet['saldo_awal'] = 0;
+          if(!empty($saldo_awal)) {
+            $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
+            $row['total_saldo_awal_keluar'] += $saldo_awal['saldo_awal'];
+          }
           $row['jurnal_keluar'][] = $row_debet;
           $total_saldo_debet += $row['total_saldo_awal_keluar'];
           $total_debet += $row_debet['debet_all'];
@@ -316,7 +322,111 @@ class Admin extends AdminModule
 
     public function getNeraca()
     {
-      return $this->draw('blank.html');
+      $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+
+      /*
+      $pjl=mysql_fetch_array(mysql_query("select sum(total) as total from kd_penj where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' ")) or die (mysql_error());
+      $pbl=mysql_fetch_array(mysql_query("select sum(total) as total from kd_pemb where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' ")) or die (mysql_error());
+      $psd=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='113'"));
+      $ret=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='511'"));
+      $biaya=mysql_fetch_array(mysql_query("select sum(jumlah) as jumlah from rekening where kd_rek between '611' and '699'"));
+      $pot=mysql_fetch_array(mysql_query("select sum(disc) as pot from kd_pemb where tanggal between '$thn_sekarang-$bln_sekarang-1' and '$tgl_sekarang' "));
+      $kas=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='111'"));
+      $hut=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='211'"));
+      $pemilik=mysql_fetch_array(mysql_query("select nm_perusahaan,alamat from bigbook_perusahaan")) or die ("gagal");
+      $modal=mysql_fetch_array(mysql_query("select jumlah from rekening where kd_rek='311'"));
+
+      $tampil=mysql_query("SELECT * FROM barang ORDER BY nama");
+      while($r = mysql_fetch_array($tampil)){
+          $jml=$r[stok];
+          $hrg=$r[hrg_beli];
+          $subtotal= $jml * $hrg;
+          $total1= $total1 + $subtotal; //persediaan akhir
+      }
+      $jmlretpo = $ret[jumlah]+$pot[pot];
+      $pblbersih = $pbl[total]- $jmlretpo; //pembelian bersih
+      $x2 = $pblbersih + $psd[jumlah]; //barang siap jual
+      $hpp = $x2 - $total1; //barang siap jual di kurangi persediaan akhir
+      $kotor = $pjl[total]-$hpp;
+      $pajak= $kotor * 10/100;
+      $beban= $biaya[jumlah]+$pajak;
+      $laba = $kotor-$beban;
+
+      $total = $laba - $prive[jumlah];
+      $modalakhir = $modal[jumlah] + $total;
+
+      $aktiva = $psd2[jumlah] + $kas[jumlah];
+      $passiva = $modalakhir + $hut[jumlah];
+
+      $tampil= mysql_query("SELECT * FROM barang ORDER BY nama");
+      while($r = mysql_fetch_array($tampil)){
+          $stok=$r[stok];
+          $hrg_beli=$r[hrg_beli];
+          $sub_total= $stok * $hrg_beli;
+          $persedian_akhir = $persedian_akhir + $sub_total;
+      }
+      */
+
+      /////// ******* ///////
+      /*
+      PENJELASAN AKTIVA PASIVA
+      
+      Rumus aktiva dan pasiva neraca keuangan
+
+      Aktiva dan pasiva adalah dua hal yang tidak boleh terlewatkan saat Anda membuat neraca keuangan. Dalam menghitung aktiva dan pasiva tidak bisa dilakukan sembarangan. Ada rumus hitungnya, yaitu:
+
+      Aktiva = Kewajiban (Pasiva) + Modal
+
+      Pada dasarnya jumlah aktiva dan pasiva adalah sama. Artinya jika ada penambahan atau pengurangan pada nilai aktiva, hal ini akan berpengaruh pada penambahan dan pengurangan nilai pasiva. Keduanya harus berjumlah sama agar neraca keuangan bisa seimbang.
+
+      Contoh perhitungan aktiva dan pasiva adalah sebagai berikut:
+
+      1. Jika Anda mendapatkan setoran modal dari investor sebesar Rp1.5 miliar, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah sebesar Rp1.5 miliar
+
+      Nilai pasiva berupa modal bertambah sebesar Rp1.5 miliar
+
+      2. Jika Anda membeli perlengkapan kantor sebesar Rp5 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah sebesar Rp5 juta
+
+      Nilai pasiva berupa kas atau modal berkurang Rp5 juta
+
+      3. Jika Anda meminjam uang ke bank sebesar Rp15 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah Rp15 juta
+
+      Nilai pasiva berupa utang bertambah Rp15 juta
+
+      4. Jika Anda mendapatkan penghasilan dari penjualan produk sebesar Rp10 juta, maka nilai yang tertera pada aktiva dan pasiva adalah:
+
+      Nilai aktiva berupa aset bertambah Rp10 juta
+
+      Nilai pasiva berupa modal bertambah Rp10 juta
+
+      */
+
+
+      $kas = 0;
+      $persediaan = 0;
+      $hutang = 0;
+      $modal = 0;
+      $aktiva = 0;
+      $pasiva = 0;
+      return $this->draw('neraca.html', ['kas' => $kas, 'persediaan' => $persediaan, 'hutang' => $hutang, 'modal' => $modal, 'aktiva' => $aktiva, 'pasiva' => $pasiva]);
     }
 
     public function getSettings()

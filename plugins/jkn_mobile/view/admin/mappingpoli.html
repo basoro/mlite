@@ -1,0 +1,37 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Mapping Poliklinik</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                  <table class="table table-striped no-margin display no-wrap" width="100%">
+                    <thead>
+                      <tr>
+                        <th>Kode Poli RS</th>
+                        <th>Kode Poli BPJS</th>
+                        <th>Nama Poli BPJS</th>
+                        <th class="text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loop: $row}
+                      <tr>
+                        <td>{$value.kd_poli_rs}</td>
+                        <td>{$value.kd_poli_bpjs}</td>
+                        <td>{$value.nm_poli_bpjs}</td>
+                        <td class="text-right">
+                          <a href="{?=url([ADMIN, 'jkn_mobile', 'poliklinik_delete', $value.kd_poli_rs])?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus poliklinik ini?">
+                            <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+                          </a>
+                        </td>
+                      </tr>
+                      {/loop}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

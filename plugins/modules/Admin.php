@@ -232,13 +232,13 @@ class Admin extends AdminModule
             $filename = $zip->getNameIndex($i);
 
             if (empty($path) || strpos($filename, $path) == 0) {
-                $file = $to.'/'.str_replace($path, null, $filename);
+                $file = $to.'/'.str_replace($path, '', $filename);
                 if (!file_exists(dirname($file))) {
                     mkdir(dirname($file), 0777, true);
                 }
 
                 if (substr($file, -1) != '/') {
-                    file_put_contents($to.'/'.str_replace($path, null, $filename), $zip->getFromIndex($i));
+                    file_put_contents($to.'/'.str_replace($path, '', $filename), $zip->getFromIndex($i));
                 }
             }
         }

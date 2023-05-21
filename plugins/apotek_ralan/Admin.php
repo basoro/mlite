@@ -60,7 +60,7 @@ class Admin extends AdminModule
 
         $this->assign['poliklinik']     = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
         $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['no_reg']     = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
@@ -103,6 +103,7 @@ class Admin extends AdminModule
     {
 
       $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
+      $no_rkm_medis =
 
       $this->core->mysql('gudangbarang')
         ->where('kode_brng', $_POST['kd_jenis_prw'])
@@ -125,7 +126,8 @@ class Admin extends AdminModule
           'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
           'status' => 'Simpan',
           'no_batch' => $get_gudangbarang['no_batch'],
-          'no_faktur' => $get_gudangbarang['no_faktur']
+          'no_faktur' => $get_gudangbarang['no_faktur'],
+          'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
       $this->core->mysql('detail_pemberian_obat')
@@ -163,6 +165,7 @@ class Admin extends AdminModule
       $get_resep_dokter_nonracikan = $this->core->mysql('resep_dokter')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
       $get_resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
       $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
+
       foreach ($get_resep_dokter as $item) {
 
         $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -183,20 +186,21 @@ class Admin extends AdminModule
             'keluar' => $item['jml'],
             'stok_akhir' => $get_gudangbarang['stok'] - $item['jml'],
             'posisi' => 'Pemberian Obat',
-            'tanggal' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
+            'tanggal' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
             'petugas' => $this->core->getUserInfo('fullname', null, true),
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
             'status' => 'Simpan',
             'no_batch' => $get_gudangbarang['no_batch'],
-            'no_faktur' => $get_gudangbarang['no_faktur']
+            'no_faktur' => $get_gudangbarang['no_faktur'],
+            'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
         $this->core->mysql('detail_pemberian_obat')
           ->save([
-            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'tgl_perawatan' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
             'biaya_obat' => $get_databarang['h_beli'],
@@ -212,17 +216,35 @@ class Admin extends AdminModule
 
         $this->core->mysql('aturan_pakai')
           ->save([
-            'tgl_perawatan' => $get_resep_obat['tgl_perawatan'],
-            'jam' => $get_resep_obat['jam'],
-            'no_rawat' => $get_resep_obat['no_rawat'],
+            'tgl_perawatan' => $_POST['tgl_peresepan'],
+            'jam' => $_POST['jam_peresepan'],
+            'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'aturan' => $item['aturan_pakai']
           ]);
+
+      }
+
+      $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $_POST['no_resep'])->oneArray();
+
+      if(!empty($resep_dokter_racikan)) {
+        $this->core->mysql('obat_racikan')->save(
+          [
+              'tgl_perawatan' => date('Y-m-d'),
+              'jam' => date('H:i:s'),
+              'no_rawat' => $_POST['no_rawat'],
+              'no_racik' => $resep_dokter_racikan['no_racik'],
+              'nama_racik' => $resep_dokter_racikan['nama_racik'],
+              'kd_racik' => $resep_dokter_racikan['kd_racik'],
+              'jml_dr' => $resep_dokter_racikan['jml_dr'],
+              'aturan_pakai' => $resep_dokter_racikan['aturan_pakai'],
+              'keterangan' => $resep_dokter_racikan['keterangan']
+          ]
+        );
       }
 
       $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
 
-      //var_dump($get_resep);
       exit();
     }
 

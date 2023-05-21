@@ -648,7 +648,11 @@
 
     $('input:text[name=get_no_sep]').val(no_sep);
     $('input:text[name=sep_nomor_rujukan]').val(no_rujukan);
-    $('input:text[name=sep_spesialis_nama]').val(poli);
+    if(poli == 'null') {
+      $('input:text[name=sep_spesialis_nama]').val('');
+    } else {
+      $('input:text[name=sep_spesialis_nama]').val(poli);
+    }
     $('input:text[name=sep_diagnosa_nama]').val(diagnosa);
     $('input:text[name=sep_tanggal_sep]').val(tgl_sep);
 
@@ -1068,24 +1072,26 @@
             alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
           } else if(json_obj[0].metaData.code == 200) {
             var histori = json_obj[0].response.histori;
-            //console.log(histori);
+            console.log(histori);
             var output="<div class=\"panel panel-default m-t-xl\">";
             for (var i in histori) {
                 var jnsPelayanan = "Rawat Inap";
+                var poli = "null";
                 if(histori[i].jnsPelayanan == 2) {
                   var jnsPelayanan = "Rawat Jalan";
+                  var poli = histori[i].poli;
                 }
                 output+="<div class=\"panel-body\">";
                 output+="Diagnosa : " + histori[i].diagnosa + "<br/>";
                 output+="Jenis : " + jnsPelayanan + "<br/>";
                 output+="Kelas : " + histori[i].kelasRawat + "<br/>";
-                output+="Poli : " + histori[i].poli + "<br/>";
+                output+="Poli : " + poli + "<br/>";
                 output+="Tgl. SEP : " + histori[i].tglSep + "<br/>";
                 output+="No. SEP : " + histori[i].noSep + "<br/>";
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
-                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + histori[i].poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
             }
             output+="</div>";
             $("#histori_pelayanan").html(output).show();
@@ -1447,6 +1453,9 @@
   $('#sep_spesialis_kode').keyup(function(){
        var query = $(this).val();
        var sep_pelayanan_kode = $('input:text[name=sep_pelayanan_kode]').val();
+       if($('#sep_spesialis_kode').val() == 'IGD') {
+         var sep_pelayanan_kode = '1';
+       }
        var sep_tanggal_sep = $('input:text[name=sep_tanggal_sep]').val();
 
        if(query != '')

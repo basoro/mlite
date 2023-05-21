@@ -417,7 +417,7 @@ class Admin extends AdminModule
                 $attr = null;
             }
 
-            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, null, $file), 'attr' => $attr];
+            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, '', $file), 'attr' => $attr];
         }
 
         return $result;

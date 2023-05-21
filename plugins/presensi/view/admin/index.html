@@ -13,7 +13,7 @@
                     <!-- <li>
                         <a href="{$jamjaga.printURL}" target="_blank" role="tab">Cetak</a>
                     </li> -->
-                    <li class="{if: $jamjaga.addUrl}active{/if}">
+                    <li class="{if: !empty($jamjaga.addUrl)}active{/if}">
                         <a href="{$jamjaga.addURL}" role="tab">Tambah</a>
                     </li>
                 </ul>

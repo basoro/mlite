@@ -1,0 +1,106 @@
+<style>
+  .nowrap th, .nowrap td {
+    white-space: nowrap;
+  }
+</style>
+<form action="{?=url(ADMIN.'/operasi/saveobatoperasi')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data Obat Operasi</h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Kode Obat</label>
+                        <input type="text" name="kd_obat" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Obat</label>
+                        <input type="text" name="nm_obat" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Satuan</label>
+                        <select name="kode_sat" id="kode_sat" class="form-control" data-use-search="true">
+                          {loop: $satuan}
+                            <option value="{$value.kode_sat}">{$value.satuan}</option>
+                          {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga Satuan</label>
+                        <input type="text" name="hargasatuan" class="form-control" value="0" />
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="obatoperasi">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Kode Obat</th>
+            <th>Nama Obat</th>
+            <th>Satuan</th>
+            <th>Harga Satuan</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $obatoperasi}
+          <tr class="obatoperasi"
+          data-kd_obat="{$value.kd_obat}"
+          data-nm_obat="{$value.nm_obat}"
+          data-kode_sat="{$value.kode_sat}"
+          data-hargasatuan="{$value.hargasatuan}"
+          >
+            <td>{$value.kd_obat}</td>
+            <td>{$value.nm_obat}</td>
+            <td>{$value.kode_sat}</td>
+            <td>{$value.hargasatuan}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('.dataTables').DataTable({
+    "order": [[ 3, "desc" ]],
+    "pagingType": "full",
+    "language": {
+      "paginate": {
+        "first": "&laquo;",
+        "last": "&raquo;",
+        "previous": "‹",
+        "next":     "›"
+      },
+      "search": "",
+      "searchPlaceholder": "Search..."
+    },
+    "lengthChange": false,
+    "scrollX": true,
+    dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+  });
+  var t = $(".dataTables").DataTable().rows().count();
+  $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+  // ketika baris data diklik
+  $("#obatoperasi").on("click", ".obatoperasi", function(event){
+    var kd_obat  = $(this).attr("data-kd_obat");
+    var nm_obat  = $(this).attr("data-nm_obat");
+    var kode_sat  = $(this).attr("data-kode_sat");
+    var hargasatuan  = $(this).attr("data-hargasatuan");
+    $('input:text[name=kd_obat]').val(kd_obat);
+    $('input:text[name=nm_obat]').val(nm_obat);
+    $('#kode_sat').val(kode_sat).change();
+    $('input:text[name=hargasatuan]').val(hargasatuan);
+  });
+</script>
