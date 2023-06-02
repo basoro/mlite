@@ -829,7 +829,8 @@ class Admin extends AdminModule
             'menejemen' => $jns_perawatan['menejemen'],
             'biaya' => $jns_perawatan['total_byr'],
             'kd_dokter' => $this->settings->get('settings.pj_laboratorium'),
-            'status' => $_POST['status']
+            'status' => $_POST['status'],
+            'kategori' => 'PK'
           ]);
         //var_dump($permintaan_pemeriksaan_lab);
         $permintaan_detail_permintaan_lab = $this->core->mysql('permintaan_detail_permintaan_lab')->where('noorder', $_POST['noorder'])->where('kd_jenis_prw', $row['kd_jenis_prw'])->toArray();
