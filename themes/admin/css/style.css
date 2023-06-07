@@ -660,8 +660,8 @@ select[multiple].form-control {
     font-weight: 400;
 }
 .modal-full {
-  min-width: 100%;
-  margin: 0;
+  margin: auto;
+  width: 90%;
 }
 .modal-full .modal-content {
   min-height: 100vh;
