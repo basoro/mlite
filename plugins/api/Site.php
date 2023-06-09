@@ -753,7 +753,7 @@ class Site extends SiteModule
                       ->where('mlite_news_tags_relationship.news_id', $row['id'])
                       ->select('name')
                       ->oneArray();
-                  $row['tag'] = $tags['name'];
+                  $row['tag'] = isset_or($tags['name']);
                   $row['tanggal'] = getDayIndonesia(date('Y-m-d', date($row['published_at']))).', '.dateIndonesia(date('Y-m-d', date($row['published_at'])));
                   $results[] = $row;
               }
