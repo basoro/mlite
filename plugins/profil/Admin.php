@@ -49,8 +49,8 @@ class Admin extends AdminModule
           }
         }
         $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
-        if (!empty($profil['photo'])) {
-            $fotoURL = WEBAPPS_URL . '/penggajian/' . $profil['photo'];
+        if (!empty($cek_profil['photo'])) {
+            $fotoURL = WEBAPPS_URL . '/penggajian/' . $cek_profil['photo'];
         }
         return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
