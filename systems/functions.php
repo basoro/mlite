@@ -503,7 +503,7 @@ if (!function_exists('apache_request_headers')) {
                 $return[$key]=$value;
             }else{
                 $return[$key]=$value;
-	        }
+	          }
         }
         return $return;
     }
