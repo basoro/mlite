@@ -1128,7 +1128,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1152,7 +1152,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=aturan_pakai&aturan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1176,7 +1176,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1200,7 +1200,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan_lab&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan_lab&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1224,7 +1224,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=jns_perawatan_radiologi&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=jns_perawatan_radiologi&nm_perawatan=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1248,7 +1248,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd10&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=icd10&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -1272,7 +1272,7 @@ $(document).ready(function () {
     load: function (search, callback) {
       if (search.length < this.minSearchLength) return callback();
       $.ajax({
-        url: '{?=url()?}/admin/dokter_ralan/ajax?show=icd9&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=icd9&s=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
         type: 'GET',
         dataType: 'json',
         success: function(data) {

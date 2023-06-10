@@ -39,7 +39,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/poli?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/poli?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)

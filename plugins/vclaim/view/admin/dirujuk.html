@@ -206,7 +206,7 @@
       var query = $(this).val();
       var faskes = $('#getPpkDirujuk').val();
       $.ajax({
-           url: '{?=url()?}/admin/vclaim/faskes/' + faskes + '/2?t={?=$_SESSION['token']?}',
+           url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + faskes + '/2?t={?=$_SESSION['token']?}',
            method:"GET",
            data:{},
            success:function(data)
@@ -242,7 +242,7 @@
       var query = $(this).val();
       var poli = $('#getPoliRujukan').val();
       $.ajax({
-           url: '{?=url()?}/admin/vclaim/poli/' + poli + '?t={?=$_SESSION['token']?}',
+           url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + poli + '?t={?=$_SESSION['token']?}',
            method:"GET",
            data:{},
            success:function(data)
@@ -278,7 +278,7 @@
       var query = $(this).val();
       var diagnosa = $('#getDiagnosa').val();
       $.ajax({
-           url: '{?=url()?}/admin/vclaim/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+           url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
            method:"GET",
            data:{},
            success:function(data)
@@ -313,7 +313,7 @@
       var query = $(this).val();
       var procedure = $('#getProcedure').val();
       $.ajax({
-           url: '{?=url()?}/admin/vclaim/procedure/' + procedure + '?t={?=$_SESSION['token']?}',
+           url: '{?=url()?}/{?=ADMIN?}/vclaim/procedure/' + procedure + '?t={?=$_SESSION['token']?}',
            method:"GET",
            data:{},
            success:function(data)

@@ -1381,7 +1381,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1418,7 +1418,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1461,7 +1461,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1504,7 +1504,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/dokterdpjp/' + encodeURIComponent(sep_pelayanan_kode) + '/' + encodeURIComponent(sep_tanggal_sep) + '/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1541,7 +1541,7 @@
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)

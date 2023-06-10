@@ -70,7 +70,7 @@ $(document).ready(function() {
        var query = $(this).val();
        var obat = $('#getObat').val();
           $.ajax({
-               url: '{?=url()?}/admin/pcare/obatreferensi/' + obat + '?t={?=$_SESSION['token']?}',
+               url: '{?=url()?}/{?=ADMIN?}/pcare/obatreferensi/' + obat + '?t={?=$_SESSION['token']?}',
                method:"GET",
                data:{},
                success:function(data)
