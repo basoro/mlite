@@ -2209,7 +2209,7 @@ class Site extends SiteModule
               if($this->settings->get('jkn_mobile.carakirim') == 'lama') {
                 $jeniskunjungan = 3;
               }
-              $nomorreferensi = '';
+              //$nomorreferensi = '';
               $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
               $nomorreferensi = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$reg_periksa['no_reg'];
 
@@ -2237,12 +2237,11 @@ class Site extends SiteModule
               }
 
               if($jenispasien == 'JKN') {
-                if ($referensi['kodebooking'] == '') {
-                    $kodebooking = $nomorreferensi;
-                } else {
+                if ($referensi['kodebooking'] != '') {
                     $kodebooking = $referensi['kodebooking'];
                 }
               }
+              
               $data = [
                   'kodebooking' => $kodebooking,
                   'jenispasien' => $jenispasien,

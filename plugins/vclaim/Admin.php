@@ -96,6 +96,72 @@ class Admin extends AdminModule
     $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
     $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
 
+    /* Add antrian dulu ya sebelum request SEP */
+
+    if($this->settings->get('jkn_mobile.kirimantrian') == 'ya') {
+      $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+      $day = array(
+        'Sun' => 'AKHAD',
+        'Mon' => 'SENIN',
+        'Tue' => 'SELASA',
+        'Wed' => 'RABU',
+        'Thu' => 'KAMIS',
+        'Fri' => 'JUMAT',
+        'Sat' => 'SABTU'
+      );
+      $hari=$day[$tentukan_hari];
+
+      $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+      $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+      $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+      $jadwaldokter = $this->core->mysql('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+
+      $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+      $minutes = $no_urut_reg * 10;
+      $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+
+      $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+
+      $nomorreferensi = $_POST['norujukan'];
+      if(isset($_POST['tujuanKunj']) == '3') {
+        $nomorreferensi = $_POST['noskdp'];
+      }
+      $data = [
+          'kodebooking' => $kodebooking,
+          'jenispasien' => 'JKN',
+          'nomorkartu' => $pasien['no_peserta'],
+          'nik' => $pasien['no_ktp'],
+          'nohp' => $pasien['no_tlp'],
+          'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+          'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+          'pasienbaru' => '0',
+          'norm' => $_POST['nomr'],
+          'tanggalperiksa' => date('Y-m-d'),
+          'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+          'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+          'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+          'jeniskunjungan' => $_POST['tujuanKunj'],
+          'nomorreferensi' => $nomorreferensi,
+          'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+          'angkaantrean' => $reg_periksa['no_reg'],
+          'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kuota['jam_mulai']) * 1000,
+          'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+          'kuotajkn' => intval($jadwaldokter['kuota']),
+          'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+          'kuotanonjkn' => intval($jadwaldokter['kuota']),
+          'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+      ];
+      // echo 'Request:<br>';
+      // echo "<pre>".print_r($data,true)."</pre>";
+      $data = json_encode($data);
+      $url = $this->api_url.'antrean/add';
+      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+      // $data = json_decode($output, true);
+    }
+
+    /* End add antrian */
+
     $data = [
       'request' => [
         't_sep' => [
