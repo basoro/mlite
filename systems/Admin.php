@@ -217,10 +217,12 @@ class Admin extends Main
         }
 
         // Is IP blocked?
-        /*if ((time() - $attempt['expires']) < 0) {
-            $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
-            return false;
-        }*/
+        if($this->settings->get('settings.keamanan') == 'ya') {
+          if ((time() - $attempt['expires']) < 0) {
+              $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+              return false;
+          }
+        }
 
         $row = $this->db('mlite_users')->where('username', $username)->oneArray();
 
@@ -248,10 +250,14 @@ class Admin extends Main
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
-                $attempt['expires'] = strtotime("+10 minutes");
+                if($this->settings->get('settings.keamanan') == 'ya') {
+                    $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                    $attempt['expires'] = strtotime("+10 minutes");
 
-                $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                    $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                } else {
+                  $this->setNotify('failure', 'Anda mencoba login berkali-kali. Pastikan username dan password anda sesuai.');                    
+                }
             } else {
                 $this->setNotify('failure', 'Username atau password salah!');
             }
