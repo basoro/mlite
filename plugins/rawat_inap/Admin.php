@@ -412,28 +412,47 @@ class Admin extends AdminModule
       if($_POST['kat'] == 'obat') {
 
         $no_resep = $this->core->setNoResep($_POST['tgl_perawatan']);
+        $cek_resep = $this->core->mysql('resep_obat')->where('no_rawat', $_POST['no_rawat'])->where('tgl_peresepan', $_POST['tgl_perawatan'])->where('tgl_perawatan', '0000-00-00')->oneArray();
 
-        $resep_obat = $this->core->mysql('resep_obat')
-          ->save([
-            'no_resep' => $no_resep,
-            'tgl_perawatan' => '0000-00-00',
-            'jam' => '00:00:00',
-            'no_rawat' => $_POST['no_rawat'],
-            'kd_dokter' => $_POST['kode_provider'],
-            'tgl_peresepan' => $_POST['tgl_perawatan'],
-            'jam_peresepan' => $_POST['jam_rawat'],
-            'status' => 'ranap',
-            'tgl_penyerahan' => '0000-00-00',
-            'jam_penyerahan' => '00:00:00'
-          ]);
+        if(empty($cek_resep)) {
 
-        $this->core->mysql('resep_dokter')
-          ->save([
-            'no_resep' => $no_resep,
-            'kode_brng' => $_POST['kd_jenis_prw'],
-            'jml' => $_POST['jml'],
-            'aturan_pakai' => $_POST['aturan_pakai']
-          ]);
+          $resep_obat = $this->core->mysql('resep_obat')
+            ->save([
+              'no_resep' => $no_resep,
+              'tgl_perawatan' => '0000-00-00',
+              'jam' => '00:00:00',
+              'no_rawat' => $_POST['no_rawat'],
+              'kd_dokter' => $_POST['kode_provider'],
+              'tgl_peresepan' => $_POST['tgl_perawatan'],
+              'jam_peresepan' => $_POST['jam_rawat'],
+              'status' => 'ranap',
+              'tgl_penyerahan' => '0000-00-00',
+              'jam_penyerahan' => '00:00:00'
+            ]);
+
+          if ($this->core->mysql('resep_obat')->where('no_resep', $no_resep)->where('kd_dokter', $_POST['kode_provider'])->oneArray()) {
+            $this->core->mysql('resep_dokter')
+              ->save([
+                'no_resep' => $no_resep,
+                'kode_brng' => $_POST['kd_jenis_prw'],
+                'jml' => $_POST['jml'],
+                'aturan_pakai' => $_POST['aturan_pakai']
+              ]);
+          }
+
+        } else {
+
+          $no_resep = $cek_resep['no_resep'];
+
+          $this->core->mysql('resep_dokter')
+            ->save([
+              'no_resep' => $no_resep,
+              'kode_brng' => $_POST['kd_jenis_prw'],
+              'jml' => $_POST['jml'],
+              'aturan_pakai' => $_POST['aturan_pakai']
+            ]);
+
+        }
 
       }
       exit();
