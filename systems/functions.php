@@ -509,54 +509,6 @@ if (!function_exists('apache_request_headers')) {
     }
 }
 
-function sendMSG($number, $msg, $sender)
-{
-    $url = "https://waapi.basoro.id/send-message";
-    $data = [
-        "sender" => $sender,
-        "number" => $number,
-        "message" => $msg
-    ];
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    //  curl_setopt($ch, CURLOPT_TIMEOUT_MS, 10000);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
-}
-
-function sendMedia($number, $message, $sender, $filetype, $filename, $urll)
-{
-    $url = "https://waapi.basoro.id/send-media";
-    $data = [
-        'sender' => $sender,
-        'number' => $number,
-        'caption' => $message,
-        'url' => $urll,
-        'filename' => $filename,
-        'filetype' => $filetype,
-    ];
-    //var_dump($data); die;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
-}
-
 function formatDuit($duit){
     return "Rp. ".number_format($duit,0,",",".").",-";
 }

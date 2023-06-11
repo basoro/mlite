@@ -1750,10 +1750,10 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (95, 'jkn_mobile', 'kd_pj_bpjs', ''),
 (96, 'jkn_mobile', 'exclude_taskid', ''),
 (97, 'jkn_mobile', 'display', ''),
-(98, 'jkn_mobile', 'kdprop', ''),
-(99, 'jkn_mobile', 'kdkab', ''),
-(100, 'jkn_mobile', 'kdkec', ''),
-(101, 'jkn_mobile', 'kdkel', ''),
+(98, 'jkn_mobile', 'kdprop', '1'),
+(99, 'jkn_mobile', 'kdkab', '1'),
+(100, 'jkn_mobile', 'kdkec', '1'),
+(101, 'jkn_mobile', 'kdkel', '1'),
 (102, 'jkn_mobile', 'perusahaan_pasien', ''),
 (103, 'jkn_mobile', 'suku_bangsa', ''),
 (104, 'jkn_mobile', 'bahasa_pasien', ''),
@@ -1799,7 +1799,8 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (144, 'orthanc', 'password', 'orthanc'),
 (145, 'veronisa', 'username', ''),
 (146, 'veronisa', 'password', ''),
-(147, 'veronisa', 'obat_kronis', '');
+(147, 'veronisa', 'obat_kronis', ''),
+(148, 'jkn_mobile', 'carakirim', 'baru');
 
 -- --------------------------------------------------------
 
