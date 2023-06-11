@@ -38,6 +38,10 @@ class Admin extends AdminModule
         $status_periksa = '';
         $status_bayar = '';
 
+        $waapitoken =  $this->settings->get('wagateway.token');
+        $waapiphonenumber =  $this->settings->get('wagateway.phonenumber');
+        $nama_instansi =  $this->settings->get('settings.nama_instansi');
+
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
         }
@@ -62,7 +66,10 @@ class Admin extends AdminModule
             'cek_pcare' => $cek_pcare,
             'master_berkas_digital' => $master_berkas_digital,
             'responsivevoice' => $responsivevoice,
-            'admin_mode' => $this->settings->get('settings.admin_mode')
+            'admin_mode' => $this->settings->get('settings.admin_mode'),
+            'waapitoken' => $waapitoken,
+            'waapiphonenumber' => $waapiphonenumber,
+            'nama_instansi' => $nama_instansi
           ]
         );
     }
