@@ -2134,6 +2134,10 @@ class Site extends SiteModule
         <title>Tambah antrian BPJS</title>
         </head>
         <body>
+        <form action="" method="">
+          Pilih tanggal: <input type="date" name="tgl">
+          <input type="submit" value="Go">
+        </form>
         ';
         $date = date('Y-m-d');
       	$perpage = 10;
@@ -2241,7 +2245,7 @@ class Site extends SiteModule
                     $kodebooking = $referensi['kodebooking'];
                 }
               }
-              
+
               $data = [
                   'kodebooking' => $kodebooking,
                   'jenispasien' => $jenispasien,
@@ -2417,6 +2421,10 @@ class Site extends SiteModule
         <title>Batal Antrian BPJS</title>
         </head>
         <body>
+        <form action="" method="">
+          Pilih tanggal: <input type="date" name="tgl">
+          <input type="submit" value="Go">
+        </form>
         ';
 
         $date = date('Y-m-d');
@@ -2467,6 +2475,10 @@ class Site extends SiteModule
         <title>Update Waktu Antrian BPJS</title>
         </head>
         <body>
+        <form action="" method="">
+          Pilih tanggal: <input type="date" name="tgl">
+          <input type="submit" value="Go">
+        </form>
         ';
 
         $date = date('Y-m-d');
