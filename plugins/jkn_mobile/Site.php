@@ -2146,7 +2146,7 @@ class Site extends SiteModule
         }
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
         $query = $this->core->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
-        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE NOT EXISTS (SELECT * FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis) AND status_kirim = 'Terkirim') AND reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
+        FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE NOT EXISTS (SELECT * FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis) AND status_kirim = 'Terkirim') AND reg_periksa.tgl_registrasi='$date' AND reg_periksa.stts='Sudah' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
         ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $perpage");
         $query->execute();
         $query = $query->fetchAll(\PDO::FETCH_ASSOC);;
@@ -2278,7 +2278,8 @@ class Site extends SiteModule
               $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
               $data = json_decode($output, true);
               echo 'Response:<br>';
-              echo 'Sukses kirim antrian!<br>';
+              //echo 'Sukses kirim antrian!<br>';
+              echo $data['metadata']['code'].': '.$data['metadata']['message'].'<br>';
               echo '.....................<br>';
               // echo json_encode($data);
               // echo $data['metadata']['code'];
