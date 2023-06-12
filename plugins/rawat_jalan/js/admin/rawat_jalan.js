@@ -902,6 +902,59 @@ $("#form_kontrol").on("click", "#simpan_kontrol", function(event){
   });
 });
 
+// ketika tombol simpan diklik
+$("#form_kontrol").on("click", "#simpan_kontrol_bpjs", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var no_rkm_medis    = $('input:text[name=no_rkm_medis]').val();
+  var no_rawat        = $('input:text[name=no_rawat]').val();
+  var tanggal_rujukan = $('input:text[name=tanggal_rujukan]').val();
+  var tanggal_datang  = $('input:text[name=tanggal_datang]').val();
+  var diagnosa        = $('input:text[name=diagnosa]').val();
+  var terapi          = $('input:text[name=terapi]').val();
+  var alasan1         = $('textarea[name=alasan1]').val();
+  var rtl1            = $('textarea[name=rtl1]').val();
+  var poli            = $('select[name=poli]').val();
+  var dokter          = $('select[name=dokter]').val();
+
+  var url = baseURL + '/rawat_jalan/savekontrolbpjs?t=' + mlite.token;
+  $.post(url, {no_rawat : no_rawat,
+  no_rkm_medis   : no_rkm_medis,
+  tanggal_rujukan       : tanggal_rujukan,
+  tanggal_datang  : tanggal_datang,
+  diagnosa : diagnosa,
+  terapi  : terapi,
+  alasan1      : alasan1,
+  rtl1          : rtl1,
+  dokter : dokter,
+  poli : poli
+  }, function(data) {
+    //console.log(data);
+    // tampilkan data
+    $("#display").hide();
+    var url = baseURL + '/rawat_jalan/kontrol?t=' + mlite.token;
+    $.post(url, {no_rkm_medis : no_rkm_medis,
+    }, function(data) {
+      // tampilkan data
+      $("#kontrol").html(data).show();
+    });
+    $('input:text[name=nm_perawatan]').val("");
+    $('input:text[name=biaya]').val("");
+    $('input:text[name=diagnosa_klinis]').val("");
+    $('input:text[name=nama_provider]').val("");
+    $('input:text[name=nama_provider2]').val("");
+    $('input:text[name=kode_provider]').val("");
+    $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=racikan]').val("");
+    $('input:text[name=nama_racik]').val("");
+    $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+    "Data surat kontrol telah disimpan!"+
+    "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+    "</div>").show();
+  });
+});
+
 function bersih(){
   $('input:text[name=no_rawat]').val("");
   $('input:text[name=no_rkm_medis]').val("");

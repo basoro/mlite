@@ -621,6 +621,65 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postSaveKontrolBPJS()
+    {
+
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consid . $this->secretkey . $tStamp;
+      $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
+
+      $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']))->oneArray();
+      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray();
+      $get_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      $_POST['no_sep'] = $get_sep['no_sep'];
+      $get_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+
+      if(empty($get_sep['no_sep'])) {
+        $_POST['no_sep'] = $get_sep_internal['no_sep'];
+      }
+
+      $data = [
+        'request' => [
+          'noSEP' => $_POST['no_sep'],
+          'kodeDokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+          'poliKontrol' => $maping_poli_bpjs['kd_poli_bpjs'],
+          'tglRencanaKontrol' => $_POST['tanggal_datang'],
+          'user' => $_POST['sep_user']
+        ]
+      ];
+
+      $data = json_encode($data);
+
+      $url = $this->api_url . 'RencanaKontrol/' . $statusUrl;
+      $output = BpjsService::$method($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+      $data = json_decode($output, true);
+      //echo $data['metaData']['message'];
+      if ($data == NULL) {
+        echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+      } else if ($data['metaData']['code'] == 200) {
+        $stringDecrypt = stringDecrypt($key, $data['response']);
+        $decompress = '""';
+        $decompress = decompress($stringDecrypt);
+        $spri = json_decode($decompress, true);
+        //echo $spri['noSuratKontrol'];
+
+        $bridging_surat_pri_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')->save([
+          'no_sep' => $_POST['no_sep'],
+          'tgl_surat' => $_POST['tanggal_rujukan'],
+          'no_surat' => $spri['noSuratKontrol'],
+          'tgl_rencana' => $_POST['tanggal_datang'],
+          'kd_dokter_bpjs' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+          'nm_dokter_bpjs' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+          'kd_poli_bpjs' => $maping_poli_bpjs['kd_poli_bpjs'],
+          'nm_poli_bpjs' => $maping_poli_bpjs['nm_poli_bpjs']
+        ]);
+
+      }
+
+      exit();
+    }
+
     public function postHapusKontrol()
     {
       $this->core->mysql('booking_registrasi')->where('kd_dokter', $_POST['kd_dokter'])->where('no_rkm_medis', $_POST['no_rkm_medis'])->where('tanggal_periksa', $_POST['tanggal_periksa'])->where('status', 'Belum')->delete();
