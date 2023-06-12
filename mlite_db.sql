@@ -1801,7 +1801,8 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (146, 'veronisa', 'password', ''),
 (147, 'veronisa', 'obat_kronis', ''),
 (148, 'jkn_mobile', 'carakirim', 'baru'),
-(149, 'jkn_mobile', 'kirimantrian', 'tidak');
+(149, 'jkn_mobile', 'kirimantrian', 'tidak'),
+(150, 'settings', 'keamanan', 'ya');
 
 -- --------------------------------------------------------
 

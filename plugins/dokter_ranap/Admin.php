@@ -288,7 +288,7 @@ class Admin extends AdminModule
                 'jml' => $jml
               ]);
           }
-          
+
         }
       }
 
@@ -733,6 +733,14 @@ class Admin extends AdminModule
     public function anyKontrol()
     {
       $rows = $this->core->mysql('booking_registrasi')
+        ->select([
+          'tanggal_periksa' => 'booking_registrasi.tanggal_periksa',
+          'no_reg' => 'booking_registrasi.no_reg',
+          'nm_poli' => 'poliklinik.nm_poli',
+          'nm_dokter' => 'dokter.nm_dokter',
+          'png_jawab' => 'penjab.png_jawab',
+          'status' => 'booking_registrasi.status'
+        ])
         ->join('poliklinik', 'poliklinik.kd_poli=booking_registrasi.kd_poli')
         ->join('dokter', 'dokter.kd_dokter=booking_registrasi.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=booking_registrasi.kd_pj')
