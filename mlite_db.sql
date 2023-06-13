@@ -1344,6 +1344,7 @@ CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
 
 CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
   `tanggal_periksa` date NOT NULL,
+  `no_rkm_medis` varchar(50) NOT NULL,
   `nomor_kartu` varchar(50) NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
