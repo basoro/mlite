@@ -2174,7 +2174,8 @@ class Site extends SiteModule
                 FROM mlite_antrian_referensi
                 WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi
                 AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis)
-                AND status_kirim = 'Terkirim')
+                AND status_kirim = 'Terkirim'
+              )
             AND reg_periksa.tgl_registrasi='$date'
             AND reg_periksa.stts='Sudah'
             AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
