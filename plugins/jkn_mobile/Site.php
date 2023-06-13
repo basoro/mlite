@@ -2357,7 +2357,7 @@ class Site extends SiteModule
                 if(isset($data_farmasi['metadata']['code']) == 200 || isset($data_farmasi['metadata']['code']) == 208){
                   echo 'Sukses kirim antrian farmasi';
                 } else {
-                  echo 'Gagal kirim antrian farmasi. '.$data_farmasi['metadata']['code'].': '$data_farmasi['metadata']['message'];                  
+                  echo 'Gagal kirim antrian farmasi. '.$data_farmasi['metadata']['code'].': '.$data_farmasi['metadata']['message'];                  
                 }
 
                 if($jenispasien == 'JKN') {
