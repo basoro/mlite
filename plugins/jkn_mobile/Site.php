@@ -2126,7 +2126,6 @@ class Site extends SiteModule
 
     public function _getAntreanAdd()
     {
-        $data['metadata']['code'] = '200';
         echo '
         <head>
         <meta http-equiv="refresh" content="30">
@@ -2145,9 +2144,6 @@ class Site extends SiteModule
           $date = $_GET['tgl'];
         }
         $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
-        // $query = $this->core->mysql()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis,reg_periksa.kd_pj
-        // FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE NOT EXISTS (SELECT * FROM mlite_antrian_referensi WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis) AND status_kirim = 'Terkirim') AND reg_periksa.tgl_registrasi='$date' AND reg_periksa.stts='Sudah' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-        // ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $perpage");
 
         $query = $this->db()->pdo()->prepare("
         	SELECT
@@ -2173,13 +2169,12 @@ class Site extends SiteModule
             	SELECT *
                 FROM mlite_antrian_referensi
                 WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi
-                AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.nomor_kartu=pasien.no_rkm_medis)
+                AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.no_rkm_medis=pasien.no_rkm_medis)
                 AND status_kirim = 'Terkirim'
               )
             AND reg_periksa.tgl_registrasi='$date'
             AND reg_periksa.stts='Sudah'
             AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
-            AND reg_periksa.no_rawat IN (SELECT no_rawat FROM bridging_sep WHERE tglsep = '$date')
         	ORDER BY concat(reg_periksa.tgl_registrasi,' ',reg_periksa.jam_reg) LIMIT $perpage
          ");
 
@@ -2361,12 +2356,26 @@ class Site extends SiteModule
                 // echo $data_farmasi['metadata']['code'];
                 if(isset($data_farmasi['metadata']['code']) == 200 || isset($data_farmasi['metadata']['code']) == 208){
                   echo 'Sukses kirim antrian farmasi';
+                } else {
+                  echo 'Gagal kirim antrian farmasi. '.$data_farmasi['metadata']['code'].': '$data_farmasi['metadata']['message'];                  
                 }
 
                 if($jenispasien == 'JKN') {
-                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray()) {
                     $this->core->mysql('mlite_antrian_referensi')->save([
                         'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
+                        'nomor_kartu' => $q['no_peserta'],
+                        'nomor_referensi' => $nomorreferensi,
+                        'kodebooking' => $kodebooking,
+                        'jenis_kunjungan' => $jeniskunjungan,
+                        'status_kirim' => 'Terkirim',
+                        'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+                    ]);
+                  } else if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                    $this->core->mysql('mlite_antrian_referensi')->save([
+                        'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
                         'nomor_kartu' => $q['no_peserta'],
                         'nomor_referensi' => $nomorreferensi,
                         'kodebooking' => $kodebooking,
@@ -2385,6 +2394,7 @@ class Site extends SiteModule
                   if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
                     $this->core->mysql('mlite_antrian_referensi')->save([
                         'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
                         'nomor_kartu' => $q['no_rkm_medis'],
                         'nomor_referensi' => $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$reg_periksa['no_reg'],
                         'kodebooking' => $kodebooking,
@@ -2401,9 +2411,21 @@ class Site extends SiteModule
                 }
               } else {
                 if($jenispasien == 'JKN') {
-                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                  if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray()) {
                     $this->core->mysql('mlite_antrian_referensi')->save([
                         'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
+                        'nomor_kartu' => $q['no_peserta'],
+                        'nomor_referensi' => $nomorreferensi,
+                        'kodebooking' => $kodebooking,
+                        'jenis_kunjungan' => $jeniskunjungan,
+                        'status_kirim' => 'Belum',
+                        'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+                    ]);
+                  } else if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
+                    $this->core->mysql('mlite_antrian_referensi')->save([
+                        'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
                         'nomor_kartu' => $q['no_peserta'],
                         'nomor_referensi' => $nomorreferensi,
                         'kodebooking' => $kodebooking,
