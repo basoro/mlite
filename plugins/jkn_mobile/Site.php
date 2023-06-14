@@ -263,7 +263,7 @@ class Site extends SiteModule
                         http_response_code(202);
                     } else {
                         // Get antrian poli
-                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $poli['kd_poli_rs'], $decode['tanggalperiksa']);
+                        $no_reg = $this->core->setNoBooking($dokter['kd_dokter'], $decode['tanggalperiksa'], $poli['kd_poli_rs']);
                         $no_urut_reg = substr($no_reg, 0, 3);
                         $minutes = $no_urut_reg * 10;
                         $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($cek_kuota['jam_mulai'])));
@@ -313,7 +313,7 @@ class Site extends SiteModule
                               }
                           }
 
-                          $query = $this->core->mysql('reg_periksa')
+                          $insert = $this->core->mysql('reg_periksa')
                           ->save([
                             'no_reg' => $no_reg,
                             'no_rawat' => $this->core->setNoRawat(date('Y-m-d')),
@@ -335,6 +335,21 @@ class Site extends SiteModule
                             'status_bayar' => 'Belum Bayar',
                             'status_poli' => $_POST['status_poli']
                           ]);
+                          if($insert) {
+                            $query = $this->core->mysql('booking_registrasi')->save([
+                                'tanggal_booking' => date('Y-m-d'),
+                                'jam_booking' => date('H:i:s'),
+                                'no_rkm_medis' => $data_pasien['no_rkm_medis'],
+                                'tanggal_periksa' => $decode['tanggalperiksa'],
+                                'kd_dokter' => $jadwal['kd_dokter'],
+                                'kd_poli' => $jadwal['kd_poli'],
+                                'no_reg' => $no_reg,
+                                'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
+                                'limit_reg' => 1,
+                                'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kuota['jam_mulai'],
+                                'status' => 'Terdaftar'
+                            ]);
+                          }
                         } else {
                           $query = $this->core->mysql('booking_registrasi')->save([
                               'tanggal_booking' => date('Y-m-d'),
@@ -351,20 +366,6 @@ class Site extends SiteModule
                           ]);
                         }
                         if ($query) {
-                            $insert = $this->core->mysql('booking_registrasi')->save([
-                                'tanggal_booking' => date('Y-m-d'),
-                                'jam_booking' => date('H:i:s'),
-                                'no_rkm_medis' => $data_pasien['no_rkm_medis'],
-                                'tanggal_periksa' => $decode['tanggalperiksa'],
-                                'kd_dokter' => $jadwal['kd_dokter'],
-                                'kd_poli' => $jadwal['kd_poli'],
-                                'no_reg' => $no_reg,
-                                'kd_pj' => $this->settings->get('jkn_mobile.kd_pj_bpjs'),
-                                'limit_reg' => 1,
-                                'waktu_kunjungan' => $decode['tanggalperiksa'].' '.$cek_kuota['jam_mulai'],
-                                'status' => 'Terdaftar'
-                            ]);
-
                             $kodebooking = $this->settings->get('settings.ppk_bpjs').''.date('Ymdhis').''.$decode['kodepoli'].''.$no_reg.'MJKN';
                             $response = array(
                                 'response' => array(
@@ -2357,7 +2358,7 @@ class Site extends SiteModule
                 if(isset($data_farmasi['metadata']['code']) == 200 || isset($data_farmasi['metadata']['code']) == 208){
                   echo 'Sukses kirim antrian farmasi';
                 } else {
-                  echo 'Gagal kirim antrian farmasi. '.$data_farmasi['metadata']['code'].': '.$data_farmasi['metadata']['message'];                  
+                  echo 'Gagal kirim antrian farmasi. '.$data_farmasi['metadata']['code'].': '.$data_farmasi['metadata']['message'];
                 }
 
                 if($jenispasien == 'JKN') {
