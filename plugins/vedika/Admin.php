@@ -2025,7 +2025,6 @@ class Admin extends AdminModule
 
   public function postSaveMappingInacbgs()
   {
-    $_POST['vedika']['carabayar'] = implode(',', $_POST['vedika']['carabayar']);
     foreach ($_POST['vedika'] as $key => $val) {
       $this->settings('vedika', $key, $val);
     }
@@ -2354,25 +2353,11 @@ class Admin extends AdminModule
     $prosedur= '';
     $a_prosedur=1;
     foreach ($row_prosedur as $row) {
-      /* == Khusus RSHD karena data ICD nya kacau == */
-
-      $kode = $row["kode"];
-      if(strpos($row["kode"],'.') == false) {
-        $kode = substr_replace($row["kode"],".", 2, 0);
-      }
-      if($a_prosedur==1){
-          $prosedur=$kode;
-      }else{
-          $prosedur=$prosedur."#".$kode;
-      }
-
-      /*
       if($a_prosedur==1){
           $prosedur=$row["kode"];
       }else{
           $prosedur=$prosedur."#".$row["kode"];
       }
-      */
       $a_prosedur++;
     }
 
@@ -2448,6 +2433,7 @@ class Admin extends AdminModule
       ->where('jns_perawatan.kd_kategori', $this->settings->get('vedika.inacbgs_prosedur_bedah'))
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
+
     /* End prosedur bedah ralan */
 
     /* Prosedur bedah ranap */
@@ -2475,9 +2461,18 @@ class Admin extends AdminModule
 
     /* Start biaya operasi */
     $biaya_operasi = $this->core->mysql('operasi')
-      ->select(['biaya_rawat' => 'SUM(biayaoperator1 + biayaoperator2)'])
+      ->select(['biaya_rawat' => 'SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + biayaasisten_anestesi + biayabidan + biayaperawat_luar)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
+      ->where('status', 'Ralan')
       ->toArray();
+
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
+      $biaya_operasi = $this->core->mysql('operasi')
+        ->select(['biaya_rawat' => 'SUM(biayaoperator1 + biayaoperator2 + biayaoperator3 + biayaasisten_operator1 + biayaasisten_operator2 + biayadokter_anak + biayaperawaat_resusitas + biayadokter_anestesi + biayaasisten_anestesi + biayabidan + biayaperawat_luar)'])
+        ->where('no_rawat', revertNoRawat($no_rawat))
+        ->where('status', 'Ranap')
+        ->toArray();
+    }
     /* End biaya operasi */
 
     $total_biaya_bedah = 0;
@@ -2604,7 +2599,51 @@ class Admin extends AdminModule
     }
 
     $total_biaya_radiologi = 0;
+    $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
+    ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+    ->where('no_rawat', revertNoRawat($no_rawat))
+    ->where('periksa_radiologi.status', 'Ralan')
+    ->toArray();
+
+    foreach ($rows_periksa_radiologi as $row) {
+      $total_biaya_radiologi += $row['biaya'];
+    }
+
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
+      $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
+      ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->where('periksa_radiologi.status', 'Ranap')
+      ->toArray();
+
+      foreach ($rows_periksa_radiologi as $row) {
+        $total_biaya_radiologi += $row['biaya'];
+      }
+    }
+
     $total_biaya_laboratorium = 0;
+
+    $rows_periksa_lab = $this->core->mysql('periksa_lab')
+    ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+    ->where('no_rawat', revertNoRawat($no_rawat))
+    ->where('periksa_lab.status', 'Ralan')
+    ->toArray();
+
+    foreach ($rows_periksa_lab as $row) {
+      $total_biaya_laboratorium += $row['biaya'];
+    }
+
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
+      $rows_periksa_lab = $this->core->mysql('periksa_lab')
+      ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+      ->where('no_rawat', revertNoRawat($no_rawat))
+      ->where('periksa_lab.status', 'Ranap')
+      ->toArray();
+      foreach ($rows_periksa_lab as $row) {
+        $total_biaya_laboratorium += $row['biaya'];
+      }
+    }
+
     $total_biaya_pelayanan_darah = 0;
 
     /* Biaya Rehabilitasi */
@@ -2636,9 +2675,9 @@ class Admin extends AdminModule
     }
 
     $total_biaya_kamar = 0;
-    if($reg_periksa['status_lanjut'] == 'Ralan') {
-      $total_biaya_kamar = $reg_periksa['registrasi'];
-    }
+    // if($reg_periksa['status_lanjut'] == 'Ralan') {
+    //   $total_biaya_kamar = $reg_periksa['registrasi'];
+    // }
     if($reg_periksa['status_lanjut'] == 'Ranap') {
       $__get_kamar_inap = $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->limit(1)->desc('tgl_keluar')->toArray();
       foreach ($__get_kamar_inap as $row) {
@@ -2676,6 +2715,39 @@ class Admin extends AdminModule
     }
 
     $total_biaya_obat = 0;
+
+    $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+    ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+    ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+    ->where('detail_pemberian_obat.status', 'Ralan')
+    ->toArray();
+
+    foreach ($rows_pemberian_obat as $row) {
+      $subtotal_biaya_obat += floatval($row['total']);
+    }
+
+    if($reg_periksa['status_lanjut'] == 'Ranap') {
+      $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+      ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+      ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+      ->where('detail_pemberian_obat.status', 'Ranap')
+      ->toArray();
+
+      foreach ($rows_pemberian_obat as $row) {
+        $subtotal_biaya_obat += floatval($row['total']);
+      }
+    }
+
+
+    $jumlah_total_obat_operasi = 0;
+    $obat_operasis = $this->core->mysql('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+    foreach ($obat_operasis as $obat_operasi) {
+      $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
+      $jumlah_total_obat_operasi += $obat_operasi['harga'];
+    }
+
+    $total_biaya_obat = $subtotal_biaya_obat + $jumlah_total_obat_operasi;
+
     $total_biaya_obat_kronis = 0;
     $total_biaya_obat_kemoterapi = 0;
 
@@ -2777,11 +2849,8 @@ class Admin extends AdminModule
 
     /* Yang belum
     ======================
-    radiologi, --> radiologi
-    laboratorium, --> laboratorium
     pelayanan_darah, --> UTD atau by kategori pelayanan darah
 
-    obat, --> resep dokter by kategori obat
     obat_kronis, --> resep dokter by kategori obat
     obat_kemoterapi, --> resep dokter by kategori obat
     ======================
@@ -2791,7 +2860,7 @@ class Admin extends AdminModule
     $total_biaya_add_payment_pct = 0;
 
     $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    $total_biaya_kamar = $piutang_pasien['totalpiutang'] - $total_biaya_non_bedah - $total_biaya_bedah - $total_biaya_konsultasi - $total_biaya_keperawatan - $total_biaya_penunjang - $total_biaya_radiologi - $total_biaya_laboratorium - $total_biaya_pelayanan_darah - $total_biaya_rehabilitasi - $total_biaya_rawat_intensif - $total_biaya_obat - $total_biaya_obat_kronis - $total_biaya_obat_kemoterapi - $total_biaya_alkes - $total_biaya_bmhp - $total_biaya_sewa_alat - $total_biaya_tarif_poli_eks - $total_biaya_add_payment_pct;
+    //$total_biaya_kamar = $piutang_pasien['totalpiutang'] - $total_biaya_non_bedah - $total_biaya_bedah - $total_biaya_konsultasi - $total_biaya_keperawatan - $total_biaya_penunjang - $total_biaya_radiologi - $total_biaya_laboratorium - $total_biaya_pelayanan_darah - $total_biaya_rehabilitasi - $total_biaya_rawat_intensif - $total_biaya_obat - $total_biaya_obat_kronis - $total_biaya_obat_kemoterapi - $total_biaya_alkes - $total_biaya_bmhp - $total_biaya_sewa_alat - $total_biaya_tarif_poli_eks - $total_biaya_add_payment_pct;
 
     $request ='{
                      "metadata": {
