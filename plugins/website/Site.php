@@ -31,9 +31,6 @@ class Site extends SiteModule
         $this->route('news/tag/(:str)', '_importTagPosts');
         $this->route('news/tag/(:str)/(:int)', '_importTagPosts');
         $this->route('news/feed/(:str)', '_generateRSS');
-        $this->route('page/(:str)', function ($slug) {
-            $this->_importPage($slug);
-        });
     }
 
     public function _getHomepage()
@@ -378,28 +375,6 @@ class Site extends SiteModule
         $this->core->append($this->draw('disqus.html', ['isNews' => true]), 'footer');
     }
 
-    private function _importPage($slug = null)
-    {
-        if (!empty($slug)) {
-            $row = $this->db('mlite_pages')->where('slug', $slug)->oneArray();
-
-            if (empty($row)) {
-                return $this->get404();
-            }
-        } else {
-            return $this->get404();
-        }
-
-        if (intval($row['markdown'])) {
-            $parsedown = new \Systems\Lib\Parsedown();
-            $row['content'] = $parsedown->text($row['content']);
-        }
-
-        $this->filterRecord($row);
-        $this->setTemplate($row['template']);
-        $this->tpl->set('page', $row);
-    }
-
     public function _generateRSS()
     {
         header('Content-type: application/xml');
@@ -428,19 +403,6 @@ class Site extends SiteModule
 
             echo $this->draw('feed.xml', ['posts' => $rows]);
         }
-    }
-
-    public function get404()
-    {
-        http_response_code(404);
-        if (!($row = $this->db('mlite_pages')->like('slug', '404%')->oneArray())) {
-            echo '<h1>404 Not Found</h1>';
-            echo 'Halaman tidak ditemukan!';
-            exit;
-        }
-
-        $this->setTemplate($row['template']);
-        $this->tpl->set('page', $row);
     }
 
     protected function filterRecord(array &$post)
