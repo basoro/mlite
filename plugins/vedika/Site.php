@@ -835,14 +835,6 @@ class Site extends SiteModule
           ->where('no_rawat', $this->revertNorawat($id))
           ->toArray();
 
-        $klinis_radiologi = $this->core->mysql('diagnosa_pasien_klinis')
-          ->join('permintaan_radiologi', 'permintaan_radiologi.noorder=diagnosa_pasien_klinis.noorder')
-          ->where('no_rawat', $this->revertNorawat($id))
-          ->toArray();
-        $saran_rad = $this->core->mysql('saran_kesan_rad')
-          ->where('no_rawat', $this->revertNorawat($id))
-          ->toArray();
-
         $pemeriksaan_laboratorium = [];
         $rows_pemeriksaan_laboratorium = $this->core->mysql('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
@@ -873,11 +865,6 @@ class Site extends SiteModule
         $laporan_operasi = $this->core->mysql('laporan_operasi')
           ->where('no_rawat', $this->revertNorawat($id))
           ->oneArray();
-
-        $rujukan_internal_poli_detail = $this->core->mysql('rujukan_internal_poli_detail')
-          ->where('no_rawat', $this->revertNorawat($id))
-          ->oneArray();
-        $this->tpl->set('rujukan_internal_poli_detail', $rujukan_internal_poli_detail);
 
         $this->tpl->set('pasien', $pasien);
         $this->tpl->set('reg_periksa', $reg_periksa);
