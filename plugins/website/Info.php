@@ -37,6 +37,18 @@ return [
               `news_id`	INTEGER NOT NULL REFERENCES mlite_news(id) ON DELETE CASCADE,
               `tag_id`	INTEGER NOT NULL REFERENCES mlite_news_tags(id) ON DELETE CASCADE
             );");
+
+            $core->mysql()->pdo()->exec("CREATE TABLE `mlite_pages` (
+              `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+              `title` text NOT NULL,
+              `slug` text NOT NULL,
+              `desc` text NULL,
+              `template` text NOT NULL,
+              `date` text NOT NULL,
+              `content` text NOT NULL,
+              `markdown` INTEGER DEFAULT 0
+            );");
+
         } else {
             $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news` (
               `id` int(11) NOT NULL,
@@ -65,10 +77,24 @@ return [
               `tag_id` int(11) NOT NULL
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
+            $core->mysql()->pdo()->exec("CREATE TABLE `mlite_pages` (
+              `id` int(11) NOT NULL,
+              `title` VARCHAR(225) NOT NULL,
+              `slug` VARCHAR(225) NOT NULL,
+              `desc` text NULL,
+              `template` text NOT NULL,
+              `date` text NOT NULL,
+              `content` text NOT NULL,
+              `markdown` int(11) DEFAULT 0
+              ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+
             $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news`
               ADD PRIMARY KEY (`id`);");
 
             $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags`
+              ADD PRIMARY KEY (`id`);");
+
+            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_pages`
               ADD PRIMARY KEY (`id`);");
 
             $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`
@@ -79,6 +105,9 @@ return [
               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
             $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags`
+              MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
+
+            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_pages`
               MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
             $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`

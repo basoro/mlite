@@ -1,0 +1,67 @@
+<article class="row">
+	<form name="page" action="{?=url(ADMIN.'/website/savepage/'.@$pages.form.id)?}" method="POST">
+		<div class="col-md-8">
+		    <div class="panel panel-default">
+                <div class="panel-heading">
+		            <h3 class="panel-title">{$pages.title}</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label>Judul</label>
+                        <input type="text" name="title" class="form-control" value="{$pages.form.title}" required />
+                    </div>
+                    <div class="form-group no-margin">
+                        <label>Isi</label>
+						<div class="progress-wrapper">
+							<div class="progress no-margin collapse">
+								<div class="progress-bar progress-bar-striped active" role="progressbar">
+								</div>
+							</div>
+						</div>
+                        <textarea name="content" rows="16" class="editor form-control" data-editor="{$pages.editor}">{$pages.form.content}</textarea>
+                    </div>
+                </div>
+            </div>
+	    </div>
+
+	    <div class="col-md-4">
+		    <div class="panel panel-default">
+                <div class="panel-heading">
+		    	    <h3 class="panel-title">SEO</h3>
+                </div>
+                <div class="panel-body">
+		            <div class="form-group">
+		                <label>Slug</label>
+		                <input type="text" name="slug" class="form-control" placeholder="Wajib isi" value="{$pages.form.slug}"/>
+		            </div>
+		            <div class="form-group no-margin">
+		                <label>Deskripsi</label>
+		                <input type="text" name="desc" class="form-control" placeholder="Wajib isi" value="{$pages.form.desc}"/>
+		            </div>
+                </div>
+		    </div>
+
+			<div class="panel panel-default">
+                <div class="panel-heading">
+		    	    <h3 class="panel-title">Pengaturan</h3>
+                </div>
+                <div class="panel-body">
+		            <div class="form-group">
+		                <label>Template</label>
+		                <select name="template" class="form-control">
+		                	{loop: $pages.templates}
+		                    <option {$value.attr}>{$value.name}</option>
+		                    {/loop}
+		                </select>
+		            </div>
+
+		            <div class="form-group">
+                        <label><input type="checkbox" name="markdown" value="1" {if: $pages.form.markdown == 1}checked{/if} /> Markdown</label>
+                    </div>
+		            <input type="submit" name="save" value="Simpan" class="btn btn-primary" />
+					<a href="{$pages.manageURL}" class="btn btn-default">Batal</a>
+		        </div>
+            </div>
+        </div>
+	</form>
+</article>

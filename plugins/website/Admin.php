@@ -15,6 +15,8 @@ class Admin extends AdminModule
             'Index'    => 'manage',
             'Kelola Berita'    => 'managenews',
             'Tambah Berita'              => 'addnews',
+            'Kelola Halaman'    => 'managepages',
+            'Tambah Halaman'              => 'addpage',
             'Pengaturan Berita'                => 'settingsnews',
             'Pengaturan Website' => 'settingswebsite'
         ];
@@ -25,6 +27,8 @@ class Admin extends AdminModule
       $sub_modules = [
         ['name' => 'Kelola Berita', 'url' => url([ADMIN, 'website', 'managenews']), 'icon' => 'pencil-square', 'desc' => 'Kelola postingan website'],
         ['name' => 'Tambah Berita', 'url' => url([ADMIN, 'website', 'addnews']), 'icon' => 'pencil-square', 'desc' => 'Tambah postingan baru'],
+        ['name' => 'Kelola Halaman', 'url' => url([ADMIN, 'website', 'managepages']), 'icon' => 'pencil-square', 'desc' => 'Kelola halaman website'],
+        ['name' => 'Tambah Halaman', 'url' => url([ADMIN, 'website', 'addpage']), 'icon' => 'pencil-square', 'desc' => 'Tambah halaman baru'],
         ['name' => 'Pengaturan Berita', 'url' => url([ADMIN, 'website', 'settingsnews']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan berita'],
         ['name' => 'Pengaturan Website', 'url' => url([ADMIN, 'website', 'settingswebsite']), 'icon' => 'pencil-square', 'desc' => 'Pengaturan website'],
       ];
@@ -302,6 +306,164 @@ class Admin extends AdminModule
 
             redirect(url([ADMIN, 'website', 'editnews', $id]));
         }
+    }
+
+
+    /**
+    * list of pages
+    */
+    public function getManagePages($page = 1)
+    {
+        // pagination
+        $totalRecords = $this->db('mlite_pages')->toArray();
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'website', 'managepages', '%d']));
+        $this->assign['pagination'] = $pagination->nav();
+        // list
+        $rows = $this->db('mlite_pages')
+                ->limit($pagination->offset().', '.$pagination->getRecordsPerPage())
+                ->toArray();
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['editURL'] = url([ADMIN, 'website', 'editpage', $row['id']]);
+                $row['delURL']  = url([ADMIN, 'website', 'deletepage', $row['id']]);
+                $row['viewURL'] = url(['page',$row['slug']]);
+                $row['desc'] = str_limit($row['desc'], 48);
+
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        return $this->draw('manage.pages.html', ['pages' => $this->assign]);
+    }
+
+    /**
+    * add new page
+    */
+    public function getAddPage()
+    {
+        $this->assign['editor'] = $this->settings('settings', 'editor');
+        $this->_addHeaderFiles();
+
+        // Unsaved data with failure
+        if (!empty($e = getRedirectData())) {
+            $this->assign['form'] = ['title' => isset_or($e['title'], ''), 'desc' => isset_or($e['desc'], ''), 'content' => isset_or($e['content'], ''), 'slug' => isset_or($e['slug'], '')];
+        } else {
+            $this->assign['form'] = ['title' => '', 'desc' => '', 'content' => '', 'slug' => '', 'markdown' => 0];
+        }
+
+        $this->assign['title'] = 'Halaman baru';
+        $this->assign['templates'] = $this->_getTemplates(isset_or($e['template'], 'index.html'));
+        $this->assign['manageURL'] = url([ADMIN, 'website', 'managepages']);
+
+        return $this->draw('form.page.html', ['pages' => $this->assign]);
+    }
+
+    public function getEditPage($id)
+    {
+        $this->assign['editor'] = $this->settings('settings', 'editor');
+        $this->_addHeaderFiles();
+
+        $page = $this->db('mlite_pages')->where('id', $id)->oneArray();
+
+        if (!empty($page)) {
+            // Unsaved data with failure
+            if (!empty($e = getRedirectData())) {
+                $page = array_merge($page, ['title' => isset_or($e['title'], ''), 'desc' => isset_or($e['desc'], ''), 'content' => isset_or($e['content'], ''), 'slug' => isset_or($e['slug'], '')]);
+            }
+
+            $this->assign['form'] = htmlspecialchars_array($page);
+            $this->assign['form']['content'] =  $this->tpl->noParse($this->assign['form']['content']);
+
+            $this->assign['title'] = 'Edit halaman';
+            $this->assign['templates'] = $this->_getTemplates($page['template']);
+            $this->assign['manageURL'] = url([ADMIN, 'website', 'managepages']);
+
+            return $this->draw('form.page.html', ['pages' => $this->assign]);
+        } else {
+            redirect(url([ADMIN, 'website', 'managepages']));
+        }
+    }
+
+    public function postSavePage($id = null)
+    {
+        unset($_POST['save'], $_POST['files']);
+
+        if (!$id) {
+            $location = url([ADMIN, 'website', 'addpage']);
+        } else {
+            $location = url([ADMIN, 'website', 'editpage', $id]);
+        }
+
+        if (checkEmptyFields(['title', 'template'], $_POST)) {
+            $this->notify('failure', 'Masih ada isian yang kosong');
+            redirect($location, $_POST);
+        }
+
+        $_POST['title'] = trim($_POST['title']);
+        if (!isset($_POST['markdown'])) {
+            $_POST['markdown'] = 0;
+        }
+
+        if (empty($_POST['slug'])) {
+            $_POST['slug'] = createSlug($_POST['title']);
+        } else {
+            $_POST['slug'] = createSlug($_POST['slug']);
+        }
+
+        if ($id != null && $this->db('mlite_pages')->where('slug', $_POST['slug'])->where('id', '!=', $id)->oneArray()) {
+            $this->notify('failure', 'Halaman sudah ada');
+            redirect(url([ADMIN, 'website', 'editpage', $id]), $_POST);
+        } elseif ($id == null && $this->db('mlite_pages')->where('slug', $_POST['slug'])->oneArray()) {
+            $this->notify('failure', 'Halaman sudah ada');
+            redirect(url([ADMIN, 'website', 'addpage']), $_POST);
+        }
+
+        if (!$id) {
+            $_POST['date'] = date('Y-m-d H:i:s');
+            $query = $this->db('mlite_pages')->save($_POST);
+            $location = url([ADMIN, 'website', 'editpage', $this->db()->pdo()->lastInsertId()]);
+        } else {
+            $query = $this->db('mlite_pages')->where('id', $id)->save($_POST);
+        }
+
+        if ($query) {
+            $this->notify('success', 'Halaman tersimpan');
+        } else {
+            $this->notify('failure', 'Gagal menyimpan halaman');
+        }
+
+        redirect($location);
+    }
+
+    public function getDeletePage($id)
+    {
+        if ($this->db('mlite_pages')->delete($id)) {
+            $this->notify('success', 'Halaman telah dihapus');
+        } else {
+            $this->notify('failure', 'Gagal menghapus halaman');
+        }
+
+        redirect(url([ADMIN, 'website', 'managepages']));
+    }
+
+    private function _getTemplates($selected = null)
+    {
+        $theme = $this->settings('settings', 'theme');
+        $tpls = glob(THEMES.'/'.$theme.'/*.html');
+
+        $result = [];
+        foreach ($tpls as $tpl) {
+            if ($selected == basename($tpl)) {
+                $attr = 'selected';
+            } else {
+                $attr = null;
+            }
+            $result[] = ['name' => basename($tpl), 'attr' => $attr];
+        }
+        return $result;
     }
 
     public function getSettingsNews()
