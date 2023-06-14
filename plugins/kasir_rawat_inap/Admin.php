@@ -164,7 +164,7 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr']
+            'biaya_rawat' => $jns_perawatan['total_byrpr']
           ]);
         }
         if($_POST['provider'] == 'rawat_inap_drpr') {
@@ -181,7 +181,7 @@ class Admin extends AdminModule
             'tarif_tindakanpr' => $jns_perawatan['tarif_tindakanpr'],
             'kso' => $jns_perawatan['kso'],
             'menejemen' => $jns_perawatan['menejemen'],
-            'biaya_rawat' => $jns_perawatan['total_byrdr']
+            'biaya_rawat' => $jns_perawatan['total_byrdrpr']
           ]);
         }
       }
