@@ -262,7 +262,7 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'laboratorium') {
-        $cek_lab = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('status', 'ralan')->oneArray();
+        $cek_lab = $this->core->mysql('permintaan_lab')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '<>', '0000-00-00')->where('status', 'ralan')->oneArray();
         if(!$cek_lab) {
           $max_id = $this->core->mysql('permintaan_lab')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
           if(empty($max_id['noorder'])) {
@@ -324,7 +324,7 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'radiologi') {
-        $cek_rad = $this->core->mysql('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('status', 'ralan')->oneArray();
+        $cek_rad = $this->core->mysql('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('tgl_permintaan', date('Y-m-d'))->where('tgl_sampel', '<>', '0000-00-00')->where('status', 'ralan')->oneArray();
         if(!$cek_rad) {
           $max_id = $this->core->mysql('permintaan_radiologi')->select(['noorder' => 'ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0)'])->where('tgl_permintaan', date('Y-m-d'))->oneArray();
           if(empty($max_id['noorder'])) {

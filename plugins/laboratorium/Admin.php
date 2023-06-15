@@ -427,6 +427,8 @@ class Admin extends AdminModule
       $rows_periksa_lab = $this->core->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_GET['no_rawat'])
+      ->where('tgl_periksa', $_GET['tgl_periksa'])
+      ->where('jam', $_GET['jam'])
       ->where('periksa_lab.status', $_GET['status'])
       ->toArray();
 
@@ -439,6 +441,8 @@ class Admin extends AdminModule
         $row['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
           ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
           ->where('detail_periksa_lab.no_rawat', $_GET['no_rawat'])
+          ->where('detail_periksa_lab.tgl_periksa', $_GET['tgl_periksa'])
+          ->where('detail_periksa_lab.jam', $_GET['jam'])
           ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
           ->toArray();
         $periksa_lab[] = $row;
@@ -572,6 +576,7 @@ class Admin extends AdminModule
         ->oneArray();
       $dokter_perujuk = $this->core->mysql('permintaan_lab')
         ->join('pegawai', 'pegawai.nik=permintaan_lab.dokter_perujuk')
+        ->where('noorder', $_GET['noorder'])
         ->where('no_rawat', $_GET['no_rawat'])
         ->where('permintaan_lab.status', strtolower($_GET['status']))
         ->group('no_rawat')
@@ -579,6 +584,7 @@ class Admin extends AdminModule
 
       $rows_permintaan_lab = $this->core->mysql('permintaan_lab')
         ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
+        ->where('noorder', $_GET['noorder'])
         ->where('no_rawat', $_GET['no_rawat'])
         ->where('permintaan_lab.status', strtolower($_GET['status']))
         ->toArray();
@@ -731,7 +737,6 @@ class Admin extends AdminModule
       foreach ($rows as $row) {
         $rows2 = $this->core->mysql('permintaan_pemeriksaan_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
-          //->join('permintaan_detail_permintaan_lab', 'permintaan_detail_permintaan_lab.noorder=permintaan_pemeriksaan_lab.noorder')
           ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
           ->toArray();
           $row['permintaan_pemeriksaan_lab'] = [];
@@ -757,25 +762,26 @@ class Admin extends AdminModule
 
       $rows_periksa_lab = $this->core->mysql('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
+      ->join('dokter', 'dokter.kd_dokter=periksa_lab.dokter_perujuk')
       ->where('periksa_lab.status', $_POST['status'])
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
 
       $periksa_lab = [];
-      $jumlah_total_lab = 0;
       $no_lab = 1;
       foreach ($rows_periksa_lab as $row) {
-        $jumlah_total_lab += $row['biaya'];
         $row['nomor'] = $no_lab++;
         $row['detail_periksa_lab'] = $this->core->mysql('detail_periksa_lab')
           ->join('template_laboratorium', 'template_laboratorium.id_template=detail_periksa_lab.id_template')
           ->where('detail_periksa_lab.no_rawat', $_POST['no_rawat'])
+          ->where('detail_periksa_lab.tgl_periksa', $row['tgl_periksa'])
+          ->where('detail_periksa_lab.jam', $row['jam'])
           ->where('detail_periksa_lab.kd_jenis_prw', $row['kd_jenis_prw'])
           ->toArray();
         $periksa_lab[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'jumlah_total_lab' => $jumlah_total_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium]);
+      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium]);
       exit();
     }
 
