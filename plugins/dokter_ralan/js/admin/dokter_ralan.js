@@ -395,6 +395,7 @@ $("#form_rincian").on("click", "#selesai", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -411,6 +412,7 @@ $("#form_soap").on("click", "#selesai_soap", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // tombol batal diklik
@@ -427,6 +429,7 @@ $("#form_kontrol").on("click", "#selesai_kontrol", function(event){
   $("#info_tambahan").hide();
   $("#form_kontrol").hide();
   $("#kontrol").hide();
+  $("#surat_kontrol").hide();
 });
 
 // ketika inputbox pencarian diisi
