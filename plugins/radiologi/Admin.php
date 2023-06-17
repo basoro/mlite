@@ -779,12 +779,12 @@ class Admin extends AdminModule
         $row['nomor'] = $no_radiologi++;
         $row['status_periksa'] = $_POST['status'];
         $row['periksa_radiologi'] = $this->core->mysql('periksa_radiologi')
-        ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
-        ->where('periksa_radiologi.status', $_POST['status'])
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('tgl_periksa', $row['tgl_periksa'])
-        ->where('jam', $row['jam'])
-        ->toArray();
+          ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+          ->where('periksa_radiologi.status', $_POST['status'])
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->where('tgl_periksa', $row['tgl_periksa'])
+          ->where('jam', $row['jam'])
+          ->toArray();
         $row['hasil_radiologi'] = $this->core->mysql('hasil_radiologi')
           ->where('no_rawat', $_POST['no_rawat'])
           ->where('tgl_periksa', $row['tgl_periksa'])

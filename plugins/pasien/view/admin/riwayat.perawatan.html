@@ -595,26 +595,40 @@
             <tr align="center">
               <td valign="top" width="20%" bgcolor="#eee">Tanggal</td>
               <td valign="top" width="30%" bgcolor="#eee">Nama Tindakan</td>
-              <td valign="top" width="50%" bgcolor="#eee">Keterangan</td>
             </tr>
             {loop: $value.periksa_radiologi as $data}
             <tr>
-              <td valign="top" width="20%">{$data.tgl_periksa}</td>
-              <td valign="top" width="30%">{$data.nm_perawatan}</td>
-              <td valign="top" width="50%">{?=nl2br($data.hasil)?}</td>
+              <td colspan="2">{$data.tgl_periksa} {$data.jam}</td>
             </tr>
             <tr>
-              <td colspan="3">
+              <td valign="top" width="30%">Pemeriksaan</td>
+              <td valign="top" width="50%">
+                {loop: $data.pemeriksaan_radiologi as $data0}
+                {?=nl2br($data0.nm_perawatan)?}<br>
+                {/loop}
+              </td>
+            </tr>
+            <tr>
+              <td valign="top" width="30%">Interpretasi</td>
+              <td valign="top" width="50%">
+                {loop: $data.hasil_radiologi as $data1}
+                {?=nl2br($data1.hasil)?}<br>
+                {/loop}
+              </td>
+            </tr>
+            {if: $data.gambar_radiologi}
+            <tr>
+              <td colspan="2">
                 <table width="100%" border="0" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
                   <tr align="center">
                     <td>
                       <div class="row">
                           <div class="gallery">
-                          {loop: $value.gambar_radiologi as $data}
+                          {loop: $data.gambar_radiologi as $data2}
                               <div class="col-sm-6 col-md-6">
-                                  <div class="thumbnail" style="padding:10px;">
-                                      <a href="{?=url(WEBAPPS_URL.'/radiologi/'.$data.lokasi_gambar)?}" class="images">
-                                          <img src="{?=url(WEBAPPS_URL.'/radiologi/'.$data.lokasi_gambar)?}" width="100%" class="img-responsive">
+                                  <div class="thumbnail" style="padding:0px;">
+                                      <a href="{?=url(WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar)?}" class="images">
+                                          <img src="{?=url(WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar)?}" width="100%" class="img-responsive">
                                       </a>
                                   </div>
                               </div>
@@ -626,6 +640,7 @@
                 </table>
               </td>
             </tr>
+            {/if}
             {/loop}
           </table>
         </td>
