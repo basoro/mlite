@@ -474,6 +474,7 @@ class Admin extends AdminModule
         ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
         ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
         ->where('no_rkm_medis', $no_rkm_medis)
+        ->desc('tgl_registrasi')
         ->toArray();
 
       $riwayat['reg_periksa'] = [];
