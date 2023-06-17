@@ -421,7 +421,8 @@ class Admin extends AdminModule
       $dokter_perujuk = $this->core->mysql('periksa_lab')
         ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
-        ->group('no_rawat')
+        ->where('tgl_periksa', $_GET['tgl_periksa'])
+        ->where('jam', $_GET['jam'])
         ->oneArray();
 
       $rows_periksa_lab = $this->core->mysql('periksa_lab')

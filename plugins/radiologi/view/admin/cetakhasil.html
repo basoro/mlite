@@ -108,24 +108,35 @@
 		  <table width="740px">
 		    <thead>
 		      <tr style="border-top: 1px solid #8c8b8b">
-		        <th width="20">No.</th>
 		        <th width="100">Pemeriksaan</th>
-		        <th>Hasil</th>
 		      </tr>
 		    </thead>
 		    <tbody>
 		      {loop: $periksa_radiologi}
-		      <tr>
-		        <td>{$value.nomor}</td>
-		        <td>{$value.nm_perawatan}</td>
-						<td>{$value.hasil}</td>
-		      </tr>
-						{loop: $value.gambar_radiologi as $data2}
-			      <tr>
-			        <td colspan="3"><img src="{?=WEBAPPS_URL.'/radiologi/'.$data2.lokasi_gambar?}" height="400px"></td>
-			      </tr>
-			      {/loop}
+						<tr>
+							<td >{$value.nm_perawatan}</td>
+						</tr>
 		      {/loop}
+					{if: $hasil_radiologi}
+					<tr style="border-top: 1px solid #8c8b8b">
+		        <th width="100">Hasil</th>
+		      </tr>
+					{/if}
+					{loop: $hasil_radiologi}
+					<tr>
+						<td>{?=nl2br($value.hasil)?}</td>
+					</tr>
+					{/loop}
+					{if: $gambar_radiologi}
+					<tr style="border-top: 1px solid #8c8b8b">
+		        <th width="100">Gambar</th>
+		      </tr>
+					{/if}
+					{loop: $gambar_radiologi}
+					<tr>
+						<td><img src="{?=WEBAPPS_URL.'/radiologi/'.$value.lokasi_gambar?}" height="400px"></td>
+					</tr>
+					{/loop}
 		    </tbody>
 		  </table>
 			<br>
