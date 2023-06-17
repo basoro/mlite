@@ -2337,6 +2337,7 @@ class Admin extends AdminModule
       ->asc('prioritas')
       ->toArray();
     $a_diagnosa=1;
+    $penyakit = '';
     foreach ($row_diagnosa as $row) {
       if($a_diagnosa==1){
           $penyakit=$row["kd_penyakit"];
@@ -2568,27 +2569,27 @@ class Admin extends AdminModule
 
     /* Biaya Penunjang */
     $biaya_penunjang_jl_dr = $this->core->mysql('rawat_jl_dr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     $biaya_penunjang_jl_pr = $this->core->mysql('rawat_jl_pr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     $biaya_penunjang_jl_drpr = $this->core->mysql('rawat_jl_drpr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     $biaya_penunjang_inap_dr = $this->core->mysql('rawat_inap_dr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     $biaya_penunjang_inap_pr = $this->core->mysql('rawat_inap_pr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     $biaya_penunjang_inap_drpr = $this->core->mysql('rawat_inap_drpr')
-      ->select(['biaya_rawat' => 'SUM(manajemen)'])
+      ->select(['biaya_rawat' => 'SUM(menejemen)'])
       ->where('no_rawat', revertNoRawat($no_rawat))
       ->toArray();
     /* End Biaya Penunjang */
@@ -2714,7 +2715,7 @@ class Admin extends AdminModule
       $total_biaya_rawat_intensif += $row['biaya_rawat'];
     }
 
-    $total_biaya_obat = 0;
+    $sub_total_biaya_obat = 0;
 
     $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
     ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
@@ -2723,7 +2724,7 @@ class Admin extends AdminModule
     ->toArray();
 
     foreach ($rows_pemberian_obat as $row) {
-      $subtotal_biaya_obat += floatval($row['total']);
+      $sub_total_biaya_obat += floatval($row['total']);
     }
 
     if($reg_periksa['status_lanjut'] == 'Ranap') {
@@ -2734,19 +2735,19 @@ class Admin extends AdminModule
       ->toArray();
 
       foreach ($rows_pemberian_obat as $row) {
-        $subtotal_biaya_obat += floatval($row['total']);
+        $sub_total_biaya_obat += floatval($row['total']);
       }
     }
 
 
     $jumlah_total_obat_operasi = 0;
-    $obat_operasis = $this->core->mysql('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+    $obat_operasis = $this->core->mysql('beri_obat_operasi')->where('no_rawat', revertNoRawat($no_rawat))->toArray();
     foreach ($obat_operasis as $obat_operasi) {
       $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
       $jumlah_total_obat_operasi += $obat_operasi['harga'];
     }
 
-    $total_biaya_obat = $subtotal_biaya_obat + $jumlah_total_obat_operasi;
+    $total_biaya_obat = $sub_total_biaya_obat + $jumlah_total_obat_operasi;
 
     $total_biaya_obat_kronis = 0;
     $total_biaya_obat_kemoterapi = 0;
@@ -2859,7 +2860,7 @@ class Admin extends AdminModule
     $total_biaya_tarif_poli_eks = 0;
     $total_biaya_add_payment_pct = 0;
 
-    $piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    //$piutang_pasien = $this->core->mysql('piutang_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
     //$total_biaya_kamar = $piutang_pasien['totalpiutang'] - $total_biaya_non_bedah - $total_biaya_bedah - $total_biaya_konsultasi - $total_biaya_keperawatan - $total_biaya_penunjang - $total_biaya_radiologi - $total_biaya_laboratorium - $total_biaya_pelayanan_darah - $total_biaya_rehabilitasi - $total_biaya_rawat_intensif - $total_biaya_obat - $total_biaya_obat_kronis - $total_biaya_obat_kemoterapi - $total_biaya_alkes - $total_biaya_bmhp - $total_biaya_sewa_alat - $total_biaya_tarif_poli_eks - $total_biaya_add_payment_pct;
 
     $request ='{
