@@ -572,6 +572,7 @@ class Admin extends AdminModule
         foreach ($rows_radiologi as $value) {
           $value['pemeriksaan_radiologi'] = $this->core->mysql('periksa_radiologi')
             ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
+            ->where('no_rawat', $value['no_rawat'])
             ->where('tgl_periksa', $value['tgl_periksa'])
             ->where('jam', $value['jam'])
             ->toArray();
