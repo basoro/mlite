@@ -40,7 +40,7 @@
           <td></td>
           <td>{$data1.hasil}</td>
           <td colspan="2">
-            <button type="button" class="btn btn-danger btn-xs hapus_hasil_radiologi {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+            <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
           </td>
         </tr>
         {/loop}
