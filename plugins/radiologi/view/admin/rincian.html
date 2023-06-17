@@ -20,7 +20,7 @@
           <button type="button" class="btn btn-primary btn-xs hasil_radiologi" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-edit"></i><span class="hidden-xs"> Hasil</span></button>
           <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-status="{$value.status_periksa}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span></button>
           <a href="{?=url([ADMIN,'orthanc','bridgingorthanc',convertNorawat($value.no_rawat), strtolower($value.status_periksa)])?}" class="btn btn-info btn-xs" data-toggle="modal" data-target="#orthancModal"><i class="fa fa-edit"></i><span class="hidden-xs"> PACS</span></a>
-          <button type="button" class="btn btn-danger btn-xs hapus_radiologi {if: $_SESSION['mlite_user'] !='1'}disabled{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-danger btn-xs {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}" data-status="{$value.status_periksa}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
         </td>
       </tr>
       {if: $value.periksa_radiologi}
@@ -40,7 +40,7 @@
           <td></td>
           <td>{$data1.hasil}</td>
           <td colspan="2">
-            <button type="button" class="btn btn-danger btn-xs hapus_hasil_radiologi {if: $_SESSION['mlite_user'] !='1'}disabled{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+            <button type="button" class="btn btn-danger btn-xs hapus_hasil_radiologi {if: $_SESSION['mlite_user'] !='1'}disabled{else}hapus_hasil_radiologi{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
           </td>
         </tr>
         {/loop}
