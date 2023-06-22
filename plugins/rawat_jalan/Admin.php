@@ -155,6 +155,8 @@ class Admin extends AdminModule
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
+          $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['no_sep'] = $bridging_sep['no_sep'];
           $this->assign['list'][] = $row;
         }
 
@@ -1401,6 +1403,16 @@ class Admin extends AdminModule
       ->where('tgl_input', $_POST['tgl_input'])
       ->where('id_user', $_POST['id_user'])
       ->delete();
+      exit();
+    }
+
+    public function getSepDetail($no_sep){
+      $sep = $this->core->mysql('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+      $this->tpl->set('sep', $this->tpl->noParse_array(htmlspecialchars_array($sep)));
+
+      $potensi_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+      $data_sep['potensi_prb'] = $potensi_prb['prb'];
+      echo $this->draw('sep.detail.html', ['data_sep' => $data_sep]);
       exit();
     }
 
