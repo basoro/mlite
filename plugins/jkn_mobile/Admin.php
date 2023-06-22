@@ -28,6 +28,7 @@ class Admin extends AdminModule
             'Jadwal Dokter HFIS' => 'jadwaldokter',
             'Data Booking Antrol' => 'bookingantrol',
             'Task ID' => 'taskid',
+            'Quality Rate' => 'qrantrol',
             'Dashboard Antrol BPJS' => 'antrol',
             'Pengaturan' => 'settings',
         ];
@@ -44,6 +45,7 @@ class Admin extends AdminModule
         ['name' => 'Jadwal Dokter HFIS', 'url' => url([ADMIN, 'jkn_mobile', 'jadwaldokter']), 'icon' => 'tasks', 'desc' => 'Jadwal Dokter HFIS JKN Mobile'],
         ['name' => 'Data Booking Antrol', 'url' => url([ADMIN, 'jkn_mobile', 'bookingantrol']), 'icon' => 'list', 'desc' => 'Booking Antrol JKN Mobile'],
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile'],
+        ['name' => 'Quality Rate', 'url' => url([ADMIN, 'jkn_mobile', 'qrantrol']), 'icon' => 'tasks', 'desc' => 'Quality Rate Antrian Online BPJS'],
         ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile'],
       ];
@@ -414,6 +416,89 @@ class Admin extends AdminModule
             return $this->draw('antrol.html', ['row' => $this->assign]);
         }
         exit();
+    }
+
+    public function getQrAntrol(){
+        $this->_addHeaderFiles();
+        $this->getCssCard();
+        $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+        if (isset($_GET['tgl'])) {
+            $tanggal = $_GET['tgl'];
+          } else {
+            $tanggal = date('Y-m-d');
+          }
+        $sql = "SELECT * FROM bridging_sep WHERE tglsep = '$tanggal' AND jnspelayanan = '2' AND kdpolitujuan NOT IN ('IGD','HDL')";
+        $query = $this->core->mysql()->pdo()->prepare($sql);
+        $query->execute();
+        $sep_terbit = $query->fetchAll();
+        $jml_sep = 1;
+        $jml_antrol = 1;
+        $taskid1 = 0;
+        $taskid2 = 0;
+        $taskid3 = 0;
+        $taskid4 = 0;
+        $taskid5 = 0;
+        $taskid6 = 0;
+        $taskid7 = 0;
+        foreach ($sep_terbit as $valuex) {
+            $nomor_referensi = '';
+            $cari_antrol = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi',$valuex['no_rujukan'])->where('tanggal_periksa',$tanggal)->where('kodebooking','!=','')->where('status_kirim','Sudah')->oneArray();
+            if (!$cari_antrol) {
+                if ($valuex['noskdp'] != '') {
+                    $cari_antrol_kontrol = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi',$valuex['noskdp'])->where('tanggal_periksa',$tanggal)->where('kodebooking','!=','')->where('status_kirim','Sudah')->oneArray();
+                    if ($cari_antrol_kontrol) {
+                        $nomor_referensi = $cari_antrol_kontrol['kodebooking'];
+                        $jml_antrol = $jml_antrol + 1;
+                    }
+                }
+            } else {
+                $nomor_referensi = $cari_antrol['kodebooking'];
+                $jml_antrol = $jml_antrol + 1;
+            }
+            $task = $this->core->mysql('mlite_antrian_referensi_taskid')->where('nomor_referensi',$nomor_referensi)->where('status','Sudah')->toArray();
+            foreach ($task as $value) {
+                switch ($value['taskid']) {
+                    case '1':
+                        $taskid1++;
+                        break;
+                    case '2':
+                        $taskid2++;
+                        break;
+                    case '3':
+                        $taskid3++;
+                        break;
+                    case '4':
+                        $taskid4++;
+                        break;
+                    case '5':
+                        $taskid5++;
+                        break;
+                    case '6':
+                        $taskid6++;
+                        break;
+                    case '7':
+                        $taskid7++;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+            $jml_sep = $jml_sep + 1;
+        }
+        $qr_manual = $jml_antrol / $jml_sep * 100;
+        $stats['tanggal'] = dateIndonesia($tanggal);
+        $stats['jml_sep'] = $jml_sep;
+        $stats['jml_antrol'] = $jml_antrol;
+        $stats['qr_manual'] = number_format($qr_manual,2);
+        $stats['taskid1'] = $taskid1;
+        $stats['taskid2'] = $taskid2;
+        $stats['taskid3'] = $taskid3;
+        $stats['taskid4'] = $taskid4;
+        $stats['taskid5'] = $taskid5;
+        $stats['taskid6'] = $taskid6;
+        $stats['taskid7'] = $taskid7;
+        return $this->draw('manage.qurate.html', ['stats' => $stats]);
     }
 
     public function getAjax()

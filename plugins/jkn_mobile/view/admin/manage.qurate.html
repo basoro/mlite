@@ -1,0 +1,202 @@
+<style media="screen">
+    .stat-title {
+        padding: 0;
+        margin: 0;
+        font-size: 16px;
+    }
+
+    .stat-bold {
+        padding: 0;
+        margin-top: 0px;
+        margin-bottom: -10px;
+        font-size: 18px;
+    }
+
+    .stat-up-down {
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .text-white {
+        color: #ffffff
+    }
+
+    a.text-white:focus,
+    a.text-white:hover {
+        color: #ffffff
+    }
+
+    .badge-success {
+        background-color: #4C9A2A;
+    }
+</style>
+<h4>
+    Antrian Online Tanggal {$stats.tanggal}
+    <span class="pull-right">
+        <form class="" action="" method="">
+            <input type="text" name="tgl" class="tanggal" value="" placeholder="Pilih periode">
+            <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+            <input type="submit" value="Go">
+        </form>
+    </span>
+</h4>
+<br>
+<div class="row">
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body bg-danger">
+                <span class="fa-3x fa-stack fa-lg pull-left">
+                    <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
+                </span>
+                <div class="stat-title text-grey">SEP Terbit
+                </div>
+                <div class="stat-bold">
+                    <b>{$stats.jml_sep}</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body bg-info">
+                <span class="fa-3x fa-stack fa-lg pull-left">
+                    <i class="fa fa-calendar fa-stack-1x"></i>
+                </span>
+                <div class="stat-title text-grey">Tambah Antrian
+                </div>
+                <div class="stat-bold">
+                    <b>{$stats.jml_antrol}</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body bg-warning">
+                <span class="fa-3x fa-stack fa-lg pull-left">
+                    <i class="fa fa-users fa-stack-1x"></i>
+                </span>
+                <div class="stat-title text-grey">Quality Rate
+                </div>
+                <div class="stat-bold">
+                    <b>{$stats.qr_manual} %</b>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+            <div class="panel-body bg-success">
+                <form name="" action="" method="GET" class="form-inline">
+                    <div class="form-group">
+                        <input type="text" name="tgl" class="form-control tanggal" placeholder="Pilih Tanggal" required
+                            value="" />
+                    </div>
+                    <input type="submit" class="btn btn-primary" value="Cari" />
+                    <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                </form>
+            </div>
+        </div>
+    </div> -->
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Antrian Online BPJS Dalam %</h3>
+            </div>
+            <div class="panel-body">
+                <canvas id="line-chartcanvas" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('.tanggal').datetimepicker({
+            format: 'YYYY-MM-DD',
+            locale: 'id'
+        });
+    });
+    $(function () {
+        //line chart
+        var ctx = document.getElementById("line-chartcanvas");
+        const dataLabel = ["tunggu admisi", "layan admisi", "tunggu poli", "layan poli", "tunggu farmasi", "layan farmasi", "obat selesai"];
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: dataLabel,
+                datasets: [{
+                    data: [{?=number_format(($stats.taskid1 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid2 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid3 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid4 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid5 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid6 / $stats.jml_antrol) * 100, 2, '.', '') ?}, {?=number_format(($stats.taskid7 / $stats.jml_antrol) * 100, 2, '.', '') ?}],
+    backgroundColor: [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 109, 64, 0.2)',
+        'rgba(25, 159, 64, 0.2)',
+        'rgba(52, 159, 164, 0.2)',
+        'rgba(255, 19, 64, 0.2)'
+    ],
+        borderColor: [
+            'rgba(255,99,132,1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 159, 64, 1)',
+            'rgba(255, 109, 64, 1)',
+            'rgba(25, 159, 64, 1)',
+            'rgba(52, 159, 164, 1)',
+            'rgba(255, 19, 64, 1)'
+        ],
+            borderWidth: 1
+              }]
+            },
+    options: {
+        layout: {
+            padding: {
+                left: 0,
+                    right: 0,
+                        top: 15,
+                            bottom: 0
+            }
+        },
+        events: [],
+            responsive: true,
+                maintainAspectRatio: false,
+                    legend: {
+            display: false
+        },
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true,
+                    display: false
+                }
+            }]
+        },
+        animation: {
+            duration: 1,
+                onComplete: function() {
+                    var chartInstance = this.chart,
+                        ctx = chartInstance.ctx;
+
+                    ctx.font = Chart.helpers.fontString(Chart.defaults.global.defaultFontSize, Chart.defaults.global.defaultFontStyle, Chart.defaults.global.defaultFontFamily);
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+
+                    this.data.datasets.forEach(function (dataset, i) {
+                        var meta = chartInstance.controller.getDatasetMeta(i);
+                        meta.data.forEach(function (bar, index) {
+                            if (dataset.data[index] > 0) {
+                                var data = dataset.data[index];
+                                ctx.fillText(data, bar._model.x, bar._model.y);
+                            }
+                        });
+                    });
+                }
+        }
+    }
+          });
+
+      });
+</script>

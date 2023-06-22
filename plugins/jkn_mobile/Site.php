@@ -2171,7 +2171,7 @@ class Site extends SiteModule
                 FROM mlite_antrian_referensi
                 WHERE mlite_antrian_referensi.tanggal_periksa=reg_periksa.tgl_registrasi
                 AND (mlite_antrian_referensi.nomor_kartu=pasien.no_peserta OR mlite_antrian_referensi.no_rkm_medis=pasien.no_rkm_medis)
-                AND status_kirim = 'Terkirim'
+                AND status_kirim = 'Sudah'
               )
             AND reg_periksa.tgl_registrasi='$date'
             AND reg_periksa.stts='Sudah'
@@ -2370,7 +2370,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $nomorreferensi,
                         'kodebooking' => $kodebooking,
                         'jenis_kunjungan' => $jeniskunjungan,
-                        'status_kirim' => 'Terkirim',
+                        'status_kirim' => 'Sudah',
                         'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
                     ]);
                   } else if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_peserta'])->oneArray()) {
@@ -2381,12 +2381,12 @@ class Site extends SiteModule
                         'nomor_referensi' => $nomorreferensi,
                         'kodebooking' => $kodebooking,
                         'jenis_kunjungan' => $jeniskunjungan,
-                        'status_kirim' => 'Terkirim',
+                        'status_kirim' => 'Sudah',
                         'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
                     ]);
                   } else {
                     $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomorreferensi)->save([
-                        'status_kirim' => 'Terkirim',
+                        'status_kirim' => 'Sudah',
                         'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
                     ]);
                   }
@@ -2400,12 +2400,12 @@ class Site extends SiteModule
                         'nomor_referensi' => $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$reg_periksa['no_reg'],
                         'kodebooking' => $kodebooking,
                         'jenis_kunjungan' => $jeniskunjungan,
-                        'status_kirim' => 'Terkirim',
+                        'status_kirim' => 'Sudah',
                         'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
                     ]);
                   } else {
                     $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$reg_periksa['no_reg'])->save([
-                        'status_kirim' => 'Terkirim',
+                        'status_kirim' => 'Sudah',
                         'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
                     ]);
                   }
@@ -2549,7 +2549,7 @@ class Site extends SiteModule
 
         $query = $this->core->mysql('mlite_antrian_referensi')
           ->where('tanggal_periksa', $date)
-          ->where('status_kirim', 'Terkirim')
+          ->where('status_kirim', 'Sudah')
           ->limit($perpage)
           ->toArray();
 
@@ -2590,7 +2590,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 1,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Mulai tunggu admisi.'
                       ]);
                     }
@@ -2636,7 +2636,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 2,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Mulai pelayanan admisi.'
                       ]);
                     }
@@ -2682,7 +2682,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 3,
                         'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Selesai pelayanan admisi atau mulai tunggu poli.'
                       ]);
                     }
@@ -2728,7 +2728,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 4,
                         'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Mulai pelayanan poli.'
                       ]);
                     }
@@ -2774,7 +2774,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 5,
                         'waktu' => strtotime($pemeriksaan_ralan['datajam']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Selesai pelayanan poli.'
                       ]);
                     }
@@ -2826,7 +2826,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 6,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Mulai pelayanan apotek. '
                       ]);
                     }
@@ -2878,7 +2878,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 7,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Selesai pelayanan apotek.'
                       ]);
                     }
@@ -2921,7 +2921,7 @@ class Site extends SiteModule
                         'nomor_referensi' => $q['nomor_referensi'],
                         'taskid' => 99,
                         'waktu' => strtotime(date('Y-m-d H:i:s')) * 1000,
-                        'status' => 'Terkirim',
+                        'status' => 'Sudah',
                         'keterangan' => 'Batal antrian.'
                       ]);
                     }
