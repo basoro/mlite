@@ -452,7 +452,7 @@ class Admin extends AdminModule
                     }
                 }
             } else {
-                $nomor_referensi = $cari_antrol['kodebooking'];
+                $nomor_referensi = $cari_antrol['nomor_referensi'];
                 $jml_antrol = $jml_antrol + 1;
             }
             $task = $this->core->mysql('mlite_antrian_referensi_taskid')->where('nomor_referensi',$nomor_referensi)->where('status','Sudah')->toArray();
