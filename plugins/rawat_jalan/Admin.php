@@ -156,7 +156,7 @@ class Admin extends AdminModule
         $this->assign['list'] = [];
         foreach ($rows as $row) {
           $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
-          $row['no_sep'] = $bridging_sep['no_sep'];
+          $row['no_sep'] = isset_or($bridging_sep['no_sep']);
           $this->assign['list'][] = $row;
         }
 

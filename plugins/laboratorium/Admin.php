@@ -51,7 +51,7 @@ class Admin extends AdminModule
         $status_periksa = '';
         $status_bayar = '';
         $status_pulang = '';
-        $type = $_POST['status'];
+        $type = isset_or($_POST['status']);
 
         if(isset($_POST['periode_rawat_jalan'])) {
           $tgl_kunjungan = $_POST['periode_rawat_jalan'];
@@ -300,18 +300,24 @@ class Admin extends AdminModule
           ->oneArray();
           if($rawat) {
             $stts_daftar ="Transaki tanggal ".date('Y-m-d', strtotime($rawat['tgl_registrasi']))." belum diselesaikan" ;
+            $stts_daftar_hidden = $stts_daftar;
+            if($this->settings->get('settings.cekstatusbayar') == 'false'){
+              $stts_daftar_hidden = 'Lama';
+            }
             $bg_status = 'text-danger';
           } else {
             $result = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray();
             if($result >= 1) {
               $stts_daftar = 'Lama';
               $bg_status = 'text-info';
+              $stts_daftar_hidden = $stts_daftar;
             } else {
               $stts_daftar = 'Baru';
               $bg_status = 'text-success';
+              $stts_daftar_hidden = $stts_daftar;
             }
           }
-        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'bg_status' =>$bg_status]);
+        echo $this->draw('stts.daftar.html', ['stts_daftar' => $stts_daftar, 'stts_daftar_hidden' => $stts_daftar_hidden, 'bg_status' =>$bg_status]);
       } else {
         $rawat = $this->core->mysql('reg_periksa')
           ->where('no_rawat', $_POST['no_rawat'])

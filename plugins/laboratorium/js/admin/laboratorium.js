@@ -71,7 +71,8 @@ $("#form").on("click", "#simpan", function(event){
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
   var kd_pj = $('select[name=kd_pj]').val();
-  var stts_daftar = $('input:text[name=stts_daftar]').val();
+  //var stts_daftar = $('input:text[name=stts_daftar]').val();
+  var stts_daftar = $('input:hidden[name=stts_daftar]').val();
 
   var url = baseURL + '/laboratorium/save?t=' + mlite.token;
 
