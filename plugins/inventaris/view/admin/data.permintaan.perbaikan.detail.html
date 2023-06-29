@@ -1,0 +1,101 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+          Data Permintaan Perbaikan
+          <div class="pull-right">
+            {if: !$perbaikandetail}
+            <a href="{$perbaikan}" class="btn btn-xs btn-primary"><i class="fa fa-plus"></i> Baru</a>
+            {/if}
+            {if: $perbaikandetail}
+            <a href="{$perbaikan}" class="btn btn-xs btn-warning"><i class="fa fa-edit"></i> Ubah</a>
+            <a href="{$perbaikanhapus}" class="btn btn-xs btn-danger"><i class="fa fa-trash"></i> Hapus</a>
+            {/if}
+          </div>
+        </h3>
+    </div>
+    <div class="panel-body">
+      <table class="table" width="100%">
+        <thead>
+          <tr>
+            <th>No. Permintaan</th>
+            <th>No. Inventaris</th>
+            <th>Pemohon Perbaikan</th>
+            <th>Tanggal</th>
+            <th>Deskripsi Kerusakan</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{$permintaan_perbaikan_inventaris.no_permintaan}</td>
+            <td>{$permintaan_perbaikan_inventaris.no_inventaris}</td>
+            <td>{$permintaan_perbaikan_inventaris.nik} - {$permintaan_perbaikan_inventaris.nama}</td>
+            <td>{$permintaan_perbaikan_inventaris.tanggal}</td>
+            <td>{$permintaan_perbaikan_inventaris.deskripsi_kerusakan}</td>
+          </tr>
+          {if: $perbaikandetail}
+            <tr>
+              <td colspan="5"><button type="button" class="btn btn-success">Sudah Tindak Lanjut</button></td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Tanggal Perbaikan
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.tanggal}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Status
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.status}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Uraian Kegiatan
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.uraian_kegiatan}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Petugas
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.nip} - {$perbaikandetail.nama}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Pelaksana
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.pelaksana}
+              </td>
+            </tr>
+            <tr>
+              <td></td>
+              <td>
+                Keterangan
+              </td>
+              <td colspan="3">
+                {$perbaikandetail.keterangan}
+              </td>
+            </tr>
+          {else}
+          <tr>
+            <td colspan="5"><button type="button" class="btn btn-danger">Belum Tindak Lanjut</button></td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+</div>

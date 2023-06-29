@@ -1,0 +1,160 @@
+<form action="{?=url(ADMIN.'/inventaris/saveaset')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+              Data Aset
+            </h3>
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="{?=url([ADMIN,'inventaris','dataaset'])?}" role="tab">Data Aset</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisbarang'])?}" role="tab">Data Barang</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nomor Inventaris</label>
+                        <input type="text" name="no_inventaris" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Data Barang</label>
+                        <select name="kode_barang" id="kode_barang" class="form-control" data-use-search="true">
+                            {loop: $inventaris_barang}
+                            <option value="{$value.kode_barang}">{$value.nama_barang}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Pengadaan</label>
+                        <input type="text" name="tgl_pengadaan" class="form-control tanggal" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Asal Barang</label>
+                        <select name="asal_barang" id="asal_barang" class="form-control" data-use-search="true">
+                            <option value="Beli">Beli</option>
+                            <option value="Bantuan">Bantuan</option>
+                            <option value="Hibah">Hibah</option>
+                            <option value="-">-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Harga</label>
+                        <input type="text" name="harga" class="form-control" value="" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Status Barang</label>
+                        <select name="status_barang" id="status_barang" class="form-control" data-use-search="true">
+                            <option value="Ada">Ada</option>
+                            <option value="Rusak">Rusak</option>
+                            <option value="Hilang">Hilang</option>
+                            <option value="Perbaikan">Perbaikan</option>
+                            <option value="Dipinjam">Dipinjam</option>
+                            <option value="-">-</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Ruangan</label>
+                        <select name="id_ruang" id="id_ruang" class="form-control" data-use-search="true">
+                            {loop: $inventaris_ruang}
+                            <option value="{$value.id_ruang}">{$value.nama_ruang}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Rak</label>
+                        <input type="text" name="no_rak" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Nomor Box</label>
+                        <input type="text" name="no_box" class="form-control" value="" />
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="inventaris">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>No. Inventaris</th>
+            <th>Kode Barang</th>
+            <th>Nama Barang</th>
+            <th>Asal Barang</th>
+            <th>Tgl. Pengadaan</th>
+            <th>Harga</th>
+            <th>Status Barang</th>
+            <th>Id Ruang</th>
+            <th>Nama Ruang</th>
+            <th>No. Rak</th>
+            <th>No. Box</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $inventaris}
+          <tr class="inventaris"
+          data-no_inventaris="{$value.no_inventaris}"
+          data-kode_barang="{$value.kode_barang}"
+          data-asal_barang="{$value.asal_barang}"
+          data-tgl_pengadaan="{$value.tgl_pengadaan}"
+          data-harga="{$value.harga}"
+          data-status_barang="{$value.status_barang}"
+          data-id_ruang="{$value.id_ruang}"
+          data-no_rak="{$value.no_rak}"
+          data-no_box="{$value.no_box}"
+          >
+            <td>{$value.no_inventaris}</td>
+            <td>{$value.kode_barang}</td>
+            <td>{$value.nama_barang}</td>
+            <td>{$value.asal_barang}</td>
+            <td>{$value.tgl_pengadaan}</td>
+            <td>{$value.harga}</td>
+            <td>{$value.status_barang}</td>
+            <td>{$value.id_ruang}</td>
+            <td>{$value.nama_ruang}</td>
+            <td>{$value.no_rak}</td>
+            <td>{$value.no_box}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#inventaris").on("click", ".inventaris", function(event){
+    var no_inventaris  = $(this).attr("data-no_inventaris");
+    var kode_barang  = $(this).attr("data-kode_barang");
+    var asal_barang  = $(this).attr("data-asal_barang");
+    var tgl_pengadaan  = $(this).attr("data-tgl_pengadaan");
+    var harga  = $(this).attr("data-harga");
+    var status_barang  = $(this).attr("data-status_barang");
+    var id_ruang  = $(this).attr("data-id_ruang");
+    var no_rak  = $(this).attr("data-no_rak");
+    var no_box  = $(this).attr("data-no_box");
+    $('input:text[name=no_inventaris]').val(no_inventaris);
+    $('#kode_barang').val(kode_barang).change();
+    $('#asal_barang').val(asal_barang).change();
+    $('input:text[name=tgl_pengadaan]').val(tgl_pengadaan);
+    $('input:text[name=harga]').val(harga);
+    $('#status_barang').val(status_barang).change();
+    $('#id_ruang').val(id_ruang).change();
+    $('input:text[name=no_rak]').val(no_rak);
+    $('input:text[name=no_box]').val(no_box);
+    $('input:text[name=no_inventaris]').prop('readonly', true);
+  });
+</script>

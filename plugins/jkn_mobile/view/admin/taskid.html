@@ -51,7 +51,7 @@
                       <tr>
                         <td>{$value.no_rkm_medis}</td>
                         <td>{$value.tgl_registrasi}</td>
-                        <td>{$value.no_rawat}</td>
+                        <td><a href="{?=url([ADMIN,'jkn_mobile','taskidinput', convertNoRawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal">{$value.no_rawat}</a></td>
                         <td>{$value.nm_poli}</td>
                         <td>{$value.nm_dokter}</td>
                         <td>{$value.nomor_referensi}</td>
@@ -71,6 +71,13 @@
               </div>
         </div>
 
+    </div>
+</div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
     </div>
 </div>
 <script type="text/javascript">

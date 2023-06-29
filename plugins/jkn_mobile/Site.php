@@ -221,7 +221,7 @@ class Site extends SiteModule
             if (!empty($decode['tanggalperiksa']) && !preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$decode['tanggalperiksa'])) {
                $errors[] = 'Format tanggal periksa tidak sesuai';
             }
-            if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] == isset_or($cek_referensi['tanggal_periksa'])) {
+            if(!empty($decode['tanggalperiksa']) && $decode['tanggalperiksa'] == $cek_referensi['tanggal_periksa']) {
                $errors[] = 'Anda sudah terdaftar dalam antrian ditanggal '.$decode['tanggalperiksa'];
             }
             if(empty($decode['kodepoli'])) {
@@ -393,11 +393,13 @@ class Site extends SiteModule
                             if(!empty($decode['nomorreferensi'])) {
                               $this->core->mysql('mlite_antrian_referensi')->save([
                                   'tanggal_periksa' => $decode['tanggalperiksa'],
+                                  'no_rkm_medis' => $data_pasien['no_rkm_medis'],
                                   'nomor_kartu' => $decode['nomorkartu'],
                                   'nomor_referensi' => $decode['nomorreferensi'],
                                   'kodebooking' => $kodebooking,
                                   'jenis_kunjungan' => $decode['jeniskunjungan'],
-                                  'status_kirim' => 'Belum'
+                                  'status_kirim' => 'Belum',
+                                  'keterangan' => ''
                               ]);
                             }
                         } else {
@@ -2445,6 +2447,7 @@ class Site extends SiteModule
                   if(!$this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $q['tgl_registrasi'])->where('nomor_kartu', $q['no_rkm_medis'])->oneArray()) {
                     $this->core->mysql('mlite_antrian_referensi')->save([
                         'tanggal_periksa' => $q['tgl_registrasi'],
+                        'no_rkm_medis' => $q['no_rkm_medis'],
                         'nomor_kartu' => $q['no_rkm_medis'],
                         'nomor_referensi' => $this->settings->get('settings.ppk_bpjs').''.convertNorawat($q['no_rawat']).''.$reg_periksa['no_reg'],
                         'kodebooking' => $kodebooking,
@@ -2571,7 +2574,7 @@ class Site extends SiteModule
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 1,
                         'waktu' => strtotime($mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time']) * 1000,
-                        'jenisresep' => 'Tidak ada'
+                        'jenisresep' => ''
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2617,7 +2620,7 @@ class Site extends SiteModule
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 2,
                         'waktu' => strtotime($mlite_antrian_loket['end_time']) * 1000,
-                        'jenisresep' => 'Tidak ada'
+                        'jenisresep' => ''
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2663,7 +2666,7 @@ class Site extends SiteModule
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 3,
                         'waktu' => strtotime($mutasi_berkas['dikirim']) * 1000,
-                        'jenisresep' => 'Tidak ada'
+                        'jenisresep' => ''
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2709,7 +2712,7 @@ class Site extends SiteModule
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 4,
                         'waktu' => strtotime($mutasi_berkas['diterima']) * 1000,
-                        'jenisresep' => 'Tidak ada'
+                        'jenisresep' => ''
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';
@@ -2794,7 +2797,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
+                $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_peresepan," ",jam_peresepan)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
                 $jenisresep = 'Non racikan';
                 $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
                 if(!empty($resep_dokter_racikan)) {
@@ -2846,7 +2849,7 @@ class Site extends SiteModule
                   $q['no_rkm_medis'] = $pasien['no_rkm_medis'];
                 }
                 $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', $date)->where('no_rkm_medis', $q['no_rkm_medis'])->oneArray();
-                $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
+                $resep_obat = $this->core->mysql('resep_obat')->select(['datajam' => 'concat(tgl_perawatan," ",jam)', 'no_resep' => 'no_resep'])->where('no_rawat', $reg_periksa['no_rawat'])->where('concat(tgl_perawatan," ",jam)', '<>', 'concat(tgl_peresepan," ",jam_peresepan)')->oneArray();
                 $jenisresep = 'Non racikan';
                 $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
                 if(!empty($resep_dokter_racikan)) {
@@ -2859,7 +2862,7 @@ class Site extends SiteModule
                         'kodebooking' => $q['kodebooking'],
                         'taskid' => 7,
                         'waktu' => strtotime($resep_obat['datajam']) * 1000,
-                        'jenisresep' => $jenisresep
+                        'jenisresep' => ''
                     ];
                     $data = json_encode($data);
                     echo 'Request:<br>';

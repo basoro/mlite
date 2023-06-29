@@ -157,7 +157,38 @@ class Admin extends AdminModule
       $data = json_encode($data);
       $url = $this->api_url.'antrean/add';
       $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-      // $data = json_decode($output, true);
+      $data = json_decode($output, true);
+      //echo 'Response:<br>';
+      //$data['metadata']['code'] = '200';
+      $cek_mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->oneArray();
+      if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208) {
+        if($cek_mlite_antrian_referensi) {
+          $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->save(['status_kirim' => 'Sudah']);
+        } else {
+          $this->core->mysql('mlite_antrian_referensi')->save([
+              'tanggal_periksa' => date('Y-m-d'),
+              'no_rkm_medis' => $_POST['nomr'],
+              'nomor_kartu' => $pasien['no_peserta'],
+              'nomor_referensi' => $nomorreferensi,
+              'kodebooking' => $kodebooking,
+              'jenis_kunjungan' => $_POST['tujuanKunj'],
+              'status_kirim' => 'Sudah',
+              'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+          ]);
+        }
+      } else {
+        $this->core->mysql('mlite_antrian_referensi')->save([
+            'tanggal_periksa' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['nomr'],
+            'nomor_kartu' => $pasien['no_peserta'],
+            'nomor_referensi' => $nomorreferensi,
+            'kodebooking' => $kodebooking,
+            'jenis_kunjungan' => $_POST['tujuanKunj'],
+            'status_kirim' => 'Belum',
+            'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+        ]);
+      }
+
     }
 
     /* End add antrian */
