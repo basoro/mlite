@@ -92,11 +92,11 @@
              data:{},
              success:function(data)
              {
-               console.log(data);
+               alert(data);
                var data = JSON.parse(data);
                $('#nomor_referensi').text(data.nomor_referensi + ' / ');
                $('#kode_booking').text(data.kode_booking);
-               $('input:text[name=nomor_referensi]').val(data.nomor_referensi);
+               $('input:hidden[name=nomor_referensi]').val(data.nomor_referensi);
                $('#kirimantrol').hide();
              }
         });
