@@ -12,7 +12,7 @@
   <label for="" style="width: 250px;">Nama</label><span>{$pasien.nm_pasien}</span><br>
   <label for="" style="width: 250px;">Nomor RM</label><span>{$pasien.no_rkm_medis}</span><br>
   <label for="" style="width: 250px;">Nomor Rawat</label><span>{$pasien.no_rawat}</span><br>
-  <label for="" style="width: 250px;">Nomor Referensi/Kode Booking</label><span id="nomor_referensi">{$nomor_referensi}</span>{if: $nomor_referensi !=''} / {/if}<span id="kode_booking">{$kode_booking}</span> {if: $nomor_referensi ==''}<button class="btn btn-xs btn-primary" id="carabaru"><i class="fa fa-send"></i> Kirim Antrol</button>{/if}<br>
+  <label for="" style="width: 250px;">Nomor Referensi/Kode Booking</label><span id="nomor_referensi">{$nomor_referensi}</span>{if: $nomor_referensi !=''} / {/if}<span id="kode_booking">{$kode_booking}</span> {if: $nomor_referensi ==''}<button class="btn btn-xs btn-primary" id="kirimantrol"><i class="fa fa-send"></i> Kirim Antrol</button>{/if}<br>
   <label for="" style="width: 250px;">Status Kirim Antrol</label><span>{$status_kirim_antrol}</span><br>
   <form class="" action="{?=url([ADMIN,'jkn_mobile','savetaskidinput'])?}" method="post">
   <input type="hidden" name="tgl_registrasi" class="form-control" value="{$pasien.tgl_registrasi}">
@@ -85,7 +85,7 @@
         });
     });
     $(document).ready(function(){
-      $("#carabaru").click(function(){
+      $("#kirimantrol").click(function(){
         $.ajax({
              url: '{?=url([ADMIN,'jkn_mobile','kirimantrian',convertNoRawat($pasien.no_rawat)])?}',
              method:"GET",
@@ -93,9 +93,11 @@
              success:function(data)
              {
                console.log(data);
-               $('#nomor_referensi').text(data.nomor_referensi);
+               var data = JSON.parse(data);
+               $('#nomor_referensi').text(data.nomor_referensi + ' / ');
                $('#kode_booking').text(data.kode_booking);
                $('input:text[name=nomor_referensi]').val(data.nomor_referensi);
+               $('#kirimantrol').hide();
              }
         });
       });
