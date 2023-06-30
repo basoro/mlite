@@ -31,6 +31,7 @@
                     <thead>
                       <tr>
                         <th>No RM</th>
+                        <th>Nama Pasien</th>
                         <th>Tanggal</th>
                         <th>No Rawat</th>
                         <th>Poliklinik</th>
@@ -50,6 +51,7 @@
                       {loop: $taskid}
                       <tr>
                         <td>{$value.no_rkm_medis}</td>
+                        <td>{?=$this->core->getPasienInfo('nm_pasien', $value.no_rkm_medis)?}</td>
                         <td>{$value.tgl_registrasi}</td>
                         <td><a href="{?=url([ADMIN,'jkn_mobile','taskidinput', convertNoRawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal">{$value.no_rawat}</a></td>
                         <td>{$value.nm_poli}</td>
