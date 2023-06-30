@@ -579,11 +579,6 @@ class Admin extends AdminModule
         $pasienbaru = '0';
       }
 
-      // $referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('nomor_kartu', $pasien['no_peserta'])->oneArray();
-      // if($jenispasien == 'NON JKN') {
-      //   $referensi = $this->core->mysql('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
-      // }
-
       $nomorkartu = $pasien['no_peserta'];
       if($jenispasien == 'NON JKN') {
         $nomorkartu = '';
@@ -607,30 +602,13 @@ class Admin extends AdminModule
       $nomorreferensi = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$reg_periksa['no_reg'];
 
       if($jenispasien == 'JKN') {
-        //$nomorreferensi = $referensi['nomor_referensi'];
-        //if($referensi['nomor_referensi'] == '') {
           $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
           $nomorreferensi = $bridging_sep['no_rujukan'];
-          if(!empty($bridging_sep['noskdp'])) {
-            $jeniskunjungan = 3;
-            $nomorreferensi = $bridging_sep['noskdp'];
-          }
           if(!$bridging_sep) {
             $bridging_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_rawat', $reg_periksa['no_rawat'])->oneArray();
             $nomorreferensi = $bridging_sep_internal['no_rujukan'];
-            $jeniskunjungan = 3;
-            if(!empty($bridging_sep_internal['noskdp'])) {
-              $nomorreferensi = $bridging_sep_internal['noskdp'];
-            }
           }
-        //}
       }
-
-      // if($jenispasien == 'JKN') {
-      //   if ($referensi['kodebooking'] != '') {
-      //       $kodebooking = $referensi['kodebooking'];
-      //   }
-      // }
 
       $data = [
           'kodebooking' => $kodebooking,
@@ -657,15 +635,10 @@ class Admin extends AdminModule
           'kuotanonjkn' => intval($jadwaldokter['kuota']),
           'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
       ];
-      //echo 'Request:<br>';
-      //echo "<pre>".print_r($data,true)."</pre>";
       $data = json_encode($data);
       $url = $this->bpjsurl.'antrean/add';
       $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
-      //print_r($output);
       $data = json_decode($output, true);
-      //echo 'Response:<br>';
-      //$data['metadata']['code'] = 200;
       if($data['metadata']['code'] == 200) {
         $response = [
             'nomor_referensi' =>  $nomorreferensi,
