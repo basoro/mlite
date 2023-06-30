@@ -688,7 +688,7 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getUpdateWaktu($nomor_referensi)
+    public function getUpdateWaktu($nomor_referensi, $versi)
     {
 
       $mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->oneArray();
@@ -716,12 +716,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
       echo '-------------------------------------<br>';
-      $data1 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 1,
-          'waktu' => $taskid1['waktu'],
-          'jenisresep' => 'Tidak ada'
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data1 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 1,
+            'waktu' => $taskid1['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data1 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 1,
+            'waktu' => $taskid1['waktu'],
+            'jenisresep' => 'Tidak ada'
+        ];
+      }
       $data1 = json_encode($data1);
       echo 'Request:<br>';
       echo $data1;
@@ -751,12 +761,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
       echo '-------------------------------------<br>';
-      $data2 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 2,
-          'waktu' => $taskid2['waktu'],
-          'jenisresep' => 'Tidak ada'
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data2 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 2,
+            'waktu' => $taskid2['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data2 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 2,
+            'waktu' => $taskid2['waktu'],
+            'jenisresep' => 'Tidak ada'
+        ];
+      }
       $data2 = json_encode($data2);
       echo 'Request:<br>';
       echo $data2;
@@ -786,12 +806,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
       echo '-------------------------------------<br>';
-      $data3 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 3,
-          'waktu' => $taskid3['waktu'],
-          'jenisresep' => 'Tidak ada'
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data3 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 3,
+            'waktu' => $taskid3['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data3 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 3,
+            'waktu' => $taskid3['waktu'],
+            'jenisresep' => 'Tidak ada'
+        ];
+      }
       $data3 = json_encode($data3);
       echo 'Request:<br>';
       echo $data3;
@@ -821,12 +851,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
       echo '-------------------------------------<br>';
-      $data4 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 4,
-          'waktu' => $taskid4['waktu'],
-          'jenisresep' => 'Tidak ada'
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data4 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 4,
+            'waktu' => $taskid4['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data4 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 4,
+            'waktu' => $taskid4['waktu'],
+            'jenisresep' => 'Tidak ada'
+        ];
+      }
       $data4 = json_encode($data4);
       echo 'Request:<br>';
       echo $data4;
@@ -856,12 +896,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
       echo '-------------------------------------<br>';
-      $data5 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 5,
-          'waktu' => $taskid2['waktu'],
-          'jenisresep' => 'Tidak ada'
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data5 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 5,
+            'waktu' => $taskid2['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data5 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 5,
+            'waktu' => $taskid2['waktu'],
+            'jenisresep' => $jenisresep
+        ];
+      }
       $data5 = json_encode($data5);
       echo 'Request:<br>';
       echo $data5;
@@ -891,13 +941,22 @@ class Admin extends AdminModule
 
       echo 'Menjalankan WS taskid (6) permintaan resep apotek<br>';
       echo '-------------------------------------<br>';
-
-      $data6 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 6,
-          'waktu' => $taskid6['waktu'],
-          'jenisresep' => $jenisresep
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data6 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 6,
+            'waktu' => $taskid6['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data6 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 6,
+            'waktu' => $taskid6['waktu'],
+            'jenisresep' => $jenisresep
+        ];
+      }
       $data6 = json_encode($data6);
       echo 'Request:<br>';
       echo $data6;
@@ -925,15 +984,24 @@ class Admin extends AdminModule
       }
       echo '<br>-------------------------------------<br><br>';
 
-      echo 'Menjalankan WS taskid (6) selesai pelayanan apotek<br>';
+      echo 'Menjalankan WS taskid (7) selesai pelayanan apotek<br>';
       echo '-------------------------------------<br>';
-
-      $data7 = [
-          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-          'taskid' => 7,
-          'waktu' => $taskid7['waktu'],
-          'jenisresep' => $jenisresep
-      ];
+      $data = [];
+      if($versi == 'v2') {
+        $data7 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 7,
+            'waktu' => $taskid7['waktu']
+        ];
+      }
+      if($versi == 'v3') {
+        $data7 = [
+            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+            'taskid' => 7,
+            'waktu' => $taskid7['waktu'],
+            'jenisresep' => $jenisresep
+        ];
+      }
       $data7 = json_encode($data7);
       echo 'Request:<br>';
       echo $data7;
