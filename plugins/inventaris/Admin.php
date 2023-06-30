@@ -641,7 +641,7 @@ class Admin extends AdminModule
         ->delete();
       $this->notify('failure', 'Data ruang barang telah dihapus');
     }
-    //redirect(url([ADMIN, 'inventaris', 'peminjaman']));
+    redirect(url([ADMIN, 'inventaris', 'peminjaman']));
   }
 
   public function getCss()
