@@ -292,7 +292,8 @@ class Admin extends AdminModule
             $task1 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time'];
             $task2 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time'];
           }
-          $q['nomor_referensi'] = isset_or($mlite_antrian_referensi['nomor_referensi']);
+          $q['nomor_referensi'] = isset_or($mlite_antrian_referensi['nomor_referensi'], '');
+          $q['status_kirim'] = isset_or($mlite_antrian_referensi['status_kirim'], '');
           /*$q['task1'] = strtotime($task1) * 1000;
           $q['task2'] = strtotime($task2) * 1000;
           $q['task3'] = strtotime($mutasi_berkas['dikirim']) * 1000;

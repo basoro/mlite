@@ -27,7 +27,7 @@
               </div>
               <div class="panel-body">
                 <div class="table-responsive no-margin">
-                  <table class="table table-striped table-condensed no-margin display no-wrap" width="100%">
+                  <table class="table table-condensed no-margin display no-wrap" width="100%">
                     <thead>
                       <tr>
                         <th>No RM</th>
@@ -49,7 +49,7 @@
                     </thead>
                     <tbody>
                       {loop: $taskid}
-                      <tr>
+                      <tr{if: $value.status_kirim == 'Sudah'} class="bg-success"{/if}>
                         <td>{$value.no_rkm_medis}</td>
                         <td>{?=$this->core->getPasienInfo('nm_pasien', $value.no_rkm_medis)?}</td>
                         <td>{$value.tgl_registrasi}</td>
