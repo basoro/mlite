@@ -620,20 +620,28 @@ class Admin extends AdminModule
       $this->core->mysql('inventaris_peminjaman')->save($_POST);
       $this->notify('success', 'Data peminjaman barang telah disimpan');
     } else if ($_POST['update']) {
-      $id_ruang = $_POST['id_ruang'];
+      $peminjam = $_POST['peminjam'];
+      $no_inventaris = $_POST['no_inventaris'];
+      $tgl_pinjam = $_POST['tgl_pinjam'];
       unset($_POST['update']);
-      unset($_POST['id_ruang']);
-      $this->core->mysql('inventaris_ruang')
-        ->where('id_ruang', $id_ruang)
+      unset($_POST['peminjam']);
+      unset($_POST['no_inventaris']);
+      unset($_POST['tgl_pinjam']);
+      $this->core->mysql('inventaris_peminjaman')
+        ->where('peminjam', $peminjam)
+        ->where('no_inventaris', $no_inventaris)
+        ->where('tgl_pinjam', $tgl_pinjam)
         ->save($_POST);
       $this->notify('failure', 'Data ruang barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_ruang')
-        ->where('id_ruang', $_POST['id_ruang'])
+      $this->core->mysql('inventaris_peminjaman')
+        ->where('peminjam', $_POST['peminjam'])
+        ->where('no_inventaris', $no_inventaris)
+        ->where('tgl_pinjam', $tgl_pinjam)
         ->delete();
       $this->notify('failure', 'Data ruang barang telah dihapus');
     }
-    redirect(url([ADMIN, 'inventaris', 'peminjaman']));
+    //redirect(url([ADMIN, 'inventaris', 'peminjaman']));
   }
 
   public function getCss()
