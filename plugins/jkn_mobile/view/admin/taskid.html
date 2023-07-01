@@ -49,7 +49,7 @@
                     </thead>
                     <tbody>
                       {loop: $taskid}
-                      <tr{if: $value.status_kirim == 'Sudah'} class="bg-success"{/if}>
+                      <tr>
                         <td>{$value.no_rkm_medis}</td>
                         <td>{?=$this->core->getPasienInfo('nm_pasien', $value.no_rkm_medis)?}</td>
                         <td>{$value.tgl_registrasi}</td>
