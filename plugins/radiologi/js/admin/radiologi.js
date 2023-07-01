@@ -107,16 +107,6 @@ $("#display").on("click",".antrian", function(event){
   window.open(baseURL + '/radiologi/antrian?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
-$("#rincian").on("click","#cetak_hasil", function(event){
-  var baseURL = mlite.url + '/' + mlite.admin;
-  event.preventDefault();
-  var no_rawat = $('input:text[name=no_rawat]').val();
-  var tgl_periksa = $(this).attr("data-tgl_periksa");
-  var jam = $(this).attr("data-jam_periksa");
-  var status = $('input:text[name=status]').val();
-  window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&tgl_periksa=' + tgl_periksa + '&jam=' + jam + '&status=' + status + '&t=' + mlite.token);
-});
-
 $("#rincian").on("click",".cetak_hasil", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
@@ -127,7 +117,15 @@ $("#rincian").on("click",".cetak_hasil", function(event){
   window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&tgl_periksa=' + tgl_periksa + '&jam=' + jam + '&status=' + status + '&t=' + mlite.token);
 });
 
-$("#rincian").on("click","#cetak_permintaan", function(event){
+$("#rincian").on("click",".cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click",".nota_lab", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();

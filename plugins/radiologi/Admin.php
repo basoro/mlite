@@ -811,6 +811,7 @@ class Admin extends AdminModule
     public function postValidasiPermintaanRadiologi()
     {
       $permintaan_radiologi = $this->core->mysql('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->oneArray();
+      $validasi_permintaan = $this->core->mysql('permintaan_radiologi')->where('no_rawat', $_POST['no_rawat'])->where('noorder', $_POST['noorder'])->save(['tgl_sampel' => date('Y-m-d'), 'jam_sampel' => date('H:i:s')]);
       $permintaan_pemeriksaan_radiologi = $this->core->mysql('permintaan_pemeriksaan_radiologi')->where('noorder', $_POST['noorder'])->toArray();
       foreach ($permintaan_pemeriksaan_radiologi as $row) {
         $jns_perawatan = $this->core->mysql('jns_perawatan_radiologi')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
