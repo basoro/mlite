@@ -559,7 +559,8 @@ class Admin extends AdminModule
         'dokter_perujuk' => $dokter_perujuk['nama'],
         'pasien' => $pasien,
         'filename' => $filename,
-        'no_rawat' => $_GET['no_rawat']
+        'no_rawat' => $_GET['no_rawat'],
+        'wagateway' => $this->settings->get('wagateway')
       ]);
       exit();
     }
@@ -1156,7 +1157,7 @@ class Admin extends AdminModule
 
       // Setting the email content
       $mail->IsHTML(true);
-      $mail->Subject = "Detail pembayaran anda di ".$this->core->settings->get('settings.nama_instansi');
+      $mail->Subject = "Hasil pemeriksaan laboratorium anda di ".$this->core->settings->get('settings.nama_instansi');
       $mail->Body = $temp;
 
       $mail->send();
