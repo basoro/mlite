@@ -415,9 +415,9 @@ class Admin extends AdminModule
       $pj_radiologi = $this->core->mysql('dokter')->where('kd_dokter', $this->settings->get('settings.pj_radiologi'))->oneArray();
       $qr = QRCode::getMinimumQRCode($pj_radiologi['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
       $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
+      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
       imagedestroy($im);
-      $qrCode = "../../admin/tmp/qrcode.png";
+      $qrCode = "../../".ADMIN."/tmp/qrcode.png";
 
       $pasien = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
@@ -576,10 +576,10 @@ class Admin extends AdminModule
 
       $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
       $im=$qr->createImage(4,4);
-      imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+      imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
       imagedestroy($im);
 
-      $image = BASE_DIR."/admin/tmp/qrcode.png";
+      $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
 
       $pdf->Text(140,290,$settings['kota'].', '.date('Y-m-d'));//end of line
       $pdf->Image($image, 140, 295, '30', '30', 'png');
@@ -617,9 +617,9 @@ class Admin extends AdminModule
 
       $qr = QRCode::getMinimumQRCode($pj_radiologi['nm_dokter'], QR_ERROR_CORRECT_LEVEL_L);
       $im = $qr->createImage(4, 4);
-      imagepng($im, BASE_DIR .'/admin/tmp/qrcode.png');
+      imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
       imagedestroy($im);
-      $qrCode = "../../admin/tmp/qrcode.png";
+      $qrCode = "../../".ADMIN."/tmp/qrcode.png";
 
       $pasien = $this->core->mysql('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')

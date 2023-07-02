@@ -1033,11 +1033,11 @@ class Admin extends AdminModule
         $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
         //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
         $im=$qr->createImage(4,4);
-        imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+        imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
 
-        $image = BASE_DIR."/admin/tmp/qrcode.png";
-        $qrCode = "../../admin/tmp/qrcode.png";
+        $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
+        $qrCode = "../../".ADMIN."/tmp/qrcode.png";
 
         $pdf->Cell(120 ,5,'',0,0);
         $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );

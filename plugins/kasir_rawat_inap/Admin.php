@@ -782,10 +782,10 @@ class Admin extends AdminModule
         $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
         //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
         $im=$qr->createImage(4,4);
-        imagepng($im,BASE_DIR.'/admin/tmp/qrcode.png');
+        imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
 
-        $image = BASE_DIR."/admin/tmp/qrcode.png";
+        $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
         $qrCode = "../../tmp/qrcode.png";
 
         echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
