@@ -640,7 +640,7 @@ class Admin extends AdminModule
       $url = $this->bpjsurl.'antrean/add';
       $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
       $data = json_decode($output, true);
-      if($data['metadata']['code'] == 200) {
+      if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 200) {
         $response = [
             'nomor_referensi' =>  $nomorreferensi,
             'kode_booking' => $kodebooking

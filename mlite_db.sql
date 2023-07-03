@@ -4060,12 +4060,6 @@ ALTER TABLE `mlite_antrian_loket`
   ADD PRIMARY KEY (`kd`);
 
 --
--- Indexes for table `mlite_antrian_referensi`
---
-ALTER TABLE `mlite_antrian_referensi`
-  ADD PRIMARY KEY (`nomor_referensi`);
-
---
 -- Indexes for table `mlite_billing`
 --
 ALTER TABLE `mlite_billing`
