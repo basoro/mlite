@@ -51,6 +51,7 @@
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}
+              <div class="btn-group" role="group">
               <button type="button" name="button" class="btn btn-xs btn-primary sep"
                 data-no_rkm_medis="{$value.no_rkm_medis}"
                 data-nm_pasien="{$value.nm_pasien}"
@@ -60,6 +61,10 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
+              {if: $value.no_sep !=''}
+              <a href="{?=url([ADMIN, 'rawat_jalan', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
+              {/if}
+              </div>
             {/if}
           {else}
             {$value.png_jawab}
