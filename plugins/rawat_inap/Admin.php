@@ -130,6 +130,8 @@ class Admin extends AdminModule
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
           $row['dokter'] = $dpjp_ranap;
+          $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $row['no_rawat'])->oneArray();
+          $row['no_sep'] = isset_or($bridging_sep['no_sep']);
           $this->assign['list'][] = $row;
         }
 
@@ -815,6 +817,16 @@ class Admin extends AdminModule
         setlocale(LC_ALL, 'en_EN');
         $text = str_replace('/', '', trim($text));
         return $text;
+    }
+
+    public function getSepDetail($no_sep){
+      $sep = $this->core->mysql('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+      $this->tpl->set('sep', $this->tpl->noParse_array(htmlspecialchars_array($sep)));
+
+      $potensi_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+      $data_sep['potensi_prb'] = $potensi_prb['prb'];
+      echo $this->draw('sep.detail.html', ['data_sep' => $data_sep]);
+      exit();
     }
 
     public function getJavascript()
