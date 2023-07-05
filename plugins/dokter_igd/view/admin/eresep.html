@@ -572,4 +572,13 @@
     });
   });
 
+  $("#form_rincian_eresep").on("click","#jam_reg", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url = baseURL + '/dokter_igd/cekwaktu?t=' + mlite.token;
+      $.post(url, {
+      } ,function(data) {
+        $("#form_rincian_eresep #jam_reg").val(data);
+      });
+  });
+
 </script>
