@@ -1160,3 +1160,21 @@ $("#form_soap").on("click","#jam_rawat", function(event){
       $("#jam_rawat").val(data);
     });
 });
+
+$("#form_rincian").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_igd/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
+});
+
+$("#form_rincian_eresep").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_igd/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian_eresep #jam_reg").val(data);
+    });
+});

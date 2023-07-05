@@ -1027,9 +1027,28 @@ $("#form").on("click","#jam_reg", function(event){
     var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
     $.post(url, {
     } ,function(data) {
-      $("#jam_reg").val(data);
+      $("#form #jam_reg").val(data);
     });
 });
+
+$("#form_rincian").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
+});
+
+$("#form_berkasdigital").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_berkasdigital #jam_reg").val(data);
+    });
+});
+
 $("#form_soap").on("click","#jam_rawat", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/rawat_jalan/cekwaktu?t=' + mlite.token;
