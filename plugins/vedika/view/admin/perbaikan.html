@@ -161,6 +161,9 @@
                               <td>- <a href="{?=url(WEBAPPS_URL)?}/berkasrawat/{$data.lokasi_file}" class="gallery">{$data.nama}</a> <button class="btn btn-danger btn-xs fa fa-trash hapus_berkas" data-no_rawat={?=convertNorawat($value.no_rawat)?} data-nama_file="{?=basename($data.lokasi_file, '.'.pathinfo($data.lokasi_file)["extension"])?}"></button></td>
                             </tr>
                             {/loop}
+                            {if: $value.status_lanjut == 'Ralan'}
+                            <tr><td><br><br><a href="{?=url([ADMIN,'vedika','resume',$value.status_lanjut,convertNorawat($value.no_rawat)])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#statusModal">Resume</a></td></tr>
+                            {/if}
                           </table>
                         </td>
       								</tr>

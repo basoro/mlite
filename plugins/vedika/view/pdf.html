@@ -1018,7 +1018,7 @@ Ralan :
   {if: $reg_periksa.status_lanjut == 'Ralan'}
   <fieldset style="page-break-before:always;">
     <h3>
-      <center>RESUME MEDIS RAWAT JALAN JKN</center>
+      <center>RESUME MEDIS RAWAT JALAN</center>
     </h3>
     <h4>
       <center>{$settings.nama_instansi}</center>
@@ -1125,7 +1125,114 @@ Ralan :
     </div>
   </fieldset>
   {/if}
+  {if: $reg_periksa.status_lanjut == 'Ranap'}
+  <fieldset style="page-break-before:always;">
+    <h3>
+      <center>RESUME MEDIS RAWAT INAP</center>
+    </h3>
+    <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+      <tr>
+        <td valign="top" width="20%">Dokter DPJP</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.nm_dokter}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Nomor Rawat</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.no_rawat}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Diagnosa Masuk</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.diagnosa_awal)}
+          {$resume_pasien.diagnosa_awal}<br>{/if}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Keluhan Utama Riwayat Penyakit Yang Positif</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.keluhan_utama}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Jalannya Penyakit Selama Perawatan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.jalannya_penyakit}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Fisik</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.pemeriksaan_fisik)}
+          {$resume_pasien.pemeriksaan_fisik}<br>{/if}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Penunjang yang Penting</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.pemeriksaan_penunjang}</td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Pemeriksaan Laboratorium</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.hasil_laborat}</td>
+      </tr>
+      {*Diagnosa Penyakit*}
+      <tr>
+        <td valign="top" width="20%">Diagnosa</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top">{$resume_pasien.diagnosa_utama}<br>
+                {$resume_pasien.diagnosa_sekunder}<br>
+                {$resume_pasien.diagnosa_sekunder2}<br>
+                {$resume_pasien.diagnosa_sekunder3}<br>
+                {$resume_pasien.diagnosa_sekunder4}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      {*Prosedur Tindakan*}
+      <tr>
+        <td valign="top" width="20%">Prosedur/Tindakan</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">
+          <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
+            <tr>
+              <td valign="top">{$resume_pasien.prosedur_utama}<br>
+                {$resume_pasien.prosedur_sekunder}<br>
+                {$resume_pasien.prosedur_sekunder2}<br>
+                {$resume_pasien.prosedur_sekunder3}</td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Obat-obatan Waktu Pulang/Nasihat</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%">{$resume_pasien.obat_pulang}<br></td>
+      </tr>
+      <tr>
+        <td valign="top" width="20%">Kondisi Pulang</td>
+        <td valign="top" width="1%" align="center">:</td>
+        <td valign="top" width="79%"> {if: !empty($resume_pasien.kondisi_pulang)}
+          {$resume_pasien.kondisi_pulang}<br>{/if}</td>
+      </tr>
+    </table>
+    <div style="float: right;">
+      <br><br>
+      <h5>Dokter Penanggung Jawab</h5>
+      <p>
+      <div class="qrcodeDPJPResumeRanap" style="margin-top:10px;width:80px;margin-right: 120px;"></div>
+      {$resume_pasien.nm_dokter}<br>
+      <script>
+        jQuery('.qrcodeDPJPResumeRanap').qrcode({
+          text: "DPJP: {$resume_pasien.nm_dokter}"
+        });
+      </script>
+      </p>
+    </div>
+  </fieldset>
+  {/if}
   <br><br><br>
+  {if: $pengaturan_billing != 'mlite'}
   <fieldset style="page-break-before:always;">
     <h2><center>Billing</center></h2>
     <table width="100%" bgcolor="#ffffff" align="left" border="0" padding="0" cellspacing="0" cellpadding="0">
@@ -1219,6 +1326,232 @@ Ralan :
         </tr>
     </table>
   </fieldset>
+  {else}
+  <fieldset style="page-break-before:always;">
+    <h2><center>Billing</center></h2>
+  <table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
+    <tr>
+    <td colspan="3">
+      <strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong>
+    </td>
+    </tr>
+    <tr>
+    <td width="80px">
+      <img width="70px" src='{?=url()?}/{$settings.logo}' />
+    </td>
+    <td>
+      <p style="font-size: 10px;">
+      {$settings.alamat}<br>
+       Telp : {$settings.nomor_telepon}<br>
+       E-Mail : {$settings.email}<br>
+      Website : {$settings.website}</p></td>
+    <td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+      <p align="right" style="font-size: 10px;">
+      Kode Faktur : {$billing.billing.kd_billing}<br>
+      Nama Pasien : {$pasien.nm_pasien}<br>
+      No RM : {$pasien.no_rkm_medis}<br>
+      Alamat : {$pasien.alamat}<br></p>
+    </td>
+    </tr>
+  </table>
+  <table  rules='rows' width="100%" style="font-size: 11px;font-family: verdana, sans-serif;">
+    <tr align="left" height='30px'>
+    <th width="20px">No</th>
+    <th with="400px">Item</th>
+    <th width="100px">Tarif</th>
+    <th width="30px">Jumlah</th>
+    <th width="150px">Total</th>
+    </tr>
+    <tr border='1', height='20px'>
+      <td>I</td>
+      <td colspan="1">Biaya Pendaftaran Poliklinik</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$billing.poliklinik.nm_poli}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($billing.poliklinik.registrasi,2,',','.')?}</span></td>
+      <td>1</td>
+      <td>Rp. <span class="pull-right">{?= number_format($billing.poliklinik.registrasi,2,',','.')?}</span></td>
+    </tr>
+    <tr border='1', height='20px'>
+      <td>II</td>
+      <td colspan="1">Biaya Obat & BHP</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.detail_pemberian_obat as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nama_brng}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya_obat,2,',','.')?}</span></td>
+      <td>{$data.jml}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>III</td>
+      <td colspan="1">Jasa Dokter</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.rawat_jl_dr as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+      <td>{$data.jml}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>IV</td>
+      <td colspan="1">Jasa Perawat</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.rawat_jl_pr as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+      <td>{$data.jml}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>V</td>
+      <td colspan="1">Jasa Dokter & Perawat</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.rawat_jl_drpr as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya_rawat,2,',','.')?}</span></td>
+      <td>{$data.jml}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>VI</td>
+      <td colspan="1">Jasa Laboratorium</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.periksa_lab as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+      <td></td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>VII</td>
+      <td colspan="1">Jasa Radiologi</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.periksa_radiologi as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+      <td></td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>VIII</td>
+      <td colspan="1">Jasa Operasi</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.operasi as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_perawatan}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
+      <td>1</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>IX</td>
+      <td colspan="1">Obat dan BHP Operasi</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.obat_operasi as $data}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$data.nm_obat}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.hargasatuan,2,',','.')?}</span></td>
+      <td>{$data.jumlah}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr border='1', height='20px'>
+      <td>X</td>
+      <td colspan="1">Biaya Tambahan</td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    {loop: $billing.tambahan_biaya}
+    <tr border='0', height='20px'>
+      <td></td>
+      <td>- {$value.nama_biaya}</td>
+      <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+      <td>1</td>
+      <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
+    </tr>
+    {/loop}
+    <tr >
+      <td colspan="2"></td>
+      <td colspan="2">Jumlah</td>
+      <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_total,2,',','.')?}</span></td>
+    </tr>
+    <tr >
+      <td colspan="2"></td>
+      <td colspan="2">Potongan</td>
+      <td>Rp. <span class="pull-right">{?= number_format($billing.billing.potongan,2,',','.')?}</span></td>
+    </tr>
+    <tr >
+      <td colspan="2"></td>
+      <td colspan="2">Jumlah Bayar</td>
+      <td>Rp. <span class="pull-right">{?= number_format($billing.billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+    </tr>
+    <tr >
+      <td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+    </tr>
+    <tr>
+      <td colspan="3"></td>
+      <td colspan=3>
+        <br><br>
+      <p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
+       Kasir<br><br>
+       <br><br>
+      {$billing.fullname}<br>
+      </p>
+      </td>
+    </tr>
+  </table>
+  </fieldset>
+  {/if}
   <br><br><br>
  {if: $cek_spri}
  <fieldset style="page-break-before:always;">

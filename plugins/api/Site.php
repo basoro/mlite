@@ -1138,7 +1138,9 @@ class Site extends SiteModule
               $img->save($imgPath);
               $query = $this->core->mysql('berkas_digital_perawatan')->save(['no_rawat' => $_POST['no_rawat'], 'kode' => $_POST['kode'], 'lokasi_file' => $lokasi_file]);
               if($query) {
-                echo 'Success';
+                $data['status'] = 'Success';
+                $data['msg'] = $lokasi_file;
+                echo json_encode($data);
               }
           }
 
