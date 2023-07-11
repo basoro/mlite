@@ -91,11 +91,11 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
-        //echo $response;
-        if($response == 'Success') {
-          $this->notify('success', 'Sukses menambahkan gambar');
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
         } else {
-          $this->notify('failure', 'Gagal menambahkan gambar');
+          echo 'Gagal menambahkan gambar';
         }
 
       } else {

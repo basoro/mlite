@@ -716,9 +716,11 @@ class Admin extends AdminModule
         $response = curl_exec($curl);
 
         curl_close($curl);
-        //echo $response;
-        if($response == 'Success') {
-          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$lokasi_file.'" width="150" />';
+        $json = json_decode($response, true);
+        if($json['status'] == 'Success') {
+          echo '<br><img src="'.WEBAPPS_URL.'/berkasrawat/'.$json['msg'].'" width="150" />';
+        } else {
+          echo 'Gagal menambahkan gambar';
         }
 
       } else {
