@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jun 30, 2023 at 07:09 AM
+-- Generation Time: Jul 13, 2023 at 06:26 AM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
@@ -2171,6 +2171,24 @@ CREATE TABLE IF NOT EXISTS `obatbhp_ok` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `obat_racikan`
+--
+
+CREATE TABLE IF NOT EXISTS `obat_racikan` (
+  `tgl_perawatan` date NOT NULL,
+  `jam` time NOT NULL,
+  `no_rawat` varchar(17) NOT NULL,
+  `no_racik` varchar(2) NOT NULL,
+  `nama_racik` varchar(100) NOT NULL,
+  `kd_racik` varchar(3) NOT NULL,
+  `jml_dr` int(11) NOT NULL,
+  `aturan_pakai` varchar(150) NOT NULL,
+  `keterangan` varchar(50) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `operasi`
 --
 
@@ -4219,6 +4237,15 @@ ALTER TABLE `obatbhp_ok`
   ADD KEY `hargasatuan` (`hargasatuan`);
 
 --
+-- Indexes for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD PRIMARY KEY (`tgl_perawatan`,`jam`,`no_rawat`,`no_racik`),
+  ADD KEY `kd_racik` (`kd_racik`),
+  ADD KEY `no_rawat` (`no_rawat`),
+  ADD KEY `no_racik` (`no_racik`);
+
+--
 -- Indexes for table `operasi`
 --
 ALTER TABLE `operasi`
@@ -5189,6 +5216,13 @@ ALTER TABLE `mutasi_berkas`
 --
 ALTER TABLE `obatbhp_ok`
   ADD CONSTRAINT `obatbhp_ok_ibfk_1` FOREIGN KEY (`kode_sat`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD CONSTRAINT `obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `obat_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `operasi`

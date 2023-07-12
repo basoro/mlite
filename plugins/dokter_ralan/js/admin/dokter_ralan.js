@@ -223,7 +223,11 @@ $("#form_soap").on("click", "#simpan_soap", function(event){
       $('input:text[name=spo2]').val("");
       $('input:text[name=tgl_perawatan]').val("{?=date('Y-m-d')?}");
       $('input:text[name=tgl_registrasi]').val("{?=date('Y-m-d')?}");
-      $('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+      //$('input:text[name=jam_rawat]').val("{?=date('H:i:s')?}");
+      $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
+      } ,function(data) {
+        $("#form_soap #jam_rawat").val(data);
+      });
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data soap telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -739,7 +743,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var kode_provider   = $('input:text[name=kode_provider]').val();
   var kode_provider2   = $('input:text[name=kode_provider2]').val();
   var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
-  var jam_rawat       = $('input:text[name=jam_rawat]').val();
+  var jam_rawat       = $('input:text[name=jam_reg]').val();
   var biaya           = $('input:text[name=biaya]').val();
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
@@ -781,6 +785,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
+    $.post(baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
     $('input:hidden[name=kat]').val("");
     $('input:text[name=biaya]').val("");
     $('input:text[name=diagnosa_klinis]').val("");

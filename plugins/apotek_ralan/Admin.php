@@ -269,35 +269,6 @@ class Admin extends AdminModule
 
     public function anyRincian()
     {
-      /*
-      $rows = $this->core->mysql('resep_obat')
-        ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('resep_obat.status', 'ralan')
-        ->toArray();
-      $resep = [];
-      $jumlah_total_resep = 0;
-      foreach ($rows as $row) {
-        $row['resep_dokter'] = $this->core->mysql('resep_dokter')
-          ->join('resep_obat', 'resep_obat.no_resep=resep_dokter.no_resep')
-          ->join('databarang', 'databarang.kode_brng=resep_dokter.kode_brng')
-          ->where('resep_dokter.no_resep', $row['no_resep'])
-          ->toArray();
-        foreach ($row['resep_dokter'] as $value) {
-          $value['ralan'] = $value['jml'] * $value['ralan'];
-          $jumlah_total_resep += floatval($value['ralan']);
-        }
-
-        $row['validasi'] = $this->core->mysql('resep_obat')
-        ->where('no_rawat', $_POST['no_rawat'])
-        ->where('tgl_perawatan','!=', $row['tgl_peresepan'])
-        ->where('jam', '!=', $row['jam_peresepan'])
-        ->where('status', 'ralan')
-        ->oneArray();
-
-        $resep[] = $row;
-      }
-      */
 
       $rows = $this->core->mysql('resep_obat')
         ->join('dokter', 'dokter.kd_dokter=resep_obat.kd_dokter')
@@ -351,12 +322,9 @@ class Admin extends AdminModule
         $resep_racikan[] = $row;
       }
 
-
-      $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
-      ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
-      ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
-      ->where('detail_pemberian_obat.status', 'Ralan')
-      ->toArray();
+      $query = $this->core->mysql()->pdo()->prepare("SELECT * FROM detail_pemberian_obat WHERE no_rawat = '{$_POST['no_rawat']}' AND status = 'Ralan' AND jam NOT IN (SELECT resep_obat.jam_peresepan FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_peresepan = tgl_peresepan)");
+      $query->execute();
+      $rows_pemberian_obat = $query->fetchAll();
 
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;
@@ -368,6 +336,9 @@ class Admin extends AdminModule
         ->where('jam', $row['jam'])
         ->oneArray();
         $row['aturan_pakai'] = $aturan_pakai['aturan'];
+        $data_barang = $this->core->mysql('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+        $row['nama_brng'] = $data_barang['nama_brng'];
+        $row['ralan'] = $data_barang['ralan'];
         $jumlah_total_obat += floatval($row['total']);
         $detail_pemberian_obat[] = $row;
       }
