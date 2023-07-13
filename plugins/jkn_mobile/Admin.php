@@ -875,14 +875,14 @@ class Admin extends AdminModule
         $data5 = [
             'kodebooking' => $mlite_antrian_referensi['kodebooking'],
             'taskid' => 5,
-            'waktu' => $taskid2['waktu']
+            'waktu' => $taskid5['waktu']
         ];
       }
       if($versi == 'v3') {
         $data5 = [
             'kodebooking' => $mlite_antrian_referensi['kodebooking'],
             'taskid' => 5,
-            'waktu' => $taskid2['waktu'],
+            'waktu' => $taskid5['waktu'],
             'jenisresep' => $jenisresep
         ];
       }
