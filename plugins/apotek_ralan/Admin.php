@@ -103,7 +103,6 @@ class Admin extends AdminModule
     {
 
       $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
-      $no_rkm_medis =
 
       $this->core->mysql('gudangbarang')
         ->where('kode_brng', $_POST['kd_jenis_prw'])
