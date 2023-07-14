@@ -1868,7 +1868,6 @@ class Admin extends AdminModule
     $this->tpl->set('operasi', $operasi);
     $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
     $this->tpl->set('hasil_radiologi', $hasil_radiologi);
-    $this->tpl->set('klinis_radiologi', $klinis_radiologi);
     $this->tpl->set('saran_rad', $saran_rad);
     $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
     $this->tpl->set('pemberian_obat', $pemberian_obat);
@@ -3051,7 +3050,7 @@ class Admin extends AdminModule
     $tgl_lahir         = $this->validTeks(trim($_POST['tgl_lahir']));
 
     $jnsrawat="2";
-    if($this->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']) == "IGDK"){
+    if($_POST['kd_poli'] == "IGDK"){
         $jnsrawat="3";
     }
     if($this->getRegPeriksaInfo('status_lanjut', $_POST['no_rawat']) == "Ranap"){
