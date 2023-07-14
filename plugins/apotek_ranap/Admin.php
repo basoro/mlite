@@ -318,11 +318,15 @@ class Admin extends AdminModule
         $resep[] = $row;
       }
 
-      $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
-      ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
-      ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
-      ->where('detail_pemberian_obat.status', 'Ranap')
-      ->toArray();
+      // $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+      // ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+      // ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
+      // ->where('detail_pemberian_obat.status', 'Ranap')
+      // ->toArray();
+
+      $query = $this->core->mysql()->pdo()->prepare("SELECT * FROM detail_pemberian_obat WHERE no_rawat = '{$_POST['no_rawat']}' AND status = 'Ranap' AND jam NOT IN (SELECT resep_obat.jam_peresepan FROM resep_obat WHERE resep_obat.no_rawat = '{$_POST['no_rawat']}' AND resep_obat.tgl_peresepan = tgl_peresepan)");
+      $query->execute();
+      $rows_pemberian_obat = $query->fetchAll();
 
       $detail_pemberian_obat = [];
       $jumlah_total_obat = 0;

@@ -6,16 +6,20 @@
           <tr>
             <th>ID Obat</th>
             <th>Nama Obat</th>
+            <th>Stok Depo</th>
+            <th>Stok Minimal</th>
             <th>Harga</th>
           </tr>
         </thead>
         <tbody>
           {if: $obat}
           {loop: $obat}
-          <tr class="pilih_obat" data-kode_brng="{$value.kode_brng}" data-nama_brng="{$value.nama_brng}" data-ranap="{$value.h_beli}" data-stok="{$value.stok}">
+          <tr class="pilih_obat" data-kode_brng="{$value.kode_brng}" data-nama_brng="{$value.nama_brng}" data-ralan="{$value.ralan}" data-stok="{$value.stok}" data-stokminimal="{$value.stokminimal}" data-kat="obat">
             <td>{$value.kode_brng}</td>
             <td>{$value.nama_brng}</td>
-            <td>Rp. <span class="pull-right">{?= number_format($value.h_beli,2,',','.')?}</span></td>
+            <td>{$value.stok}</td>
+            <td>{$value.stokminimal}</td>
+            <td>Rp. <span class="pull-right">{?= number_format($value.ralan,2,',','.')?}</span></td>
           </tr>
           {/loop}
           {else}
