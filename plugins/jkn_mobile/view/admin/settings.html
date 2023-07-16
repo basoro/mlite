@@ -70,17 +70,6 @@
                          </div>
                     </div>
                     <div class="form-group">
-                         <label>Cara Kirim Antrian Online</label>
-                         <div class="radio">
-                             <label class="radio-inline">
-                                <input type="radio" name="jkn_mobile[carakirim]" value="baru" {if: $settings.jkn_mobile.carakirim == 'baru'}checked{/if} /> Cara Baru
-                             </label>
-                             <label class="radio-inline">
-                                <input type="radio" name="jkn_mobile[carakirim]" value="lama" {if: $settings.jkn_mobile.carakirim == 'lama'}checked{/if} /> Cara Lama
-                             </label>
-                         </div>
-                    </div>
-                    <div class="form-group">
                         <label>Tampilkan Poli</label>
                         <select name="jkn_mobile[display][]" class="form-control" multiple>
                           {loop: $settings.poliklinik}
