@@ -131,6 +131,10 @@
       $("#form").hide();
       $("#notif").hide();
       $("#rincian").html(data).show();
+      $.post(baseURL + '/radiologi/cekwaktu?t=' + mlite.token, {
+      } ,function(data) {
+        $("#form_rincian #jam_reg").val(data);
+      });
     });
   });
 
