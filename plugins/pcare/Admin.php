@@ -40,7 +40,7 @@ class Admin extends AdminModule
   public function getManage()
   {
       $parsedown = new \Systems\Lib\Parsedown();
-      $readme_file = MODULES.'/pcare/ReadMe.md';
+      $readme_file = MODULES.'/pcare/Help.md';
       $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
       return $this->draw('manage.html', ['readme' => $readme]);
   }

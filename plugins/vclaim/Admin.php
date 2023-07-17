@@ -35,7 +35,7 @@ class Admin extends AdminModule
   public function getManage()
   {
     $parsedown = new \Systems\Lib\Parsedown();
-    $readme_file = MODULES . '/vclaim/ReadMe.md';
+    $readme_file = MODULES . '/vclaim/Help.md';
     $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
     return $this->draw('manage.html', ['readme' => $readme]);
   }
@@ -2658,7 +2658,6 @@ class Admin extends AdminModule
     if(empty($bridging_sep)) {
       $bridging_sep = [];
     }
-    //$dirujuk = $this->core->mysql('dirujuk')->toArray();
     $dirujuk = [];
 
     echo $this->draw('dirujuk.html', ['bridging_sep' => $bridging_sep, 'dirujuk' => $dirujuk]);
