@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\inventaris;
+namespace Plugins\Inventaris;
 
 use Systems\AdminModule;
 

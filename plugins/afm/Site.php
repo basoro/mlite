@@ -40,23 +40,23 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari=$day[$tentukan_hari];
-    if($header['X-Header-Token'] == false) {
+    if($header[$this->settings->get('afm.x_header_token')] == false) {
         $response = array(
             'metadata' => array(
-                'message' => 'Token expireda',
+                'message' => 'Token kadaluarsa',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] != $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] != $this->settings->get('afm.afm_token')){
     	$response = array(
             'metadata' => array(
-                'message' => 'Token Wrong',
+                'message' => 'Token tidak sesuai',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] == $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = isset_or($decode['nomor_kartu'],'');
       $field = isset_or($decode['kolom'], 'no_rkm_medis');
       $sql = "SELECT no_peserta , no_rkm_medis , no_ktp , no_tlp FROM pasien WHERE " . $field . " = '" . $cari . "'";
@@ -103,23 +103,23 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari=$day[$tentukan_hari];
-    if($header['X-Header-Token'] == false) {
+    if($header[$this->settings->get('afm.x_header_token')] == false) {
         $response = array(
             'metadata' => array(
-                'message' => 'Token expireda',
+                'message' => 'Token kadaluarsa',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] != $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] != $this->settings->get('afm.afm_token')){
     	$response = array(
             'metadata' => array(
-                'message' => 'Token Wrong',
+                'message' => 'Token tidak sesuai',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] == $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $list = array(
         'logo' => $this->settings->get('settings.logo'),
         'nama_instansi' => $this->settings->get('settings.nama_instansi'),
@@ -156,23 +156,23 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari=$day[$tentukan_hari];
-    if($header['X-Header-Token'] == false) {
+    if($header[$this->settings->get('afm.x_header_token')] == false) {
         $response = array(
             'metadata' => array(
-                'message' => 'Token expireda',
+                'message' => 'Token kadaluarsa',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] != $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] != $this->settings->get('afm.afm_token')){
     	$response = array(
             'metadata' => array(
-                'message' => 'Token Wrong',
+                'message' => 'Token tidak sesuai',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] == $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = $decode['nomor_kartu'];
       $reg = $this->core->mysql('reg_periksa')->where('no_rkm_medis',$cari)->where('tgl_registrasi',$date)->oneArray();
       if ($reg['no_rawat']) {
@@ -223,23 +223,23 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari=$day[$tentukan_hari];
-    if($header['X-Header-Token'] == false) {
+    if($header[$this->settings->get('afm.x_header_token')] == false) {
         $response = array(
             'metadata' => array(
-                'message' => 'Token expireda',
+                'message' => 'Token kadaluarsa',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] != $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] != $this->settings->get('afm.afm_token')){
     	$response = array(
             'metadata' => array(
-                'message' => 'Token Wrong',
+                'message' => 'Token tidak sesuai',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] == $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $list = array(
         'user' => $this->settings->get('afm.username_finger'),
         'pass' => $this->settings->get('afm.password_finger')
@@ -275,23 +275,23 @@ class Site extends SiteModule
       'Sat' => 'SABTU'
     );
     $hari=$day[$tentukan_hari];
-    if($header['X-Header-Token'] == false) {
+    if($header[$this->settings->get('afm.x_header_token')] == false) {
         $response = array(
             'metadata' => array(
-                'message' => 'Token expireda',
+                'message' => 'Token kadaluarsa',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] != $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] != $this->settings->get('afm.afm_token')){
     	$response = array(
             'metadata' => array(
-                'message' => 'Token Wrong',
+                'message' => 'Token tidak sesuai',
                 'code' => 201
             )
         );
         http_response_code(201);
-    } else if ($header['X-Header-Token'] == $this->settings->get('afm.afm_token')){
+    } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = $decode['nomor_kartu'];
       $cekSep = $this->core->mysql('bridging_sep')->where('no_kartu',$cari)->where('tglsep',$date)->oneArray();
       if ($cekSep['no_rawat']) {
