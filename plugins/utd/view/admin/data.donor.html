@@ -1,0 +1,342 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<form action="{?=url(ADMIN.'/utd/savedonor')?}" method="POST" id="form_donor">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+              Data Aset
+            </h3>
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="{?=url([ADMIN,'utd','pendonor'])?}" role="tab">Data Pendonor</a>
+                </li>
+                <li class="active">
+                    <a href="{?=url([ADMIN,'utd','donor'])?}" role="tab">Data Donor</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'utd','stokdarah'])?}" role="tab">Stok Darah</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nomor Donor</label>
+                            <input type="text" name="no_donor" class="form-control" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nama Pendonor</label>
+                            <select id="no_pendonor" name="no_pendonor" class="form-control" data-use-search="true">
+                              {loop: $pendonor}
+                    					<option value="{$value.no_pendonor}">{$value.nama}</option>
+                              {/loop}
+                    				</select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal</label>
+                            <input type="text" name="tanggal" id="tanggal" class="form-control tanggal" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Dinas</label>
+                            <select name="dinas" id="dinas" class="form-control" data-use-search="true">
+                                <option value="Pagi">Pagi</option>
+                                <option value="Siang">Siang</option>
+                                <option value="Sore">Sore</option>
+                                <option value="Malam">Malam</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Nomor Bag</label>
+                            <input type="text" name="no_bag" class="form-control" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Jenis Bag</label>
+                            <select name="jenis_bag" id="jenis_bag" class="form-control" data-use-search="true">
+                                <option value="SB">SB</option>
+                                <option value="DB">DB</option>
+                                <option value="TB">TB</option>
+                                <option value="QB">QB</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Jenis Donor</label>
+                            <select name="jenis_donor" id="jenis_donor" class="form-control" data-use-search="true">
+                                <option value="DB">DB</option>
+                                <option value="DP">DP</option>
+                                <option value="DS">DS</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tempat Aftap</label>
+                            <select name="tempat_aftap" id="tempat_aftap" class="form-control" data-use-search="true">
+                                <option value="Dalam Gedung">Dalam Gedung</option>
+                                <option value="Luar Gedung">Luar Gedung</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Petugas Aftap</label>
+                            <select id="petugas_aftap" name="petugas_aftap" class="form-control" data-use-search="true">
+                              {loop: $petugas}
+                              <option value="{$value.nip}">{$value.nama}</option>
+                              {/loop}
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Tensi</label>
+                          <input type="text" name="tensi" class="form-control" value="" required />
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>HBSAG</label>
+                          <select name="hbsag" id="hbsag" class="form-control" data-use-search="true">
+                              <option value="Negatif">Negatif</option>
+                              <option value="Positif">Positif</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>HCV</label>
+                          <select name="hcv" id="hcv" class="form-control" data-use-search="true">
+                              <option value="Negatif">Negatif</option>
+                              <option value="Positif">Positif</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>HIV</label>
+                          <select name="hiv" id="hiv" class="form-control" data-use-search="true">
+                              <option value="Negatif">Negatif</option>
+                              <option value="Positif">Positif</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Spilis</label>
+                          <select name="spilis" id="spilis" class="form-control" data-use-search="true">
+                              <option value="Negatif">Negatif</option>
+                              <option value="Positif">Positif</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Malaria</label>
+                          <select name="malaria" id="malaria" class="form-control" data-use-search="true">
+                              <option value="Negatif">Negatif</option>
+                              <option value="Positif">Positif</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Petugas Saring</label>
+                          <select id="petugas_u_saring" name="petugas_u_saring" class="form-control" data-use-search="true">
+                            {loop: $petugas}
+                            <option value="{$value.nip}">{$value.nama}</option>
+                            {/loop}
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Status</label>
+                          <select name="status" id="status" class="form-control" data-use-search="true">
+                              <option value="Aman">Aman</option>
+                              <option value="Cekal">Cekal</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" id="hapus" class="btn btn-danger pull-right" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="utd_donor">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>No. Donor</th>
+            <th>Nama Pendonor</th>
+            <th>Nomor Pendonor</th>
+            <th>No. Telepon</th>
+            <th>Tanggal Donor</th>
+            <th>Dinas</th>
+            <th>Tensi</th>
+            <th>Nomor Bag</th>
+            <th>Jenis Bag</th>
+            <th>Jenis Donor</th>
+            <th>Tempat Aftap</th>
+            <th>Petugas Aftap</th>
+            <th>HBSAG</th>
+            <th>HCV</th>
+            <th>HIV</th>
+            <th>Spilis</th>
+            <th>Malaria</th>
+            <th>Petugas Saring</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $donor}
+          {loop: $donor}
+          <tr class="utd_donor"
+          data-no_donor="{$value.no_donor}"
+          data-no_pendonor="{$value.no_pendonor}"
+          data-tanggal="{$value.tanggal}"
+          data-dinas="{$value.dinas}"
+          data-tensi="{$value.tensi}"
+          data-no_bag="{$value.no_bag}"
+          data-jenis_bag="{$value.jenis_bag}"
+          data-jenis_donor="{$value.jenis_donor}"
+          data-tempat_aftap="{$value.tempat_aftap}"
+          data-petugas_aftap="{$value.petugas_aftap}"
+          data-hbsag="{$value.hbsag}"
+          data-hcv="{$value.hcv}"
+          data-hiv="{$value.hiv}"
+          data-spilis="{$value.spilis}"
+          data-malaria="{$value.malaria}"
+          data-petugas_u_saring="{$value.petugas_u_saring}"
+          data-status="{$value.status}"
+          >
+            <td>{$value.no_donor}</td>
+            <td>{$value.nama}</td>
+            <td>{$value.no_pendonor}</td>
+            <td>{$value.no_telp}</td>
+            <td>{$value.tanggal}</td>
+            <td>{$value.dinas}</td>
+            <td>{$value.tensi}</td>
+            <td>{$value.no_bag}</td>
+            <td>{$value.jenis_bag}</td>
+            <td>{$value.jenis_donor}</td>
+            <td>{$value.tempat_aftap}</td>
+            <td>{$value.petugas_aftap}</td>
+            <td>{$value.hbsag}</td>
+            <td>{$value.hcv}</td>
+            <td>{$value.hiv}</td>
+            <td>{$value.spilis}</td>
+            <td>{$value.malaria}</td>
+            <td>{$value.petugas_u_saring}</td>
+            <td>{$value.status}</td>
+          </tr>
+          {/loop}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#utd_donor").on("click", ".utd_donor", function(event){
+    var no_donor  = $(this).attr("data-no_donor");
+    var no_pendonor  = $(this).attr("data-no_pendonor");
+    var tanggal  = $(this).attr("data-tanggal");
+    var dinas  = $(this).attr("data-dinas");
+    var tensi  = $(this).attr("data-tensi");
+    var no_bag  = $(this).attr("data-no_bag");
+    var jenis_bag  = $(this).attr("data-jenis_bag");
+    var jenis_donor  = $(this).attr("data-jenis_donor");
+    var tempat_aftap  = $(this).attr("data-tempat_aftap");
+    var petugas_aftap  = $(this).attr("data-petugas_aftap");
+    var hbsag  = $(this).attr("data-hbsag");
+    var hcv = $(this).attr("data-hcv");
+    var hiv = $(this).attr("data-hiv");
+    var spilis  = $(this).attr("data-spilis");
+    var malaria  = $(this).attr("data-malaria");
+    var petugas_u_saring  = $(this).attr("data-petugas_u_saring");
+    var status  = $(this).attr("data-status");
+    $('input:text[name=no_donor]').val(no_donor);
+    $('#no_pendonor').val(no_pendonor).change();
+    $('#tanggal').val(tanggal);
+    $('#dinas').val(dinas).change();
+    $('input:text[name=tensi]').val(tensi);
+    $('input:text[name=no_bag]').val(no_bag);
+    $('#jenis_bag').val(jenis_bag).change();
+    $('#jenis_donor').val(jenis_donor).change();
+    $('#tempat_aftap').val(tempat_aftap).change();
+    $('#petugas_aftap').val(petugas_aftap).change();
+    $('#hbsag').val(hbsag).change();
+    $('#hcv').val(hcv).change();
+    $('#hiv').val(hiv).change();
+    $('#spilis').val(spilis).change();
+    $('#malaria').val(malaria).change();
+    $('#petugas_u_saring').val(petugas_u_saring).change();
+    $('#status').val(status).change();
+    $('input:text[name=no_donor]').prop('readonly', true);
+  });
+
+  $(function() {
+    $("form").on("click", "#hapus", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var no_donor = $('input:text[name=no_donor]').val();
+      event.preventDefault();
+      if(no_donor == '') {
+        alert('Silahkan pilih data yang mau dihapus!!');
+      } else {
+        $.confirm({
+          columnClass: 'col-md-4 col-md-offset-4',
+          theme: 'white',
+          title: 'Peringatan',
+          text: 'Apakah anda yakin akan menghapus data ini?',
+          confirmButton: 'Iya',
+          cancelButton: 'Tidak',
+          confirmButtonClass: 'btn-success',
+          cancelButtonClass: 'btn-danger',
+          confirm: function() {
+            window.location.replace(baseURL + '/utd/hapusdonor/' + no_donor + '?t=' + mlite.token);
+          },
+          cancel: function() {
+          }
+        });
+      }
+    });
+  });
+</script>

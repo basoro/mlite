@@ -1,0 +1,4 @@
+th, td {
+  white-space: nowrap;
+  vertical-align: top !important;
+}

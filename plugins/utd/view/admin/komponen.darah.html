@@ -1,0 +1,177 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<form action="{?=url(ADMIN.'/utd/savekomponendarah')?}" method="POST" id="form_komponen_darah">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+              Data Aset
+            </h3>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Kode</label>
+                      <input type="text" name="kode" class="form-control" value="" required />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Nama Komponen</label>
+                      <input type="text" name="nama" class="form-control" value="" required />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Lama</label>
+                      <input type="text" name="lama" class="form-control" value="" required />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Jasa Sarana</label>
+                      <input type="text" name="jasa_sarana" class="form-control" value="0" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Paket BHP</label>
+                      <input type="text" name="paket_bhp" class="form-control" value="0" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>KSO</label>
+                      <input type="text" name="kso" class="form-control" value="0" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Manajemen</label>
+                      <input type="text" name="manajemen" class="form-control" value="0" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Total</label>
+                      <input type="text" name="total" class="form-control" value="0" />
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label>Pembatalan</label>
+                      <input type="text" name="pembatalan" class="form-control" value="" />
+                  </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" id="hapus" class="btn btn-danger pull-right" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="utd_komponen_darah">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Kode</th>
+            <th>Nama Komponen</th>
+            <th>Lama</th>
+            <th>Jasa Sarana</th>
+            <th>Paket BHP</th>
+            <th>KSO</th>
+            <th>Manajemen</th>
+            <th>Total</th>
+            <th>Pembatalan</th>
+        </thead>
+        <tbody>
+          {if: $komponendarah}
+          {loop: $komponendarah}
+          <tr class="utd_komponen_darah"
+          data-kode="{$value.kode}"
+          data-nama="{$value.nama}"
+          data-lama="{$value.lama}"
+          data-jasa_sarana="{$value.jasa_sarana}"
+          data-paket_bhp="{$value.paket_bhp}"
+          data-kso="{$value.kso}"
+          data-manajemen="{$value.manajemen}"
+          data-total="{$value.total}"
+          data-pembatalan="{$value.pembatalan}"
+          >
+            <td>{$value.kode}</td>
+            <td>{$value.nama}</td>
+            <td>{$value.lama}</td>
+            <td>{$value.jasa_sarana}</td>
+            <td>{$value.paket_bhp}</td>
+            <td>{$value.kso}</td>
+            <td>{$value.manajemen}</td>
+            <td>{$value.total}</td>
+            <td>{$value.pembatalan}</td>
+          </tr>
+          {/loop}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#utd_komponen_darah").on("click", ".utd_komponen_darah", function(event){
+    var kode  = $(this).attr("data-kode");
+    var nama  = $(this).attr("data-nama");
+    var lama  = $(this).attr("data-lama");
+    var jasa_sarana  = $(this).attr("data-jasa_sarana");
+    var paket_bhp  = $(this).attr("data-paket_bhp");
+    var kso  = $(this).attr("data-kso");
+    var manajemen  = $(this).attr("data-manajemen");
+    var total  = $(this).attr("data-total");
+    var pembatalan  = $(this).attr("data-pembatalan");
+    $('input:text[name=kode]').val(kode);
+    $('input:text[name=nama]').val(nama);
+    $('input:text[name=lama]').val(lama);
+    $('input:text[name=jasa_sarana]').val(jasa_sarana);
+    $('input:text[name=paket_bhp]').val(paket_bhp);
+    $('input:text[name=kso]').val(kso);
+    $('input:text[name=manajemen]').val(manajemen);
+    $('input:text[name=total]').val(total);
+    $('input:text[name=pembatalan]').val(pembatalan);
+    $('input:text[name=kode]').prop('readonly', true);
+  });
+
+  $(function() {
+    $("form").on("click", "#hapus", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var kode = $('input:text[name=kode]').val();
+      event.preventDefault();
+      if(kode == '') {
+        alert('Silahkan pilih data yang mau dihapus!!');
+      } else {
+        $.confirm({
+          columnClass: 'col-md-4 col-md-offset-4',
+          theme: 'white',
+          title: 'Peringatan',
+          text: 'Apakah anda yakin akan menghapus data ini?',
+          confirmButton: 'Iya',
+          cancelButton: 'Tidak',
+          confirmButtonClass: 'btn-success',
+          cancelButtonClass: 'btn-danger',
+          confirm: function() {
+            window.location.replace(baseURL + '/utd/hapuskomponendarah/' + kode + '?t=' + mlite.token);
+          },
+          cancel: function() {
+          }
+        });
+      }
+    });
+  });
+
+  $('input:text[name=jasa_sarana], input:text[name=paket_bhp], input:text[name=kso], input:text[name=manajemen]').keyup(function(){
+      var total = parseInt($('input:text[name=jasa_sarana]').val()) + parseInt($('input:text[name=paket_bhp]').val()) + parseInt($('input:text[name=kso]').val()) + parseInt($('input:text[name=manajemen]').val());
+      $('input:text[name=total]').val(total);
+  });
+
+</script>

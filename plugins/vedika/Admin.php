@@ -3023,6 +3023,8 @@ class Admin extends AdminModule
     $terapi_konvalesen = $this->validTeks(trim($_POST['terapi_konvalesen']));
     $akses_naat        = $this->validTeks(trim($_POST['akses_naat']));
     $isoman_ind        = $this->validTeks(trim($_POST['isoman_ind']));
+    $sistole = $this->validTeks(trim($_POST['sistole']));
+    $diastole = $this->validTeks(trim($_POST['diastole']));
     $dializer_single_use = $this->validTeks(trim($_POST['dializer_single_use']));
     $kantong_darah     = $this->validTeks(trim($_POST['kantong_darah']));
     $usia_kehamilan     = $this->validTeks(trim($_POST['usia_kehamilan']));
@@ -3076,7 +3078,7 @@ class Admin extends AdminModule
         $obat_kronis,$obat_kemoterapi,$alkes,$bmhp,$sewa_alat,
         $pemulasaraan_jenazah,$kantong_jenazah,$peti_jenazah,$plastik_erat,$desinfektan_jenazah,$mobil_jenazah,$desinfektan_mobil_jenazah,
         $covid19_status_cd,$nomor_kartu_t,$episodes,$covid19_cc_ind,$covid19_rs_darurat_ind,$covid19_co_insidense_ind,
-        $terapi_konvalesen,$akses_naat,$isoman_ind,$dializer_single_use,$kantong_darah,$usia_kehamilan,$onset_kontraksi,$delivery_method,$delivery_dttm,$letak_janin,$kondisi,$use_manual,$use_forcep,$use_vacuum,
+        $terapi_konvalesen,$akses_naat,$isoman_ind,$sistole,$diastole,$dializer_single_use,$kantong_darah,$usia_kehamilan,$onset_kontraksi,$delivery_method,$delivery_dttm,$letak_janin,$kondisi,$use_manual,$use_forcep,$use_vacuum,
         $appearance_1,$pulse_1,$grimace_1,$activity_1,$respiration_1,$appearance_5,$pulse_5,$grimace_5,$activity_5,$respiration_5);
 
     exit();
@@ -3350,7 +3352,7 @@ class Admin extends AdminModule
                           $obat_kronis,$obat_kemoterapi,$alkes,$bmhp,$sewa_alat,
                           $pemulasaraan_jenazah,$kantong_jenazah,$peti_jenazah,$plastik_erat,$desinfektan_jenazah,$mobil_jenazah,$desinfektan_mobil_jenazah,
                           $covid19_status_cd,$nomor_kartu_t,$episodes,$covid19_cc_ind,$covid19_rs_darurat_ind,$covid19_co_insidense_ind,
-                          $terapi_konvalesen,$akses_naat,$isoman_ind,$dializer_single_use,$kantong_darah,$usia_kehamilan,$onset_kontraksi,$delivery_method,$delivery_dttm,$letak_janin,$kondisi,$use_manual,$use_forcep,$use_vacuum,
+                          $terapi_konvalesen,$akses_naat,$isoman_ind,$sistole,$diastole,$dializer_single_use,$kantong_darah,$usia_kehamilan,$onset_kontraksi,$delivery_method,$delivery_dttm,$letak_janin,$kondisi,$use_manual,$use_forcep,$use_vacuum,
                           $appearance_1,$pulse_1,$grimace_1,$activity_1,$respiration_1,$appearance_5,$pulse_5,$grimace_5,$activity_5,$respiration_5){
       $request ='{
                       "metadata": {
@@ -3381,8 +3383,8 @@ class Admin extends AdminModule
                           "upgrade_class_payor": "'.$upgrade_class_payor.'",
                           "add_payment_pct": "'.$add_payment_pct.'",
                           "birth_weight": "'.$birth_weight.'",
-                          "sistole": 120,
-                          "diastole": 70,
+                          "sistole": '.intval($sistole).',
+                          "diastole": '.intval($diastole).',
                           "discharge_status": "'.$discharge_status.'",
                           "diagnosa": "'.$diagnosa.'",
                           "procedure": "'.$procedure.'",
