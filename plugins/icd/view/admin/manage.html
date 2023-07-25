@@ -5,6 +5,29 @@
         <h3 class="panel-title">Kelola ICD 9</h3>
       </div>
       <div class="panel-body">
+        <div class="row">
+          <form action="{?=url(ADMIN.'/icd/simpan_icd9')?}" method="POST">
+            <div class="col-md-2">
+              <div class="form-group">
+                  <label>Kode</label>
+                  <input type="text" name="kode_icd9" class="form-control" value="" required />
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                  <label>Nama Prosedur</label>
+                  <input type="text" name="nama_icd9" class="form-control" value="" required />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                  <label>Aksi</label>
+                  <input type="submit" name="simpan_icd9" class="btn btn-primary" value="Submit" required />
+              </div>
+            </div>
+          </form>
+        </div>
+        <hr>
         <div class="table-responsive no-margin">
           <table id="icd9_json" class="table table-bordered no-padding" width="100%">
             <thead>
@@ -24,6 +47,29 @@
         <h3 class="panel-title">Kelola ICD 10</h3>
       </div>
       <div class="panel-body">
+        <div class="row">
+          <form action="{?=url(ADMIN.'/icd/simpan_icd10')?}" method="POST">
+            <div class="col-md-2">
+              <div class="form-group">
+                  <label>Kode</label>
+                  <input type="text" name="kode_icd10" class="form-control" value="" required />
+              </div>
+            </div>
+            <div class="col-md-8">
+              <div class="form-group">
+                  <label>Nama Prosedur</label>
+                  <input type="text" name="nama_icd10" class="form-control" value="" required />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                  <label>Aksi</label>
+                  <input type="submit" name="simpan_icd10" class="btn btn-primary" value="Submit" required />
+              </div>
+            </div>
+          </form>
+        </div>
+        <hr>
         <div class="table-responsive no-margin">
           <table id="icd10_json" class="table table-bordered no-padding" width="100%">
             <thead>
@@ -42,7 +88,7 @@
 <script type="text/javascript">
 
   $(document).ready(function() {
-      $('#icd9_json').DataTable( {
+      var table_icd9 = $('#icd9_json').DataTable( {
           "processing": true,
           "ajax": "{?=url([ADMIN,'icd','icd9'])?}",
           "columns": [
@@ -50,7 +96,7 @@
               { "data": "nama" }
           ]
       } );
-      $('#icd10_json').DataTable( {
+      var table_icd10 = $('#icd10_json').DataTable( {
           "processing": true,
           "ajax": "{?=url([ADMIN,'icd','icd10'])?}",
           "columns": [
@@ -58,6 +104,18 @@
               { "data": "nama" }
           ]
       } );
+      $('#icd9_json').on('click', 'tbody tr', function() {
+        var row = table_icd9.row($(this)).data();
+        $('input:text[name=kode_icd9]').val(row['kode']);
+        $('input:text[name=nama_icd9]').val(row['nama']);
+        $('input:text[name=kode_icd9]').prop('readonly', true);
+      })
+      $('#icd10_json').on('click', 'tbody tr', function() {
+        var row = table_icd10.row($(this)).data();
+        $('input:text[name=kode_icd10]').val(row['kode']);
+        $('input:text[name=nama_icd10]').val(row['nama']);
+        $('input:text[name=kode_icd10]').prop('readonly', true);
+      })
   } );
 
 </script>
