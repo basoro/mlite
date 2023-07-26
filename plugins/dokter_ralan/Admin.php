@@ -11,8 +11,19 @@ class Admin extends AdminModule
     public function navigation()
     {
         return [
-            'Kelola'   => 'manage',
+            'Kelola'   => 'index',
+            'Dokter Ralan'   => 'manage',
+            'Pengaturan' =>'settings'
         ];
+    }
+
+    public function getIndex()
+    {
+      $sub_modules = [
+        ['name' => 'Dokter Ralan', 'url' => url([ADMIN, 'dokter_ralan', 'manage']), 'icon' => 'wheelchair', 'desc' => 'Data pasien rawat jalan'],
+        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'dokter_ralan', 'settings']), 'icon' => 'wrench', 'desc' => 'Pengaturan dokter rawat jalan'],
+      ];
+      return $this->draw('index.html', ['sub_modules' => $sub_modules]);
     }
 
     public function anyManage()
@@ -856,8 +867,14 @@ class Admin extends AdminModule
 
       if(!$this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
         $this->core->mysql('pemeriksaan_ralan')->save($_POST);
+        if($this->settings->get('dokter_ralan.set_sudah') == 'ya') {
+          $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save(['stts' => 'Sudah']);
+        }
       } else {
         $this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        if($this->settings->get('dokter_ralan.set_sudah') == 'ya') {
+          $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->save(['stts' => 'Sudah']);
+        }
       }
       exit();
     }
@@ -1330,6 +1347,22 @@ class Admin extends AdminModule
       ->where('id_user', $_POST['id_user'])
       ->delete();
       exit();
+    }
+
+    public function getSettings()
+    {
+        $this->assign['title'] = 'Pengaturan Modul Dokter Ralan';
+        $this->assign['dokter_ralan'] = htmlspecialchars_array($this->settings('dokter_ralan'));
+        return $this->draw('settings.html', ['settings' => $this->assign]);
+    }
+
+    public function postSaveSettings()
+    {
+        foreach ($_POST['dokter_ralan'] as $key => $val) {
+            $this->settings('dokter_ralan', $key, $val);
+        }
+        $this->notify('success', 'Pengaturan telah disimpan');
+        redirect(url([ADMIN, 'dokter_ralan', 'settings']));
     }
 
     public function getJavascript()

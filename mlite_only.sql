@@ -516,7 +516,8 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (146, 'veronisa', 'password', ''),
 (147, 'veronisa', 'obat_kronis', ''),
 (148, 'jkn_mobile', 'kirimantrian', 'tidak'),
-(149, 'settings', 'keamanan', 'ya');
+(149, 'settings', 'keamanan', 'ya'),
+(150, 'settings', 'dokter_ralan', 'tidak');
 
 -- --------------------------------------------------------
 
