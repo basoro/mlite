@@ -3,12 +3,18 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 20, 2023 at 04:45 PM
+-- Generation Time: Jul 13, 2023 at 06:26 AM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Database: `mlite_db`
@@ -37,7 +43,14 @@ CREATE TABLE IF NOT EXISTS `aturan_pakai` (
 CREATE TABLE IF NOT EXISTS `bahasa_pasien` (
   `id` int(11) NOT NULL,
   `nama_bahasa` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `bahasa_pasien`
+--
+
+INSERT INTO `bahasa_pasien` (`id`, `nama_bahasa`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -51,6 +64,16 @@ CREATE TABLE IF NOT EXISTS `bangsal` (
   `status` enum('0','1') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `bangsal`
+--
+
+INSERT INTO `bangsal` (`kd_bangsal`, `nm_bangsal`, `status`) VALUES
+('-', '-', '1'),
+('ANG', 'Anggrek', '1'),
+('APT', 'Apotek', '1'),
+('GF', 'Gudang Farmasi', '1');
+
 -- --------------------------------------------------------
 
 --
@@ -60,6 +83,14 @@ CREATE TABLE IF NOT EXISTS `bangsal` (
 CREATE TABLE IF NOT EXISTS `bank` (
   `namabank` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `bank`
+--
+
+INSERT INTO `bank` (`namabank`) VALUES
+('-'),
+('T');
 
 -- --------------------------------------------------------
 
@@ -107,6 +138,13 @@ CREATE TABLE IF NOT EXISTS `berkas_digital_perawatan` (
 CREATE TABLE IF NOT EXISTS `bidang` (
   `nama` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `bidang`
+--
+
+INSERT INTO `bidang` (`nama`) VALUES
+('-');
 
 -- --------------------------------------------------------
 
@@ -365,7 +403,14 @@ CREATE TABLE IF NOT EXISTS `bridging_surat_pri_bpjs` (
 CREATE TABLE IF NOT EXISTS `cacat_fisik` (
   `id` int(11) NOT NULL,
   `nama_cacat` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `cacat_fisik`
+--
+
+INSERT INTO `cacat_fisik` (`id`, `nama_cacat`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -416,6 +461,13 @@ CREATE TABLE IF NOT EXISTS `databarang` (
   `kode_golongan` char(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `databarang`
+--
+
+INSERT INTO `databarang` (`kode_brng`, `nama_brng`, `kode_satbesar`, `kode_sat`, `letak_barang`, `dasar`, `h_beli`, `ralan`, `kelas1`, `kelas2`, `kelas3`, `utama`, `vip`, `vvip`, `beliluar`, `jualbebas`, `karyawan`, `stokminimal`, `kdjns`, `isi`, `kapasitas`, `expire`, `status`, `kode_industri`, `kode_kategori`, `kode_golongan`) VALUES
+('B00001', 'Paracetamol 500mg', '-', '-', '-', 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 100, '-', 10, 500, '2024-06-10', '1', '-', '-', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -426,6 +478,13 @@ CREATE TABLE IF NOT EXISTS `departemen` (
   `dep_id` char(4) NOT NULL,
   `nama` varchar(25) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `departemen`
+--
+
+INSERT INTO `departemen` (`dep_id`, `nama`) VALUES
+('-', '-');
 
 -- --------------------------------------------------------
 
@@ -512,6 +571,13 @@ CREATE TABLE IF NOT EXISTS `dokter` (
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `dokter`
+--
+
+INSERT INTO `dokter` (`kd_dokter`, `nm_dokter`, `jk`, `tmp_lahir`, `tgl_lahir`, `gol_drh`, `agama`, `almt_tgl`, `no_telp`, `stts_nikah`, `kd_sps`, `alumni`, `no_ijn_praktek`, `status`) VALUES
+('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2000-09-18', 'O', 'Islam', 'Barabai', '-', 'MENIKAH', 'UMUM', 'UI', '-', '1');
+
 -- --------------------------------------------------------
 
 --
@@ -534,6 +600,13 @@ CREATE TABLE IF NOT EXISTS `emergency_index` (
   `nama_emergency` varchar(200) DEFAULT NULL,
   `indek` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `emergency_index`
+--
+
+INSERT INTO `emergency_index` (`kode_emergency`, `nama_emergency`, `indek`) VALUES
+('-', '-', 1);
 
 -- --------------------------------------------------------
 
@@ -558,6 +631,13 @@ CREATE TABLE IF NOT EXISTS `golongan_barang` (
   `kode` char(4) NOT NULL,
   `nama` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `golongan_barang`
+--
+
+INSERT INTO `golongan_barang` (`kode`, `nama`) VALUES
+('-', '-');
 
 -- --------------------------------------------------------
 
@@ -611,6 +691,13 @@ CREATE TABLE IF NOT EXISTS `industrifarmasi` (
   `kota` varchar(20) DEFAULT NULL,
   `no_telp` varchar(20) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `industrifarmasi`
+--
+
+INSERT INTO `industrifarmasi` (`kode_industri`, `nama_industri`, `alamat`, `kota`, `no_telp`) VALUES
+('-', '-', '-', '-', '0');
 
 -- --------------------------------------------------------
 
@@ -733,6 +820,13 @@ CREATE TABLE IF NOT EXISTS `jabatan` (
   `kd_jbtn` char(4) NOT NULL DEFAULT '',
   `nm_jbtn` varchar(25) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jabatan`
+--
+
+INSERT INTO `jabatan` (`kd_jbtn`, `nm_jbtn`) VALUES
+('-', '-');
 
 -- --------------------------------------------------------
 
@@ -861,6 +955,23 @@ CREATE TABLE IF NOT EXISTS `jam_masuk` (
   `jam_pulang` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jam_masuk`
+--
+
+INSERT INTO `jam_masuk` (`shift`, `jam_masuk`, `jam_pulang`) VALUES
+('Pagi', '06:00:00', '16:00:00'),
+('Pagi2', '08:00:00', '14:00:00'),
+('Pagi3', '10:00:00', '17:00:00'),
+('Siang', '14:00:00', '08:00:00'),
+('Siang2', '14:00:00', '21:00:00'),
+('Malam', '20:00:00', '02:00:00'),
+('Midle Siang1', '00:00:00', '06:00:00'),
+('Midle Siang3', '00:00:00', '00:00:00'),
+('Midle Siang4', '04:00:00', '16:00:00'),
+('Midle Malam1', '00:00:00', '06:00:00'),
+('Midle Malam5', '22:00:00', '07:00:00');
+
 -- --------------------------------------------------------
 
 --
@@ -872,6 +983,13 @@ CREATE TABLE IF NOT EXISTS `jenis` (
   `nama` varchar(30) NOT NULL,
   `keterangan` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jenis`
+--
+
+INSERT INTO `jenis` (`kdjns`, `nama`, `keterangan`) VALUES
+('-', '-', '-');
 
 -- --------------------------------------------------------
 
@@ -885,6 +1003,13 @@ CREATE TABLE IF NOT EXISTS `jnj_jabatan` (
   `tnj` double NOT NULL,
   `indek` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jnj_jabatan`
+--
+
+INSERT INTO `jnj_jabatan` (`kode`, `nama`, `tnj`, `indek`) VALUES
+('-', '-', 0, 1);
 
 -- --------------------------------------------------------
 
@@ -909,6 +1034,13 @@ CREATE TABLE IF NOT EXISTS `jns_perawatan` (
   `kd_poli` char(5) NOT NULL,
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jns_perawatan`
+--
+
+INSERT INTO `jns_perawatan` (`kd_jenis_prw`, `nm_perawatan`, `kd_kategori`, `material`, `bhp`, `tarif_tindakandr`, `tarif_tindakanpr`, `kso`, `menejemen`, `total_byrdr`, `total_byrpr`, `total_byrdrpr`, `kd_pj`, `kd_poli`, `status`) VALUES
+('RJ001', 'Pemeriksaan rutin', '-', 0, 0, 50000, 0, 0, 0, 50000, 0, 50000, '-', '-', '1');
 
 -- --------------------------------------------------------
 
@@ -935,6 +1067,13 @@ CREATE TABLE IF NOT EXISTS `jns_perawatan_inap` (
   `kelas` enum('-','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan_inap`
+--
+
+INSERT INTO `jns_perawatan_inap` (`kd_jenis_prw`, `nm_perawatan`, `kd_kategori`, `material`, `bhp`, `tarif_tindakandr`, `tarif_tindakanpr`, `kso`, `menejemen`, `total_byrdr`, `total_byrpr`, `total_byrdrpr`, `kd_pj`, `kd_bangsal`, `status`, `kelas`) VALUES
+('RI001', 'Pasang Infus', '-', 0, 0, 0, 25000, 0, 0, 0, 25000, 25000, '-', '-', '1', 'Kelas 1');
+
 -- --------------------------------------------------------
 
 --
@@ -958,6 +1097,13 @@ CREATE TABLE IF NOT EXISTS `jns_perawatan_lab` (
   `kategori` enum('PK','PA','MB') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan_lab`
+--
+
+INSERT INTO `jns_perawatan_lab` (`kd_jenis_prw`, `nm_perawatan`, `bagian_rs`, `bhp`, `tarif_perujuk`, `tarif_tindakan_dokter`, `tarif_tindakan_petugas`, `kso`, `menejemen`, `total_byr`, `kd_pj`, `status`, `kelas`, `kategori`) VALUES
+('LAB001', 'Pemeriksaan Darah', 0, 0, 0, 100000, 0, 0, 0, 100000, '-', '1', 'Kelas 1', 'PK');
+
 -- --------------------------------------------------------
 
 --
@@ -980,6 +1126,13 @@ CREATE TABLE IF NOT EXISTS `jns_perawatan_radiologi` (
   `kelas` enum('-','Rawat Jalan','Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `jns_perawatan_radiologi`
+--
+
+INSERT INTO `jns_perawatan_radiologi` (`kd_jenis_prw`, `nm_perawatan`, `bagian_rs`, `bhp`, `tarif_perujuk`, `tarif_tindakan_dokter`, `tarif_tindakan_petugas`, `kso`, `menejemen`, `total_byr`, `kd_pj`, `status`, `kelas`) VALUES
+('RAD001', 'Thorax', 0, 0, 0, 150000, 0, 0, 0, 150000, '-', '1', 'Kelas 1');
+
 -- --------------------------------------------------------
 
 --
@@ -989,7 +1142,14 @@ CREATE TABLE IF NOT EXISTS `jns_perawatan_radiologi` (
 CREATE TABLE IF NOT EXISTS `kabupaten` (
   `kd_kab` int(11) NOT NULL,
   `nm_kab` varchar(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `kabupaten`
+--
+
+INSERT INTO `kabupaten` (`kd_kab`, `nm_kab`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -1005,6 +1165,14 @@ CREATE TABLE IF NOT EXISTS `kamar` (
   `kelas` enum('Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP') DEFAULT NULL,
   `statusdata` enum('0','1') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `kamar`
+--
+
+INSERT INTO `kamar` (`kd_kamar`, `kd_bangsal`, `trf_kamar`, `status`, `kelas`, `statusdata`) VALUES
+('ANG01', 'ANG', 100000, 'KOSONG', 'Kelas 1', '1'),
+('ANG02', 'ANG', 100000, 'KOSONG', 'Kelas 1', '1');
 
 -- --------------------------------------------------------
 
@@ -1038,6 +1206,13 @@ CREATE TABLE IF NOT EXISTS `kategori_barang` (
   `nama` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `kategori_barang`
+--
+
+INSERT INTO `kategori_barang` (`kode`, `nama`) VALUES
+('-', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -1050,6 +1225,13 @@ CREATE TABLE IF NOT EXISTS `kategori_penyakit` (
   `ciri_umum` varchar(200) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `kategori_penyakit`
+--
+
+INSERT INTO `kategori_penyakit` (`kd_ktg`, `nm_kategori`, `ciri_umum`) VALUES
+('-', '-', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -1061,6 +1243,13 @@ CREATE TABLE IF NOT EXISTS `kategori_perawatan` (
   `nm_kategori` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `kategori_perawatan`
+--
+
+INSERT INTO `kategori_perawatan` (`kd_kategori`, `nm_kategori`) VALUES
+('-', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -1070,7 +1259,14 @@ CREATE TABLE IF NOT EXISTS `kategori_perawatan` (
 CREATE TABLE IF NOT EXISTS `kecamatan` (
   `kd_kec` int(11) NOT NULL,
   `nm_kec` varchar(60) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `kecamatan`
+--
+
+INSERT INTO `kecamatan` (`kd_kec`, `nm_kec`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -1084,6 +1280,13 @@ CREATE TABLE IF NOT EXISTS `kelompok_jabatan` (
   `indek` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `kelompok_jabatan`
+--
+
+INSERT INTO `kelompok_jabatan` (`kode_kelompok`, `nama_kelompok`, `indek`) VALUES
+('-', '-', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -1095,6 +1298,13 @@ CREATE TABLE IF NOT EXISTS `kelurahan` (
   `nm_kel` varchar(60) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `kelurahan`
+--
+
+INSERT INTO `kelurahan` (`kd_kel`, `nm_kel`) VALUES
+('1', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -1105,6 +1315,13 @@ CREATE TABLE IF NOT EXISTS `kodesatuan` (
   `kode_sat` char(4) NOT NULL,
   `satuan` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `kodesatuan`
+--
+
+INSERT INTO `kodesatuan` (`kode_sat`, `satuan`) VALUES
+('-', '-');
 
 -- --------------------------------------------------------
 
@@ -1157,6 +1374,13 @@ CREATE TABLE IF NOT EXISTS `master_aturan_pakai` (
   `aturan` varchar(150) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `master_aturan_pakai`
+--
+
+INSERT INTO `master_aturan_pakai` (`aturan`) VALUES
+('3 x 1 Sehari');
+
 -- --------------------------------------------------------
 
 --
@@ -1168,6 +1392,13 @@ CREATE TABLE IF NOT EXISTS `master_berkas_digital` (
   `nama` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `master_berkas_digital`
+--
+
+INSERT INTO `master_berkas_digital` (`kode`, `nama`) VALUES
+('DIG001', 'Berkas Digital');
+
 -- --------------------------------------------------------
 
 --
@@ -1178,6 +1409,13 @@ CREATE TABLE IF NOT EXISTS `metode_racik` (
   `kd_racik` varchar(3) NOT NULL,
   `nm_racik` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `metode_racik`
+--
+
+INSERT INTO `metode_racik` (`kd_racik`, `nm_racik`) VALUES
+('1', 'Puyer');
 
 -- --------------------------------------------------------
 
@@ -1370,7 +1608,47 @@ CREATE TABLE IF NOT EXISTS `mlite_modules` (
   `id` int(11) NOT NULL,
   `dir` text,
   `sequence` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `mlite_modules`
+--
+
+INSERT INTO `mlite_modules` (`id`, `dir`, `sequence`) VALUES
+(1, 'settings', '9'),
+(2, 'dashboard', '0'),
+(3, 'master', '1'),
+(4, 'pasien', '2'),
+(5, 'rawat_jalan', '3'),
+(6, 'kasir_rawat_jalan', '4'),
+(7, 'kepegawaian', '5'),
+(8, 'farmasi', '6'),
+(9, 'users', '8'),
+(10, 'modules', '7'),
+(11, 'wagateway', '10'),
+(12, 'apotek_ralan', '11'),
+(13, 'dokter_ralan', '12'),
+(14, 'igd', '13'),
+(15, 'dokter_igd', '14'),
+(16, 'laboratorium', '15'),
+(17, 'radiologi', '16'),
+(18, 'icd', '17'),
+(19, 'rawat_inap', '18'),
+(20, 'apotek_ranap', '19'),
+(21, 'dokter_ranap', '20'),
+(22, 'kasir_rawat_inap', '21'),
+(23, 'operasi', '22'),
+(24, 'anjungan', '23'),
+(25, 'api', '24'),
+(26, 'jkn_mobile', '25'),
+(27, 'vclaim', '26'),
+(28, 'keuangan', '27'),
+(29, 'manajemen', '28'),
+(30, 'presensi', '29'),
+(31, 'vedika', '30'),
+(32, 'profil', '31'),
+(33, 'orthanc', '32'),
+(34, 'veronisa', '33');
 
 -- --------------------------------------------------------
 
@@ -1480,7 +1758,163 @@ CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `module` text,
   `field` text,
   `value` text
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `mlite_settings`
+--
+
+INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
+(1, 'settings', 'logo', 'uploads/settings/logo.png'),
+(2, 'settings', 'nama_instansi', 'mLITE Indonesia'),
+(3, 'settings', 'alamat', 'Jl. Perintis Kemerdekaan 45'),
+(4, 'settings', 'kota', 'Barabai'),
+(5, 'settings', 'propinsi', 'Kalimantan Selatan'),
+(6, 'settings', 'nomor_telepon', '0812345678'),
+(7, 'settings', 'email', 'info@mlite.id'),
+(8, 'settings', 'website', 'https://mlite.id'),
+(9, 'settings', 'ppk_bpjs', '-'),
+(10, 'settings', 'footer', 'Copyright {?=date("Y")?} &copy; by drg. F. Basoro. All rights reserved.'),
+(11, 'settings', 'homepage', 'main'),
+(12, 'settings', 'wallpaper', 'uploads/settings/wallpaper.jpg'),
+(13, 'settings', 'text_color', '#44813e'),
+(14, 'settings', 'igd', '-'),
+(15, 'settings', 'laboratorium', '-'),
+(16, 'settings', 'pj_laboratorium', 'DR001'),
+(17, 'settings', 'radiologi', '-'),
+(18, 'settings', 'pj_radiologi', 'DR001'),
+(19, 'settings', 'dokter_ralan_per_dokter', 'false'),
+(20, 'settings', 'cekstatusbayar', 'false'),
+(21, 'settings', 'ceklimit', 'false'),
+(22, 'settings', 'responsivevoice', 'false'),
+(23, 'settings', 'notif_presensi', 'true'),
+(24, 'settings', 'BpjsApiUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),
+(25, 'settings', 'BpjsConsID', '-'),
+(26, 'settings', 'BpjsSecretKey', '-'),
+(27, 'settings', 'BpjsUserKey', '-'),
+(28, 'settings', 'timezone', 'Asia/Makassar'),
+(29, 'settings', 'theme', 'default'),
+(30, 'settings', 'theme_admin', 'ataaka'),
+(31, 'settings', 'admin_mode', 'simple'),
+(32, 'settings', 'input_kasir', 'tidak'),
+(33, 'settings', 'editor', 'wysiwyg'),
+(34, 'settings', 'version', '2023-01-01 00:00:01'),
+(35, 'settings', 'update_check', '0'),
+(36, 'settings', 'update_changelog', ''),
+(37, 'settings', 'update_version', '0'),
+(38, 'settings', 'license', ''),
+(39, 'farmasi', 'deporalan', '-'),
+(40, 'farmasi', 'igd', '-'),
+(41, 'farmasi', 'deporanap', '-'),
+(42, 'farmasi', 'gudang', '-'),
+(43, 'wagateway', 'server', 'https://mlite.id'),
+(44, 'wagateway', 'token', '-'),
+(45, 'wagateway', 'phonenumber', '-'),
+(46, 'anjungan', 'display_poli', ''),
+(47, 'anjungan', 'carabayar', ''),
+(48, 'anjungan', 'antrian_loket', '1'),
+(49, 'anjungan', 'antrian_cs', '2'),
+(50, 'anjungan', 'antrian_apotek', '3'),
+(51, 'anjungan', 'panggil_loket', '1'),
+(52, 'anjungan', 'panggil_loket_nomor', '1'),
+(53, 'anjungan', 'panggil_cs', '1'),
+(54, 'anjungan', 'panggil_cs_nomor', '1'),
+(55, 'anjungan', 'panggil_apotek', '1'),
+(56, 'anjungan', 'panggil_apotek_nomor', '1'),
+(57, 'anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....'),
+(58, 'anjungan', 'text_loket', 'Running text display antrian loket.....'),
+(59, 'anjungan', 'text_poli', 'Running text display antrian poliklinik.....'),
+(60, 'anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....'),
+(61, 'anjungan', 'text_apotek', 'Running text display antrian apotek.....'),
+(62, 'anjungan', 'text_farmasi', 'Running text display antrian farmasi.....'),
+(63, 'anjungan', 'vidio', 'G4im8_n0OoI'),
+(64, 'api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
+(65, 'api', 'apam_status_daftar', 'Terdaftar'),
+(66, 'api', 'apam_status_dilayani', 'Anda siap dilayani'),
+(67, 'api', 'apam_webappsurl', 'http://localhost/webapps/'),
+(68, 'api', 'apam_normpetugas', '000001,000002'),
+(69, 'api', 'apam_limit', '2'),
+(70, 'api', 'apam_smtp_host', 'ssl://smtp.gmail.com'),
+(71, 'api', 'apam_smtp_port', '465'),
+(72, 'api', 'apam_smtp_username', ''),
+(73, 'api', 'apam_smtp_password', ''),
+(74, 'api', 'apam_kdpj', ''),
+(75, 'api', 'apam_kdprop', ''),
+(76, 'api', 'apam_kdkab', ''),
+(77, 'api', 'apam_kdkec', ''),
+(78, 'api', 'duitku_merchantCode', ''),
+(79, 'api', 'duitku_merchantKey', ''),
+(80, 'api', 'duitku_paymentAmount', ''),
+(81, 'api', 'duitku_paymentMethod', ''),
+(82, 'api', 'duitku_productDetails', ''),
+(83, 'api', 'duitku_expiryPeriod', ''),
+(84, 'api', 'duitku_kdpj', ''),
+(85, 'api', 'berkasdigital_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
+(86, 'jkn_mobile', 'x_username', 'jkn'),
+(87, 'jkn_mobile', 'x_password', 'mobile'),
+(88, 'jkn_mobile', 'header_token', 'X-Token'),
+(89, 'jkn_mobile', 'header_username', 'X-Username'),
+(90, 'jkn_mobile', 'header_password', 'X-Password'),
+(91, 'jkn_mobile', 'BpjsConsID', ''),
+(92, 'jkn_mobile', 'BpjsSecretKey', ''),
+(93, 'jkn_mobile', 'BpjsUserKey', ''),
+(94, 'jkn_mobile', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),
+(95, 'jkn_mobile', 'kd_pj_bpjs', ''),
+(96, 'jkn_mobile', 'exclude_taskid', ''),
+(97, 'jkn_mobile', 'display', ''),
+(98, 'jkn_mobile', 'kdprop', '1'),
+(99, 'jkn_mobile', 'kdkab', '1'),
+(100, 'jkn_mobile', 'kdkec', '1'),
+(101, 'jkn_mobile', 'kdkel', '1'),
+(102, 'jkn_mobile', 'perusahaan_pasien', ''),
+(103, 'jkn_mobile', 'suku_bangsa', ''),
+(104, 'jkn_mobile', 'bahasa_pasien', ''),
+(105, 'jkn_mobile', 'cacat_fisik', ''),
+(106, 'keuangan', 'jurnal_kasir', '0'),
+(107, 'keuangan', 'akun_kredit_pendaftaran', ''),
+(108, 'keuangan', 'akun_kredit_tindakan', ''),
+(109, 'keuangan', 'akun_kredit_obat_bhp', ''),
+(110, 'keuangan', 'akun_kredit_laboratorium', ''),
+(111, 'keuangan', 'akun_kredit_radiologi', ''),
+(112, 'keuangan', 'akun_kredit_tambahan_biaya', ''),
+(113, 'manajemen', 'penjab_umum', 'UMU'),
+(114, 'manajemen', 'penjab_bpjs', 'BPJ'),
+(115, 'presensi', 'lat', '-2.58'),
+(116, 'presensi', 'lon', '115.37'),
+(117, 'presensi', 'distance', '2'),
+(118, 'presensi', 'helloworld', 'Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),
+(119, 'vedika', 'carabayar', ''),
+(120, 'vedika', 'sep', ''),
+(121, 'vedika', 'skdp', ''),
+(122, 'vedika', 'operasi', ''),
+(123, 'vedika', 'individual', ''),
+(124, 'vedika', 'billing', 'mlite'),
+(125, 'vedika', 'periode', '2023-01'),
+(126, 'vedika', 'verifikasi', '2023-01'),
+(127, 'vedika', 'inacbgs_prosedur_bedah', ''),
+(128, 'vedika', 'inacbgs_prosedur_non_bedah', ''),
+(129, 'vedika', 'inacbgs_konsultasi', ''),
+(130, 'vedika', 'inacbgs_tenaga_ahli', ''),
+(131, 'vedika', 'inacbgs_keperawatan', ''),
+(132, 'vedika', 'inacbgs_penunjang', ''),
+(133, 'vedika', 'inacbgs_pelayanan_darah', ''),
+(134, 'vedika', 'inacbgs_rehabilitasi', ''),
+(135, 'vedika', 'inacbgs_rawat_intensif', ''),
+(136, 'vedika', 'eklaim_url', ''),
+(137, 'vedika', 'eklaim_key', ''),
+(138, 'vedika', 'eklaim_kelasrs', 'CP'),
+(139, 'vedika', 'eklaim_payor_id', '3'),
+(140, 'vedika', 'eklaim_payor_cd', 'JKN'),
+(141, 'vedika', 'eklaim_cob_cd', '#'),
+(142, 'orthanc', 'server', 'http://localhost:8042'),
+(143, 'orthanc', 'username', 'orthanc'),
+(144, 'orthanc', 'password', 'orthanc'),
+(145, 'veronisa', 'username', ''),
+(146, 'veronisa', 'password', ''),
+(147, 'veronisa', 'obat_kronis', ''),
+(148, 'jkn_mobile', 'kirimantrian', 'tidak'),
+(149, 'settings', 'keamanan', 'ya'),
+(150, 'settings', 'dokter_ralan', 'tidak');
 
 -- --------------------------------------------------------
 
@@ -1619,7 +2053,15 @@ CREATE TABLE IF NOT EXISTS `mlite_users` (
   `role` varchar(100) NOT NULL DEFAULT 'user',
   `cap` varchar(100) DEFAULT '',
   `access` varchar(500) NOT NULL DEFAULT 'dashboard'
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `mlite_users`
+--
+
+INSERT INTO `mlite_users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
+(1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar6422cb573b50c.png', 'info@mlite.id', 'admin', '', 'all'),
+(2, 'DR001', 'dr. Ataaka Muhammad', '-', '$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC', 'avatar643a104444515.png', 'info@mlite.id', 'admin', '', 'all');
 
 -- --------------------------------------------------------
 
@@ -1961,7 +2403,14 @@ CREATE TABLE IF NOT EXISTS `pegawai` (
   `dankes` double NOT NULL,
   `photo` varchar(500) DEFAULT NULL,
   `no_ktp` varchar(20) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `pegawai`
+--
+
+INSERT INTO `pegawai` (`id`, `nik`, `nama`, `jk`, `jbtn`, `jnj_jabatan`, `kode_kelompok`, `kode_resiko`, `kode_emergency`, `departemen`, `bidang`, `stts_wp`, `stts_kerja`, `npwp`, `pendidikan`, `gapok`, `tmp_lahir`, `tgl_lahir`, `alamat`, `kota`, `mulai_kerja`, `ms_kerja`, `indexins`, `bpd`, `rekening`, `stts_aktif`, `wajibmasuk`, `pengurang`, `indek`, `mulai_kontrak`, `cuti_diambil`, `dankes`, `photo`, `no_ktp`) VALUES
+(1, 'DR001', 'dr. Ataaka Muhammad', 'Pria', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', 0, 'Barabai', '2016-06-10', '-', 'Barabai', '2019-09-18', '<1', '-', '-', '-', 'AKTIF', 0, 0, 0, '2019-09-18', 1, 0, '-', '0');
 
 -- --------------------------------------------------------
 
@@ -2052,6 +2501,13 @@ CREATE TABLE IF NOT EXISTS `pendidikan` (
   `maksimal` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `pendidikan`
+--
+
+INSERT INTO `pendidikan` (`tingkat`, `indek`, `gapok1`, `kenaikan`, `maksimal`) VALUES
+('-', 1, 0, 0, 1);
+
 -- --------------------------------------------------------
 
 --
@@ -2067,6 +2523,15 @@ CREATE TABLE IF NOT EXISTS `penjab` (
   `attn` varchar(60) NOT NULL,
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `penjab`
+--
+
+INSERT INTO `penjab` (`kd_pj`, `png_jawab`, `nama_perusahaan`, `alamat_asuransi`, `no_telp`, `attn`, `status`) VALUES
+('-', '-', '-', '-', '0', '0', '1'),
+('BPJ', 'BPJS Kesehatan', '-', '-', '0', '0', '1'),
+('UMU', 'Umum', '-', '-', '0', '0', '1');
 
 -- --------------------------------------------------------
 
@@ -2278,6 +2743,13 @@ CREATE TABLE IF NOT EXISTS `perusahaan_pasien` (
   `no_telp` varchar(27) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `perusahaan_pasien`
+--
+
+INSERT INTO `perusahaan_pasien` (`kode_perusahaan`, `nama_perusahaan`, `alamat`, `kota`, `no_telp`) VALUES
+('-', '-', '-', '-', '0');
+
 -- --------------------------------------------------------
 
 --
@@ -2299,6 +2771,13 @@ CREATE TABLE IF NOT EXISTS `petugas` (
   `status` enum('0','1') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `petugas`
+--
+
+INSERT INTO `petugas` (`nip`, `nama`, `jk`, `tmp_lahir`, `tgl_lahir`, `gol_darah`, `agama`, `stts_nikah`, `alamat`, `kd_jbtn`, `no_telp`, `status`) VALUES
+('DR001', 'dr. Ataaka Muhammad', 'L', 'Barabai', '2020-12-01', 'A', 'Islam', 'MENIKAH', '-', '-', '0', '1');
+
 -- --------------------------------------------------------
 
 --
@@ -2313,6 +2792,15 @@ CREATE TABLE IF NOT EXISTS `poliklinik` (
   `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `poliklinik`
+--
+
+INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, `status`) VALUES
+('-', '-', 0, 0, '1'),
+('IGDK', 'IGD', 0, 0, '1'),
+('UMU', 'Umum', 0, 0, '1');
+
 -- --------------------------------------------------------
 
 --
@@ -2322,7 +2810,14 @@ CREATE TABLE IF NOT EXISTS `poliklinik` (
 CREATE TABLE IF NOT EXISTS `propinsi` (
   `kd_prop` int(11) NOT NULL,
   `nm_prop` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `propinsi`
+--
+
+INSERT INTO `propinsi` (`kd_prop`, `nm_prop`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -2606,6 +3101,13 @@ CREATE TABLE IF NOT EXISTS `resiko_kerja` (
   `indek` tinyint(4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `resiko_kerja`
+--
+
+INSERT INTO `resiko_kerja` (`kode_resiko`, `nama_resiko`, `indek`) VALUES
+('-', '-', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -2747,6 +3249,13 @@ CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
   `no_rkm_medis` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
+--
+-- Dumping data for table `set_no_rkm_medis`
+--
+
+INSERT INTO `set_no_rkm_medis` (`no_rkm_medis`) VALUES
+('000000');
+
 -- --------------------------------------------------------
 
 --
@@ -2780,6 +3289,13 @@ CREATE TABLE IF NOT EXISTS `spesialis` (
   `nm_sps` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `spesialis`
+--
+
+INSERT INTO `spesialis` (`kd_sps`, `nm_sps`) VALUES
+('UMUM', 'Dokter Umum');
+
 -- --------------------------------------------------------
 
 --
@@ -2792,6 +3308,13 @@ CREATE TABLE IF NOT EXISTS `stts_kerja` (
   `indek` tinyint(4) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `stts_kerja`
+--
+
+INSERT INTO `stts_kerja` (`stts`, `ktg`, `indek`) VALUES
+('-', '-', 1);
+
 -- --------------------------------------------------------
 
 --
@@ -2803,6 +3326,13 @@ CREATE TABLE IF NOT EXISTS `stts_wp` (
   `ktg` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+--
+-- Dumping data for table `stts_wp`
+--
+
+INSERT INTO `stts_wp` (`stts`, `ktg`) VALUES
+('-', '-');
+
 -- --------------------------------------------------------
 
 --
@@ -2812,7 +3342,14 @@ CREATE TABLE IF NOT EXISTS `stts_wp` (
 CREATE TABLE IF NOT EXISTS `suku_bangsa` (
   `id` int(11) NOT NULL,
   `nama_suku_bangsa` varchar(30) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1 ROW_FORMAT=COMPACT;
+
+--
+-- Dumping data for table `suku_bangsa`
+--
+
+INSERT INTO `suku_bangsa` (`id`, `nama_suku_bangsa`) VALUES
+(1, '-');
 
 -- --------------------------------------------------------
 
@@ -2850,7 +3387,15 @@ CREATE TABLE IF NOT EXISTS `template_laboratorium` (
   `menejemen` double DEFAULT NULL,
   `biaya_item` double NOT NULL,
   `urut` int(4) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `template_laboratorium`
+--
+
+INSERT INTO `template_laboratorium` (`kd_jenis_prw`, `id_template`, `Pemeriksaan`, `satuan`, `nilai_rujukan_ld`, `nilai_rujukan_la`, `nilai_rujukan_pd`, `nilai_rujukan_pa`, `bagian_rs`, `bhp`, `bagian_perujuk`, `bagian_dokter`, `bagian_laborat`, `kso`, `menejemen`, `biaya_item`, `urut`) VALUES
+('LAB001', 1, 'Leukosit', 'LK', '10', '5', '10', '5', 0, 0, 0, 0, 0, 0, 0, 0, 1),
+('LAB001', 2, 'Hemoglobin', 'HB', '20', '10', '20', '10', 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
 -- --------------------------------------------------------
 
@@ -2867,90 +3412,6 @@ CREATE TABLE IF NOT EXISTS `temporary_presensi` (
   `keterlambatan` varchar(20) NOT NULL,
   `durasi` varchar(20) DEFAULT NULL,
   `photo` varchar(500) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `utd_donor`
---
-
-CREATE TABLE IF NOT EXISTS `utd_donor` (
-  `no_donor` varchar(15) NOT NULL,
-  `no_pendonor` varchar(15) NOT NULL,
-  `tanggal` date DEFAULT NULL,
-  `dinas` enum('Pagi','Siang','Sore','Malam') DEFAULT NULL,
-  `tensi` varchar(7) DEFAULT NULL,
-  `no_bag` int(11) DEFAULT NULL,
-  `jenis_bag` enum('SB','DB','TB','QB') DEFAULT NULL,
-  `jenis_donor` enum('DB','DP','DS') DEFAULT NULL,
-  `tempat_aftap` enum('Dalam Gedung','Luar Gedung') DEFAULT NULL,
-  `petugas_aftap` varchar(20) DEFAULT NULL,
-  `hbsag` enum('Negatif','Positif') DEFAULT NULL,
-  `hcv` enum('Negatif','Positif') DEFAULT NULL,
-  `hiv` enum('Negatif','Positif') DEFAULT NULL,
-  `spilis` enum('Negatif','Positif') DEFAULT NULL,
-  `malaria` enum('Negatif','Positif') DEFAULT NULL,
-  `petugas_u_saring` varchar(20) DEFAULT NULL,
-  `status` enum('Aman','Cekal') DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `utd_komponen_darah`
---
-
-CREATE TABLE IF NOT EXISTS `utd_komponen_darah` (
-  `kode` varchar(5) NOT NULL,
-  `nama` varchar(70) DEFAULT NULL,
-  `lama` smallint(6) DEFAULT NULL,
-  `jasa_sarana` double DEFAULT NULL,
-  `paket_bhp` double DEFAULT NULL,
-  `kso` double DEFAULT NULL,
-  `manajemen` double DEFAULT NULL,
-  `total` double DEFAULT NULL,
-  `pembatalan` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `utd_pendonor`
---
-
-CREATE TABLE IF NOT EXISTS `utd_pendonor` (
-  `no_pendonor` varchar(15) NOT NULL,
-  `nama` varchar(40) NOT NULL,
-  `no_ktp` varchar(20) NOT NULL,
-  `jk` enum('L','P') NOT NULL,
-  `tmp_lahir` varchar(15) NOT NULL,
-  `tgl_lahir` date NOT NULL,
-  `alamat` varchar(100) NOT NULL,
-  `kd_kel` int(11) NOT NULL,
-  `kd_kec` int(11) NOT NULL,
-  `kd_kab` int(11) NOT NULL,
-  `kd_prop` int(11) NOT NULL,
-  `golongan_darah` enum('A','AB','B','O') NOT NULL,
-  `resus` enum('(-)','(+)') NOT NULL,
-  `no_telp` varchar(40) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
--- Table structure for table `utd_stok_darah`
---
-
-CREATE TABLE IF NOT EXISTS `utd_stok_darah` (
-  `no_kantong` varchar(20) NOT NULL DEFAULT '',
-  `kode_komponen` varchar(5) DEFAULT NULL,
-  `golongan_darah` enum('A','AB','B','O') DEFAULT NULL,
-  `resus` enum('(-)','(+)') DEFAULT NULL,
-  `tanggal_aftap` date DEFAULT NULL,
-  `tanggal_kadaluarsa` date DEFAULT NULL,
-  `asal_darah` enum('Hibah','Beli','Produksi Sendiri') DEFAULT NULL,
-  `status` enum('Ada','Diambil','Dimusnahkan') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -4292,38 +4753,6 @@ ALTER TABLE `temporary_presensi`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `utd_donor`
---
-ALTER TABLE `utd_donor`
-  ADD PRIMARY KEY (`no_donor`),
-  ADD KEY `petugas_aftap` (`petugas_aftap`),
-  ADD KEY `petugas_u_saring` (`petugas_u_saring`),
-  ADD KEY `no_pendonor` (`no_pendonor`);
-
---
--- Indexes for table `utd_komponen_darah`
---
-ALTER TABLE `utd_komponen_darah`
-  ADD PRIMARY KEY (`kode`);
-
---
--- Indexes for table `utd_pendonor`
---
-ALTER TABLE `utd_pendonor`
-  ADD PRIMARY KEY (`no_pendonor`),
-  ADD KEY `kd_kec` (`kd_kec`),
-  ADD KEY `kd_kab` (`kd_kab`),
-  ADD KEY `kd_prop` (`kd_prop`),
-  ADD KEY `kd_kel` (`kd_kel`) USING BTREE;
-
---
--- Indexes for table `utd_stok_darah`
---
-ALTER TABLE `utd_stok_darah`
-  ADD PRIMARY KEY (`no_kantong`),
-  ADD KEY `kode_komponen` (`kode_komponen`);
-
---
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -4331,12 +4760,12 @@ ALTER TABLE `utd_stok_darah`
 -- AUTO_INCREMENT for table `bahasa_pasien`
 --
 ALTER TABLE `bahasa_pasien`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `cacat_fisik`
 --
 ALTER TABLE `cacat_fisik`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `jam_jaga`
 --
@@ -4346,12 +4775,12 @@ ALTER TABLE `jam_jaga`
 -- AUTO_INCREMENT for table `kabupaten`
 --
 ALTER TABLE `kabupaten`
-  MODIFY `kd_kab` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `kd_kab` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `kecamatan`
 --
 ALTER TABLE `kecamatan`
-  MODIFY `kd_kec` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `kd_kec` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `mlite_akun_kegiatan`
 --
@@ -4376,7 +4805,7 @@ ALTER TABLE `mlite_duitku`
 -- AUTO_INCREMENT for table `mlite_modules`
 --
 ALTER TABLE `mlite_modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=35;
 --
 -- AUTO_INCREMENT for table `mlite_notifications`
 --
@@ -4401,12 +4830,12 @@ ALTER TABLE `mlite_remember_me`
 -- AUTO_INCREMENT for table `mlite_settings`
 --
 ALTER TABLE `mlite_settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=151;
 --
 -- AUTO_INCREMENT for table `mlite_users`
 --
 ALTER TABLE `mlite_users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `mlite_users_vedika`
 --
@@ -4436,22 +4865,22 @@ ALTER TABLE `mlite_veronisa_feedback`
 -- AUTO_INCREMENT for table `pegawai`
 --
 ALTER TABLE `pegawai`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `propinsi`
 --
 ALTER TABLE `propinsi`
-  MODIFY `kd_prop` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `kd_prop` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `suku_bangsa`
 --
 ALTER TABLE `suku_bangsa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT for table `template_laboratorium`
 --
 ALTER TABLE `template_laboratorium`
-  MODIFY `id_template` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_template` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
 --
 -- Constraints for dumped tables
 --
@@ -5119,24 +5548,6 @@ ALTER TABLE `template_laboratorium`
 ALTER TABLE `temporary_presensi`
   ADD CONSTRAINT `temporary_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
 
---
--- Constraints for table `utd_donor`
---
-ALTER TABLE `utd_donor`
-  ADD CONSTRAINT `utd_donor_ibfk_1` FOREIGN KEY (`petugas_aftap`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `utd_donor_ibfk_2` FOREIGN KEY (`petugas_u_saring`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `utd_donor_ibfk_3` FOREIGN KEY (`no_pendonor`) REFERENCES `utd_pendonor` (`no_pendonor`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Constraints for table `utd_pendonor`
---
-ALTER TABLE `utd_pendonor`
-  ADD CONSTRAINT `utd_pendonor_ibfk_1` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `utd_pendonor_ibfk_2` FOREIGN KEY (`kd_kab`) REFERENCES `kabupaten` (`kd_kab`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `utd_pendonor_ibfk_3` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE;
-
---
--- Constraints for table `utd_stok_darah`
---
-ALTER TABLE `utd_stok_darah`
-  ADD CONSTRAINT `utd_stok_darah_ibfk_1` FOREIGN KEY (`kode_komponen`) REFERENCES `utd_komponen_darah` (`kode`) ON UPDATE CASCADE;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
