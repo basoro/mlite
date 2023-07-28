@@ -355,16 +355,9 @@ class Admin extends AdminModule
 
   public function getKartuDonor($no_pendonor)
   {
-      //echo 'Kartu Donor '.$no_pendonor;
-      //$logo = $this->settings->get('settings.logo');
-      // $pdf = new FPDF('L', 'mm', array(59,98));
-      // $pdf->AddPage();
-      // $pdf->SetFont('Arial','B',16);
-      // $pdf->Cell(40,10,'Kartu Donor '.$no_pendonor);
       $pdf=new PDF_Code128('L', 'mm', array(59,98));
       $pdf->AddPage();
       $pdf->SetFont('Arial','',10);
-      //A set
       $pdf->Code128(9,35,$no_pendonor,80,20);
       $pdf->SetFont('Arial','B',16);
       $pdf->SetXY(8,0);
