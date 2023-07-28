@@ -519,7 +519,7 @@ function stringDecrypt($key, $string){
     $key_hash = hex2bin(hash('sha256', $key));
     $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
 
-    $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
+    $output = openssl_decrypt(base64_decode(isset_or($string,'')), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
 
     return $output;
 }

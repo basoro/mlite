@@ -4,6 +4,8 @@ namespace Plugins\Utd;
 
 use Systems\AdminModule;
 use Plugins\Utd\DB_Wilayah;
+use Systems\Lib\Fpdf\FPDF;
+use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -39,7 +41,12 @@ class Admin extends AdminModule
       ->join('kecamatan', 'kecamatan.kd_kec=utd_pendonor.kd_kec')
       ->join('kelurahan', 'kelurahan.kd_kel=utd_pendonor.kd_kel')
       ->toArray();
-    return $this->draw('data.pendonor.html', ['pendonor' => $pendonor, 'nomor' => $this->setNoPendonor()]);
+    return $this->draw('data.pendonor.html', [
+      'pendonor' => $pendonor,
+      'nomor' => $this->setNoPendonor(),
+      'waapitoken' => $this->settings->get('wagateway.token'),
+      'waapiphonenumber' => $this->settings->get('wagateway.phonenumber')
+    ]);
   }
 
   public function postSavePendonor()
@@ -102,6 +109,70 @@ class Admin extends AdminModule
       ->where('no_pendonor', $no_pendonor)
       ->delete();
     redirect(url([ADMIN, 'utd', 'pendonor']));
+  }
+
+  public function postCetak()
+  {
+    $this->core->mysql()->pdo()->exec("DELETE FROM `mlite_temporary`");
+    $cari = $_POST['cari'];
+    $this->core->mysql()->pdo()->exec("INSERT INTO `mlite_temporary` (
+      `temp1`,
+      `temp2`,
+      `temp3`,
+      `temp4`,
+      `temp5`,
+      `temp6`,
+      `temp7`,
+      `temp8`,
+      `temp9`,
+      `temp10`,
+      `temp11`,
+      `temp12`,
+      `temp13`,
+      `temp14`
+    )
+    SELECT *
+    FROM `utd_pendonor`
+    WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
+    ");
+    exit();
+  }
+
+  public function getCetakPendonor()
+  {
+    $tmp = $this->core->mysql('mlite_temporary')->toArray();
+    $logo = $this->settings->get('settings.logo');
+
+    $pdf = new PDF_MC_Table('L','mm','Legal');
+    $pdf->AddPage();
+    $pdf->SetAutoPageBreak(true, 10);
+    $pdf->SetTopMargin(10);
+    $pdf->SetLeftMargin(10);
+    $pdf->SetRightMargin(10);
+
+    $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
+    $pdf->SetFont('Arial', '', 24);
+    $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
+    $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
+    $pdf->Line(10, 30, 345, 30);
+    $pdf->Line(10, 31, 345, 31);
+    $pdf->SetFont('Arial', 'B', 13);
+    $pdf->Text(10, 40, 'DATA PENDONOR');
+    $pdf->Ln(34);
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->SetWidths(array(30,65,35,25,25,90,35,30));
+    $pdf->Row(array('No. Pendonor','Nama Pasien','No. KTP','J. Kelamin','Tgl. Lahir','Alamat','G.Darah/Resus','No. Telp'));
+    $pdf->SetFont('Arial', '', 10);
+    foreach ($tmp as $hasil) {
+      $j_kelamin = 'Laki-Laki';
+      if($hasil['temp4'] == 'P') {
+        $j_kelamin = 'Perempuan';
+      }
+      $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3'],$j_kelamin,$hasil['temp6'],$hasil['temp7'],$hasil['temp12'].' / '.$hasil['temp13'],$hasil['temp14']));
+    }
+    $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
   }
 
   public function getDonor()
@@ -279,6 +350,17 @@ class Admin extends AdminModule
       break;
     }
     exit();
+  }
+
+  public function getKartuDonor($no_pendonor)
+  {
+      //echo 'Kartu Donor '.$no_pendonor;
+      //$logo = $this->settings->get('settings.logo');
+      $pdf = new FPDF('L', 'mm', array(59,98));
+      $pdf->AddPage();
+      $pdf->SetFont('Arial','B',16);
+      $pdf->Cell(40,10,'Kartu Donor '.$no_pendonor);
+      $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
   }
 
   public function setNoPendonor()

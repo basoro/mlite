@@ -136,8 +136,9 @@
                     </div>
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">
-                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="simpan" class="btn btn-primary" value="Simpan" />
                     <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="update" class="btn btn-warning" id="cetak" value="Cetak" />
                     <input type="submit" name="hapus" id="hapus" class="btn btn-danger pull-right" value="Hapus" />
                 </div>
             </div>
@@ -148,7 +149,7 @@
 <div class="row">
   <div class="col-md-12">
     <div class="table-responsive no-margin" id="utd_pendonor">
-      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+      <table class="table table-bordered no-padding nowrap dataTables" id="myTable" width="100%">
         <thead>
           <tr>
             <th>No. Pendonor</th>
@@ -212,8 +213,123 @@
     </div>
   </div>
 </div>
+<div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;">
+    <li>
+      <a class="kartuDonor" tabindex="-1" href="#">Cetak Kartu Donor</a>
+    </li>
+    <li><a class="kirimWa" tabindex="-1" href="#">Kirim WhatsApp</a>
+    <!-- </li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Submenu</a>
+      <ul class="dropdown-menu">
+        <li><a class="selectOption" href="#">Submenu 1</a></li>
+        <li><a class="selectOption" href="#">Submenu 2</a></li>
+      </ul>
+    </li>
+    <li class="divider"></li>
+    <li><a class="selectOption" tabindex="-1" href="#">Final Action</a></li> -->
+  </ul>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="kartuModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Cetak Kartu</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cetak-kartu">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="cetakModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Cetak Data Pendonor</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cetak-data_pendonor">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
 
 <script type="text/javascript">
+  $('#myTable tbody tr').click(function() {
+      $(this).addClass('bg-danger').siblings().removeClass('bg-danger');
+  });
+  $(function() {
+      var selected_row;
+      var $contextMenu = $("#contextMenu");
+      $("body").on("contextmenu", "table tr", function(e) {
+         no_pendonor = $(this).data("no_pendonor");
+         nama = $(this).data("nama");
+         no_telp = $(this).data("no_telp");
+         $contextMenu.css({
+              display: "block",
+              left: e.pageX,
+              top: e.pageY-50
+         });
+         return false;
+      });
+      $(".kirimWa").click(function(){
+        $("#waModal").on("shown.bs.modal", function (e) {
+             $(e.currentTarget).find('input[name="number"]').val(no_telp);
+             $(e.currentTarget).find('#message').val('Assalamualaikum...\nBapak/Ibu ' + nama + ' waktunya donor\n\n\nUnit UTD');
+        }).modal('show');
+      })
+      $(".kartuDonor").click(function(){
+          var baseURL = mlite.url + '/' + mlite.admin;
+          $("#kartuModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/utd/kartudonor/' + no_pendonor + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+      })
+      $('html').click(function() {
+           $contextMenu.hide();
+      });
+  });
+
   $("#utd_pendonor").on("click", ".utd_pendonor", function(event){
     var no_pendonor  = $(this).attr("data-no_pendonor");
     var nama  = $(this).attr("data-nama");
@@ -369,6 +485,40 @@
         });
       }
     });
+  });
+
+  function KirimWA() {
+  	var xhttp = new XMLHttpRequest();
+    var api_key = '{$waapitoken}';
+  	var sender = '{$waapiphonenumber}';
+  	var number = document.getElementById("number").value;
+  	var message = document.getElementById("message").value;
+  	//console.log(api_key + " - " + number + " - " + message);
+  	xhttp.onreadystatechange = function() {
+  		if (this.readyState == 4 && this.status == 200) {
+  			var data=xhttp.responseText;
+  			var jsonResponse = JSON.parse(data);
+  			if(jsonResponse["status"] == true) {
+  				alert('Sukses mengirim pesan.');
+  			} else {
+  				alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+  			}
+  		}
+  	};
+  	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
+  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
+  }
+
+  $("form").on("click", "#cetak", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/utd/cetak?t=' + mlite.token;
+    var cari = $('.pencarian').val();
+    $.post(url, {cari: cari} ,function(data) {
+      $("#cetakModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/utd/cetakpendonor?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+    });
+
+		return false;
   });
 
  </script>

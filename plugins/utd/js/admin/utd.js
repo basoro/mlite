@@ -17,7 +17,7 @@ $('.dataTables').DataTable({
 });
 var t = $(".dataTables").DataTable().rows().count();
 $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
-
+$('.dataTables_filter input').addClass('form-control pencarian');
 $('.displayData').DataTable();
 
 $(function () {
