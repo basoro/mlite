@@ -6,6 +6,7 @@ use Systems\AdminModule;
 use Plugins\Utd\DB_Wilayah;
 use Systems\Lib\Fpdf\FPDF;
 use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\Fpdf\PDF_Code128;
 
 class Admin extends AdminModule
 {
@@ -356,10 +357,18 @@ class Admin extends AdminModule
   {
       //echo 'Kartu Donor '.$no_pendonor;
       //$logo = $this->settings->get('settings.logo');
-      $pdf = new FPDF('L', 'mm', array(59,98));
+      // $pdf = new FPDF('L', 'mm', array(59,98));
+      // $pdf->AddPage();
+      // $pdf->SetFont('Arial','B',16);
+      // $pdf->Cell(40,10,'Kartu Donor '.$no_pendonor);
+      $pdf=new PDF_Code128('L', 'mm', array(59,98));
       $pdf->AddPage();
+      $pdf->SetFont('Arial','',10);
+      //A set
+      $pdf->Code128(9,35,$no_pendonor,80,20);
       $pdf->SetFont('Arial','B',16);
-      $pdf->Cell(40,10,'Kartu Donor '.$no_pendonor);
+      $pdf->SetXY(8,0);
+      $pdf->Cell(0,35,$no_pendonor);
       $pdf->Output('kartudonor_'.$no_pendonor.'.pdf','I');
   }
 
