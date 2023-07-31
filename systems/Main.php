@@ -216,7 +216,11 @@ abstract class Main
 
             if (empty(parseURL(1))) {
                 if(MULTI_APP) {
-                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                    if(!empty(MULTI_APP_REDIRECT)) {
+                        redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                    } else {
+                        redirect(url([ADMIN, 'dashboard', 'main']));
+                    }
                 } else {
                     redirect(url([ADMIN, 'dashboard', 'main']));
                 }
@@ -243,7 +247,11 @@ abstract class Main
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
                             if(MULTI_APP) {
-                                redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                                if(!empty(MULTI_APP_REDIRECT)) {
+                                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                                } else {
+                                    redirect(url([ADMIN, 'dashboard', 'main']));
+                                }
                             } else {
                                 redirect(url([ADMIN, 'dashboard', 'main']));
                             }

@@ -42,7 +42,11 @@ if ($core->loginCheck()) {
                 redirect(url($url));
             }
             if(MULTI_APP) {
-                redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                if(!empty(MULTI_APP_REDIRECT)) {
+                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
+                } else {
+                    redirect(url([ADMIN, 'dashboard', 'main']));
+                }
             } else {
                 redirect(url([ADMIN, 'dashboard', 'main']));
             }
