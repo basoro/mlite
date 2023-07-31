@@ -524,6 +524,20 @@ function stringDecrypt($key, $string){
     return $output;
 }
 
+function hitungUmur($tanggal_lahir)
+{
+  $birthDate = new \DateTime($tanggal_lahir);
+  $today = new \DateTime("today");
+  $umur = "0 Th 0 Bl 0 Hr";
+  if ($birthDate < $today) {
+    $y = $today->diff($birthDate)->y;
+    $m = $today->diff($birthDate)->m;
+    $d = $today->diff($birthDate)->d;
+    $umur =  $y." Th ".$m." Bl ".$d." Hr";
+  }
+  return $umur;
+}
+
 function decompress($string){
     return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
 }

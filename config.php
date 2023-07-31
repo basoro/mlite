@@ -18,6 +18,7 @@ define('ADMIN', 'admin');
 
 // Multi APP
 define('MULTI_APP', false);
+define('MULTI_APP_REDIRECT', '');
 
 // Themes path
 define('THEMES', BASE_DIR . '/themes');
