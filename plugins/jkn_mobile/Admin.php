@@ -662,10 +662,10 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getUpdateWaktu($nomor_referensi, $versi)
+    public function getUpdateWaktu($nomor_referensi, $kode_booking, $versi)
     {
 
-      $mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->oneArray();
+      $mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->where('kodebooking', $kode_booking)->oneArray();
       $reg_periksa = $this->core->mysql('reg_periksa')
         ->where('tgl_registrasi', $mlite_antrian_referensi['tanggal_periksa'])
         ->where('no_rkm_medis', $mlite_antrian_referensi['no_rkm_medis'])
