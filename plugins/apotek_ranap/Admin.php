@@ -337,7 +337,9 @@ class Admin extends AdminModule
         ->where('tgl_perawatan', $row['tgl_perawatan'])
         ->where('jam', $row['jam'])
         ->oneArray();
+        $databarang = $this->core->mysql('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
         $row['aturan_pakai'] = $aturan_pakai['aturan'];
+        $row['nama_brng'] = $databarang['nama_brng'];
         $jumlah_total_obat += floatval($row['total']);
         $detail_pemberian_obat[] = $row;
       }
