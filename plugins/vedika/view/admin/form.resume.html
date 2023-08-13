@@ -13,13 +13,13 @@
       <div class="col-md-12">
         <div class="form-group">
             <label>Diagnosa</label>
-            <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3"></textarea>
+            <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama)?}{else}{?=isset_or($diagnosa.nm_penyakit)?}{/if}</textarea>
         </div>
       </div>
       <div class="col-md-12">
         <div class="form-group">
             <label>Prosedur</label>
-            <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3"></textarea>
+            <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.prosedur_utama)?}{else}{?=isset_or($prosedur.deskripsi_panjang)?}{/if}</textarea>
         </div>
       </div>
       <div class="col-md-12">

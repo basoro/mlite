@@ -1636,7 +1636,7 @@ class Admin extends AdminModule
            ->toArray();
 
          $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
-           ->where('status', 'ranap')
+           //->where('status', 'ranap')
            ->where('no_rawat', $no_rawat)
            ->toArray();
 
@@ -1852,7 +1852,7 @@ class Admin extends AdminModule
 
     $this->tpl->set('pasien', $pasien);
     $this->tpl->set('reg_periksa', $reg_periksa);
-    $this->tpl->set('rujukan_internal', $rujukan_internal);
+    //$this->tpl->set('rujukan_internal', $rujukan_internal);
     $this->tpl->set('dpjp_ranap', $dpjp_ranap);
     $this->tpl->set('diagnosa_pasien', $diagnosa_pasien);
     $this->tpl->set('prosedur_pasien', $prosedur_pasien);
@@ -1868,7 +1868,7 @@ class Admin extends AdminModule
     $this->tpl->set('operasi', $operasi);
     $this->tpl->set('tindakan_radiologi', $tindakan_radiologi);
     $this->tpl->set('hasil_radiologi', $hasil_radiologi);
-    $this->tpl->set('saran_rad', $saran_rad);
+    //$this->tpl->set('saran_rad', $saran_rad);
     $this->tpl->set('pemeriksaan_laboratorium', $pemeriksaan_laboratorium);
     $this->tpl->set('pemberian_obat', $pemberian_obat);
     $this->tpl->set('obat_operasi', $obat_operasi);
@@ -2199,11 +2199,95 @@ class Admin extends AdminModule
 
   public function getResume($status_lanjut, $no_rawat)
   {
-    echo $this->draw('form.resume.html', ['status_lanjut' => $status_lanjut, 'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(), 'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()]);
+    if($status_lanjut == 'Ralan') {
+      echo $this->draw('form.resume.html', [
+        'status_lanjut' => $status_lanjut,
+        'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'diagnosa' => $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray(),
+        'prosedur' => $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()
+      ]);
+    }
+    if($status_lanjut == 'Ranap') {
+      echo $this->draw('form.resume.ranap.html', [
+        'status_lanjut' => $status_lanjut,
+        'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'kamar_inap' => $this->core->mysql('kamar_inap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'diagnosa_utama' => $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ranap')->oneArray(),
+        'prosedur_utama' => $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ranap')->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien_ranap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()
+      ]);
+    }
     exit();
   }
 
   public function postSaveResume()
+  {
+
+    if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      $this->core->mysql('resume_pasien')
+        ->where('no_rawat', $_POST['no_rawat'])
+        ->save([
+        'kd_dokter'  => $this->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+        'keluhan_utama' => '-',
+        'jalannya_penyakit' => '-',
+        'pemeriksaan_penunjang' => '-',
+        'hasil_laborat' => '-',
+        'diagnosa_utama' => $_POST['diagnosa_utama'],
+        'kd_diagnosa_utama' => '-',
+        'diagnosa_sekunder' => '-',
+        'kd_diagnosa_sekunder' => '-',
+        'diagnosa_sekunder2' => '-',
+        'kd_diagnosa_sekunder2' => '-',
+        'diagnosa_sekunder3' => '-',
+        'kd_diagnosa_sekunder3' => '-',
+        'diagnosa_sekunder4' => '-',
+        'kd_diagnosa_sekunder4' => '-',
+        'prosedur_utama' => $_POST['prosedur_utama'],
+        'kd_prosedur_utama' => '-',
+        'prosedur_sekunder' => '-',
+        'kd_prosedur_sekunder' => '-',
+        'prosedur_sekunder2' => '-',
+        'kd_prosedur_sekunder2' => '-',
+        'prosedur_sekunder3' => '-',
+        'kd_prosedur_sekunder3' => '-',
+        'kondisi_pulang'  => $_POST['kondisi_pulang'],
+        'obat_pulang' => '-'
+      ]);
+    } else {
+      $this->core->mysql('resume_pasien')->save([
+        'no_rawat' => $_POST['no_rawat'],
+        'kd_dokter'  => $this->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
+        'keluhan_utama' => '-',
+        'jalannya_penyakit' => '-',
+        'pemeriksaan_penunjang' => '-',
+        'hasil_laborat' => '-',
+        'diagnosa_utama' => $_POST['diagnosa_utama'],
+        'kd_diagnosa_utama' => '-',
+        'diagnosa_sekunder' => '-',
+        'kd_diagnosa_sekunder' => '-',
+        'diagnosa_sekunder2' => '-',
+        'kd_diagnosa_sekunder2' => '-',
+        'diagnosa_sekunder3' => '-',
+        'kd_diagnosa_sekunder3' => '-',
+        'diagnosa_sekunder4' => '-',
+        'kd_diagnosa_sekunder4' => '-',
+        'prosedur_utama' => $_POST['prosedur_utama'],
+        'kd_prosedur_utama' => '-',
+        'prosedur_sekunder' => '-',
+        'kd_prosedur_sekunder' => '-',
+        'prosedur_sekunder2' => '-',
+        'kd_prosedur_sekunder2' => '-',
+        'prosedur_sekunder3' => '-',
+        'kd_prosedur_sekunder3' => '-',
+        'kondisi_pulang'  => $_POST['kondisi_pulang'],
+        'obat_pulang' => '-'
+      ]);
+    }
+    exit();
+  }
+
+  public function postSaveResumeRanap()
   {
 
     if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
