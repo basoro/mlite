@@ -20,4 +20,5 @@ assets/easyui
 plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
+plugins/cssd
 jasperphp
