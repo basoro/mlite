@@ -1349,6 +1349,92 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getResume($no_rawat)
+    {
+      $data_resume['pemeriksaan_ralan'] = $this->core->mysql('pemeriksaan_ralan')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+      $data_resume['diagnosa'] = $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray();
+      $data_resume['prosedur'] = $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray();
+      echo $this->draw('resume.html', [
+        'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'data_resume' => $data_resume
+      ]);
+      exit();
+    }
+
+    public function getResumeTampil($no_rawat)
+    {
+      echo $this->draw('resume.tampil.html', ['resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()]);
+      exit();
+    }
+
+    public function postResumeSave()
+    {
+      $_POST['kd_dokter']	= $this->core->getUserInfo('username', $_SESSION['mlite_user']);
+
+      if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+        $this->core->mysql('resume_pasien')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+          'kd_dokter'  => $_POST['kd_dokter'],
+          'keluhan_utama' => $_POST['keluhan_utama'],
+          'jalannya_penyakit' => '-',
+          'pemeriksaan_penunjang' => '-',
+          'hasil_laborat' => '-',
+          'diagnosa_utama' => $_POST['diagnosa_utama'],
+          'kd_diagnosa_utama' => '-',
+          'diagnosa_sekunder' => '-',
+          'kd_diagnosa_sekunder' => '-',
+          'diagnosa_sekunder2' => '-',
+          'kd_diagnosa_sekunder2' => '-',
+          'diagnosa_sekunder3' => '-',
+          'kd_diagnosa_sekunder3' => '-',
+          'diagnosa_sekunder4' => '-',
+          'kd_diagnosa_sekunder4' => '-',
+          'prosedur_utama' => $_POST['prosedur_utama'],
+          'kd_prosedur_utama' => '-',
+          'prosedur_sekunder' => '-',
+          'kd_prosedur_sekunder' => '-',
+          'prosedur_sekunder2' => '-',
+          'kd_prosedur_sekunder2' => '-',
+          'prosedur_sekunder3' => '-',
+          'kd_prosedur_sekunder3' => '-',
+          'kondisi_pulang'  => $_POST['kondisi_pulang'],
+          'obat_pulang' => '-'
+        ]);
+      } else {
+        $this->core->mysql('resume_pasien')->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_dokter'  => $_POST['kd_dokter'],
+          'keluhan_utama' => $_POST['keluhan_utama'],
+          'jalannya_penyakit' => '-',
+          'pemeriksaan_penunjang' => '-',
+          'hasil_laborat' => '-',
+          'diagnosa_utama' => $_POST['diagnosa_utama'],
+          'kd_diagnosa_utama' => '-',
+          'diagnosa_sekunder' => '-',
+          'kd_diagnosa_sekunder' => '-',
+          'diagnosa_sekunder2' => '-',
+          'kd_diagnosa_sekunder2' => '-',
+          'diagnosa_sekunder3' => '-',
+          'kd_diagnosa_sekunder3' => '-',
+          'diagnosa_sekunder4' => '-',
+          'kd_diagnosa_sekunder4' => '-',
+          'prosedur_utama' => $_POST['prosedur_utama'],
+          'kd_prosedur_utama' => '-',
+          'prosedur_sekunder' => '-',
+          'kd_prosedur_sekunder' => '-',
+          'prosedur_sekunder2' => '-',
+          'kd_prosedur_sekunder2' => '-',
+          'prosedur_sekunder3' => '-',
+          'kd_prosedur_sekunder3' => '-',
+          'kondisi_pulang'  => $_POST['kondisi_pulang'],
+          'obat_pulang' => '-'
+        ]);
+      }
+      exit();
+    }
+
     public function getSettings()
     {
         $this->assign['title'] = 'Pengaturan Modul Dokter Ralan';

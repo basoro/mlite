@@ -1,0 +1,175 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Resume Pasien Rawat Inap</h4>
+</div>
+<div class="modal-body">
+  <article class="row" id="resume_pasien">
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Nomor Rawat</label>
+            <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Diagnosa Awal</label>
+            <input type="text" name="diagnosa_awal" id="diagnosa_awal" class="form-control" value="{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_awal)?}{else}{?=isset_or($kamar_inap.diagnosa_awal)?}{/if}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Keluhan Utama</label>
+            <textarea name="keluhan_utama" id="keluhan_utama" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Jalannya Penyakit</label>
+            <textarea name="jalannya_penyakit" id="jalannya_penyakit" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Pemeriksaan Fisik <a href="" class="btn btn-xs btn-danger"><i class="fa fa-paperclip"></i></a></label>
+            <textarea name="pemeriksaan_fisik" id="pemeriksaan_fisik" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Pemeriksaan Laboratorium <a href="" class="btn btn-xs btn-danger"><i class="fa fa-paperclip"></i></a></label>
+            <textarea name="hasil_laborat" id="hasil_laborat" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Pemeriksaan Penunjang <a href="" class="btn btn-xs btn-danger"><i class="fa fa-paperclip"></i></a></label>
+            <textarea name="pemeriksaan_penunjang" id="pemeriksaan_penunjang" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Tindakan Operasi <a href="" class="btn btn-xs btn-danger"><i class="fa fa-paperclip"></i></a></label>
+            <textarea name="tindakan_dan_operasi" id="tindakan_dan_operasi" class="form-control" cols="3"></textarea>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Diagnosa Utama</label>
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="" aria-hidden="true">{if: $resume_pasien}{?=isset_or($resume_pasien.kd_diagnosa_utama)?}{else}{$diagnosa_utama.kd_penyakit}{/if}</span>
+              </span>
+              <input type="text" class="form-control" value="{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama)?}{else}{$diagnosa_utama.nm_penyakit}{/if}">
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Prosedur Utama</label>
+            <div class="input-group">
+              <span class="input-group-addon">
+                <span class="" aria-hidden="true">{if: $resume_pasien}{?=isset_or($resume_pasien.kd_prosedur_utama)?}{else}{?=isset_or($prosedur_utama.kode)?}{/if}</span>
+              </span>
+              <input type="text" class="form-control" value="{if: $resume_pasien}{?=isset_or($resume_pasien.prosedur_utama)?}{else}{?=isset_or($prosedur_utama.deskripsi_panjang)?}{/if}">
+            </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Cara Keluar</label>
+            <select name="cara_keluar" class="form-control">
+                <option value="Atas Izin Dokter">Atas Izin Dokter</option>
+                <option value="Pindah RS">Pindah RS</option>
+                <option value="Pulang Atas Permintaan Sendiri">Pulang Atas Permintaan Sendiri</option>
+                <option value="Lainnya">Lainnya</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+            <label>Keadaan</label>
+            <select name="keadaan" class="form-control">
+                <option value="Membaik">Membaik</option>
+                <option value="Sembuh">Sembuh</option>
+                <option value="Keadaan Khusus">Keadaan Khusus</option>
+                <option value="Meninggal">Meninggal</option>
+            </select>
+        </div>
+      </div>
+      <div class="col-md-12">
+        <button class="btn btn-success" id="simpan_resume">Simpan</button>
+      </div>
+  </article>
+  <div class="table-responsive no-margin" id="display_resume_pasien">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Nomor Rawat</th>
+          <th>Diagnosa</th>
+          <th>Prosedur</th>
+          <th>Aksi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {if: $resume_pasien}
+        <tr>
+          <td>{$resume_pasien.no_rawat}</td>
+          <td>{$resume_pasien.diagnosa_utama}</td>
+          <td>{$resume_pasien.prosedur_utama}</td>
+          <td>{if: $resume_pasien.no_rawat !=''}<a href="" class="btn btn-xs btn-danger fa fa-edit edit_resume" data-no_rawat="{$resume_pasien.no_rawat}" data-diagnosa_utama="{$resume_pasien.diagnosa_utama}" data-prosedur_utama="{$resume_pasien.prosedur_utama}"></a>{/if}</td>
+        </tr>
+        {/if}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+  // tombol simpan diklik
+  $("#resume_pasien").on("click", "#simpan_resume", function(event){
+    //alert('Test');
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $('input:text[name=no_rawat_resume]').val();
+    var diagnosa_utama = $('textarea[name=diagnosa_resume]').val();
+    var prosedur_utama = $('textarea[name=prosedur_resume]').val();
+	  var kondisi_pulang = $('select[name=kondisi_pulang]').val();
+    //alert(no_rawat + ' - ' + diagnosa_utama + ' - ' + prosedur_utama + ' - ' + kondisi_pulang);
+
+    var url = baseURL + '/vedika/saveresumeranap?t=' + mlite.token;
+
+    $.post(url,{
+      no_rawat: no_rawat,
+      diagnosa_utama: diagnosa_utama,
+      prosedur_utama: prosedur_utama,
+      kondisi_pulang: kondisi_pulang
+    } ,function(data) {
+      //console.log(data);
+      alert('Data resume nomor rawat ' + no_rawat + ' telah disimpan!!');
+      $("#display_resume_pasien").show().load(baseURL + '/vedika/displayresume/{?=convertNoRawat($reg_periksa.no_rawat)?}/?t=' + mlite.token);
+      //bersih();
+      //$('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      //"Data ICD 10 (Diagnosa) pasien telah disimpan!"+
+      //"<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      //"</div>").show();
+    });
+  });
+
+  $("#display_resume_pasien").on("click",".edit_resume", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var diagnosa_utama = $(this).attr("data-diagnosa_utama");
+    var prosedur_utama = $(this).attr("data-prosedur_utama");
+
+    $('textarea[name=diagnosa_resume]').val(diagnosa_utama);
+    $('textarea[name=prosedur_resume]').val(prosedur_utama);
+
+  });
+
+</script>

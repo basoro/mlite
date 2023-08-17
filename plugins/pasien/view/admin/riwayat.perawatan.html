@@ -4,12 +4,27 @@
     padding: 5px;
   }
 </style>
+<script type="text/javascript">
+  function nWin() {
+    var w = window.open();
+    var html = $("#toNewWindow").html();
+
+      $(w.document.body).html(html);
+      w.print();
+      w.close();
+  }
+
+  $(function() {
+      $("a#print").click(nWin);
+  });
+</script>
 <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Riwayat Perawatan</h4>
 </div>
 <div class="modal-body">
-  <h4>Data Pasien</h4>
+  <div id="toNewWindow">
+  <h4>Data Riwayat Perawatan Pasien</h4>
   <div class="table table-responsive">
     <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
       <tr class="isi">
@@ -169,6 +184,7 @@
                 <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
+                <td valign="top" width="9%" bgcolor="#eee">SPO2</td>
                 <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
                 <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
              </tr>
@@ -186,24 +202,25 @@
                   <td valign="top">{$data.tinggi}</td>
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
+                  <td valign="top">{$data.spo2}</td>
                   <td valign="top">{$data.alergi}</td>
                   <td valign="top">{$data.kesadaran}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
-                  <td valign="top" colspan="9"> : {$data.keluhan}</td>
+                  <td valign="top" colspan="10"> : {$data.keluhan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Objek</td>
-                  <td valign="top" colspan="9"> : {$data.pemeriksaan}</td>
+                  <td valign="top" colspan="10"> : {$data.pemeriksaan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Asesment</td>
-                  <td valign="top" colspan="9"> : {$data.penilaian}</td>
+                  <td valign="top" colspan="10"> : {$data.penilaian}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Plan</td>
-                  <td valign="top" colspan="9"> : {$data.rtl}</td>
+                  <td valign="top" colspan="10"> : {$data.rtl}</td>
                </tr>
              {/loop}
              {/if}
@@ -219,6 +236,7 @@
                 <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
                 <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
                 <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
+                <td valign="top" width="9%" bgcolor="#eee">SPO2</td>
                 <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
                 <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
              </tr>
@@ -236,24 +254,25 @@
                   <td valign="top">{$data.tinggi}</td>
                   <td valign="top">{$data.berat}</td>
                   <td valign="top">{$data.gcs}</td>
+                  <td valign="top">{$data.spo2}</td>
                   <td valign="top">{$data.alergi}</td>
                   <td valign="top">{$data.kesadaran}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Subjek</td>
-                  <td valign="top" colspan="9"> : {$data.keluhan}</td>
+                  <td valign="top" colspan="10"> : {$data.keluhan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Objek</td>
-                  <td valign="top" colspan="9"> : {$data.pemeriksaan}</td>
+                  <td valign="top" colspan="10"> : {$data.pemeriksaan}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Asesment</td>
-                  <td valign="top" colspan="9"> : {$data.penilaian}</td>
+                  <td valign="top" colspan="10"> : {$data.penilaian}</td>
                </tr>
                <tr>
                   <td valign="top" colspan="2">Plan</td>
-                  <td valign="top" colspan="9"> : {$data.rtl}</td>
+                  <td valign="top" colspan="10"> : {$data.rtl}</td>
                </tr>
              {/loop}
              {/if}
@@ -722,7 +741,9 @@
     <br>
     {/loop}
   </div>
+  </div>
 </div>
 <div class="modal-footer">
+    <a class="btn btn-danger" href="javascript:;" id="print">Cetak</a>
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
 </div>

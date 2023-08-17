@@ -1,0 +1,103 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Resume Perawatan</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Keluhan</label>
+          <textarea name="keluhan_utama" id="keluhan_utama" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.keluhan_utama,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ralan.keluhan,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Diagnosa</label>
+          <textarea name="diagnosa_resume" id="diagnosa_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.diagnosa_utama,'')?}{else}{?=isset_or($data_resume.diagnosa.nm_penyakit,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Prosedur</label>
+          <textarea name="prosedur_resume" id="prosedur_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.prosedur_utama,'')?}{else}{?=isset_or($data_resume.prosedur.deskripsi_panjang,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Kondisi Pulang</label>
+          <select name="kondisi_pulang" id="kondisi_pulang" class="form-control">
+              <option value="Hidup">Hidup</option>
+              <option value="Meninggal">Meninggal</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <button class="btn btn-success" id="simpan_resume">Simpan</button>
+    </div>
+    <br>
+    <div class="tampildata">
+      <table class="table" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor Rawat</th>
+            <th>Keluhan</th>
+            <th>Diagnosa</th>
+            <th>Prosedur</th>
+            <th>Pulang</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $resume_pasien}
+          <tr>
+            <td>{$resume_pasien.no_rawat}</td>
+            <td>{$resume_pasien.keluhan_utama}</td>
+            <td>{$resume_pasien.diagnosa_utama}</td>
+            <td>{$resume_pasien.prosedur_utama}</td>
+            <td>{$resume_pasien.kondisi_pulang}</td>
+          </tr>
+          {else}
+          <tr>
+            <td colspan="5">Tidak ada data</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#simpan_resume").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $('input:text[name=no_rawat_resume]').val();
+    var set_no_rawat = $('input:text[name=no_rawat_resume]').val().replace(/\//g, '');
+    var keluhan_utama = $('#keluhan_utama').val();
+    var diagnosa_resume = $('#diagnosa_resume').val();
+    var prosedur_resume = $('#prosedur_resume').val();
+    var kondisi_pulang = $('select[name=kondisi_pulang]').val();
+
+    var url = baseURL + '/dokter_ralan/resumesave/?t=' + mlite.token;
+    $.post(url,{
+      no_rawat:no_rawat,
+      keluhan_utama: keluhan_utama,
+      diagnosa_utama: diagnosa_resume,
+      prosedur_utama: prosedur_resume,
+      kondisi_pulang: kondisi_pulang
+    } ,function(data) {
+      console.log(data);
+      $('.tampildata').load(baseURL + '/dokter_ralan/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
+    });
+  });
+});
+</script>
