@@ -390,7 +390,7 @@ abstract class Main
 
     public function setNoResep($date)
     {
-        $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date'");
+        $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
