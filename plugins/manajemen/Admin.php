@@ -161,6 +161,30 @@ class Admin extends AdminModule
         return $record['count'];
     }
 
+    public function countCurrentTempPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->core->mysql('temporary_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getTotalAbsen(){
+        $total=$this->countCurrentTempPresensi()+$this->countRkpPresensi() ;
+        return $total;
+    }
+
+    public function getBelumAbsen(){
+        $total=$this->getJadwalJaga()-$this->getTotalAbsen() ;
+        echo $total;
+        return $total;
+    }
+
     public function countPegawai()
     {
         $status = 'AKTIF';
@@ -171,6 +195,47 @@ class Admin extends AdminModule
             ->where ('stts_aktif', $status)
             ->oneArray();
 
+        return $record['count'];
+    }
+
+    public function countRkpPresensi()
+    {
+        $tgl_presensi = date('Y-m-d');
+        $record = $this->core->mysql('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->like ('jam_datang', $tgl_presensi.'%')
+            ->oneArray();
+
+        return $record['count'];
+    }
+
+    public function getJadwalJaga()
+    {
+      $date = date('j');
+      $bulan = date('m');
+      $tahun = date('y');
+      $data = array_column($this->core->mysql('jadwal_pegawai')->where('h'.$date, '!=', '')->where('bulan', $bulan)->where('tahun', $tahun)->toArray(), 'h'.$date);
+    //   //print_r($data);
+    //   print("<pre>".print_r($data,true)."</pre>");
+       $hasil = count($data);
+    //   echo $hasil;
+    //   exit();
+      return $hasil;
+    }
+
+    public function getIjin()
+    {
+        $record = $this->core->mysql('rekap_presensi')
+            ->select([
+                'count' => 'COUNT(DISTINCT id)',
+            ])
+            ->where ('keterangan', '!=' , '')
+            ->where ('keterangan', '!=' , '-')
+          	->where('jam_datang', '>=', date('Y-m-d').' 00:00:00')
+            ->oneArray();
+        //echo $record;
         return $record['count'];
     }
 
@@ -200,14 +265,33 @@ class Admin extends AdminModule
 
     public function poliChart()
     {
+        
+      $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
 
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      
+      
+      $dashboard = [];
         $query = $this->core->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
             ])
             ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-            ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            // ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            ->where('tgl_registrasi', '>=', $tgl_awal)
+            ->where('tgl_registrasi', '<=', $tgl_akhir)
             ->group(['reg_periksa.kd_poli'])
             ->desc('nm_poli');
 
@@ -222,13 +306,25 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_poli'];
                 $return['visits'][] = $value['count'];
+                $dashboard[] = $value;
             }
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('dashboard.print.html', [
+            'dashboard' => $dashboard,
+           'action' => url([ADMIN,'manajemen','dashboard'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
 
-        return $return;
+        
     }
 
     public function KunjunganTahunChart()
     {
+        
 
         $query = $this->core->mysql('reg_periksa')
             ->select([
@@ -254,16 +350,32 @@ class Admin extends AdminModule
 
     public function RanapTahunChart()
     {
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+      
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
 
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $ranap = [];
         $query = $this->core->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'label'       => 'tgl_registrasi'
             ])
             ->where('stts', 'Dirawat')
-            ->like('tgl_registrasi', date('Y').'%')
-            ->group('EXTRACT(MONTH FROM tgl_registrasi)');
-
+            // ->like('tgl_registrasi', date('Y').'%')
+            ->where('tgl_registrasi', '>=', $tgl_awal)
+            ->where('tgl_registrasi', '<=', $tgl_akhir)
+            // ->group('EXTRACT(MONTH FROM tgl_registrasi)');
+            ;
             $data = $query->toArray();
 
             $return = [
@@ -273,9 +385,18 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = date("M", strtotime($value['label']));
                 $return['visits'][] = $value['count'];
+                $ranap[] = $value;
             }
-
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('ranap.print.html', [
+            'ranap' => $ranap,
+           'action' => url([ADMIN,'manajemen','ranap'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
     }
 
     public function RujukTahunChart()
@@ -306,14 +427,30 @@ class Admin extends AdminModule
 
     public function poliChartBatal()
     {
+         $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $chartbatal = [];
         $query = $this->core->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
             ])
             ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-            ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            // ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            ->where('tgl_registrasi', '>=', $tgl_awal)
+            ->where('tgl_registrasi', '<=', $tgl_akhir)
             ->where('stts','Batal')
             ->group(['reg_periksa.kd_poli'])
             ->desc('nm_poli');
@@ -329,21 +466,45 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_poli'];
                 $return['visits'][] = $value['count'];
+                $chartbatal[] = $value;
             }
-
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('pendaftaran.print.html', [
+            'chartbatal' => $chartbatal,
+           'action' => url([ADMIN,'manajemen','chartbatal'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
     }
 
     public function poliChartBaru()
     {
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+        $chartbaru= [];
         $query = $this->core->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT no_rawat)',
               'nm_poli'     => 'nm_poli',
             ])
             ->join('poliklinik', 'poliklinik.kd_poli = reg_periksa.kd_poli')
-            ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            // ->where('tgl_registrasi', '>=', date('Y-m-d'))
+            ->where('tgl_registrasi', '>=', $tgl_awal)
+            ->where('tgl_registrasi', '<=', $tgl_akhir)
             ->where('stts_daftar','Baru')
             ->group(['reg_periksa.kd_poli'])
             ->desc('nm_poli');
@@ -359,7 +520,27 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_poli'];
                 $return['visits'][] = $value['count'];
+                $chartbaru[] = $value;
             }
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('pendaftaran.print.html', [
+            'chartbaru' => $chartbaru,
+           'action' => url([ADMIN,'manajemen','chartbaru'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
+    }
+
+    public function presensiChartHari()
+    {
+            $return = [
+                'labels'  => 'Belum Absen',
+                'visits'  => $this->getBelumAbsen(),
+            ];
+
 
         return $return;
     }
@@ -506,6 +687,21 @@ class Admin extends AdminModule
 
     public function countDrPerujukLab()
     {
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+
+      $perujuklab = [];
         $date = date('Y-m-d');
         $query = $this->core->mysql('periksa_lab')
             ->select([
@@ -529,13 +725,36 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_dokter'];
                 $return['visits'][] = $value['count'];
+                $perujuklab[] = $value;
             }
-
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('laboratorium.print.html', [
+          'laboratorium' => $perujuklab,
+          'action' => url([ADMIN,'keuangan','laboratorium'])
+        ]);
+            exit();
+          } else {
         return $return;
+        }
     }
 
     public function countDrPerujukRad()
     {
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $radiologi = [];
         $date = date('Y-m-d');
         $query = $this->core->mysql('periksa_radiologi')
             ->select([
@@ -544,6 +763,7 @@ class Admin extends AdminModule
             ])
             ->join('dokter', 'periksa_radiologi.dokter_perujuk = dokter.kd_dokter')
             ->where('periksa_radiologi.tgl_periksa', $date)
+            // ->where('periksa_radiologi.tgl_periksa')
             ->where('periksa_radiologi.nip','rad1')
             ->group(['periksa_radiologi.dokter_perujuk'])
             ->desc('dokter.nm_dokter');
@@ -559,9 +779,17 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_dokter'];
                 $return['visits'][] = $value['count'];
+                $radiologi[] = $value;
             }
-
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+        echo $this->draw('radiologi.print.html', [
+          'radiologi' => $radiologi,
+          'action' => url([ADMIN,'radiologi','radiologi'])
+        ]);
+        exit();
+      } else {
         return $return;
+    }
     }
 
     public function countRanap($tgl,$stts)
@@ -596,6 +824,20 @@ class Admin extends AdminModule
 
     public function countKamarInap()
     {
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      $kamarinap = [];
         $date = date('Y-m-d');
         $query = $this->core->mysql('kamar_inap')
             ->select([
@@ -618,15 +860,40 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_bangsal'];
                 $return['visits'][] = $value['count'];
+                $kamarinap[] = $value;
             }
-
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('rawatinap.print.html', [
+            'kamarinap' => $kamarinap,
+           'action' => url([ADMIN,'manajemen','rawatinap'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
     }
 
     public function countDx()
     {
-        $date = date('Y-m-d');
-        $query = $this->core->mysql()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
+         $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $rawatjalan = [];
+        // $date = date('Y-m-d');
+        // $query = $this->core->mysql()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi like '%$date%' GROUP BY diagnosa_pasien.kd_penyakit ORDER BY `count`  DESC Limit 10");
+        $query = $this->core->mysql()->pdo()->prepare("SELECT COUNT(diagnosa_pasien.kd_penyakit) as count ,penyakit.nm_penyakit FROM diagnosa_pasien JOIN reg_periksa ON diagnosa_pasien.no_rawat = reg_periksa.no_rawat JOIN penyakit ON diagnosa_pasien.kd_penyakit = penyakit.kd_penyakit WHERE diagnosa_pasien.status ='Ralan' and reg_periksa.tgl_registrasi");
         $query->execute();
 
             $data = $query->fetchAll(\PDO::FETCH_ASSOC);
@@ -639,24 +906,49 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_penyakit'];
                 $return['visits'][] = $value['count'];
+                $rawatjalan[] = $value;
             }
-
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('rawatjalan.print.html', [
+            'rawatjalan' => $rawatjalan,
+           'action' => url([ADMIN,'manajemen','rawatjalan'])
+             ]);
+             exit();
+        } else {
+          return $return;
+        }
     }
 
     public function countPxDrRj()
     {
-        $date = date('Y-m-d');
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $dokter = [];
+        // $date = date('Y-m-d');
         $query = $this->core->mysql('reg_periksa')
             ->select([
               'count'       => 'COUNT(DISTINCT reg_periksa.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
             ])
             ->join('dokter', 'reg_periksa.kd_dokter = dokter.kd_dokter')
-            ->where('reg_periksa.tgl_registrasi', $date)
+            // ->where('reg_periksa.tgl_registrasi', $date)
+            // ->where('reg_periksa.tgl_registrasi')
+            ->where('tgl_registrasi', '>=', $tgl_awal)
+    ->where('tgl_registrasi', '<=', $tgl_akhir)
             ->group(['reg_periksa.kd_dokter'])
             ->desc('dokter.nm_dokter');
-
 
             $data = $query->toArray();
 
@@ -668,14 +960,38 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_dokter'];
                 $return['visits'][] = $value['count'];
-
+                $dokter[] = $value;
             }
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('dokter.print.html', [
+            'dokter' => $dokter,
+           'action' => url([ADMIN,'manajemen','dokter'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
     }
 
     public function countPxDrRi()
     {
-        $date = date('Y-m-d');
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $dokter2 = [];
+        // $date = date('Y-m-d');
         $query = $this->core->mysql('kamar_inap')
             ->select([
               'count'       => 'COUNT(DISTINCT kamar_inap.no_rawat)',
@@ -698,21 +1014,48 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_dokter'];
                 $return['visits'][] = $value['count'];
+                $dokter2[] = $value;
             }
-
-        return $return;
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('dokter2.print.html', [
+            'dokter2' => $dokter2,
+           'action' => url([ADMIN,'manajemen','dokter'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        // return $this->draw('dashboard.html', ['dashboard' => $dashboard]);
+      }
     }
 
     public function countResepDr()
     {
-        $date = date('Y-m-d');
+        $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      
+        // $date = date('Y-m-d');
+        $apotek = [];
         $query = $this->core->mysql('resep_obat')
             ->select([
               'count'       => 'COUNT(DISTINCT resep_obat.no_rawat)',
               'nm_dokter'     => 'dokter.nm_dokter',
             ])
             ->join('dokter', 'resep_obat.kd_dokter = dokter.kd_dokter')
-            ->where('resep_obat.tgl_peresepan', $date)
+            ->where('tgl_peresepan', '>=', $tgl_awal)
+            ->where('tgl_peresepan', '<=', $tgl_akhir)
+            // ->where('resep_obat.tgl_peresepan', $date)
             ->group(['resep_obat.kd_dokter'])
             ->desc('dokter.nm_dokter');
 
@@ -727,9 +1070,18 @@ class Admin extends AdminModule
             foreach ($data as $value) {
                 $return['labels'][] = $value['nm_dokter'];
                 $return['visits'][] = $value['count'];
+                $apotek[] = $value;
 
-            }
-        return $return;
+            } if(isset($_GET['action']) && $_GET['action'] == 'print') {
+            echo $this->draw('apotek.print.html', [
+            'apotek' => $apotek,
+           'action' => url([ADMIN,'manajemen','apotek'])
+          ]);
+         exit();
+      } else {
+          return $return;
+        
+      }
     }
 
     public function sumPdptLain()
@@ -747,6 +1099,7 @@ class Admin extends AdminModule
 
     public function getPendaftaran()
     {
+        
         $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
         $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
 
@@ -964,9 +1317,111 @@ class Admin extends AdminModule
         ]);
     }
 
+    public function getPresensi()
+    {
+      $this->core->addCSS(url(MODULES.'/manajemen/css/admin/style.css'));
+      $this->core->addJS(url(BASE_DIR.'/assets/jscripts/Chart.bundle.min.js'));
+      $settings = htmlspecialchars_array($this->settings('manajemen'));
+      $stats['getVisities'] = number_format($this->getTotalAbsen(),0,'','.');
+      $stats['getBelumAbsen'] = number_format($this->getBelumAbsen(),0,'','.');
+      $stats['getHarusAbsen'] = number_format($this->getJadwalJaga(),0,'','.');
+      $stats['presensiChart'] = $this->presensiChart(15);
+
+      $stats['getIjin'] = number_format($this->getIjin(),0,'','.');
+
+      $stats['percentTotal'] = 0;
+        if($this->getTotalAbsen() != 0) {
+            $stats['percentTotal'] = number_format((($this->getTotalAbsen()-$this->countVisiteNoRM())/$this->countVisite())*100,0,'','.');
+        }
+
+      return $this->draw('presensi.html',[
+        'settings' => $settings,
+        'stats' => $stats,
+        ]);
+    }
+
+  	public function presensiChart($days = 14, $offset = 0)
+    {
+         $this->_addHeaderFiles();
+      $settings = $this->settings('settings');
+      $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+
+      $tgl_awal = date('Y-m-d');
+      $tgl_akhir = date('Y-m-d');
+
+      if(isset($_GET['tgl_awal'])) {
+        $tgl_awal = $_GET['tgl_awal'];
+      }
+      if(isset($_GET['tgl_akhir'])) {
+        $tgl_akhir = $_GET['tgl_akhir'];
+      }
+      
+      $presensi = [];
+        $time = strtotime(date("Y-m-d", strtotime("-".$days + $offset." days")));
+        $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+        $query = $this->core->mysql()->pdo()->prepare("SELECT COUNT(photo) as count,COUNT(IF(keterangan != '-', 1, NULL)) as count2, date(jam_datang) as jam FROM `rekap_presensi` WHERE jam_datang >= '$date 00:00:00' GROUP BY jam");
+        $query->execute();
+
+        $data = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            $return = [
+                'labels'  => [],
+                'visits'  => [],
+                'visits2'  => [],
+            ];
+
+            while ($time < (time() - ($offset * 86400))) {
+                $return['labels'][] = '"'.date("Y-m-d", $time).'"';
+                $return['readable'][] = '"'.date("d M Y", $time).'"';
+                $return['visits'][] = 0;
+                $return['visits2'][] = 0;
+
+                $time = strtotime('+1 day', $time);
+            }
+
+            foreach ($data as $day) {
+                $index = array_search('"'.$day['jam'].'"', $return['labels']);
+                if ($index === false) {
+                    continue;
+                }
+
+                $return['visits'][$index] = $day['count'];
+                $return['visits2'][$index] = $day['count2'];
+                $presensi[] = $day;
+            }
+            if(isset($_GET['action']) && $_GET['action'] == 'print') {
+                echo $this->draw('presensi.print.html', [
+          'presensi' => $presensi,
+          'action' => url([ADMIN,'manajemen','presensi'])
+            ]);
+            exit();
+        } else {
+
+        return $return;
+        }
+    }
+
+    public function getCoba($days = 14, $offset = 0)
+    {
+      $date = date("Y-m-d", strtotime("-".$days + $offset." days"));
+
+      $query = $this->core->mysql('rekap_presensi')
+          ->select([
+            'count' => 'COUNT(photo)',
+            'count2' => "COUNT(IF(keterangan = '', 1, NULL))",
+          ])
+          ->where('jam_datang', '>=', $date.' 00:00:00');
+
+
+      $data = $query->toArray();
+      print_r($data);
+      exit();
+    }
+
     public function getSettings()
     {
-        $this->assign['penjab'] = $this->core->mysql('penjab')->toArray();
+        $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
         $this->assign['manajemen'] = htmlspecialchars_array($this->settings('manajemen'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
     }
@@ -978,6 +1433,16 @@ class Admin extends AdminModule
         }
         $this->notify('success', 'Pengaturan manajemen telah disimpan');
         redirect(url([ADMIN, 'manajemen', 'settings']));
+    }
+    
+    private function _addHeaderFiles()
+    {
+        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+        $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
     }
 
 }

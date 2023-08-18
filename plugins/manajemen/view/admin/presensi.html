@@ -5,11 +5,11 @@
     <li><a href="{?=url([ADMIN,'manajemen','rawatinap'])?}">Rawat Inap</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','dokter'])?}">Dokter</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','laboratorium'])?}">Laboratorium</a></li>
-    <li class="active"><a href="{?=url([ADMIN,'manajemen','radiologi'])?}">Radiologi</a></li>
+    <li><a href="{?=url([ADMIN,'manajemen','radiologi'])?}">Radiologi</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','apotek'])?}">Apotek</a></li>
     <li><a href="{?=url([ADMIN,'manajemen','farmasi'])?}">Farmasi</a></li>
     <!--<li><a href="{?=url([ADMIN,'manajemen','kasir'])?}">Kasir</a></li>-->
-    <li><a href="{?=url([ADMIN,'manajemen','presensi'])?}">Presensi</a></li>
+    <li class="active"><a href="{?=url([ADMIN,'manajemen','presensi'])?}">Presensi</a></li>
 </ul>
 <br>
 <div class="row">
@@ -19,13 +19,13 @@
                     <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Total Kunjungan</div>
+                    <div class="stat-title text-grey">Total Pegawai Terjadwal</div>
                     <div class="stat-bold">
-                        {?= $stats.getVisities ?}
-                        <span class="stat-up-down">
+                        {?= $stats.getHarusAbsen ?} Orang
+                        <!-- <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentTotal >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentTotal ?}%)
-                        </span>
+                        </span> -->
                     </div>
               </div>
         </div>
@@ -36,13 +36,13 @@
                     <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-calendar fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Pasien Cek Rad Hari Ini</div>
+                    <div class="stat-title text-grey">Pegawai Sudah Absen</div>
                     <div class="stat-bold">
-                        {?= $stats.getLab ?}
-                        <span class="stat-up-down">
+                        {?= $stats.getVisities ?} Orang
+                        <!-- <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentDays >= 0}up{else}down{/if}"></i>
                             ({?= $stats.percentDays ?}%)
-                        </span>
+                        </span> -->
                     </div>
               </div>
         </div>
@@ -53,13 +53,13 @@
                     <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-users fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Pasien Cek Rad Bulan Ini</div>
+                    <div class="stat-title text-grey">Pegawai Belum Absen</div>
                     <div class="stat-bold">
-                        {?= $stats.getLabMonthly ?}
-                        <span class="stat-up-down">
+                        {?= $stats.getBelumAbsen ?} Orang
+                        <!-- <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentDaysBaru >= 0}up{else}down{/if}"></i>
-                            ({?= $stats.percentMonths ?}%)
-                        </span>
+                            ({?= $stats.percentDaysBaru ?}%)
+                        </span> -->
                     </div>
               </div>
         </div>
@@ -70,28 +70,28 @@
                     <span class="fa-2x fa-stack fa-lg pull-left">
                         <i class="fa fa-wheelchair fa-stack-1x"></i>
                     </span>
-                    <div class="stat-title text-grey">Pasien Cek Rad Tahun Ini</div>
+                    <div class="stat-title text-grey">Pegawai Ijin/TL/TK</div>
                     <div class="stat-bold">
-                        {?= $stats.getLabYearly ?}
-                        <span class="stat-up-down">
+                        {?= $stats.getIjin ?} Orang
+                        <!-- <span class="stat-up-down">
                             <i class="fa fa-arrow-circle-{if: $stats.percentDaysBatal >= 0}up{else}down{/if}"></i>
-                            ({?= $stats.percentYears ?}%)
-                        </span>
+                            ({?= $stats.percentDaysBatal ?}%)
+                        </span> -->
                     </div>
               </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-lg-12 col-md-12">
+<article class="row">
+    <div class="col-md-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <form action="" method="">
         {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-          <a href="{?=url()?}/admin/manajemen/radiologi?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/admin/manajemen/presensi?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {else}
-          <a href="{?=url()?}/admin/manajemen/radiologi?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/admin/manajemen/presensi?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {/if}
                 <div class="btn-group pull-right" style="margin-top:-8px;">
             <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
@@ -111,63 +111,88 @@
             </ul>
             </div>
             </form>
-                <h3 class="panel-title">Dokter Perujuk Hari Ini</h3>
+                <h3 class="panel-title">Presensi Hari Ini</h3>
             </div>
-            <div class="panel-body">
-                <canvas id="line-chart" height="350"></canvas>
-            </div>
+                <div class="panel-body">
+                    <canvas id="visits"
+                    style="width:100%; height:300px;"
+                    data-chart="line"
+                    data-labels='[{?= implode(",", $stats.presensiChart.readable) ?}]'
+                    data-datasets='[
+                        {
+                            label: "Presensi",
+                            data: [{?= implode(',', $stats.presensiChart.visits) ?}],
+                            backgroundColor: "rgba(255, 87, 34, 0.2)",
+                            borderColor: "rgba(255, 87, 34, 1)"
+                        },
+                        {
+                            label: "Absensi",
+                            data: [{?= implode(',', $stats.presensiChart.visits2) ?}],
+                            backgroundColor: "rgba(0, 0, 255, 0.2)",
+                            borderColor: "rgba(0, 0, 255, 1)"
+                        }
+                    ]'></canvas>
+                </div>
         </div>
     </div>
-</div>
+</article>
 
-<!-- <div class="row">
-    <div class="col-lg-12 col-md-12">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">Pasien Batal Poliklinik Hari Ini</h3>
-            </div>
-            <div class="panel-body">
-                <canvas id="line-chartcanvas" height="350"></canvas>
-            </div>
-        </div>
-    </div>
-</div> -->
+<script type="text/javascript">
+  $(document).ready(function() {
+      var defaultColors = [
+          "rgba(131, 58, 163, 0.5)", "rgba(201, 216, 88, 0.5)", "rgba(5, 183, 196, 0.5)", "rgba(139, 20, 229, 0.5)", "rgba(85, 150, 219, 0.5)", "rgba(46, 151, 155, 0.5)", "rgba(169, 99, 226, 0.5)", "rgba(90, 27, 209, 0.5)", "rgba(123, 160, 3, 0.5)", "rgba(161, 95, 226, 0.5)", "rgba(201, 59, 214, 0.5)", "rgba(9, 102, 104, 0.5)", "rgba(81, 118, 186, 0.5)", "rgba(220, 63, 252, 0.5)", "rgba(252, 63, 82, 0.5)", "rgba(97, 249, 176, 0.5)", "rgba(232, 30, 154, 0.5)", "rgba(239, 7, 231, 0.5)", "rgba(107, 239, 211, 0.5)", "rgba(168, 10, 23, 0.5)", "rgba(221, 90, 99, 0.5)", "rgba(35, 102, 237, 0.5)", "rgba(15, 226, 216, 0.5)", "rgba(63, 122, 211, 0.5)", "rgba(226, 88, 86, 0.5)", "rgba(232, 98, 85, 0.5)", "rgba(168, 6, 226, 0.5)"
+      ];
+      var charts = [];
+      $('[data-chart]').each(function() {
+          var name = $(this).attr('id') || false;
 
-<script>
-    $(function(){
-        var ctx = document.getElementById("line-chart");
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ["{?= implode('","', $stats.getDrRujuk.labels) ?}"],
-                datasets: [{
-                        label: "Pasien",
-                        borderColor: "#34316E",
-                        borderWidth: "2",
-                        backgroundColor: "rgba(30, 30, 45, 0.2)",
-                        pointHighlightStroke: "#1e1e2d",
-                        pointRadius: 0,
-                        data: ["{?= implode('","', $stats.getDrRujuk.visits) ?}"],
-                    }
-                ]
-            },
-            options: {
-                legend: {
-                    display: false
-                },
-                responsive: true,
-                tooltips: {
-                    mode: 'index',
-                    intersect: false
-                },
-                hover: {
-                    mode: 'nearest',
-                    intersect: true
-                },
-                maintainAspectRatio: false
-            }
-        });
-    })
+          if(name === false)
+              return;
+
+          var type = $(this).data('chart');
+          var labels = $(this).data('labels');
+          var data = $(this).data('datasets');
+
+          var options = {};
+          if(type == 'bar')
+          {
+              options = Object.assign(options, {scales: {
+                      yAxes: [{
+                          ticks: {
+                              beginAtZero:true
+                          }
+                      }]
+                  }});
+          }
+
+          var backgroundColor = function() {
+              if(type == 'pie')
+                  return defaultColors;
+              else
+                  return 'rgba(248, 190, 18, 0.2)';
+          }
+          var datasets = [];
+          data = eval(data);
+          data.forEach(function(e) {
+              datasets.push(Object.assign({
+                  label: '',
+                  data: [],
+                  borderWidth: 1,
+                  backgroundColor: backgroundColor()
+              }, e))
+          });
+
+          var ctx = document.getElementById(name);
+          var myChart = new Chart(ctx, {
+              type: type,
+              data: {
+                  labels: labels,
+                  datasets: datasets
+              },
+              options: options
+          });
+      });
+  });
 </script>
 <script type="text/javascript">
   $(function () {
