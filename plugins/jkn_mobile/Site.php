@@ -3014,25 +3014,20 @@ class Site extends SiteModule
             echo $output;
         }
         if ($slug == 'delkamar') {
+            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);    
+            $first = strtok($slug2, '-');
             $url .= "/aplicaresws/rest/bed/delete/".$kode_ppk;
-            $beds = array(
-                array('kodekelas'=>'KL1','koderuang'=>''),
-                array('kodekelas'=>'KL2','koderuang'=>''),
-                array('kodekelas'=>'KL3','koderuang'=>''),
-                array('kodekelas'=>'KL3','koderuang'=>''),
-                array('kodekelas'=>'KL3','koderuang'=>''),
+            $beds = array('kodekelas'=>$first,'koderuang'=>$whatIWant);
+            
+            $data = array(
+                'kodekelas'=>$beds['kodekelas'],
+                'koderuang'=>$beds['koderuang']
             );
-            // $bed = [['kodekelas'=>'KL1','koderuang'=>'R013'].['kodekelas'=>'KL1','koderuang'=>'R012']];
-            foreach ($beds as $value) {
-                $data = array(
-                    'kodekelas'=>$value['kodekelas'],
-                    'koderuang'=>$value['koderuang']
-                );
-                $postdata = json_encode($data);
-                $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-                echo $output;
-                echo '<br>';
-            }
+            $postdata = json_encode($data);
+            $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+            echo $output;
+            echo '<br>';
+            
         }
         if ($slug == 'addkamar') {
             $bed = $this->checkBed($slug2);
@@ -3048,10 +3043,6 @@ class Site extends SiteModule
                     'tersediawanita'=>"0",
                     'tersediapriawanita'=>$value['isi']
                 );
-                // $data = array(
-                //     'kodekelas'=>"KL2",
-                //     'koderuang'=>"B0010"
-                // );
                 $postdata = json_encode($data);
                 $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
                 echo $output;
@@ -3071,19 +3062,11 @@ class Site extends SiteModule
                     'tersediawanita'=>"0",
                     'tersediapriawanita'=>$value['isi']
                 );
-                // $data = array(
-                //     'kodekelas'=>"KL2",
-                //     'koderuang'=>"B0010"
-                // );
                 $postdata = json_encode($data);
                 $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
                 echo $output;
             }
         }
-        // $url .= "/aplicaresws/rest/ref/kelas";
-        // $url .= "/aplicaresws/rest/bed/update/1708R008";
-        // $url .= "/aplicaresws/rest/bed/create/1708R008";
-        // $url .= "/aplicaresws/rest/bed/delete/1708R008";
         exit();
     }
 
