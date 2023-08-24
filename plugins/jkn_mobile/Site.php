@@ -2939,29 +2939,16 @@ class Site extends SiteModule
     {
         $slug = parseURL();
         echo $this->_resultBed($slug[2],$slug[3]);
+        //slug[2] => kelas BPJS , slug[3] => kode ruang / kode bangsal
         exit();
     }
 
-    private function checkBed($kelas){
+    private function checkBed($kelas,$bangsal = ''){
         $bed = array();
         $sql = "SELECT bangsal.nm_bangsal ,kamar.kd_bangsal, COUNT(kamar.kd_kamar) as jml , SUM(IF(kamar.status = 'ISI',1,0)) as isi , SUM(IF(kamar.status = 'KOSONG',1,0)) as kosong  FROM kamar JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal WHERE kamar.statusdata = '1'";
-        if ($kelas == 'cov') {
-            $sql .= " AND kamar.kd_kamar LIKE '%cov%' ";
-        } else if ($kelas == 'icu') {
-            $sql .= " AND kamar.kd_bangsal = 'B0007' ";
-        } else if ($kelas == 'nicu') {
-            $sql .= " AND kamar.kd_bangsal = 'B0006'  AND kamar.kd_kamar LIKE '%nicu%' ";
-        } else if ($kelas == 'peri') {
-            $sql .= " AND kamar.kd_bangsal = 'B0006'  AND kamar.kd_kamar LIKE '%peri%' ";
-        } else if ($kelas == 'hcu') {
-            $sql .= " AND kamar.kd_kamar LIKE '%HCU%' ";
-        } else if ($kelas == 'picu') {
-            $sql .= " AND kamar.kd_bangsal = 'B0008' ";
-        } else if ($kelas == 'iso') {
-            $sql .= " AND kamar.kd_bangsal != 'B0103' AND kamar.kd_kamar LIKE '%iso%' ";
-        } else {
-            $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal NOT IN ('B0012','B0008','B0006','B0007') AND kamar.kd_kamar NOT LIKE '%HCU%' AND kamar.kd_kamar NOT LIKE '%ISO%' ";
-        }
+        
+        $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal LIKE '%$bangsal%'";
+        
         $sql .= " GROUP BY kamar.kd_bangsal ";
         $query = $this->core->mysql()->pdo()->prepare($sql);
         $query->execute();
@@ -3030,7 +3017,9 @@ class Site extends SiteModule
             
         }
         if ($slug == 'addkamar') {
-            $bed = $this->checkBed($slug2);
+            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);    
+            $first = strtok($slug2, '-');
+            $bed = $this->checkBed($first,$whatIWant);
             $url .= "/aplicaresws/rest/bed/create/".$kode_ppk;
             foreach ($bed as $value) {
                 $data = array(
