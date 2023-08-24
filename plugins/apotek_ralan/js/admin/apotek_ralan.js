@@ -352,6 +352,7 @@ $("#rincian").on("click",".validasi_resep_obat", function(event){
         jam_peresepan: jam_peresepan,
         jenis_racikan: jenis_racikan
       } ,function(data) {
+        console.log(data);
         var url = baseURL + '/apotek_ralan/rincian?t=' + mlite.token;
         $.post(url, {no_rawat : no_rawat,
         }, function(data) {

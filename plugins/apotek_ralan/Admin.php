@@ -2,6 +2,7 @@
 namespace Plugins\Apotek_Ralan;
 
 use Systems\AdminModule;
+use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -161,8 +162,24 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
-      $get_resep_dokter_nonracikan = $this->core->mysql('resep_dokter')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
-      $get_resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter_nonracikan = $this->core->mysql('resep_dokter')
+        ->select([
+            'kode_brng' => 'kode_brng',
+            'jml' => 'jml',
+            'aturan_pakai' => 'aturan_pakai'
+          ])
+        ->where('no_resep', $_POST['no_resep'])
+        ->toArray();
+      $get_resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')
+        ->select([
+            'kode_brng' => 'kode_brng',
+            'jml' => 'jml',
+            'aturan_pakai' => 'aturan_pakai'
+          ])
+        ->join('resep_dokter_racikan_detail', 'resep_dokter_racikan_detail.no_resep=resep_dokter_racikan.no_resep')
+        ->where('resep_dokter_racikan.no_resep', $_POST['no_resep'])
+        ->where('resep_dokter_racikan.no_racik=resep_dokter_racikan_detail.no_racik')
+        ->toArray();
       $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
 
       foreach ($get_resep_dokter as $item) {
@@ -229,8 +246,8 @@ class Admin extends AdminModule
       if(!empty($resep_dokter_racikan)) {
         $this->core->mysql('obat_racikan')->save(
           [
-              'tgl_perawatan' => date('Y-m-d'),
-              'jam' => date('H:i:s'),
+              'tgl_perawatan' => $_POST['tgl_peresepan'],
+              'jam' => $_POST['jam_peresepan'],
               'no_rawat' => $_POST['no_rawat'],
               'no_racik' => $resep_dokter_racikan['no_racik'],
               'nama_racik' => $resep_dokter_racikan['nama_racik'],
@@ -242,7 +259,7 @@ class Admin extends AdminModule
         );
       }
 
-      $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => date('Y-m-d'), 'jam' => date('H:i:s')]);
+      $this->core->mysql('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => $_POST['tgl_peresepan'], 'jam' => $_POST['jam_peresepan']]);
 
       exit();
     }
@@ -417,6 +434,83 @@ class Admin extends AdminModule
 
       exit();
 
+    }
+
+    public function getCetakLabel($no_rawat, $tipe, $tgl_peresepan){
+      if($tipe == 'nonracikan') {
+        $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+        ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+        ->join('reg_periksa', 'reg_periksa.no_rawat=detail_pemberian_obat.no_rawat')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+        ->where('detail_pemberian_obat.status', 'Ralan')
+        ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
+        ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $aturan_pakai = $this->core->mysql('aturan_pakai')
+          ->where('no_rawat', $row['no_rawat'])
+          ->where('kode_brng', $row['kode_brng'])
+          ->where('tgl_perawatan', $row['tgl_perawatan'])
+          ->where('jam', $row['jam'])
+          ->oneArray();
+          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['keterangan'] = '';
+          $detail_pemberian_obat[] = $row;
+        }
+      }
+      if($tipe == 'racikan') {
+        $rows_pemberian_obat = $this->core->mysql('obat_racikan')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=obat_racikan.no_rawat')
+          ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+          ->where('obat_racikan.no_rawat', revertNoRawat($no_rawat))
+          ->where('obat_racikan.tgl_perawatan', $tgl_peresepan)
+          ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $row['nama_brng'] = $row['nama_racik'];
+          $row['jml'] = $row['jml_dr'];
+          $detail_pemberian_obat[] = $row;
+        }
+
+      }
+
+      $logo = $this->settings->get('settings.logo');
+      $pdf = new PDF_MC_Table('L','mm', array(100,50));
+
+      foreach($detail_pemberian_obat as $dpo){
+        $pdf->AddPage();
+        $pdf->SetAutoPageBreak(true, 10);
+        $pdf->SetTopMargin(10);
+        $pdf->SetLeftMargin(10);
+        $pdf->SetRightMargin(10);
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Text(10,7,'Instalasi Farmasi',0,1, 'C');
+        $pdf->Text(10, 10, $this->settings->get('settings.nama_instansi'));
+        $pdf->SetFont('Arial', '', 9);
+        $pdf->Text(10,14,'Email: '.$this->settings->get('settings.email').' - Telp: '.$this->settings->get('settings.nomor_telepon'),0,1);
+        $pdf->Line(10, 16, 90, 16);
+        $pdf->Line(10, 17, 90, 17);
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Text(64, 20, ''.dateIndonesia(date('Y-m-d')),0,1, 'L');
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Text(10, 23, ''.$this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat))),0,1, 'C');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Text(10, 26, 'No. RM: '.$this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)),0,1, 'L');
+        $pdf->Text(60, 26, 'Klinik: '.$dpo['nm_poli'],0,1);
+        $pdf->Text(15, 31, ''.$dpo['nama_brng'],0,1, 'L');
+        $pdf->Text(80, 31, '('.$dpo['jml'].')',0,1);
+        $pdf->Text(20, 34, ''.$dpo['aturan_pakai'],0,1, 'L');
+        $pdf->Text(20, 38, ''.$dpo['keterangan'],0,1, 'L');
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Text(33, 47, 'SEMOGA LEKAS SEMBUH', 0, 1, 'C');
+      }
+
+      $pdf->Output('etiket-obat-'.date('Y-m-d').'.pdf','I');
+      exit();
     }
 
     public function getJavascript()
