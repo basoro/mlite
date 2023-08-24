@@ -40,6 +40,9 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile/jadwal/(:str)/(:str)', '_getJadwal');
 
+        $this->route('jknmobile/aplicare/(:str)', 'getAplicare');
+        $this->route('jknmobile/aplicare/(:str)/(:str)', 'getAplicare');
+
         /* Start Old school routing */
         $this->route('jknmobile_v2', 'getIndex');
         $this->route('jknmobile_v2/token', 'getToken');
@@ -61,6 +64,9 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
+
+        $this->route('jknmobile_v2/aplicare/(:str)', 'getAplicare');
+        $this->route('jknmobile_v2/aplicare/(:str)/(:str)', 'getAplicare');
         /* End Old school routing */
 
     }
@@ -2926,6 +2932,158 @@ class Site extends SiteModule
         $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
         echo json_encode($json);
+        exit();
+    }
+
+    public function getAplicare()
+    {
+        $slug = parseURL();
+        echo $this->_resultBed($slug[2],$slug[3]);
+        exit();
+    }
+
+    private function checkBed($kelas){
+        $bed = array();
+        $sql = "SELECT bangsal.nm_bangsal ,kamar.kd_bangsal, COUNT(kamar.kd_kamar) as jml , SUM(IF(kamar.status = 'ISI',1,0)) as isi , SUM(IF(kamar.status = 'KOSONG',1,0)) as kosong  FROM kamar JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal WHERE kamar.statusdata = '1'";
+        if ($kelas == 'cov') {
+            $sql .= " AND kamar.kd_kamar LIKE '%cov%' ";
+        } else if ($kelas == 'icu') {
+            $sql .= " AND kamar.kd_bangsal = 'B0007' ";
+        } else if ($kelas == 'nicu') {
+            $sql .= " AND kamar.kd_bangsal = 'B0006'  AND kamar.kd_kamar LIKE '%nicu%' ";
+        } else if ($kelas == 'peri') {
+            $sql .= " AND kamar.kd_bangsal = 'B0006'  AND kamar.kd_kamar LIKE '%peri%' ";
+        } else if ($kelas == 'hcu') {
+            $sql .= " AND kamar.kd_kamar LIKE '%HCU%' ";
+        } else if ($kelas == 'picu') {
+            $sql .= " AND kamar.kd_bangsal = 'B0008' ";
+        } else if ($kelas == 'iso') {
+            $sql .= " AND kamar.kd_bangsal != 'B0103' AND kamar.kd_kamar LIKE '%iso%' ";
+        } else {
+            $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal NOT IN ('B0012','B0008','B0006','B0007') AND kamar.kd_kamar NOT LIKE '%HCU%' AND kamar.kd_kamar NOT LIKE '%ISO%' ";
+        }
+        $sql .= " GROUP BY kamar.kd_bangsal ";
+        $query = $this->core->mysql()->pdo()->prepare($sql);
+        $query->execute();
+        $bedlist = $query->fetchAll();
+        foreach ($bedlist as $value) {
+            switch ($kelas) {
+                case '1':
+                    $value['kelas'] = 'KL1';
+                    break;
+                case '2':
+                    $value['kelas'] = 'KL2';
+                    break;
+                case '3':
+                    $value['kelas'] = 'KL3';
+                    break;
+                case 'vip':
+                    $value['kelas'] = 'VIP';
+                    break;
+                case 'icu':
+                    $value['kelas'] = 'ICU';
+                    break;
+                case 'nicu':
+                    $value['kelas'] = 'NIC';
+                    break;
+                case 'picu':
+                    $value['kelas'] = 'PIC';
+                    break;
+                case 'hcu':
+                    $value['kelas'] = 'HCU';
+                    break;
+
+                default:
+                    # code...
+                    break;
+            }
+            $bed[] = $value;
+        }
+        return $bed;
+    }
+
+    private function _resultBed($slug,$slug2 = '')
+    {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
+        $url = "https://new-api.bpjs-kesehatan.go.id";
+        if ($slug == 'listkamar') {
+            $url .= "/aplicaresws/rest/bed/read/".$kode_ppk."/1/100";
+            $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+            echo $output;
+        }
+        if ($slug == 'delkamar') {
+            $url .= "/aplicaresws/rest/bed/delete/".$kode_ppk;
+            $beds = array(
+                array('kodekelas'=>'KL1','koderuang'=>''),
+                array('kodekelas'=>'KL2','koderuang'=>''),
+                array('kodekelas'=>'KL3','koderuang'=>''),
+                array('kodekelas'=>'KL3','koderuang'=>''),
+                array('kodekelas'=>'KL3','koderuang'=>''),
+            );
+            // $bed = [['kodekelas'=>'KL1','koderuang'=>'R013'].['kodekelas'=>'KL1','koderuang'=>'R012']];
+            foreach ($beds as $value) {
+                $data = array(
+                    'kodekelas'=>$value['kodekelas'],
+                    'koderuang'=>$value['koderuang']
+                );
+                $postdata = json_encode($data);
+                $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                echo $output;
+                echo '<br>';
+            }
+        }
+        if ($slug == 'addkamar') {
+            $bed = $this->checkBed($slug2);
+            $url .= "/aplicaresws/rest/bed/create/".$kode_ppk;
+            foreach ($bed as $value) {
+                $data = array(
+                    'kodekelas'=>$value['kelas'],
+                    'koderuang'=>$value['kd_bangsal'],
+                    'namaruang'=>$value['nm_bangsal'],
+                    'kapasitas'=>$value['jml'],
+                    'tersedia'=>$value['isi'],
+                    'tersediapria'=>"0",
+                    'tersediawanita'=>"0",
+                    'tersediapriawanita'=>$value['isi']
+                );
+                // $data = array(
+                //     'kodekelas'=>"KL2",
+                //     'koderuang'=>"B0010"
+                // );
+                $postdata = json_encode($data);
+                $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                echo $output;
+            }
+        }
+        if ($slug != 'listkamar') {
+            $bed = $this->checkBed($slug);
+            $url .= "/aplicaresws/rest/bed/update/".$kode_ppk;
+            foreach ($bed as $value) {
+                $data = array(
+                    'kodekelas'=>$value['kelas'],
+                    'koderuang'=>$value['kd_bangsal'],
+                    'namaruang'=>$value['nm_bangsal'],
+                    'kapasitas'=>$value['jml'],
+                    'tersedia'=>$value['isi'],
+                    'tersediapria'=>"0",
+                    'tersediawanita'=>"0",
+                    'tersediapriawanita'=>$value['isi']
+                );
+                // $data = array(
+                //     'kodekelas'=>"KL2",
+                //     'koderuang'=>"B0010"
+                // );
+                $postdata = json_encode($data);
+                $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                echo $output;
+            }
+        }
+        // $url .= "/aplicaresws/rest/ref/kelas";
+        // $url .= "/aplicaresws/rest/bed/update/1708R008";
+        // $url .= "/aplicaresws/rest/bed/create/1708R008";
+        // $url .= "/aplicaresws/rest/bed/delete/1708R008";
         exit();
     }
 
