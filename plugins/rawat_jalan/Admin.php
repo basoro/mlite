@@ -8,6 +8,13 @@ use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
+    public function init()
+    {
+      $this->consid = $this->settings->get('settings.BpjsConsID');
+      $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
+      $this->user_key = $this->settings->get('settings.BpjsUserKey');
+      $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+    }
     private $_uploads = WEBAPPS_PATH.'/berkasrawat/pages/upload';
     public function navigation()
     {
@@ -632,7 +639,7 @@ class Admin extends AdminModule
       $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
 
       $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']))->oneArray();
-      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray();
+      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']))->oneArray();
       $get_sep = $this->core->mysql('bridging_sep')->where('no_rawat', $_POST['no_rawat'])->oneArray();
       $_POST['no_sep'] = $get_sep['no_sep'];
       $get_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_rawat', $_POST['no_rawat'])->oneArray();
@@ -650,6 +657,8 @@ class Admin extends AdminModule
           'user' => $_POST['sep_user']
         ]
       ];
+      $statusUrl = 'insert';
+      $method = 'post';
 
       $data = json_encode($data);
 
