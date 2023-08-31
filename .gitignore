@@ -20,5 +20,7 @@ assets/easyui
 plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
+plugins/dokter_ulun
+plugins/satu_sehat
 plugins/cssd
 jasperphp
