@@ -1,0 +1,118 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Mapping Poliklinik</h3>
+            </div>
+            <div class="panel-body">
+                <form name="jkn_mobile" action="{?=url(ADMIN.'/vclaim/poliklinik_save/')?}" method="POST">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+          	                <label>Nama Poli BPJS</label>
+                              <input type="text" name="poli_nama" id="poli_nama" class="form-control" value="">
+                              <ul class="list-group" id="poliList" style="z-index:1000;position:absolute;width:100%;"></ul>
+          	            </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+          	                <label>Kode Poli BPJS</label>
+                              <input type="text" name="poli_kode" id="poli_kode" class="form-control" value="">
+          	            </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+          	                <label>Nama Poli RS</label>
+                            	<select name="kd_poli_rs" class="form-control">
+                                {loop: $poliklinik}
+                                <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                                {/loop}
+                            	</select>
+          	            </div>
+                      </div>
+                    </div>
+      	            <div class="form-group">
+      	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+      	            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Mapping Poliklinik</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                  <table class="table table-striped no-margin display no-wrap" width="100%">
+                    <thead>
+                      <tr>
+                        <th>Kode Poli RS</th>
+                        <th>Kode Poli BPJS</th>
+                        <th>Nama Poli BPJS</th>
+                        <th class="text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loop: $row}
+                      <tr>
+                        <td>{$value.kd_poli_rs}</td>
+                        <td>{$value.kd_poli_bpjs}</td>
+                        <td>{$value.nm_poli_bpjs}</td>
+                        <td class="text-right">
+                          <a href="{?=url([ADMIN, 'vclaim', 'poliklinik_delete', $value.kd_poli_rs])?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus poliklinik ini?">
+                            <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+                          </a>
+                        </td>
+                      </tr>
+                      {/loop}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $('#poli_nama').keyup(function(e){
+      var poli_nama = $('#poli_nama').val().replace(/\s+$/, '');
+      var url = "{?=url(ADMIN)?}/vclaim/poli/" + poli_nama + "?t={?=$_SESSION['token']?}";
+      if(e.which == 32) {
+        $.ajax({
+          url: url,
+          method:"GET",
+          data:{},
+               success:function(data)
+        {
+          var data = JSON.parse(data);
+          console.log(data);
+          var json_obj = [data];
+          var output='';
+          if(json_obj[0].metaData.code == 200) {
+            var response = json_obj[0].response.poli;
+            for (var i in response) {
+              output+='<li class=\"list-group-item link-class\">' + response[i].kode + ': ' + response[i].nama + '</li>';
+            }
+          } else {
+            output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output+='';
+          //console.log(output);
+          $('#poliList').fadeIn();
+          $('#poliList').html(output).show();
+        }
+      });
+    }
+  });
+  $('#poliList').on('click', 'li', function(){
+    $('#poli_nama').val($(this).text().split(': ')[1]);
+    $('#poli_kode').val($(this).text().split(': ')[0]);
+    var poli_kode = $('#poli_kode').val();
+    $('#poliList').fadeOut();
+  });
+
+</script>

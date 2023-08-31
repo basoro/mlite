@@ -28,7 +28,9 @@ class Admin extends AdminModule
       'Rujukan' => 'rujukan',
       'PRB' => 'prb',
       'Lembar Pengajuan Klaim' => 'lpk',
-      'Monitoring' => 'monitoring'
+      'Monitoring' => 'monitoring',
+      'Mapping Poli' => 'mappingpoli',
+      'Mapping Dokter' => 'mappingdokter'
     ];
   }
 
@@ -652,6 +654,8 @@ class Admin extends AdminModule
     }
     exit();
   }
+
+
   public function getPoli($keyword)
   {
     date_default_timezone_set('UTC');
@@ -686,6 +690,7 @@ class Admin extends AdminModule
     }
     exit();
   }
+
   public function getFaskes($kd_faskes = null, $jns_faskes = null)
   {
     date_default_timezone_set('UTC');
@@ -2662,6 +2667,84 @@ class Admin extends AdminModule
 
     echo $this->draw('dirujuk.html', ['bridging_sep' => $bridging_sep, 'dirujuk' => $dirujuk]);
     exit();
+  }
+
+  public function getMappingPoli()
+  {
+      $this->_addHeaderFiles();
+      $poliklinik = $this->core->mysql('poliklinik')->where('status','1')->toArray();
+      return $this->draw('mappingpoli.html', ['row' => $this->core->mysql('maping_poli_bpjs')->toArray(), 'poliklinik' => $poliklinik]);
+  }
+
+  public function postPoliklinik_Save()
+  {
+
+      $location = url([ADMIN, 'vclaim', 'mappingpoli']);
+
+      unset($_POST['save']);
+
+      $query = $this->core->mysql('maping_poli_bpjs')->save([
+          'kd_poli_rs' => $_POST['kd_poli_rs'],
+          'kd_poli_bpjs' => $_POST['poli_kode'],
+          'nm_poli_bpjs' => $_POST['poli_nama']
+      ]);
+
+      if ($query) {
+          $this->notify('success', 'Simpan maping poli bpjs sukes');
+      } else {
+          $this->notify('failure', 'Simpan maping poli bpjs gagal');
+      }
+
+      redirect($location, $_POST);
+  }
+
+  public function getPoliklinik_Delete($id)
+  {
+      if ($this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
+          $this->notify('success', 'Hapus maping poli bpjs sukses');
+      } else {
+          $this->notify('failure', 'Hapus maping poli bpjs gagal');
+      }
+      redirect(url([ADMIN, 'vclaim', 'mappingpoli']));
+  }
+
+  public function getMappingDokter()
+  {
+      $this->_addHeaderFiles();
+      $dokter = $this->core->mysql('dokter')->where('status','1')->toArray();
+      return $this->draw('mappingdokter.html', ['row' => $this->core->mysql('maping_dokter_dpjpvclaim')->toArray(), 'dokter' => $dokter]);
+  }
+
+  public function postDokter_Save()
+  {
+
+      $location = url([ADMIN, 'vclaim', 'mappingdokter']);
+
+      unset($_POST['save']);
+
+      $query = $this->core->mysql('maping_dokter_dpjpvclaim')->save([
+          'kd_dokter' => $_POST['kd_dokter'],
+          'kd_dokter_bpjs' => $_POST['dokter_kode'],
+          'nm_dokter_bpjs' => $_POST['dokter_nama']
+      ]);
+
+      if ($query) {
+          $this->notify('success', 'Simpan maping poli bpjs sukes');
+      } else {
+          $this->notify('failure', 'Simpan maping poli bpjs gagal');
+      }
+
+      redirect($location, $_POST);
+  }
+
+  public function getDokter_Delete($id)
+  {
+      if ($this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
+          $this->notify('success', 'Hapus maping poli bpjs sukses');
+      } else {
+          $this->notify('failure', 'Hapus maping poli bpjs gagal');
+      }
+      redirect(url([ADMIN, 'vclaim', 'mappingdokter']));
   }
 
   private function _addHeaderFiles()
