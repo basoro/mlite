@@ -38,7 +38,7 @@ class Admin extends AdminModule
     $key = $this->consid . $this->secretkey . $tStamp;
     $data = [
       'param' => $bridging_sep['no_kartu'],
-      'kodedokter' => intval($bridging_sep['kddpjppelayanan'])
+      'kodedokter' => intval($bridging_sep['kddpjplayanan'])
     ];
     $data = json_encode($data);
     $signature = hash_hmac('sha256', $this->consid."&".$tStamp, $this->secretkey, true);
