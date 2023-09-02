@@ -40,6 +40,7 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile/jadwal/(:str)/(:str)', '_getJadwal');
 
+        $this->route('jknmobile/aplicare', 'getAplicareManajemen');
         $this->route('jknmobile/aplicare/(:str)', 'getAplicare');
         $this->route('jknmobile/aplicare/(:str)/(:str)', 'getAplicare');
 
@@ -74,7 +75,18 @@ class Site extends SiteModule
     public function getIndex()
     {
         $referensi_poli = $this->core->mysql('maping_poli_bpjs')->toArray();
-        echo $this->draw('index.html', ['referensi_poli' => $referensi_poli]);
+        $kelas = [];
+        $sql = "SELECT kamar.kelas, kamar.kd_bangsal FROM kamar JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal WHERE kamar.statusdata = '1'";
+        // $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal LIKE '%$bangsal%'";
+        $sql .= " GROUP BY kamar.kd_bangsal ";
+        $query = $this->core->mysql()->pdo()->prepare($sql);
+        $query->execute();
+        $bedlist = $query->fetchAll();
+        foreach ($bedlist as $value) {
+          $kelas[] = $value;
+        }
+
+        echo $this->draw('index.html', ['referensi_poli' => $referensi_poli, 'kelas' => $kelas]);
         exit();
     }
 
@@ -2935,10 +2947,15 @@ class Site extends SiteModule
         exit();
     }
 
+    public function getAplicareManajemen()
+    {
+        exit();
+    }
+
     public function getAplicare()
     {
         $slug = parseURL();
-        echo $this->_resultBed($slug[2],$slug[3]);
+        echo $this->_resultBed($slug[2],isset_or($slug[3],''));
         //slug[2] => kelas BPJS , slug[3] => kode ruang / kode bangsal
         exit();
     }
@@ -2993,7 +3010,7 @@ class Site extends SiteModule
         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
         $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
         $BpjsApiUrl = parse_url($this->settings->get('settings.BpjsApiUrl'));
-        $url = $BpjsApiUrl['scheme'].'://'.$BpjsApiUrl['host'].'/';
+        $url = $BpjsApiUrl['scheme'].'://'.$BpjsApiUrl['host'];
         if ($slug == 'listkamar') {
             $url .= "/aplicaresws/rest/bed/read/".$kode_ppk."/1/100";
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
