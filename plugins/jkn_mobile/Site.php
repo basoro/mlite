@@ -2946,9 +2946,7 @@ class Site extends SiteModule
     private function checkBed($kelas,$bangsal = ''){
         $bed = array();
         $sql = "SELECT bangsal.nm_bangsal ,kamar.kd_bangsal, COUNT(kamar.kd_kamar) as jml , SUM(IF(kamar.status = 'ISI',1,0)) as isi , SUM(IF(kamar.status = 'KOSONG',1,0)) as kosong  FROM kamar JOIN bangsal ON kamar.kd_bangsal = bangsal.kd_bangsal WHERE kamar.statusdata = '1'";
-        
         $sql .= " AND kamar.kelas = 'Kelas $kelas' AND kamar.kd_bangsal LIKE '%$bangsal%'";
-        
         $sql .= " GROUP BY kamar.kd_bangsal ";
         $query = $this->core->mysql()->pdo()->prepare($sql);
         $query->execute();
@@ -2994,18 +2992,18 @@ class Site extends SiteModule
         date_default_timezone_set('UTC');
         $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
         $kode_ppk  = $this->settings->get('settings.ppk_bpjs');
-        $url = "https://new-api.bpjs-kesehatan.go.id";
+        $BpjsApiUrl = parse_url($this->settings->get('settings.BpjsApiUrl'));
+        $url = $BpjsApiUrl['scheme'].'://'.$BpjsApiUrl['host'].'/';
         if ($slug == 'listkamar') {
             $url .= "/aplicaresws/rest/bed/read/".$kode_ppk."/1/100";
             $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
             echo $output;
         }
         if ($slug == 'delkamar') {
-            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);    
+            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);
             $first = strtok($slug2, '-');
             $url .= "/aplicaresws/rest/bed/delete/".$kode_ppk;
             $beds = array('kodekelas'=>$first,'koderuang'=>$whatIWant);
-            
             $data = array(
                 'kodekelas'=>$beds['kodekelas'],
                 'koderuang'=>$beds['koderuang']
@@ -3014,10 +3012,9 @@ class Site extends SiteModule
             $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
             echo $output;
             echo '<br>';
-            
         }
         if ($slug == 'addkamar') {
-            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);    
+            $whatIWant = substr($slug2, strpos($slug2, "-") + 1);
             $first = strtok($slug2, '-');
             $bed = $this->checkBed($first,$whatIWant);
             $url .= "/aplicaresws/rest/bed/create/".$kode_ppk;
