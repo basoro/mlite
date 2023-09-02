@@ -131,6 +131,71 @@ CREATE TABLE IF NOT EXISTS `mlite_billing` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_bridging_pcare`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
+  `id` int(11) NOT NULL,
+  `no_rawat` text NOT NULL,
+  `no_rkm_medis` text,
+  `tgl_daftar` text,
+  `nomor_kunjungan` text,
+  `kode_provider_peserta` text,
+  `nomor_jaminan` text,
+  `kode_poli` text,
+  `nama_poli` text,
+  `kunjungan_sakit` text,
+  `sistole` text,
+  `diastole` text,
+  `nadi` text,
+  `respirasi` text,
+  `tinggi` text,
+  `berat` text,
+  `lingkar_perut` text,
+  `rujuk_balik` text,
+  `subyektif` text,
+  `kode_tkp` text,
+  `nomor_urut` text,
+  `kode_kesadaran` text,
+  `nama_kesadaran` text,
+  `terapi` text,
+  `kode_status_pulang` text,
+  `nama_status_pulang` text,
+  `tgl_pulang` text,
+  `tgl_kunjungan` text,
+  `kode_dokter` text,
+  `nama_dokter` text,
+  `kode_diagnosa1` text,
+  `nama_diagnosa1` text,
+  `kode_diagnosa2` text,
+  `nama_diagnosa2` text,
+  `kode_diagnosa3` text,
+  `nama_diagnosa3` text,
+  `tgl_estimasi_rujuk` text,
+  `kode_ppk` text,
+  `nama_ppk` text,
+  `kode_spesialis` text,
+  `nama_spesialis` text,
+  `kode_subspesialis` text,
+  `nama_subspesialis` text,
+  `kode_sarana` text,
+  `nama_sarana` text,
+  `kode_referensikhusus` text,
+  `nama_referensikhusus` text,
+  `kode_faskeskhusus` text,
+  `nama_faskeskhusus` text,
+  `catatan` text,
+  `kode_tacc` text,
+  `nama_tacc` text,
+  `alasan_tacc` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL,
+  `status_kirim` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_detailjurnal`
 --
 
@@ -765,6 +830,13 @@ ALTER TABLE `mlite_billing`
   ADD PRIMARY KEY (`id_billing`);
 
 --
+-- Indexes for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
+
+--
 -- Indexes for table `mlite_detailjurnal`
 --
 ALTER TABLE `mlite_detailjurnal`
@@ -921,6 +993,11 @@ ALTER TABLE `mlite_antrian_loket`
 --
 ALTER TABLE `mlite_billing`
   MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_bridging_pcare`
+--
+ALTER TABLE `mlite_bridging_pcare`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `mlite_duitku`
 --

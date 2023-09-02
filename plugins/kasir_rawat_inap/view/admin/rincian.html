@@ -308,9 +308,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan)?}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan)?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
@@ -321,9 +321,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($jumlah_total_bangsal + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>

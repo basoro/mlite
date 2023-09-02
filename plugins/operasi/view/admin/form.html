@@ -37,8 +37,8 @@
             <label for="no_rkm_medis" class="col-sm-3 control-label">Status</label>
             <div class="col-sm-9">
               <select class="form-control" name="status">
-                <option value="Ralan">Ralan</option>
-                <option value="Ranap">Ranap</option>
+                <option value="Ralan"{if: $operasi.operasi.status == 'Ralan'} selected{/if}>Ralan</option>
+                <option value="Ranap"{if: $operasi.operasi.status == 'Ranap'} selected{/if}>Ranap</option>
               </select>
             </div>
           </div>
@@ -47,7 +47,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kategori">
                 {loop: $operasi.kategori}
-                <option value="{$value}">{$value}</option>
+                <option value="{$value}"{if: isset_or($operasi.operasi.kategori) == $value} selected{/if}>{$value}</option>
                 {/loop}
               </select>
             </div>
@@ -63,7 +63,7 @@
             <div class="col-sm-9">
               <select class="form-control" name="kode_paket">
                 {loop: $operasi.paket_operasi}
-                <option value="{$value.kode_paket}">{$value.nm_perawatan}</option>
+                <option value="{$value.kode_paket}"{if: isset_or($operasi.operasi.kode_paket) == $value.kode_paket} selected{/if}>{$value.nm_perawatan}</option>
                 {/loop}
               </select>
             </div>

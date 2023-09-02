@@ -75,6 +75,11 @@
 				<td>{$billing_besar_detail.kamar_inap.lama}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.kamar_inap.ttl_biaya,2,',','.')?}</span></td>
 			</tr>
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format($billing_besar_detail.kamar_inap.ttl_biaya,2,',','.')?}</span></a></td>
+			</tr>
 			<tr border='1', height='20px'>
 				<td>II</td>
 				<td colspan="1">Biaya Obat & BHP</td>
@@ -91,6 +96,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.total,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.detail_pemberian_obat}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.detail_pemberian_obat, 'total')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>III</td>
 				<td colspan="1">Jasa Dokter</td>
@@ -107,6 +119,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_dr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.rawat_inap_dr}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.rawat_inap_dr, 'total_biaya_rawat_dr')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>IV</td>
 				<td colspan="1">Jasa Perawat</td>
@@ -123,6 +142,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_pr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.rawat_inap_pr}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.total_biaya_rawat_pr, 'total_biaya_rawat_pr')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>V</td>
 				<td colspan="1">Jasa Dokter & Perawat</td>
@@ -139,6 +165,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.total_biaya_rawat_drpr,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.rawat_inap_drpr}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.total_biaya_rawat_drpr, 'total_biaya_rawat_drpr')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>VI</td>
 				<td colspan="1">Jasa Laboratorium</td>
@@ -155,6 +188,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.periksa_lab}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.periksa_lab, 'biaya')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>VII</td>
 				<td colspan="1">Jasa Radiologi</td>
@@ -171,6 +211,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.biaya,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.periksa_radiologi}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.periksa_radiologi, 'biaya')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>VIII</td>
 				<td colspan="1">Jasa Operasi</td>
@@ -184,9 +231,16 @@
 				<td>- {$data.nm_perawatan}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
 				<td>1</td>
-				<td>Rp. <span class="pull-right">{?= number_format($data.jumlah,2,',','.')?}</span></td>
+				<td>Rp. <span class="pull-right">{?= number_format($jumlah_total_operasi,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.operasi}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.operasi, 'jumlah')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>IX</td>
 				<td colspan="1">Obat dan BHP Operasi</td>
@@ -203,6 +257,13 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
+			{if: $billing_besar_detail.obat_operasi}
+			<tr border='0', height='20px'>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.obat_operasi, 'harga')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
 			<tr border='1', height='20px'>
 				<td>X</td>
 				<td colspan="1">Biaya Tambahan</td>
@@ -219,23 +280,33 @@
 				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
-			<tr >
+			{if: $billing_besar_detail.tambahan_biaya}
+			<tr border='0', height='20px'>
 				<td colspan="2"></td>
-				<td colspan="2">Jumlah</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_total,2,',','.')?}</span></td>
+				<td colspan="2"><b>Sub total</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.tambahan_biaya, 'besar_biaya')),2,',','.')?}</span></a></td>
+			</tr>
+			{/if}
+			<tr border='1', height='20px'>
+				<td colspan="5"></td>
 			</tr>
 			<tr >
 				<td colspan="2"></td>
-				<td colspan="2">Potongan</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing.potongan,2,',','.')?}</span></td>
+				<td colspan="2"><b>Jumlah</b></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format($billing.jumlah_total,2,',','.')?}</span></b></td>
 			</tr>
 			<tr >
 				<td colspan="2"></td>
-				<td colspan="2">Jumlah Bayar</td>
-				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+				<td colspan="2"><b>Potongan</td>
+				<td><b>Rp. <span class="pull-right">{?= number_format($billing.potongan,2,',','.')?}</span></b></td>
 			</tr>
 			<tr >
-				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+				<td colspan="2"></td>
+				<td colspan="2"><b>Jumlah Bayar</td>
+				<td><b>Rp. <span class="pull-right">{?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</span></b></td>
+			</tr>
+			<tr >
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # <b>{?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah</b> # </i></td>
 			</tr>
 			<tr>
 				<td colspan="3"></td>
