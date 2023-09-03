@@ -23,13 +23,13 @@ class Admin extends Main
         $access = '';
         $this->assign['username'] = '';
 
-        if($_SESSION['mlite_user'] == '') {
+        if(isset_or($_SESSION['mlite_user']) == '') {
           $id = 1;
         } else {
           $id = $_SESSION['mlite_user'];
         }
 
-        if($this->db('mlite__users')->where('id', $id)->oneArray()) {
+        if($this->db('mlite_users')->where('id', $id)->oneArray()) {
           $username = $this->getUserInfo('fullname', $id, true);
           $access = $this->getUserInfo('access');
           $this->assign['username']      = !empty($username) ? $username : $this->getUserInfo('username');
@@ -50,23 +50,25 @@ class Admin extends Main
         $this->assign['footer'] = isset_or($this->appends['footer'], ['']);
 
         $this->assign['pasien_access'] = ($access == 'all') || in_array('pasien', explode(',', $access)) ? true : false;
-        $this->assign['module_pasien'] = $this->db('mlite__modules')->where('dir', 'pasien')->oneArray();
+        $this->assign['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
         $this->assign['igd_access'] = ($access == 'all') || in_array('igd', explode(',', $access)) ? true : false;
-        $this->assign['module_igd'] = $this->db('mlite__modules')->where('dir', 'igd')->oneArray();
+        $this->assign['module_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
         $this->assign['rawat_jalan_access'] = ($access == 'all') || in_array('rawat_jalan', explode(',', $access)) ? true : false;
-        $this->assign['module_rawat_jalan'] = $this->db('mlite__modules')->where('dir', 'rawat_jalan')->oneArray();
+        $this->assign['module_rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
         $this->assign['rawat_inap_access'] = ($access == 'all') || in_array('rawat_inap', explode(',', $access)) ? true : false;
-        $this->assign['module_rawat_inap'] = $this->db('mlite__modules')->where('dir', 'rawat_inap')->oneArray();
+        $this->assign['module_rawat_inap'] = $this->db('mlite_modules')->where('dir', 'rawat_inap')->oneArray();
 
         $this->assign['dokter_igd_access'] = ($access == 'all') || in_array('dokter_igd', explode(',', $access)) ? true : false;
         $this->assign['dokter_ralan_access'] = ($access == 'all') || in_array('dokter_ralan', explode(',', $access)) ? true : false;
         $this->assign['dokter_ranap_access'] = ($access == 'all') || in_array('dokter_ranap', explode(',', $access)) ? true : false;
-        $this->assign['cek_anjungan'] = $this->db('mlite__modules')->where('dir', 'anjungan')->oneArray();
+        $this->assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
         $this->assign['poliklinik'] = '';
         if($this->assign['cek_anjungan']) {
           $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
+
+        $this->assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 
         $this->tpl->set('mlite', $this->assign);
         echo $this->tpl->draw(THEMES.'/admin/'.$file, true);
@@ -203,11 +205,11 @@ class Admin extends Main
     public function login($username, $password, $remember_me = false)
     {
         // Check attempt
-        $attempt = $this->db('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
+        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
         if (!$attempt) {
-            $this->db('mlite__login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
+            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
         } else {
             $attempt['attempts'] = intval($attempt['attempts']);
@@ -215,16 +217,18 @@ class Admin extends Main
         }
 
         // Is IP blocked?
-        /*if ((time() - $attempt['expires']) < 0) {
-            $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
-            return false;
-        }*/
+        if($this->settings->get('settings.keamanan') == 'ya') {
+          if ((time() - $attempt['expires']) < 0) {
+              $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+              return false;
+          }
+        }
 
-        $row = $this->db('mlite__users')->where('username', $username)->oneArray();
+        $row = $this->db('mlite_users')->where('username', $username)->oneArray();
 
         if ($row && password_verify(trim($password), $row['password'])) {
             // Reset fail attempts for this IP
-            $this->db('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => 0]);
 
             $_SESSION['mlite_user']= $row['id'];
             $_SESSION['token']      = bin2hex(openssl_random_pseudo_bytes(6));
@@ -234,22 +238,26 @@ class Admin extends Main
             if ($remember_me) {
                 $token = str_gen(64, "1234567890qwertyuiop[]asdfghjkl;zxcvbnm,./");
 
-                $this->db('mlite__remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
+                $this->db('mlite_remember_me')->save(['user_id' => $row['id'], 'token' => $token, 'expiry' => time()+60*60*24*30]);
 
-                setcookie('mlite__remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
+                setcookie('mlite_remember', $row['id'].':'.$token, time()+60*60*24*365, '/');
             }
             return true;
         } else {
             // Increase attempt
-            $this->db('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
             $attempt['attempts'] += 1;
 
             // ... and block if reached maximum attempts
             if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite__login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
-                $attempt['expires'] = strtotime("+10 minutes");
+                if($this->settings->get('settings.keamanan') == 'ya') {
+                    $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                    $attempt['expires'] = strtotime("+10 minutes");
 
-                $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                    $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
+                } else {
+                  $this->setNotify('failure', 'Anda mencoba login berkali-kali. Pastikan username dan password anda sesuai.');                    
+                }
             } else {
                 $this->setNotify('failure', 'Username atau password salah!');
             }
@@ -263,10 +271,10 @@ class Admin extends Main
         $_SESSION = [];
 
         // Delete remember_me token from database and cookie
-        if (isset($_COOKIE['mlite__remember'])) {
-            $token = explode(':', $_COOKIE['mlite__remember']);
-            $this->db('mlite__remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
-            setcookie('mlite__remember', null, -1, '/');
+        if (isset($_COOKIE['mlite_remember'])) {
+            $token = explode(':', $_COOKIE['mlite_remember']);
+            $this->db('mlite_remember_me')->where('user_id', $token[0])->where('token', $token[1])->delete();
+            setcookie('mlite_remember', null, -1, '/');
         }
 
         session_unset();
@@ -282,7 +290,7 @@ class Admin extends Main
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];

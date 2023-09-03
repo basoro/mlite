@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="refresh" content="400">
+    <meta http-equiv="refresh" content="180">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
@@ -13,7 +13,6 @@
     <link href="{?=url()?}/assets/css/font-awesome.css" rel="stylesheet">
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
-    <script type='text/javascript' src='//cdn.jsdelivr.net/jquery.marquee/1.4.0/jquery.marquee.min.js'></script>
     <style media="screen">
       body {
         font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
@@ -22,58 +21,48 @@
       	height:calc(100vh);
       	width:100%;
       }
+      li:nth-child(even) {background: #0264d6; color: #ffffff;}
+      li:nth-child(odd) {background: #ffffff; color: #0264d6;}
       footer {
           position: fixed;
           right: 0px;
           bottom: 0px;
-          height: 0px;
+          height: 40px;
           width: calc(100% - 0px);
-          font-size: 0px;
+          font-size: 14px;
           color: #fff;
-          visibility: hidden;
       }
       footer a, footer a:hover {
         color: #fff;
-      }
-      tr:nth-child(even) {color: #ffffff;}
-
-      .marquee {
-        width: 100%;
-        overflow: hidden;
-        /* border: 1px solid #ccc; */
-        background:#0264d6;
       }
     </style>
 </head>
 <body>
 <div class="container-fluid">
-  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Antrian Apotek {$settings.nama_instansi}</h1>
-  <div class="col-md-12">
-  <table class="table table-bordered table-striped lead text-primary">
-    <thead class="bg-primary">
+  <h1 class="display-3 text-center text-white m-3"><img class="logo" src="{?=url()?}/{$logo}" alt="" width="60px"> Jadwal Operasi {$settings.nama_instansi}</h1>
+  <table class="table table-bordered text-primary">
+    <tbody class="bg-primary">
       <tr>
-        <th style="background-color: #000000;" width="5%">#</th>
-        <th style="background-color: #DA0037;" width="25%">Nama Pasien</th>
-        <th style="background-color: #F9B208;" width="10%">No RM</th>
+        <td>
+            <div id="list_lab" style="font-size: 20px; font-weight:bold;">
+              <ul class="list-unstyled">
+                {loop: $display}
+                <li style="padding:10px;">
+                  Nama: {$value.nm_pasien}, No. RM: {$value.no_rkm_medis}  <span class="pull-right">Status: <b {if: $value.status == 'Selesai'}style="color:red;"{/if}>{$value.status}</b></span><br>
+                  [ Operator : {$value.namadok} ] [ Rujukan Dari :
+                  {if: $value.kd_poli == 'IGDK'}{$value.kamar.namabangsal}
+                    {elseif: $value.kd_poli == 'U0027'}{$value.kamar.namabangsal}
+                    {else} {$value.namapoli}{/if} ]<br>
+                </li>
+                {/loop}
+              </ul>
+            </div>
+        </td>
       </tr>
-    </thead>
-  </table>
-  <div class="marquee" data-direction='up' data-duration='23000' startVisible='true' data-gap='10' data-duplicated='false' style="height:600px;" >
-  <table class="table table-bordered table-striped lead text-primary">
-    <tbody>
-      {loop: $display}
-      <tr>
-        <td width="5%">{$value.noantrian}</td>
-        <td width="25%">{$value.nm_pasien}</td>
-        <td width="10%">{$value.no_rkm_medis}</td>
-      </tr>
-      {/loop}
     </tbody>
   </table>
-    </div>
-  </div>
   <div class="row" style="bottom:0;position:absolute;width:100%;background-color:#fff;color:#ff0000;margin-top:20px;margin-bottom:40px;">
-    <h3 class="display-6"><marquee>{$running_text}</marquee></h3>
+     <!-- <h3 class="display-6"><marquee></marquee></h3> -->
   </div>
 </div>
 <footer class="visible-lg visible-md bg-primary" style="padding:10px;z-index:1000;">
@@ -87,6 +76,3 @@
 </footer>
 </body>
 </html>
-<script>
-$('.marquee').marquee()
-</script>

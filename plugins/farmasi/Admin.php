@@ -91,7 +91,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
             if($query2) {
               $this->core->mysql('gudangbarang')
@@ -117,7 +118,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
 
           $query2 = $this->core->mysql('riwayat_barang_medis')
@@ -134,7 +136,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $_POST['kd_bangsal'],
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
         }
 
@@ -176,7 +179,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
             if($query) {
               $this->core->mysql('gudangbarang')->save([
@@ -204,7 +208,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $this->settings->get('farmasi.gudang'),
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
 
           $query2 = $this->core->mysql('riwayat_barang_medis')
@@ -221,7 +226,8 @@ class Admin extends AdminModule
               'kd_bangsal' => $_POST['kd_bangsal'],
               'status' => 'Simpan',
               'no_batch' => '0',
-              'no_faktur' => '0'
+              'no_faktur' => '0',
+              'keterangan' => '-'
             ]);
           if($query) {
             $this->core->mysql('gudangbarang')
@@ -277,9 +283,9 @@ class Admin extends AdminModule
       $no_batch = $_POST['no_batch'];
       $no_faktur = $_POST['no_faktur'];
       for($count = 0; $count < count($kode_brng); $count++){
-       $query = "UPDATE gudangbarang SET stok=? WHERE kode_brng=? AND kd_bangsal=?";
+       $query = "UPDATE gudangbarang SET stok=?, no_batch=?, no_faktur=? WHERE kode_brng=? AND kd_bangsal=?";
        $opname = $this->core->mysql()->pdo()->prepare($query);
-       $opname->execute([$real[$count], $kode_brng[$count], $kd_bangsal[$count]]);
+       $opname->execute([$real[$count], $no_batch[$count], $no_faktur[$count], $kode_brng[$count], $kd_bangsal[$count]]);
 
        $selisih = $real[$count] - $stok[$count];
        $nomihilang = $selisih * $h_beli[$count];

@@ -219,6 +219,14 @@ function KirimEmail() {
 	var email = document.getElementById("email").value;
 	var receiver = document.getElementById("receiver").value;
 	var file = "{?=url()?}/uploads/laboratorium/{$filename}.pdf";
+	console.log(email + " - " + receiver + " - " + file);
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var data=xhttp.responseText;
+			console.log(data);
+			alert(data);
+		}
+	};
 	xhttp.open("POST", "{?=url([ADMIN,'laboratorium','kirimemail'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);

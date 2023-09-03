@@ -9,9 +9,9 @@
       <div class="panel-heading">
         <form action="" method="">
           {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
-          <a href="{?=url()?}/admin/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {else}
-          <a href="{?=url()?}/admin/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+          <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
           {/if}
           <div class="btn-group pull-right" style="margin-top:-8px;">
             <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">

@@ -71,7 +71,7 @@ $("#form").on("click", "#simpan", function(event){
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
   var kd_pj = $('select[name=kd_pj]').val();
-  var stts_daftar = $('input:text[name=stts_daftar]').val();
+  var stts_daftar = $('input:hidden[name=stts_daftar]').val();
 
   var url = baseURL + '/radiologi/save?t=' + mlite.token;
 
@@ -90,8 +90,12 @@ $("#form").on("click", "#simpan", function(event){
       stts_daftar: stts_daftar
     } ,function(data) {
       $("#display").show().load(baseURL + '/radiologi/display?t=' + mlite.token);
-      bersih();
+      //bersih();
       $("#status_pendaftaran").hide();
+      $.post(baseURL + '/radiologi/cekwaktu?t=' + mlite.token, {
+      } ,function(data) {
+        $("#form #jam_reg").val(data);
+      });
       $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
       "Data pasien telah disimpan!"+
       "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -107,15 +111,25 @@ $("#display").on("click",".antrian", function(event){
   window.open(baseURL + '/radiologi/antrian?no_rawat=' + no_rawat + '&t=' + mlite.token);
 });
 
-$("#rincian").on("click","#cetak_hasil", function(event){
+$("#rincian").on("click",".cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam = $(this).attr("data-jam_periksa");
+  var status = $('input:text[name=status]').val();
+  window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&tgl_periksa=' + tgl_periksa + '&jam=' + jam + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click",".cetak_permintaan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
   var status = $('input:text[name=status]').val();
-  window.open(baseURL + '/radiologi/cetakhasil?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+  window.open(baseURL + '/radiologi/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
 });
 
-$("#rincian").on("click","#cetak_permintaan", function(event){
+$("#rincian").on("click",".nota_lab", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
@@ -380,18 +394,12 @@ $('#manage').on('click', '#lunas_periode_rawat_jalan', function(event){
 
 // tombol batal diklik
 $("#form_rincian").on("click", "#selesai", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
   bersih();
-  $("#form_rincian").hide();
-  $("#form_soap").hide();
-  $("#form").show();
-  $("#display").show();
-  $("#rincian").hide();
-  $("#soap").hide();
-});
-
-// tombol batal diklik
-$("#form_soap").on("click", "#selesai_soap", function(event){
-  bersih();
+  $.post(baseURL + '/radiologi/cekwaktu?t=' + mlite.token, {
+  } ,function(data) {
+    $("#form_rincian #jam_reg").val(data);
+  });
   $("#form_rincian").hide();
   $("#form_soap").hide();
   $("#form").show();
@@ -477,7 +485,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     }, function(data) {
       // tampilkan data
       $("#rincian").html(data).show();
-      bersih();
+      //bersih();
     });
     $('input:hidden[name=kd_jenis_prw]').val("");
     $('input:text[name=nm_perawatan]').val("");
@@ -515,11 +523,14 @@ $("#rincian").on("click",".hasil_radiologi", function(event){
       + '</form>'
       + '<div id="preview"></div>'
       + '</div>'
+      + '<div id="preview_hasil"></div>'
+      + '</div>'
       + '';
 
   // tampilkan dialog konfirmasi
   var box = bootbox.dialog({
     message: set_stok,
+    size: 'large',
     title: 'Input Hasil Radiologi',
     buttons: {
       main: {
@@ -775,4 +786,22 @@ $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function (
 
 $('body').on('hidden.bs.modal', '.modal', function () {
     $(this).removeData('bs.modal');
+});
+
+$("#form").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/radiologi/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form #jam_reg").val(data);
+    });
+});
+
+$("#form_rincian").on("click","#jam_reg", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/radiologi/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_reg").val(data);
+    });
 });

@@ -55,7 +55,7 @@
     <div class="col col-md-3">
       <div class="form-group">
         <label for="poli">Poliklinik/Unit</label>
-        <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$reg_periksa.nm_poli}" readonly>
+        <input type="text" id="kd_poli" name="kd_poli" class="form-control" value="{$reg_periksa.nm_poli}" readonly>
       </div>
     </div>
     <div class="col col-md-3">
@@ -84,121 +84,74 @@
     <div class="col col-md-12" style="margin: 20px 0;">
       <ul class="nav nav-tabs">
         <li role="presentation" class="active">
-          <a href="#one" aria-controls="one" role="tab" data-toggle="tab">Data Umum</a>
+          <a href="#umum" aria-controls="umum" role="tab" data-toggle="tab">Data Umum</a>
         </li>
         <li role="presentation">
-          <a href="#two" aria-controls="two" role="tab" data-toggle="tab">Data Biaya</a>
+          <a href="#tambahan" aria-controls="tambahan" role="tab" data-toggle="tab">Data Tambahan</a>
+        </li>
+        <li role="presentation">
+          <a href="#kelahiran" aria-controls="kelahiran" role="tab" data-toggle="tab">Data Kelahiran</a>
+        </li>
+        <li role="presentation">
+          <a href="#covid" aria-controls="covid" role="tab" data-toggle="tab">Data Covid</a>
+        </li>
+        <li role="presentation">
+          <a href="#biaya" aria-controls="biaya" role="tab" data-toggle="tab">Data Biaya</a>
         </li>
       </ul>
     </div>
     </div>
 
     <div class="tab-content">
-      <div role="tabpanel" class="tab-pane fade in active" id="one">
+      <div role="tabpanel" class="tab-pane fade in active" id="umum">
       <div class="row">
-        <div class="col col-md-6">
+        <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Nomor SEP</label>
             <input type="text" id="nosep" name="nosep" class="form-control" value="{$reg_periksa.no_sep}">
           </div>
         </div>
-        <div class="col col-md-6">
+        <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Tanggal Keluar</label>
-            <input type="text" id="keluar" name="keluar" class="form-control" value="{$reg_periksa.tgl_keluar}">
+            <input type="text" id="keluar" name="keluar" class="form-control tanggal" value="{$reg_periksa.tgl_keluar}">
           </div>
         </div>
-      </div>
-      <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="">Cara Masuk</label>
+            <select name="cara_masuk" class="form-control">
+               <option value="gp">Rujukan FKTP</option>
+               <option value="hosp-trans">Rujukan FKRTL</option>
+               <option value="mp">Rujukan Spesialis</option>
+               <option value="outp">Dari Rawat Jalan</option>
+               <option value="inp">Dari Rawat Inap</option>
+               <option value="emd">Dari Rawat Darurat</option>
+               <option value="born">Lahir di RS</option>
+               <option value="nursing">Rujukan Panti Jompo</option>
+               <option value="psych">Rujukan dari RS Jiwa</option>
+               <option value="rehab">Rujukan Fasilitas Rehab</option>
+               <option value="other">Lain-lain</option>
+            </select>
+          </div>
+        </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Kelas Rawat</label>
             <select name="kelas_rawat" class="form-control">
             {if: $reg_periksa.status_lanjut == 'Ralan'}
-              <option value='3'>Kelas Reguler</option>
-              <option value='1'>Kelas Eksekutif</option>
+              <option value='3'{if: $reg_periksa.kelas_rawat == '3'} selected{/if}>Kelas Reguler</option>
+              <option value='1'{if: $reg_periksa.kelas_rawat == '1'} selected{/if}>Kelas Eksekutif</option>
             {else}
-              <option value='1'>Kelas 1</option>
-              <option value='2'>Kelas 2</option>
-              <option value='3'>Kelas 3</option>
+              <option value='1'{if: $reg_periksa.kelas_rawat == '1'} selected{/if}>Kelas 1</option>
+              <option value='2'{if: $reg_periksa.kelas_rawat == '2'} selected{/if}>Kelas 2</option>
+              <option value='3'{if: $reg_periksa.kelas_rawat == '3'} selected{/if}>Kelas 3</option>
             {/if}
             </select>
           </div>
         </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">Upgrade Kelas</label>
-            <select name="upgrade_class_ind" class="form-control">
-               <option value="0">0</option>
-               <option value="1">1</option>
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">Naik ke Kelas</label>
-            <select name="upgrade_class_class" class="form-control">
-               <option value=""></option>
-               <option value="kelas_1">Kelas 1</option>
-               <option value="kelas_2">Kelas 2</option>
-               <option value="vip">Kelas VIP</option>
-               <option value="vvip">Kelas VVIP</option>
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">Lama Hari Naik Kelas</label>
-            <input type="text" id="upgrade_class_los" name="upgrade_class_los" class="form-control" value="0">
-          </div>
-        </div>
       </div>
       <div class="row">
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">ADL Sub Acute</label>
-            <select name="adl_sub_acute" class="form-control">
-                <option value=""></option>
-                {loop: $adl}
-                <option value="{$value}">{$value}</option>
-                {/loop}
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">ADL Chronic</label>
-            <select name="adl_chronic" class="form-control">
-                <option value=""></option>
-                {loop: $adl}
-                <option value="{$value}">{$value}</option>
-                {/loop}
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">ICU Indikator</label>
-            <select name="icu_indikator" class="form-control">
-               <option value="0">0</option>
-               <option value="1">1</option>
-            </select>
-          </div>
-        </div>
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">ICU Los</label>
-            <input type="text" id="icu_los" name="icu_los" class="form-control" value="0">
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col col-md-3">
-          <div class="form-group">
-            <label for="poli">Berat Saat Lahir</label>
-            <input type="text" id="birth_weight" name="birth_weight" class="form-control" value="0">
-          </div>
-        </div>
         <div class="col col-md-3">
           <div class="form-group">
             <label for="poli">Status Pulang</label>
@@ -243,6 +196,16 @@
         </div>
         <div class="col col-md-3">
           <div class="form-group">
+            <label for="">Tensi</label>
+            <div class="input-group">
+              <input type="text" id="sistole" name="sistole" class="form-control" value="{$reg_periksa.sistole}"/>
+              <span class="input-group-addon">/</span>
+              <input type="text" id="diastole" name="diastole" class="form-control" value="{$reg_periksa.diastole}"/>
+            </div>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
             <label for="poli">Diagnosa</label>
             <input type="text" id="diagnosa" name="diagnosa" class="form-control" value="{$penyakit}">
           </div>
@@ -255,7 +218,452 @@
         </div>
       </div>
       </div>
-      <div role="tabpanel" class="tab-pane fade" id="two">
+      <div role="tabpanel" class="tab-pane fade" id="tambahan">
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Upgrade Kelas</label>
+              <select name="upgrade_class_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Naik ke Kelas</label>
+              <select name="upgrade_class_class" class="form-control">
+                 <option value=""></option>
+                 <option value="kelas_1">Kelas 1</option>
+                 <option value="kelas_2">Kelas 2</option>
+                 <option value="vip">Kelas VIP</option>
+                 <option value="vvip">Kelas VVIP</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Lama Hari Naik Kelas</label>
+              <input type="text" id="upgrade_class_los" name="upgrade_class_los" class="form-control" value="0">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">P.J Naik Kelas</label>
+              <select name="upgrade_class_class" class="form-control">
+                 <option value=""></option>
+                 <option value="peserta">Peserta</option>
+                 <option value="pemberi_kerja">Pemberi Kerja</option>
+                 <option value="asuransi_tambahan">Asuransi Tambahan</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Kantong Darah</label>
+              <input type="text" id="kantong_darah" name="kantong_darah" class="form-control" value="0">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">ADL Sub Acute</label>
+              <select name="adl_sub_acute" class="form-control">
+                  <option value=""></option>
+                  {loop: $adl}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">ADL Chronic</label>
+              <select name="adl_chronic" class="form-control">
+                  <option value=""></option>
+                  {loop: $adl}
+                  <option value="{$value}">{$value}</option>
+                  {/loop}
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">ICU/Hari</label>
+              <div class="input-group">
+                <input type="text" id="icu_indikator" name="icu_indikator" class="form-control" value="0"/>
+                <span class="input-group-addon">/</span>
+                <input type="text" id="icu_los" name="icu_los" class="form-control" value="0"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Ventilator/Jam</label>
+              <div class="input-group">
+                <input type="text" id="use_ind" name="use_ind" class="form-control" value="0"/>
+                <span class="input-group-addon">/</span>
+                <input type="text" id="ventilator_hour" name="ventilator_hour" class="form-control" value="0"/>
+              </div>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Mulai Pemakaian</label>
+              <input type="text" id="start_dttm" name="start_dttm" class="form-control tanggaljam" value="">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Selesai Pemakaian</label>
+              <input type="text" id="stop_dttm" name="stop_dttm" class="form-control tanggaljam" value="">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Hemodialisa</label>
+              <select name="dializer_single_use" class="form-control">
+                 <option></option>
+                 <option value="1">Multiple Use</option>
+                 <option value="0">Single Use</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="kelahiran">
+      <div class="row">
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="">Usia Kehamilan</label>
+            <input type="text" id="usia_kehamilan" name="usia_kehamilan" class="form-control" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="">Onset Kontraksi</label>
+            <select name="onset_kontraksi" class="form-control">
+              <option value="spontan">Spontan</option>
+              <option value="induksi">Induksi</option>
+              <option value="non_spontan_non_induksi">Non Spontan / Non Induksi</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="">Waktu Kelahiran</label>
+            <input type="text" id="delivery_dttm" name="delivery_dttm" class="form-control tanggaljam" value="">
+          </div>
+        </div>
+        <div class="col col-md-3">
+          <div class="form-group">
+            <label for="">Cara Kelahiran</label>
+            <select name="delivery_method" id="delivery_method" class="form-control">
+              <option value="vaginal">Vaginal</option>
+              <option value="sc">SC</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row" id="delivery_method_sc">
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="">Manual</label>
+            <select name="use_manual" class="form-control">
+              <option value="0">Tidak</option>
+              <option value="1">Ya</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="">Forcep</label>
+            <select name="use_forcep" class="form-control">
+              <option value="0">Tidak</option>
+              <option value="1">Ya</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="">Vacuum</label>
+            <select name="use_vacuum" class="form-control">
+              <option value="0">Tidak</option>
+              <option value="1">Ya</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="poli">Berat Saat Lahir</label>
+            <input type="text" id="birth_weight" name="birth_weight" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="poli">Letak Janin</label>
+            <select name="letak_janin" class="form-control">
+              <option value="kepala">Kepala</option>
+              <option value="sungsang">Sungsang</option>
+              <option value="lintang">Lintang</option>
+            </select>
+          </div>
+        </div>
+        <div class="col col-md-4">
+          <div class="form-group">
+            <label for="">Kodisi Janin</label>
+            <select name="kondisi" class="form-control">
+              <option value="livebirth">Hidup</option>
+              <option value="stillbirth">Meninggal</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Apgar Score</label>
+            <input type="text" class="form-control" value="1 Menit" disabled>
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Appareance</label>
+            <input type="text" id="appareance_1" name="appareance_1" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Pulse</label>
+            <input type="text" id="pulse_1" name="pulse_1" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Grimace</label>
+            <input type="text" id="grimace_1" name="grimace_1" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Acivityt</label>
+            <input type="text" id="activity_1" name="activity_1" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Respiration</label>
+            <input type="text" id="respiration_1" name="respiration_1" class="form-control" value="0">
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Apgar Score</label>
+            <input type="text" class="form-control" value="5 Menit" disabled>
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Appareance</label>
+            <input type="text" id="appareance_5" name="appareance_5" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Pulse</label>
+            <input type="text" id="pulse_5" name="pulse_5" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Grimace</label>
+            <input type="text" id="grimace_5" name="grimace_5" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Acivityt</label>
+            <input type="text" id="activity_5" name="activity_5" class="form-control" value="0">
+          </div>
+        </div>
+        <div class="col col-md-2">
+          <div class="form-group">
+            <label for="">Respiration</label>
+            <input type="text" id="respiration_5" name="respiration_5" class="form-control" value="0">
+          </div>
+        </div>
+      </div>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="covid">
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Pemulasaraan Jenazah</label>
+              <select name="pemulasaraan_jenazah" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Kantong Jenazah</label>
+              <select name="kantong_jenazah" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Peti Jenazah</label>
+              <select name="peti_jenazah" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Plastik Erat</label>
+              <select name="plastik_erat" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Desinfektan Jenazah</label>
+              <select name="desinfektan_jenazah" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Mobil Jenazah</label>
+              <select name="upgrade_class_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Desinfektan Mobil</label>
+              <select name="upgrade_class_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Nomor Kartu</label>
+              <select name="nomor_kartu_t" class="form-control">
+                 <option value="nik">NIK</option>
+                 <option value="kitas">Kitas/Kitap</option>
+                 <option value="paspor">Paspor</option>
+                 <option value="kartu_jkn">Kartu Peserta JKN</option>
+                 <option value="kk">Kartu Keluarga</option>
+                 <option value="unhcr">UNHCR</option>
+                 <option value="kelurahan">Kelurahan</option>
+                 <option value="dinsos">Dinas Sosial</option>
+                 <option value="dinkes">Dinas Kesehatan</option>
+                 <option value="sjp">Surat Jaminan Perawatan</option>
+                 <option value="klaim_ibu">Bayi Baru Lahir</option>
+                 <option value="lainnya">Lainnya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Status</label>
+              <select name="covid19_status_cd" class="form-control">
+                 <option value="1">ODP</option>
+                 <option value="2">PDP</option>
+                 <option value="3">Terkonfirmasi</option>
+                 <option value="4">Suspek</option>
+                 <option value="5">Probable</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Indikator CC</label>
+              <select name="covid19_cc_ind" class="form-control">
+                 <option value="0">Tidak Ada</option>
+                 <option value="1">Ada</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">RS Darurat</label>
+              <select name="covid19_rs_darurat_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Co Insiden</label>
+              <select name="covid19_co_insidense_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Episode</label>
+              <input type="text" id="episodes" name="episodes" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="">Terapi Konvalesen</label>
+              <input type="text" id="terapi_konvalesen" name="terapi_konvalesen" class="form-control" value="">
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Akses NAAT</label>
+              <select name="akses_naat" class="form-control">
+                 <option value="A">A</option>
+                 <option value="B">B</option>
+                 <option value="C">C</option>
+              </select>
+            </div>
+          </div>
+          <div class="col col-md-3">
+            <div class="form-group">
+              <label for="poli">Isoman</label>
+              <select name="isoman_ind" class="form-control">
+                 <option value="0">Tidak</option>
+                 <option value="1">Ya</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="biaya">
         <div class="row">
         <div class="col col-md-3">
           <div class="form-group">
@@ -393,9 +801,9 @@
       <button class="btn btn-success simpanbridging">
           Simpan
       </button>
-      <button class="btn btn-info editbridging">
+      <!-- <button class="btn btn-info editbridging">
           Edit
-      </button>
+      </button> -->
       <button class="btn btn-danger hapusbridging">
           Hapus
       </button>
@@ -447,6 +855,26 @@
   $('select').selectator();
 </script>
 <script type="text/javascript">
+    $(function () {
+        $('.tanggaljam').datetimepicker({
+          format: 'YYYY-MM-DD HH:mm:ss',
+          locale: 'id'
+        });
+    });
+   $(function () {
+       $('.tanggal').datetimepicker({
+         format: 'YYYY-MM-DD',
+         locale: 'id'
+       });
+   });
+   $(function () {
+       $('.jam').datetimepicker({
+         format: 'HH:mm:ss',
+         locale: 'id'
+       });
+   });
+</script>
+<script type="text/javascript">
   $("#bridginginacbgs").on("click", ".simpanbridging", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
@@ -465,6 +893,9 @@
     var adl_sub_acute = $('select[name=adl_sub_acute]').val();
     var adl_chronic = $('select[name=adl_chronic]').val();
     var icu_indikator = $('select[name=icu_indikator]').val();
+    var sistole = $('input:text[name=sistole]').val();
+    var diastole = $('input:text[name=diastole]').val();
+    var dializer_single_use = $('select[name=dializer_single_use]').val();
     var icu_los = $('input:text[name=icu_los]').val();
     var upgrade_class_ind = $('select[name=upgrade_class_ind]').val();
     var upgrade_class_class = $('select[name=upgrade_class_class]').val();
@@ -513,6 +944,9 @@
           adl_sub_acute: adl_sub_acute,
           adl_chronic: adl_chronic,
           icu_indikator: icu_indikator,
+          sistole: sistole,
+          diastole: diastole,
+          dializer_single_use: dializer_single_use, 
           icu_los: icu_los,
           upgrade_class_ind: upgrade_class_ind,
           upgrade_class_class: upgrade_class_class,
@@ -569,5 +1003,18 @@
         });
       }
     });
+  });
+</script>
+
+<script>
+  $(function() {
+      $('#delivery_method_sc').show();
+      $('#delivery_method').change(function(){
+          if($('#delivery_method').val() == 'sc') {
+              $('#delivery_method_sc').hide();
+          } else {
+              $('#delivery_method_sc').show();
+          }
+      });
   });
 </script>

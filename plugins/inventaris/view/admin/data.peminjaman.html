@@ -1,0 +1,134 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">
+          Data Peminjaman
+        </h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <form action="{?=url(ADMIN.'/inventaris/savepeminjaman')?}" method="POST">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label>Peminjaman</label>
+                    <input type="text" name="peminjam" class="form-control" value="" required />
+                </div>
+                <div class="form-group">
+                    <label>Telepon</label>
+                    <input type="text" name="tlp" class="form-control" value="" required />
+                </div>
+                <div class="form-group">
+                    <label>Nomor Inventaris</label>
+                    <select name="no_inventaris" id="no_inventaris" class="form-control" data-use-search="true">
+                        {loop: $inventaris}
+                        <option value="{$value.no_inventaris}">{$value.nama_barang}</option>
+                        {/loop}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tanggal Pinjam</label>
+                        <input type="text" name="tgl_pinjam" class="form-control tanggal" value="" required />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Tanggal Kembali</label>
+                        <input type="text" name="tgl_kembali" class="form-control tanggal" value="" required />
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group">
+                    <label>Petugas</label>
+                    <select name="nip" id="nip" class="form-control" data-use-search="true">
+                        {loop: $pegawai}
+                        <option value="{$value.nik}">{$value.nama}</option>
+                        {/loop}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Status Pinjam</label>
+                    <select name="status_pinjam" id="status_pinjam" class="form-control" data-use-search="true">
+                        <option value="Masih Dipinjam">Masih Dipinjam</option>
+                        <option value="Sudah Kembali">Sudah Kembali</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-12" style="padding-top: 20px;">
+                <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                <input type="submit" name="update" class="btn btn-info" value="Update" />
+                <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="peminjaman">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Peminjam</th>
+            <th>Telepon</th>
+            <th>Nomor Inventaris</th>
+            <th>Kode Barang</th>
+            <th>Nama Barang</th>
+            <th>Tanggal Pinjam</th>
+            <th>Tanggal Kembali</th>
+            <th>NIP</th>
+            <th>Nama Petugas</th>
+            <th>Status Pinjam</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $inventaris_peminjaman}
+          <tr class="peminjaman"
+          data-peminjam="{$value.peminjam}"
+          data-tlp="{$value.tlp}"
+          data-no_inventaris="{$value.no_inventaris}"
+          data-tgl_pinjam="{$value.tgl_pinjam}"
+          data-tgl_kembali="{$value.tgl_kembali}"
+          data-nip="{$value.nip}"
+          data-status_pinjam="{$value.status_pinjam}"
+          >
+            <td>{$value.peminjam}</td>
+            <td>{$value.tlp}</td>
+            <td>{$value.no_inventaris}</td>
+            <td>{$value.kode_barang}</td>
+            <td>{$value.nama_barang}</td>
+            <td>{$value.tgl_pinjam}</td>
+            <td>{$value.tgl_kembali}</td>
+            <td>{$value.nip}</td>
+            <td>{$value.nama}</td>
+            <td>{$value.status_pinjam}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#peminjaman").on("click", ".peminjaman", function(event){
+    var peminjam  = $(this).attr("data-peminjam");
+    var tlp  = $(this).attr("data-tlp");
+    var no_inventaris  = $(this).attr("data-no_inventaris");
+    var tgl_pinjam  = $(this).attr("data-tgl_pinjam");
+    var tgl_kembali  = $(this).attr("data-tgl_kembali");
+    var nip  = $(this).attr("data-nip");
+    var status_pinjam  = $(this).attr("data-status_pinjam");
+    $('input:text[name=peminjam]').val(peminjam);
+    $('input:text[name=tlp]').val(tlp);
+    $('#no_inventaris').val(no_inventaris).change();
+    $('input:text[name=tgl_pinjam]').val(tgl_pinjam);
+    $('input:text[name=tgl_kembali]').val(tgl_kembali);
+    $('#nip').val(nip).change();
+    $('#status_pinjam').val(status_pinjam).change();
+    $('input:text[name=peminjam]').prop('readonly', true);
+    $('input:text[name=tgl_pinjam]').prop('readonly', true);
+  });
+</script>

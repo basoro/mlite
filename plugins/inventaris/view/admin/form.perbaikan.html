@@ -1,0 +1,59 @@
+<div class="row">
+    <div class="col-md-6">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Form Perbaikan</h3>
+            </div>
+            <div class="panel-body">
+              <form name="user" action="{?=url(ADMIN.'/inventaris/perbaikansimpan/'.@$perbaikan.form.no_permintaan)?}" method="POST" enctype="multipart/form-data">
+              <div class="form-group">
+                  <label>No. Permintaan</label>
+                  <input type="text" name="no_permintaan" class="form-control" placeholder="Nomor Permintaan" value="{$perbaikan.form.no_permintaan}" {if: $perbaikan.form.no_permintaan !=''}readonly{/if}/>
+              </div>
+              <div class="form-group">
+                  <label>Tanggal</label>
+                  <input type="text" name="tanggal" class="form-control tanggal" placeholder="Tanggal" value="{$perbaikan.form.tanggal}" />
+              </div>
+              <div class="form-group">
+                    <label>Uraian Kegiatan</label>
+                    <textarea class="form-control" name="uraian_kegiatan" placeholder="Deskripsi (optional)" rows="6">{$perbaikan.form.uraian_kegiatan}</textarea>
+              </div>
+              <div class="form-group">
+                  <label>Petugas Perbaikan</label>
+                  <select name="nip" class="form-control" data-use-search="true">
+                      {loop: $perbaikan.pegawai}
+                      <option value="{$value.nik}"{if: $value.nik == $perbaikan.form.nip}selected{/if}>{$value.nama}</option>
+                      {/loop}
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Pelaksana</label>
+                  <select name="pelaksana" class="form-control" data-use-search="true">
+                      <option value="Teknisi Rumah Sakit">Teknisi Rumah Sakit</option>
+                      <option value="Teknisi Rujukan">Teknisi Rujukan</option>
+                      <option value="Pihak ke III">Pihak ke III</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <label>Biaya</label>
+                  <input type="text" name="biaya" class="form-control" placeholder="Biaya" value="{$perbaikan.form.biaya}" />
+              </div>
+              <div class="form-group">
+                  <label>Keterangan</label>
+                  <input type="text" name="keterangan" class="form-control" placeholder="Keterangan" value="{$perbaikan.form.keterangan}" />
+              </div>
+              <div class="form-group">
+                  <label>Status</label>
+                  <select name="status" class="form-control" data-use-search="true">
+                      <option value="Bisa Diperbaiki">Bisa Diperbaiki</option>
+                      <option value="Tidak Bisa Diperbaiki">Tidak Bisa Diperbaiki</option>
+                  </select>
+              </div>
+              <div class="form-group">
+                  <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+              </div>
+              </form>
+            </div>
+        </div>
+    </div>
+</div>

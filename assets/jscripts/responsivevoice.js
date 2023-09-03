@@ -160,7 +160,7 @@ typeof h)try{var g=h.match(/^\/(.*?)\/([gimy]*)$/),f=new RegExp(g[1],g[2]);f ins
 
 if( document.location.search && /rvWebsiteVerify=5gV4KSf1/gi.test(document.location.search) ){
     function rvNotificationPopup(){
-        
+
         var css = '#rv_5gV4KSf1_notification,#rv_5gV4KSf1_notification *{font-family:"Open Sans",Helvetica,Arial,sans-serif,Tahoma!important}#rv_5gV4KSf1_notification{transition-duration:.3s;opacity:1;transform:scale(1);background:#fff;border:1px solid rgba(0,0,0,.125);border-radius:.3rem;position:fixed;z-index:2147483646;top:20px;left:20px;width:400px;padding:25px;-webkit-box-shadow:0 2px 4px 0 rgba(0,0,0,.3);-moz-box-shadow:0 2px 4px 0 rgba(0,0,0,.3);box-shadow:0 2px 4px 0 rgba(0,0,0,.3)}#rv_5gV4KSf1_notification .rv_notification_logo{background:url(https://app.responsivevoice.org/favicon-96x96.png) no-repeat;background-size:50px 50px;float:left;margin:0 20px 0 0;width:50px;height:50px}#rv_5gV4KSf1_notification_play{background:url(https://app.responsivevoice.org/images/play.png) no-repeat;background-size:25px 25px;float:left;margin:0 5px 0 0;width:25px;height:25px;cursor:pointer}#rv_5gV4KSf1_notification .rv_notification_body{float:left;color:#343a40;font-size:13px;width:78%;min-height:50px;vertical-align:middle}#rv_5gV4KSf1_notification .rv_notification_title{color:#1d643b;font-size:16px;font-weight:700;margin:1px 0 4px 0;display:inline-block}#rv_5gV4KSf1_notification_close{position:absolute;top:15px;right:15px;font-size:22px;color:#343a40;cursor:pointer;line-height:11px}.rv_notification_clear{clear:both}',
             head = document.head || document.getElementsByTagName('head')[0],
             style = document.createElement('style');
@@ -168,18 +168,18 @@ if( document.location.search && /rvWebsiteVerify=5gV4KSf1/gi.test(document.locat
         style.type = 'text/css';
 
         if (style.styleSheet){
-            
+
             style.styleSheet.cssText = css;
         } else {
             style.appendChild(document.createTextNode(css) );
         }
 
-        
+
         var rvNotification = document.createElement('div');
         rvNotification.innerHTML = '<div id=rv_5gV4KSf1_notification><div id=rv_5gV4KSf1_notification_close>Ã—</div><div class=rv_notification_logo></div><div class=rv_notification_body><div id=rv_5gV4KSf1_notification_play></div><span class=rv_notification_title>ResponsiveVoice URL verified</span><br><span class=rv_notification_text>Your <i style="display: none;">ResponsivVoice</i> code snippet is correctly installed, you may now close this window.</span></div><div class=rv_notification_clear></div></div>';
         document.body.appendChild(rvNotification);
 
-        
+
         function speakVerification(){
             responsiveVoice.speak( document.getElementById('rv_5gV4KSf1_notification').getElementsByClassName('rv_notification_text')[0].textContent );
         }
@@ -234,7 +234,7 @@ if( document.location.search && /rvWebsiteVerify=5gV4KSf1/gi.test(document.locat
  */
 !function(e,t){if("function"==typeof define&&define.amd)define("hoverintent",["module"],t);else if("undefined"!=typeof exports)t(module);else{var n={exports:{}};t(n),e.hoverintent=n.exports}}(this,function(e){"use strict";var t=Object.assign||function(e){for(var t=1;t<arguments.length;t++){var n=arguments[t];for(var o in n)Object.prototype.hasOwnProperty.call(n,o)&&(e[o]=n[o])}return e};e.exports=function(e,n,o){function i(e,t){return y&&(y=clearTimeout(y)),b=0,p?void 0:o.call(e,t)}function r(e){m=e.clientX,d=e.clientY}function u(e,t){if(y&&(y=clearTimeout(y)),Math.abs(h-m)+Math.abs(E-d)<x.sensitivity)return b=1,p?void 0:n.call(e,t);h=m,E=d,y=setTimeout(function(){u(e,t)},x.interval)}function s(t){return L=!0,y&&(y=clearTimeout(y)),e.removeEventListener("mousemove",r,!1),1!==b&&(h=t.clientX,E=t.clientY,e.addEventListener("mousemove",r,!1),y=setTimeout(function(){u(e,t)},x.interval)),this}function c(t){return L=!1,y&&(y=clearTimeout(y)),e.removeEventListener("mousemove",r,!1),1===b&&(y=setTimeout(function(){i(e,t)},x.timeout)),this}function v(t){L||(p=!0,n.call(e,t))}function a(t){!L&&p&&(p=!1,o.call(e,t))}function f(){e.addEventListener("focus",v,!1),e.addEventListener("blur",a,!1)}function l(){e.removeEventListener("focus",v,!1),e.removeEventListener("blur",a,!1)}var m,d,h,E,L=!1,p=!1,T={},b=0,y=0,x={sensitivity:7,interval:100,timeout:0,handleFocus:!1};return T.options=function(e){var n=e.handleFocus!==x.handleFocus;return x=t({},x,e),n&&(x.handleFocus?f():l()),T},T.remove=function(){e&&(e.removeEventListener("mouseover",s,!1),e.removeEventListener("mouseout",c,!1),l())},e&&(e.addEventListener("mouseover",s,!1),e.addEventListener("mouseout",c,!1)),T}});
 
-var config = {"welcomeMessage":false,"speakSelectedText":true,"speakLinks":false,"speakInactivity":false,"speakEndPage":false,"exitIntent":false,"accesibilityNavigation":false,"accesibilityNavigation2":false,"welcomeMessageTime":false,"text_welcomeMessage":null,"text_speakInactivity":"","text_speakEndPage":"","text_exitIntent":"","trackEvents":false,"abTesting":false,"analytics_id":null,"another_field":null};
+var config = {"welcomeMessage":false,"speakSelectedText":false,"speakLinks":false,"speakInactivity":false,"speakEndPage":false,"exitIntent":false,"accesibilityNavigation":false,"accesibilityNavigation2":false,"welcomeMessageTime":false,"text_welcomeMessage":null,"text_speakInactivity":"","text_speakEndPage":"","text_exitIntent":"","trackEvents":false,"abTesting":false,"analytics_id":null,"another_field":null};
 
  /*<!-- LearnBriteAnalytics -->
 var _wla = _wla || [];

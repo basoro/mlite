@@ -201,6 +201,19 @@
                         </div>
                     </div>
                     {/if}
+                    {if: $settings.presensi}
+                    <div class="form-group">
+                        <label>Aktifkan Notifikasi Presensi</label>
+                        <div class="radio">
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="false" {if: $settings.notif_presensi == 'false'}checked{/if} /> Tidak
+                            </label>
+                            <label class="radio-inline">
+                               <input type="radio" name="notif_presensi" value="true" {if: $settings.notif_presensi == 'true'}checked{/if} /> Ya
+                            </label>
+                        </div>
+                    </div>
+                    {/if}
                     {if: $settings.bridging_sep}
                     <div class="form-group">
                         <label>Kode PPK BPJS</label>
@@ -247,6 +260,17 @@
                          </div>
                     </div>
                     {/if}
+                    <div class="form-group">
+                         <label>Aktifkan Mode Paranoid</label>
+                         <div class="radio">
+                             <label class="radio-inline">
+                                <input type="radio" name="keamanan" value="ya" {if: $settings.keamanan == 'ya'}checked{/if} /> Ya
+                             </label>
+                             <label class="radio-inline">
+                                <input type="radio" name="keamanan" value="tidak" {if: $settings.keamanan == 'tidak'}checked{/if} /> Tidak
+                             </label>
+                         </div>
+                    </div>
                     <div class="form-group">
                          <label>Footer</label>
                          <input type="text" name="footer" class="form-control" value="{$settings.footer}" required />

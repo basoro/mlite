@@ -129,10 +129,10 @@ input:focus {
 --------------------------------------------------------- */
 #content-wrapper {
     width: 100%;
+    height: 100%;
     position: absolute;
-    padding: 15px;
-    margin-top: 60px;
-    margin-bottom: 80px;
+    padding: 60px 0px 0px 0px;
+    margin-bottom: 0px;
 }
 .content-title {
     margin: 11px 0 30px 0;
@@ -660,11 +660,58 @@ select[multiple].form-control {
     font-weight: 400;
 }
 .modal-full {
-  min-width: 100%;
-  margin: 0;
+  margin: auto;
+  width: 90%;
 }
 .modal-full .modal-content {
   min-height: 100vh;
+}
+
+.modal.left .modal-dialog,
+.modal.right .modal-dialog {
+  position: fixed;
+  margin: auto;
+  width: 100%px;
+  height: 100%;
+  -webkit-transform: translate3d(0%, 0, 0);
+      -ms-transform: translate3d(0%, 0, 0);
+       -o-transform: translate3d(0%, 0, 0);
+          transform: translate3d(0%, 0, 0);
+}
+
+.modal.left .modal-content,
+.modal.right .modal-content {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.modal.left .modal-body,
+.modal.right .modal-body {
+  padding: 15px 15px 80px;
+}
+
+.modal.left.fade .modal-dialog{
+  left: -320px;
+  -webkit-transition: opacity 0.3s linear, left 0.3s ease-out;
+     -moz-transition: opacity 0.3s linear, left 0.3s ease-out;
+       -o-transition: opacity 0.3s linear, left 0.3s ease-out;
+          transition: opacity 0.3s linear, left 0.3s ease-out;
+}
+
+.modal.left.fade.in .modal-dialog{
+  left: 0;
+}
+
+.modal.right.fade .modal-dialog {
+  right: -320px;
+  -webkit-transition: opacity 0.3s linear, right 0.3s ease-out;
+     -moz-transition: opacity 0.3s linear, right 0.3s ease-out;
+       -o-transition: opacity 0.3s linear, right 0.3s ease-out;
+          transition: opacity 0.3s linear, right 0.3s ease-out;
+}
+
+.modal.right.fade.in .modal-dialog {
+  right: 0;
 }
 
 /* 10. HELPERS
@@ -837,26 +884,13 @@ select[multiple].form-control {
       text-overflow: ellipsis;
     }
     #content-wrapper {
-      top:50px;
+      top:70px;
       margin-bottom: 80px;
     }
 }
 
 .hidden_navbar_brand {
   display: none;
-}
-
-ul.nav.nav-tabs {
-    white-space: nowrap;
-    overflow-x: auto;
-}
-
-ul.nav.nav-tabs li {
-    display: inline-block;
-    float: none;
-}
-ul.nav.nav-tabs>li.active>a {
-    background-color: #ddd;
 }
 
 .navbar img.logo {

@@ -1,0 +1,179 @@
+<h4>Permintaan e-Resep</h4>
+<h5>Non Racikan</h5>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Dokter</th>
+        <th>Nomor Resep</th>
+        <th>Tanggal Peresepan</th>
+        <th colspan="2">Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $resep}
+      <tr>
+        <td>{$value.nm_dokter}</td>
+        <td>{$value.no_resep}</td>
+        <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+        <td colspan="2">
+          <button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+        </td>
+      </tr>
+      <tr>
+        <th>Nama Obat</th>
+        <th>Jumlah</th>
+        <th>Aturan Pakai</th>
+        <th>Harga</th>
+        <th>Aksi</th>
+      </tr>
+      {loop: $value.resep_dokter as $data}
+        <tr>
+          <td>{$data.nama_brng}</td>
+          <td>{$data.jml}</td>
+          <td>{$data.aturan_pakai}</td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+          <td><button type="button" class="btn btn-danger btn-xs hapus_resep_dokter" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$data.kode_brng}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button></td>
+        </tr>
+      {/loop}
+      {/loop}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3">Total Biaya Obat</th>
+        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep,2,',','.')?}</span></th>
+        <th></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+<h5>Racikan </h5>
+<div class="table-responsive no-margin">
+  <table class="table table-striped table-bordered no-padding" width="100%">
+    <thead>
+      <tr>
+        <th>Nama Dokter</th>
+        <th>Nomor Resep</th>
+        <th>Tanggal Peresepan</th>
+        <th>Aksi</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $resep_racikan}
+      <tr>
+        <td>{$value.nm_dokter}</td>
+        <td>{$value.no_resep}</td>
+        <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+        <td>
+          <button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+        </td>
+      </tr>
+      <tr>
+        <th>Nama Racikan</th>
+        <th>Jml. Racik</th>
+        <th>Aturan Pakai</th>
+        <th>Keterangan</th>
+      </tr>
+      <tr>
+        <td>{$value.nama_racik}</td>
+        <td>{$value.jml_dr}</td>
+        <td>{$value.aturan_pakai}</td>
+        <td>{$value.keterangan}</td>
+      </tr>
+      <tr>
+        <th>Nama Obat</th>
+        <th>Kandungan</th>
+        <th>Jumlah</th>
+        <th>Harga</th>
+      </tr>
+      {loop: $value.resep_dokter_racikan_detail as $data}
+        <tr>
+          <td>{$data.nama_brng}</td>
+          <td>{$data.kandungan}</td>
+          <td>{$data.jml}</td>
+          <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+        </tr>
+      {/loop}
+      {/loop}
+    </tbody>
+    <tfoot>
+      <tr>
+        <th colspan="3">Total Biaya Obat Racikan</th>
+        <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep_racikan,2,',','.')?}</span></th>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+
+<script type="text/javascript">
+  $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  // ketika tombol hapus ditekan
+  $("#rincian_eresep").on("click",".hapus_resep_obat_eresep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/dokter_igd/hapusresep?t=' + mlite.token;
+    var no_resep = $(this).attr("data-no_resep");
+    var no_rawat = $(this).attr("data-no_rawat");
+    var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+    var jam_peresepan = $(this).attr("data-jam_peresepan");
+
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_resep: no_resep,
+          no_rawat: no_rawat,
+          tgl_peresepan: tgl_peresepan,
+          jam_peresepan: jam_peresepan
+        } ,function(data) {
+          var url = baseURL + '/dokter_igd/rincianeresep?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#rincian").html(data).show();
+          });
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data rincian rawat jalan telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+
+  // ketika tombol hapus ditekan
+  $("#rincian_eresep").on("click",".hapus_resep_dokter_eresep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/dokter_igd/hapusresep?t=' + mlite.token;
+    var no_resep = $(this).attr("data-no_resep");
+    var no_rawat = $(this).attr("data-no_rawat");
+    var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_resep: no_resep,
+          no_rawat: no_rawat,
+          kd_jenis_prw: kd_jenis_prw
+        } ,function(data) {
+          var url = baseURL + '/dokter_igd/rincianeresep?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#rincian_eresep").html(data).show();
+          });
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data rincian rawat jalan telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+</script>

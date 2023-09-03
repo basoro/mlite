@@ -1,0 +1,108 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Data Task ID</h4>
+</div>
+<div class="modal-body">
+  <label for="" style="width: 250px;">Nama</label><span>{$pasien.nm_pasien}</span><br>
+  <label for="" style="width: 250px;">Nomor RM</label><span>{$pasien.no_rkm_medis}</span><br>
+  <label for="" style="width: 250px;">Nomor Rawat</label><span>{$pasien.no_rawat}</span><br>
+  <label for="" style="width: 250px;">Nomor Referensi/Kode Booking</label><span id="nomor_referensi">{$nomor_referensi}</span>{if: $nomor_referensi !=''} / {/if}<span id="kode_booking">{$kode_booking}</span> <button class="btn btn-xs btn-primary" id="kirimantrol"><i class="fa fa-send"></i> Kirim Antrol</button><br>
+  <label for="" style="width: 250px;">Status Kirim Antrol</label><span id="status_kirim_antrol">{$status_kirim_antrol}</span><br>
+  <form class="" action="{?=url([ADMIN,'jkn_mobile','savetaskidinput'])?}" method="post">
+  <input type="hidden" name="tgl_registrasi" class="form-control" value="{$pasien.tgl_registrasi}">
+  <input type="hidden" name="nomor_referensi" class="form-control" value="{$nomor_referensi}">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 1</label>
+          <input type="text" name="taskid1" class="form-control tanggaljam" value="{$taskid.1}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 2</label>
+          <input type="text" name="taskid2" class="form-control tanggaljam" value="{$taskid.2}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 3</label>
+          <input type="text" name="taskid3" class="form-control tanggaljam" value="{$taskid.3}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 4</label>
+          <input type="text" name="taskid4" class="form-control tanggaljam" value="{$taskid.4}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 5</label>
+          <input type="text" name="taskid5" class="form-control tanggaljam" value="{$taskid.5}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 6</label>
+          <input type="text" name="taskid6" class="form-control tanggaljam" value="{$taskid.6}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 7</label>
+          <input type="text" name="taskid7" class="form-control tanggaljam" value="{$taskid.7}">
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Task ID 99</label>
+          <input type="text" name="taskid99" class="form-control tanggaljam" value="">
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+      <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+  </div>
+  </form>
+</div>
+<div class="modal-footer">
+    <a href="{?=url([ADMIN,'jkn_mobile','updatewaktu',$nomor_referensi,$kode_booking,'v2'])?}" class="btn btn-warning" target="_blank">Udate Waktu V2</a>
+    <a href="{?=url([ADMIN,'jkn_mobile','updatewaktu',$nomor_referensi,$kode_booking,'v3'])?}" class="btn btn-danger" target="_blank">Udate Waktu V3</a>
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+    $(function () {
+        $('.tanggaljam').datetimepicker({
+            // defaultDate: "{?=date('Y-m-d H:i:s')?}",
+            format: 'YYYY-MM-DD HH:mm:ss',
+            locale: 'id'
+        });
+    });
+    $(document).ready(function(){
+      $("#kirimantrol").click(function(){
+        $.ajax({
+             url: '{?=url([ADMIN,'jkn_mobile','kirimantrian',convertNoRawat($pasien.no_rawat)])?}',
+             method:"GET",
+             data:{},
+             success:function(data)
+             {
+               alert(data);
+               var data = JSON.parse(data);
+               $('#nomor_referensi').text(data.nomor_referensi + ' / ');
+               $('#kode_booking').text(data.kode_booking);
+               $('#status_kirim_antrol').text('Sudah');
+               $('input:hidden[name=nomor_referensi]').val(data.nomor_referensi);
+               $('#kirimantrol').hide();
+             }
+        });
+      });
+    });
+
+</script>

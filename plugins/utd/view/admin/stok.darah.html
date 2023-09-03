@@ -1,0 +1,203 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<form action="{?=url(ADMIN.'/utd/savestokdarah')?}" method="POST" id="form_stok_darah">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+              Data Aset
+            </h3>
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="{?=url([ADMIN,'utd','pendonor'])?}" role="tab">Data Pendonor</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'utd','donor'])?}" role="tab">Data Donor</a>
+                </li>
+                <li class="active">
+                    <a href="{?=url([ADMIN,'utd','stokdarah'])?}" role="tab">Stok Darah</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nomor Kantong</label>
+                            <input type="text" name="no_kantong" class="form-control" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kode Komponen</label>
+                            <select id="kode_komponen" name="kode_komponen" class="form-control" data-use-search="true">
+                              {loop: $komponendarah}
+                    					<option value="{$value.kode}">{$value.nama}</option>
+                              {/loop}
+                    				</select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal Aftap</label>
+                            <input type="text" name="tanggal_aftap" id="tanggal_aftap" class="form-control tanggal" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal Kadaluarsa</label>
+                            <input type="text" name="tanggal_kadaluarsa" id="tanggal_kadaluarsa" class="form-control tanggal" value="" required />
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Golongan Darah</label>
+                          <select name="golongan_darah" id="golongan_darah" class="form-control" data-use-search="true">
+                            <option value="O">O</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="AB">AB</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Resus</label>
+                          <select name="resus" id="resus" class="form-control" data-use-search="true">
+                            <option value="(+)">Positif</option>
+                            <option value="(-)">Negatif</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Asal Darah</label>
+                          <select id="asal_darah" name="asal_darah" class="form-control" data-use-search="true">
+                              <option value="Hibah">Hibah</option>
+                              <option value="Beli">Beli</option>
+                              <option value="Produksi Sendiri">Produksi Sendiri</option>
+                          </select>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="form-group">
+                          <label>Status</label>
+                          <select name="status" id="status" class="form-control" data-use-search="true">
+                              <option value="Ada">Ada</option>
+                              <option value="Diambil">Diambil</option>
+                              <option value="Dimusnahkan">Dimusnahkan</option>
+                          </select>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" id="hapus" class="btn btn-danger pull-right" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="utd_stok_darah">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>No. Kantong</th>
+            <th>Kode Komponen</th>
+            <th>Gol. Darah</th>
+            <th>Resus</th>
+            <th>Tanggal Aftap</th>
+            <th>Tanggal Kadaluarsa</th>
+            <th>Asal Darah</th>
+            <th>Status</th>
+        </thead>
+        <tbody>
+          {if: $stokdarah}
+          {loop: $stokdarah}
+          <tr class="utd_stok_darah"
+          data-no_kantong="{$value.no_kantong}"
+          data-kode_komponen="{$value.kode_komponen}"
+          data-golongan_darah="{$value.golongan_darah}"
+          data-resus="{$value.resus}"
+          data-tanggal_aftap="{$value.tanggal_aftap}"
+          data-tanggal_kadaluarsa="{$value.tanggal_kadaluarsa}"
+          data-asal_darah="{$value.asal_darah}"
+          data-status="{$value.status}"
+          >
+            <td>{$value.no_kantong}</td>
+            <td>{$value.kode_komponen}</td>
+            <td>{$value.golongan_darah}</td>
+            <td>{$value.resus}</td>
+            <td>{$value.tanggal_aftap}</td>
+            <td>{$value.tanggal_kadaluarsa}</td>
+            <td>{$value.asal_darah}</td>
+            <td>{$value.status}</td>
+          </tr>
+          {/loop}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#utd_stok_darah").on("click", ".utd_stok_darah", function(event){
+    var no_kantong  = $(this).attr("data-no_kantong");
+    var kode_komponen  = $(this).attr("data-kode_komponen");
+    var golongan_darah  = $(this).attr("data-golongan_darah");
+    var resus  = $(this).attr("data-resus");
+    var tanggal_aftap  = $(this).attr("data-tanggal_aftap");
+    var tanggal_kadaluarsa  = $(this).attr("data-tanggal_kadaluarsa");
+    var asal_darah  = $(this).attr("data-asal_darah");
+    var status  = $(this).attr("data-status");
+    $('input:text[name=no_kantong]').val(no_kantong);
+    $('input:text[name=kode_komponen]').val(kode_komponen);
+    $('#golongan_darah').val(golongan_darah).change();
+    $('#resus').val(resus).change();
+    $('#tanggal_aftap').val(tanggal_aftap);
+    $('#tanggal_kadaluarsa').val(tanggal_kadaluarsa);
+    $('#asal_darah').val(asal_darah).change();
+    $('#status').val(status).change();
+    $('input:text[name=no_kantong]').prop('readonly', true);
+  });
+
+  $(function() {
+    $("form").on("click", "#hapus", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var no_kantong = $('input:text[name=no_kantong]').val();
+      event.preventDefault();
+      if(no_kantong == '') {
+        alert('Silahkan pilih data yang mau dihapus!!');
+      } else {
+        $.confirm({
+          columnClass: 'col-md-4 col-md-offset-4',
+          theme: 'white',
+          title: 'Peringatan',
+          text: 'Apakah anda yakin akan menghapus data ini?',
+          confirmButton: 'Iya',
+          cancelButton: 'Tidak',
+          confirmButtonClass: 'btn-success',
+          cancelButtonClass: 'btn-danger',
+          confirm: function() {
+            window.location.replace(baseURL + '/utd/hapusstokdarah/' + no_kantong + '?t=' + mlite.token);
+          },
+          cancel: function() {
+          }
+        });
+      }
+    });
+  });
+</script>

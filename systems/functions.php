@@ -503,58 +503,10 @@ if (!function_exists('apache_request_headers')) {
                 $return[$key]=$value;
             }else{
                 $return[$key]=$value;
-	        }
+	          }
         }
         return $return;
     }
-}
-
-function sendMSG($number, $msg, $sender)
-{
-    $url = "https://waapi.basoro.id/send-message";
-    $data = [
-        "sender" => $sender,
-        "number" => $number,
-        "message" => $msg
-    ];
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    //  curl_setopt($ch, CURLOPT_TIMEOUT_MS, 10000);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
-}
-
-function sendMedia($number, $message, $sender, $filetype, $filename, $urll)
-{
-    $url = "https://waapi.basoro.id/send-media";
-    $data = [
-        'sender' => $sender,
-        'number' => $number,
-        'caption' => $message,
-        'url' => $urll,
-        'filename' => $filename,
-        'filetype' => $filetype,
-    ];
-    //var_dump($data); die;
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/x-www-form-urlencoded']);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($data));
-    curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-    $result = curl_exec($ch);
-    curl_close($ch);
-    return json_decode($result, true);
 }
 
 function formatDuit($duit){
@@ -567,9 +519,23 @@ function stringDecrypt($key, $string){
     $key_hash = hex2bin(hash('sha256', $key));
     $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
 
-    $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
+    $output = openssl_decrypt(base64_decode(isset_or($string,'')), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
 
     return $output;
+}
+
+function hitungUmur($tanggal_lahir)
+{
+  $birthDate = new \DateTime($tanggal_lahir);
+  $today = new \DateTime("today");
+  $umur = "0 Th 0 Bl 0 Hr";
+  if ($birthDate < $today) {
+    $y = $today->diff($birthDate)->y;
+    $m = $today->diff($birthDate)->m;
+    $d = $today->diff($birthDate)->d;
+    $umur =  $y." Th ".$m." Bl ".$d." Hr";
+  }
+  return $umur;
 }
 
 function decompress($string){

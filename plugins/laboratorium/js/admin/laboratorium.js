@@ -71,7 +71,8 @@ $("#form").on("click", "#simpan", function(event){
   var kd_poli = $('select[name=kd_poli]').val();
   var kd_dokter = $('select[name=kd_dokter]').val();
   var kd_pj = $('select[name=kd_pj]').val();
-  var stts_daftar = $('input:text[name=stts_daftar]').val();
+  //var stts_daftar = $('input:text[name=stts_daftar]').val();
+  var stts_daftar = $('input:hidden[name=stts_daftar]').val();
 
   var url = baseURL + '/laboratorium/save?t=' + mlite.token;
 
@@ -115,12 +116,31 @@ $("#rincian").on("click","#cetak_hasil", function(event){
   window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
 });
 
+$("#rincian").on("click",".cetak_hasil", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  var tgl_periksa = $(this).attr("data-tgl_periksa");
+  var jam = $(this).attr("data-jam_periksa");
+  window.open(baseURL + '/laboratorium/cetakhasil?no_rawat=' + no_rawat + '&tgl_periksa=' + tgl_periksa + '&jam=' + jam + '&status=' + status + '&t=' + mlite.token);
+});
+
 $("#rincian").on("click","#cetak_permintaan", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rawat = $('input:text[name=no_rawat]').val();
   var status = $('input:text[name=status]').val();
   window.open(baseURL + '/laboratorium/cetakpermintaan?no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
+});
+
+$("#rincian").on("click",".cetak_permintaan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val();
+  var status = $('input:text[name=status]').val();
+  var noorder = $(this).attr("data-noorder");
+  window.open(baseURL + '/laboratorium/cetakpermintaan?noorder=' + noorder + '&no_rawat=' + no_rawat + '&status=' + status + '&t=' + mlite.token);
 });
 
 $("#display").on("click",".riwayat_perawatan", function(event){

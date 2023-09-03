@@ -12,6 +12,9 @@ class Admin extends AdminModule
         return [
             'Kelola' => 'manage',
             'Biodata' => 'biodata',
+            'Presensi Masuk' => 'presensi',
+            'Rekap Presensi' => 'rekap_presensi',
+            'Jadwal Pegawai' => 'jadwal',
             'Ganti Password' => 'ganti_pass'
         ];
     }
@@ -20,6 +23,9 @@ class Admin extends AdminModule
     {
         $sub_modules = [
             ['name' => 'Biodata', 'url' => url([ADMIN, 'profil', 'biodata']), 'icon' => 'cubes', 'desc' => 'Biodata Pegawai'],
+            ['name' => 'Presensi', 'url' => url([ADMIN, 'profil', 'presensi']), 'icon' => 'cubes', 'desc' => 'Presensi Pegawai'],
+            ['name' => 'Rekap Presensi', 'url' => url([ADMIN, 'profil', 'rekap_presensi']), 'icon' => 'cubes', 'desc' => 'Rekap Presensi Pegawai'],
+            ['name' => 'Jadwal', 'url' => url([ADMIN, 'profil', 'jadwal']), 'icon' => 'cubes', 'desc' => 'Jadwal Pegawai'],
             ['name' => 'Ganti Password', 'url' => url([ADMIN, 'profil', 'ganti_pass']), 'icon' => 'cubes', 'desc' => 'Ganti Pasword'],
         ];
         $username = $this->core->getUserInfo('username', null, true);
@@ -32,11 +38,21 @@ class Admin extends AdminModule
           $profil['nik'] = $cek_profil['nik'];
         }
         $tanggal = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
-        $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
-        if (!empty($profil['photo'])) {
-            $fotoURL = WEBAPPS_URL . '/penggajian/' . $profil['photo'];
+        $presensi = [];
+        $absensi = [];
+        if($cek_profil) {
+          $presensi = [];
+          $absensi = [];
+          if($this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->oneArray()){
+            $presensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '!=', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+            $absensi = $this->core->mysql('rekap_presensi')->where('id', $cek_profil['id'])->where('photo', '')->like('jam_datang', date('Y-m') . '%')->toArray();
+          }
         }
-        return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'fotoURL' => $fotoURL]);
+        $fotoURL = url(MODULES . '/kepegawaian/img/default.png');
+        if (!empty($cek_profil['photo'])) {
+            $fotoURL = WEBAPPS_URL . '/penggajian/' . $cek_profil['photo'];
+        }
+        return $this->draw('manage.html', ['sub_modules' => $sub_modules, 'profil' => $profil, 'tanggal' => $tanggal, 'presensi' => $presensi, 'absensi' => $absensi, 'fotoURL' => $fotoURL]);
     }
 
     public function getBiodata()
@@ -128,6 +144,319 @@ class Admin extends AdminModule
         redirect($location, $_POST);
     }
 
+    public function getJadwal($page = 1)
+    {
+
+        $array_hari = array(1 => 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu');
+        $array_bulan = array(1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember');
+
+        $this->_addHeaderFiles();
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $status = '1';
+        if (isset($_GET['status']))
+            $status = $_GET['status'];
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        // pagination
+        if ($this->core->getUserInfo('id') == 1) {
+            $totalRecords = $this->core->mysql('jadwal_pegawai')
+                ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
+                ->where('jadwal_pegawai.tahun', date('Y'))
+                ->where('jadwal_pegawai.bulan', date('m'))
+                ->like('pegawai.nama', '%' . $phrase . '%')
+                ->toArray();
+        } else {
+            $totalRecords = $this->core->mysql('jadwal_pegawai')
+                ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
+                ->where('jadwal_pegawai.tahun', date('Y'))
+                ->where('jadwal_pegawai.bulan', date('m'))
+                ->where('nik', $username)
+                // ->like('pegawai.nama', '%'.$phrase.'%')
+                ->toArray();
+        }
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'profil', 'jadwal', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        if ($this->core->getUserInfo('id') == 1) {
+            $rows = $this->core->mysql('jadwal_pegawai')
+                ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
+                ->where('jadwal_pegawai.tahun', date('Y'))
+                ->where('jadwal_pegawai.bulan', date('m'))
+                ->like('pegawai.nama', '%' . $phrase . '%')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        } else {
+            $rows = $this->core->mysql('jadwal_pegawai')
+                ->join('pegawai', 'pegawai.id=jadwal_pegawai.id')
+                ->where('jadwal_pegawai.tahun', date('Y'))
+                ->where('jadwal_pegawai.bulan', date('m'))
+                ->where('nik', $username)
+                // ->like('pegawai.nama', '%'.$phrase.'%')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        }
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                // $row['editURL'] = url([ADMIN, 'presensi', 'jadwaledit', $row['id']]);
+                // $row['delURL']  = url([ADMIN, 'master', 'petugasdelete', $row['nip']]);
+                // $row['restoreURL']  = url([ADMIN, 'master', 'petugasrestore', $row['nip']]);
+                // $row['viewURL'] = url([ADMIN, 'master', 'petugasview', $row['nip']]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        /*
+        $year = date('Y');
+        $month = date('m');
+        $day = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+
+        for ($i = 1; $i < $day + 1; $i++) {
+            $i;
+        }
+        */
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        // $this->assign['addURL'] = url([ADMIN, 'presensi', 'jadwaladd']);
+        // $this->assign['printURL'] = url([ADMIN, 'master', 'petugasprint']);
+
+        return $this->draw('jadwal.manage.html', ['jadwal' => $this->assign, 'array_hari' => $array_hari, 'array_bulan' => $array_bulan]);
+    }
+
+    public function getRekap_Presensi($page = 1)
+    {
+        $this->_addHeaderFiles();
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $status = '1';
+        if (isset($_GET['status']))
+            $status = $_GET['status'];
+
+        $bulan = date('m');
+        if (isset($_GET['b'])) {
+            $bulan = $_GET['b'];
+        }
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        if ($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])) {
+            $totalRecords = $this->core->mysql('rekap_presensi')
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->like('nama', '%' . $phrase . '%')
+                ->orLike('shift', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        } elseif (isset($_GET['bulan'])) {
+            $totalRecords = $this->core->mysql('rekap_presensi')
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('nik', $username)
+                ->asc('jam_datang')
+                ->toArray();
+        } else {
+            $totalRecords = $this->core->mysql('rekap_presensi')
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('nik', $username)
+                ->asc('jam_datang')
+                ->toArray();
+        }
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'profil', 'rekap_presensi', '%d?b=' . $bulan . '&s=' . $phrase]));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+
+        if ($this->core->getUserInfo('id') == 1 and isset($_GET['bulan'])) {
+            $rows = $this->core->mysql('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->like('nama', '%' . $phrase . '%')
+                ->orLike('shift', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        } elseif (isset($_GET['bulan'])) {
+            $rows = $this->core->mysql('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('nik', $username)
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        } else {
+            $rows = $this->core->mysql('rekap_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'departemen' => 'pegawai.departemen',
+                    'id' => 'rekap_presensi.id',
+                    'shift' => 'rekap_presensi.shift',
+                    'jam_datang' => 'rekap_presensi.jam_datang',
+                    'jam_pulang' => 'rekap_presensi.jam_pulang',
+                    'status' => 'rekap_presensi.status',
+                    'durasi' => 'rekap_presensi.durasi',
+                    'photo' => 'rekap_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = rekap_presensi.id')
+                ->where('jam_datang', '>', date('Y-' . $bulan) . '-01')
+                ->where('jam_datang', '<', date('Y-' . $bulan) . '-31')
+                ->where('nik', $username)
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        }
+
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['mapURL']  = url([ADMIN, 'profil', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        $this->assign['getStatus'] = isset($_GET['status']);
+        $this->assign['getBulan'] = $bulan;
+        $this->assign['getUser'] = $username;
+        $this->assign['bulan'] = array('', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12');
+        return $this->draw('rekap_presensi.html', ['rekap' => $this->assign]);
+    }
+
+    public function getGoogleMap($id, $tanggal)
+    {
+        $geo = $this->core->mysql('mlite_geolocation_presensi')->where('id', $id)->where('tanggal', $tanggal)->oneArray();
+        $pegawai = $this->core->mysql('pegawai')->where('id', $id)->oneArray();
+
+        $this->tpl->set('geo', $geo);
+        $this->tpl->set('pegawai', $pegawai);
+        echo $this->tpl->draw(MODULES . '/profil/view/admin/google_map.html', true);
+        exit();
+    }
+    public function getPresensi($page = 1)
+    {
+        $this->_addHeaderFiles();
+
+        $perpage = '10';
+        $phrase = '';
+        if (isset($_GET['s']))
+            $phrase = $_GET['s'];
+
+        $username = $this->core->getUserInfo('username', null, true);
+
+        // pagination
+        if ($this->core->getUserInfo('id') == 1) {
+            $totalRecords = $this->core->mysql('temporary_presensi')
+                ->join('pegawai', 'pegawai.id = temporary_presensi.id')
+                ->like('nama', '%' . $phrase . '%')
+                // ->orLike('jam_datang', '%'.date('Y-m').'%')
+                ->asc('jam_datang')
+                ->toArray();
+        } else {
+            $totalRecords = $this->core->mysql('temporary_presensi')
+                ->join('pegawai', 'pegawai.id = temporary_presensi.id')
+                ->where('nik', $username)
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->toArray();
+        }
+        $pagination = new \Systems\Lib\Pagination($page, count($totalRecords), 10, url([ADMIN, 'presensi', 'presensi', '%d']));
+        $this->assign['pagination'] = $pagination->nav('pagination', '5');
+        $this->assign['totalRecords'] = $totalRecords;
+
+        // list
+        $offset = $pagination->offset();
+        if ($this->core->getUserInfo('id') == 1) {
+            $rows = $this->core->mysql('temporary_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'id' => 'temporary_presensi.id',
+                    'shift' => 'temporary_presensi.shift',
+                    'jam_datang' => 'temporary_presensi.jam_datang',
+                    'status' => 'temporary_presensi.status',
+                    'photo' => 'temporary_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = temporary_presensi.id')
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        } else {
+            $rows = $this->core->mysql('temporary_presensi')
+                ->select([
+                    'nama' => 'pegawai.nama',
+                    'id' => 'temporary_presensi.id',
+                    'shift' => 'temporary_presensi.shift',
+                    'jam_datang' => 'temporary_presensi.jam_datang',
+                    'status' => 'temporary_presensi.status',
+                    'photo' => 'temporary_presensi.photo'
+                ])
+                ->join('pegawai', 'pegawai.id = temporary_presensi.id')
+                ->where('nik', $username)
+                ->like('nama', '%' . $phrase . '%')
+                ->asc('jam_datang')
+                ->offset($offset)
+                ->limit($perpage)
+                ->toArray();
+        }
+        $this->assign['list'] = [];
+        if (count($rows)) {
+            foreach ($rows as $row) {
+                $row = htmlspecialchars_array($row);
+                $row['mapURL']  = url([ADMIN, 'profil', 'googlemap', $row['id'], date('Y-m-d', strtotime($row['jam_datang']))]);
+                $this->assign['list'][] = $row;
+            }
+        }
+
+        return $this->draw('presensi.html', ['presensi' => $this->assign]);
+    }
+
     public function getGanti_Pass()
     {
         $this->_addHeaderFiles();
@@ -142,7 +471,7 @@ class Admin extends AdminModule
     {
         $errors = 0;
 
-        $row_user = $this->db('mlite__users')->where('id', $this->core->getUserInfo('id'))->oneArray();
+        $row_user = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->oneArray();
 
         // location to redirect
         if (!$id) {
@@ -169,7 +498,7 @@ class Admin extends AdminModule
 
             if ($row_user && password_verify(trim($_POST['pass_lama']), $row_user['password'])) {
                 $password = password_hash($_POST['pass_baru'], PASSWORD_BCRYPT);
-                $query = $this->db('mlite__users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
+                $query = $this->db('mlite_users')->where('id', $this->core->getUserInfo('id'))->save(['password' => $password]);
             }
 
             if ($query) {
@@ -193,6 +522,14 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
+        // CSS
+        $this->core->addCSS(url('plugins/profil/css/admin/timeline.min.css'));
+        $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
+
+        // JS
+        $this->core->addJs(url('plugins/profil/js/admin/timeline.min.js'), 'footer');
+        $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'), 'footer');
+
         $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));

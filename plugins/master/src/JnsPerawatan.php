@@ -42,7 +42,7 @@ class JnsPerawatan
     {
         $return['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
         $return['kategori_perawatan'] = $this->mysql('kategori_perawatan')->toArray();
-        $return['penjab'] = $this->mysql('penjab')->toArray();
+        $return['penjab'] = $this->mysql('penjab')->where('status', '1')->toArray();
         if (isset($_POST['kd_jenis_prw'])){
           $return['form'] = $this->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         } else {

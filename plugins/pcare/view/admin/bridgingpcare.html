@@ -589,7 +589,7 @@ $(document).ready(function(){
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/poli?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/poli?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -625,7 +625,7 @@ $(document).ready(function(){
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/statuspulang/false?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/statuspulang/false?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -661,7 +661,7 @@ $(document).ready(function(){
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/kesadaran/false?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/kesadaran/false?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -698,7 +698,7 @@ $(document).ready(function() {
        var query = $(this).val();
        var diagnosa = $('#getDiagnosa1').val();
           $.ajax({
-               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               url: '{?=url()?}/{?=ADMIN?}/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
                method:"GET",
                data:{},
                success:function(data)
@@ -736,7 +736,7 @@ $(document).ready(function() {
        var query = $(this).val();
        var diagnosa = $('#getDiagnosa2').val();
           $.ajax({
-               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               url: '{?=url()?}/{?=ADMIN?}/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
                method:"GET",
                data:{},
                success:function(data)
@@ -774,7 +774,7 @@ $(document).ready(function() {
        var query = $(this).val();
        var diagnosa = $('#getDiagnosa3').val();
           $.ajax({
-               url: '{?=url()?}/admin/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
+               url: '{?=url()?}/{?=ADMIN?}/pcare/diagnosa/' + diagnosa + '?t={?=$_SESSION['token']?}',
                method:"GET",
                data:{},
                success:function(data)
@@ -811,7 +811,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/dokter?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/dokter?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -847,7 +847,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/provider?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/provider?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -883,7 +883,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/spesialis?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/spesialis?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -921,7 +921,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/subspesialis/' + kode_spesialis.split(':')[0] + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/subspesialis/' + kode_spesialis.split(':')[0] + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -958,7 +958,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/sarana?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/sarana?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -998,7 +998,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/faskesspesialis/' + kode_spesialis.split(':')[0] + '/' + kode_sarana.split(':')[0] + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/faskesspesialis/' + kode_spesialis.split(':')[0] + '/' + kode_sarana.split(':')[0] + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1036,7 +1036,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/khusus?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/khusus?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)
@@ -1076,7 +1076,7 @@ $(document).ready(function() {
        if(query != '')
        {
             $.ajax({
-                 url: '{?=url()?}/admin/pcare/faskeskhusus/' + kode_khusus.split(':')[0] + '/' + kode_subspesialis.split(':')[0] + '/' + nomor_kartu + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/faskeskhusus/' + kode_khusus.split(':')[0] + '/' + kode_subspesialis.split(':')[0] + '/' + nomor_kartu + '/' + tgl_rujuk + '?t={?=$_SESSION['token']?}',
                  method:"GET",
                  data:{},
                  success:function(data)

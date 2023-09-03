@@ -51,12 +51,14 @@ class Site extends Main
         $assign['wallpaper'] = $this->settings->get('settings.wallpaper');
         $assign['theme_admin'] = $this->settings->get('settings.theme_admin');
         $assign['version']       = $this->settings->get('settings.version');
-        $assign['cek_anjungan'] = $this->db('mlite__modules')->where('dir', 'anjungan')->oneArray();
+        $assign['cek_anjungan'] = $this->db('mlite_modules')->where('dir', 'anjungan')->oneArray();
 
         $assign['poliklinik'] = '';
         if($assign['cek_anjungan']) {
           $assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('anjungan.display_poli'));
         }
+
+        $assign['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
 
         $assign['header']   = isset_or($this->appends['header'], ['']);
         $assign['footer']   = isset_or($this->appends['footer'], ['']);
@@ -83,7 +85,7 @@ class Site extends Main
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->db('poliklinik')->toArray();
+        $rows = $this->mysql('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];

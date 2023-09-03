@@ -178,8 +178,8 @@ Variabel sistem
 ----------------
 mLITE, seperti pluginnya, menyediakan banyak variabel *(biasanya array)* yang berfungsi untuk menampilkan setiap elemen halaman. Berikut adalah yang paling penting:
 
-+ `{$settings.pole}` — elemen larik yang berisi nilai bidang pengaturan mLITE yang diberikan
-+ `{$settings.moduł.pole}` — elemen larik yang berisi nilai bidang pengaturan modul
++ `{$settings.pole}` — elemen yang berisi nilai bidang pengaturan mLITE yang diberikan
++ `{$settings.moduł.pole}` — elemen yang berisi nilai bidang pengaturan modul
 + `{$mlite.path}` — menyimpan jalur tempat sistem berada
 + `{$mlite.notify}` — pemberitahuan terakhir
 + `{$mlite.notify.text}` - teks notifikasi
@@ -555,422 +555,6 @@ Memungkinkan Anda untuk mengubah file template di bagian depan. Metode ini hanya
 $this->setTemplate('index.html'); // $this->core->template = 'index.html';
 ```
 
-
-Systems
-====
-
-Ini adalah inti dari mLITE, bagian terpenting yang bertanggung jawab atas semua tugas dasarnya. Inti berisi banyak definisi konstanta, fungsi, dan metode yang dapat Anda gunakan saat menulis plugin.
-
-Constants
----------
-
-Semua definisi konstanta dijelaskan di bagian pertama dokumentasi ini. Untuk menggunakannya dalam file PHP, panggil saja namanya. Konstanta sangat berguna saat membuat URL.
-
-#### Example
-```php
-echo MODULES.'/contact/view/form.html';
-
-```
-
-
-Functions
----------
-
-mLITE memiliki beberapa fungsi pembantu bawaan yang memfasilitasi pembuatan plugin.
-
-### domain
-
-```php
-string domain([bool $with_protocol = true])
-```
-
-Mengembalikan nama domain dengan http (s) atau tanpa.
-
-#### Arguments
-+ `with_protocol` — itu memutuskan apakah alamat akan dikembalikan dengan atau tanpa protokol
-
-#### Return value
-String with the domain name.
-
-#### Example
-```php
-echo domain(false);
-// Result: example.com
-```
-
-
-### checkEmptyFields
-
-```php
-bool checkEmptyFields(array $keys, array $array)
-```
-
-Memeriksa apakah array berisi elemen kosong. Ini berguna saat memvalidasi formulir.
-
-#### Arguments
-+ `keys` — list of array items that the function has to check
-+ `array` — source array
-
-#### Return value
-Mengembalikan `TRUE` ketika setidaknya satu item kosong. `FALSE` ketika semua elemen selesai.
-
-#### Example
-```php
-if(checkEmptyFields(['name', 'phone', 'email'], $_POST) {
-    echo 'Fill in all fields!';
-}
-```
-
-
-### currentURL
-
-```php
-string currentURL([bool $query = false])
-```
-
-Mengembalikan URL saat ini.
-
-#### Arguments
-+ `query` — itu memutuskan apakah alamat akan dikembalikan dengan atau tanpa permintaan
-
-#### Example
-```php
-echo currentURL();
-// Result: http://example.com/contact
-
-echo currentURL(true);
-// Result: http://example.com/contact?foo=bar
-```
-
-
-### createSlug
-
-```php
-string createSlug(string $text)
-```
-
-Menerjemahkan teks dalam karakter non-bahasa, tanda hubung ke spasi, dan menghapus karakter khusus. Digunakan untuk membuat garis miring di URL dan nama variabel dalam sistem template.
-
-#### Arguments
-+ `text` — text to convert
-
-#### Return value
-Returns the text in slug form.
-
-#### Example
-```php
-echo createSlug('To be, or not to be, that is the question!');
-// Result: to-be-or-not-to-be-that-is-the-question
-```
-
-
-### deleteDir
-
-```php
-bool deleteDir(string $path)
-```
-
-Fungsi rekursif yang menghapus direktori dan semua isinya.
-
-#### Arguments
-+ `path` — directory path
-
-#### Return value
-Returns `TRUE` for success or `FALSE` for failure.
-
-#### Example
-```php
-deleteDir('foo/bar');
-```
-
-
-### getRedirectData
-```php
-mixed getRedirectData()
-```
-
-Mengembalikan data yang diteruskan ke sesi saat menggunakan `redirect()`.
-
-#### Return value
-An array or `null`.
-
-#### Example
-```php
-$postData = getRedirectData();
-```
-
-
-### htmlspecialchars_array
-
-```php
-string htmlspecialchars_array(array $array)
-```
-
-Mengganti karakter khusus dari elemen array menjadi entitas HTML.
-
-#### Arguments
-+ `array` — the array that will be converted
-
-#### Return value
-Mengembalikan teks yang dikonversi.
-
-#### Example
-```php
-$_POST = htmlspecialchars_array($_POST);
-```
-
-
-### isset_or
-
-```php
-mixed isset_or(mixed $var [, mixed $alternate = null ])
-```
-
-Menggantikan variabel kosong dengan nilai alternatif.
-
-#### Arguments
-+ `var` — variable
-+ `alternate` — replacement value of the variable *(optional)*
-
-#### Return value
-Mengembalikan nilai alternatif.
-
-#### Example
-```php
-$foo = isset_or($_GET['bar'], 'baz');
-```
-
-
-### parseURL
-```php
-mixed parseURL([ int $key = null ])
-```
-
-Parsing URL skrip saat ini.
-
-#### Arguments
-+ `key` — URL parameter number *(optional)*
-
-#### Return value
-Array atau elemen individualnya.
-
-#### Example
-```php
-// URL: http://example.com/foo/bar/4
-
-var_dump(parseURL())
-// Result:
-// array(3) {
-//   [0] =>
-//   string(3) "foo"
-//   [1] =>
-//   string(3) "bar"
-//   [2] =>
-//   int(4)
-// }
-
-echo parseURL(2);
-// Result: "bar"
-```
-
-
-### redirect
-
-```php
-void redirect(string $url [, array $data = [] ])
-```
-
-Arahkan ulang ke URL yang ditentukan. Ini memungkinkan Anda untuk menyimpan data dari array ke sesi. Berguna untuk mengingat data yang belum disimpan dari formulir.
-
-#### Arguments
-+ `url` — address to redirect
-+ `data` — an array that will be passed to the session *(optional)*
-
-#### Example
-```php
-redirect('http://www.example.com/');
-
-// Save the array to session:
-redirect('http://www.example.com/', $_POST);
-```
-
-
-### url
-```php
-string url([ mixed $data = null ])
-```
-
-Membuat URL absolut. Panel admin secara otomatis menambahkan token.
-
-#### Arguments
-+ `data` — string or array
-
-#### Return value
-Absolute URL.
-
-#### Example
-```php
-echo url();
-// Result: http://example.com
-
-echo url('foo/bar')
-// Result: http://example.com/foo/bar
-
-echo url('admin/foo/bar');
-// Result: http://example.com/admin/foo/bar?t=[token]
-
-echo url(['admin', 'foo', 'bar']);
-// Result: http://example.com/admin/foo/bar?t=[token]
-```
-
-
-Methods
--------
-
-Selain fungsi, ada beberapa metode penting yang mempercepat proses pembuatan fungsionalitas sistem baru.
-
-### addCSS
-
-```php
-void addCSS(string $path)
-```
-
-Mengimpor file CSS di header tema.
-
-#### Arguments
-+ `path` — URL to file
-
-#### Example
-```php
-$this->core->addCSS('http://example.com/style.css');
-// Result: <link rel="stylesheet" href="http://example.com/style.css" />
-```
-
-
-### addJS
-
-```php
-void addJS(string $path [, string $location = 'header'])
-```
-
-Mengimpor file JS di header atau footer tema.
-
-#### Arguments
-+ `path` — URL to file
-+ `location` — *header* or *footer* *(optional)*
-
-#### Example
-```php
-$this->core->addJS('http://example.com/script.js');
-// Result: <script src="http://example.com/script.js"></script>
-```
-
-
-### append
-
-```php
-void append(string $string, string $location)
-```
-
-Adds a string to the header or footer.
-
-#### Arguments
-+ `string` — character string
-+ `location` — *header* or *footer*
-
-#### Example
-```php
-$this->core->append('<meta name="author" content="Basoro">', 'header');
-```
-
-
-### getModuleInfo
-
-```php
-array getModuleInfo(string $dir)
-```
-
-Mengembalikan informasi modul. Metode ini hanya berfungsi di kelas `Admin`.
-
-#### Arguments
-+ `name` — module directory name
-
-#### Return value
-Array with informations.
-
-#### Example
-```php
-$foo = $this->core->getModuleInfo('contact');
-```
-
-
-### getSettings
-
-```php
-mixed getSettings([string $module = 'settings', string $field = null])
-```
-
-Mendapatkan nilai dari pengaturan modul. Secara default ini adalah pengaturan mLITE utama.
-
-#### Arguments
-+ `module` — module name *(optional)*
-+ `field` — field with definition of setting *(optional)*
-
-#### Return value
-Array or string.
-
-#### Example
-```php
-echo $this->core->getSettings('blog', 'title');
-```
-
-
-### getUserInfo
-
-```php
-string getUserInfo(string $field [, int $id ])
-```
-
-Mengembalikan informasi tentang pengguna yang masuk atau pengguna dengan ID yang diberikan. Metode ini hanya berfungsi di kelas `Admin`.
-
-#### Arguments
-+ `field` — field name in the database
-+ `id` — ID number *(opcjonalne)*
-
-#### Return value
-The string of the selected field.
-
-#### Example
-```php
-// The currently logged in user
-$foo = $this->core->getUserInfo('username');
-
-// User with given ID
-$foo = $this->core->getUserInfo('username', 1);
-```
-
-
-### setNotify
-
-```php
-void setNotify(string $type, string $text [, mixed $args [, mixed $... ]])
-```
-
-Generates notification.
-
-#### Arguments
-+ `type` — type of notification: *success* or *failure*
-+ `text` — notyfication content
-+ `args` — additional arguments *(optional)*
-
-#### Example
-```php
-$foo = 'Bar';
-$this->core->setNotify('success', 'This is %s!', $foo);
-// Result: "This is Bar!"
-```
-
-
 Database
 --------
 
@@ -978,118 +562,107 @@ Basis data yang digunakan pada mLITE adalah MySQL dan SQLite versi 3. Untuk peng
 
 ### SELECT
 
-Select multiple records:
+Pilih beberapa data:
 
 ```php
-// JSON
-$rows = $$this->core->mysql('table')->toJson();
 
-// Array
-$rows = $$this->core->mysql('table')->select('foo')->select('bar')->toArray();
+$rows = $this->core->mysql('table')->select('foo')->select('bar')->toArray();
 
-// Object
-$rows = $$this->core->mysql('table')->select(['foo', 'b' => 'bar'])->toObject();
 ```
 
-Select a single record:
+Pilih satu data:
 ```php
-// JSON
-$row = $$this->core->mysql('table')->oneJson();
 
-// Array
-$row = $$this->core->mysql('table')->select('foo')->select('bar')->oneArray();
+$row = $this->core->mysql('table')->select('foo')->select('bar')->oneArray();
 
-// Object
-$row = $$this->core->mysql('table')->select(['foo', 'b' => 'bar'])->oneObject();
 ```
-
 
 ### WHERE
 
-Select a record with the specified number in the `id` column:
+Pilih record dengan nomor yang ditentukan di kolom `id`:
 
 ```php
-$row = $$this->core->mysql('table')->oneArray(1);
-// or
-$row = $$this->core->mysql('table')->oneArray('id', 1);
-// or
-$row = $$this->core->mysql('table')->where(1)->oneArray();
-// or
-$row = $$this->core->mysql('table')->where('id', 1)->oneArray();
+$row = $this->core->mysql('table')->oneArray(1);
+// atau
+$row = $this->core->mysql('table')->oneArray('id', 1);
+// atau
+$row = $this->core->mysql('table')->where(1)->oneArray();
+// atau
+$row = $this->core->mysql('table')->where('id', 1)->oneArray();
 ```
 
-Complex conditions:
+Kondisi kompleks:
 ```php
-// Fetch rows whose column value 'foo' is GREATER than 4
-$rows = $$this->core->mysql('table')->where('foo', '>', 4)->toArray();
+// Ambil baris yang nilai kolomnya 'foo' LEBIH BESAR dari 4
+$rows = $this->core->mysql('table')->where('foo', '>', 4)->toArray();
 
-// Fetch rows whose column value 'foo' is GREATER than 4 and LOWER than 8
-$rows = $$this->core->mysql('table')->where('foo', '>', 4)->where('foo', '<', 8)->toArray();
+// Ambil baris yang nilai kolomnya 'foo' LEBIH BESAR dari 4 dan LEBIH RENDAH dari 8
+$rows = $this->core->mysql('table')->where('foo', '>', 4)->where('foo', '<', 8)->toArray();
 ```
 
 OR WHERE:
 ```php
-// Fetch rows whose column value 'foo' is EQUAL 4 or 8
-$rows = $$this->core->mysql('table')->where('foo', '=', 4)->orWhere('foo', '=', 8)->toArray();
+// Ambil baris yang nilai kolomnya 'foo' SAMA DENGAN 4 atau 8
+$rows = $this->core->mysql('table')->where('foo', '=', 4)->orWhere('foo', '=', 8)->toArray();
 ```
 
 WHERE LIKE:
 ```php
-// Fetch rows whose column 'foo' CONTAINS the string 'bar' OR 'bases'
-$rows = $$this->core->mysql('table')->like('foo', '%bar%')->orLike('foo', '%baz%')->toArray();
+// Ambil baris yang kolomnya 'foo' BERISI string 'bar' ATAU 'basis'
+$rows = $this->core->mysql('table')->like('foo', '%bar%')->orLike('foo', '%baz%')->toArray();
 ```
 
 WHERE NOT LIKE:
 ```php
-// Fetch rows whose column 'foo' DOES NOT CONTAIN the string 'bar' OR 'baz'
-$rows = $$this->core->mysql('table')->notLike('foo', '%bar%')->orNotLike('foo', '%baz%')->toArray();
+// Ambil baris yang kolomnya 'foo' TIDAK MENGANDUNG string 'bar' ATAU 'baz'
+$rows = $this->core->mysql('table')->notLike('foo', '%bar%')->orNotLike('foo', '%baz%')->toArray();
 ```
 
 WHERE IN:
 ```php
-// Fetch rows whose column value 'foo' CONTAINS in array [1,2,3] OR [7,8,9]
-$rows = $$this->core->mysql('table')->in('foo', [1,2,3])->orIn('foo', [7,8,9])->toArray();
+// Ambil baris yang nilai kolomnya 'foo' BERISI dalam baris [1,2,3] ATAU [7,8,9]
+$rows = $this->core->mysql('table')->in('foo', [1,2,3])->orIn('foo', [7,8,9])->toArray();
 ```
 
 WHERE NOT IN:
 ```php
-// Fetch rows whose column value 'foo' DOES NOT CONTAIN in array [1,2,3] OR [7,8,9]
-$rows = $$this->core->mysql('table')->notIn('foo', [1,2,3])->orNotIn('foo', [7,8,9])->toArray();
+// Ambil baris yang nilai kolomnya 'foo' TIDAK BERISI dalam baris [1,2,3] ATAU [7,8,9]
+$rows = $this->core->mysql('table')->notIn('foo', [1,2,3])->orNotIn('foo', [7,8,9])->toArray();
 ```
 
-Grouping conditions:
+Kondisi pengelompokan:
 ```php
-// Fetch rows those column value 'foo' is 1 or 2 AND status is 1
-$rows = $$this->core->mysql('table')->where(function($st) {
+// Ambil baris yang nilai kolomnya 'foo' adalah 1 atau 2 DAN statusnya adalah 1
+$rows = $this->core->mysql('table')->where(function($st) {
             $st->where('foo', 1)->orWhere('foo', 2);
         })->where('status', 1)->toArray();
 ```
 
-Allowed comparison operators: `=`, `>`, `<`, `>=`, `<=`, `<>`, `!=`.
+Operator pembanding yang diizinkan: `=`, `>`, `<`, `>=`, `<=`, `<>`, `!=`.
 
 
 ### JOIN
 
 INNER JOIN:
 ```php
-$rows = $$this->core->mysql('table')->join('foo', 'foo.table_id = table.id')->toJson();
+$rows = $this->core->mysql('table')->join('foo', 'foo.table_id = table.id')->toJson();
 ```
 
 LEFT JOIN:
 ```php
-$rows = $$this->core->mysql('table')->leftJoin('foo', 'foo.table_id = table.id')->toJson();
+$rows = $this->core->mysql('table')->leftJoin('foo', 'foo.table_id = table.id')->toJson();
 ```
 
 
 ### HAVING
 
 ```php
-$rows = $$this->core->mysql('table')->having('COUNT(*)', '>', 5)->toArray();
+$rows = $this->core->mysql('table')->having('COUNT(*)', '>', 5)->toArray();
 ```
 
 OR HAVING:
 ```php
-$rows = $$this->core->mysql('table')->orHaving('COUNT(*)', '>', 5)->toArray();
+$rows = $this->core->mysql('table')->orHaving('COUNT(*)', '>', 5)->toArray();
 ```
 
 
@@ -1098,13 +671,13 @@ $rows = $$this->core->mysql('table')->orHaving('COUNT(*)', '>', 5)->toArray();
 Metode `save` dapat menambahkan catatan baru ke tabel atau memperbarui yang sudah ada ketika memiliki kondisi. Ketika Anda menambahkan catatan baru, nomor identifikasi akan dikembalikan.
 
 ```php
-// Add a new record
-$id = $$this->core->mysql('table')->save(['name' => 'James Gordon', 'city' => 'Gotham']);
-// Return value: ID number of new record
+// Tambahkan data baru
+$id = $this->core->mysql('table')->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
+// Nilai pengembalian: nomor ID dari catatan baru
 
-// Update an existing record
-$$this->core->mysql('table')->where('age', 50)->save(['name' => 'James Gordon', 'city' => 'Gotham']);
-// Return value: TRUE on success or FALSE on failure
+// Perbarui data yang ada
+$this->core->mysql('table')->where('age', 50)->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
+// Nilai pengembalian: BENAR jika berhasil atau SALAH jika gagal
 ```
 
 
@@ -1113,18 +686,18 @@ $$this->core->mysql('table')->where('age', 50)->save(['name' => 'James Gordon', 
 Memperbarui catatan jika berhasil akan mengembalikan `TRUE`. Jika tidak, itu akan menjadi `FALSE`.
 
 ```php
-// Changing one column
-$$this->core->mysql('table')->where('city', 'Gotham')->update('name', 'Joker');
+// Mengubah satu kolom
+$this->core->mysql('table')->where('city', 'Barabai')->update('name', 'Fulan');
 
-// Changing multiple columns
-$$this->core->mysql('table')->where('city', 'Gotham')->update(['name' => 'Joker', 'type' => 'Villain']);
+// Mengubah beberapa kolom
+$this->core->mysql('table')->where('city', 'Barabai')->update(['name' => 'Fulan', 'type' => 'Pasien']);
 ```
 
 
 ### SET
 
 ```php
-$$this->core->mysql('table')->where('age', 65)->set('age', 70)->set('name', 'Alfred Pennyworth')->update();
+$this->core->mysql('table')->where('age', 65)->set('age', 70)->set('name', 'Fulani Binti Fulan')->update();
 ```
 
 
@@ -1133,44 +706,44 @@ $$this->core->mysql('table')->where('age', 65)->set('age', 70)->set('name', 'Alf
 Penghapusan catatan yang berhasil mengembalikan nomornya.
 
 ```php
-// Delete record with `id` equal to 1
-$$this->core->mysql('table')->delete(1);
+// Hapus data dengan `id` sama dengan 1
+$this->core->mysql('table')->delete(1);
 
-// Deletion of record with condition
-$$this->core->mysql('table')->where('age', 20)->delete();
+// Penghapusan data dengan kondisi
+$this->core->mysql('table')->where('age', 20)->delete();
 ```
 
 
 ### ORDER BY
 
-Ascending order:
+Ascending:
 ```php
-$$this->core->mysql('table')->asc('created_at')->toJson();
+$this->core->mysql('table')->asc('created_at')->toArray();
 ```
 
-Descending order:
+Descending:
 ```php
-$$this->core->mysql('table')->desc('created_at')->toJson();
+$this->core->mysql('table')->desc('created_at')->toArray();
 ```
 
-Combine order:
+Kombinasi:
 ```php
-$$this->core->mysql('table')->desc('created_at')->asc('id')->toJson();
+$this->core->mysql('table')->desc('created_at')->asc('id')->toArray();
 ```
 
 
 ### GROUP BY
 
 ```php
-$$this->core->mysql('table')->group('city')->toArray();
+$this->core->mysql('table')->group('city')->toArray();
 ```
 
 
 ### OFFSET, LIMIT
 
 ```php
-// Fetch 5 records starting at tenth
-$$this->core->mysql('table')->offset(10)->limit(5)->toJson();
+// Ambil 5 catatan mulai dari kesepuluh
+$this->core->mysql('table')->offset(10)->limit(5)->toArray();
 ```
 
 
@@ -1179,14 +752,13 @@ $$this->core->mysql('table')->offset(10)->limit(5)->toJson();
 Tidak semua kueri dapat dibuat menggunakan metode di atas *(mis. membuat atau menghapus tabel)*, jadi Anda juga dapat menulis kueri menggunakan [PDO](http://php.net/manual/en/book.pdo.php):
 
 ```php
-$$this->core->mysql()->pdo()->exec("DROP TABLE `example`");
+$this->core->mysql()->pdo()->exec("DROP TABLE `example`");
 ```
 
-
-Template system
+Sistem Template
 ---------------
 
-Mengoperasikan sistem template itu mudah dan terutama didasarkan pada dua metode. Satu memungkinkan menetapkan variabel, sementara yang lain mengembalikan kode yang dikompilasi. Dalam situasi luar biasa, dua metode lainnya berguna.
+Mengoperasikan sistem template itu mudah dan terutama didasarkan pada dua metode. Satu memungkinkan menetapkan variabel, sementara yang lain mengembalikan kode yang dikompilasi. Dalam beberapa kondisi, dua metode lainnya berguna.
 
 ### set
 
@@ -1196,17 +768,17 @@ void set(string $name, mixed $value)
 
 Menetapkan nilai atau fungsi ke variabel yang dapat digunakan dalam tampilan.
 
-#### Arguments
-+ `name` — variable name
-+ `value` — variable value or anonymous function
+#### Argumen
++ `name` — nama variabel
++ `value` — nilai variabel atau fungsi anonim
 
-#### Example
+#### Contoh
 ```php
-// Assignment of the array
+// Diletakkan pada array
 $foo = ['bar', 'baz', 'qux'];
 $this->tpl->set('foo', $foo);
 
-// Assign an anonymous function
+// Diletakkan pada fungsi anonim
 $this->tpl->set('bar', function() {
    return ['baz' => 'qux'];
 })
@@ -1221,13 +793,13 @@ string draw(string $file)
 
 Mengembalikan kode tampilan terkompilasi yang sebelumnya menggunakan tag sistem template.
 
-#### Arguments
-+ `file` — file path
+#### Argumen
++ `file` — path berkas
 
-#### Return value
-A string, i.e. a compiled view.
+#### Nilai return
+Sebuah string, yaitu tampilan yang dikompilasi.
 
-#### Example
+#### Contoh
 ```php
 $this->tpl->draw(MODULES.'/pasien/view/admin/manage.html');
 ```
@@ -1241,12 +813,12 @@ string noParse(string $text)
 
 Melindungi dari kompilasi tag sistem template.
 
-#### Arguments
-+ `text` — string to be left unchanged
+#### Argumen
++ `text` — string dibiarkan tidak berubah
 
-#### Example
+#### Contoh
 ```php
-$this->tpl->noParse('Place this tag in website template: {$contact.form}');
+$this->tpl->noParse('Letakkan tag ini di situs web: {$contact.form}');
 ```
 
 
@@ -1256,14 +828,12 @@ $this->tpl->noParse('Place this tag in website template: {$contact.form}');
 array noParse_array(array $array)
 ```
 
-Melindungi dari kompilasi tag sistem template di dalam larik.
+Melindungi dari kompilasi tag sistem template di dalam array.
 
 #### Arguments
-+ `array` — array to be left unchanged
++ `array` — array dibiarkan tidak berubah
 
 #### Example
 ```php
 $this->tpl->noParse_array(['{$no}', '{$changes}']);
 ```
-
-(Diperbarui 11 Mei 2022)

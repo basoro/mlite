@@ -15,9 +15,15 @@
       {loop: $periksa_lab}
       <tr>
         <td>{$value.nomor}</td>
-        <td colspan="4">{$value.nm_perawatan}</td>
+        <td colspan="4">
+          Nama Pemeriksaan: {$value.nm_perawatan}<br>
+          Tanggal: {$value.tgl_periksa}<br>
+          Jam: {$value.jam}<br>
+          Dokter perujuk: {$value.nm_dokter}
+        </td>
         <td colspan="2">
-          <button type="button" class="btn btn-danger btn-xs hapus_laboratorium" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" class="btn btn-danger btn-xs hapus_laboratorium {if: $_SESSION['mlite_user'] != '1'}disabled{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}" data-kd_jenis_prw="{$value.kd_jenis_prw}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+          <button type="button" name="button" class="btn btn-primary btn-xs cetak_hasil" data-tgl_periksa="{$value.tgl_periksa}" data-jam_periksa="{$value.jam}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Hasil</span></button>
         </td>
       </tr>
       {loop: $value.detail_periksa_lab as $data2}
@@ -38,22 +44,10 @@
       </tr>
       {/loop}
     </tbody>
-    <tfoot>
-      <tr>
-        <th></th>
-        <th colspan="3">Total Biaya Laboratorium</th>
-        <th><span class="hidden-xs"><span class="hidden-xs">Rp. </span></span><span class="pull-right">{?= number_format($jumlah_total_lab,2,',','.')?}</span></th>
-        <th></th>
-      </tr>
-    </tfoot>
   </table>
 </div>
-<div class="pull-right">
-  <button type="button" name="button" class="btn btn-primary" id="cetak_hasil"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Hasil</span></button>
-  <!--<button type="button" name="button" class="btn btn-success" id="nota_lab"><i class="fa fa-money"></i><span class="hidden-xs"> Nota</span></button>-->
-</div>
 <br>
-{if: $check_permintaan_lab}
+<br>
 <h4>e-Laboratorium</h4>
 <div class="table-responsive no-margin">
   <table class="table table-striped table-bordered no-padding" width="100%">
@@ -74,6 +68,7 @@
         <td>
           <!--<button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>-->
           <button type="button" class="btn btn-success btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}validasi_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-check"></i><span class="hidden-xs"> Validasi</span></button>
+          <button type="button" name="button" class="btn btn-primary btn-xs cetak_permintaan" data-noorder="{$value.noorder}"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Permintaan</span></button>
         </td>
       </tr>
       <tr>
@@ -116,10 +111,6 @@
     </tbody>
   </table>
 </div>
-<div class="pull-right">
-  <button type="button" name="button" class="btn btn-primary" id="cetak_permintaan"><i class="fa fa-print"></i><span class="hidden-xs"> Cetak Permintaan</span></button>
-</div>
-{/if}
 <!-- Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
@@ -140,7 +131,7 @@
   	if($(editableObj).attr('data-old_value') === editableObj.innerHTML)
   	return false;
   	// send ajax to update value
-  	$(editableObj).css("background","#FFF url(loader.gif) no-repeat right");
+  	$(editableObj).css("background","#FFF url({?=url()?}/assets/img/loader.gif) no-repeat right");
   	$.ajax({
   		url: "{?=url([ADMIN,'laboratorium','savenilai'])?}",
   		cache: false,

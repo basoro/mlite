@@ -1,0 +1,85 @@
+<style>
+  .nowrap th, .nowrap td {
+    white-space: nowrap;
+  }
+</style>
+<form action="{?=url(ADMIN.'/inventaris/saveinventarismerk')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data Merk</h3>
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisbarang'])?}" role="tab">Data Barang</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisjenis'])?}" role="tab">Jenis</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventariskategori'])?}" role="tab">Kategori</a>
+                </li>
+                <li class="active">
+                    <a href="{?=url([ADMIN,'inventaris','inventarismerk'])?}" role="tab">Merk</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisprodusen'])?}" role="tab">Produsen</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisruang'])?}" role="tab">Ruang</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>ID Merk</label>
+                        <input type="text" name="id_merk" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Merk</label>
+                        <input type="text" name="nama_merk" class="form-control" value="" required />
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="inventarismerk">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>ID Merk</th>
+            <th>Nama Merk</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $inventaris_merk}
+          <tr class="inventarismerk"
+          data-id_merk="{$value.id_merk}"
+          data-nama_merk="{$value.nama_merk}"
+          >
+            <td>{$value.id_merk}</td>
+            <td>{$value.nama_merk}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#inventarismerk").on("click", ".inventarismerk", function(event){
+    var id_merk  = $(this).attr("data-id_merk");
+    var nama_merk  = $(this).attr("data-nama_merk");
+    $('input:text[name=id_merk]').val(id_merk);
+    $('input:text[name=nama_merk]').val(nama_merk);
+    $('input:text[name=id_merk]').prop('readonly', true);
+  });
+</script>

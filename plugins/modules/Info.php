@@ -10,17 +10,11 @@ return [
 
     'install'       =>  function () use ($core) {
         if(MULTI_APP) {
-            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite__modules` (
-                    `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-                    `dir` text NOT NULL,
-                    `sequence` integer DEFAULT 0
-                )");
-        } else {
-            $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite__modules` (
-                `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                `dir` text,
-                `sequence` text
-                ) ENGINE=MyISAM DEFAULT CHARSET=utf8;");
+            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_modules` (
+                `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
+                `dir` text NOT NULL,
+                `sequence` integer DEFAULT 0
+            )");
         }
     },
     'uninstall'     =>  function () use ($core) {

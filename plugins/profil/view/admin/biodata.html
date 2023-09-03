@@ -1,4 +1,4 @@
-<article class="row">
+<div class="row" style="margin-bottom:20px;">
     <form name="petugas" action="{?=url(ADMIN.'/profil/biodatasave/'.@$biodata.form.id)?}" method="POST" enctype="multipart/form-data">
         <div class="col-md-8">
             <div class="panel panel-default">
@@ -138,7 +138,7 @@
             </div>
         </div>
     </form>
-</article>
+</div>
 <!-- {if: $petugas.form.nip !== ''}
   <script>
     $('#nip option:not(:selected)').remove();

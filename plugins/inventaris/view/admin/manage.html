@@ -1,0 +1,126 @@
+<style media="screen">
+  .stat-title {
+    padding:0;
+    margin:0;
+    font-size:16px;
+  }
+  .stat-bold {
+    padding:0;
+    margin-top:0px;
+    margin-bottom:-10px;
+    font-size:32px;
+  }
+  .stat-up-down {
+    font-size:14px;
+    font-weight:bold;
+  }
+  .text-white{color:#ffffff}
+  a.text-white:focus,a.text-white:hover{color:#ffffff}
+
+  .badge-success {
+    background-color: #4C9A2A;
+  }
+</style>
+<h4>
+  Periode {?=date('d', strtotime($tgl_awal))?} {?=bulan(date('m', strtotime($tgl_awal)))?} {?=date('Y', strtotime($tgl_awal))?} - {?=date('d', strtotime($tgl_akhir))?} {?=bulan(date('m', strtotime($tgl_akhir)))?} {?=date('Y', strtotime($tgl_akhir))?}
+  <span class="pull-right">
+    <form class="" action="" method="">
+      <input type="text" name="tgl_awal" class="tanggal" value="" placeholder="Tanggal awal">
+      <input type="text" name="tgl_akhir" class="tanggal" value="" placeholder="Tanggal akhir">
+      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+      <input type="submit" value="Go">
+    </form>
+  </span>
+</h4>
+<br>
+<div class="row">
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-danger">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-calendar-plus-o fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey"><a href="{?=url([ADMIN,'inventaris','dataaset'])?}">Data Aset</a></div>
+                    <div class="stat-bold">
+                      {?=count($aset)?}
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-info">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-calendar fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey"><a href="{?=url([ADMIN,'inventaris','pemeliharaan'])?}">Pemeliharaan</a></div>
+                    <div class="stat-bold">
+                      {?=count($pemeliharaan)?}
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-warning">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-users fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey"><a href="{?=url([ADMIN,'inventaris','permintaanperbaikan'])?}">Perbaikan</a></div>
+                    <div class="stat-bold">
+                      {?=count($perbaikan)?}
+                    </div>
+              </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+              <div class="panel-body bg-success">
+                    <span class="fa-3x fa-stack fa-lg pull-left">
+                        <i class="fa fa-send fa-stack-1x"></i>
+                    </span>
+                    <div class="stat-title text-grey"><a href="{?=url([ADMIN,'inventaris','peminjaman'])?}">Peminjaman</a></div>
+                    <div class="stat-bold">
+                      {?=count($peminjaman)?}
+                    </div>
+              </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Permintaan Perbaikan</h3>
+            </div>
+            <div class="panel-body">
+              <div class="table-responsive no-margin">
+              <table class="table table-striped no-padding" width="100%">
+                <thead>
+                  <tr>
+                    <th>No. Permintaan</th>
+                    <th>No. Inventaris</th>
+                    <th>Pemohon Perbaikan</th>
+                    <th>Tanggal</th>
+                    <th>Deskripsi Kerusakan</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loop: $perbaikan}
+                  <tr>
+                    <td>{$value.no_permintaan}</td>
+                    <td>{$value.no_inventaris}</td>
+                    <td>{$value.nik} - {$value.nama}</td>
+                    <td>{$value.tanggal}</td>
+                    <td>{$value.deskripsi_kerusakan}</td>
+                    <td class="text-{if: $value.status_perbaikan == 'Sudah'}primary{else}danger{/if}">{$value.status_perbaikan}</td>
+                  </tr>
+                  {/loop}
+                </tbody>
+              </table>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>

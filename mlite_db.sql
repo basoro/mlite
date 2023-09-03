@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Mar 28, 2023 at 07:56 PM
+-- Generation Time: Aug 12, 2023 at 08:26 PM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
@@ -85,6 +85,17 @@ CREATE TABLE IF NOT EXISTS `bank` (
 INSERT INTO `bank` (`namabank`) VALUES
 ('-'),
 ('T');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `barcode`
+--
+
+CREATE TABLE IF NOT EXISTS `barcode` (
+  `id` int(11) NOT NULL,
+  `barcode` varchar(25) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -685,6 +696,117 @@ INSERT INTO `industrifarmasi` (`kode_industri`, `nama_industri`, `alamat`, `kota
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris` (
+  `no_inventaris` varchar(30) NOT NULL,
+  `kode_barang` varchar(20) DEFAULT NULL,
+  `asal_barang` enum('Beli','Bantuan','Hibah','-') DEFAULT NULL,
+  `tgl_pengadaan` date DEFAULT NULL,
+  `harga` double DEFAULT NULL,
+  `status_barang` enum('Ada','Rusak','Hilang','Perbaikan','Dipinjam','-') DEFAULT NULL,
+  `id_ruang` char(5) DEFAULT NULL,
+  `no_rak` char(3) DEFAULT NULL,
+  `no_box` char(3) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_barang`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_barang` (
+  `kode_barang` varchar(20) NOT NULL,
+  `nama_barang` varchar(60) DEFAULT NULL,
+  `jml_barang` int(11) DEFAULT NULL,
+  `kode_produsen` varchar(10) DEFAULT NULL,
+  `id_merk` varchar(10) DEFAULT NULL,
+  `thn_produksi` year(4) DEFAULT NULL,
+  `isbn` varchar(20) DEFAULT NULL,
+  `id_kategori` char(10) DEFAULT NULL,
+  `id_jenis` char(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_jenis`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_jenis` (
+  `id_jenis` char(10) NOT NULL,
+  `nama_jenis` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_kategori`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_kategori` (
+  `id_kategori` char(10) NOT NULL,
+  `nama_kategori` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_merk`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_merk` (
+  `id_merk` varchar(10) NOT NULL,
+  `nama_merk` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_peminjaman`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_peminjaman` (
+  `peminjam` varchar(50) NOT NULL DEFAULT '',
+  `tlp` varchar(13) NOT NULL,
+  `no_inventaris` varchar(30) NOT NULL DEFAULT '',
+  `tgl_pinjam` date NOT NULL DEFAULT '0000-00-00',
+  `tgl_kembali` date DEFAULT NULL,
+  `nip` varchar(20) NOT NULL DEFAULT '',
+  `status_pinjam` enum('Masih Dipinjam','Sudah Kembali') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_produsen`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_produsen` (
+  `kode_produsen` varchar(10) NOT NULL,
+  `nama_produsen` varchar(40) DEFAULT NULL,
+  `alamat_produsen` varchar(70) DEFAULT NULL,
+  `no_telp` varchar(13) DEFAULT NULL,
+  `email` varchar(25) DEFAULT NULL,
+  `website_produsen` varchar(30) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inventaris_ruang`
+--
+
+CREATE TABLE IF NOT EXISTS `inventaris_ruang` (
+  `id_ruang` varchar(5) NOT NULL,
+  `nama_ruang` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `jabatan`
 --
 
@@ -714,6 +836,135 @@ CREATE TABLE IF NOT EXISTS `jadwal` (
   `kd_poli` char(5) DEFAULT NULL,
   `kuota` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_pegawai`
+--
+
+CREATE TABLE IF NOT EXISTS `jadwal_pegawai` (
+  `id` int(11) NOT NULL,
+  `tahun` year(4) NOT NULL,
+  `bulan` enum('01','02','03','04','05','06','07','08','09','10','11','12') NOT NULL,
+  `h1` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h2` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h3` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h4` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h5` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h6` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h7` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h8` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h9` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h10` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h11` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h12` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h13` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h14` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h15` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h16` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h17` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h18` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h19` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h20` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h21` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h22` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h23` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h24` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h25` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h26` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h27` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h28` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h29` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h30` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h31` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jadwal_tambahan`
+--
+
+CREATE TABLE IF NOT EXISTS `jadwal_tambahan` (
+  `id` int(11) NOT NULL,
+  `tahun` year(4) NOT NULL,
+  `bulan` enum('01','02','03','04','05','06','07','08','09','10','11','12') NOT NULL,
+  `h1` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h2` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h3` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h4` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h5` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h6` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h7` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h8` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h9` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h10` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h11` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h12` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h13` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h14` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h15` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h16` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h17` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h18` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h19` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h20` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h21` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h22` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h23` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h24` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h25` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h26` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h27` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h28` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h29` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h30` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL,
+  `h31` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10','') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jam_jaga`
+--
+
+CREATE TABLE IF NOT EXISTS `jam_jaga` (
+  `no_id` int(11) NOT NULL,
+  `dep_id` char(4) NOT NULL,
+  `shift` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10') NOT NULL,
+  `jam_masuk` time NOT NULL,
+  `jam_pulang` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `jam_masuk`
+--
+
+CREATE TABLE IF NOT EXISTS `jam_masuk` (
+  `shift` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10') NOT NULL,
+  `jam_masuk` time NOT NULL,
+  `jam_pulang` time NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jam_masuk`
+--
+
+INSERT INTO `jam_masuk` (`shift`, `jam_masuk`, `jam_pulang`) VALUES
+('Pagi', '06:00:00', '16:00:00'),
+('Pagi2', '08:00:00', '14:00:00'),
+('Pagi3', '10:00:00', '17:00:00'),
+('Siang', '14:00:00', '08:00:00'),
+('Siang2', '14:00:00', '21:00:00'),
+('Malam', '20:00:00', '02:00:00'),
+('Midle Siang1', '00:00:00', '06:00:00'),
+('Midle Siang3', '00:00:00', '00:00:00'),
+('Midle Siang4', '04:00:00', '16:00:00'),
+('Midle Malam1', '00:00:00', '06:00:00'),
+('Midle Malam5', '22:00:00', '07:00:00');
 
 -- --------------------------------------------------------
 
@@ -1098,6 +1349,18 @@ CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `maping_poliklinik_pcare`
+--
+
+CREATE TABLE IF NOT EXISTS `maping_poliklinik_pcare` (
+  `kd_poli_rs` char(5) NOT NULL,
+  `kd_poli_pcare` char(5) DEFAULT NULL,
+  `nm_poli_pcare` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `maping_poli_bpjs`
 --
 
@@ -1163,10 +1426,10 @@ INSERT INTO `metode_racik` (`kd_racik`, `nm_racik`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__akun_kegiatan`
+-- Table structure for table `mlite_akun_kegiatan`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__akun_kegiatan` (
+CREATE TABLE IF NOT EXISTS `mlite_akun_kegiatan` (
   `id` int(11) NOT NULL,
   `kegiatan` varchar(200) DEFAULT NULL,
   `kd_rek` varchar(20) DEFAULT NULL
@@ -1175,10 +1438,10 @@ CREATE TABLE IF NOT EXISTS `mlite__akun_kegiatan` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_loket`
+-- Table structure for table `mlite_antrian_loket`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_loket` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
   `kd` int(50) NOT NULL,
   `type` varchar(50) NOT NULL,
   `noantrian` varchar(50) NOT NULL,
@@ -1193,25 +1456,27 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_loket` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi`
+-- Table structure for table `mlite_antrian_referensi`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
   `tanggal_periksa` date NOT NULL,
+  `no_rkm_medis` varchar(50) NOT NULL,
   `nomor_kartu` varchar(50) NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
   `jenis_kunjungan` varchar(10) NOT NULL,
-  `status_kirim` varchar(20) DEFAULT NULL
+  `status_kirim` varchar(20) DEFAULT NULL,
+  `keterangan` varchar(250) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi_batal`
+-- Table structure for table `mlite_antrian_referensi_batal`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_batal` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
   `tanggal_batal` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `kodebooking` varchar(100) NOT NULL,
@@ -1221,23 +1486,25 @@ CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_batal` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__antrian_referensi_taskid`
+-- Table structure for table `mlite_antrian_referensi_taskid`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__antrian_referensi_taskid` (
+CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
   `tanggal_periksa` date NOT NULL,
   `nomor_referensi` varchar(50) NOT NULL,
   `taskid` varchar(50) NOT NULL,
-  `waktu` varchar(50) NOT NULL
+  `waktu` varchar(50) NOT NULL,
+  `status` varchar(20) DEFAULT NULL,
+  `keterangan` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__apamregister`
+-- Table structure for table `mlite_apamregister`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__apamregister` (
+CREATE TABLE IF NOT EXISTS `mlite_apamregister` (
   `nama_lengkap` varchar(225) NOT NULL,
   `email` varchar(225) NOT NULL,
   `nomor_ktp` varchar(225) NOT NULL,
@@ -1247,10 +1514,10 @@ CREATE TABLE IF NOT EXISTS `mlite__apamregister` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__billing`
+-- Table structure for table `mlite_billing`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__billing` (
+CREATE TABLE IF NOT EXISTS `mlite_billing` (
   `id_billing` int(11) NOT NULL,
   `kd_billing` varchar(100) NOT NULL,
   `no_rawat` varchar(17) NOT NULL,
@@ -1267,23 +1534,89 @@ CREATE TABLE IF NOT EXISTS `mlite__billing` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__detailjurnal`
+-- Table structure for table `mlite_bridging_pcare`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__detailjurnal` (
+CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
+  `id` int(11) NOT NULL,
+  `no_rawat` text NOT NULL,
+  `no_rkm_medis` text,
+  `tgl_daftar` text,
+  `nomor_kunjungan` text,
+  `kode_provider_peserta` text,
+  `nomor_jaminan` text,
+  `kode_poli` text,
+  `nama_poli` text,
+  `kunjungan_sakit` text,
+  `sistole` text,
+  `diastole` text,
+  `nadi` text,
+  `respirasi` text,
+  `tinggi` text,
+  `berat` text,
+  `lingkar_perut` text,
+  `rujuk_balik` text,
+  `subyektif` text,
+  `kode_tkp` text,
+  `nomor_urut` text,
+  `kode_kesadaran` text,
+  `nama_kesadaran` text,
+  `terapi` text,
+  `kode_status_pulang` text,
+  `nama_status_pulang` text,
+  `tgl_pulang` text,
+  `tgl_kunjungan` text,
+  `kode_dokter` text,
+  `nama_dokter` text,
+  `kode_diagnosa1` text,
+  `nama_diagnosa1` text,
+  `kode_diagnosa2` text,
+  `nama_diagnosa2` text,
+  `kode_diagnosa3` text,
+  `nama_diagnosa3` text,
+  `tgl_estimasi_rujuk` text,
+  `kode_ppk` text,
+  `nama_ppk` text,
+  `kode_spesialis` text,
+  `nama_spesialis` text,
+  `kode_subspesialis` text,
+  `nama_subspesialis` text,
+  `kode_sarana` text,
+  `nama_sarana` text,
+  `kode_referensikhusus` text,
+  `nama_referensikhusus` text,
+  `kode_faskeskhusus` text,
+  `nama_faskeskhusus` text,
+  `catatan` text,
+  `kode_tacc` text,
+  `nama_tacc` text,
+  `alasan_tacc` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL,
+  `status_kirim` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_detailjurnal`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
   `no_jurnal` varchar(20) DEFAULT NULL,
   `kd_rek` varchar(15) DEFAULT NULL,
-  `debet` double DEFAULT NULL,
-  `kredit` double DEFAULT NULL
+  `arus_kas` int(10) NOT NULL,
+  `debet` double NOT NULL,
+  `kredit` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__duitku`
+-- Table structure for table `mlite_duitku`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__duitku` (
+CREATE TABLE IF NOT EXISTS `mlite_duitku` (
   `id` int(10) NOT NULL,
   `tanggal` datetime NOT NULL,
   `no_rkm_medis` varchar(15) NOT NULL,
@@ -1299,24 +1632,38 @@ CREATE TABLE IF NOT EXISTS `mlite__duitku` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__jurnal`
+-- Table structure for table `mlite_geolocation_presensi`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__jurnal` (
+CREATE TABLE IF NOT EXISTS `mlite_geolocation_presensi` (
+  `id` int(11) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `latitude` varchar(200) NOT NULL,
+  `longitude` varchar(200) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_jurnal`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
   `no_jurnal` varchar(20) NOT NULL,
   `no_bukti` varchar(20) DEFAULT NULL,
   `tgl_jurnal` date DEFAULT NULL,
   `jenis` enum('U','P') DEFAULT NULL,
+  `kegiatan` varchar(250) NOT NULL,
   `keterangan` varchar(350) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__login_attempts`
+-- Table structure for table `mlite_login_attempts`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__login_attempts` (
+CREATE TABLE IF NOT EXISTS `mlite_login_attempts` (
   `ip` text,
   `attempts` int(100) NOT NULL,
   `expires` int(100) NOT NULL DEFAULT '0'
@@ -1325,20 +1672,20 @@ CREATE TABLE IF NOT EXISTS `mlite__login_attempts` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__modules`
+-- Table structure for table `mlite_modules`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__modules` (
+CREATE TABLE IF NOT EXISTS `mlite_modules` (
   `id` int(11) NOT NULL,
   `dir` text,
   `sequence` text
-) ENGINE=MyISAM AUTO_INCREMENT=30 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=35 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__modules`
+-- Dumping data for table `mlite_modules`
 --
 
-INSERT INTO `mlite__modules` (`id`, `dir`, `sequence`) VALUES
+INSERT INTO `mlite_modules` (`id`, `dir`, `sequence`) VALUES
 (1, 'settings', '9'),
 (2, 'dashboard', '0'),
 (3, 'master', '1'),
@@ -1367,15 +1714,20 @@ INSERT INTO `mlite__modules` (`id`, `dir`, `sequence`) VALUES
 (26, 'jkn_mobile', '25'),
 (27, 'vclaim', '26'),
 (28, 'keuangan', '27'),
-(29, 'manajemen', '28');
+(29, 'manajemen', '28'),
+(30, 'presensi', '29'),
+(31, 'vedika', '30'),
+(32, 'profil', '31'),
+(33, 'orthanc', '32'),
+(34, 'veronisa', '33');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__notifications`
+-- Table structure for table `mlite_notifications`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__notifications` (
+CREATE TABLE IF NOT EXISTS `mlite_notifications` (
   `id` int(11) NOT NULL,
   `judul` varchar(250) NOT NULL,
   `pesan` text NOT NULL,
@@ -1387,10 +1739,10 @@ CREATE TABLE IF NOT EXISTS `mlite__notifications` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__odontogram`
+-- Table structure for table `mlite_odontogram`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__odontogram` (
+CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
   `id` int(11) NOT NULL,
   `no_rkm_medis` text NOT NULL,
   `pemeriksaan` text,
@@ -1403,10 +1755,10 @@ CREATE TABLE IF NOT EXISTS `mlite__odontogram` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__pengaduan`
+-- Table structure for table `mlite_pengaduan`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__pengaduan` (
+CREATE TABLE IF NOT EXISTS `mlite_pengaduan` (
   `id` varchar(15) NOT NULL,
   `tanggal` datetime NOT NULL,
   `no_rkm_medis` varchar(15) NOT NULL,
@@ -1416,10 +1768,10 @@ CREATE TABLE IF NOT EXISTS `mlite__pengaduan` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__pengaduan_detail`
+-- Table structure for table `mlite_pengaduan_detail`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__pengaduan_detail` (
+CREATE TABLE IF NOT EXISTS `mlite_pengaduan_detail` (
   `id` int(10) NOT NULL,
   `pengaduan_id` varchar(15) NOT NULL,
   `tanggal` datetime NOT NULL,
@@ -1430,10 +1782,10 @@ CREATE TABLE IF NOT EXISTS `mlite__pengaduan_detail` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__rekening`
+-- Table structure for table `mlite_rekening`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__rekening` (
+CREATE TABLE IF NOT EXISTS `mlite_rekening` (
   `kd_rek` varchar(15) NOT NULL DEFAULT '',
   `nm_rek` varchar(100) DEFAULT NULL,
   `tipe` enum('N','M','R') DEFAULT NULL,
@@ -1444,10 +1796,10 @@ CREATE TABLE IF NOT EXISTS `mlite__rekening` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__rekeningtahun`
+-- Table structure for table `mlite_rekeningtahun`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__rekeningtahun` (
+CREATE TABLE IF NOT EXISTS `mlite_rekeningtahun` (
   `thn` year(4) NOT NULL,
   `kd_rek` varchar(15) NOT NULL DEFAULT '',
   `saldo_awal` double NOT NULL
@@ -1456,10 +1808,10 @@ CREATE TABLE IF NOT EXISTS `mlite__rekeningtahun` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__remember_me`
+-- Table structure for table `mlite_remember_me`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__remember_me` (
+CREATE TABLE IF NOT EXISTS `mlite_remember_me` (
   `id` int(11) NOT NULL,
   `token` text,
   `user_id` int(10) NOT NULL,
@@ -1469,21 +1821,21 @@ CREATE TABLE IF NOT EXISTS `mlite__remember_me` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__settings`
+-- Table structure for table `mlite_settings`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__settings` (
+CREATE TABLE IF NOT EXISTS `mlite_settings` (
   `id` int(11) NOT NULL,
   `module` text,
   `field` text,
   `value` text
-) ENGINE=MyISAM AUTO_INCREMENT=114 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=151 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__settings`
+-- Dumping data for table `mlite_settings`
 --
 
-INSERT INTO `mlite__settings` (`id`, `module`, `field`, `value`) VALUES
+INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (1, 'settings', 'logo', 'uploads/settings/logo.png'),
 (2, 'settings', 'nama_instansi', 'mLITE Indonesia'),
 (3, 'settings', 'alamat', 'Jl. Perintis Kemerdekaan 45'),
@@ -1506,105 +1858,141 @@ INSERT INTO `mlite__settings` (`id`, `module`, `field`, `value`) VALUES
 (20, 'settings', 'cekstatusbayar', 'false'),
 (21, 'settings', 'ceklimit', 'false'),
 (22, 'settings', 'responsivevoice', 'false'),
-(23, 'settings', 'BpjsApiUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),
-(24, 'settings', 'BpjsConsID', '-'),
-(25, 'settings', 'BpjsSecretKey', '-'),
-(26, 'settings', 'BpjsUserKey', '-'),
-(27, 'settings', 'timezone', 'Asia/Makassar'),
-(28, 'settings', 'theme', 'default'),
-(29, 'settings', 'theme_admin', 'ataaka'),
-(30, 'settings', 'admin_mode', 'simple'),
-(31, 'settings', 'input_kasir', 'tidak'),
-(32, 'settings', 'editor', 'wysiwyg'),
-(33, 'settings', 'version', '2023-01-01 00:00:01'),
-(34, 'settings', 'update_check', '0'),
-(35, 'settings', 'update_changelog', ''),
-(36, 'settings', 'update_version', '0'),
-(37, 'settings', 'license', ''),
-(38, 'farmasi', 'deporalan', '-'),
-(39, 'farmasi', 'igd', '-'),
-(40, 'farmasi', 'deporanap', '-'),
-(41, 'farmasi', 'gudang', '-'),
-(42, 'wagateway', 'server', 'https://mlite.id'),
-(43, 'wagateway', 'token', '-'),
-(44, 'wagateway', 'phonenumber', '-'),
-(45, 'anjungan', 'display_poli', ''),
-(46, 'anjungan', 'carabayar', ''),
-(47, 'anjungan', 'antrian_loket', '1'),
-(48, 'anjungan', 'antrian_cs', '2'),
-(49, 'anjungan', 'antrian_apotek', '3'),
-(50, 'anjungan', 'panggil_loket', '1'),
-(51, 'anjungan', 'panggil_loket_nomor', '1'),
-(52, 'anjungan', 'panggil_cs', '1'),
-(53, 'anjungan', 'panggil_cs_nomor', '1'),
-(54, 'anjungan', 'panggil_apotek', '1'),
-(55, 'anjungan', 'panggil_apotek_nomor', '1'),
-(56, 'anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....'),
-(57, 'anjungan', 'text_loket', 'Running text display antrian loket.....'),
-(58, 'anjungan', 'text_poli', 'Running text display antrian poliklinik.....'),
-(59, 'anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....'),
-(60, 'anjungan', 'text_apotek', 'Running text display antrian apotek.....'),
-(61, 'anjungan', 'text_farmasi', 'Running text display antrian farmasi.....'),
-(62, 'anjungan', 'vidio', 'G4im8_n0OoI'),
-(63, 'api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
-(64, 'api', 'apam_status_daftar', 'Terdaftar'),
-(65, 'api', 'apam_status_dilayani', 'Anda siap dilayani'),
-(66, 'api', 'apam_webappsurl', 'http://localhost/webapps/'),
-(67, 'api', 'apam_normpetugas', '000001,000002'),
-(68, 'api', 'apam_limit', '2'),
-(69, 'api', 'apam_smtp_host', 'ssl://smtp.gmail.com'),
-(70, 'api', 'apam_smtp_port', '465'),
-(71, 'api', 'apam_smtp_username', ''),
-(72, 'api', 'apam_smtp_password', ''),
-(73, 'api', 'apam_kdpj', ''),
-(74, 'api', 'apam_kdprop', ''),
-(75, 'api', 'apam_kdkab', ''),
-(76, 'api', 'apam_kdkec', ''),
-(77, 'api', 'duitku_merchantCode', ''),
-(78, 'api', 'duitku_merchantKey', ''),
-(79, 'api', 'duitku_paymentAmount', ''),
-(80, 'api', 'duitku_paymentMethod', ''),
-(81, 'api', 'duitku_productDetails', ''),
-(82, 'api', 'duitku_expiryPeriod', ''),
-(83, 'api', 'duitku_kdpj', ''),
-(84, 'api', 'berkasdigital_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
-(85, 'jkn_mobile', 'x_username', 'jkn'),
-(86, 'jkn_mobile', 'x_password', 'mobile'),
-(87, 'jkn_mobile', 'header_token', 'X-Token'),
-(88, 'jkn_mobile', 'header_username', 'X-Username'),
-(89, 'jkn_mobile', 'header_password', 'X-Password'),
-(90, 'jkn_mobile', 'BpjsConsID', ''),
-(91, 'jkn_mobile', 'BpjsSecretKey', ''),
-(92, 'jkn_mobile', 'BpjsUserKey', ''),
-(93, 'jkn_mobile', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),
-(94, 'jkn_mobile', 'kd_pj_bpjs', ''),
-(95, 'jkn_mobile', 'exclude_taskid', ''),
-(96, 'jkn_mobile', 'display', ''),
-(97, 'jkn_mobile', 'kdprop', ''),
-(98, 'jkn_mobile', 'kdkab', ''),
-(99, 'jkn_mobile', 'kdkec', ''),
-(100, 'jkn_mobile', 'kdkel', ''),
-(101, 'jkn_mobile', 'perusahaan_pasien', ''),
-(102, 'jkn_mobile', 'suku_bangsa', ''),
-(103, 'jkn_mobile', 'bahasa_pasien', ''),
-(104, 'jkn_mobile', 'cacat_fisik', ''),
-(105, 'keuangan', 'jurnal_kasir', '0'),
-(106, 'keuangan', 'akun_kredit_pendaftaran', ''),
-(107, 'keuangan', 'akun_kredit_tindakan', ''),
-(108, 'keuangan', 'akun_kredit_obat_bhp', ''),
-(109, 'keuangan', 'akun_kredit_laboratorium', ''),
-(110, 'keuangan', 'akun_kredit_radiologi', ''),
-(111, 'keuangan', 'akun_kredit_tambahan_biaya', ''),
-(112, 'manajemen', 'penjab_umum', 'UMU'),
-(113, 'manajemen', 'penjab_bpjs', 'BPJ');
+(23, 'settings', 'notif_presensi', 'true'),
+(24, 'settings', 'BpjsApiUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),
+(25, 'settings', 'BpjsConsID', '-'),
+(26, 'settings', 'BpjsSecretKey', '-'),
+(27, 'settings', 'BpjsUserKey', '-'),
+(28, 'settings', 'timezone', 'Asia/Makassar'),
+(29, 'settings', 'theme', 'default'),
+(30, 'settings', 'theme_admin', 'ataaka'),
+(31, 'settings', 'admin_mode', 'simple'),
+(32, 'settings', 'input_kasir', 'tidak'),
+(33, 'settings', 'editor', 'wysiwyg'),
+(34, 'settings', 'version', '2023-01-01 00:00:01'),
+(35, 'settings', 'update_check', '0'),
+(36, 'settings', 'update_changelog', ''),
+(37, 'settings', 'update_version', '0'),
+(38, 'settings', 'license', ''),
+(39, 'farmasi', 'deporalan', '-'),
+(40, 'farmasi', 'igd', '-'),
+(41, 'farmasi', 'deporanap', '-'),
+(42, 'farmasi', 'gudang', '-'),
+(43, 'wagateway', 'server', 'https://mlite.id'),
+(44, 'wagateway', 'token', '-'),
+(45, 'wagateway', 'phonenumber', '-'),
+(46, 'anjungan', 'display_poli', ''),
+(47, 'anjungan', 'carabayar', ''),
+(48, 'anjungan', 'antrian_loket', '1'),
+(49, 'anjungan', 'antrian_cs', '2'),
+(50, 'anjungan', 'antrian_apotek', '3'),
+(51, 'anjungan', 'panggil_loket', '1'),
+(52, 'anjungan', 'panggil_loket_nomor', '1'),
+(53, 'anjungan', 'panggil_cs', '1'),
+(54, 'anjungan', 'panggil_cs_nomor', '1'),
+(55, 'anjungan', 'panggil_apotek', '1'),
+(56, 'anjungan', 'panggil_apotek_nomor', '1'),
+(57, 'anjungan', 'text_anjungan', 'Running text anjungan pasien mandiri.....'),
+(58, 'anjungan', 'text_loket', 'Running text display antrian loket.....'),
+(59, 'anjungan', 'text_poli', 'Running text display antrian poliklinik.....'),
+(60, 'anjungan', 'text_laboratorium', 'Running text display antrian laboratorium.....'),
+(61, 'anjungan', 'text_apotek', 'Running text display antrian apotek.....'),
+(62, 'anjungan', 'text_farmasi', 'Running text display antrian farmasi.....'),
+(63, 'anjungan', 'vidio', 'G4im8_n0OoI'),
+(64, 'api', 'apam_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
+(65, 'api', 'apam_status_daftar', 'Terdaftar'),
+(66, 'api', 'apam_status_dilayani', 'Anda siap dilayani'),
+(67, 'api', 'apam_webappsurl', 'http://localhost/webapps/'),
+(68, 'api', 'apam_normpetugas', '000001,000002'),
+(69, 'api', 'apam_limit', '2'),
+(70, 'api', 'apam_smtp_host', 'ssl://smtp.gmail.com'),
+(71, 'api', 'apam_smtp_port', '465'),
+(72, 'api', 'apam_smtp_username', ''),
+(73, 'api', 'apam_smtp_password', ''),
+(74, 'api', 'apam_kdpj', ''),
+(75, 'api', 'apam_kdprop', ''),
+(76, 'api', 'apam_kdkab', ''),
+(77, 'api', 'apam_kdkec', ''),
+(78, 'api', 'duitku_merchantCode', ''),
+(79, 'api', 'duitku_merchantKey', ''),
+(80, 'api', 'duitku_paymentAmount', ''),
+(81, 'api', 'duitku_paymentMethod', ''),
+(82, 'api', 'duitku_productDetails', ''),
+(83, 'api', 'duitku_expiryPeriod', ''),
+(84, 'api', 'duitku_kdpj', ''),
+(85, 'api', 'berkasdigital_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),
+(86, 'jkn_mobile', 'x_username', 'jkn'),
+(87, 'jkn_mobile', 'x_password', 'mobile'),
+(88, 'jkn_mobile', 'header_token', 'X-Token'),
+(89, 'jkn_mobile', 'header_username', 'X-Username'),
+(90, 'jkn_mobile', 'header_password', 'X-Password'),
+(91, 'jkn_mobile', 'BpjsConsID', ''),
+(92, 'jkn_mobile', 'BpjsSecretKey', ''),
+(93, 'jkn_mobile', 'BpjsUserKey', ''),
+(94, 'jkn_mobile', 'BpjsAntrianUrl', 'https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),
+(95, 'jkn_mobile', 'kd_pj_bpjs', ''),
+(96, 'jkn_mobile', 'exclude_taskid', ''),
+(97, 'jkn_mobile', 'display', ''),
+(98, 'jkn_mobile', 'kdprop', '1'),
+(99, 'jkn_mobile', 'kdkab', '1'),
+(100, 'jkn_mobile', 'kdkec', '1'),
+(101, 'jkn_mobile', 'kdkel', '1'),
+(102, 'jkn_mobile', 'perusahaan_pasien', ''),
+(103, 'jkn_mobile', 'suku_bangsa', ''),
+(104, 'jkn_mobile', 'bahasa_pasien', ''),
+(105, 'jkn_mobile', 'cacat_fisik', ''),
+(106, 'keuangan', 'jurnal_kasir', '0'),
+(107, 'keuangan', 'akun_kredit_pendaftaran', ''),
+(108, 'keuangan', 'akun_kredit_tindakan', ''),
+(109, 'keuangan', 'akun_kredit_obat_bhp', ''),
+(110, 'keuangan', 'akun_kredit_laboratorium', ''),
+(111, 'keuangan', 'akun_kredit_radiologi', ''),
+(112, 'keuangan', 'akun_kredit_tambahan_biaya', ''),
+(113, 'manajemen', 'penjab_umum', 'UMU'),
+(114, 'manajemen', 'penjab_bpjs', 'BPJ'),
+(115, 'presensi', 'lat', '-2.58'),
+(116, 'presensi', 'lon', '115.37'),
+(117, 'presensi', 'distance', '2'),
+(118, 'presensi', 'helloworld', 'Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),
+(119, 'vedika', 'carabayar', ''),
+(120, 'vedika', 'sep', ''),
+(121, 'vedika', 'skdp', ''),
+(122, 'vedika', 'operasi', ''),
+(123, 'vedika', 'individual', ''),
+(124, 'vedika', 'billing', 'mlite'),
+(125, 'vedika', 'periode', '2023-01'),
+(126, 'vedika', 'verifikasi', '2023-01'),
+(127, 'vedika', 'inacbgs_prosedur_bedah', ''),
+(128, 'vedika', 'inacbgs_prosedur_non_bedah', ''),
+(129, 'vedika', 'inacbgs_konsultasi', ''),
+(130, 'vedika', 'inacbgs_tenaga_ahli', ''),
+(131, 'vedika', 'inacbgs_keperawatan', ''),
+(132, 'vedika', 'inacbgs_penunjang', ''),
+(133, 'vedika', 'inacbgs_pelayanan_darah', ''),
+(134, 'vedika', 'inacbgs_rehabilitasi', ''),
+(135, 'vedika', 'inacbgs_rawat_intensif', ''),
+(136, 'vedika', 'eklaim_url', ''),
+(137, 'vedika', 'eklaim_key', ''),
+(138, 'vedika', 'eklaim_kelasrs', 'CP'),
+(139, 'vedika', 'eklaim_payor_id', '3'),
+(140, 'vedika', 'eklaim_payor_cd', 'JKN'),
+(141, 'vedika', 'eklaim_cob_cd', '#'),
+(142, 'orthanc', 'server', 'http://localhost:8042'),
+(143, 'orthanc', 'username', 'orthanc'),
+(144, 'orthanc', 'password', 'orthanc'),
+(145, 'veronisa', 'username', ''),
+(146, 'veronisa', 'password', ''),
+(147, 'veronisa', 'obat_kronis', ''),
+(148, 'jkn_mobile', 'kirimantrian', 'tidak'),
+(149, 'settings', 'keamanan', 'ya');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__subrekening`
+-- Table structure for table `mlite_subrekening`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__subrekening` (
+CREATE TABLE IF NOT EXISTS `mlite_subrekening` (
   `kd_rek` varchar(15) NOT NULL,
   `kd_rek2` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -1612,10 +2000,10 @@ CREATE TABLE IF NOT EXISTS `mlite__subrekening` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__temporary`
+-- Table structure for table `mlite_temporary`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__temporary` (
+CREATE TABLE IF NOT EXISTS `mlite_temporary` (
   `temp1` text,
   `temp2` text,
   `temp3` text,
@@ -1721,10 +2109,10 @@ CREATE TABLE IF NOT EXISTS `mlite__temporary` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite__users`
+-- Table structure for table `mlite_users`
 --
 
-CREATE TABLE IF NOT EXISTS `mlite__users` (
+CREATE TABLE IF NOT EXISTS `mlite_users` (
   `id` int(11) NOT NULL,
   `username` text,
   `fullname` text,
@@ -1735,14 +2123,91 @@ CREATE TABLE IF NOT EXISTS `mlite__users` (
   `role` varchar(100) NOT NULL DEFAULT 'user',
   `cap` varchar(100) DEFAULT '',
   `access` varchar(500) NOT NULL DEFAULT 'dashboard'
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `mlite__users`
+-- Dumping data for table `mlite_users`
 --
 
-INSERT INTO `mlite__users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
-(1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar6422cb573b50c.png', 'info@mlite.id', 'admin', '', 'all');
+INSERT INTO `mlite_users` (`id`, `username`, `fullname`, `description`, `password`, `avatar`, `email`, `role`, `cap`, `access`) VALUES
+(1, 'admin', 'Administrator', 'Admin ganteng baik hati, suka menabung dan tidak sombong.', '$2y$10$pgRnDiukCbiYVqsamMM3ROWViSRqbyCCL33N8.ykBKZx0dlplXe9i', 'avatar6422cb573b50c.png', 'info@mlite.id', 'admin', '', 'all'),
+(2, 'DR001', 'dr. Ataaka Muhammad', '-', '$2y$10$kuf2BxvViduBpUTn.6Nxsug3AskH/PGvXTSlfCfJqK8Ayb9a0.vqC', 'avatar643a104444515.png', 'info@mlite.id', 'admin', '', 'all');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_users_vedika`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_users_vedika` (
+  `id` int(11) NOT NULL,
+  `username` text,
+  `password` text,
+  `fullname` text
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_vedika`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_vedika` (
+  `id` int(11) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `no_rkm_medis` varchar(6) NOT NULL,
+  `no_rawat` varchar(100) NOT NULL,
+  `tgl_registrasi` varchar(100) NOT NULL,
+  `nosep` varchar(100) NOT NULL,
+  `jenis` varchar(100) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_vedika_feedback`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
+  `id` int(11) NOT NULL,
+  `nosep` varchar(100) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `catatan` text,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_veronisa`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_veronisa` (
+  `id` int(11) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `no_rkm_medis` varchar(6) NOT NULL,
+  `no_rawat` varchar(100) NOT NULL,
+  `tgl_registrasi` varchar(100) NOT NULL,
+  `nosep` varchar(100) NOT NULL,
+  `status` varchar(100) NOT NULL,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_veronisa_feedback`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_veronisa_feedback` (
+  `id` int(11) NOT NULL,
+  `nosep` varchar(100) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `catatan` text,
+  `username` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -1771,6 +2236,24 @@ CREATE TABLE IF NOT EXISTS `obatbhp_ok` (
   `nm_obat` varchar(50) NOT NULL,
   `kode_sat` char(4) NOT NULL,
   `hargasatuan` double NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `obat_racikan`
+--
+
+CREATE TABLE IF NOT EXISTS `obat_racikan` (
+  `tgl_perawatan` date NOT NULL,
+  `jam` time NOT NULL,
+  `no_rawat` varchar(17) NOT NULL,
+  `no_racik` varchar(2) NOT NULL,
+  `nama_racik` varchar(100) NOT NULL,
+  `kd_racik` varchar(3) NOT NULL,
+  `jml_dr` int(11) NOT NULL,
+  `aturan_pakai` varchar(150) NOT NULL,
+  `keterangan` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2002,6 +2485,22 @@ INSERT INTO `pegawai` (`id`, `nik`, `nama`, `jk`, `jbtn`, `jnj_jabatan`, `kode_k
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `pemeliharaan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `pemeliharaan_inventaris` (
+  `no_inventaris` varchar(30) NOT NULL,
+  `tanggal` date NOT NULL,
+  `uraian_kegiatan` varchar(255) NOT NULL,
+  `nip` varchar(20) NOT NULL,
+  `pelaksana` enum('Teknisi Rumah Sakit','Teknisi Rujukan','Pihak ke III') NOT NULL,
+  `biaya` double NOT NULL,
+  `jenis_pemeliharaan` enum('Running Maintenance','Shut Down Maintenance','Emergency Maintenance') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `pemeriksaan_ralan`
 --
 
@@ -2091,17 +2590,18 @@ CREATE TABLE IF NOT EXISTS `penjab` (
   `nama_perusahaan` varchar(60) NOT NULL,
   `alamat_asuransi` varchar(130) NOT NULL,
   `no_telp` varchar(40) NOT NULL,
-  `attn` varchar(60) NOT NULL
+  `attn` varchar(60) NOT NULL,
+  `status` enum('0','1') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `penjab`
 --
 
-INSERT INTO `penjab` (`kd_pj`, `png_jawab`, `nama_perusahaan`, `alamat_asuransi`, `no_telp`, `attn`) VALUES
-('-', '-', '-', '-', '0', '0'),
-('BPJ', 'BPJS Kesehatan', '-', '-', '0', '0'),
-('UMU', 'Umum', '-', '-', '0', '0');
+INSERT INTO `penjab` (`kd_pj`, `png_jawab`, `nama_perusahaan`, `alamat_asuransi`, `no_telp`, `attn`, `status`) VALUES
+('-', '-', '-', '-', '0', '0', '1'),
+('BPJ', 'BPJS Kesehatan', '-', '-', '0', '0', '1'),
+('UMU', 'Umum', '-', '-', '0', '0', '1');
 
 -- --------------------------------------------------------
 
@@ -2116,6 +2616,23 @@ CREATE TABLE IF NOT EXISTS `penyakit` (
   `keterangan` varchar(60) DEFAULT NULL,
   `kd_ktg` varchar(8) DEFAULT NULL,
   `status` enum('Menular','Tidak Menular') NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `perbaikan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `perbaikan_inventaris` (
+  `no_permintaan` varchar(15) NOT NULL,
+  `tanggal` date NOT NULL,
+  `uraian_kegiatan` varchar(255) NOT NULL,
+  `nip` varchar(20) NOT NULL,
+  `pelaksana` enum('Teknisi Rumah Sakit','Teknisi Rujukan','Pihak ke III') NOT NULL,
+  `biaya` double NOT NULL,
+  `keterangan` varchar(255) NOT NULL,
+  `status` enum('Bisa Diperbaiki','Tidak Bisa Diperbaiki') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2141,7 +2658,7 @@ CREATE TABLE IF NOT EXISTS `periksa_lab` (
   `biaya` double NOT NULL,
   `kd_dokter` varchar(20) NOT NULL,
   `status` enum('Ralan','Ranap') DEFAULT NULL,
-  `kategori` enum('PK','PA','MB') NOT NULL
+  `kategori` enum('PA','PK','MB') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2233,6 +2750,20 @@ CREATE TABLE IF NOT EXISTS `permintaan_pemeriksaan_radiologi` (
   `noorder` varchar(15) NOT NULL,
   `kd_jenis_prw` varchar(15) NOT NULL,
   `stts_bayar` enum('Sudah','Belum') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `permintaan_perbaikan_inventaris`
+--
+
+CREATE TABLE IF NOT EXISTS `permintaan_perbaikan_inventaris` (
+  `no_permintaan` varchar(15) NOT NULL,
+  `no_inventaris` varchar(30) DEFAULT NULL,
+  `nik` varchar(20) DEFAULT NULL,
+  `tanggal` datetime DEFAULT NULL,
+  `deskripsi_kerusakan` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2348,7 +2879,7 @@ INSERT INTO `poliklinik` (`kd_poli`, `nm_poli`, `registrasi`, `registrasilama`, 
 
 CREATE TABLE IF NOT EXISTS `propinsi` (
   `kd_prop` int(11) NOT NULL,
-  `nm_prop` varchar(60) NOT NULL
+  `nm_prop` varchar(30) NOT NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 --
@@ -2529,6 +3060,24 @@ CREATE TABLE IF NOT EXISTS `reg_periksa` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `rekap_presensi`
+--
+
+CREATE TABLE IF NOT EXISTS `rekap_presensi` (
+  `id` int(10) NOT NULL,
+  `shift` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10') NOT NULL,
+  `jam_datang` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `jam_pulang` datetime DEFAULT NULL,
+  `status` enum('Tepat Waktu','Terlambat Toleransi','Terlambat I','Terlambat II','Tepat Waktu & PSW','Terlambat Toleransi & PSW','Terlambat I & PSW','Terlambat II & PSW') NOT NULL,
+  `keterlambatan` varchar(20) NOT NULL,
+  `durasi` varchar(20) DEFAULT NULL,
+  `keterangan` varchar(100) NOT NULL,
+  `photo` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `resep_dokter`
 --
 
@@ -2585,7 +3134,9 @@ CREATE TABLE IF NOT EXISTS `resep_obat` (
   `kd_dokter` varchar(20) NOT NULL,
   `tgl_peresepan` date DEFAULT NULL,
   `jam_peresepan` time DEFAULT NULL,
-  `status` enum('ralan','ranap') DEFAULT NULL
+  `status` enum('ralan','ranap') DEFAULT NULL,
+  `tgl_penyerahan` date NOT NULL,
+  `jam_penyerahan` time NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2731,7 +3282,8 @@ CREATE TABLE IF NOT EXISTS `riwayat_barang_medis` (
   `kd_bangsal` char(5) DEFAULT NULL,
   `status` enum('Simpan','Hapus') DEFAULT NULL,
   `no_batch` varchar(20) NOT NULL,
-  `no_faktur` varchar(20) NOT NULL
+  `no_faktur` varchar(20) NOT NULL,
+  `keterangan` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=DYNAMIC;
 
 -- --------------------------------------------------------
@@ -2744,6 +3296,18 @@ CREATE TABLE IF NOT EXISTS `ruang_ok` (
   `kd_ruang_ok` varchar(3) NOT NULL,
   `nm_ruang_ok` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `set_keterlambatan`
+--
+
+CREATE TABLE IF NOT EXISTS `set_keterlambatan` (
+  `toleransi` int(11) DEFAULT NULL,
+  `terlambat1` int(11) DEFAULT NULL,
+  `terlambat2` int(11) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -2777,8 +3341,8 @@ CREATE TABLE IF NOT EXISTS `skdp_bpjs` (
   `alasan2` varchar(50) DEFAULT NULL,
   `rtl1` varchar(50) DEFAULT NULL,
   `rtl2` varchar(50) DEFAULT NULL,
-  `tanggal_datang` date DEFAULT NULL,
-  `tanggal_rujukan` date NOT NULL,
+  `tanggal_datang` datetime DEFAULT NULL,
+  `tanggal_rujukan` datetime NOT NULL,
   `no_antrian` varchar(6) NOT NULL,
   `kd_dokter` varchar(20) DEFAULT NULL,
   `status` enum('Menunggu','Sudah Periksa','Batal Periksa') NOT NULL
@@ -2866,8 +3430,7 @@ INSERT INTO `suku_bangsa` (`id`, `nama_suku_bangsa`) VALUES
 CREATE TABLE IF NOT EXISTS `tambahan_biaya` (
   `no_rawat` varchar(17) NOT NULL,
   `nama_biaya` varchar(60) NOT NULL,
-  `besar_biaya` double NOT NULL,
-  `status` enum('ralan','ranap') NOT NULL
+  `besar_biaya` double NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -2904,6 +3467,107 @@ INSERT INTO `template_laboratorium` (`kd_jenis_prw`, `id_template`, `Pemeriksaan
 ('LAB001', 1, 'Leukosit', 'LK', '10', '5', '10', '5', 0, 0, 0, 0, 0, 0, 0, 0, 1),
 ('LAB001', 2, 'Hemoglobin', 'HB', '20', '10', '20', '10', 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `temporary_presensi`
+--
+
+CREATE TABLE IF NOT EXISTS `temporary_presensi` (
+  `id` int(11) NOT NULL,
+  `shift` enum('Pagi','Pagi2','Pagi3','Pagi4','Pagi5','Pagi6','Pagi7','Pagi8','Pagi9','Pagi10','Siang','Siang2','Siang3','Siang4','Siang5','Siang6','Siang7','Siang8','Siang9','Siang10','Malam','Malam2','Malam3','Malam4','Malam5','Malam6','Malam7','Malam8','Malam9','Malam10','Midle Pagi1','Midle Pagi2','Midle Pagi3','Midle Pagi4','Midle Pagi5','Midle Pagi6','Midle Pagi7','Midle Pagi8','Midle Pagi9','Midle Pagi10','Midle Siang1','Midle Siang2','Midle Siang3','Midle Siang4','Midle Siang5','Midle Siang6','Midle Siang7','Midle Siang8','Midle Siang9','Midle Siang10','Midle Malam1','Midle Malam2','Midle Malam3','Midle Malam4','Midle Malam5','Midle Malam6','Midle Malam7','Midle Malam8','Midle Malam9','Midle Malam10') NOT NULL,
+  `jam_datang` datetime DEFAULT NULL,
+  `jam_pulang` datetime DEFAULT NULL,
+  `status` enum('Tepat Waktu','Terlambat Toleransi','Terlambat I','Terlambat II','Tepat Waktu & PSW','Terlambat Toleransi & PSW','Terlambat I & PSW','Terlambat II & PSW') NOT NULL,
+  `keterlambatan` varchar(20) NOT NULL,
+  `durasi` varchar(20) DEFAULT NULL,
+  `photo` varchar(500) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_donor`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_donor` (
+  `no_donor` varchar(15) NOT NULL,
+  `no_pendonor` varchar(15) NOT NULL,
+  `tanggal` date DEFAULT NULL,
+  `dinas` enum('Pagi','Siang','Sore','Malam') DEFAULT NULL,
+  `tensi` varchar(7) DEFAULT NULL,
+  `no_bag` int(11) DEFAULT NULL,
+  `jenis_bag` enum('SB','DB','TB','QB') DEFAULT NULL,
+  `jenis_donor` enum('DB','DP','DS') DEFAULT NULL,
+  `tempat_aftap` enum('Dalam Gedung','Luar Gedung') DEFAULT NULL,
+  `petugas_aftap` varchar(20) DEFAULT NULL,
+  `hbsag` enum('Negatif','Positif') DEFAULT NULL,
+  `hcv` enum('Negatif','Positif') DEFAULT NULL,
+  `hiv` enum('Negatif','Positif') DEFAULT NULL,
+  `spilis` enum('Negatif','Positif') DEFAULT NULL,
+  `malaria` enum('Negatif','Positif') DEFAULT NULL,
+  `petugas_u_saring` varchar(20) DEFAULT NULL,
+  `status` enum('Aman','Cekal') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_komponen_darah`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_komponen_darah` (
+  `kode` varchar(5) NOT NULL,
+  `nama` varchar(70) DEFAULT NULL,
+  `lama` smallint(6) DEFAULT NULL,
+  `jasa_sarana` double DEFAULT NULL,
+  `paket_bhp` double DEFAULT NULL,
+  `kso` double DEFAULT NULL,
+  `manajemen` double DEFAULT NULL,
+  `total` double DEFAULT NULL,
+  `pembatalan` double DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_pendonor`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_pendonor` (
+  `no_pendonor` varchar(15) NOT NULL,
+  `nama` varchar(40) NOT NULL,
+  `no_ktp` varchar(20) NOT NULL,
+  `jk` enum('L','P') NOT NULL,
+  `tmp_lahir` varchar(15) NOT NULL,
+  `tgl_lahir` date NOT NULL,
+  `alamat` varchar(100) NOT NULL,
+  `kd_kel` int(11) NOT NULL,
+  `kd_kec` int(11) NOT NULL,
+  `kd_kab` int(11) NOT NULL,
+  `kd_prop` int(11) NOT NULL,
+  `golongan_darah` enum('A','AB','B','O') NOT NULL,
+  `resus` enum('(-)','(+)') NOT NULL,
+  `no_telp` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `utd_stok_darah`
+--
+
+CREATE TABLE IF NOT EXISTS `utd_stok_darah` (
+  `no_kantong` varchar(20) NOT NULL DEFAULT '',
+  `kode_komponen` varchar(5) DEFAULT NULL,
+  `golongan_darah` enum('A','AB','B','O') DEFAULT NULL,
+  `resus` enum('(-)','(+)') DEFAULT NULL,
+  `tanggal_aftap` date DEFAULT NULL,
+  `tanggal_kadaluarsa` date DEFAULT NULL,
+  `asal_darah` enum('Hibah','Beli','Produksi Sendiri') DEFAULT NULL,
+  `status` enum('Ada','Diambil','Dimusnahkan') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
 --
 -- Indexes for dumped tables
 --
@@ -2936,6 +3600,13 @@ ALTER TABLE `bangsal`
 --
 ALTER TABLE `bank`
   ADD PRIMARY KEY (`namabank`);
+
+--
+-- Indexes for table `barcode`
+--
+ALTER TABLE `barcode`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `barcode` (`barcode`);
 
 --
 -- Indexes for table `beri_obat_operasi`
@@ -3210,6 +3881,83 @@ ALTER TABLE `industrifarmasi`
   ADD KEY `no_telp` (`no_telp`);
 
 --
+-- Indexes for table `inventaris`
+--
+ALTER TABLE `inventaris`
+  ADD PRIMARY KEY (`no_inventaris`),
+  ADD KEY `kode_barang` (`kode_barang`),
+  ADD KEY `kd_ruang` (`id_ruang`),
+  ADD KEY `asal_barang` (`asal_barang`),
+  ADD KEY `tgl_pengadaan` (`tgl_pengadaan`),
+  ADD KEY `harga` (`harga`),
+  ADD KEY `status_barang` (`status_barang`),
+  ADD KEY `no_rak` (`no_rak`),
+  ADD KEY `no_box` (`no_box`);
+
+--
+-- Indexes for table `inventaris_barang`
+--
+ALTER TABLE `inventaris_barang`
+  ADD PRIMARY KEY (`kode_barang`),
+  ADD KEY `kode_produsen` (`kode_produsen`),
+  ADD KEY `id_merk` (`id_merk`),
+  ADD KEY `id_kategori` (`id_kategori`),
+  ADD KEY `id_jenis` (`id_jenis`),
+  ADD KEY `nama_barang` (`nama_barang`),
+  ADD KEY `jml_barang` (`jml_barang`),
+  ADD KEY `thn_produksi` (`thn_produksi`),
+  ADD KEY `isbn` (`isbn`);
+
+--
+-- Indexes for table `inventaris_jenis`
+--
+ALTER TABLE `inventaris_jenis`
+  ADD PRIMARY KEY (`id_jenis`),
+  ADD KEY `nama_jenis` (`nama_jenis`);
+
+--
+-- Indexes for table `inventaris_kategori`
+--
+ALTER TABLE `inventaris_kategori`
+  ADD PRIMARY KEY (`id_kategori`),
+  ADD KEY `nama_kategori` (`nama_kategori`);
+
+--
+-- Indexes for table `inventaris_merk`
+--
+ALTER TABLE `inventaris_merk`
+  ADD PRIMARY KEY (`id_merk`),
+  ADD KEY `nama_merk` (`nama_merk`);
+
+--
+-- Indexes for table `inventaris_peminjaman`
+--
+ALTER TABLE `inventaris_peminjaman`
+  ADD PRIMARY KEY (`peminjam`,`no_inventaris`,`tgl_pinjam`,`nip`) USING BTREE,
+  ADD KEY `no_inventaris` (`no_inventaris`) USING BTREE,
+  ADD KEY `nip` (`nip`) USING BTREE,
+  ADD KEY `tgl_kembali` (`tgl_kembali`) USING BTREE,
+  ADD KEY `status_pinjam` (`status_pinjam`) USING BTREE;
+
+--
+-- Indexes for table `inventaris_produsen`
+--
+ALTER TABLE `inventaris_produsen`
+  ADD PRIMARY KEY (`kode_produsen`),
+  ADD KEY `nama_produsen` (`nama_produsen`),
+  ADD KEY `alamat_produsen` (`alamat_produsen`),
+  ADD KEY `no_telp` (`no_telp`),
+  ADD KEY `email` (`email`),
+  ADD KEY `website_produsen` (`website_produsen`);
+
+--
+-- Indexes for table `inventaris_ruang`
+--
+ALTER TABLE `inventaris_ruang`
+  ADD PRIMARY KEY (`id_ruang`),
+  ADD KEY `nama_ruang` (`nama_ruang`);
+
+--
 -- Indexes for table `jabatan`
 --
 ALTER TABLE `jabatan`
@@ -3225,6 +3973,45 @@ ALTER TABLE `jadwal`
   ADD KEY `kd_poli` (`kd_poli`),
   ADD KEY `jam_mulai` (`jam_mulai`),
   ADD KEY `jam_selesai` (`jam_selesai`);
+
+--
+-- Indexes for table `jadwal_pegawai`
+--
+ALTER TABLE `jadwal_pegawai`
+  ADD PRIMARY KEY (`id`,`tahun`,`bulan`),
+  ADD KEY `h1` (`h1`),
+  ADD KEY `h2` (`h2`),
+  ADD KEY `h3` (`h3`),
+  ADD KEY `h4` (`h4`),
+  ADD KEY `h30` (`h30`),
+  ADD KEY `h31` (`h31`),
+  ADD KEY `h29` (`h29`),
+  ADD KEY `h28` (`h28`),
+  ADD KEY `h18` (`h18`),
+  ADD KEY `h9` (`h9`);
+
+--
+-- Indexes for table `jadwal_tambahan`
+--
+ALTER TABLE `jadwal_tambahan`
+  ADD PRIMARY KEY (`id`,`tahun`,`bulan`);
+
+--
+-- Indexes for table `jam_jaga`
+--
+ALTER TABLE `jam_jaga`
+  ADD PRIMARY KEY (`no_id`),
+  ADD UNIQUE KEY `dep_id_2` (`dep_id`,`shift`),
+  ADD KEY `dep_id` (`dep_id`),
+  ADD KEY `shift` (`shift`),
+  ADD KEY `jam_masuk` (`jam_masuk`),
+  ADD KEY `jam_pulang` (`jam_pulang`);
+
+--
+-- Indexes for table `jam_masuk`
+--
+ALTER TABLE `jam_masuk`
+  ADD PRIMARY KEY (`shift`);
 
 --
 -- Indexes for table `jenis`
@@ -3408,10 +4195,17 @@ ALTER TABLE `maping_dokter_dpjpvclaim`
   ADD PRIMARY KEY (`kd_dokter`) USING BTREE;
 
 --
+-- Indexes for table `maping_poliklinik_pcare`
+--
+ALTER TABLE `maping_poliklinik_pcare`
+  ADD PRIMARY KEY (`kd_poli_rs`) USING BTREE;
+
+--
 -- Indexes for table `maping_poli_bpjs`
 --
 ALTER TABLE `maping_poli_bpjs`
-  ADD PRIMARY KEY (`kd_poli_rs`);
+  ADD PRIMARY KEY (`kd_poli_rs`),
+  ADD UNIQUE KEY `kd_poli_bpjs` (`kd_poli_bpjs`) USING BTREE;
 
 --
 -- Indexes for table `master_aturan_pakai`
@@ -3432,50 +4226,56 @@ ALTER TABLE `metode_racik`
   ADD PRIMARY KEY (`kd_racik`) USING BTREE;
 
 --
--- Indexes for table `mlite__akun_kegiatan`
+-- Indexes for table `mlite_akun_kegiatan`
 --
-ALTER TABLE `mlite__akun_kegiatan`
+ALTER TABLE `mlite_akun_kegiatan`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__antrian_loket`
+-- Indexes for table `mlite_antrian_loket`
 --
-ALTER TABLE `mlite__antrian_loket`
+ALTER TABLE `mlite_antrian_loket`
   ADD PRIMARY KEY (`kd`);
 
 --
--- Indexes for table `mlite__antrian_referensi`
+-- Indexes for table `mlite_billing`
 --
-ALTER TABLE `mlite__antrian_referensi`
-  ADD PRIMARY KEY (`nomor_referensi`);
-
---
--- Indexes for table `mlite__billing`
---
-ALTER TABLE `mlite__billing`
+ALTER TABLE `mlite_billing`
   ADD PRIMARY KEY (`id_billing`);
 
 --
--- Indexes for table `mlite__detailjurnal`
+-- Indexes for table `mlite_bridging_pcare`
 --
-ALTER TABLE `mlite__detailjurnal`
+ALTER TABLE `mlite_bridging_pcare`
+  ADD PRIMARY KEY (`id`) USING BTREE;
+
+--
+-- Indexes for table `mlite_detailjurnal`
+--
+ALTER TABLE `mlite_detailjurnal`
   ADD KEY `no_jurnal` (`no_jurnal`),
   ADD KEY `kd_rek` (`kd_rek`),
   ADD KEY `debet` (`debet`),
   ADD KEY `kredit` (`kredit`);
 
 --
--- Indexes for table `mlite__duitku`
+-- Indexes for table `mlite_duitku`
 --
-ALTER TABLE `mlite__duitku`
+ALTER TABLE `mlite_duitku`
   ADD PRIMARY KEY (`id`),
   ADD KEY `reference` (`reference`),
-  ADD KEY `mlite__duitku_ibfk_1` (`no_rkm_medis`);
+  ADD KEY `mlite_duitku_ibfk_1` (`no_rkm_medis`);
 
 --
--- Indexes for table `mlite__jurnal`
+-- Indexes for table `mlite_geolocation_presensi`
 --
-ALTER TABLE `mlite__jurnal`
+ALTER TABLE `mlite_geolocation_presensi`
+  ADD KEY `mlite_geolocation_presensi_ibfk_1` (`id`);
+
+--
+-- Indexes for table `mlite_jurnal`
+--
+ALTER TABLE `mlite_jurnal`
   ADD PRIMARY KEY (`no_jurnal`),
   ADD KEY `no_bukti` (`no_bukti`),
   ADD KEY `tgl_jurnal` (`tgl_jurnal`),
@@ -3483,78 +4283,108 @@ ALTER TABLE `mlite__jurnal`
   ADD KEY `keterangan` (`keterangan`);
 
 --
--- Indexes for table `mlite__modules`
+-- Indexes for table `mlite_modules`
 --
-ALTER TABLE `mlite__modules`
+ALTER TABLE `mlite_modules`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__notifications`
+-- Indexes for table `mlite_notifications`
 --
-ALTER TABLE `mlite__notifications`
+ALTER TABLE `mlite_notifications`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__odontogram`
+-- Indexes for table `mlite_odontogram`
 --
-ALTER TABLE `mlite__odontogram`
+ALTER TABLE `mlite_odontogram`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__pengaduan`
+-- Indexes for table `mlite_pengaduan`
 --
-ALTER TABLE `mlite__pengaduan`
+ALTER TABLE `mlite_pengaduan`
   ADD PRIMARY KEY (`id`),
   ADD KEY `no_rkm_medis` (`no_rkm_medis`);
 
 --
--- Indexes for table `mlite__pengaduan_detail`
+-- Indexes for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__pengaduan_detail`
+ALTER TABLE `mlite_pengaduan_detail`
   ADD PRIMARY KEY (`id`) USING BTREE,
   ADD KEY `pengaduan_detail_ibfk_1` (`pengaduan_id`);
 
 --
--- Indexes for table `mlite__rekening`
+-- Indexes for table `mlite_rekening`
 --
-ALTER TABLE `mlite__rekening`
+ALTER TABLE `mlite_rekening`
   ADD PRIMARY KEY (`kd_rek`),
   ADD KEY `nm_rek` (`nm_rek`),
   ADD KEY `tipe` (`tipe`),
   ADD KEY `balance` (`balance`);
 
 --
--- Indexes for table `mlite__rekeningtahun`
+-- Indexes for table `mlite_rekeningtahun`
 --
-ALTER TABLE `mlite__rekeningtahun`
+ALTER TABLE `mlite_rekeningtahun`
   ADD PRIMARY KEY (`thn`,`kd_rek`),
   ADD KEY `kd_rek` (`kd_rek`),
   ADD KEY `saldo_awal` (`saldo_awal`);
 
 --
--- Indexes for table `mlite__remember_me`
+-- Indexes for table `mlite_remember_me`
 --
-ALTER TABLE `mlite__remember_me`
+ALTER TABLE `mlite_remember_me`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `mlite__remember_me_ibfk_1` (`user_id`);
+  ADD KEY `mlite_remember_me_ibfk_1` (`user_id`);
 
 --
--- Indexes for table `mlite__settings`
+-- Indexes for table `mlite_settings`
 --
-ALTER TABLE `mlite__settings`
+ALTER TABLE `mlite_settings`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `mlite__subrekening`
+-- Indexes for table `mlite_subrekening`
 --
-ALTER TABLE `mlite__subrekening`
+ALTER TABLE `mlite_subrekening`
   ADD PRIMARY KEY (`kd_rek2`),
   ADD KEY `kd_rek` (`kd_rek`);
 
 --
--- Indexes for table `mlite__users`
+-- Indexes for table `mlite_users`
 --
-ALTER TABLE `mlite__users`
+ALTER TABLE `mlite_users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_users_vedika`
+--
+ALTER TABLE `mlite_users_vedika`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_vedika`
+--
+ALTER TABLE `mlite_vedika`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_vedika_feedback`
+--
+ALTER TABLE `mlite_vedika_feedback`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_veronisa`
+--
+ALTER TABLE `mlite_veronisa`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `mlite_veronisa_feedback`
+--
+ALTER TABLE `mlite_veronisa_feedback`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -3571,6 +4401,15 @@ ALTER TABLE `obatbhp_ok`
   ADD KEY `kode_sat` (`kode_sat`),
   ADD KEY `nm_obat` (`nm_obat`),
   ADD KEY `hargasatuan` (`hargasatuan`);
+
+--
+-- Indexes for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD PRIMARY KEY (`tgl_perawatan`,`jam`,`no_rawat`,`no_racik`),
+  ADD KEY `kd_racik` (`kd_racik`),
+  ADD KEY `no_rawat` (`no_rawat`),
+  ADD KEY `no_racik` (`no_racik`);
 
 --
 -- Indexes for table `operasi`
@@ -3696,6 +4535,13 @@ ALTER TABLE `pegawai`
   ADD KEY `kode_resiko` (`kode_resiko`) USING BTREE;
 
 --
+-- Indexes for table `pemeliharaan_inventaris`
+--
+ALTER TABLE `pemeliharaan_inventaris`
+  ADD PRIMARY KEY (`no_inventaris`,`tanggal`),
+  ADD KEY `nip` (`nip`);
+
+--
 -- Indexes for table `pemeriksaan_ralan`
 --
 ALTER TABLE `pemeriksaan_ralan`
@@ -3731,6 +4577,13 @@ ALTER TABLE `penyakit`
   ADD KEY `kd_ktg` (`kd_ktg`),
   ADD KEY `nm_penyakit` (`nm_penyakit`),
   ADD KEY `status` (`status`);
+
+--
+-- Indexes for table `perbaikan_inventaris`
+--
+ALTER TABLE `perbaikan_inventaris`
+  ADD PRIMARY KEY (`no_permintaan`),
+  ADD KEY `nip` (`nip`);
 
 --
 -- Indexes for table `periksa_lab`
@@ -3781,6 +4634,14 @@ ALTER TABLE `permintaan_pemeriksaan_lab`
 ALTER TABLE `permintaan_pemeriksaan_radiologi`
   ADD PRIMARY KEY (`noorder`,`kd_jenis_prw`),
   ADD KEY `kd_jenis_prw` (`kd_jenis_prw`);
+
+--
+-- Indexes for table `permintaan_perbaikan_inventaris`
+--
+ALTER TABLE `permintaan_perbaikan_inventaris`
+  ADD PRIMARY KEY (`no_permintaan`),
+  ADD KEY `no_inventaris` (`no_inventaris`),
+  ADD KEY `nik` (`nik`);
 
 --
 -- Indexes for table `permintaan_radiologi`
@@ -3913,6 +4774,13 @@ ALTER TABLE `reg_periksa`
   ADD KEY `status_bayar` (`status_bayar`) USING BTREE;
 
 --
+-- Indexes for table `rekap_presensi`
+--
+ALTER TABLE `rekap_presensi`
+  ADD PRIMARY KEY (`id`,`jam_datang`),
+  ADD KEY `id` (`id`);
+
+--
 -- Indexes for table `resep_dokter`
 --
 ALTER TABLE `resep_dokter`
@@ -3938,7 +4806,6 @@ ALTER TABLE `resep_dokter_racikan_detail`
 --
 ALTER TABLE `resep_obat`
   ADD PRIMARY KEY (`no_resep`),
-  ADD UNIQUE KEY `tgl_perawatan` (`tgl_perawatan`,`jam`,`no_rawat`),
   ADD KEY `no_rawat` (`no_rawat`),
   ADD KEY `kd_dokter` (`kd_dokter`);
 
@@ -4046,6 +4913,44 @@ ALTER TABLE `template_laboratorium`
   ADD KEY `urut` (`urut`);
 
 --
+-- Indexes for table `temporary_presensi`
+--
+ALTER TABLE `temporary_presensi`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `utd_donor`
+--
+ALTER TABLE `utd_donor`
+  ADD PRIMARY KEY (`no_donor`),
+  ADD KEY `petugas_aftap` (`petugas_aftap`),
+  ADD KEY `petugas_u_saring` (`petugas_u_saring`),
+  ADD KEY `no_pendonor` (`no_pendonor`);
+
+--
+-- Indexes for table `utd_komponen_darah`
+--
+ALTER TABLE `utd_komponen_darah`
+  ADD PRIMARY KEY (`kode`);
+
+--
+-- Indexes for table `utd_pendonor`
+--
+ALTER TABLE `utd_pendonor`
+  ADD PRIMARY KEY (`no_pendonor`),
+  ADD KEY `kd_kec` (`kd_kec`),
+  ADD KEY `kd_kab` (`kd_kab`),
+  ADD KEY `kd_prop` (`kd_prop`),
+  ADD KEY `kd_kel` (`kd_kel`) USING BTREE;
+
+--
+-- Indexes for table `utd_stok_darah`
+--
+ALTER TABLE `utd_stok_darah`
+  ADD PRIMARY KEY (`no_kantong`),
+  ADD KEY `kode_komponen` (`kode_komponen`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -4060,6 +4965,11 @@ ALTER TABLE `bahasa_pasien`
 ALTER TABLE `cacat_fisik`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
+-- AUTO_INCREMENT for table `jam_jaga`
+--
+ALTER TABLE `jam_jaga`
+  MODIFY `no_id` int(11) NOT NULL AUTO_INCREMENT;
+--
 -- AUTO_INCREMENT for table `kabupaten`
 --
 ALTER TABLE `kabupaten`
@@ -4070,60 +4980,90 @@ ALTER TABLE `kabupaten`
 ALTER TABLE `kecamatan`
   MODIFY `kd_kec` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
 --
--- AUTO_INCREMENT for table `mlite__akun_kegiatan`
+-- AUTO_INCREMENT for table `mlite_akun_kegiatan`
 --
-ALTER TABLE `mlite__akun_kegiatan`
+ALTER TABLE `mlite_akun_kegiatan`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__antrian_loket`
+-- AUTO_INCREMENT for table `mlite_antrian_loket`
 --
-ALTER TABLE `mlite__antrian_loket`
+ALTER TABLE `mlite_antrian_loket`
   MODIFY `kd` int(50) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__billing`
+-- AUTO_INCREMENT for table `mlite_billing`
 --
-ALTER TABLE `mlite__billing`
+ALTER TABLE `mlite_billing`
   MODIFY `id_billing` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__duitku`
+-- AUTO_INCREMENT for table `mlite_bridging_pcare`
 --
-ALTER TABLE `mlite__duitku`
+ALTER TABLE `mlite_bridging_pcare`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_duitku`
+--
+ALTER TABLE `mlite_duitku`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__modules`
+-- AUTO_INCREMENT for table `mlite_modules`
 --
-ALTER TABLE `mlite__modules`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=30;
+ALTER TABLE `mlite_modules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=35;
 --
--- AUTO_INCREMENT for table `mlite__notifications`
+-- AUTO_INCREMENT for table `mlite_notifications`
 --
-ALTER TABLE `mlite__notifications`
+ALTER TABLE `mlite_notifications`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__odontogram`
+-- AUTO_INCREMENT for table `mlite_odontogram`
 --
-ALTER TABLE `mlite__odontogram`
+ALTER TABLE `mlite_odontogram`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__pengaduan_detail`
+-- AUTO_INCREMENT for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__pengaduan_detail`
+ALTER TABLE `mlite_pengaduan_detail`
   MODIFY `id` int(10) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__remember_me`
+-- AUTO_INCREMENT for table `mlite_remember_me`
 --
-ALTER TABLE `mlite__remember_me`
+ALTER TABLE `mlite_remember_me`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
--- AUTO_INCREMENT for table `mlite__settings`
+-- AUTO_INCREMENT for table `mlite_settings`
 --
-ALTER TABLE `mlite__settings`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=114;
+ALTER TABLE `mlite_settings`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=151;
 --
--- AUTO_INCREMENT for table `mlite__users`
+-- AUTO_INCREMENT for table `mlite_users`
 --
-ALTER TABLE `mlite__users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=2;
+ALTER TABLE `mlite_users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=3;
+--
+-- AUTO_INCREMENT for table `mlite_users_vedika`
+--
+ALTER TABLE `mlite_users_vedika`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_vedika`
+--
+ALTER TABLE `mlite_vedika`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_vedika_feedback`
+--
+ALTER TABLE `mlite_vedika_feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_veronisa`
+--
+ALTER TABLE `mlite_veronisa`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_veronisa_feedback`
+--
+ALTER TABLE `mlite_veronisa_feedback`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `pegawai`
 --
@@ -4154,6 +5094,12 @@ ALTER TABLE `template_laboratorium`
 ALTER TABLE `aturan_pakai`
   ADD CONSTRAINT `aturan_pakai_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `aturan_pakai_ibfk_2` FOREIGN KEY (`kode_brng`) REFERENCES `databarang` (`kode_brng`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `barcode`
+--
+ALTER TABLE `barcode`
+  ADD CONSTRAINT `barcode_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `beri_obat_operasi`
@@ -4312,11 +5258,52 @@ ALTER TABLE `hasil_radiologi`
   ADD CONSTRAINT `hasil_radiologi_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `inventaris`
+--
+ALTER TABLE `inventaris`
+  ADD CONSTRAINT `inventaris_ibfk_1` FOREIGN KEY (`kode_barang`) REFERENCES `inventaris_barang` (`kode_barang`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_ibfk_2` FOREIGN KEY (`id_ruang`) REFERENCES `inventaris_ruang` (`id_ruang`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `inventaris_barang`
+--
+ALTER TABLE `inventaris_barang`
+  ADD CONSTRAINT `inventaris_barang_ibfk_5` FOREIGN KEY (`kode_produsen`) REFERENCES `inventaris_produsen` (`kode_produsen`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_6` FOREIGN KEY (`id_merk`) REFERENCES `inventaris_merk` (`id_merk`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_7` FOREIGN KEY (`id_kategori`) REFERENCES `inventaris_kategori` (`id_kategori`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_barang_ibfk_8` FOREIGN KEY (`id_jenis`) REFERENCES `inventaris_jenis` (`id_jenis`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `inventaris_peminjaman`
+--
+ALTER TABLE `inventaris_peminjaman`
+  ADD CONSTRAINT `inventaris_peminjaman_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaris_peminjaman_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `jadwal`
 --
 ALTER TABLE `jadwal`
   ADD CONSTRAINT `jadwal_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `jadwal_ibfk_2` FOREIGN KEY (`kd_poli`) REFERENCES `poliklinik` (`kd_poli`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `jadwal_pegawai`
+--
+ALTER TABLE `jadwal_pegawai`
+  ADD CONSTRAINT `jadwal_pegawai_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `jadwal_tambahan`
+--
+ALTER TABLE `jadwal_tambahan`
+  ADD CONSTRAINT `jadwal_tambahan_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `jam_jaga`
+--
+ALTER TABLE `jam_jaga`
+  ADD CONSTRAINT `jam_jaga_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `jns_perawatan`
@@ -4372,48 +5359,60 @@ ALTER TABLE `maping_dokter_dpjpvclaim`
   ADD CONSTRAINT `maping_dokter_dpjpvclaim_ibfk_1` FOREIGN KEY (`kd_dokter`) REFERENCES `dokter` (`kd_dokter`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Constraints for table `maping_poliklinik_pcare`
+--
+ALTER TABLE `maping_poliklinik_pcare`
+  ADD CONSTRAINT `maping_poliklinik_pcare_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `maping_poli_bpjs`
 --
 ALTER TABLE `maping_poli_bpjs`
   ADD CONSTRAINT `maping_poli_bpjs_ibfk_1` FOREIGN KEY (`kd_poli_rs`) REFERENCES `poliklinik` (`kd_poli`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__detailjurnal`
+-- Constraints for table `mlite_detailjurnal`
 --
-ALTER TABLE `mlite__detailjurnal`
-  ADD CONSTRAINT `mlite__detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite__jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `mlite__detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_detailjurnal`
+  ADD CONSTRAINT `mlite_detailjurnal_ibfk_1` FOREIGN KEY (`no_jurnal`) REFERENCES `mlite_jurnal` (`no_jurnal`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `mlite_detailjurnal_ibfk_2` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__duitku`
+-- Constraints for table `mlite_duitku`
 --
-ALTER TABLE `mlite__duitku`
-  ADD CONSTRAINT `mlite__duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_duitku`
+  ADD CONSTRAINT `mlite_duitku_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__pengaduan`
+-- Constraints for table `mlite_geolocation_presensi`
 --
-ALTER TABLE `mlite__pengaduan`
-  ADD CONSTRAINT `mlite__pengaduan_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_geolocation_presensi`
+  ADD CONSTRAINT `mlite_geolocation_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__pengaduan_detail`
+-- Constraints for table `mlite_pengaduan`
 --
-ALTER TABLE `mlite__pengaduan_detail`
-  ADD CONSTRAINT `mlite__pengaduan_detail_ibfk_1` FOREIGN KEY (`pengaduan_id`) REFERENCES `mlite__pengaduan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_pengaduan`
+  ADD CONSTRAINT `mlite_pengaduan_ibfk_1` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__rekeningtahun`
+-- Constraints for table `mlite_pengaduan_detail`
 --
-ALTER TABLE `mlite__rekeningtahun`
-  ADD CONSTRAINT `mlite__rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON UPDATE CASCADE;
+ALTER TABLE `mlite_pengaduan_detail`
+  ADD CONSTRAINT `mlite_pengaduan_detail_ibfk_1` FOREIGN KEY (`pengaduan_id`) REFERENCES `mlite_pengaduan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite__subrekening`
+-- Constraints for table `mlite_rekeningtahun`
 --
-ALTER TABLE `mlite__subrekening`
-  ADD CONSTRAINT `mlite__subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite__rekening` (`kd_rek`) ON UPDATE CASCADE,
-  ADD CONSTRAINT `mlite__subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite__rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE `mlite_rekeningtahun`
+  ADD CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `mlite_subrekening`
+--
+ALTER TABLE `mlite_subrekening`
+  ADD CONSTRAINT `mlite_subrekening_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `mlite_subrekening_ibfk_2` FOREIGN KEY (`kd_rek2`) REFERENCES `mlite_rekening` (`kd_rek`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `mutasi_berkas`
@@ -4426,6 +5425,13 @@ ALTER TABLE `mutasi_berkas`
 --
 ALTER TABLE `obatbhp_ok`
   ADD CONSTRAINT `obatbhp_ok_ibfk_1` FOREIGN KEY (`kode_sat`) REFERENCES `kodesatuan` (`kode_sat`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `obat_racikan`
+--
+ALTER TABLE `obat_racikan`
+  ADD CONSTRAINT `obat_racikan_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `obat_racikan_ibfk_2` FOREIGN KEY (`kd_racik`) REFERENCES `metode_racik` (`kd_racik`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `operasi`
@@ -4488,6 +5494,13 @@ ALTER TABLE `pegawai`
   ADD CONSTRAINT `pegawai_ibfk_9` FOREIGN KEY (`kode_emergency`) REFERENCES `emergency_index` (`kode_emergency`) ON UPDATE CASCADE;
 
 --
+-- Constraints for table `pemeliharaan_inventaris`
+--
+ALTER TABLE `pemeliharaan_inventaris`
+  ADD CONSTRAINT `pemeliharaan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `pemeliharaan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
 -- Constraints for table `pemeriksaan_ralan`
 --
 ALTER TABLE `pemeriksaan_ralan`
@@ -4506,6 +5519,13 @@ ALTER TABLE `pemeriksaan_ranap`
 --
 ALTER TABLE `penyakit`
   ADD CONSTRAINT `penyakit_ibfk_1` FOREIGN KEY (`kd_ktg`) REFERENCES `kategori_penyakit` (`kd_ktg`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `perbaikan_inventaris`
+--
+ALTER TABLE `perbaikan_inventaris`
+  ADD CONSTRAINT `perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_permintaan`) REFERENCES `permintaan_perbaikan_inventaris` (`no_permintaan`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nip`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `periksa_lab`
@@ -4555,6 +5575,13 @@ ALTER TABLE `permintaan_pemeriksaan_lab`
 ALTER TABLE `permintaan_pemeriksaan_radiologi`
   ADD CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_1` FOREIGN KEY (`noorder`) REFERENCES `permintaan_radiologi` (`noorder`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `permintaan_pemeriksaan_radiologi_ibfk_2` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_radiologi` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `permintaan_perbaikan_inventaris`
+--
+ALTER TABLE `permintaan_perbaikan_inventaris`
+  ADD CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_1` FOREIGN KEY (`no_inventaris`) REFERENCES `inventaris` (`no_inventaris`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `permintaan_perbaikan_inventaris_ibfk_2` FOREIGN KEY (`nik`) REFERENCES `pegawai` (`nik`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `permintaan_radiologi`
@@ -4643,6 +5670,12 @@ ALTER TABLE `reg_periksa`
   ADD CONSTRAINT `reg_periksa_ibfk_7` FOREIGN KEY (`no_rkm_medis`) REFERENCES `pasien` (`no_rkm_medis`) ON UPDATE CASCADE;
 
 --
+-- Constraints for table `rekap_presensi`
+--
+ALTER TABLE `rekap_presensi`
+  ADD CONSTRAINT `rekap_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
+
+--
 -- Constraints for table `resep_dokter`
 --
 ALTER TABLE `resep_dokter`
@@ -4717,3 +5750,31 @@ ALTER TABLE `tambahan_biaya`
 --
 ALTER TABLE `template_laboratorium`
   ADD CONSTRAINT `template_laboratorium_ibfk_1` FOREIGN KEY (`kd_jenis_prw`) REFERENCES `jns_perawatan_lab` (`kd_jenis_prw`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `temporary_presensi`
+--
+ALTER TABLE `temporary_presensi`
+  ADD CONSTRAINT `temporary_presensi_ibfk_1` FOREIGN KEY (`id`) REFERENCES `pegawai` (`id`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `utd_donor`
+--
+ALTER TABLE `utd_donor`
+  ADD CONSTRAINT `utd_donor_ibfk_1` FOREIGN KEY (`petugas_aftap`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_donor_ibfk_2` FOREIGN KEY (`petugas_u_saring`) REFERENCES `petugas` (`nip`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_donor_ibfk_3` FOREIGN KEY (`no_pendonor`) REFERENCES `utd_pendonor` (`no_pendonor`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `utd_pendonor`
+--
+ALTER TABLE `utd_pendonor`
+  ADD CONSTRAINT `utd_pendonor_ibfk_1` FOREIGN KEY (`kd_kec`) REFERENCES `kecamatan` (`kd_kec`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_pendonor_ibfk_2` FOREIGN KEY (`kd_kab`) REFERENCES `kabupaten` (`kd_kab`) ON UPDATE CASCADE,
+  ADD CONSTRAINT `utd_pendonor_ibfk_3` FOREIGN KEY (`kd_prop`) REFERENCES `propinsi` (`kd_prop`) ON UPDATE CASCADE;
+
+--
+-- Constraints for table `utd_stok_darah`
+--
+ALTER TABLE `utd_stok_darah`
+  ADD CONSTRAINT `utd_stok_darah_ibfk_1` FOREIGN KEY (`kode_komponen`) REFERENCES `utd_komponen_darah` (`kode`) ON UPDATE CASCADE;

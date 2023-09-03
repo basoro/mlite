@@ -82,6 +82,11 @@
 				<td></td>
 				<td></td>
 			</tr>
+			{if: $billing_besar_detail.detail_pemberian_obat}
+			<tr>
+				<td colspan="5">Non Racikan</td>
+			</tr>
+			{/if}
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
 			<tr border='0', height='20px'>
 				<td></td>
@@ -201,22 +206,6 @@
 				<td>Rp. <span class="pull-right">{?= number_format($data.hargasatuan,2,',','.')?}</span></td>
 				<td>{$data.jumlah}</td>
 				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
-			</tr>
-			{/loop}
-			<tr border='1', height='20px'>
-				<td>X</td>
-				<td colspan="1">Biaya Tambahan</td>
-				<td></td>
-				<td></td>
-				<td></td>
-			</tr>
-			{loop: $billing_besar_detail.tambahan_biaya}
-			<tr border='0', height='20px'>
-				<td></td>
-				<td>- {$value.nama_biaya}</td>
-				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
-				<td>1</td>
-				<td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
 			</tr>
 			{/loop}
 			<tr >

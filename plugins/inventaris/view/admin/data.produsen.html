@@ -1,0 +1,122 @@
+<style>
+  .nowrap th, .nowrap td {
+    white-space: nowrap;
+  }
+</style>
+<form action="{?=url(ADMIN.'/inventaris/saveinventarisprodusen')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">Data Produsen</h3>
+            <ul class="nav nav-tabs">
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisbarang'])?}" role="tab">Data Barang</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisjenis'])?}" role="tab">Jenis</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventariskategori'])?}" role="tab">Kategori</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarismerk'])?}" role="tab">Merk</a>
+                </li>
+                <li class="active">
+                    <a href="{?=url([ADMIN,'inventaris','inventarisprodusen'])?}" role="tab">Produsen</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'inventaris','inventarisruang'])?}" role="tab">Ruang</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Kode Produsen</label>
+                        <input type="text" name="kode_produsen" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Nama Produsen</label>
+                        <input type="text" name="nama_produsen" class="form-control" value="" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Alamat Produsen</label>
+                        <input type="text" name="alamat_produsen" class="form-control" value="" required />
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Nomor Telepon</label>
+                        <input type="text" name="no_telp" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="text" name="email" class="form-control" value="" />
+                    </div>
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="text" name="website_produsen" class="form-control" value="" />
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="inventarisprodusen">
+      <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+          <tr>
+            <th>Kode Produsen</th>
+            <th>Nama Produsen</th>
+            <th>Alamat Produsen</th>
+            <th>Nomor Telepon</th>
+            <th>Email</th>
+            <th>Website</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $inventaris_produsen}
+          <tr class="inventarisprodusen"
+          data-kode_produsen="{$value.kode_produsen}"
+          data-nama_produsen="{$value.nama_produsen}"
+          data-alamat_produsen="{$value.alamat_produsen}"
+          data-no_telp="{$value.no_telp}"
+          data-email="{$value.email}"
+          data-website_produsen="{$value.website_produsen}"
+          >
+            <td>{$value.kode_produsen}</td>
+            <td>{$value.nama_produsen}</td>
+            <td>{$value.alamat_produsen}</td>
+            <td>{$value.no_telp}</td>
+            <td>{$value.email}</td>
+            <td>{$value.website_produsen}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $("#inventarisprodusen").on("click", ".inventarisprodusen", function(event){
+    var kode_produsen  = $(this).attr("data-kode_produsen");
+    var nama_produsen  = $(this).attr("data-nama_produsen");
+    var alamat_produsen  = $(this).attr("data-alamat_produsen");
+    var no_telp  = $(this).attr("data-no_telp");
+    var email  = $(this).attr("data-email");
+    var website_produsen  = $(this).attr("data-website_produsen");
+    $('input:text[name=kode_produsen]').val(kode_produsen);
+    $('input:text[name=nama_produsen]').val(nama_produsen);
+    $('input:text[name=alamat_produsen]').val(alamat_produsen);
+    $('input:text[name=no_telp]').val(no_telp);
+    $('input:text[name=email]').val(email);
+    $('input:text[name=website_produsen]').val(website_produsen);
+  });
+</script>

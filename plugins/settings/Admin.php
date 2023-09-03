@@ -48,20 +48,21 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $settings = $this->settings('settings');
-        $settings['module_pasien'] = $this->db('mlite__modules')->where('dir', 'pasien')->oneArray();
-        $settings['module_rawat_igd'] = $this->db('mlite__modules')->where('dir', 'igd')->oneArray();
-        $settings['module_laboratorium'] = $this->db('mlite__modules')->where('dir', 'laboratorium')->oneArray();
-        $settings['module_radiologi'] = $this->db('mlite__modules')->where('dir', 'radiologi')->oneArray();
-        $settings['module_wagateway'] = $this->db('mlite__modules')->where('dir', 'wagateway')->oneArray();
-        $settings['master'] = $this->db('mlite__modules')->where('dir', 'master')->oneArray();
+        $settings['module_pasien'] = $this->db('mlite_modules')->where('dir', 'pasien')->oneArray();
+        $settings['module_rawat_igd'] = $this->db('mlite_modules')->where('dir', 'igd')->oneArray();
+        $settings['module_laboratorium'] = $this->db('mlite_modules')->where('dir', 'laboratorium')->oneArray();
+        $settings['module_radiologi'] = $this->db('mlite_modules')->where('dir', 'radiologi')->oneArray();
+        $settings['module_wagateway'] = $this->db('mlite_modules')->where('dir', 'wagateway')->oneArray();
+        $settings['master'] = $this->db('mlite_modules')->where('dir', 'master')->oneArray();
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($settings['master']) {
           $settings['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
           $settings['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
         }
-        $settings['bridging_sep'] = $this->db('mlite__modules')->where('dir', 'vclaim')->oneArray();
-        $settings['rawat_jalan'] = $this->db('mlite__modules')->where('dir', 'rawat_jalan')->oneArray();
+        $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
+        $settings['presensi'] = $this->db('mlite_modules')->where('dir', 'presensi')->oneArray();
         $settings['themes'] = $this->_getThemes();
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
@@ -139,7 +140,7 @@ class Admin extends AdminModule
         $_POST['wallpaper'] = $wallpaper;
 
         foreach ($_POST as $field => $value) {
-            if (!$this->db('mlite__settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
+            if (!$this->db('mlite_settings')->where('module', 'settings')->where('field', $field)->save(['value' => $value])) {
                 $errors++;
             }
         }
@@ -179,7 +180,7 @@ class Admin extends AdminModule
                 $this->notify('success', 'Kode validasi penggunaan berhasil diterima.');
             }
         } elseif (isset($_GET['downgrade'])) {
-            $this->db('mlite__settings')->where('module', 'settings')->where('field', 'license')->save(['value' => '']);
+            $this->db('mlite_settings')->where('module', 'settings')->where('field', 'license')->save(['value' => '']);
         }
 
         redirect(url([ADMIN,'settings','general']));
@@ -195,7 +196,7 @@ class Admin extends AdminModule
             return $this->draw('themes.html');
         } else {
             if ($file == 'activate') {
-                $this->db('mlite__settings')->where('module', 'settings')->where('field', 'theme')->save(['value' => $theme]);
+                $this->db('mlite_settings')->where('module', 'settings')->where('field', 'theme')->save(['value' => $theme]);
                 $this->notify('success', 'Templat utama sudah diubah.');
                 redirect(url([ADMIN, 'settings', 'theme']));
             }
@@ -242,6 +243,7 @@ class Admin extends AdminModule
 
         if (isset($_POST['check'])) {
 
+            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -251,7 +253,7 @@ class Admin extends AdminModule
                 ]
             ];
 
-            $json = file_get_contents($this->feed_url, false, stream_context_create($opts));
+            $json = file_get_contents($url, false, stream_context_create($opts));
             $obj = json_decode($json, true);
             $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
 
@@ -270,6 +272,7 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
+                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
                 $opts = [
                     'http' => [
                         'method' => 'GET',
@@ -279,7 +282,7 @@ class Admin extends AdminModule
                     ]
                 ];
 
-                $json = file_get_contents($this->feed_url, false, stream_context_create($opts));
+                $json = file_get_contents($url, false, stream_context_create($opts));
                 $obj = json_decode($json, true);
                 $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
                 $this->download('https://github.com/basoro/khanza-lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
@@ -356,7 +359,7 @@ class Admin extends AdminModule
     public function postChangeOrderOfNavItem()
     {
         foreach ($_POST as $module => $order) {
-            $this->db('mlite__modules')->where('dir', $module)->save(['sequence' => $order]);
+            $this->db('mlite_modules')->where('dir', $module)->save(['sequence' => $order]);
         }
         exit();
     }
@@ -414,7 +417,7 @@ class Admin extends AdminModule
                 $attr = null;
             }
 
-            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, null, $file), 'attr' => $attr];
+            $result[md5($file)] = ['name' => basename($file), 'path' => $file, 'short' => str_replace(BASE_DIR, '', $file), 'attr' => $attr];
         }
 
         return $result;

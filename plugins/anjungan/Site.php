@@ -38,14 +38,14 @@ class Site extends SiteModule
         $this->route('anjungan/display/poli/(:str)/(:str)', 'getDisplayAntrianPoliDisplay');
         $this->route('anjungan/laboratorium', 'getDisplayAntrianLaboratorium');
         $this->route('anjungan/apotek', 'getDisplayAntrianApotek');
-        $this->route('anjungan/farmasi', 'getDisplayAntrianFarmasi');
-        $this->route('anjungan/farmasi2', 'getDisplayAntrianFarmasi2');
-        $this->route('anjungan/farmasi2/ambilantrian', 'getDisplayAntrianFarmasiAmbil');
+        $this->route('anjungan/apotek/ambilantrian', 'getDisplayAntrianApotekAmbil');
         $this->route('anjungan/ajax', 'getAjax');
         $this->route('anjungan/panggilantrian', 'getPanggilAntrian');
         $this->route('anjungan/panggilselesai', 'getPanggilSelesai');
         $this->route('anjungan/simpannorm', 'getSimpanNoRM');
         $this->route('anjungan/setpanggil', 'getSetPanggil');
+        $this->route('anjungan/presensi', 'getPresensi');
+        $this->route('anjungan/presensi/upload', 'getUpload');
         $this->route('anjungan/bed', 'getDisplayBed');
         $this->route('anjungan/sep', 'getSepMandiri');
         $this->route('anjungan/sep/cek', 'getSepMandiriCek');
@@ -55,6 +55,7 @@ class Site extends SiteModule
         $this->route('anjungan/sep/cetaksep/(:str)', 'getCetakSEP');
         $this->route('anjungan/checkin/(:str)', 'getDisplayCheckin');
         $this->route('anjungan/daftar/(:str)', 'getDaftarBPJS');
+        $this->route('anjungan/jadwaloperasi', 'getDisplayJadwalOperasi');
         //$this->route('anjungan/daftar/baru/(:str)', 'getDaftarBPJS');
     }
 
@@ -111,34 +112,34 @@ class Site extends SiteModule
       switch (isset($_GET['act'])) {
         case 'reseta':
           if (!isset($_GET['antrian'])){
-              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',0);
-              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',0);
+              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',0);
+              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',0);
           }
           else {
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',$_GET['antrian']);
-              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',$_GET['loket']);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_loket')->update('value',$_GET['antrian']);
+              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_loket')->update('value',$_GET['loket']);
           }
           break;
 
         case 'resetb':
           if (!isset($_GET['antrian'])){
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',0);
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',0);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',0);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',0);
           }
           else {
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',$_GET['antrian']);
-              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',$_GET['loket']);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_cs')->update('value',$_GET['antrian']);
+              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_cs')->update('value',$_GET['loket']);
           }
           break;
 
         case 'resetc':
           if (!isset($_GET['antrian'])){
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',0);
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',0);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',0);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',0);
           }
           else {
-            $this->core->db('mlite__settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',$_GET['antrian']);
-              $this->core->db('mlite__settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',$_GET['loket']);
+            $this->core->db('mlite_settings')->where('module','anjungan')->where('field','no_antrian_igd')->update('value',$_GET['antrian']);
+              $this->core->db('mlite_settings')->where('module','anjungan')->where('field','konter_antrian_igd')->update('value',$_GET['loket']);
           }
           break;
 
@@ -147,18 +148,18 @@ class Site extends SiteModule
           $_tcounter = $tcounter + 1;
 
           if (isset($_GET['loket'])) {
-            $this->core->db('mlite__antrian_loket')
+            $this->core->db('mlite_antrian_loket')
             ->where('noantrian',$_tcounter)
             ->where('type','Loket')
             ->where('postdate', date('Y-m-d'))
             ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-            $this->core->db('mlite__settings')
+            $this->core->db('mlite_settings')
             ->where('module','anjungan')
             ->where('field','no_antrian_loket')
             ->update('value',$_tcounter);
 
-            $this->core->db('mlite__settings')
+            $this->core->db('mlite_settings')
             ->where('module','anjungan')
             ->where('field','konter_antrian_loket')
             ->update('value',$_GET['loket']);
@@ -174,7 +175,7 @@ class Site extends SiteModule
             echo '<audio id="suarabela' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
           }
 
-          $this->core->db('mlite__antrian_loket')
+          $this->core->db('mlite_antrian_loket')
             ->where('noantrian',$tcounter)
             ->where('type','Loket')
             ->where('postdate', date('Y-m-d'))
@@ -188,18 +189,18 @@ class Site extends SiteModule
             $_tcounter = $tcounter + 1;
 
             if (isset($_GET['loket'])) {
-              $this->core->db('mlite__antrian_loket')
+              $this->core->db('mlite_antrian_loket')
               ->where('noantrian',$_tcounter)
               ->where('type','CS')
               ->where('postdate', date('Y-m-d'))
               ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-              $this->core->db('mlite__settings')
+              $this->core->db('mlite_settings')
               ->where('module','anjungan')
               ->where('field','no_antrian_cs')
               ->update('value',$_tcounter);
 
-              $this->core->db('mlite__settings')
+              $this->core->db('mlite_settings')
               ->where('module','anjungan')
               ->where('field','konter_antrian_cs')
               ->update('value',$_GET['loket']);
@@ -215,7 +216,7 @@ class Site extends SiteModule
               echo '<audio id="suarabelb' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
             }
 
-            $this->core->db('mlite__antrian_loket')
+            $this->core->db('mlite_antrian_loket')
               ->where('noantrian',$tcounter)
               ->where('type','CS')
               ->where('postdate', date('Y-m-d'))
@@ -229,18 +230,18 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
 
               if (isset($_GET['loket'])) {
-                $this->core->db('mlite__antrian_loket')
+                $this->core->db('mlite_antrian_loket')
                 ->where('noantrian',$_tcounter)
                 ->where('type','IGD')
                 ->where('postdate', date('Y-m-d'))
                 ->update(['end_time' => date('H:i:s'), 'loket' => $_GET['loket'], 'status' => 1 ]);
 
-                $this->core->db('mlite__settings')
+                $this->core->db('mlite_settings')
                 ->where('module','anjungan')
                 ->where('field','no_antrian_igd')
                 ->update('value',$_tcounter);
 
-                $this->core->db('mlite__settings')
+                $this->core->db('mlite_settings')
                 ->where('module','anjungan')
                 ->where('field','konter_antrian_igd')
                 ->update('value',$_GET['loket']);
@@ -256,7 +257,7 @@ class Site extends SiteModule
                 echo '<audio id="suarabelc' . $i . '" src="'.url().'/plugins/anjungan/suara/' . substr($tcounter, $i, 1) . '.wav" ></audio>';
               }
 
-              $this->core->db('mlite__antrian_loket')
+              $this->core->db('mlite_antrian_loket')
                 ->where('noantrian',$tcounter)
                 ->where('type','IGD')
                 ->where('postdate', date('Y-m-d'))
@@ -266,7 +267,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantriana' :
-              $max = $this->core->db('mlite__antrian_loket')->where('type','Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite_antrian_loket')->where('type','Loket')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -278,7 +279,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantrianb' :
-              $max = $this->core->db('mlite__antrian_loket')->where('type','CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite_antrian_loket')->where('type','CS')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -290,7 +291,7 @@ class Site extends SiteModule
               break;
 
             case 'getallantrianc' :
-              $max = $this->core->db('mlite__antrian_loket')->where('type','IGD')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
+              $max = $this->core->db('mlite_antrian_loket')->where('type','IGD')->where('postdate', date('Y-m-d'))->desc('noantrian')->oneArray();
 
               $allantrian = 0;
 
@@ -312,7 +313,7 @@ class Site extends SiteModule
     private function _getPenjab($kd_pj = null)
     {
         $result = [];
-        $rows = $this->core->mysql('penjab')->toArray();
+        $rows = $this->core->mysql('penjab')->where('status', '1')->toArray();
 
         if (!$kd_pj) {
             $kd_pjArray = [];
@@ -1167,7 +1168,7 @@ class Site extends SiteModule
 
             $setting_antrian_loket = str_replace(",","','", $this->settings->get('anjungan.antrian_loket'));
             $loket = explode(",", $this->settings->get('anjungan.antrian_loket'));
-            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1180,22 +1181,22 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite__antrian_loket')
+              $this->core->mysql('mlite_antrian_loket')
                 ->where('type', 'Loket')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['loket']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket')->save(['value' => $_GET['reset']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_loket_nomor')->save(['value' => $_GET['antrian']]);
             }
             if(isset($_GET['no_rkm_medis'])) {
-              $this->core->mysql('mlite__antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
+              $this->core->mysql('mlite_antrian_loket')->where('noantrian', $_GET['noantrian'])->where('postdate', date('Y-m-d'))->save(['no_rkm_medis' => $_GET['no_rkm_medis']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
               ->where('type', 'Loket')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1225,7 +1226,7 @@ class Site extends SiteModule
           case "panggil_cs":
             $display = 'Panggil CS';
             $loket = explode(",", $this->settings->get('anjungan.antrian_cs'));
-            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1238,19 +1239,19 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite__antrian_loket')
+              $this->core->mysql('mlite_antrian_loket')
                 ->where('type', 'CS')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['loket']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs')->save(['value' => $_GET['reset']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_cs_nomor')->save(['value' => $_GET['antrian']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
               ->where('type', 'CS')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1280,7 +1281,7 @@ class Site extends SiteModule
           case "panggil_apotek":
             $display = 'Panggil Apotek';
             $loket = explode(",", $this->settings->get('anjungan.antrian_apotek'));
-            $get_antrian = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+            $get_antrian = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
             $noantrian = 0;
             if(!empty($get_antrian['noantrian'])) {
               $noantrian = $get_antrian['noantrian'];
@@ -1293,19 +1294,19 @@ class Site extends SiteModule
               $_tcounter = $tcounter + 1;
             }
             if(isset($_GET['loket'])) {
-              $this->core->mysql('mlite__antrian_loket')
+              $this->core->mysql('mlite_antrian_loket')
                 ->where('type', 'Apotek')
                 ->where('noantrian', $tcounter)
                 ->where('postdate', date('Y-m-d'))
                 ->save(['end_time' => date('H:i:s')]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['loket']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_tcounter]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['loket']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_tcounter]);
             }
             if(isset($_GET['antrian'])) {
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['reset']]);
-              $this->db('mlite__settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_GET['antrian']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek')->save(['value' => $_GET['reset']]);
+              $this->db('mlite_settings')->where('module', 'anjungan')->where('field', 'panggil_apotek_nomor')->save(['value' => $_GET['antrian']]);
             }
-            $hitung_antrian = $this->core->mysql('mlite__antrian_loket')
+            $hitung_antrian = $this->core->mysql('mlite_antrian_loket')
               ->where('type', 'Apotek')
               ->like('postdate', date('Y-m-d'))
               ->toArray();
@@ -1507,23 +1508,171 @@ class Site extends SiteModule
 
     public function _resultDisplayAntrianApotek()
     {
-        $query = $this->core->mysql('reg_periksa')
-          ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-          ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-          ->where('tgl_registrasi', date('Y-m-d'))
-          ->where('stts', 'Sudah')
-          ->asc('resep_obat.jam_peresepan')
+        $query = $this->core->mysql('mlite_antrian_loket')
+          ->join('pasien', 'pasien.no_rkm_medis=mlite_antrian_loket.no_rkm_medis')
+          ->where('type', 'Apotek')
+          ->where('postdate', date('Y-m-d'))
+          ->where('status', '<>', '3')
           ->toArray();
+
         $rows=[];
         foreach ($query as $row) {
-          $row['status_resep'] = 'Sudah';
-          if($row['jam'] == $row['jam_peresepan']) {
-            $row['status_resep'] = 'Belum';
+          $row['status_resep'] = 'Belum';
+          $row['jenis_resep'] = 'Non Racikan';
+
+          $reg_periksa = $this->core->mysql('reg_periksa')
+            ->where('tgl_registrasi', date('Y-m-d'))
+            ->where('kd_poli', '<>', 'IGDK')
+            ->where('no_rkm_medis', $row['no_rkm_medis'])
+            ->oneArray();
+
+          $resep_obat = $this->core->mysql('resep_obat')
+            ->where('tgl_peresepan', date('Y-m-d'))
+            ->where('no_rawat', $reg_periksa['no_rawat'])
+            ->where('status', 'ralan')
+            ->oneArray();
+
+          $resep_dokter_racikan = $this->core->mysql('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+
+          if($resep_obat['tgl_perawatan'] != '0000-00-00' && $resep_obat['jam'] != '00:00:00') {
+            $row['status_resep'] = 'Disiapkan';
           }
+
+          if(!empty($resep_dokter_racikan)) {
+            $row['jenis_resep'] = 'Racikan';
+          }
+
           $rows[] = $row;
         }
 
         return $rows;
+    }
+
+    public function getDisplayAntrianApotekAmbil()
+    {
+          $logo  = $this->settings->get('settings.logo');
+          $title = 'Display Antrian Farmasi';
+          $display = '';
+
+          $_username = '';
+          if(isset($_SESSION['mlite_user'])) {
+            $_username = $this->core->getUserInfo('fullname', null, true);
+          }
+          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+          $content = $this->draw('display.antrian.apotek.ambil.html', [
+            'logo' => $logo,
+            'title' => $title,
+            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+            'username' => $username,
+            'vidio' => $this->settings->get('anjungan.vidio'),
+            'tanggal' => $tanggal,
+            'running_text' => $this->settings->get('anjungan.text_farmasi'),
+            'display' => $display
+          ]);
+
+          $assign = [
+              'title' => $this->settings->get('settings.nama_instansi'),
+              'desc' => $this->settings->get('settings.alamat'),
+              'content' => $content
+          ];
+
+          $this->setTemplate("canvas.html");
+
+          $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+          //exit();
+    }
+
+    public function getDisplayJadwalOperasi()
+    {
+      $logo  = $this->settings->get('settings.logo');
+      $title = 'Display Jadwal Operasi';
+      $display = $this->_resultDisplayJadwalOperasi();
+
+      $_username = $this->core->getUserInfo('fullname', null, true);
+      $tanggal       = getDayIndonesia(date('Y-m-d')) . ', ' . dateIndonesia(date('Y-m-d'));
+      $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
+
+      $content = $this->draw('display.jadwal.operasi.html', [
+        'logo' => $logo,
+        'title' => $title,
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+        'username' => $username,
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_laboratorium'),
+        'display' => $display
+      ]);
+
+      $assign = [
+        'title' => $this->settings->get('settings.nama_instansi'),
+        'desc' => $this->settings->get('settings.alamat'),
+        'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+
+    }
+
+    public function _resultDisplayJadwalOperasi()
+    {
+      $date = date('Y-m-d');
+      $tentukan_hari = date('D', strtotime(date('Y-m-d')));
+      $day = array(
+        'Sun' => 'AKHAD',
+        'Mon' => 'SENIN',
+        'Tue' => 'SELASA',
+        'Wed' => 'RABU',
+        'Thu' => 'KAMIS',
+        'Fri' => 'JUMAT',
+        'Sat' => 'SABTU'
+      );
+      $hari = $day[$tentukan_hari];
+
+      $rows = $this->core->mysql('booking_operasi')
+        ->join('reg_periksa', 'reg_periksa.no_rawat=booking_operasi.no_rawat')
+        ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+        ->join('dokter', 'dokter.kd_dokter=booking_operasi.kd_dokter')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->select(['nm_pasien' => 'pasien.nm_pasien',
+                  'no_rkm_medis' => 'reg_periksa.no_rkm_medis',
+                  'kd_dokter'    => 'booking_operasi.kd_dokter',
+                  'status'       => 'booking_operasi.status',
+                  'kode'         => 'dokter.kd_dokter',
+                  'namadok'      => 'dokter.nm_dokter',
+                  'kd_poli'      => 'reg_periksa.kd_poli',
+                  'kodepoli'     => 'poliklinik.kd_poli',
+                  'namapoli'     => 'poliklinik.nm_poli',
+                  'no_rawat'     => 'booking_operasi.no_rawat'
+                ])
+        ->where('tanggal', date('Y-m-d'))
+        ->toArray();
+
+      $result = [];
+      if (count($rows)) {
+        foreach ($rows as $row) {
+          $norawat = $row['no_rawat'];
+          $row['kamar'] = $this->core->mysql('reg_periksa')
+            ->join('kamar_inap', 'reg_periksa.no_rawat=kamar_inap.no_rawat')
+            ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
+            ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+            ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+            ->where('reg_periksa.no_rawat', $norawat)
+            ->where('kamar_inap.tgl_keluar', '0000:00:00')
+            ->select([
+              'namabangsal' => 'bangsal.nm_bangsal',
+              'kodekmr' => 'kamar_inap.kd_kamar'
+            ])
+            ->select('bangsal.nm_bangsal')
+            ->oneArray();
+
+          $result[] = $row;
+        }
+      }
+      return $result;
     }
 
     public function getPanggilAntrian()
@@ -1531,7 +1680,7 @@ class Site extends SiteModule
       $res = [];
 
       $date = date('Y-m-d');
-      $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite__antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
+      $sql = $this->core->mysql()->pdo()->prepare("SELECT * FROM mlite_antrian_loket WHERE status = 1 AND postdate = '$date' ORDER BY noantrian ASC");
 
       if($sql) {
           //$data  = $query->fetch_object();
@@ -1584,7 +1733,7 @@ class Site extends SiteModule
     {
       if(!isset($_GET['id']) || $_GET['id'] == '') die(json_encode(array('status' => false)));
       $kode  = $_GET['id'];
-      $query = $this->core->mysql('mlite__antrian_loket')->where('kd', $kode)->update('status', 2);
+      $query = $this->core->mysql('mlite_antrian_loket')->where('kd', $kode)->update('status', 2);
       if($query) {
           $res = [
               'status' => true,
@@ -1614,7 +1763,7 @@ class Site extends SiteModule
       $noantrian  = $_GET['noantrian'];
       $loket  = $_GET['loket'];
       $date = date('Y-m-d');
-      $query = $this->core->mysql('mlite__antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
+      $query = $this->core->mysql('mlite_antrian_loket')->where('type', $type)->where('noantrian', $noantrian)->where('postdate', $date)->update(['status' => 1, 'loket' => $loket]);
       if($query) {
           $res = [
               'status' => true,
@@ -1652,12 +1801,26 @@ class Site extends SiteModule
 
       $noantrian  = $_GET['noantrian'];
       $no_rkm_medis = $_GET['no_rkm_medis'];
-      $query = $this->core->mysql('mlite__antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
+      $query = $this->core->mysql('mlite_antrian_loket')->where('noantrian', $noantrian)->where('type', $type)->where('postdate', date('Y-m-d'))->update('no_rkm_medis', $no_rkm_medis);
       if($query) {
           $res = [
               'status' => true,
               'message' => 'Berhasil menyimpan No RM :'.$no_rkm_medis,
           ];
+          if($type == 'Apotek') {
+            $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('kd_poli', '<>', 'IGDK')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+            $this->core->mysql('resep_obat')
+              ->where('tgl_peresepan', date('Y-m-d'))
+              ->where('no_rawat', $reg_periksa['no_rawat'])
+              ->where('tgl_perawatan', '<>', '0000-00-00')
+              ->where('jam', '<>', '00:00:00')
+              ->where('status', 'ralan')
+              ->save([
+                'tgl_penyerahan' => date('Y-m-d'),
+                'jam_penyerahan' => date('H:i:s')
+              ]);
+            $this->core->mysql('mlite_antrian_loket')->where('type', $type)->where('postdate', date('Y-m-d'))->where('no_rkm_medis', $no_rkm_medis)->update('status', 3);
+          }
       } else {
           $res = [
               'status' => false,
@@ -1669,185 +1832,6 @@ class Site extends SiteModule
       exit();
     }
 
-    public function getDisplayAntrianFarmasi()
-    {
-         $logo  = $this->settings->get('settings.logo');
-         $title = 'Display Antrian Farmasi';
-         $display = $this->_resultDisplayAntrianFarmasi();
-
-         $_username = '';
-         if(isset($_SESSION['mlite_user'])) {
-           $_username = $this->core->getUserInfo('fullname', null, true);
-         }
-
-         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-         $content = $this->draw('display.antrian.farmasi.html', [
-           'logo' => $logo,
-           'title' => $title,
-           'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-           'username' => $username,
-           'vidio' => $this->settings->get('anjungan.vidio'),
-           'tanggal' => $tanggal,
-           'running_text' => $this->settings->get('anjungan.text_farmasi'),
-           'display' => $display
-         ]);
-
-         $assign = [
-             'title' => $this->settings->get('settings.nama_instansi'),
-             'desc' => $this->settings->get('settings.alamat'),
-             'content' => $content
-         ];
-
-         $this->setTemplate("canvas.html");
-
-         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-         //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasi()
-    {
-         $date = date('Y-m-d');
-         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-         $day = array(
-           'Sun' => 'AKHAD',
-           'Mon' => 'SENIN',
-           'Tue' => 'SELASA',
-           'Wed' => 'RABU',
-           'Thu' => 'KAMIS',
-           'Fri' => 'JUMAT',
-           'Sat' => 'SABTU'
-         );
-         $hari=$day[$tentukan_hari];
-         $rows = $this->core->mysql('reg_periksa')
-           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-           ->where('tgl_peresepan', date('Y-m-d'))
-           ->where('status', 'ralan')
-           ->where('jam=jam_peresepan',true)
-           ->asc('jam')
-           ->toArray();
-
-         return $rows;
-    }
-
-
-    public function getDisplayAntrianFarmasi2()
-    {
-         $logo  = $this->settings->get('settings.logo');
-         $title = 'Display Antrian Farmasi';
-         $display = $this->_resultDisplayAntrianFarmasi2();
-
-         $_username = '';
-         if(isset($_SESSION['mlite_user'])) {
-           $_username = $this->core->getUserInfo('fullname', null, true);
-         }
-         $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-         $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-         $content = $this->draw('display.antrian.farmasi2.html', [
-           'logo' => $logo,
-           'title' => $title,
-           'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-           'username' => $username,
-           'vidio' => $this->settings->get('anjungan.vidio'),
-           'tanggal' => $tanggal,
-           'running_text' => $this->settings->get('anjungan.text_farmasi'),
-           'display' => $display
-         ]);
-
-         $assign = [
-             'title' => $this->settings->get('settings.nama_instansi'),
-             'desc' => $this->settings->get('settings.alamat'),
-             'content' => $content
-         ];
-
-         $this->setTemplate("canvas.html");
-
-         $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-         //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasi2()
-    {
-         $rows = $this->core->mysql('mlite__antrian_loket')
-           ->join('pasien', 'pasien.no_rkm_medis=mlite__antrian_loket.no_rkm_medis')
-           ->where('postdate', date('Y-m-d'))
-           ->where('type', 'Apotek')
-           ->where('status', 0)
-           ->asc('noantrian')
-           ->toArray();
-
-         return $rows;
-    }
-
-
-    public function getDisplayAntrianFarmasiAmbil()
-    {
-          $logo  = $this->settings->get('settings.logo');
-          $title = 'Display Antrian Farmasi';
-          $display = $this->_resultDisplayAntrianFarmasiAmbil();
-
-          $_username = '';
-          if(isset($_SESSION['mlite_user'])) {
-            $_username = $this->core->getUserInfo('fullname', null, true);
-          }
-          $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
-          $username      = !empty($_username) ? $_username : $this->core->getUserInfo('username');
-
-          $content = $this->draw('display.antrian.farmasi.ambil.html', [
-            'logo' => $logo,
-            'title' => $title,
-            'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
-            'username' => $username,
-            'vidio' => $this->settings->get('anjungan.vidio'),
-            'tanggal' => $tanggal,
-            'running_text' => $this->settings->get('anjungan.text_farmasi'),
-            'display' => $display
-          ]);
-
-          $assign = [
-              'title' => $this->settings->get('settings.nama_instansi'),
-              'desc' => $this->settings->get('settings.alamat'),
-              'content' => $content
-          ];
-
-          $this->setTemplate("canvas.html");
-
-          $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
-
-          //exit();
-    }
-
-    public function _resultDisplayAntrianFarmasiAmbil()
-    {
-         $date = date('Y-m-d');
-         $tentukan_hari=date('D',strtotime(date('Y-m-d')));
-         $day = array(
-           'Sun' => 'AKHAD',
-           'Mon' => 'SENIN',
-           'Tue' => 'SELASA',
-           'Wed' => 'RABU',
-           'Thu' => 'KAMIS',
-           'Fri' => 'JUMAT',
-           'Sat' => 'SABTU'
-         );
-         $hari=$day[$tentukan_hari];
-         $rows = $this->core->mysql('reg_periksa')
-           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-           ->join('resep_obat', 'resep_obat.no_rawat=reg_periksa.no_rawat')
-           ->where('tgl_peresepan', date('Y-m-d'))
-           ->where('status', 'ralan')
-           ->where('jam=jam_peresepan',true)
-           ->asc('jam')
-           ->toArray();
-
-         return 'Test';
-    }
-
     public function getAjax()
     {
       $show = isset($_GET['show']) ? $_GET['show'] : "";
@@ -1855,7 +1839,7 @@ class Site extends SiteModule
        default:
         break;
         case "tampilloket":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1874,7 +1858,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printloket":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Loket')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1915,7 +1899,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpanloket":
-          $this->core->mysql('mlite__antrian_loket')
+          $this->core->mysql('mlite_antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'Loket',
@@ -1927,7 +1911,7 @@ class Site extends SiteModule
           //redirect(url('anjungan/pasien'));
         break;
         case "tampilcs":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1946,7 +1930,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printcs":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'CS')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -1987,7 +1971,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpancs":
-          $this->core->mysql('mlite__antrian_loket')
+          $this->core->mysql('mlite_antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'CS',
@@ -2000,7 +1984,7 @@ class Site extends SiteModule
         break;
 
         case "tampilapotek":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -2019,7 +2003,7 @@ class Site extends SiteModule
           echo '<br>';
         break;
         case "printapotek":
-          $result = $this->core->mysql('mlite__antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
+          $result = $this->core->mysql('mlite_antrian_loket')->select('noantrian')->where('type', 'Apotek')->where('postdate', date('Y-m-d'))->desc('start_time')->oneArray();
           $noantrian = '';
           if($result) {
             $noantrian = $result['noantrian'];
@@ -2062,7 +2046,7 @@ class Site extends SiteModule
           <?php
         break;
         case "simpanapotek":
-          $this->core->mysql('mlite__antrian_loket')
+          $this->core->mysql('mlite_antrian_loket')
             ->save([
               'kd' => NULL,
               'type' => 'Apotek',
@@ -2342,6 +2326,190 @@ class Site extends SiteModule
           }
         break;
       }
+      exit();
+    }
+
+    public function getPresensi()
+    {
+
+      $title = 'Presensi Pegawai';
+      $logo  = $this->settings->get('settings.logo');
+      $wallpaper  = $this->settings->get('settings.wallpaper');
+      $text_color  = $this->settings->get('settings.text_color');
+
+      $tanggal       = getDayIndonesia(date('Y-m-d')).', '.dateIndonesia(date('Y-m-d'));
+
+      $content = $this->draw('presensi.html', [
+        'title' => $title,
+        'notify' => $this->core->getNotify(),
+        'logo' => $logo,
+        'wallpaper' => $wallpaper,
+        'text_color' => $text_color,
+        'powered' => 'Powered by <a href="https://mlite.id/">mLITE</a>',
+        'tanggal' => $tanggal,
+        'running_text' => $this->settings->get('anjungan.text_poli'),
+        'jam_jaga' => $this->core->mysql('jam_jaga')->group('jam_masuk')->toArray()
+      ]);
+
+      $assign = [
+          'title' => $this->settings->get('settings.nama_instansi'),
+          'desc' => $this->settings->get('settings.alamat'),
+          'content' => $content
+      ];
+
+      $this->setTemplate("canvas.html");
+
+      $this->tpl->set('page', ['title' => $assign['title'], 'desc' => $assign['desc'], 'content' => $assign['content']]);
+    }
+
+    public function getGeolocation()
+    {
+
+      $idpeg = $this->core->mysql('barcode')->where('barcode', $this->core->getUserInfo('username', null, true))->oneArray();
+
+      if(isset($_GET['lat'], $_GET['lng'])) {
+          if(!$this->core->mysql('mlite_geolocation_presensi')->where('id', $idpeg['id'])->where('tanggal', date('Y-m-d'))->oneArray()) {
+              $this->core->mysql('mlite_geolocation_presensi')
+                ->save([
+                  'id' => $idpeg['id'],
+                  'tanggal' => date('Y-m-d'),
+                  'latitude' => $_GET['lat'],
+                  'longitude' => $_GET['lng']
+              ]);
+          }
+      }
+
+      exit();
+    }
+
+    public function getUpload()
+    {
+      if ($photo = isset_or($_FILES['webcam']['tmp_name'], false)) {
+          $img = new \Systems\Lib\Image;
+          if ($img->load($photo)) {
+              if ($img->getInfos('width') < $img->getInfos('height')) {
+                  $img->crop(0, 0, $img->getInfos('width'), $img->getInfos('width'));
+              } else {
+                  $img->crop(0, 0, $img->getInfos('height'), $img->getInfos('height'));
+              }
+
+              if ($img->getInfos('width') > 512) {
+                  $img->resize(512, 512);
+              }
+              $gambar = uniqid('photo').".".$img->getInfos('type');
+          }
+
+          if (isset($img) && $img->getInfos('width')) {
+
+              $img->save(WEBAPPS_PATH."/presensi/".$gambar);
+
+              $urlnya         = WEBAPPS_URL.'/presensi/'.$gambar;
+              $barcode        = $_GET['barcode'];
+
+              $idpeg          = $this->core->mysql('barcode')->where('barcode', $barcode)->oneArray();
+              $jam_jaga       = $this->core->mysql('jam_jaga')->join('pegawai', 'pegawai.departemen = jam_jaga.dep_id')->where('pegawai.id', $idpeg['id'])->where('jam_jaga.shift', $_GET['shift'])->oneArray();
+              $jadwal_pegawai = $this->core->mysql('jadwal_pegawai')->where('id', $idpeg['id'])->where('h'.date('j'), $_GET['shift'])->oneArray();
+
+              $set_keterlambatan  = $this->core->mysql('set_keterlambatan')->toArray();
+              $toleransi      = $set_keterlambatan['toleransi'];
+              $terlambat1     = $set_keterlambatan['terlambat1'];
+              $terlambat2     = $set_keterlambatan['terlambat2'];
+
+              $valid = $this->core->mysql('rekap_presensi')->where('id', $idpeg['id'])->where('shift', $jam_jaga['shift'])->like('jam_datang', '%'.date('Y-m-d').'%')->oneArray();
+
+              if($valid){
+                  $this->notify('failure', 'Anda sudah presensi untuk tanggal '.date('Y-m-d'));
+              //}elseif((!empty($idpeg['id']))&&(!empty($jam_jaga['shift']))&&($jadwal_pegawai)&&(!$valid)) {
+              }elseif((!empty($idpeg['id']))) {
+                  $cek = $this->core->mysql('temporary_presensi')->where('id', $idpeg['id'])->oneArray();
+
+                  if(!$cek){
+                      if(empty($urlnya)){
+                          $this->notify('failure', 'Pilih shift dulu...!!!!');
+                      }else{
+
+                          $status = 'Tepat Waktu';
+
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($toleransi*60)) {
+                            $status = 'Terlambat Toleransi';
+                          }
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat1*60)) {
+                            $status = 'Terlambat I';
+                          }
+                          if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_masuk']))>($terlambat2*60)) {
+                            $status = 'Terlambat II';
+                          }
+
+                          if(strtotime(date('Y-m-d H:i:s'))-(date('Y-m-d').' '.$jam_jaga['jam_masuk'])>($toleransi*60)) {
+                            $awal  = new \DateTime(date('Y-m-d').' '.$jam_jaga['jam_masuk']);
+                            $akhir = new \DateTime();
+                            $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
+                            $keterlambatan = $diff->format('%H:%I:%S');
+
+                          }
+
+                          $insert = $this->core->mysql('temporary_presensi')
+                            ->save([
+                              'id' => $idpeg['id'],
+                              'shift' => $jam_jaga['shift'],
+                              'jam_datang' => date('Y-m-d H:i:s'),
+                              'jam_pulang' => NULL,
+                              'status' => $status,
+                              'keterlambatan' => $keterlambatan,
+                              'durasi' => '',
+                              'photo' => $urlnya
+                            ]);
+
+                          if($insert) {
+                            $this->notify('success', 'Presensi Masuk jam '.$jam_jaga['jam_masuk'].' '.$status.' '.$keterlambatan);
+                          }
+                      }
+                  }elseif($cek){
+
+                      $status = $cek['status'];
+                      if((strtotime(date('Y-m-d H:i:s'))-strtotime(date('Y-m-d').' '.$jam_jaga['jam_pulang']))<0) {
+                        $status = $cek['status'].' & PSW';
+                      }
+
+                      $awal  = new \DateTime($cek['jam_datang']);
+                      $akhir = new \DateTime();
+                      $diff = $akhir->diff($awal,true); // to make the difference to be always positive.
+                      $durasi = $diff->format('%H:%I:%S');
+
+                      $ubah = $this->core->mysql('temporary_presensi')
+                        ->where('id', $idpeg['id'])
+                        ->save([
+                          'jam_pulang' => date('Y-m-d H:i:s'),
+                          'status' => $status,
+                          'durasi' => $durasi
+                        ]);
+
+                      if($ubah) {
+                          $presensi = $this->core->mysql('temporary_presensi')->where('id', $cek['id'])->oneArray();
+                          $insert = $this->core->mysql('rekap_presensi')
+                            ->save([
+                              'id' => $presensi['id'],
+                              'shift' => $presensi['shift'],
+                              'jam_datang' => $presensi['jam_datang'],
+                              'jam_pulang' => $presensi['jam_pulang'],
+                              'status' => $presensi['status'],
+                              'keterlambatan' => $presensi['keterlambatan'],
+                              'durasi' => $presensi['durasi'],
+                              'keterangan' => '-',
+                              'photo' => $presensi['photo']
+                            ]);
+                          if($insert) {
+                              $this->notify('success', 'Presensi pulang telah disimpan');
+                              $this->core->mysql('temporary_presensi')->where('id', $cek['id'])->delete();
+                          }
+                      }
+                  }
+              }else{
+                  $this->notify('failure', 'ID Pegawai atau jadwal shift tidak sesuai. Silahkan pilih berdasarkan shift departemen anda!');
+              }
+          }
+      }
+      //echo 'Upload';
       exit();
     }
 
@@ -2724,6 +2892,68 @@ class Site extends SiteModule
         $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
         $_POST['sep_user']	= 'SEP Mandiri';
 
+        if($this->settings->get('jkn_mobile.kirimantrian') == 'ya') {
+          $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+          $day = array(
+            'Sun' => 'AKHAD',
+            'Mon' => 'SENIN',
+            'Tue' => 'SELASA',
+            'Wed' => 'RABU',
+            'Thu' => 'KAMIS',
+            'Fri' => 'JUMAT',
+            'Sat' => 'SABTU'
+          );
+          $hari=$day[$tentukan_hari];
+
+          $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+          $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+          $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+          $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+          $jadwaldokter = $this->core->mysql('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+
+          $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+          $minutes = $no_urut_reg * 10;
+          $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+
+          $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+
+          $nomorreferensi = $_POST['norujukan'];
+          if(isset($_POST['tujuanKunj']) == '3') {
+            $nomorreferensi = $_POST['noskdp'];
+          }
+          $data = [
+              'kodebooking' => $kodebooking,
+              'jenispasien' => 'JKN',
+              'nomorkartu' => $pasien['no_peserta'],
+              'nik' => $pasien['no_ktp'],
+              'nohp' => $pasien['no_tlp'],
+              'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+              'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+              'pasienbaru' => '0',
+              'norm' => $_POST['nomr'],
+              'tanggalperiksa' => date('Y-m-d'),
+              'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+              'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+              'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+              'jeniskunjungan' => $_POST['tujuanKunj'],
+              'nomorreferensi' => $nomorreferensi,
+              'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+              'angkaantrean' => $reg_periksa['no_reg'],
+              'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kuota['jam_mulai']) * 1000,
+              'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+              'kuotajkn' => intval($jadwaldokter['kuota']),
+              'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+              'kuotanonjkn' => intval($jadwaldokter['kuota']),
+              'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+          ];
+          // echo 'Request:<br>';
+          // echo "<pre>".print_r($data,true)."</pre>";
+          $data = json_encode($data);
+          $url = $this->api_url.'antrean/add';
+          $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+          // $data = json_decode($output, true);
+        }
+
         $data = [
             'request' => [
                't_sep' => [
@@ -3065,7 +3295,7 @@ class Site extends SiteModule
       $username      = !empty($_username) ? $_username : $__username;
 
       //echo 'Checkin';
-      $referensi = $this->core->mysql('mlite__antrian_referensi')->where('nomor_referensi', $referensi)->oneArray();
+      $referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $referensi)->oneArray();
       $pasien = $this->core->mysql('pasien')->where('no_peserta', $referensi['nomor_kartu'])->oneArray();
       $no_peserta = $referensi['nomor_kartu'];
       $no_rkm_medis = $pasien['no_rkm_medis'];

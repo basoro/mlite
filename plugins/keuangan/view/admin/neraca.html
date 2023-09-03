@@ -1,0 +1,108 @@
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <p style="text-align:center">
+                <b>{$settings.nama_instansi}</b><br>
+                {$settings.alamat}<br>
+                {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
+                    Laporan Neraca Periode {?=date('d-m-Y', strtotime($_GET['tgl_awal']))?} s/d {?=date('d-m-Y', strtotime($_GET['tgl_akhir']))?}
+                {else}
+                    Laporan Neraca Periode {?=date('d-m-Y')?} s/d {?=date('d-m-Y')?}
+                {/if}
+                </p>
+                <form action="" method="">
+                  {if: isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir'])}
+                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&tgl_awal={?=$_GET['tgl_awal']?}&tgl_akhir={?=$_GET['tgl_akhir']?}&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+                  {else}
+                  <a href="{?=url()?}/{?=ADMIN?}/keuangan/bukubesar?action=print&t={?=$_SESSION['token']?}" target="_blank" class="pull-right" style="margin-top:-2px;"><span class="fa fa-print"></span> Print</a>
+                  {/if}
+                  <div class="btn-group pull-right" style="margin-top:-8px;">
+                    <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+                      <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+                    </span>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li style="padding-left:5px;padding-right:5px;">
+                        <input type="text" id="tgl_awal" class="form-control tanggal" name="tgl_awal" value="{?=date('Y-m-d')?}" required>
+                      </li>
+                      <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <input type="text" id="tgl_akhir" class="form-control tanggal" name="tgl_akhir" value="{?=date('Y-m-d')?}" required>
+                      </li>
+                      <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <input type="submit" class="btn btn-primary btn-block" value="Submit">
+                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                      </li>
+                    </ul>
+                  </div>
+                </form>
+                <div class="clearfix"></div>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-6 col-sm-6">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Aktiva</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">Kas</td>
+                                    <td>Rp. {?= number_format($kas,2,',','.')?}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Persedian</td>
+                                    <td>Rp. {?= number_format($persediaan,2,',','.')?}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">Total</td>
+                                    <td>Rp. {?= number_format($aktiva,2,',','.')?}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-6">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Passiva</th>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="2">Hutang</td>
+                                    <td>Rp. {?= number_format($hutang,2,',','.')?}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">Modal</td>
+                                    <td>Rp. {?= number_format($modal,2,',','.')?}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3">Total</td>
+                                    <td>Rp. {?= number_format($pasiva,2,',','.')?}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $(function () {
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+  });
+</script>

@@ -2,7 +2,7 @@
 <html class="no-js" lang="en">
     <head>
         <meta charset="utf-8">
-        <title>mLITE JKN Mobile API V2 - Documentation</title>
+        <title>mLITE JKN Mobile API - Documentation</title>
         <meta name="description" content="">
         <meta name="author" content="ticlekiwi">
 
@@ -21,7 +21,7 @@
         <div class="left-menu">
             <div class="content-logo">
                 <img alt="mLITE JKN Mobile" title="CATALOG mLITE JKN Mobile" src="{?= url(MODULES.'/jkn_mobile/img/logo.png')?}" height="32" />
-                <span>mLITE JKN API v2</span>
+                <span>mLITE JKN API</span>
             </div>
             <div class="content-menu">
                 <ul>
@@ -62,10 +62,16 @@
                         <a>Kode Pesan</a>
                     </li>
                     <li>
-                        <a href="{?=url('jknmobile/display/antrian')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
+                        <a href="{?=url('anjungan/poli')?}" target="_blank" style="text-decoration:none;">Display Antrian</a>
                     </li>
                     <li>
-                        <a href="{?=url('jknmobile/display/operasi')?}" target="_blank" style="text-decoration:none;">Display Jadwal Operasi</a>
+                        <a href="{?=url('anjungan/jadwaloperasi')?}" target="_blank" style="text-decoration:none;">Display Jadwal Operasi</a>
+                    </li>
+                    <li>
+                        <a href="{?=url('anjungan/bed')?}" target="_blank" style="text-decoration:none;">Display Bed Manajemen</a>
+                    </li>
+                    <li class="scroll-to-link" data-target="aplicare">
+                        <a>Aplicare Manajemen</a>
                     </li>
                 </ul>
             </div>
@@ -1606,6 +1612,52 @@ Response :
                                 <td>401</td>
                                 <td>
                                     Terjadi kesalahan.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="overflow-hidden content-section" id="content-aplicare">
+                    <h2 id="aplicare">Update Data Tempat Tidur</h2>
+                    <p>
+                        Berikut adalah manajemen Update data tempat tidur:
+                    </p>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Method</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>List</td>
+                                <td>
+                                  <a href="{?=url()?}/jknmobile/aplicare/listkamar" target="_blank">View List</a><br>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Add</td>
+                                <td>
+                                  {loop: $kelas}
+                                  <a href="{?=url()?}/jknmobile/aplicare/addkamar/{?=substr($value.kelas, strpos($value.kelas, " ") + 1)?}-{$value.kd_bangsal}" target="_blank">{$value.kelas} - {$value.kd_bangsal}</a><br>
+                                  {/loop}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Delete</td>
+                                <td>
+                                  {loop: $kelas}
+                                  <a href="{?=url()?}/jknmobile/aplicare/deletekamar/{?=substr($value.kelas, strpos($value.kelas, " ") + 1)?}-{$value.kd_bangsal}" target="_blank">{$value.kelas} - {$value.kd_bangsal}</a><br>
+                                  {/loop}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Update</td>
+                                <td>
+                                  {loop: $kelas}
+                                  <a href="{?=url()?}/jknmobile/aplicare/{?=substr($value.kelas, strpos($value.kelas, " ") + 1)?}" target="_blank">{$value.kelas}</a><br>
+                                  {/loop}
                                 </td>
                             </tr>
                         </tbody>

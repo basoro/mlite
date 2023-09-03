@@ -160,6 +160,38 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function postSimpan_ICD9()
+  {
+    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
+    $db = new \PDO('sqlite:'.$dbFile);
+    if($_POST['simpan_icd9']) {
+      $cek = $this->data_icd('icd9')->where('kode', $_POST['kode_icd9'])->oneArray();
+      if(!$cek) {
+        $db->query("INSERT INTO icd9 (kode,nama) VALUES ('{$_POST['kode_icd9']}', '{$_POST['nama_icd9']}')");
+      } else {
+        $db->query("UPDATE icd9 SET nama='{$_POST['nama_icd9']}' WHERE kode='{$_POST['kode_icd9']}'");
+      }
+      $this->notify('success', 'Data ICD telah disimpan');
+    }
+    redirect(url([ADMIN, 'icd', 'manage']));
+  }
+
+  public function postSimpan_ICD10()
+  {
+    $dbFile = BASE_DIR.'/systems/data/icd.sdb';
+    $db = new \PDO('sqlite:'.$dbFile);
+    if($_POST['simpan_icd10']) {
+      $cek = $this->data_icd('icd10')->where('kode', $_POST['kode_icd10'])->oneArray();
+      if(!$cek) {
+        $db->query("INSERT INTO icd10 (kode,nama) VALUES ('{$_POST['kode_icd10']}', '{$_POST['nama_icd10']}')");
+      } else {
+        $db->query("UPDATE icd10 SET nama='{$_POST['nama_icd10']}' WHERE kode='{$_POST['kode_icd10']}'");
+      }
+      $this->notify('success', 'Data ICD telah disimpan');
+    }
+    redirect(url([ADMIN, 'icd', 'manage']));
+  }
+
   protected function data_icd($table)
   {
       return new DB_ICD($table);

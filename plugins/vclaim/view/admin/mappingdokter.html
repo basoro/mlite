@@ -1,0 +1,117 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola Mapping Dokter</h3>
+            </div>
+            <div class="panel-body">
+                <form name="jkn_mobile" action="{?=url(ADMIN.'/vclaim/dokter_save/')?}" method="POST">
+                    <div class="row">
+                        <div class="col-md-4">
+                          <div class="form-group">
+            	                <label>Nama Dokter BPJS</label>
+                                <input type="text" name="dokter_nama" id="dokter_nama" class="form-control" value="" placeholder="Masukkan kode poli BPJS">
+                                <ul class="list-group" id="dokterList" style="z-index:1000;position:absolute;width:100%;"></ul>
+            	            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+            	                <label>Kode Dokter BPJS</label>
+                                <input type="text" name="dokter_kode" id="dokter_kode" class="form-control" value="">
+            	            </div>
+                        </div>
+                        <div class="col-md-4">
+                          <div class="form-group">
+            	                <label>Nama Dokter RS</label>
+                              	<select name="kd_dokter" class="form-control">
+                                  {loop: $dokter}
+                                  <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                                  {/loop}
+                              	</select>
+            	            </div>
+                        </div>
+                    </div>
+      	            <div class="form-group">
+      	                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+      	            </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Data Mapping Dokter</h3>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive no-margin">
+                  <table class="table table-striped no-margin display no-wrap" width="100%">
+                    <thead>
+                      <tr>
+                        <th>Kode Dokter RS</th>
+                        <th>Kode Dokter BPJS</th>
+                        <th>Nama Dokter BPJS</th>
+                        <th class="text-right">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {loop: $row}
+                      <tr>
+                        <td>{$value.kd_dokter}</td>
+                        <td>{$value.kd_dokter_bpjs}</td>
+                        <td>{$value.nm_dokter_bpjs}</td>
+                        <td class="text-right">
+                          <a href="{?=url([ADMIN, 'vclaim', 'dokter_delete', $value.kd_dokter])?}" class="btn btn-xs btn-danger" data-confirm="Anda yakin akan menghapus dokter ini?">
+                            <i class="fa fa-trash-o"></i> <span class="hidden-xs">Hapus</span>
+                          </a>
+                        </td>
+                      </tr>
+                      {/loop}
+                    </tbody>
+                  </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+  $('#dokter_nama').keyup(function(e){
+    var dokter_nama = $('#dokter_nama').val().replace(/\s+$/, '');
+    var url = "{?=url(ADMIN)?}/vclaim/dokterdpjp/2/{?=date('Y-m-d')?}/" + dokter_nama + "?t={?=$_SESSION['token']?}";
+    if(e.which == 32) {
+      $.ajax({
+        url: url,
+        method:"GET",
+        data:{},
+             success:function(data)
+      {
+        var data = JSON.parse(data);
+        console.log(data);
+        var json_obj = [data];
+        var output='';
+        if(json_obj[0].metaData.code == 200) {
+          var response = json_obj[0].response.list;
+          for (var i in response) {
+            output+='<li class=\"list-group-item link-class\">' + response[i].kode + ': ' + response[i].nama + '</li>';
+          }
+        } else {
+          output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+        }
+        output+='';
+        //console.log(output);
+        $('#dokterList').fadeIn();
+        $('#dokterList').html(output).show();
+      }
+    });
+  }
+                                });
+  $('#dokterList').on('click', 'li', function(){
+    $('#dokter_nama').val($(this).text().split(': ')[1]);
+    $('#dokter_kode').val($(this).text().split(': ')[0]);
+    var dokter_kode = $('#dokter_kode').val();
+    $('#dokterList').fadeOut();
+  });
+</script>

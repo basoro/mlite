@@ -38,7 +38,7 @@ class JnsPerawatanLab
 
     public function anyForm()
     {
-        $return['penjab'] = $this->mysql('penjab')->toArray();
+        $return['penjab'] = $this->mysql('penjab')->where('status', '1')->toArray();
         $return['kelas'] = ['Kelas 1','Kelas 2','Kelas 3','Kelas Utama','Kelas VIP','Kelas VVIP'];
         $return['kategori'] = ['PA','PK'];
         if (isset($_POST['kd_jenis_prw'])){

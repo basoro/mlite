@@ -1,0 +1,524 @@
+<form action="{?=url(ADMIN.'/utd/savependonor')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title">
+              Data Aset
+            </h3>
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="{?=url([ADMIN,'utd','pendonor'])?}" role="tab">Data Pendonor</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'utd','donor'])?}" role="tab">Data Donor</a>
+                </li>
+                <li>
+                    <a href="{?=url([ADMIN,'utd','stokdarah'])?}" role="tab">Stok Darah</a>
+                </li>
+            </ul>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nomor Pendonor</label>
+                            <input type="text" name="no_pendonor" class="form-control" value="{$nomor}" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nama Pendonor</label>
+                            <input type="text" name="nama" class="form-control" value="" required />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nomor KTP</label>
+                            <input type="text" name="no_ktp" class="form-control" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Nomor Telepon</label>
+                            <input type="text" name="no_telp" class="form-control" value="" required />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tempat Lahir</label>
+                            <input type="text" name="tmp_lahir" class="form-control" value="" required />
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Tanggal Lahir</label>
+                            <input type="text" name="tgl_lahir" id="tgl_lahir" class="form-control tanggal" value="" required />
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Jenis Kelamin</label>
+                            <select name="jk" id="jk" class="form-control" data-use-search="true">
+                                <option value="L">Laki-Laki</option>
+                                <option value="P">Perempuan</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Golongan Darah</label>
+                            <select name="golongan_darah" id="golongan_darah" class="form-control" data-use-search="true">
+                              <option value="O">O</option>
+                              <option value="A">A</option>
+                              <option value="B">B</option>
+                              <option value="AB">AB</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-md-4">
+                        <div class="form-group">
+                            <label>Resus</label>
+                            <select name="resus" id="resus" class="form-control" data-use-search="true">
+                              <option value="(+)">Positif</option>
+                              <option value="(-)">Negatif</option>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <textarea name="alamat" class="form-control" rows="5" cols="80"></textarea>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Propinsi</label>
+                            <input type="text" name="nm_prop" id="nm_prop" class="form-control" value="" />
+                            <input type="hidden" name="kd_prop" id="kd_prop" class="form-control" value="" />
+                            <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kabupaten/Kota</label>
+                            <input type="text" name="nm_kab" id="nm_kab" class="form-control" value="" />
+                            <input type="hidden" name="kd_kab" id="kd_kab" class="form-control" value="" />
+                            <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kecamatan</label>
+                            <input type="text" name="nm_kec" id="nm_kec" class="form-control" value="" />
+                            <input type="hidden" name="kd_kec" id="kd_kec" class="form-control" value="" />
+                            <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kelurahan</label>
+                            <input type="text" name="nm_kel" id="nm_kel" class="form-control" value="" />
+                            <input type="hidden" name="kd_kel" id="kd_kel" class="form-control" value="" />
+                            <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-primary" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="update" class="btn btn-warning" id="cetak" value="Cetak" />
+                    <input type="submit" name="hapus" id="hapus" class="btn btn-danger pull-right" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="table-responsive no-margin" id="utd_pendonor">
+      <table class="table table-bordered no-padding nowrap dataTables" id="myTable" width="100%">
+        <thead>
+          <tr>
+            <th>No. Pendonor</th>
+            <th>Nama Pendonor</th>
+            <th>Nomor KTP</th>
+            <th>Jenis Kelamin</th>
+            <th>Gol. Darah</th>
+            <th>Resus</th>
+            <th>Tempat Lahir</th>
+            <th>Tanggal Lahir</th>
+            <th>Alamat</th>
+            <th>Kelurahan</th>
+            <th>Kecamatan</th>
+            <th>Kabupaten/Kota</th>
+            <th>Propinsi</th>
+            <th>Telepon</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $pendonor}
+          {loop: $pendonor}
+          <tr class="utd_pendonor"
+          data-no_pendonor="{$value.no_pendonor}"
+          data-nama="{$value.nama}"
+          data-no_ktp="{$value.no_ktp}"
+          data-jk="{$value.jk}"
+          data-tmp_lahir="{$value.tmp_lahir}"
+          data-tgl_lahir="{$value.tgl_lahir}"
+          data-alamat="{$value.alamat}"
+          data-kd_kel="{$value.kd_kel}"
+          data-nm_kel="{$value.nm_kel}"
+          data-kd_kec="{$value.kd_kec}"
+          data-nm_kec="{$value.nm_kec}"
+          data-kd_kab="{$value.kd_kab}"
+          data-nm_kab="{$value.nm_kab}"
+          data-kd_prop="{$value.kd_prop}"
+          data-nm_prop="{$value.nm_prop}"
+          data-golongan_darah="{$value.golongan_darah}"
+          data-resus="{$value.resus}"
+          data-no_telp="{$value.no_telp}"
+          >
+            <td>{$value.no_pendonor}</td>
+            <td>{$value.nama}</td>
+            <td>{$value.no_ktp}</td>
+            <td>{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+            <td>{$value.golongan_darah}</td>
+            <td>{$value.resus}</td>
+            <td>{$value.tmp_lahir}</td>
+            <td>{$value.tgl_lahir}</td>
+            <td>{$value.alamat}</td>
+            <td>{$value.kd_kel} - {$value.nm_kel}</td>
+            <td>{$value.kd_kec} - {$value.nm_kec}</td>
+            <td>{$value.kd_kab} - {$value.nm_kab}</td>
+            <td>{$value.kd_prop} - {$value.nm_prop}</td>
+            <td>{$value.no_telp}</td>
+          </tr>
+          {/loop}
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div id="contextMenu" class="dropdown clearfix" style="position: absolute;display: none;">
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu" style="display:block;position:static;">
+    <li>
+      <a class="kartuDonor" tabindex="-1" href="#">Cetak Kartu Donor</a>
+    </li>
+    <li><a class="kirimWa" tabindex="-1" href="#">Kirim WhatsApp</a>
+    <!-- </li>
+    <li class="dropdown-submenu">
+      <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Submenu</a>
+      <ul class="dropdown-menu">
+        <li><a class="selectOption" href="#">Submenu 1</a></li>
+        <li><a class="selectOption" href="#">Submenu 2</a></li>
+      </ul>
+    </li>
+    <li class="divider"></li>
+    <li><a class="selectOption" tabindex="-1" href="#">Final Action</a></li> -->
+  </ul>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Kirim WhatsApp</h4>
+      </div>
+      <div class="modal-body">
+        <div class="form-floating number">
+          <label for="floatingPassword">Nomor</label>
+          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan">
+        </div>
+        <div class="form-floating message">
+          <label for="floatingPassword">Pesan</label>
+          <textarea name="message" rows="14" cols="100" class="form-control" id="message" placeholder="Tulis pesan anda.."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="kartuModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Cetak Kartu</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cetak-kartu">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="cetakModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Cetak Data Pendonor</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cetak-data_pendonor">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+
+<script type="text/javascript">
+  $('#myTable tbody tr').click(function() {
+      $(this).addClass('bg-danger').siblings().removeClass('bg-danger');
+  });
+  $(function() {
+      var selected_row;
+      var $contextMenu = $("#contextMenu");
+      $("body").on("contextmenu", "table tr", function(e) {
+         no_pendonor = $(this).data("no_pendonor");
+         nama = $(this).data("nama");
+         no_telp = $(this).data("no_telp");
+         $contextMenu.css({
+              display: "block",
+              left: e.pageX,
+              top: e.pageY-50
+         });
+         return false;
+      });
+      $(".kirimWa").click(function(){
+        $("#waModal").on("shown.bs.modal", function (e) {
+             $(e.currentTarget).find('input[name="number"]').val(no_telp);
+             $(e.currentTarget).find('#message').val('Assalamualaikum...\nBapak/Ibu ' + nama + ' waktunya donor\n\n\nUnit UTD');
+        }).modal('show');
+      })
+      $(".kartuDonor").click(function(){
+          var baseURL = mlite.url + '/' + mlite.admin;
+          $("#kartuModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/utd/kartudonor/' + no_pendonor + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+      })
+      $('html').click(function() {
+           $contextMenu.hide();
+      });
+  });
+
+  $("#utd_pendonor").on("click", ".utd_pendonor", function(event){
+    var no_pendonor  = $(this).attr("data-no_pendonor");
+    var nama  = $(this).attr("data-nama");
+    var no_ktp  = $(this).attr("data-no_ktp");
+    var jk  = $(this).attr("data-jk");
+    var golongan_darah  = $(this).attr("data-golongan_darah");
+    var resus  = $(this).attr("data-resus");
+    var tmp_lahir  = $(this).attr("data-tmp_lahir");
+    var tgl_lahir  = $(this).attr("data-tgl_lahir");
+    var alamat  = $(this).attr("data-alamat");
+    var kd_kel  = $(this).attr("data-kd_kel");
+    var nm_kel  = $(this).attr("data-nm_kel");
+    var kd_kec  = $(this).attr("data-kd_kec");
+    var nm_kec  = $(this).attr("data-nm_kec");
+    var kd_kab  = $(this).attr("data-kd_kab");
+    var nm_kab  = $(this).attr("data-nm_kab");
+    var kd_prop  = $(this).attr("data-kd_prop");
+    var nm_prop  = $(this).attr("data-nm_prop");
+    var no_telp  = $(this).attr("data-no_telp");
+    $('input:text[name=no_pendonor]').val(no_pendonor);
+    $('input:text[name=nama]').val(nama);
+    $('input:text[name=no_ktp]').val(no_ktp);
+    $('#jk').val(jk).change();
+    $('#golongan_darah').val(golongan_darah).change();
+    $('#resus').val(resus).change();
+    $('input:text[name=tmp_lahir]').val(tmp_lahir);
+    $('#tgl_lahir').val(tgl_lahir);
+    $('textarea[name=alamat]').val(alamat);
+    $('#kd_kel').val(kd_kel);
+    $('#nm_kel').val(nm_kel);
+    $('#kd_kec').val(kd_kec);
+    $('#nm_kec').val(nm_kec);
+    $('#kd_kab').val(kd_kab);
+    $('#nm_kab').val(nm_kab);
+    $('#kd_prop').val(kd_prop);
+    $('#nm_prop').val(nm_prop);
+    $('input:text[name=no_telp]').val(no_telp);
+    $('input:text[name=no_pendonor]').prop('readonly', true);
+  });
+</script>
+<script>
+  $('#nm_prop').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'utd', 'wilayah?show=caripropinsi'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#propinsiList').fadeIn();
+              $('#propinsiList').html(data);
+           }
+        });
+     }
+  });
+  $('#propinsiList').on('click', 'li', function(){
+     $('#nm_prop').val($(this).text().split(': ')[1]);
+     $('#kd_prop').val($(this).text().split(': ')[0]);
+     $('#propinsiList').fadeOut();
+  });
+  $('#nm_kab').keyup(function(){
+     event.preventDefault();
+     var query = $(this).val();
+     if(query != '')
+     {
+        $.ajax({
+           url: "{?=url([ADMIN, 'utd', 'wilayah?show=carikabupaten'])?}",
+           method:"POST",
+           data:{query:query},
+           success:function(data)
+           {
+              $('#kabupatenList').fadeIn();
+              $('#kabupatenList').html(data);
+           }
+        });
+     }
+  });
+  $('#kabupatenList').on('click', 'li', function(){
+       $('#nm_kab').val($(this).text().split(': ')[1]);
+       $('#kd_kab').val($(this).text().split(': ')[0]);
+       $('#kabupatenList').fadeOut();
+  });
+  $('#nm_kec').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'utd', 'wilayah?show=carikecamatan'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#kecamatanList').fadeIn();
+                      $('#kecamatanList').html(data);
+                 }
+            });
+       }
+  });
+  $('#kecamatanList').on('click', 'li', function(){
+       $('#nm_kec').val($(this).text().split(': ')[1]);
+       $('#kd_kec').val($(this).text().split(': ')[0]);
+       $('#kecamatanList').fadeOut();
+  });
+  $('#nm_kel').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: "{?=url([ADMIN, 'utd', 'wilayah?show=carikelurahan'])?}",
+                 method:"POST",
+                 data:{query:query},
+                 success:function(data)
+                 {
+                      $('#kelurahanList').fadeIn();
+                      $('#kelurahanList').html(data);
+                 }
+            });
+       }
+  });
+  $('#kelurahanList').on('click', 'li', function(){
+       $('#nm_kel').val($(this).text().split(': ')[1]);
+       $('#kd_kel').val($(this).text().split(': ')[0]);
+       $('#kelurahanList').fadeOut();
+  });
+
+  $(function() {
+    $("form").on("click", "#hapus", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var no_pendonor = $('input:text[name=no_pendonor]').val();
+      event.preventDefault();
+      if(no_pendonor == '') {
+        alert('Silahkan pilih data yang mau dihapus!!');
+      } else {
+        $.confirm({
+          columnClass: 'col-md-4 col-md-offset-4',
+          theme: 'white',
+          title: 'Peringatan',
+          text: 'Apakah anda yakin akan menghapus data ini?',
+          confirmButton: 'Iya',
+          cancelButton: 'Tidak',
+          confirmButtonClass: 'btn-success',
+          cancelButtonClass: 'btn-danger',
+          confirm: function() {
+            window.location.replace(baseURL + '/utd/hapuspendonor/' + no_pendonor + '?t=' + mlite.token);
+          },
+          cancel: function() {
+          }
+        });
+      }
+    });
+  });
+
+  function KirimWA() {
+  	var xhttp = new XMLHttpRequest();
+    var api_key = '{$waapitoken}';
+  	var sender = '{$waapiphonenumber}';
+  	var number = document.getElementById("number").value;
+  	var message = document.getElementById("message").value;
+  	//console.log(api_key + " - " + number + " - " + message);
+  	xhttp.onreadystatechange = function() {
+  		if (this.readyState == 4 && this.status == 200) {
+  			var data=xhttp.responseText;
+  			var jsonResponse = JSON.parse(data);
+  			if(jsonResponse["status"] == true) {
+  				alert('Sukses mengirim pesan.');
+  			} else {
+  				alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+  			}
+  		}
+  	};
+  	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
+  	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
+  }
+
+  $("form").on("click", "#cetak", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/utd/cetak?t=' + mlite.token;
+    var cari = $('.pencarian').val();
+    $.post(url, {cari: cari} ,function(data) {
+      $("#cetakModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:90%;height:95%;"><iframe src="' + baseURL + '/utd/cetakpendonor?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+    });
+
+		return false;
+  });
+
+ </script>

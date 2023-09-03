@@ -35,6 +35,14 @@
               <li><a href="#status_rawat" data-no_rawat="{$value.no_rawat}" data-stts="{$value.stts}">Status Rawat</a></li>
               <li><a href="#status_lanjut" data-no_rawat="{$value.no_rawat}">Status Lanjut</a></li>
               {/if}
+              <li class="dropdown-submenu">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Surat-Surat</a>
+                <ul class="dropdown-menu">
+                  <li><a href="{?=url([ADMIN,'igd','suratrujukan',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Rujukan</a></li>
+                  <li><a href="{?=url([ADMIN,'igd','suratsehat',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sehat</a></li>
+                  <li><a href="{?=url([ADMIN,'igd','suratsakit',convertNorawat($value.no_rawat)])?}" target="_blank">Surat Keterangan Sakit</a></li>
+                </ul>
+              </li>
             </ul>
           </td>
           <td style="white-space: nowrap;"><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">{$value.nm_pasien}</a></td>
@@ -51,6 +59,7 @@
           <td style="white-space: nowrap;">
           {if: $value.kd_pj == 'BPJ'}
             {if: $cek_vclaim}
+              <div class="btn-group" role="group">
               <button type="button" name="button" class="btn btn-xs btn-primary sep"
                 data-no_rkm_medis="{$value.no_rkm_medis}"
                 data-nm_pasien="{$value.nm_pasien}"
@@ -60,6 +69,10 @@
                 disabled
                 {/if}
               ><span class="fa fa-send"></span> BPJS</button>
+              {if: $value.no_sep !=''}
+              <a href="{?=url([ADMIN, 'rawat_jalan', 'sepdetail', $value.no_sep])?}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#sepModal"><span class="fa fa-eye"></span></a>
+              {/if}
+              </div>
             {/if}
           {else}
             {$value.png_jawab}
@@ -85,6 +98,13 @@
 </div>
 <div class="modal fade" id="riwayatModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-full" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="sepModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
         </div>

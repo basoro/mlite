@@ -1,0 +1,583 @@
+<style media="screen">
+  table td,
+  table th {
+    padding: 5px;
+  }
+</style>
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">e-Resep</h4>
+</div>
+<div class="modal-body">
+  <div class="row" id="form_rincian_eresep">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label for="tgl_perawatan" class="col-sm-3 control-label">Tanggal</label>
+              <div class="col-sm-4">
+                <input type="text" id="tgl_perawatan" name="tgl_perawatan" class="form-control tanggal" value="{?=date('Y-m-d')?}">
+              </div>
+              <label for="pnd" class="col-sm-2 control-label">Jam</label>
+              <div class="col-sm-3">
+                <input type="text" id="jam_reg" name="jam_reg" class="form-control jam" value="{?=date('H:i:s')?}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Resep Non-Racik</label>
+              <div class="col-sm-4">
+                <input type="text" name="obat_eresep" class="form-control" placeholder="Nama obat/BHP" value="">
+              </div>
+              <label for="" class="col-sm-2 control-label">Racikan</label>
+              <div class="col-sm-3">
+                <input type="text" name="racikan_eresep" class="form-control" placeholder="Nama racikan" value="">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div id="obat_eresep"></div>
+      <div id="racikan_eresep"></div>
+      <div id="obat_racikan"></div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="form-horizontal">
+            <div class="form-group">
+              <label for="tgl_perawatan" class="col-sm-3 control-label">Jenis</label>
+              <div class="col-sm-4">
+                <input type="hidden" name="kd_jenis_prw_eresep" class="form-control" value="">
+                <input type="text" name="nm_perawatan_eresep" class="form-control" placeholder="Nama Obat/BHP/Racikan" value="" readonly>
+              </div>
+              <label for="pnd" class="col-sm-2 control-label">Biaya</label>
+              <div class="col-sm-3">
+                <input type="text" id="biaya_eresep" name="biaya_eresep" class="form-control" value="" readonly>
+              </div>
+            </div>
+            <div id="daftar_racikan_eresep">
+              <div class="form-group">
+                <label for="" class="col-sm-3 control-label">Nama Racikan</label>
+                <div class="col-sm-9">
+                  <input type="text" id="nama_racik_eresep" name="nama_racik_eresep" class="form-control" value="">
+                </div>
+              </div>
+              <div id="item_racikan_eresep">
+                <div class="form-group">
+                  <label class="col-md-3 control-label"><button type="button" class="btn btn-xs btn-primary add_racikan_eresep"><span class="fa fa-plus"></span></button> Nama Obat</label>
+                  <div class="col-sm-6">
+                    <select name="kode_brng_eresep" id="kode_brng_eresep" class="form-control databarang_ajax">
+                    </select>
+                  </div>
+                  <label for="" class="col-sm-1 control-label">Knd.</label>
+                  <div class="col-sm-2">
+                    <input type="text" name="kandungan_eresep" class="form-control" value="" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="" class="col-sm-3 control-label">Keterangan</label>
+                <div class="col-sm-9">
+                  <textarea name="keterangan_eresep" id="keterangan_eresep" rows="2" class="form-control"></textarea>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" id="aturan_pakai_eresep">
+              <label class="col-md-3 control-label">Aturan Pakai</label>
+              <div class="col-sm-4">
+                <input type="text" class="form-control" name="aturan_pakai_eresep" id="aturan_pakai_eresep" value="">
+                <ul class="list-group" id="aturan_pakaiList_eresep" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+              <label for="" class="col-sm-2 control-label">Jml</label>
+              <div class="col-sm-3">
+                <input type="text" name="jml_eresep" id="jml_eresep" class="form-control" value="10">
+              </div>
+            </div>
+            <div class="m-t-xl">
+              <button type="button" name="button" class="btn btn-primary" id="simpan_rincian_eresep"><i class="fa fa-save"></i><span class="hidden-xs"> Masukkan Rincian</span></button>
+              <button type="button" name="button" class="btn btn-success" id="selesai_eresep"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="rincian_eresep">
+    <h4>Permintaan e-Resep</h4>
+    <h5>Non Racikan</h5>
+    <div class="table-responsive no-margin">
+      <table class="table table-striped table-bordered no-padding" width="100%">
+        <thead>
+          <tr>
+            <th>Nama Dokter</th>
+            <th>Nomor Resep</th>
+            <th>Tanggal Peresepan</th>
+            <th colspan="2">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $resep}
+          <tr>
+            <td>{$value.nm_dokter}</td>
+            <td>{$value.no_resep}</td>
+            <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+            <td colspan="2">
+              <button type="button" class="btn btn-danger btn-xs hapus_resep_obat_eresep" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+            </td>
+          </tr>
+          <tr>
+            <th>Nama Obat</th>
+            <th>Jumlah</th>
+            <th>Aturan Pakai</th>
+            <th>Harga</th>
+            <th>Aksi</th>
+          </tr>
+          {loop: $value.resep_dokter as $data}
+            <tr>
+              <td>{$data.nama_brng}</td>
+              <td>{$data.jml}</td>
+              <td>{$data.aturan_pakai}</td>
+              <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+              <td><button type="button" class="btn btn-danger btn-xs hapus_resep_dokter_eresep" data-no_rawat="{$value.no_rawat}" data-kd_jenis_prw="{$data.kode_brng}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Obat</span></button></td>
+            </tr>
+          {/loop}
+          {/loop}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3">Total Biaya Obat</th>
+            <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep,2,',','.')?}</span></th>
+            <th></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <h5>Racikan </h5>
+    <div class="table-responsive no-margin">
+      <table class="table table-striped table-bordered no-padding" width="100%">
+        <thead>
+          <tr>
+            <th>Nama Dokter</th>
+            <th>Nomor Resep</th>
+            <th>Tanggal Peresepan</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $resep_racikan}
+          <tr>
+            <td>{$value.nm_dokter}</td>
+            <td>{$value.no_resep}</td>
+            <td>{$value.tgl_peresepan} {$value.jam_peresepan}</td>
+            <td>
+              <button type="button" class="btn btn-danger btn-xs hapus_resep_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_peresepan}" data-jam_peresepan="{$value.jam_peresepan}" data-no_resep="{$value.no_resep}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus Resep</span></button>
+            </td>
+          </tr>
+          <tr>
+            <th>Nama Racikan</th>
+            <th>Jml. Racik</th>
+            <th>Aturan Pakai</th>
+            <th>Keterangan</th>
+          </tr>
+          <tr>
+            <td>{$value.nama_racik}</td>
+            <td>{$value.jml_dr}</td>
+            <td>{$value.aturan_pakai}</td>
+            <td>{$value.keterangan}</td>
+          </tr>
+          <tr>
+            <th>Nama Obat</th>
+            <th>Kandungan</th>
+            <th>Jumlah</th>
+            <th>Harga</th>
+          </tr>
+          {loop: $value.resep_dokter_racikan_detail as $data}
+            <tr>
+              <td>{$data.nama_brng}</td>
+              <td>{$data.kandungan}</td>
+              <td>{$data.jml}</td>
+              <td>Rp. <span class="pull-right">{?= number_format(($data.ralan * $data.jml),2,',','.')?}</span></td>
+            </tr>
+          {/loop}
+          {/loop}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th colspan="3">Total Biaya Obat Racikan</th>
+            <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_resep_racikan,2,',','.')?}</span></th>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $('#daftar_racikan_eresep').hide();
+  // ketika inputbox pencarian diisi
+  $('input:text[name=obat_eresep]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/dokter_ralan/obat?t=' + mlite.token;
+    var obat = $('input:text[name=obat_eresep]').val();
+    //console.log(obat);
+
+    if(obat!="") {
+        $.post(url, {obat: obat} ,function(data) {
+        // tampilkan data yang sudah di perbaharui
+          $("#obat_eresep").html(data).show();
+          $("#racikan_eresep").hide();
+        });
+    }
+
+  });
+
+  // ketika baris data diklik
+  $("#obat_eresep").on("click", ".pilih_obat", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+
+    var kode_brng = $(this).attr("data-kode_brng");
+    var nama_brng = $(this).attr("data-nama_brng");
+    var biaya = $(this).attr("data-ralan");
+    var stok = $(this).attr("data-stok");
+    var stokminimal = $(this).attr("data-stokminimal");
+
+    if(stok < stokminimal) {
+      alert('Stok obat ' + nama_brng + ' tidak mencukupi.');
+      $('input:hidden[name=kd_jenis_prw_eresep]').val();
+      $('input:text[name=biaya_eresep]').val();
+      $('input:text[name=nm_perawatan_eresep]').val();
+    } else {
+      $('input:hidden[name=kd_jenis_prw_eresep]').val(kode_brng);
+      $('input:text[name=biaya_eresep]').val(biaya);
+      $('input:text[name=nm_perawatan_eresep]').val(nama_brng);
+    }
+
+    $('#obat_eresep').hide();
+    $('#racikan_eresep').hide();
+    $('#daftar_racikan_eresep').hide();
+  });
+
+  $('input:text[name=racikan_eresep]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/dokter_ralan/racikan?t=' + mlite.token;
+    var racikan = $('input:text[name=racikan_eresep]').val();
+    //console.log(racikan);
+
+    if(racikan!="") {
+        $.post(url, {racikan: racikan} ,function(data) {
+        // tampilkan data yang sudah di perbaharui
+          //console.log(data);
+          $("#racikan_eresep").html(data).show();
+          $("#obat_eresep").hide();
+        });
+    }
+    // ketika baris data diklik
+    $("#racikan_eresep").on("click", ".pilih_racikan", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      event.preventDefault();
+
+      var kd_racik = $(this).attr("data-kd_racik");
+      var nm_racik = $(this).attr("data-nm_racik");
+
+      $('input:hidden[name=kd_jenis_prw_eresep]').val(kd_racik);
+      $('input:text[name=nm_perawatan_eresep]').val(nm_racik);
+      $('input:text[name=biaya_eresep]').val('');
+
+      $('#racikan_eresep').hide();
+      $('#daftar_racikan_eresep').show();
+    });
+
+  });
+  $('.databarang_ajax').selectator({
+    labels: {
+      search: 'Cari obat...'
+    },
+    load: function (search, callback) {
+      if (search.length < this.minSearchLength) return callback();
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          callback(data.slice(0, 100));
+          //console.log(data);
+        },
+        error: function() {
+          callback();
+        }
+      });
+    },
+    delay: 300,
+    minSearchLength: 1,
+    valueField: 'kode_brng',
+    textField: 'nama_brng'
+  });
+
+</script>
+<script>
+  var count=2;
+  $(document).on('click', '.add_racikan_eresep', function(){
+      var html = '';
+      html += '<div class="form-group row_racikan_eresep">';
+      html += '    <label class="col-md-3 control-label"><button type="button" class="btn btn-xs btn-danger remove_racikan_eresep"><span class="fa fa-minus"></span></button></label>';
+      html += '    <div class="col-md-6">';
+      html += '        <select name="kode_brng_eresep" class="form-control databarang_ajax">';
+      html += '        </select>';
+      //html += '        <input type="hidden" name="kode_brng" class="form-control" value="">';
+      //html += '        <input type="text" name="nama_brng" class="form-control nama_brng" value="">';
+      html += '    </div>';
+      html += '    <label for="" class="col-sm-1 control-label">Knd.</label>';
+      html += '    <div class="col-sm-2">';
+      html += '        <input type="text" name="kandungan_eresep" id="kandungan_eresep" class="form-control" value="">';
+      html += '    </div>';
+      html += '</div>';
+      $('#item_racikan_eresep').append(html);
+      count++;
+      //console.log(html);
+      var strip_tags = function(str) {
+        return (str + '').replace(/<\/?[^>]+(>|$)/g, '')
+      };
+      var truncate_string = function(str, chars) {
+        if ($.trim(str).length <= chars) {
+          return str;
+        } else {
+          return $.trim(str.substr(0, chars)) + '…';
+        }
+      };
+      $('.databarang_ajax').selectator({
+        labels: {
+          search: 'Cari obat...'
+        },
+        load: function (search, callback) {
+          if (search.length < this.minSearchLength) return callback();
+          $.ajax({
+            url: '{?=url()?}/{?=ADMIN?}/dokter_ralan/ajax?show=databarang&nama_brng=' + encodeURIComponent(search) + '&t={?=$_SESSION['token']?}',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              callback(data.slice(0, 100));
+              //console.log(data);
+            },
+            error: function() {
+              callback();
+            }
+          });
+        },
+        delay: 300,
+        minSearchLength: 1,
+        valueField: 'kode_brng',
+        textField: 'nama_brng'
+      });
+      $('select').each(function () {
+          var options = {
+              useDimmer: true,
+              useSearch: true,
+              labels: {
+                  search: '...'
+              }
+          };
+          $.each($(this).data(), function (key, value) {
+              options[key] = value;
+          });
+          $(this).selectator(options);
+      });
+
+  });
+
+  $(document).on('click', '.remove_racikan_eresep', function(){
+      $(this).closest('.row_racikan_eresep').remove();
+  });
+
+  $("#form_rincian_eresep").on("click", "#selesai_eresep", function(event){
+    $("#form_rincian_eresep").hide();
+    $("#form").show();
+    $("#daftar_racikan").hide();
+    $("#eresepModal").modal("hide");
+  });
+
+</script>
+
+<script>
+  $('input:text[name=aturan_pakai_eresep]').on('input',function(e){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url    = baseURL + '/dokter_ralan/aturanpakai?t=' + mlite.token;
+    var query = $('input:text[name=aturan_pakai_eresep]').val();
+    if(query!="") {
+        $.ajax({
+             url: url,
+             method:"POST",
+             data:{query:query},
+             success:function(data)
+             {
+                  $('#aturan_pakaiList_eresep').fadeIn();
+                  $('#aturan_pakaiList_eresep').html(data);
+             }
+        });
+    }
+    $('#aturan_pakaiList_eresep').fadeIn();
+  });
+
+  $('#aturan_pakaiList_eresep').on('click', 'li', function(){
+       $('input:text[name=aturan_pakai_eresep]').val($(this).text());
+       $('#aturan_pakaiList_eresep').fadeOut();
+  });
+</script>
+
+<script type="text/javascript">
+  $("#form_rincian_eresep").on("click", "#simpan_rincian_eresep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat        = $('input:text[name=no_rawat]').val();
+    var kd_jenis_prw 	  = $('input:hidden[name=kd_jenis_prw_eresep]').val();
+    var tgl_perawatan   = $('input:text[name=tgl_perawatan]').val();
+    var jam_rawat       = $('input:text[name=jam_rawat]').val();
+    var biaya           = $('input:text[name=biaya_eresep]').val();
+    var aturan_pakai    = $('input:text[name=aturan_pakai_eresep]').val();
+    var jml             = $('input:text[name=jml_eresep]').val();
+    var nama_racik      = $('input:text[name=nama_racik_eresep]').val();
+    var keterangan      = $('textarea[name=keterangan_eresep]').val();
+    var kode_brng       = JSON.stringify($('select[name=kode_brng_eresep]').serializeArray());
+    var kandungan       = JSON.stringify($('input:text[name=kandungan_eresep]').serializeArray());
+    var kat             = 'obat';
+    if(typeof nama_racik !== 'undefined' && nama_racik != ''){
+      var kat           = 'racikan';
+    }
+    /*
+    console.log(
+      'No Rawat: ' + no_rawat + '\n' +
+      'Kd Jenis Prw: ' + kd_jenis_prw + '\n' +
+      'Jml: ' + jml + '\n' +
+      'Tgl Perawatan: ' + tgl_perawatan + '\n' +
+      'Jam Rawat: ' + jam_rawat + '\n' +
+      'Biaya: ' + biaya + '\n' +
+      'Aturan Pakai: ' + aturan_pakai + '\n' +
+      'Nama Racik: ' + nama_racik + '\n' +
+      'Keterangan: ' + keterangan + '\n' +
+      'Kategori: ' + kat + '\n' +
+      'Kode Barang: ' + kode_brng + '\n' +
+      'Kandungan: ' + kandungan + '\n'
+    );
+    */
+
+    var url = baseURL + '/dokter_ralan/savedetail?t=' + mlite.token;
+    $.post(url, {
+      no_rawat : no_rawat,
+      kd_jenis_prw   : kd_jenis_prw,
+      tgl_perawatan  : tgl_perawatan,
+      jam_rawat      : jam_rawat,
+      biaya          : biaya,
+      aturan_pakai   : aturan_pakai,
+      jml            : jml,
+      nama_racik     : nama_racik,
+      keterangan     : keterangan,
+      kode_brng      : kode_brng,
+      kandungan      : kandungan,
+      kat            : kat
+    }, function(data) {
+      //console.log(data);
+      // tampilkan data
+      $("#display").hide();
+      var url = baseURL + '/dokter_ralan/rincianeresep?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#rincian_eresep").html(data).show();
+      });
+      $('input:hidden[name=kd_jenis_prw_eresep]').val("");
+      $('input:text[name=biaya_eresep]').val("");
+      $('input:text[name=nama_racik_eresep]').val("");
+      $('#kode_brng_eresep').val("");
+      $('#keterangan_eresep').val("");
+      $('input:text[name=kandungan_eresep]').val("");
+      $('.row_racikan').remove();
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+      "Data pasien telah disimpan!"+
+      "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+      "</div>").show();
+    });
+  });
+
+  // ketika tombol hapus ditekan
+  $("#rincian_eresep").on("click",".hapus_resep_obat_eresep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/dokter_ralan/hapusresep?t=' + mlite.token;
+    var no_resep = $(this).attr("data-no_resep");
+    var no_rawat = $(this).attr("data-no_rawat");
+    var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+    var jam_peresepan = $(this).attr("data-jam_peresepan");
+
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_resep: no_resep,
+          no_rawat: no_rawat,
+          tgl_peresepan: tgl_peresepan,
+          jam_peresepan: jam_peresepan
+        } ,function(data) {
+          var url = baseURL + '/dokter_ralan/rincianeresep?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#rincian_eresep").html(data).show();
+          });
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data rincian rawat jalan telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+
+  // ketika tombol hapus ditekan
+  $("#rincian_eresep").on("click",".hapus_resep_dokter_eresep", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var url = baseURL + '/dokter_ralan/hapusresep?t=' + mlite.token;
+    var no_resep = $(this).attr("data-no_resep");
+    var no_rawat = $(this).attr("data-no_rawat");
+    var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        $.post(url, {
+          no_resep: no_resep,
+          no_rawat: no_rawat,
+          kd_jenis_prw: kd_jenis_prw
+        } ,function(data) {
+          var url = baseURL + '/dokter_ralan/rincianeresep?t=' + mlite.token;
+          $.post(url, {no_rawat : no_rawat,
+          }, function(data) {
+            // tampilkan data
+            $("#rincian_eresep").html(data).show();
+          });
+          $('#notif').html("<div class=\"alert alert-danger alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data rincian rawat jalan telah dihapus!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+  });
+
+  $("#form_rincian_eresep").on("click","#jam_reg", function(event){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var url = baseURL + '/dokter_ralan/cekwaktu?t=' + mlite.token;
+      $.post(url, {
+      } ,function(data) {
+        $("#form_rincian_eresep #jam_reg").val(data);
+      });
+  });
+
+</script>

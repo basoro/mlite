@@ -40,6 +40,7 @@ use Plugins\Master\Src\ResikoKerja;
 use Plugins\Master\Src\StatusKerja;
 use Plugins\Master\Src\StatusWP;
 use Plugins\Master\Src\MetodeRacik;
+use Plugins\Master\Src\RuangOk;
 use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
@@ -84,6 +85,7 @@ class Admin extends AdminModule
         $this->statuskerja = new StatusKerja();
         $this->statuswp = new StatusWP();
         $this->metoderacik = new MetodeRacik();
+        $this->ruangok = new RuangOk();
     }
 
     public function navigation()
@@ -127,6 +129,7 @@ class Admin extends AdminModule
             'Status Kerja' => 'statuskerja',
             'Status WP' => 'statuswp',
             'Metode Racik' => 'metoderacik',
+            'Ruang OK' => 'ruangok',
         ];
     }
 
@@ -170,6 +173,7 @@ class Admin extends AdminModule
         ['name' => 'Status Kerja', 'url' => url([ADMIN, 'master', 'statuskerja']), 'icon' => 'cubes', 'desc' => 'Master status kerja'],
         ['name' => 'Status Wajib Pajak', 'url' => url([ADMIN, 'master', 'statuswp']), 'icon' => 'cubes', 'desc' => 'Master status wajib pajak'],
         ['name' => 'Metode Racik', 'url' => url([ADMIN, 'master', 'metoderacik']), 'icon' => 'cubes', 'desc' => 'Master metode racik'],
+        ['name' => 'Ruang OK', 'url' => url([ADMIN, 'master', 'ruangok']), 'icon' => 'cubes', 'desc' => 'Master ruang OK'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -1899,6 +1903,50 @@ class Admin extends AdminModule
     }
     /* End MetodeRacik Section */
 
+    /* Start Ruang OK Section */
+    public function getRuangOk()
+    {
+      $this->core->addJS(url([ADMIN, 'master', 'ruangokjs']), 'footer');
+      $return = $this->ruangok->getIndex();
+      return $this->draw('ruangok.html', [
+        'ruangok' => $return
+      ]);
+
+    }
+
+    public function anyRuangOkForm()
+    {
+        $return = $this->ruangok->anyForm();
+        echo $this->draw('ruangok.form.html', ['ruangok' => $return]);
+        exit();
+    }
+
+    public function anyRuangOkDisplay()
+    {
+        $return = $this->ruangok->anyDisplay();
+        echo $this->draw('ruangok.display.html', ['ruangok' => $return]);
+        exit();
+    }
+
+    public function postRuangOkSave()
+    {
+      $this->ruangok->postSave();
+      exit();
+    }
+
+    public function postRuangOkHapus()
+    {
+      $this->ruangok->postHapus();
+      exit();
+    }
+
+    public function getRuangOkJS()
+    {
+        header('Content-type: text/javascript');
+        echo $this->draw(MODULES.'/master/js/admin/ruangok.js');
+        exit();
+    }
+    /* End Ruang OK Section */
 
     public function getCSS()
     {

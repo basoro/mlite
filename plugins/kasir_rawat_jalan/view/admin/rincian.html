@@ -7,7 +7,6 @@
         <li role="presentation"><a href="#lab" aria-controls="lab" role="tab" data-toggle="tab">Laboratorium</a></li>
         <li role="presentation"><a href="#rad" aria-controls="rad" role="tab" data-toggle="tab">Radiologi</a></li>
         <li role="presentation"><a href="#operasi" aria-controls="rad" role="tab" data-toggle="tab">Operasi</a></li>
-        <li role="presentation"><a href="#tambahan" aria-controls="kontrol" role="tab" data-toggle="tab">Tambahan</a></li>
     </ul>
 
     <div class="tab-content">
@@ -52,11 +51,6 @@
                   <td>6.</td>
                   <td>Operasi</td>
                   <td>Rp. <span class="pull-right" id="jurnal_radiologi">{?= number_format($jumlah_total_operasi + $jumlah_total_obat_operasi,2,',','.')?}</span></td>
-                </tr>
-                <tr>
-                  <td>7.</td>
-                  <td>Tambahan Biaya</td>
-                  <td>Rp. <span class="pull-right" id="jurnal_tambahan_biaya">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></td>
                 </tr>
               </tbody>
             </table>
@@ -146,7 +140,7 @@
                   <td>{$value.jml}</td>
                   <td>Rp. <span class="pull-right">{?= number_format(($value.ralan * $value.jml),2,',','.')?}</span></td>
                   <td colspan="2">
-                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-no_resep="{$value.no_resep}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
+                    <button type="button" class="btn btn-danger btn-xs hapus_obat" data-no_rawat="{$value.no_rawat}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-kode_brng="{$value.kode_brng}" data-jml="{$value.jml}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
                   </td>
                 </tr>
                 {/loop}
@@ -261,42 +255,6 @@
             </table>
           </div>
         </div>
-        <div role="tabpanel" class="tab-pane fade in" id="tambahan">
-          <h4>Tambahan Biaya</h4>
-          <div class="table-responsive no-margin">
-            <table class="table table-striped table-bordered no-padding" width="100%">
-              <thead>
-                <tr>
-                  <th width="20px;">No.</th>
-                  <th>Nama Tambahan</th>
-                  <th>Harga</th>
-                  <th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody>
-                {if: $tambahan_biaya}
-                {loop: $tambahan_biaya}
-                <tr>
-                  <td>{$value.nomor}</td>
-                  <td>{$value.nama_biaya}</td>
-                  <td>Rp. <span class="pull-right">{?= number_format($value.besar_biaya,2,',','.')?}</span></td>
-                  <td>
-                    <button type="button" class="btn btn-danger btn-xs hapus_tambahan_biaya" data-no_rawat="{$value.no_rawat}" data-nama_biaya="{$value.nama_biaya}"><i class="fa fa-close"></i><span class="hidden-xs"> Hapus</span></button>
-                  </td>
-                </tr>
-                {/loop}
-                {/if}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th colspan="2">Total Biaya Tambahan</th>
-                  <th>Rp. <span class="pull-right">{?= number_format($jumlah_total_tambahan,2,',','.')?}</span></th>
-                  <th></th>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        </div>
     </div>
 </div>
 
@@ -305,9 +263,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Tagihan</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan)?}" name="jumlah_total" maxlength="11" disabled>
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi)?}" name="jumlah_total" maxlength="11" disabled>
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_total" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi),3,"")?}" name="terbilang_jumlah_total" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Potongan</label>
@@ -318,9 +276,9 @@
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
       <div class="col-sm-7">
-        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{?=($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi)?}" name="jumlah_harus_bayar" maxlength="11" disabled />
       </div>
-      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi + $jumlah_total_tambahan),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
+      <input type="text" class="form-control" style="background:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang(($biaya_registrasi + $jumlah_total + $jumlah_total_obat + $jumlah_total_lab + $jumlah_total_radiologi + $jumlah_total_operasi + $jumlah_total_obat_operasi),3,"")?}" name="terbilang_jumlah_harus_bayar" disabled >
     </div>
     <div class="form-group">
       <label class="col-sm-5 control-label">Jumlah Bayar</label>

@@ -28,14 +28,16 @@ class Admin extends AdminModule
       'Rujukan' => 'rujukan',
       'PRB' => 'prb',
       'Lembar Pengajuan Klaim' => 'lpk',
-      'Monitoring' => 'monitoring'
+      'Monitoring' => 'monitoring',
+      'Mapping Poli' => 'mappingpoli',
+      'Mapping Dokter' => 'mappingdokter'
     ];
   }
 
   public function getManage()
   {
     $parsedown = new \Systems\Lib\Parsedown();
-    $readme_file = MODULES . '/vclaim/ReadMe.md';
+    $readme_file = MODULES . '/vclaim/Help.md';
     $readme =  $parsedown->text($this->tpl->noParse(file_get_contents($readme_file)));
     return $this->draw('manage.html', ['readme' => $readme]);
   }
@@ -95,6 +97,103 @@ class Admin extends AdminModule
     $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
     $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
     $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
+
+    /* Add antrian dulu ya sebelum request SEP */
+
+    if($this->settings->get('jkn_mobile.kirimantrian') == 'ya') {
+      $tentukan_hari=date('D',strtotime(date('Y-m-d')));
+      $day = array(
+        'Sun' => 'AKHAD',
+        'Mon' => 'SENIN',
+        'Tue' => 'SELASA',
+        'Wed' => 'RABU',
+        'Thu' => 'KAMIS',
+        'Fri' => 'JUMAT',
+        'Sat' => 'SABTU'
+      );
+      $hari=$day[$tentukan_hari];
+
+      $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+      $reg_periksa = $this->core->mysql('reg_periksa')->where('tgl_registrasi', date('Y-m-d'))->where('no_rkm_medis', $_POST['nomr'])->oneArray();
+      $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+      $jadwaldokter = $this->core->mysql('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+
+      $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
+      $minutes = $no_urut_reg * 10;
+      $cek_kuota['jam_mulai'] = date('H:i:s',strtotime('+'.$minutes.' minutes',strtotime($jadwaldokter['jam_mulai'])));
+
+      $kodebooking = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($reg_periksa['no_rawat']).''.$maping_poli_bpjs['kd_poli_bpjs'].''.$reg_periksa['no_reg'];
+
+      $nomorreferensi = $_POST['norujukan'];
+      if(isset($_POST['tujuanKunj']) == '3') {
+        $nomorreferensi = $_POST['noskdp'];
+      }
+      $data = [
+          'kodebooking' => $kodebooking,
+          'jenispasien' => 'JKN',
+          'nomorkartu' => $pasien['no_peserta'],
+          'nik' => $pasien['no_ktp'],
+          'nohp' => $pasien['no_tlp'],
+          'kodepoli' => $maping_poli_bpjs['kd_poli_bpjs'],
+          'namapoli' => $maping_poli_bpjs['nm_poli_bpjs'],
+          'pasienbaru' => '0',
+          'norm' => $_POST['nomr'],
+          'tanggalperiksa' => date('Y-m-d'),
+          'kodedokter' => $maping_dokter_dpjpvclaim['kd_dokter_bpjs'],
+          'namadokter' => $maping_dokter_dpjpvclaim['nm_dokter_bpjs'],
+          'jampraktek' => substr($jadwaldokter['jam_mulai'],0,5).'-'.substr($jadwaldokter['jam_selesai'],0,5),
+          'jeniskunjungan' => $_POST['tujuanKunj'],
+          'nomorreferensi' => $nomorreferensi,
+          'nomorantrean' => $maping_poli_bpjs['kd_poli_bpjs'].'-'.$reg_periksa['no_reg'],
+          'angkaantrean' => $reg_periksa['no_reg'],
+          'estimasidilayani' => strtotime($reg_periksa['tgl_registrasi'].' '.$cek_kuota['jam_mulai']) * 1000,
+          'sisakuotajkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+          'kuotajkn' => intval($jadwaldokter['kuota']),
+          'sisakuotanonjkn' => $jadwaldokter['kuota']-ltrim($reg_periksa['no_reg'],'0'),
+          'kuotanonjkn' => intval($jadwaldokter['kuota']),
+          'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
+      ];
+      // echo 'Request:<br>';
+      // echo "<pre>".print_r($data,true)."</pre>";
+      $data = json_encode($data);
+      $url = $this->api_url.'antrean/add';
+      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
+      $data = json_decode($output, true);
+      //echo 'Response:<br>';
+      //$data['metadata']['code'] = '200';
+      $cek_mlite_antrian_referensi = $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->oneArray();
+      if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208) {
+        if($cek_mlite_antrian_referensi) {
+          $this->core->mysql('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->save(['status_kirim' => 'Sudah']);
+        } else {
+          $this->core->mysql('mlite_antrian_referensi')->save([
+              'tanggal_periksa' => date('Y-m-d'),
+              'no_rkm_medis' => $_POST['nomr'],
+              'nomor_kartu' => $pasien['no_peserta'],
+              'nomor_referensi' => $nomorreferensi,
+              'kodebooking' => $kodebooking,
+              'jenis_kunjungan' => $_POST['tujuanKunj'],
+              'status_kirim' => 'Sudah',
+              'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+          ]);
+        }
+      } else {
+        $this->core->mysql('mlite_antrian_referensi')->save([
+            'tanggal_periksa' => date('Y-m-d'),
+            'no_rkm_medis' => $_POST['nomr'],
+            'nomor_kartu' => $pasien['no_peserta'],
+            'nomor_referensi' => $nomorreferensi,
+            'kodebooking' => $kodebooking,
+            'jenis_kunjungan' => $_POST['tujuanKunj'],
+            'status_kirim' => 'Belum',
+            'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+        ]);
+      }
+
+    }
+
+    /* End add antrian */
 
     $data = [
       'request' => [
@@ -555,6 +654,8 @@ class Admin extends AdminModule
     }
     exit();
   }
+
+
   public function getPoli($keyword)
   {
     date_default_timezone_set('UTC');
@@ -589,6 +690,7 @@ class Admin extends AdminModule
     }
     exit();
   }
+
   public function getFaskes($kd_faskes = null, $jns_faskes = null)
   {
     date_default_timezone_set('UTC');
@@ -1367,7 +1469,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function postUpdateTglPlg($data = [])
+  public function __postUpdateTglPlg($data = [])
   {
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -2363,23 +2465,6 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getPulang($no_kartu)
-  {
-    $this->_addHeaderFiles();
-    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->toArray();
-    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->toArray();
-    $bridging_surat_kontrol_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')
-      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
-      ->where('bridging_sep.no_kartu', $no_kartu)
-      ->toArray();
-    $this->tpl->set('kontrol', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_kontrol_bpjs)));
-    $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
-    $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
-    $this->tpl->set('no_kartu', $no_kartu);
-    echo $this->draw('pulang.html');
-    exit();
-  }
-
   public function getKontrolDisplay($no_kartu)
   {
     $bridging_surat_kontrol_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')
@@ -2479,7 +2564,7 @@ class Admin extends AdminModule
               'tanggal_periksa' => $_POST['tanggal_datang'],
               'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
               'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']), $_POST['tanggal_datang']),
+              'no_reg' => $this->core->setNoBooking($this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']), $_POST['tanggal_datang'], $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat'])),
               'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
               'limit_reg' => 0,
               'waktu_kunjungan' => $_POST['tanggal_datang'] . ' ' . date('H:i:s'),
@@ -2521,7 +2606,7 @@ class Admin extends AdminModule
               'tanggal_periksa' => $_POST['tanggal_datang'],
               'kd_dokter' => $this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']),
               'kd_poli' => $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']),
-              'no_reg' => $this->core->setNoBooking($this->core->getUserInfo('username', null, true), $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat']), $_POST['tanggal_datang']),
+              'no_reg' => $this->core->setNoBooking($this->core->getRegPeriksaInfo('kd_dokter', $_POST['no_rawat']), $_POST['tanggal_datang'], $this->core->getRegPeriksaInfo('kd_poli', $_POST['no_rawat'])),
               'kd_pj' => $this->core->getRegPeriksaInfo('kd_pj', $_POST['no_rawat']),
               'limit_reg' => 0,
               'waktu_kunjungan' => $_POST['tanggal_datang'] . ' ' . date('H:i:s'),
@@ -2578,11 +2663,88 @@ class Admin extends AdminModule
     if(empty($bridging_sep)) {
       $bridging_sep = [];
     }
-    //$dirujuk = $this->core->mysql('dirujuk')->toArray();
     $dirujuk = [];
 
     echo $this->draw('dirujuk.html', ['bridging_sep' => $bridging_sep, 'dirujuk' => $dirujuk]);
     exit();
+  }
+
+  public function getMappingPoli()
+  {
+      $this->_addHeaderFiles();
+      $poliklinik = $this->core->mysql('poliklinik')->where('status','1')->toArray();
+      return $this->draw('mappingpoli.html', ['row' => $this->core->mysql('maping_poli_bpjs')->toArray(), 'poliklinik' => $poliklinik]);
+  }
+
+  public function postPoliklinik_Save()
+  {
+
+      $location = url([ADMIN, 'vclaim', 'mappingpoli']);
+
+      unset($_POST['save']);
+
+      $query = $this->core->mysql('maping_poli_bpjs')->save([
+          'kd_poli_rs' => $_POST['kd_poli_rs'],
+          'kd_poli_bpjs' => $_POST['poli_kode'],
+          'nm_poli_bpjs' => $_POST['poli_nama']
+      ]);
+
+      if ($query) {
+          $this->notify('success', 'Simpan maping poli bpjs sukes');
+      } else {
+          $this->notify('failure', 'Simpan maping poli bpjs gagal');
+      }
+
+      redirect($location, $_POST);
+  }
+
+  public function getPoliklinik_Delete($id)
+  {
+      if ($this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
+          $this->notify('success', 'Hapus maping poli bpjs sukses');
+      } else {
+          $this->notify('failure', 'Hapus maping poli bpjs gagal');
+      }
+      redirect(url([ADMIN, 'vclaim', 'mappingpoli']));
+  }
+
+  public function getMappingDokter()
+  {
+      $this->_addHeaderFiles();
+      $dokter = $this->core->mysql('dokter')->where('status','1')->toArray();
+      return $this->draw('mappingdokter.html', ['row' => $this->core->mysql('maping_dokter_dpjpvclaim')->toArray(), 'dokter' => $dokter]);
+  }
+
+  public function postDokter_Save()
+  {
+
+      $location = url([ADMIN, 'vclaim', 'mappingdokter']);
+
+      unset($_POST['save']);
+
+      $query = $this->core->mysql('maping_dokter_dpjpvclaim')->save([
+          'kd_dokter' => $_POST['kd_dokter'],
+          'kd_dokter_bpjs' => $_POST['dokter_kode'],
+          'nm_dokter_bpjs' => $_POST['dokter_nama']
+      ]);
+
+      if ($query) {
+          $this->notify('success', 'Simpan maping poli bpjs sukes');
+      } else {
+          $this->notify('failure', 'Simpan maping poli bpjs gagal');
+      }
+
+      redirect($location, $_POST);
+  }
+
+  public function getDokter_Delete($id)
+  {
+      if ($this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
+          $this->notify('success', 'Hapus maping poli bpjs sukses');
+      } else {
+          $this->notify('failure', 'Hapus maping poli bpjs gagal');
+      }
+      redirect(url([ADMIN, 'vclaim', 'mappingdokter']));
   }
 
   private function _addHeaderFiles()
