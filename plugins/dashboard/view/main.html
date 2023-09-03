@@ -124,16 +124,11 @@
               <ul class="dropdown-menu">
                 {if: $mlite.presensi}
                 <li><a href="{?=url()?}/anjungan/presensi" target="_blank">Presensi Pegawai</a></li>
-                <li role="separator" class="divider"></li>
                 {/if}
-                <li><a href="#">Rawat Jalan</a></li>
-                <li><a href="#">Rawat Inap</a></li>
-                <li><a href="#">Laboratorium</a></li>
-                <li><a href="#">Radiologi</a></li>
                 <li><a href="{?=url()?}/anjungan/bed" target="_blank">Ketersediaan Kamar</a></li>
-                <li role="separator" class="divider"></li>
                 <li><a href="{?=url()?}/anjungan/pasien" target="_blank">Anjungan Pasien Mandiri</a></li>
                 <li><a href="{?=url()?}/anjungan/sep" target="_blank">Anjungan Cetak SEP</a></li>
+                <li role="separator" class="divider"></li>
                 <li><a href="{?=url()?}/anjungan/loket" target="_blank">Antrian Loket</a></li>
                 <li><a href="{?=url()?}/anjungan/laboratorium" target="_blank">Antrian Laboratorium</a></li>
                 <li><a href="{?=url()?}/anjungan/apotek" target="_blank">Antrian Apotek</a></li>
@@ -233,7 +228,22 @@
                 <h4 class="modal-title">Bantuan mLITE</h4>
             </div>
             <div class="modal-body">
-
+              <div class="text-center">
+                <img src="{?=url()?}/themes/admin/img/logo.png" width="100px" alt="">
+                <h4>
+                  Telegram Group mLITE Indonesia
+                  <div class="">
+                    <small>
+                      {$mlite.version}
+                    </small>
+                  </div>
+                </h4>
+                <p>
+                  Sistem Informasi Manajemen Kesehatan yang Aman, Ringan &amp; Modular.<br/>
+                  Info lebih lanjut di <a href="https://mlite.id" target="_blank">https://mlite.id</a>.<br><br>
+                </p>
+                  <a href="tg://join?invite=LIsXkWKjSW5kYjE1" class="btn btn-primary"><span class="fa fa-send"></span> Join Group</a>
+              </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
