@@ -1367,7 +1367,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function __postUpdateTglPlg($data = [])
+  public function postUpdateTglPlg($data = [])
   {
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -2360,6 +2360,23 @@ class Admin extends AdminModule
     $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
     $this->tpl->set('no_kartu', $no_kartu);
     echo $this->draw('kontrol.html');
+    exit();
+  }
+
+  public function getPulang($no_kartu)
+  {
+    $this->_addHeaderFiles();
+    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->toArray();
+    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->toArray();
+    $bridging_surat_kontrol_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')
+      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
+      ->where('bridging_sep.no_kartu', $no_kartu)
+      ->toArray();
+    $this->tpl->set('kontrol', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_kontrol_bpjs)));
+    $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
+    $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
+    $this->tpl->set('no_kartu', $no_kartu);
+    echo $this->draw('pulang.html');
     exit();
   }
 

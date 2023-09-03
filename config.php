@@ -1,13 +1,13 @@
 <?php
-if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
-    exit("mLITE requires at least <b>PHP 5.5</b>");
+if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
+    exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
-define('DBUSER', 'mlite_db');
-define('DBPASS', 'mlite_db');
-define('DBNAME', 'mlite_db');
+define('DBUSER', 'mlite');
+define('DBPASS', 'mlite');
+define('DBNAME', 'mlite');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://mlite.loc/webapps');

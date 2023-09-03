@@ -533,6 +533,13 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="pulangModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
   $("#form_sep").on("click","#sync_sep", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;
@@ -580,6 +587,23 @@
 
     var modal = $('#kontrolModal');
     var modalContent = $('#kontrolModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click","#tanggal_pulang", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $('input:text[name=no_sep]').val();
+    var loadURL =  baseURL + '/vclaim/pulang/' + no_sep + '?t=' + mlite.token;
+
+    var modal = $('#pulangModal');
+    var modalContent = $('#pulangModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
@@ -1072,7 +1096,7 @@
             alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
           } else if(json_obj[0].metaData.code == 200) {
             var histori = json_obj[0].response.histori;
-            console.log(histori);
+            //console.log(histori);
             var output="<div class=\"panel panel-default m-t-xl\">";
             for (var i in histori) {
                 var jnsPelayanan = "Rawat Inap";
@@ -1091,7 +1115,7 @@
                 output+="No. Rjk : " + histori[i].noRujukan + "<br/>";
                 output+="PPK Pelayanan : " + histori[i].ppkPelayanan;
                 output+="</div>";
-                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
+                output+="<div class=\"panel-footer\"><button class=\"btn btn-success btn-xs ubah_sep\" data-diagnosa=" + histori[i].diagnosa + " data-poli=" + poli + " data-tgl_sep=" + histori[i].tglSep + " data-no_sep=" + histori[i].noSep + " data-no_rujukan=" + histori[i].noRujukan + ">Ubah</button> <button class=\"btn btn-danger btn-xs\" id=\"tanggal_pulang\" data-no_sep=" + histori[i].noSep + ">Pulang</button> <button class=\"btn btn-danger btn-xs hapus_sep\" data-no_sep=" + histori[i].noSep + ">Hapus</button> <button class=\"btn btn-primary btn-xs print_sep\" data-no_sep=" + histori[i].noSep + ">Cetak</button></div>";
             }
             output+="</div>";
             $("#histori_pelayanan").html(output).show();

@@ -242,7 +242,6 @@ class Admin extends AdminModule
 
         if (isset($_POST['check'])) {
 
-            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -252,7 +251,7 @@ class Admin extends AdminModule
                 ]
             ];
 
-            $json = file_get_contents($url, false, stream_context_create($opts));
+            $json = file_get_contents($this->feed_url, false, stream_context_create($opts));
             $obj = json_decode($json, true);
             $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
 
@@ -271,7 +270,6 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
                 $opts = [
                     'http' => [
                         'method' => 'GET',
@@ -281,7 +279,7 @@ class Admin extends AdminModule
                     ]
                 ];
 
-                $json = file_get_contents($url, false, stream_context_create($opts));
+                $json = file_get_contents($this->feed_url, false, stream_context_create($opts));
                 $obj = json_decode($json, true);
                 $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
                 $this->download('https://github.com/basoro/khanza-lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
