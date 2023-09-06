@@ -146,7 +146,7 @@
 			<tr border='0', height='20px'>
 				<td colspan="2"></td>
 				<td colspan="2"><b>Sub total</b></td>
-				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.total_biaya_rawat_pr, 'total_biaya_rawat_pr')),2,',','.')?}</span></a></td>
+				<td><b>Rp. <span class="pull-right">{?= number_format(array_sum(array_column($billing_besar_detail.rawat_inap_pr, 'total_biaya_rawat_pr')),2,',','.')?}</span></a></td>
 			</tr>
 			{/if}
 			<tr border='1', height='20px'>

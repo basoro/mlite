@@ -82,7 +82,7 @@ socket.on('QrGenerated', (url) => {
                                             <span class="" role="status" aria-hidden="true"></span>
                                      Timed Out, Reload halaman untuk Generate qr ulang
                                         </button>`)
-        $('.imageee').html(' <img src="../assets/images/other/waiting.jpg" height="300px" alt="">');
+        $('.imageee').html(' <img src="{?=url()?}/plugins/wagateway/images/waiting.jpg" height="300px" alt="">');
 
     }, 30000);
 

@@ -410,13 +410,14 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   kat            : kat,
   jml            : jml
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/kasir_rawat_inap/rincian?t=' + mlite.token;
     $.post(url, {no_rawat : no_rawat,
     }, function(data) {
       // tampilkan data
-      console.log(data);
+      // console.log(data);
       $("#rincian").html(data).show();
     });
     $("#rawat_inap_dr").hide();
