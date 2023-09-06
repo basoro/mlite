@@ -1,6 +1,6 @@
 {
     "name": "basoro/khanza-lite",
-    "description": "SIMKES Khanza versi Ringan. Jalan di sisi server sebagai aplikasi web dan bersifat mobile first (responsive).",
+    "description": "SIMKES versi Ringan. Jalan di sisi server sebagai aplikasi web dan bersifat mobile first (responsive).",
     "type": "project",
     "require": {
         "nullpunkt/lz-string-php": "1.3"

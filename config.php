@@ -1,6 +1,6 @@
 <?php
-if (!version_compare(PHP_VERSION, '5.5.0', '>=')) {
-    exit("mLITE requires at least <b>PHP 5.5</b>");
+if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
+    exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
 define('DBHOST', '127.0.0.1');
