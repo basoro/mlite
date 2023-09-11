@@ -13,10 +13,18 @@ FROM guhkun13/php-for-mlite:latest
 
 WORKDIR /var/www/html
 
-COPY . .
+# COPY . .
+
+# override config.php using docker-config
+
+# COPY config-docker.php config.php
+
+# RUN composer install
 
 RUN mkdir -p uploads 
 RUN mkdir -p tmp 
 RUN mkdir -p admin/tmp
 
-RUN chmod -R 777 .
+# RUN chmod -R 777 .
+
+# RUN composer install

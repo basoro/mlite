@@ -5,26 +5,30 @@ services:
       context: .
       dockerfile: nginx.Dockerfile
     image: nginx:alpine
+    env_file:
+      - .env
     ports:
       - 8085:80
     networks:
       - internal
-    # volumes:
-    #   - .:/var/www/html/
-    #   - ./logs/nginx:/var/log/nginx/
+    volumes:
+      - .:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/
   
   php:
     # image: php:fpm-alpine
+    # image ini sudah ada mysql dan mysql-pdo nya
     image: guhkun13/php-for-mlite:latest
+    user: root
     build:
       context: .
       dockerfile: php.Dockerfile
     env_file:
-      - app.env
+      - .env
     networks:
       - internal
-    # volumes:
-    #   - .:/var/www/html/
+    volumes:
+      - .:/var/www/html/
     depends_on:
       - mysql
   
