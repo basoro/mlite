@@ -1,0 +1,48 @@
+version: "3"
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx.Dockerfile
+    image: nginx:alpine
+    ports:
+      - 8085:80
+    networks:
+      - internal
+    volumes:
+      - .:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/
+  
+  php:
+    image: php:fpm-alpine
+    build:
+      context: .
+      dockerfile: php.Dockerfile
+    networks:
+      - internal
+    volumes:
+      - .:/var/www/html/
+    depends_on:
+      - mysql
+  
+  mysql:
+    image: mysql:latest
+    build:
+      context: .
+      dockerfile: mysql.Dockerfile
+      args:
+        - MYSQL_DATABASE=mlite_db
+        - MYSQL_USER=mlite_db
+        - MYSQL_PASSWORD=mlite_db
+        - MYSQL_ROOT_PASSWORD=iamgroot
+    ports:
+      - 3307:3306
+    volumes:
+      - my-db:/var/lib/mysql
+
+networks:
+  internal:
+    driver: bridge
+
+volumes:
+  my-db:
