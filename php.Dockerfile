@@ -21,9 +21,9 @@ WORKDIR /var/www/html
 
 # RUN composer install
 
-RUN mkdir -p uploads 
-RUN mkdir -p tmp 
-RUN mkdir -p admin/tmp
+# RUN mkdir -p uploads 
+# RUN mkdir -p tmp 
+# RUN mkdir -p admin/tmp
 
 # RUN chmod -R 777 .
 
