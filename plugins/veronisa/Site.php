@@ -9,6 +9,7 @@ class Site extends SiteModule
 {
 
     protected $mlite;
+    protected $assign;
 
     public function init()
     {
