@@ -8,6 +8,8 @@ use Systems\Lib\QRCode;
 class Site extends SiteModule
 {
 
+    protected $mlite;
+
     public function init()
     {
         $this->mlite['notify']         = $this->core->getNotify();
