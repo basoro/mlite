@@ -52,7 +52,16 @@ if ($core->loginCheck()) {
             }
         }
     }
-    $core->drawTheme('login.html');
+    if(MULTI_APP) {
+      if(!empty(MULTI_APP_REDIRECT)) {
+        echo $core->tpl->draw(MODULES.'/'.MULTI_APP_REDIRECT.'/view/login.html', true);
+      } else {
+        $core->drawTheme('login.html');
+      }
+    } else {
+      $core->drawTheme('login.html');
+    }
+
 }
 
 ob_end_flush();
