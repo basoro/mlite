@@ -1,11 +1,22 @@
-FROM php:fpm-alpine
+# FROM php:fpm-alpine
+FROM guhkun13/php-for-mlite:latest
 
-# RUN apk update \
+# RUN apk update 
 #     && apk upgrade \
 #     && apk add ca-certificates wget \
 #     && update-ca-certificates
 
+# tidak perlu install mysqli dan pdo karena sudah diinstall di image di atas!!!
+# soalnya lumayan besar size yg di-install. huft
 # RUN docker-php-ext-install mysqli && \
 #     docker-php-ext-install pdo_mysql
 
-# RUN apk add php-mysqli php-dom php-gd php-mbstring php-pdo php-zip php-curl
+WORKDIR /var/www/html
+
+COPY . .
+
+RUN mkdir -p uploads 
+RUN mkdir -p tmp 
+RUN mkdir -p admin/tmp
+
+RUN chmod -R 777 .
