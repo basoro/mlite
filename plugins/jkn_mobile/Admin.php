@@ -8,6 +8,12 @@ use Systems\Lib\BpjsService;
 class Admin extends AdminModule
 {
 
+    protected $consid;
+    protected $secretkey;
+    protected $bpjsurl;
+    protected $user_key;
+    protected $assign;
+
     public function init()
     {
         $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');

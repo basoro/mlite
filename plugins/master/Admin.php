@@ -46,6 +46,45 @@ use Systems\Lib\Fpdf\PDF_MC_Table;
 class Admin extends AdminModule
 {
 
+  protected $dokter;
+  protected $petugas;
+  protected $poliklinik;
+  protected $bangsal;
+  protected $kamar;
+  protected $databarang;
+  protected $jnsperawatan;
+  protected $jnsperawataninap;
+  protected $jnsperawatanlab;
+  protected $jnsperawatanradiologi;
+  protected $bahasa;
+  protected $cacat;
+  protected $suku;
+  protected $perusahaan;
+  protected $penjab;
+  protected $golonganbarang;
+  protected $industrifarmasi;
+  protected $jenis;
+  protected $kategoribarang;
+  protected $kategoripenyakit;
+  protected $kategoriperawatan;
+  protected $masteraturanpakai;
+  protected $masterberkasdigital;
+  protected $kodesatuan;
+  protected $spesialis;
+  protected $bank;
+  protected $bidang;
+  protected $departemen;
+  protected $emergencyindex;
+  protected $jabatan;
+  protected $jenjangjabatan;
+  protected $kelompokjabatan;
+  protected $pendidikan;
+  protected $resikokerja;
+  protected $statuskerja;
+  protected $statuswp;
+  protected $metoderacik;
+  protected $ruangok;
+
     public function init()
     {
         $this->dokter = new Dokter();
