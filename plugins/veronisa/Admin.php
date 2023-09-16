@@ -10,6 +10,12 @@ class Admin extends AdminModule
 
   private $_uploads = WEBAPPS_PATH . '/berkasrawat/pages/upload';
 
+  protected $consid;
+  protected $secretkey;
+  protected $user_key;
+  protected $api_url;
+  protected $assign;
+
   public function init()
   {
     $this->consid = $this->settings->get('settings.BpjsConsID');

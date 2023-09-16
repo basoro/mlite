@@ -7,6 +7,9 @@ use Systems\SiteModule;
 class Site extends SiteModule
 {
 
+    protected $mlite;
+    protected $assign;
+
     public function init()
     {
         $this->mlite['notify']         = $this->core->getNotify();
