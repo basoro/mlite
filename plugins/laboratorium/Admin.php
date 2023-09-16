@@ -1170,6 +1170,11 @@ class Admin extends AdminModule
 
     }
 
+    public function postCekWaktu()
+    {
+      echo date('H:i:s');
+      exit();
+    }
 
     public function getJavascript()
     {
