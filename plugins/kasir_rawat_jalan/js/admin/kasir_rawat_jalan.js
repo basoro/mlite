@@ -354,7 +354,8 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   var aturan_pakai    = $('input:text[name=aturan_pakai]').val();
   var kat             = $('input:hidden[name=kat]').val();
   var jml             = $('input:text[name=jml]').val();
-
+  var jml_tindakan    = $('input:text[name=jml_tindakan]').val();
+  console.log(jml_tindakan);
   var url = baseURL + '/kasir_rawat_jalan/savedetail?t=' + mlite.token;
   $.post(url, {no_rawat : no_rawat,
   kd_jenis_prw   : kd_jenis_prw,
@@ -367,8 +368,10 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
   biaya          : biaya,
   aturan_pakai   : aturan_pakai,
   kat            : kat,
-  jml            : jml
+  jml            : jml,
+  jml_tindakan   : jml_tindakan
   }, function(data) {
+    console.log(data);
     // tampilkan data
     $("#display").hide();
     var url = baseURL + '/kasir_rawat_jalan/rincian?t=' + mlite.token;
@@ -389,6 +392,7 @@ $("#form_rincian").on("click", "#simpan_rincian", function(event){
     $('input:text[name=nama_provider2]').val("");
     $('input:text[name=kode_provider]').val("");
     $('input:text[name=kode_provider2]').val("");
+    $('input:text[name=jml_tindakan]').val(1);
     $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
     "Data pasien telah disimpan!"+
     "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
@@ -904,3 +908,12 @@ function terbilang(a){
 	}
 	return full.join(' ');
 }
+
+$("#form_rincian").on("click","#jam_billing", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/kasir_rawat_jalan/cekwaktu?t=' + mlite.token;
+    $.post(url, {
+    } ,function(data) {
+      $("#form_rincian #jam_billing").val(data);
+    });
+});
