@@ -101,6 +101,9 @@ Atau dalam lingkungan Windows dengan klik 2x pada file
 systems\srv\startServer.bat
 ```
 
+Poses pengembangan juga bisa dilakukan di lingkungan Docker. Sumbangan kode dari https://github.com/guhkun13
+
+
 ### Peringatan!
 
 + Untuk pengguna Apache, pastikan file `.htaccess` juga ada di server. Tanpanya mLITE tidak akan berfungsi.
