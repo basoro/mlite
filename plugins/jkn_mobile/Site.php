@@ -8,6 +8,11 @@ use Systems\Lib\BpjsService;
 class Site extends SiteModule
 {
 
+    protected $consid;
+    protected $secretkey;
+    protected $bpjsurl;
+    protected $user_key;
+
     public function init()
     {
         $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');

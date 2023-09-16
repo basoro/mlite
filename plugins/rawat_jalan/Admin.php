@@ -8,6 +8,13 @@ use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
+
+    protected $consid;
+    protected $secretkey;
+    protected $user_key;
+    protected $api_url;
+    protected $assign;
+    
     public function init()
     {
       $this->consid = $this->settings->get('settings.BpjsConsID');

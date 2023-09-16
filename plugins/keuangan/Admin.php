@@ -6,7 +6,8 @@ use Plugins\Keuangan\Src\Akunrekening;
 
 class Admin extends AdminModule
 {
-
+    protected $akunrekening;
+    
     public function init()
     {
       $this->akunrekening = new Akunrekening();

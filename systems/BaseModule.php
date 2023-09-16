@@ -6,7 +6,7 @@ class BaseModule
 {
     protected $core;
     protected $tpl;
-    protected $route;
+    protected $router;
     protected $settings;
     protected $name;
 

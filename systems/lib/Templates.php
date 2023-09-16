@@ -55,7 +55,7 @@ class Templates
     {
         // replace tags with PHP
         foreach ($this->tags as $regexp => $replace) {
-            if (strpos($replace, 'self') !== false) {
+            if (strpos($replace, self::class) !== false) {
                 $content = preg_replace_callback('#'.$regexp.'#s', $replace, $content);
             } else {
                 $content = preg_replace('#'.$regexp.'#', $replace, $content);
