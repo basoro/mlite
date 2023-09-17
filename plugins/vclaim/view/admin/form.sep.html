@@ -503,6 +503,15 @@
           <div class="panel-footer">
             <input type="submit" id="simpan" class="btn btn-primary" name="" value="Simpan">
             <!--<button type="button" name="button" class="btn btn-warning" id="sync_sep">Sync SEP</button>-->
+            <div class="btn-group">
+              <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Antrian <span class="caret"></span></button>
+              <ul class="dropdown-menu">
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="1">Rujukan FKTP</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="2">Rujukan Internal</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="3">Kontrol</a></li>
+                <li><a href="#" class="add_antrian" data-jenis_kunjungan="4">Rujukan Antar RS</a></li>
+              </ul>
+            </div>
             <button type="button" name="button" class="btn btn-warning" id="kontrol">Kontrol</button>
             <button type="button" name="button" class="btn btn-warning" id="spri">SPRI</button>
             <input type="submit" id="selesai" class="btn btn-danger pull-right" name="" value="Selesai">
@@ -520,6 +529,13 @@
     </div>
 </div>
 <div class="modal fade" id="spriModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="add_antrianModal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             ...
@@ -544,6 +560,29 @@
 
     var modal = $('#syncsepModal');
     var modalContent = $('#syncsepModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#form_sep").on("click",".add_antrian", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
+    var nomor_rujukan = $('input:text[name=sep_nomor_rujukan]').val();
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    var jenis_kunjungan = $(this).attr("data-jenis_kunjungan");
+
+    var loadURL =  baseURL + '/vclaim/addantrian/' + no_rkm_medis + '/' + no_rawat + '/' + nomor_rujukan + '/' + jenis_kunjungan + '?t=' + mlite.token;
+    // alert(loadURL);
+
+    var modal = $('#add_antrianModal');
+    var modalContent = $('#add_antrianModal .modal-content');
 
     modal.off('show.bs.modal');
     modal.on('show.bs.modal', function () {
