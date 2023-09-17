@@ -3,17 +3,8 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
-// $DBHOST=$env['APP_DBHOST'] || '127.0.0.1';
-// $DBPORT=$env['APP_DBPORT'] || '3306';
-
-// $DBHOST=getenv('APP_DBHOST') || '127.0.0.1';
-// $DBPORT=getenv('APP_DBPORT') || '3306';
-
-$DBHOST='172.17.0.1';
-$DBPORT='3308';
-
-define('DBHOST', $DBHOST);
-define('DBPORT', $DBPORT);
+define('DBHOST', '172.17.0.1');
+define('DBPORT', '3306');
 define('DBUSER', 'mlite_db');
 define('DBPASS', 'mlite_db');
 define('DBNAME', 'mlite_db');

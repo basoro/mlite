@@ -1,5 +1,5 @@
 .DS_Store
-config.php
+#config.php
 admin/tmp
 admin/pla.php
 tmp
@@ -21,8 +21,8 @@ assets/easyui
 plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
-plugins/dokter_ulun
-plugins/satu_sehat
+#plugins/dokter_ulun
+#plugins/satu_sehat
 plugins/cssd
 jasperphp
 plugins/utd/Site.php
