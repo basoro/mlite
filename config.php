@@ -3,7 +3,7 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
-define('DBHOST', '172.17.0.1');
+define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
 define('DBUSER', 'mlite_db');
 define('DBPASS', 'mlite_db');
