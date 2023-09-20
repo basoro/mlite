@@ -91,7 +91,7 @@ class Admin extends AdminModule
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'false') {
+        if($response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim pesan');
         } else {
           $this->notify('failure', 'Gagal mengirim pesan');
