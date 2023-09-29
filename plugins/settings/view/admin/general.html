@@ -343,7 +343,7 @@
                     <dl class="dl-horizontal no-margin">
                         <dt>Versi PHP</dt>
                         <dd>{$settings.system.php}</dd>
-                        <dt>Versi MySQL</dt>
+                        <dt>Versi {if: MULTI_APP}SQLite{else}MySQL{/if}</dt>
                         <dd>{$settings.system.mysql}</dd>
                     </dl>
                     <hr />

@@ -5,9 +5,9 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
-define('DBUSER', 'mlite_db');
-define('DBPASS', 'mlite_db');
-define('DBNAME', 'mlite_db');
+define('DBUSER', '');
+define('DBPASS', '');
+define('DBNAME', '');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://mlite.loc/webapps');
@@ -17,7 +17,7 @@ define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 define('ADMIN', 'admin');
 
 // Multi APP
-define('MULTI_APP', false);
+define('MULTI_APP', true);
 define('MULTI_APP_REDIRECT', '');
 
 // Themes path
@@ -36,15 +36,15 @@ define('FILE_LOCK', false);
 define('BASIC_MODULES', serialize([
     9 => 'settings',
     0 => 'dashboard',
-    1 => 'master',
-    2 => 'pasien',
-    3 => 'rawat_jalan',
-    4 => 'kasir_rawat_jalan',
-    5 => 'kepegawaian',
-    6 => 'farmasi',
+    // 1 => 'master',
+    // 2 => 'pasien',
+    // 3 => 'rawat_jalan',
+    // 4 => 'kasir_rawat_jalan',
+    // 5 => 'kepegawaian',
+    // 6 => 'farmasi',
     8 => 'users',
     7 => 'modules',
-   10 => 'wagateway'
+   // 10 => 'dokter_ulun'
 ]));
 
 // Developer mode
