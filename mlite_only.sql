@@ -446,7 +446,7 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (11, 'settings', 'homepage', 'main'),
 (12, 'settings', 'wallpaper', 'uploads/settings/wallpaper.jpg'),
 (13, 'settings', 'text_color', '#44813e'),
-(14, 'settings', 'igd', '-'),
+(14, 'settings', 'igd', 'IGDK'),
 (15, 'settings', 'laboratorium', '-'),
 (16, 'settings', 'pj_laboratorium', 'DR001'),
 (17, 'settings', 'radiologi', '-'),

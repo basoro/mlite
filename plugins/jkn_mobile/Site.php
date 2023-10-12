@@ -3046,10 +3046,10 @@ class Site extends SiteModule
                     'koderuang'=>$value['kd_bangsal'],
                     'namaruang'=>$value['nm_bangsal'],
                     'kapasitas'=>$value['jml'],
-                    'tersedia'=>$value['isi'],
+                    'tersedia'=>$value['kosong'],
                     'tersediapria'=>"0",
                     'tersediawanita'=>"0",
-                    'tersediapriawanita'=>$value['isi']
+                    'tersediapriawanita'=>$value['kosong']
                 );
                 $postdata = json_encode($data);
                 $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
@@ -3065,10 +3065,10 @@ class Site extends SiteModule
                     'koderuang'=>$value['kd_bangsal'],
                     'namaruang'=>$value['nm_bangsal'],
                     'kapasitas'=>$value['jml'],
-                    'tersedia'=>$value['isi'],
+                    'tersedia'=>$value['kosong'],
                     'tersediapria'=>"0",
                     'tersediawanita'=>"0",
-                    'tersediapriawanita'=>$value['isi']
+                    'tersediapriawanita'=>$value['kosong']
                 );
                 $postdata = json_encode($data);
                 $output = BpjsService::postAplicare($url, $postdata, $this->consid, $this->secretkey, $this->user_key, $tStamp);
