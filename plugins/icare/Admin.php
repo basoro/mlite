@@ -10,10 +10,10 @@ class Admin extends AdminModule
 
   public function init()
   {
-    $this->consid = $this->settings->get('settings.BpjsConsID');
-    $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
-    $this->user_key = $this->settings->get('settings.BpjsUserKey');
-    $this->api_url = 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate';
+    $this->consid = $this->settings->get('icare.consid');
+    $this->secretkey = $this->settings->get('icare.secretkey');
+    $this->user_key = $this->settings->get('icare.userkey');
+    $this->api_url = $this->settings->get('icare.url');
   }
 
   public function navigation()
@@ -25,7 +25,25 @@ class Admin extends AdminModule
 
   public function getManage()
   {
-    return $this->draw('manage.html');
+    $icare['url'] = $this->settings->get('icare.url');
+    $icare['consid'] = $this->settings->get('icare.consid');
+    $icare['secretkey'] = $this->settings->get('icare.secretkey');
+    $icare['userkey'] = $this->settings->get('icare.userkey');
+    return $this->draw('manage.html', ['icare' => $icare]);
+  }
+
+  public function postSaveSettings()
+  {
+      foreach ($_POST['icare'] as $key => $val) {
+          $this->settings('icare', $key, $val);
+      }
+
+      $icare['url'] = $this->settings->get('icare.url');
+      $icare['consid'] = $this->settings->get('icare.username');
+      $icare['secretkey'] = $this->settings->get('icare.secretkey');
+      $icare['userkey'] = $this->settings->get('icare.userkey');
+      $this->notify('success', 'Pengaturan telah disimpan');
+      redirect(url([ADMIN, 'icare', 'manage']));
   }
 
   public function getRiwayat($no_rawat)
