@@ -71,7 +71,7 @@ class Admin extends AdminModule
       if (!empty($stringDecrypt)) {
         $decompress = decompress($stringDecrypt);
       }
-      $message = $json['metaData']['message'];
+      $message = $json['metaData']['code'];
     } else {
       $message = $json['metaData']['message'];
     }
