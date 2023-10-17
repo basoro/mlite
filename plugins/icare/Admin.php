@@ -50,13 +50,14 @@ class Admin extends AdminModule
   {
 
     $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',revertNoRawat($no_rawat));
+    $kd_dokter_bpjs = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter',revertNoRawat($no_rawat)))->oneArray();
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
     $data = [
-      'param' => $bridging_sep['no_kartu'],
-      'kodedokter' => intval($bridging_sep['kddpjp'])
+      'param' => $this->core->getPasienInfo('no_peserta',$no_rkm_medis),
+      'kodedokter' => intval($kd_dokter_bpjs['kd_dokter_bpjs'])
     ];
     $data = json_encode($data);
     $signature = hash_hmac('sha256', $this->consid."&".$tStamp, $this->secretkey, true);
@@ -70,9 +71,12 @@ class Admin extends AdminModule
       if (!empty($stringDecrypt)) {
         $decompress = decompress($stringDecrypt);
       }
+      $message = $json['metaData']['message'];
+    } else {
+      $message = $json['metaData']['message'];
     }
     $riwayat = json_decode($decompress, true);
-    echo $this->draw('riwayat.html', ['url' => $riwayat['url']]);
+    echo $this->draw('riwayat.html', ['url' => $riwayat['url'], 'message' => $message]);
     exit();
   }
 
