@@ -14,7 +14,7 @@ class Admin extends AdminModule
   protected $user_key;
   protected $api_url;
   protected $assign;
-  
+
   public function init()
   {
     $this->consid = $this->settings->get('settings.BpjsConsID');
@@ -3589,7 +3589,7 @@ class Admin extends AdminModule
       }
   }
 
-  private function GroupingStage12($nomor_sep,$coder_nik){
+  private function GroupingStage12__($nomor_sep,$coder_nik){
       $request ='{
                       "metadata": {
                           "method":"grouper",
@@ -3610,6 +3610,50 @@ class Admin extends AdminModule
           */
           //InsertData2("inacbg_grouping_stage12","'".$nomor_sep."','".$msg['response']['cbg']['code']."','".$msg['response']['cbg']['description']."','".($cbg+$sub_acute+$chronic+$add_payment_amt)."'");
           $this->FinalisasiKlaim($nomor_sep,$coder_nik);
+      }
+  }
+
+  private function GroupingStage12($nomor_sep,$coder_nik){
+      $request ='{
+                      "metadata": {
+                          "method":"grouper",
+                          "stage":"1"
+                      },
+                      "data": {
+                          "nomor_sep":"'.$nomor_sep.'"
+                      }
+                 }';
+      $msg= $this->Request($request);
+      if($msg['metadata']['message']=="Ok"){
+        $topup = $msg['special_cmg_option']?$msg['special_cmg_option']:'';
+        if($topup!=''){
+          $temp_grouper="";
+          $i = 0;
+          foreach ($topup as $data) {
+            if($i==0){
+              $temp_grouper.=$data['code'];
+            }else{
+              $temp_grouper.='#'.$data['code'];
+            }
+            $i+=1;
+          }
+          $request2 ='{
+            "metadata": {
+                "method":"grouper",
+                "stage":"2"
+            },
+            "data": {
+                "nomor_sep":"'.$nomor_sep.'",
+                "special_cmg":"'.$temp_grouper.'"
+            }
+          }';
+          $msg2= $this->Request($request2);
+          if($msg2['metadata']['message']=="Ok"){
+            $this->FinalisasiKlaim($nomor_sep,$coder_nik);
+          }
+        }else if($topup==''){
+          $this->FinalisasiKlaim($nomor_sep,$coder_nik);
+        }
       }
   }
 
