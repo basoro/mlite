@@ -260,6 +260,7 @@ class Admin extends AdminModule
       ]);
       if($kamar_inap) {
         $this->core->mysql('dpjp_ranap')->save(['no_rawat' => $_POST['no_rawat'], 'kd_dokter' => $_POST['kd_dokter']]);
+        $this->core->mysql('kamar')->where('kd_kamar', $_POST['kd_kamar'])->save(['status' => 'ISI']);
       }
       exit();
     }
@@ -279,6 +280,7 @@ class Admin extends AdminModule
         'kd_pj' => $_POST['kd_pj'],
         'stts' => 'Sudah'
       ]);
+      $this->core->mysql('kamar')->where('kd_kamar', $_POST['kd_kamar'])->save(['status' => 'KOSONG']);
       exit();
     }
 
