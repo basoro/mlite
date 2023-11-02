@@ -453,7 +453,6 @@ Ralan :
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">{$reg_periksa.status_lanjut}</td>
       </tr>
-      {*Diagnosa Penyakit*}
       <tr class="isi">
         <td valign="top" width="20%">Diagnosa/Penyakit/ICD 10</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -466,7 +465,6 @@ Ralan :
           </table>
         </td>
       </tr>
-      {*Prosedur Tindakan*}
       <tr class="isi">
         <td valign="top" width="20%">Prosedur Tindakan/ICD 9</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -479,7 +477,6 @@ Ralan :
           </table>
         </td>
       </tr>
-      {*Pemeriksaan Rawat Jalan*}
       {if: $pemeriksaan_ralan}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan Rawat Jalan</td>
@@ -542,7 +539,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Pemeriksaan Rawat Inap*}
       {if: $pemeriksaan_ranap}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan Rawat Inap</td>
@@ -605,7 +601,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Jalan Dokter*}
       {if: $rawat_jl_dr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Jalan Dokter</td>
@@ -630,7 +625,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Jalan Paramedis*}
       {if: $rawat_jl_pr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Jalan Paramedis</td>
@@ -655,7 +649,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Jalan Dokter & Perawat*}
       {if: $rawat_jl_drpr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Jalan Dokter & Perawat</td>
@@ -682,7 +675,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Inap Dokter*}
       {if: $rawat_inap_dr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Inap Dokter</td>
@@ -707,7 +699,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Inap Perawat*}
       {if: $rawat_inap_pr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Inap Perawat</td>
@@ -732,7 +723,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Rawat Inap Dokter & Perawat*}
       {if: $rawat_inap_drpr}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Rawat Inap Dokter & Perawat</td>
@@ -759,7 +749,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Kamar Inap*}
       {if: $kamar_inap}
       <tr class="isi">
         <td valign="top" width="20%">Kamar Inap</td>
@@ -786,7 +775,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Operasi*}
       {if: $operasi}
       <tr class="isi">
         <td valign="top" width="20%">Operasi</td>
@@ -811,7 +799,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Tindakan Radiologi*}
       {if: $tindakan_radiologi}
       <tr class="isi">
         <td valign="top" width="20%">Tindakan Radiologi</td>
@@ -838,7 +825,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Hasil Radiologi*}
       {if: $hasil_radiologi}
       <tr class="isi">
         <td valign="top" width="20%">Hasil Radiologi/Interpretasi</td>
@@ -877,7 +863,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Pemeriksaan Laboratorium*}
       {if: $pemeriksaan_laboratorium}
       <tr class="isi">
         <td valign="top" width="20%">Pemeriksaan Laboratorium </td>
@@ -910,7 +895,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Pemberian Obat*}
       {if: $pemberian_obat}
       <tr class="isi">
         <td valign="top" width="20%">Pemberian Obat</td>
@@ -935,7 +919,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Obat Operasi*}
       {if: $obat_operasi}
       <tr class="isi">
         <td valign="top" width="20%">Obat Operasi</td>
@@ -960,7 +943,6 @@ Ralan :
         </td>
       </tr>
       {/if}
-      {*Resep Pulang*}
       {if: $resep_pulang}
       <tr class="isi">
         <td valign="top" width="20%">Resep Pulang</td>
@@ -1025,7 +1007,6 @@ Ralan :
       <center>{$print_sep.nama_instansi}</center>
     </h4>
     <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
-      {*Diagnosa Penyakit*}
       <tr class="isi">
         <td valign="top" width="20%">Diagnosa</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -1041,7 +1022,6 @@ Ralan :
           </table>
         </td>
       </tr>
-      {*Prosedur Tindakan*}
       <tr class="isi">
         <td valign="top" width="20%">Prosedur/Tindakan</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -1056,7 +1036,6 @@ Ralan :
           </table>
         </td>
       </tr>
-      {*Laporan Tindakan*}
       <tr class="isi">
         <td valign="top" width="20%">Laporan Tindakan</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -1174,7 +1153,6 @@ Ralan :
         <td valign="top" width="1%" align="center">:</td>
         <td valign="top" width="79%">{$resume_pasien.hasil_laborat}</td>
       </tr>
-      {*Diagnosa Penyakit*}
       <tr>
         <td valign="top" width="20%">Diagnosa</td>
         <td valign="top" width="1%" align="center">:</td>
@@ -1190,7 +1168,6 @@ Ralan :
           </table>
         </td>
       </tr>
-      {*Prosedur Tindakan*}
       <tr>
         <td valign="top" width="20%">Prosedur/Tindakan</td>
         <td valign="top" width="1%" align="center">:</td>
