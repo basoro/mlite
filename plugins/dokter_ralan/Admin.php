@@ -1356,7 +1356,7 @@ class Admin extends AdminModule
       $data_resume['prosedur'] = $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ralan')->oneArray();
       echo $this->draw('resume.html', [
         'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
-        'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')->oneArray(),
         'data_resume' => $data_resume
       ]);
       exit();
@@ -1364,7 +1364,7 @@ class Admin extends AdminModule
 
     public function getResumeTampil($no_rawat)
     {
-      echo $this->draw('resume.tampil.html', ['resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->oneArray()]);
+      echo $this->draw('resume.tampil.html', ['resume_pasien' => $this->core->mysql('resume_pasien')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien.kd_dokter')->oneArray()]);
       exit();
     }
 
@@ -1372,7 +1372,7 @@ class Admin extends AdminModule
     {
       $_POST['kd_dokter']	= $this->core->getUserInfo('username', $_SESSION['mlite_user']);
 
-      if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->oneArray()) {
+      if($this->core->mysql('resume_pasien')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
         $this->core->mysql('resume_pasien')
           ->where('no_rawat', $_POST['no_rawat'])
           ->save([

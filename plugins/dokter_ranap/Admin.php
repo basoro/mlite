@@ -969,6 +969,122 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getResume($no_rawat)
+    {
+      $data_resume['pemeriksaan_ranap'] = $this->core->mysql('pemeriksaan_ranap')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+      $data_resume['diagnosa'] = $this->core->mysql('diagnosa_pasien')->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('diagnosa_pasien.status', 'Ralan')->oneArray();
+      $data_resume['prosedur'] = $this->core->mysql('prosedur_pasien')->join('icd9', 'icd9.kode=prosedur_pasien.kode')->where('no_rawat', revertNoRawat($no_rawat))->where('prioritas', 1)->where('status', 'Ranap')->oneArray();
+      echo $this->draw('resume.html', [
+        'reg_periksa' => $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray(),
+        'resume_pasien' => $this->core->mysql('resume_pasien_ranap')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien_ranap.kd_dokter')->toArray(),
+        'data_resume' => $data_resume
+      ]);
+      exit();
+    }
+
+    public function getResumeTampil($no_rawat)
+    {
+      echo $this->draw('resume.tampil.html', ['resume_pasien' => $this->core->mysql('resume_pasien_ranap')->where('no_rawat', revertNoRawat($no_rawat))->join('dokter', 'dokter.kd_dokter=resume_pasien_ranap.kd_dokter')->toArray()]);
+      exit();
+    }
+
+    public function postResumeSave()
+    {
+      $_POST['kd_dokter']	= $this->core->getUserInfo('username', $_SESSION['mlite_user']);
+
+      if($this->core->mysql('resume_pasien_ranap')->where('no_rawat', $_POST['no_rawat'])->where('kd_dokter', $_POST['kd_dokter'])->oneArray()) {
+        $this->core->mysql('resume_pasien_ranap')
+          ->where('no_rawat', $_POST['no_rawat'])
+          ->save([
+            'kd_dokter'  => $_POST['kd_dokter'],
+            'diagnosa_awal' => $_POST['diagnosa_masuk'],
+            'alasan' => '-',
+            'keluhan_utama' => $_POST['keluhan_utama'],
+            'pemeriksaan_fisik' => '-',
+            'jalannya_penyakit' => $_POST['riwayat_penyakit'],
+            'pemeriksaan_penunjang' => '-',
+            'hasil_laborat' => '-',
+            'tindakan_dan_operasi' => '-',
+            'obat_di_rs' => '-',
+            'diagnosa_utama' => $_POST['diagnosa_utama'],
+            'kd_diagnosa_utama' => '-',
+            'diagnosa_sekunder' => '-',
+            'kd_diagnosa_sekunder' => '-',
+            'diagnosa_sekunder2' => '-',
+            'kd_diagnosa_sekunder2' => '-',
+            'diagnosa_sekunder3' => '-',
+            'kd_diagnosa_sekunder3' => '-',
+            'diagnosa_sekunder4' => '-',
+            'kd_diagnosa_sekunder4' => '-',
+            'prosedur_utama' => $_POST['prosedur_utama'],
+            'kd_prosedur_utama' => '-',
+            'prosedur_sekunder' => '-',
+            'kd_prosedur_sekunder' => '-',
+            'prosedur_sekunder2' => '-',
+            'kd_prosedur_sekunder2' => '-',
+            'prosedur_sekunder3' => '-',
+            'kd_prosedur_sekunder3' => '-',
+            'alergi' => '-',
+            'diet' => '-',
+            'lab_belum' => '-',
+            'edukasi' => '-',
+            'cara_keluar' => 'Lainnya',
+            'ket_keluar' => '-',
+            'keadaan'  => $_POST['kondisi_pulang'],
+            'ket_keadaan' => '-',
+            'dilanjutkan' => 'Lainnya',
+            'ket_dilanjutkan' => '-',
+            'kontrol' => date('Y-m-d H:i:s'),
+            'obat_pulang' => '-'
+        ]);
+      } else {
+        $this->core->mysql('resume_pasien_ranap')->save([
+          'no_rawat' => $_POST['no_rawat'],
+          'kd_dokter'  => $_POST['kd_dokter'],
+          'diagnosa_awal' => $_POST['diagnosa_masuk'],
+          'alasan' => '-',
+          'keluhan_utama' => $_POST['keluhan_utama'],
+          'pemeriksaan_fisik' => '-',
+          'jalannya_penyakit' => $_POST['riwayat_penyakit'],
+          'pemeriksaan_penunjang' => '-',
+          'hasil_laborat' => '-',
+          'tindakan_dan_operasi' => '-',
+          'obat_di_rs' => '-',
+          'diagnosa_utama' => $_POST['diagnosa_utama'],
+          'kd_diagnosa_utama' => '-',
+          'diagnosa_sekunder' => '-',
+          'kd_diagnosa_sekunder' => '-',
+          'diagnosa_sekunder2' => '-',
+          'kd_diagnosa_sekunder2' => '-',
+          'diagnosa_sekunder3' => '-',
+          'kd_diagnosa_sekunder3' => '-',
+          'diagnosa_sekunder4' => '-',
+          'kd_diagnosa_sekunder4' => '-',
+          'prosedur_utama' => $_POST['prosedur_utama'],
+          'kd_prosedur_utama' => '-',
+          'prosedur_sekunder' => '-',
+          'kd_prosedur_sekunder' => '-',
+          'prosedur_sekunder2' => '-',
+          'kd_prosedur_sekunder2' => '-',
+          'prosedur_sekunder3' => '-',
+          'kd_prosedur_sekunder3' => '-',
+          'alergi' => '-',
+          'diet' => '-',
+          'lab_belum' => '-',
+          'edukasi' => '-',
+          'cara_keluar' => 'Lainnya',
+          'ket_keluar' => '-',
+          'keadaan'  => $_POST['kondisi_pulang'],
+          'ket_keadaan' => '-',
+          'dilanjutkan' => 'Lainnya',
+          'ket_dilanjutkan' => '-',
+          'kontrol' => date('Y-m-d H:i:s'),
+          'obat_pulang' => '-'
+        ]);
+      }
+      exit();
+    }
+    
     public function getJavascript()
     {
         header('Content-type: text/javascript');

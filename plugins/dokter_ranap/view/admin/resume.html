@@ -1,0 +1,203 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Resume Perawatan Ranap</h4>
+</div>
+<div class="modal-body">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_resume" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Diagnosa Masuk</label>
+          <input type="text" name="diagnosa_masuk_resume" id="diagnosa_masuk_resume" class="form-control" placeholder="Diagnosa masuk" required value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_awal,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ranap.keluhan,'')?}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Keluhan Utama</label>
+          <input type="text" name="keluhan_utama_resume" id="keluhan_utama_resume" class="form-control" placeholder="Diagnosa masuk" required value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_awal,'')?}{else}{?=isset_or($data_resume.pemeriksaan_ranap.keluhan,'')?}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Ringkasan Riwayat Penyakit</label>
+          <textarea name="riwayat_penyakit_resume" id="riwayat_penyakit_resume" class="form-control" cols="3">{if: $resume_pasien}{?=isset_or($resume_pasien.0.keluhan_utama,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Pemeriksaan Fisik</label>
+          <textarea name="pemeriksaan_fisik_resume" id="pemeriksaan_fisik_resume" class="form-control" cols="3"></textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Pemeriksaan Penunjang Yang Penting</label>
+          <textarea name="pemeriksaan_pj_penting_resume" id="pemeriksaan_pj_penting_resume" class="form-control" cols="3"></textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Pemeriksaan Laboratorium</label>
+          <textarea name="pemeriksaan_lab_resume" id="pemeriksaan_lab_resume" class="form-control" cols="3"></textarea>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Diagnosa Utama</label>
+          <input type="text" name="diagnosa_utama_resume" id="diagnosa_utama_resume" class="form-control" placeholder="Diagnosa utama" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.diagnosa_utama,'')?}{else}{?=isset_or($data_resume.diagnosa.nm_penyakit,'')?}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Diagnosa Sekunder</label>
+          <input type="text" name="diagnosa_sekunder_resume" id="diagnosa_sekunder_resume" class="form-control" placeholder="Diagnosa sekunder" value="" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Diagnosa Sekunder 2</label>
+          <input type="text" name="diagnosa_sekunder_2_resume" class="form-control" placeholder="Diagnosa sekunder 2" value="" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Diagnosa Sekunder Lainnya</label>
+          <input type="text" name="diagnosa_sekunder_lain_resume" class="form-control" placeholder="Diagnosa sekunder lainnya" value="" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Prosedur Utama</label>
+          <input type="text" name="prosedur_utama_resume" id="prosedur_utama_resume" class="form-control" placeholder="Prosedur utama" value="{if: $resume_pasien}{?=isset_or($resume_pasien.0.prosedur_utama,'')?}{else}{?=isset_or($data_resume.prosedur.deskripsi_panjang,'')?}{/if}" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Prosedur Sekunder</label>
+          <input type="text" name="prosedur_sekunder_resume" id="prosedur_sekunder_resume" class="form-control" placeholder="Prosedur sekunder" value="" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Prosedur Sekunder 2</label>
+          <input type="text" name="prosedur_sekunder_2_resume" class="form-control" placeholder="Prosedur sekunder 2" value="" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Prosedur Sekunder Lainnya</label>
+          <input type="text" name="prosedur_sekunder_lain_resume" class="form-control" placeholder="Prosedur sekunder lainnya" value="" />
+      </div>
+    </div>    
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Terapi</label>
+          <textarea name="obat_pulang_resume" id="obat_pulang_resume" class="form-control" cols="3"></textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Terapi Pulang</label>
+          <textarea name="terapi_pulang_resume" id="terapi_pulang_resume" class="form-control" cols="3"></textarea>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Kondisi Pulang</label>
+          <select name="kondisi_pulang" id="kondisi_pulang" class="form-control">
+              <option value="Membaik">Membaik</option>
+              <option value="Meninggal">Meninggal</option>
+          </select>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <button class="btn btn-success" id="simpan_resume">Simpan</button>
+    </div>
+    <br>
+    <div class="tampildata">
+      <table class="table" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor Rawat</th>
+            <th>Keluhan</th>
+            <th>Diagnosa</th>
+            <th>Prosedur</th>
+            <th>Pulang</th>
+            <th>Dokter</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $resume_pasien}
+          {loop: $resume_pasien}
+          <tr>
+            <td>{$value.no_rawat}</td>
+            <td>{$value.keluhan_utama}</td>
+            <td>{$value.diagnosa_utama}</td>
+            <td>{$value.prosedur_utama}</td>
+            <td>{$value.keadaan}</td>
+            <td>{$value.nm_dokter}</td>
+          </tr>
+          {/loop}
+          {else}
+          <tr>
+            <td colspan="5">Tidak ada data</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  $("#simpan_resume").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $('input:text[name=no_rawat_resume]').val();
+    var set_no_rawat = $('input:text[name=no_rawat_resume]').val().replace(/\//g, '');
+    var diagnosa_masuk_resume = $('#diagnosa_masuk_resume').val();
+    var keluhan_utama_resume = $('#keluhan_utama_resume').val();
+    var riwayat_penyakit_resume = $('#riwayat_penyakit_resume').val();
+    var pemeriksaan_fisik_resume = $('#pemeriksaan_fisik_resume').val();
+    var pemeriksaan_pj_penting_resume = $('#pemeriksaan_pj_pentings_resume').val();
+    var pemeriksaan_lab_resume = $('#pemeriksaan_lab_resume').val();
+    var diagnosa_utama_resume = $('#diagnosa_utama_resume').val();
+    var diagnosa_sekunder_resume = $('#diagnosa_sekunder_resume').val();
+    var prosedur_utama_resume = $('#prosedur_utama_resume').val();
+    var prosedur_sekunder_resume = $('#prosedur_sekunder_resume').val();
+    var obat_pulang_resume = $('#obat_pulang_resume').val();
+    var terapi_pulang_resume = $('#terapi_pulang_resume').val();
+    var kondisi_pulang = $('select[name=kondisi_pulang]').val();
+
+    var url = baseURL + '/dokter_ranap/resumesave/?t=' + mlite.token;
+    $.post(url,{
+      no_rawat:no_rawat,
+      diagnosa_masuk: diagnosa_masuk_resume,
+      keluhan_utama: keluhan_utama_resume,
+      riwayat_penyakit: riwayat_penyakit_resume,
+      pemeriksaan_fisik: pemeriksaan_fisik_resume,
+      pemeriksaan_pj_penting: pemeriksaan_pj_penting_resume,
+      pemeriksaan_lab: pemeriksaan_lab_resume,
+      diagnosa_utama: diagnosa_utama_resume,
+      diagnosa_sekunder: diagnosa_masuk_resume,
+      prosedur_utama: prosedur_utama_resume,
+      prosedur_sekunder: prosedur_sekunder_resume,
+      obat_pulang: obat_pulang_resume,
+      terapi_pulang: terapi_pulang_resume,
+      kondisi_pulang: kondisi_pulang
+    } ,function(data) {
+      console.log(data);
+      $('.tampildata').load(baseURL + '/dokter_ranap/resumetampil/' + set_no_rawat + '?t=' + mlite.token);
+    });
+  });
+});
+</script>
