@@ -1755,6 +1755,35 @@ CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `mlite_ohis`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_ohis` (
+  `id` int(11) NOT NULL,
+  `no_rkm_medis` text NOT NULL,
+  `d_16` text,
+  `d_11` text,
+  `d_26` text,
+  `d_36` text,
+  `d_31` text,
+  `d_46` text,
+  `c_16` text,
+  `c_11` text,
+  `c_26` text,
+  `c_36` text,
+  `c_31` text,
+  `c_46` text,
+  `debris` text,
+  `calculus` text,
+  `nilai` text,
+  `kriteria` text,
+  `id_user` text NOT NULL,
+  `tgl_input` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mlite_pengaduan`
 --
 
@@ -4301,6 +4330,12 @@ ALTER TABLE `mlite_odontogram`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `mlite_pengaduan`
 --
 ALTER TABLE `mlite_pengaduan`
@@ -5018,6 +5053,11 @@ ALTER TABLE `mlite_notifications`
 -- AUTO_INCREMENT for table `mlite_odontogram`
 --
 ALTER TABLE `mlite_odontogram`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+--
+-- AUTO_INCREMENT for table `mlite_ohis`
+--
+ALTER TABLE `mlite_ohis`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 --
 -- AUTO_INCREMENT for table `mlite_pengaduan_detail`
