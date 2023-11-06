@@ -658,7 +658,7 @@ class Admin extends AdminModule
             }
             unset($_POST['jurnal_pendaftaran']);
           }
-          // End jurnal_pendaftaran //
+          // End jurnal_pendaftaran // 
 
           // jurnal_tindakan_ralan //
           if($_POST['jurnal_tindakan_ralan'] != '0,00') {
