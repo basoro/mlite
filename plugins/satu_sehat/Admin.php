@@ -704,6 +704,15 @@ class Admin extends AdminModule
   public function getEncounter($no_rawat)
   {
 
+    $zonawaktu = '+07:00';
+    if($this->settings->get('satu_sehat.zonawaktu') == 'WITA'){
+      $zonawaktu = '+08:00';
+    } 
+    if($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+      $zonawaktu = '+09:00';
+    }
+
+
     $no_rawat = revertNoRawat($no_rawat);
     $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
     $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
@@ -775,7 +784,7 @@ class Admin extends AdminModule
             }
         ],
         "period": {
-            "start": "'.$tgl_registrasi.'T'.$jam_reg.'+08:00"
+            "start": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'"
         },
         "location": [
             {
@@ -789,7 +798,7 @@ class Admin extends AdminModule
             {
                 "status": "arrived",
                 "period": {
-                    "start": "'.$mlite_billing['tgl_billing'].'T'.$mlite_billing['jam_billing'].'+08:00"
+                    "start": "'.$mlite_billing['tgl_billing'].'T'.$mlite_billing['jam_billing'].''.$zonawaktu.'"
                 }
             }
         ],

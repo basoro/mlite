@@ -1,64 +1,78 @@
 <article class="row">
     <form action="{?=url(ADMIN.'/satu_sehat/saveSettings')?}" method="POST">
-        <div class="col-md-6">
+        <div class="col-md-12">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">Pengaturan Satu Sehat Kemenkes</h3>
                 </div>
             	  <div class="panel-body">
-                    <div class="form-group">
-                        <label>Organization ID</label> <span class="pull-right"></span>
-                        <input type="text" name="satu_sehat[organizationid]" class="form-control" value="{$satu_sehat.organizationid}" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Organization ID</label> <span class="pull-right"></span>
+                            <input type="text" name="satu_sehat[organizationid]" class="form-control" value="{$satu_sehat.organizationid}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Client ID</label> <span class="pull-right"></span>
+                            <input type="text" name="satu_sehat[clientid]" class="form-control" value="{$satu_sehat.clientid}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <input type="text" name="satu_sehat[secretkey]" class="form-control" value="{$satu_sehat.secretkey}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Auth URL</label>
+                            <input type="text" name="satu_sehat[authurl]" class="form-control" value="{$satu_sehat.authurl}" />
+                        </div>
+                        <div class="form-group">
+                            <label>FHIR URL</label>
+                            <input type="text" name="satu_sehat[fhirurl]" class="form-control" value="{$satu_sehat.fhirurl}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="text" name="satu_sehat[longitude]" class="form-control" value="{$satu_sehat.longitude}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="text" name="satu_sehat[latitude]" class="form-control" value="{$satu_sehat.latitude}" />
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Client ID</label> <span class="pull-right"></span>
-                        <input type="text" name="satu_sehat[clientid]" class="form-control" value="{$satu_sehat.clientid}" />
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kode Kelurahan</label>
+                            <input type="text" name="satu_sehat[kelurahan]" id="kd_kel" class="form-control" value="{$satu_sehat.kelurahan}" />
+                            <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Kecamatan</label>
+                            <input type="text" name="satu_sehat[kecamatan]" id="kd_kec" class="form-control" value="{$satu_sehat.kecamatan}" />
+                            <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Kabupaten</label>
+                            <input type="text" name="satu_sehat[kabupaten]" id="kd_kab" class="form-control" value="{$satu_sehat.kabupaten}" />
+                            <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Propinsi</label>
+                            <input type="text" name="satu_sehat[propinsi]" id="kd_prop" class="form-control" value="{$satu_sehat.propinsi}" />
+                            <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kodepos</label>
+                            <input type="text" name="satu_sehat[kodepos]" class="form-control" value="{$satu_sehat.kodepos}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Zona Waktu</label>
+                            <select name="satu_sehat[zonawaktu]" class="form-control">
+                                <option value="WIB">WIB</option>
+                                <option value="WITA">WITA</option>
+                                <option value="WIT">WIT</option>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Secret Key</label>
-                        <input type="text" name="satu_sehat[secretkey]" class="form-control" value="{$satu_sehat.secretkey}" />
+                    <div class="col-md-12">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                     </div>
-                    <div class="form-group">
-                        <label>Auth URL</label>
-                        <input type="text" name="satu_sehat[authurl]" class="form-control" value="{$satu_sehat.authurl}" />
-                    </div>
-                    <div class="form-group">
-                        <label>FHIR URL</label>
-                        <input type="text" name="satu_sehat[fhirurl]" class="form-control" value="{$satu_sehat.fhirurl}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Kelurahan</label>
-                        <input type="text" name="satu_sehat[kelurahan]" id="kd_kel" class="form-control" value="{$satu_sehat.kelurahan}" />
-                        <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Kecamatan</label>
-                        <input type="text" name="satu_sehat[kecamatan]" id="kd_kec" class="form-control" value="{$satu_sehat.kecamatan}" />
-                        <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Kabupaten</label>
-                        <input type="text" name="satu_sehat[kabupaten]" id="kd_kab" class="form-control" value="{$satu_sehat.kabupaten}" />
-                        <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
-                    </div>
-                    <div class="form-group">
-                        <label>Kode Propinsi</label>
-                        <input type="text" name="satu_sehat[propinsi]" id="kd_prop" class="form-control" value="{$satu_sehat.propinsi}" />
-                        <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
-                    </div>
-                    <div class="form-group">
-                        <label>Kodepos</label>
-                        <input type="text" name="satu_sehat[kodepos]" class="form-control" value="{$satu_sehat.kodepos}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Longitude</label>
-                        <input type="text" name="satu_sehat[longitude]" class="form-control" value="{$satu_sehat.longitude}" />
-                    </div>
-                    <div class="form-group">
-                        <label>Latitude</label>
-                        <input type="text" name="satu_sehat[latitude]" class="form-control" value="{$satu_sehat.latitude}" />
-                    </div>
-                    <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
                 </div>
             </div>
         </div>

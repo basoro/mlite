@@ -19,9 +19,11 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'propinsi', '')");      
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'kodepos', '')");      
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'longitude', '')");      
-      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'latitude', '')");      
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'latitude', '')");
+      $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'zonawaktu', 'WIB')");      
     },
     'uninstall'     =>  function() use($core)
     {
+      $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'satu_sehat'");
     }
 ];
