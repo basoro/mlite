@@ -63,6 +63,8 @@
         <tbody>
         {loop: $satu_sehat_lokasi}
         <tr class="mapping_lokasi"
+        data-kode="{$value.kode}"
+        data-lokasi="{$value.lokasi}"
         data-dep_id="{$value.dep_id}"
         data-nama="{$value.nama}"
         >
@@ -82,8 +84,12 @@
 </div>
 <script type="text/javascript">
 $("#mapping_lokasi").on("click", ".mapping_lokasi", function(event){
+    var kode  = $(this).attr("data-kode");
+    var lokasi  = $(this).attr("data-lokasi");
     var dep_id  = $(this).attr("data-dep_id");
     var nama  = $(this).attr("data-nama");
+    $('#kode').val(kode).change();
+    $('input:text[name=lokasi]').val(lokasi);
     $('#dep_id').val(dep_id).change();
     $('input:text[name=nama]').val(nama);
 });

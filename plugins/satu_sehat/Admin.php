@@ -912,7 +912,10 @@ class Admin extends AdminModule
     return $this->draw('lokasi.html', [
       'lokasi' => $lokasi, 
       'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray(), 
-      'satu_sehat_lokasi' => $this->core->mysql('mlite_satu_sehat_lokasi')->toArray()
+      'satu_sehat_lokasi' => $this->core->mysql('mlite_satu_sehat_lokasi')
+        ->join('mlite_satu_sehat_departemen', 'mlite_satu_sehat_departemen.id_organisasi_satusehat=mlite_satu_sehat_lokasi.id_organisasi_satusehat')
+        ->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')
+        ->toArray()
     ]);
   }
 
