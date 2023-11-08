@@ -975,7 +975,9 @@ class Admin extends AdminModule
 
   public function getDataEncounter()
   {
-    $periode = str_replace('-', '/', trim($tgl_registrasi));
+    if(isset($_POST['tgl_registrasi'])) {
+      $periode = str_replace('-', '/', trim($tgl_registrasi));
+    }
     $date = isset_or($periode, date('Y/m/d'));
     $data_encounter = $this->core->mysql('mlite_satu_sehat_encounter')
       ->join('reg_periksa', 'reg_periksa.no_rawat=mlite_satu_sehat_encounter.no_rawat')
