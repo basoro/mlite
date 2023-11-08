@@ -1,7 +1,7 @@
 <h4>Data Encounter</h4>
 <div class="row">
     <div class="col-md-12">
-        <table class="table">
+        <table class="table display table-bordered table-striped" width="100%">
             <thead>
                 <tr>
                     <th>No. Rawat</th>
@@ -25,3 +25,15 @@
         </table>
     </div>
 </div>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.display').DataTable({
+        "language": { "search": "", "searchPlaceholder": "Search..." },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      var t = $(".display").DataTable().rows().count();
+      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    });
+    </script>

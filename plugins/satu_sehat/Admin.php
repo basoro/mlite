@@ -984,6 +984,7 @@ class Admin extends AdminModule
 
   public function getDataEncounter()
   {
+    $this->_addHeaderFiles();
     if(isset($_POST['tgl_registrasi'])) {
       $periode = str_replace('-', '/', trim($tgl_registrasi));
     }
@@ -995,4 +996,15 @@ class Admin extends AdminModule
       ->toArray();
     return $this->draw('data.encounter.html', ['data_encounter' => $data_encounter]);
   }
+
+  private function _addHeaderFiles()
+  {
+      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+  }
+
 }
