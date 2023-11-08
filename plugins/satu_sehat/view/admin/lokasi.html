@@ -11,9 +11,9 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Poli/Unit</label>
-                        <select name="kode" id="kode" class="form-control">
+                        <select name="kode" id="kode" class="form-control" onchange="document.getElementById('lokasi').value=this.options[this.selectedIndex].text.split('- ')[1]">
                             {loop: $lokasi}
-                            <option value="{$value.kode}">{$value.kode}</option>
+                            <option value="{$value.kode}">{$value.kode} - {$value.nama}</option>
                             {/loop}
                         </select>
                     </div>
@@ -25,15 +25,15 @@
                 <div class="col-md-6">
                     <div class="form-group">
                         <label>Departemen</label>
-                        <select name="dep_id" id="dep_id" class="form-control">
+                        <select name="dep_id" id="dep_id" class="form-control" onchange="document.getElementById('nama').value=this.options[this.selectedIndex].text.split('- ')[1]">
                             {loop: $satu_sehat_departemen}
-                            <option value="{$value.dep_id}">{$value.dep_id}</option>
+                            <option value="{$value.dep_id}">{$value.dep_id} - {$value.nama}</option>
                             {/loop}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Nama Departemen</label>
-                        <input type="text" name="nama" class="form-control" value="" required />
+                        <input type="text" name="nama" id="nama" class="form-control" value="" required />
                     </div>
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">

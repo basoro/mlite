@@ -13,7 +13,7 @@
                         <label>ID Departemen</label>
                         <select name="dep_id" id="dep_id" class="form-control" onchange="document.getElementById('nama_departemen').value=this.options[this.selectedIndex].text.split('- ')[1]">
                             {loop: $departemen}
-                            <option value="{$value.dep_id}">[{$value.dep_id}] - {$value.nama}</option>
+                            <option value="{$value.dep_id}">{$value.dep_id} - {$value.nama}</option>
                             {/loop}
                         </select>
                     </div>

@@ -806,7 +806,7 @@ class Admin extends AdminModule
     ));
     
     $response = curl_exec($curl);
-    
+
     $id_encounter = json_decode($response)->id;
     $pesan = 'Gagal mengirim encounter platform Satu Sehat!!';
     if($id_encounter) {
@@ -911,7 +911,7 @@ class Admin extends AdminModule
     $lokasi = array_merge($poliklinik, $bangsal);
     return $this->draw('lokasi.html', [
       'lokasi' => $lokasi, 
-      'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->toArray(), 
+      'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray(), 
       'satu_sehat_lokasi' => $this->core->mysql('mlite_satu_sehat_lokasi')->toArray()
     ]);
   }
