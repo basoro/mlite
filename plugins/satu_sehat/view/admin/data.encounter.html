@@ -1,0 +1,27 @@
+<h4>Data Encounter</h4>
+<div class="row">
+    <div class="col-md-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>No. Rawat</th>
+                    <th>ID Encounter</th>
+                    <th>No. Rekam Medis</th>
+                    <th>Nama Pasien</th>
+                    <th>Tanggal</th>
+                </tr>    
+            </thead>
+            <tbody>
+                {loop: $data_encounter}
+                <tr>
+                    <td>{$value.no_rawat}</td>
+                    <td>{$value.id_encounter}</td>
+                    <td>{$value.no_rkm_medis}</td>
+                    <td>{$value.nm_pasien}</td>
+                    <td>{$value.tgl_registrasi}</td>
+                </tr>
+                {/loop}
+            </tbody>
+        </table>
+    </div>
+</div>

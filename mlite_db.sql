@@ -5818,3 +5818,45 @@ ALTER TABLE `utd_pendonor`
 --
 ALTER TABLE `utd_stok_darah`
   ADD CONSTRAINT `utd_stok_darah_ibfk_1` FOREIGN KEY (`kode_komponen`) REFERENCES `utd_komponen_darah` (`kode`) ON UPDATE CASCADE;
+
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_departemen` (
+  `dep_id` char(4) NOT NULL,
+  `id_organisasi_satusehat` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `mlite_satu_sehat_departemen`
+  ADD PRIMARY KEY (`dep_id`),
+  ADD UNIQUE KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
+
+ALTER TABLE `mlite_satu_sehat_departemen`
+  ADD CONSTRAINT `mlite_satu_sehat_departemen_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_lokasi` (
+  `kode` char(5) NOT NULL,
+  `lokasi` varchar(40) DEFAULT NULL,
+  `id_organisasi_satusehat` varchar(40) DEFAULT NULL,
+  `id_lokasi_satusehat` varchar(40) DEFAULT NULL,
+  `longitude` varchar(30) NOT NULL,
+  `latitude` varchar(30) NOT NULL,
+  `altittude` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `mlite_satu_sehat_lokasi`
+  ADD PRIMARY KEY (`kode`),
+  ADD UNIQUE KEY `id_lokasi_satusehat` (`id_lokasi_satusehat`),
+  ADD KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
+
+ALTER TABLE `mlite_satu_sehat_lokasi`
+  ADD CONSTRAINT `mlite_satu_sehat_lokasi_ibfk_2` FOREIGN KEY (`id_organisasi_satusehat`) REFERENCES `mlite_satu_sehat_departemen` (`id_organisasi_satusehat`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_encounter` (
+  `no_rawat` varchar(17) NOT NULL,
+  `id_encounter` varchar(40) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+ALTER TABLE `mlite_satu_sehat_encounter`
+  ADD PRIMARY KEY (`no_rawat`);
+
+ALTER TABLE `mlite_satu_sehat_encounter`
+  ADD CONSTRAINT `mlite_satu_sehat_encounter_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;

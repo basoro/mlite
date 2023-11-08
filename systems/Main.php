@@ -297,7 +297,19 @@ abstract class Main
     public function getPoliklinikInfo($field, $kd_poli)
     {
         $row = $this->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
-        return $row[$field];
+        return isset_or($row[$field],'');
+    }
+
+    public function getBangsalInfo($field, $kd_bangsal)
+    {
+        $row = $this->mysql('bangsal')->where('kd_bangsal', $kd_bangsal)->oneArray();
+        return isset_or($row[$field],'');
+    }
+
+    public function getKamarInfo($field, $kd_kamar)
+    {
+        $row = $this->mysql('kamar')->where('kd_kamar', $kd_kamar)->oneArray();
+        return isset_or($row[$field],'');
     }
 
     public function getPenjabInfo($field, $kd_pj)

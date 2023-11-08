@@ -1,0 +1,18 @@
+<h4>Referensi Practitioner</h4>
+<div class="row">
+    <div class="col-md-12">
+        <div class="form-inline">
+            <form action="{?=url([ADMIN, 'satu_sehat', 'praktisi'])?}" method="POST">
+                <input type="text" name="nik_dokter" id="nik_dokter" class="form-control" value="" placeholder="Masukkan NIK Dokter" style="width:500px;" /> <input type="submit" class="btn btn-primary" style="position: inline;" value="Cari">
+            </form>
+        </div>    
+    </div>
+</div>
+<br>
+{if: isset($_POST['nik_dokter'])}
+<div class="row">
+    <div class="col-md-12">
+        <pre>{$response}</pre>
+    </div>
+</div>
+{/if}
