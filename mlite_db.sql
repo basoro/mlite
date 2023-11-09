@@ -1,5 +1,5 @@
 -- Host: localhost
--- Generation Time: Nov 08, 2023 at 06:40 PM
+-- Generation Time: Nov 10, 2023 at 02:12 AM
 -- Server version: 5.7.39-log
 -- PHP Version: 7.3.33
 
@@ -1857,17 +1857,6 @@ CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_departemen` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `mlite_satu_sehat_encounter`
---
-
-CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_encounter` (
-  `no_rawat` varchar(17) NOT NULL,
-  `id_encounter` varchar(40) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `mlite_satu_sehat_lokasi`
 --
 
@@ -1879,6 +1868,28 @@ CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_lokasi` (
   `longitude` varchar(30) NOT NULL,
   `latitude` varchar(30) NOT NULL,
   `altitude` varchar(30) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `mlite_satu_sehat_response`
+--
+
+CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
+  `no_rawat` varchar(17) NOT NULL,
+  `id_encounter` varchar(50) DEFAULT NULL,
+  `id_condition` varchar(50) DEFAULT NULL,
+  `id_observation_ttvnadi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvrespirasi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvsuhu` varchar(50) DEFAULT NULL,
+  `id_observation_ttvspo2` varchar(50) DEFAULT NULL,
+  `id_observation_ttvgcs` varchar(50) DEFAULT NULL,
+  `id_observation_ttvtinggi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvberat` varchar(50) DEFAULT NULL,
+  `id_observation_ttvperut` varchar(50) DEFAULT NULL,
+  `id_observation_ttvtensi` varchar(50) DEFAULT NULL,
+  `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -4415,18 +4426,18 @@ ALTER TABLE `mlite_satu_sehat_departemen`
   ADD UNIQUE KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
 
 --
--- Indexes for table `mlite_satu_sehat_encounter`
---
-ALTER TABLE `mlite_satu_sehat_encounter`
-  ADD PRIMARY KEY (`no_rawat`);
-
---
 -- Indexes for table `mlite_satu_sehat_lokasi`
 --
 ALTER TABLE `mlite_satu_sehat_lokasi`
   ADD PRIMARY KEY (`kode`),
   ADD UNIQUE KEY `id_lokasi_satusehat` (`id_lokasi_satusehat`),
   ADD KEY `id_organisasi_satusehat` (`id_organisasi_satusehat`);
+
+--
+-- Indexes for table `mlite_satu_sehat_response`
+--
+ALTER TABLE `mlite_satu_sehat_response`
+  ADD PRIMARY KEY (`no_rawat`);
 
 --
 -- Indexes for table `mlite_settings`
@@ -5509,16 +5520,16 @@ ALTER TABLE `mlite_satu_sehat_departemen`
   ADD CONSTRAINT `mlite_satu_sehat_departemen_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `mlite_satu_sehat_encounter`
---
-ALTER TABLE `mlite_satu_sehat_encounter`
-  ADD CONSTRAINT `mlite_satu_sehat_encounter_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
 -- Constraints for table `mlite_satu_sehat_lokasi`
 --
 ALTER TABLE `mlite_satu_sehat_lokasi`
   ADD CONSTRAINT `mlite_satu_sehat_lokasi_ibfk_2` FOREIGN KEY (`id_organisasi_satusehat`) REFERENCES `mlite_satu_sehat_departemen` (`id_organisasi_satusehat`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Constraints for table `mlite_satu_sehat_response`
+--
+ALTER TABLE `mlite_satu_sehat_response`
+  ADD CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `mlite_subrekening`

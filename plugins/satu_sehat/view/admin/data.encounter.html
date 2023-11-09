@@ -1,28 +1,63 @@
-<h4>Data Encounter</h4>
-<div class="row">
-    <div class="col-md-12">
-        <table class="table display table-bordered table-striped" width="100%">
-            <thead>
-                <tr>
-                    <th>No. Rawat</th>
-                    <th>ID Encounter</th>
-                    <th>No. Rekam Medis</th>
-                    <th>Nama Pasien</th>
-                    <th>Tanggal</th>
-                </tr>    
-            </thead>
-            <tbody>
-                {loop: $data_encounter}
-                <tr>
-                    <td>{$value.no_rawat}</td>
-                    <td>{$value.id_encounter}</td>
-                    <td>{$value.no_rkm_medis}</td>
-                    <td>{$value.nm_pasien}</td>
-                    <td>{$value.tgl_registrasi}</td>
-                </tr>
-                {/loop}
-            </tbody>
-        </table>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        Data Encounter
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table display table-bordered table-striped" width="100%">
+                    <thead>
+                        <tr>
+                            <th style="white-space: nowrap;">No. Rawat</th>
+                            <th style="white-space: nowrap;">Nama Pasien</th>
+                            <th style="white-space: nowrap;">No. Rekam Medis</th>
+                            <th style="white-space: nowrap;">Tanggal</th>
+                            <th style="white-space: nowrap;">ID Encounter</th>
+                            <th style="white-space: nowrap;">ID Condition</th>
+                            <th style="white-space: nowrap;">ID Observation Tensi</th>
+                            <th style="white-space: nowrap;">ID Observation Nadi</th>
+                            <th style="white-space: nowrap;">ID Observation RR</th>
+                            <th style="white-space: nowrap;">ID Observation Suhu</th>
+                            <th style="white-space: nowrap;">ID Observation SPO2</th>
+                            <th style="white-space: nowrap;">ID Observation GCS</th>
+                            <th style="white-space: nowrap;">ID Observation Tinggi</th>
+                            <th style="white-space: nowrap;">ID Observation Berat</th>
+                            <th style="white-space: nowrap;">ID Observation Perut</th>
+                            <th style="white-space: nowrap;">ID Observation Kesadaran</th>
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        {loop: $data_encounter}
+                        <tr>
+                            <td style="white-space: nowrap;">{$value.no_rawat}</td>
+                            <td style="white-space: nowrap;">{$value.nm_pasien}</td>
+                            <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
+                            <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
+                            <td style="white-space: nowrap;">{$value.id_encounter}</td>
+                            <td style="white-space: nowrap;">{$value.id_condition} <a href="{?=url([ADMIN, 'satu_sehat', 'condition', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvtensi} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tensi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvnadi} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'nadi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvrespirasi} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'respirasi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvsuhu} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'suhu'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvspo2} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'spo2'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvgcs} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'gcs'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvtinggi} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tinggi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvberat} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'berat'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvperut} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'perut'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.id_observation_ttvkesadaran} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'kesadaran'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-send"></i></a></td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
     </div>
 </div>
 <script type="text/javascript">
