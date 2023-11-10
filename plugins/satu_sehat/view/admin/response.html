@@ -1,6 +1,22 @@
 <div class="panel panel-default">
     <div class="panel-heading">
-        Data Encounter
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <form action="">
+                    <li style="padding-left:5px;padding-right:5px;">
+                        <input type="text" id="periode" class="form-control periode" name="periode" required>
+                    </li>
+                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                        <input type="submit" class="btn btn-primary btn-block value="Cari">
+                    </li>        
+                </form>
+            </ul>
+        </div>
+        <h3 class="panel-title">Data Response Satu Sehat</h3>
     </div>
     <div class="panel-body">
         <div class="row">
@@ -27,7 +43,7 @@
                         </tr>    
                     </thead>
                     <tbody>
-                        {loop: $data_encounter}
+                        {loop: $data_response}
                         <tr>
                             <td style="white-space: nowrap;">{$value.no_rawat}</td>
                             <td style="white-space: nowrap;">{$value.nm_pasien}</td>
@@ -71,4 +87,13 @@
       var t = $(".display").DataTable().rows().count();
       $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
     });
-    </script>
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('.periode').datetimepicker({
+          defaultDate: '{?=date('Y-m-d')?}',
+          format: 'YYYY-MM-DD',
+          locale: 'id'
+        });
+    });
+ </script>

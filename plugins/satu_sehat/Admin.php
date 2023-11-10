@@ -33,7 +33,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
-      ['name' => 'Data Encounter', 'url' => url([ADMIN, 'satu_sehat', 'dataencounter']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
+      ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
     return $this->draw('index.html', ['sub_modules' => $sub_modules]);
@@ -46,7 +46,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
-      ['name' => 'Data Encounter', 'url' => url([ADMIN, 'satu_sehat', 'dataencounter']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
+      ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
     return $this->draw('index.html', ['sub_modules' => $sub_modules]);
@@ -1157,8 +1157,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
-          "issued": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
           "valueCodeableConcept": {
               "text": "'.$ttv_unitsofmeasure_value.'"
           }
@@ -1211,8 +1211,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
-          "issued": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
           "component": [
             {
               "code": {
@@ -1297,8 +1297,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
-          "issued": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
           "valueQuantity": {
               "value": '.intval($ttv_unitsofmeasure_value).',
               "unit": "'.$ttv_unitsofmeasure_unit.'",
@@ -1482,19 +1482,19 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'satu_sehat', 'lokasi']));
   }  
 
-  public function getDataEncounter()
+  public function getResponse()
   {
     $this->_addHeaderFiles();
-    if(isset($_POST['tgl_registrasi'])) {
-      $periode = str_replace('-', '/', trim($tgl_registrasi));
+    $periode = date('Y/m/d');
+    if(isset($_GET['periode']) && $_GET['periode'] !='') {
+      $periode = substr(str_replace('-', '/', trim($_GET['periode'])), 0, 10);
     }
-    $date = isset_or($periode, date('Y/m/d'));
-    $data_encounter = $this->core->mysql('mlite_satu_sehat_response')
+    $data_response = $this->core->mysql('mlite_satu_sehat_response')
       ->join('reg_periksa', 'reg_periksa.no_rawat=mlite_satu_sehat_response.no_rawat')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->like('mlite_satu_sehat_response.no_rawat', '%'.$periode)
+      ->like('mlite_satu_sehat_response.no_rawat', $periode.'%')
       ->toArray();
-    return $this->draw('data.encounter.html', ['data_encounter' => $data_encounter]);
+    return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
   private function _addHeaderFiles()
