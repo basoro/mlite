@@ -1494,16 +1494,19 @@ class Admin extends AdminModule
     $url = $this->api_url.'tindakan/kunjungan/'.$nomor_kunjungan;
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    // echo json_encode($json);
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
-    if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+    $data_tindakan = [];
+    if($code == '200') {
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      if (!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+          $data_tindakan = json_decode($decompress,true);
+      }  
     }
-    $data_tindakan = json_decode($decompress,true);
 
     $ref_tindakan = '[
       {
@@ -1761,12 +1764,16 @@ class Admin extends AdminModule
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
+
     $decompress = '""';
-    if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+    $data_obat = [];
+    if($code == '200') {
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      if (!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+          $data_obat = json_decode($decompress,true);
+      }  
     }
-    $data_obat = json_decode($decompress,true);
 
     echo $this->draw('bridgingpcare.obat.html', ['bridging_pcare' => $bridging_pcare, 'data_obat' => $data_obat]);
     exit();

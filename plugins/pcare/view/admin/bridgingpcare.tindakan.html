@@ -53,6 +53,7 @@
         </tr>
     </thead>
     <tbody>
+        {if: $data_tindakan}
         {loop: $data_tindakan.list}
         <tr>
             <td>{$value.noKunjungan}</td>
@@ -61,6 +62,7 @@
             <td>{$value.nmTindakan}</td>
         </tr>
         {/loop}
+        {/if}
     </tbody>
 </table>
 </div>
@@ -79,7 +81,7 @@ $("#simpantindakan").click(function(){
   var url = baseURL + '/pcare/addtindakan/' + noKunjungan + '/' + kdTindakan + '?t=' + mlite.token;
 
   $.get(url, function(data){
-    //console.log(data);
+    // console.log(data);
   });
 
 });
