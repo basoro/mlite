@@ -1485,23 +1485,82 @@ class Admin extends AdminModule
   public function getResponse()
   {
     $this->_addHeaderFiles();
-    $periode = date('Y/m/d');
+    $periode = date('Y-m-d');
     if(isset($_GET['periode']) && $_GET['periode'] !='') {
-      $periode = substr(str_replace('-', '/', trim($_GET['periode'])), 0, 10);
+      $periode = $_GET['periode'];
     }
-    $data_response = $this->core->mysql('mlite_satu_sehat_response')
-      ->join('reg_periksa', 'reg_periksa.no_rawat=mlite_satu_sehat_response.no_rawat')
-      ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
-      ->like('mlite_satu_sehat_response.no_rawat', $periode.'%')
+    $data_response = [];
+    $query = $this->core->mysql('reg_periksa')
+      ->like('reg_periksa.tgl_registrasi', $periode)
       ->toArray();
+    foreach($query as $row) {
+
+      $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $row['no_rawat'])->oneArray();
+
+      $row['no_ktp_pasien'] = $this->core->getPasienInfo('no_ktp', $row['no_rkm_medis']);
+      $row['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $row['no_rkm_medis']);
+      $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
+      $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
+      $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
+      $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
+      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
+
+      if($row['status_lanjut'] == 'Ranap') {
+        $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);
+        $row['kd_poli'] = $this->core->getKamarInfo('kd_bangsal', $row['kd_kamar']);
+        $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_bangsal']);
+        $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_bangsal']);
+      }
+
+      $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $row['kd_poli'])->oneArray();
+      $row['id_organisasi'] = $mlite_satu_sehat_lokasi['id_organisasi_satusehat'];
+      $row['id_lokasi'] = $mlite_satu_sehat_lokasi['id_lokasi_satusehat'];
+
+      $row['pemeriksaan'] = $this->core->mysql('pemeriksaan_ralan')
+      ->where('no_rawat', $row['no_rawat'])
+      ->limit(1)
+      ->desc('tgl_perawatan')
+      ->oneArray();
+
+      if($row['status_lanjut'] == 'Ranap') {
+        $row['pemeriksaan'] = $this->core->mysql('pemeriksaan_ranap')
+        ->where('no_rawat', $row['no_rawat'])
+        ->limit(1)
+        ->desc('tgl_perawatan')
+        ->oneArray();
+      }
+
+      $row['diagnosa_pasien'] = $this->core->mysql('diagnosa_pasien')
+      ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+      ->where('no_rawat', $row['no_rawat'])
+      ->where('diagnosa_pasien.status', $row['status_lanjut'])
+      ->where('prioritas', '1')
+      ->oneArray();
+      
+      $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
+      $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
+      $row['id_observation_ttvtensi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvtensi'], '');
+      $row['id_observation_ttvnadi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvnadi'], '');
+      $row['id_observation_ttvrespirasi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvrespirasi'], '');
+      $row['id_observation_ttvsuhu'] = isset_or($mlite_satu_sehat_response['id_observation_ttvsuhu'], '');
+      $row['id_observation_ttvspo2'] = isset_or($mlite_satu_sehat_response['id_observation_ttvspo2'], '');
+      $row['id_observation_ttvgcs'] = isset_or($mlite_satu_sehat_response['id_observation_ttvgcs'], '');
+      $row['id_observation_ttvtinggi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvtinggi'], '');
+      $row['id_observation_ttvberat'] = isset_or($mlite_satu_sehat_response['id_observation_ttvberat'], '');
+      $row['id_observation_ttvperut'] = isset_or($mlite_satu_sehat_response['id_observation_ttvperut'], '');
+      $row['id_observation_ttvkesadaran'] = isset_or($mlite_satu_sehat_response['id_observation_ttvkesadaran'], '');
+      $data_response[] = $row;
+    }
     return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
   private function _addHeaderFiles()
   {
       $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+      $this->core->addCSS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css'));
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+      $this->core->addJS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js'));
       $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
