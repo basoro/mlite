@@ -1157,8 +1157,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
-          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
           "valueCodeableConcept": {
               "text": "'.$ttv_unitsofmeasure_value.'"
           }
@@ -1211,8 +1211,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
-          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
           "component": [
             {
               "code": {
@@ -1297,8 +1297,8 @@ class Admin extends AdminModule
               "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
               "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
           },
-          "effectiveDateTime": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
-          "issued": "'.$tgl_perawatan.'T'.$jam_rawat.''.$zonawaktu.'",
+          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
           "valueQuantity": {
               "value": '.intval($ttv_unitsofmeasure_value).',
               "unit": "'.$ttv_unitsofmeasure_unit.'",
@@ -1313,7 +1313,7 @@ class Admin extends AdminModule
     
 
     $id_observation = json_decode($response)->id;
-    $pesan = 'Gagal mengirim observation ttv nadi ke platform Satu Sehat!!';
+    $pesan = 'Gagal mengirim observation ttv '.$ttv.' ke platform Satu Sehat!!';
     if($id_observation) {
       $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
       if($mlite_satu_sehat_response) {
@@ -1330,7 +1330,7 @@ class Admin extends AdminModule
           'id_observation_ttv'.$ttv.'' => $id_condition
         ]);          
       }
-      $pesan = 'Sukses mengirim observation ttv nadi ke platform Satu Sehat!!';
+      $pesan = 'Sukses mengirim observation ttv '.$ttv.' ke platform Satu Sehat!!';
     }
     
     curl_close($curl);
