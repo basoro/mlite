@@ -45,6 +45,7 @@ class Admin extends AdminModule
         }
 
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
 
         return $this->draw('manage.html', [
           'pasien' => $pasien,
@@ -52,6 +53,7 @@ class Admin extends AdminModule
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
           'cek_vclaim' => $cek_vclaim,
+          'cek_pcare' => $cek_pcare,
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
@@ -171,6 +173,7 @@ class Admin extends AdminModule
         }
 
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
+        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
 
         echo $this->draw('display.html', [
           'pasien' => $pasien,
@@ -178,6 +181,7 @@ class Admin extends AdminModule
           'jumlah_data' => $jumlah_data,
           'jml_halaman' => $jml_halaman,
           'cek_vclaim' => $cek_vclaim,
+          'cek_pcare' => $cek_pcare, 
           'offset' => $offset,
           'admin_mode' => $this->settings->get('settings.admin_mode')
         ]);
@@ -462,6 +466,20 @@ class Admin extends AdminModule
     {
       $url = url([ADMIN, 'vclaim', 'bynik', $nik, $tglPelayananSEP]);
       echo $this->draw('vclaim.bynik.html', ['url' => $url]);
+      exit();
+    }
+
+    public function getPcare_ByNoKartu($noKartu, $tglPelayananSEP)
+    {
+      $url = url([ADMIN, 'pcare', 'byjeniskartu', 'noka', $noKartu]);
+      echo $this->draw('pcare.bynokartu.html', ['url' => $url]);
+      exit();
+    }
+
+    public function getPcare_ByNIK($nik, $tglPelayananSEP)
+    {
+      $url = url([ADMIN, 'pcare', 'byjeniskartu', 'nik', $nik]);
+      echo $this->draw('pcare.bynik.html', ['url' => $url]);
       exit();
     }
 
