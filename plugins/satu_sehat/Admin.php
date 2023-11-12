@@ -273,7 +273,7 @@ class Admin extends AdminModule
                         "extension": [
                             {
                                 "url": "province",
-                                "valueCode": "3'.$this->settings->get('satu_sehat.propinsi').'1"
+                                "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
                             },
                             {
                                 "url": "city",
@@ -405,7 +405,7 @@ class Admin extends AdminModule
                         "extension": [
                             {
                                 "url": "province",
-                                "valueCode": "3'.$this->settings->get('satu_sehat.propinsi').'1"
+                                "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
                             },
                             {
                                 "url": "city",
