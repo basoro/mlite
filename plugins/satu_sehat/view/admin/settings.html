@@ -64,9 +64,16 @@
                         <div class="form-group">
                             <label>Zona Waktu</label>
                             <select name="satu_sehat[zonawaktu]" class="form-control">
-                                <option value="WIB">WIB</option>
-                                <option value="WITA">WITA</option>
-                                <option value="WIT">WIT</option>
+                                <option value="WIB"{if: $satu_sehat.zonawaktu == 'WIB'} selected{/if}>WIB</option>
+                                <option value="WITA"{if: $satu_sehat.zonawaktu == 'WITA'} selected{/if}>WITA</option>
+                                <option value="WIT"{if: $satu_sehat.zonawaktu == 'WIT'} selected{/if}>WIT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Billing</label>
+                            <select name="satu_sehat[billing]" class="form-control">
+                                <option value="mlite"{if: $satu_sehat.billing == 'mlite'} selected{/if}>mLITE</option>
+                                <option value="khanza"{if: $satu_sehat.billing == 'khanza'} selected{/if}>Khanza</option>
                             </select>
                         </div>
                     </div>

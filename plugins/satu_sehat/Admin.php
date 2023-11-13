@@ -726,6 +726,22 @@ class Admin extends AdminModule
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
     $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
+    if($this->settings->get('satu_sehat.billing') == 'khanza') {
+      $mlite_billing = $this->core->mysql('nota_jalan')->select([
+        'tgl_billing' => 'tanggal', 
+        'jam_billing' => 'jam'
+      ])
+      ->where('no_rawat', $no_rawat)
+      ->oneArray();
+      if($status_lanjut == 'Ranap') {
+        $mlite_billing = $this->core->mysql('nota_inap')->select([
+          'tgl_billing' => 'tanggal', 
+          'jam_billing' => 'jam'
+        ])
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      }
+    }
 
     $code = 'AMB';
     $display = 'ambulatory';
