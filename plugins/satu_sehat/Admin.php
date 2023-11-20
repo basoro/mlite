@@ -1519,6 +1519,20 @@ class Admin extends AdminModule
       $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
       $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
       $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
+      if($this->settings->get('satu_sehat.billing') == 'khanza') {
+        $mlite_billing = $this->core->mysql('nota_jalan')->select([
+          'tgl_billing' => 'tanggal'
+        ])
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray();
+        if($status_lanjut == 'Ranap') {
+          $mlite_billing = $this->core->mysql('nota_inap')->select([
+            'tgl_billing' => 'tanggal'
+          ])
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+        }
+      }      
       $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
 
       if($row['status_lanjut'] == 'Ranap') {
