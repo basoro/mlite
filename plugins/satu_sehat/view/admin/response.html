@@ -59,7 +59,7 @@
                         <tr>
                             <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
                             <td style="white-space: nowrap;">{$value.no_rawat}</td>
-                            <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
+                            <td style="white-space: nowrap;">{$value.no_rkm_medis} &nbsp; <a href="{?=url([ADMIN, 'satu_sehat', 'encounterbundle', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-plus"></i></a></td>
                             <td style="white-space: nowrap;">{$value.nm_pasien}</td>
                             <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
                             <td style="white-space: nowrap;">{$value.kd_dokter}</td>

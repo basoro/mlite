@@ -4,40 +4,17 @@
     }
 </style>
 <h4>Mapping Departemen Satu Sehat</h4>
-<form action="{?=url(ADMIN.'/satu_sehat/savedepartemen')?}" method="POST">
+<form action="{?=url(ADMIN.'/satu_sehat/savemappraktisi')?}" method="POST">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>ID Organisasi</label>
-                        <input type="text" name="id_organisasi_sub" id="id_organisasi_sub" class="form-control" value="" placeholder="Optional" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>ID Departemen</label>
-                        <select name="dep_id" id="dep_id" class="form-control" onchange="document.getElementById('nama_departemen').value=this.options[this.selectedIndex].text.split('- ')[1]">
-                            <option value="">Pilih Departemen</option>
-                            {loop: $departemen}
-                            <option value="{$value.dep_id}">{$value.dep_id} - {$value.nama}</option>
-                            {/loop}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama Departemen</label>
-                        <input type="text" name="nama" id="nama_departemen" class="form-control" value="" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>ID Poli</label>
-                        <select name="poli" id="poli" class="form-control" onchange="document.getElementById('nama_poli').value=this.options[this.selectedIndex].text">
-                            <option value="">Pilih Poliklinik</option>
+                        <label>ID Dokter</label>
+                        <select name="dokter" id="dokter" class="form-control" onchange="document.getElementById('nama_poli').value=this.options[this.selectedIndex].text">
+                            <option value="">Pilih Dokter</option>
                             {loop: $poli}
-                            <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                            <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
                             {/loop}
                         </select>
                     </div>
@@ -72,9 +49,9 @@
         data-dep_id="{$value.dep_id}"
         data-nama="{$value.nama}"
         >
-            <td>{$value.dep_id}</td>
+            <td>{$value.practitioner_id}</td>
             <td>{$value.nama}</td>
-            <td>{$value.id_organisasi_satusehat}</td>
+            <td>{$value.kd_dokter}</td>
         </tr>
         {/loop}
         </tbody>

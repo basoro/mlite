@@ -19,11 +19,11 @@ class Admin extends AdminModule
 
   public function navigation()
   {
-      return [
-        'Index'   => 'index',
-        'Kelola'   => 'manage',
-        'Pengaturan'   => 'settings',
-      ];
+    return [
+      'Index'   => 'index',
+      'Kelola'   => 'manage',
+      'Pengaturan'   => 'settings',
+    ];
   }
 
   public function getIndex()
@@ -33,6 +33,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
+      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
@@ -46,6 +47,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
+      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
@@ -58,7 +60,7 @@ class Admin extends AdminModule
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->settings->get('satu_sehat.authurl').'/accesstoken?grant_type=client_credentials',
+      CURLOPT_URL => $this->settings->get('satu_sehat.authurl') . '/accesstoken?grant_type=client_credentials',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -66,11 +68,11 @@ class Admin extends AdminModule
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => 'client_id='.$this->clientid.'&client_secret='.$this->secretkey,
+      CURLOPT_POSTFIELDS => 'client_id=' . $this->clientid . '&client_secret=' . $this->secretkey,
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     return $response;
     // echo $response;    
@@ -80,10 +82,10 @@ class Admin extends AdminModule
   public function getTest()
   {
     $pemeriksaan = $this->core->mysql('pemeriksaan_ralan')
-    ->where('no_rawat', '2023/11/09/000001')
-    ->limit(1)
-    ->desc('tgl_perawatan')
-    ->oneArray();
+      ->where('no_rawat', '2023/11/09/000001')
+      ->limit(1)
+      ->desc('tgl_perawatan')
+      ->oneArray();
     var_dump($pemeriksaan);
     exit();
   }
@@ -92,21 +94,21 @@ class Admin extends AdminModule
   {
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|'.$nik_dokter,
+      CURLOPT_URL => $this->fhirurl . '/Practitioner?identifier=https://fhir.kemkes.go.id/id/nik|' . $nik_dokter,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'GET'
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     return $response;
     // echo $response;
@@ -118,15 +120,15 @@ class Admin extends AdminModule
   {
     echo json_decode($this->getPractitioner($nik_dokter))->entry[0]->resource->id;
     exit();
-  } 
+  }
 
   public function getPractitionerByID($id_dokter)
   {
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Practitioner/'.$id_dokter,
+      CURLOPT_URL => $this->fhirurl . '/Practitioner/' . $id_dokter,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -134,57 +136,55 @@ class Admin extends AdminModule
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'GET',
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     echo $response;
     exit();
-    
   }
 
   public function getPatient($nik_pasien)
   {
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Patient?identifier=https://fhir.kemkes.go.id/id/nik|'.$nik_pasien,
+      CURLOPT_URL => $this->fhirurl . '/Patient?identifier=https://fhir.kemkes.go.id/id/nik|' . $nik_pasien,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'GET'
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     return $response;
     // echo $response;
     // exit();
 
-  } 
+  }
 
   public function getPatientID($nik_pasien)
   {
     echo json_decode($this->getPatient($nik_pasien))->entry[0]->resource->id;
     exit();
-
-  } 
+  }
 
   public function getPatientByID($id_pasien)
   {
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Patient/'.$id_pasien,
+      CURLOPT_URL => $this->fhirurl . '/Patient/' . $id_pasien,
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
@@ -192,40 +192,44 @@ class Admin extends AdminModule
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_CUSTOMREQUEST => 'GET',
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     echo $response;
     exit();
-
   }
-  
-  public function getOrganization($kode_departemen)
-  {
 
+  public function getOrganization($kode_departemen, $kode_organization = '')
+  {
+    $partOf = $this->organizationid;
+    $nameResource = $this->core->getDepartemenInfo($kode_departemen);
+    if ($kode_organization != '') {
+      $partOf = $kode_organization;
+      $nameResource = $this->core->getPoliklinikInfo('nm_poli', $kode_departemen);
+    }
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Organization',
+      CURLOPT_URL => $this->fhirurl . '/Organization',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>'{
+      CURLOPT_POSTFIELDS => '{
         "resourceType": "Organization",
         "active": true,
         "identifier": [
             {
                 "use": "official",
-                "system": "http://sys-ids.kemkes.go.id/organization/'.$this->organizationid.'",
-                "value": "'.$kode_departemen.'"
+                "system": "http://sys-ids.kemkes.go.id/organization/' . $this->organizationid . '",
+                "value": "' . $kode_departemen . '"
             }
         ],
         "type": [
@@ -239,21 +243,21 @@ class Admin extends AdminModule
                 ]
             }
         ],
-        "name": "'.$this->core->getDepartemenInfo($kode_departemen).'",
+        "name": "' . $nameResource . '",
         "telecom": [
             {
                 "system": "phone",
-                "value": "'.$this->settings->get('settings.nomor_telepon').'",
+                "value": "' . $this->settings->get('settings.nomor_telepon') . '",
                 "use": "work"
             },
             {
                 "system": "email",
-                "value": "'.$this->settings->get('settings.email').'",
+                "value": "' . $this->settings->get('settings.email') . '",
                 "use": "work"
             },
             {
                 "system": "url",
-                "value": "www.'.$this->settings->get('settings.email').'",
+                "value": "www.' . $this->settings->get('settings.email') . '",
                 "use": "work"
             }
         ],
@@ -262,10 +266,10 @@ class Admin extends AdminModule
                 "use": "work",
                 "type": "both",
                 "line": [
-                    "'.$this->settings->get('settings.alamat').'"
+                    "' . $this->settings->get('settings.alamat') . '"
                 ],
-                "city": "'.$this->settings->get('settings.kota').'",
-                "postalCode": "'.$this->settings->get('satu_sehat.kodepos').'",
+                "city": "' . $this->settings->get('settings.kota') . '",
+                "postalCode": "' . $this->settings->get('satu_sehat.kodepos') . '",
                 "country": "ID",
                 "extension": [
                     {
@@ -273,19 +277,19 @@ class Admin extends AdminModule
                         "extension": [
                             {
                                 "url": "province",
-                                "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.propinsi') . '"
                             },
                             {
                                 "url": "city",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kabupaten').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kabupaten') . '"
                             },
                             {
                                 "url": "district",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kecamatan').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kecamatan') . '"
                             },
                             {
                                 "url": "village",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kelurahan').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kelurahan') . '"
                             }
                         ]
                     }
@@ -293,13 +297,13 @@ class Admin extends AdminModule
             }
         ],
         "partOf": {
-            "reference": "Organization/'.$this->settings->get('satu_sehat.organizationid').'"
+            "reference": "Organization/' . $partOf . '"
         }
     }',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     return $response;
     // echo $response;
@@ -312,21 +316,47 @@ class Admin extends AdminModule
     $mlite_satu_sehat_departemen = $this->core->mysql('mlite_satu_sehat_departemen')->where('dep_id', $kode_departemen)->oneArray();
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Organization/'.$mlite_satu_sehat_departemen['id_organisasi_satusehat'],
+      CURLOPT_URL => $this->fhirurl . '/Organization/' . $mlite_satu_sehat_departemen['id_organisasi_satusehat'],
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'GET',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
+    curl_close($curl);
+    echo $response;
+    exit();
+  }
+
+  public function getOrganizationByPart()
+  {
+
+    $mlite_satu_sehat_departemen = $this->core->mysql('mlite_satu_sehat_departemen')->where('dep_id', $kode_departemen)->oneArray();
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl . '/Organization?partof=' . $this->organizationid,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_CUSTOMREQUEST => 'GET',
+    ));
+
+    $response = curl_exec($curl);
+
     curl_close($curl);
     echo $response;
     exit();
@@ -338,26 +368,26 @@ class Admin extends AdminModule
     $mlite_satu_sehat_departemen = $this->core->mysql('mlite_satu_sehat_departemen')->where('dep_id', $kode_departemen)->oneArray();
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Organization/'.$mlite_satu_sehat_departemen['id_organisasi_satusehat'],
+      CURLOPT_URL => $this->fhirurl . '/Organization/' . $mlite_satu_sehat_departemen['id_organisasi_satusehat'],
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'PUT',
-      CURLOPT_POSTFIELDS =>'{
+      CURLOPT_POSTFIELDS => '{
         "resourceType": "Organization",
-        "id":"'.$mlite_satu_sehat_departemen['id_organisasi_satusehat'].'",
+        "id":"' . $mlite_satu_sehat_departemen['id_organisasi_satusehat'] . '",
         "active": true,
         "identifier": [
             {
                 "use": "official",
-                "system": "http://sys-ids.kemkes.go.id/organization/'.$this->organizationid.'",
-                "value": "'.$kode_departemen.'"
+                "system": "http://sys-ids.kemkes.go.id/organization/' . $this->organizationid . '",
+                "value": "' . $kode_departemen . '"
             }
         ],
         "type": [
@@ -371,21 +401,21 @@ class Admin extends AdminModule
                 ]
             }
         ],
-        "name": "'.$this->core->getDepartemenInfo($kode_departemen).'",
+        "name": "' . $this->core->getDepartemenInfo($kode_departemen) . '",
         "telecom": [
             {
                 "system": "phone",
-                "value": "'.$this->settings->get('settings.nomor_telepon').'",
+                "value": "' . $this->settings->get('settings.nomor_telepon') . '",
                 "use": "work"
             },
             {
                 "system": "email",
-                "value": "'.$this->settings->get('settings.email').'",
+                "value": "' . $this->settings->get('settings.email') . '",
                 "use": "work"
             },
             {
                 "system": "url",
-                "value": "www.'.$this->settings->get('settings.email').'",
+                "value": "www.' . $this->settings->get('settings.email') . '",
                 "use": "work"
             }
         ],
@@ -394,10 +424,10 @@ class Admin extends AdminModule
                 "use": "work",
                 "type": "both",
                 "line": [
-                    "'.$this->settings->get('settings.alamat').'"
+                    "' . $this->settings->get('settings.alamat') . '"
                 ],
-                "city": "'.$this->settings->get('settings.kota').'",
-                "postalCode": "'.$this->settings->get('satu_sehat.kodepos').'",
+                "city": "' . $this->settings->get('settings.kota') . '",
+                "postalCode": "' . $this->settings->get('satu_sehat.kodepos') . '",
                 "country": "ID",
                 "extension": [
                     {
@@ -405,19 +435,19 @@ class Admin extends AdminModule
                         "extension": [
                             {
                                 "url": "province",
-                                "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.propinsi') . '"
                             },
                             {
                                 "url": "city",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kabupaten').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kabupaten') . '"
                             },
                             {
                                 "url": "district",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kecamatan').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kecamatan') . '"
                             },
                             {
                                 "url": "village",
-                                "valueCode": "'.$this->settings->get('satu_sehat.kelurahan').'"
+                                "valueCode": "' . $this->settings->get('satu_sehat.kelurahan') . '"
                             }
                         ]
                     }
@@ -425,22 +455,22 @@ class Admin extends AdminModule
             }
         ],
         "partOf": {
-            "reference": "Organization/'.$this->settings->get('satu_sehat.organizationid').'"
+            "reference": "Organization/' . $this->settings->get('satu_sehat.organizationid') . '"
         }
     }',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     echo $response;
-    exit();      
+    exit();
   }
 
-  public function getLocation($kode)
+  public function getLocation($kode, $kode_organization = '')
   {
     $lokasi = '';
-    if(!empty($this->core->getPoliklinikInfo('nm_poli', $kode))) {
+    if (!empty($this->core->getPoliklinikInfo('nm_poli', $kode))) {
       $lokasi = $this->core->getPoliklinikInfo('nm_poli', $kode);
     } else {
       $lokasi = $this->core->getBangsalInfo('nm_bangsal', $kode);
@@ -449,51 +479,51 @@ class Admin extends AdminModule
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Location',
+      CURLOPT_URL => $this->fhirurl . '/Location',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>'{
+      CURLOPT_POSTFIELDS => '{
         "resourceType": "Location",
         "identifier": [
             {
-                "system": "http://sys-ids.kemkes.go.id/location/'.$this->organizationid.'",
-                "value": "'.$kode.'"
+                "system": "http://sys-ids.kemkes.go.id/location/' . $this->organizationid . '",
+                "value": "' . $kode . '"
             }
         ],
         "status": "active",
-        "name": "'.$lokasi.'",
-        "description": "'.$kode.' - '.$lokasi.'",
+        "name": "' . $lokasi . '",
+        "description": "' . $kode . ' - ' . $lokasi . '",
         "mode": "instance",
         "telecom": [
           {
               "system": "phone",
-              "value": "'.$this->settings->get('settings.nomor_telepon').'",
+              "value": "' . $this->settings->get('settings.nomor_telepon') . '",
               "use": "work"
           },
           {
               "system": "email",
-              "value": "'.$this->settings->get('settings.email').'",
+              "value": "' . $this->settings->get('settings.email') . '",
               "use": "work"
           },
           {
               "system": "url",
-              "value": "www.'.$this->settings->get('settings.email').'",
+              "value": "www.' . $this->settings->get('settings.email') . '",
               "use": "work"
           }
         ],
         "address": {
             "use": "work",
             "line": [
-                "'.$this->settings->get('settings.alamat').'"
+                "' . $this->settings->get('settings.alamat') . '"
             ],
-            "city": "'.$this->settings->get('settings.kota').'",
-            "postalCode": "'.$this->settings->get('satu_sehat.kodepos').'",
+            "city": "' . $this->settings->get('settings.kota') . '",
+            "postalCode": "' . $this->settings->get('satu_sehat.kodepos') . '",
             "country": "ID",
             "extension": [
                 {
@@ -501,19 +531,19 @@ class Admin extends AdminModule
                     "extension": [
                         {
                             "url": "province",
-                            "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.propinsi') . '"
                         },
                         {
                             "url": "city",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kabupaten').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kabupaten') . '"
                         },
                         {
                             "url": "district",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kecamatan').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kecamatan') . '"
                         },
                         {
                             "url": "village",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kelurahan').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kelurahan') . '"
                         },
                         {
                             "url": "rt",
@@ -537,12 +567,12 @@ class Admin extends AdminModule
             ]
         },
         "position": {
-            "longitude": '.$this->settings->get('satu_sehat.longitude').',
-            "latitude": '.$this->settings->get('satu_sehat.latitude').',
+            "longitude": ' . $this->settings->get('satu_sehat.longitude') . ',
+            "latitude": ' . $this->settings->get('satu_sehat.latitude') . ',
             "altitude": 0
       },
         "managingOrganization": {
-            "reference": "Organization/'.$this->settings->get('satu_sehat.organizationid').'"
+            "reference": "Organization/' . $kode_organization . '"
         }
     }',
     ));
@@ -561,85 +591,84 @@ class Admin extends AdminModule
     $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $kode_departemen)->oneArray();
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Location?organization='.$mlite_satu_sehat_lokasi['id_lokasi_satusehat'],
+      CURLOPT_URL => $this->fhirurl . '/Location?organization=' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'],
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'GET',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     echo $response;
-    exit();    
-
+    exit();
   }
 
   public function getLocationUpdate($kode_departemen)
   {
- 
+
     $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $kode_departemen)->oneArray();
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Location/'.$mlite_satu_sehat_lokasi['id_lokasi_satusehat'],
+      CURLOPT_URL => $this->fhirurl . '/Location/' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'],
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'PUT',
-      CURLOPT_POSTFIELDS =>'{
+      CURLOPT_POSTFIELDS => '{
         "resourceType": "Location",
-        "id": "'.$mlite_satu_sehat_lokasi['id_lokasi_satusehat'].'",
+        "id": "' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] . '",
         "identifier": [
             {
-                "system": "http://sys-ids.kemkes.go.id/location/'.$this->organizationid.'",
-                "value": "'.$mlite_satu_sehat_lokasi['kode'].'"
+                "system": "http://sys-ids.kemkes.go.id/location/' . $this->organizationid . '",
+                "value": "' . $mlite_satu_sehat_lokasi['kode'] . '"
             }
         ],
         "status": "inactive",
-        "name": "'.$mlite_satu_sehat_lokasi['lokasi'].'",
-        "description": "'.$mlite_satu_sehat_lokasi['kode'].' - '.$mlite_satu_sehat_lokasi['lokasi'].'",
+        "name": "' . $mlite_satu_sehat_lokasi['lokasi'] . '",
+        "description": "' . $mlite_satu_sehat_lokasi['kode'] . ' - ' . $mlite_satu_sehat_lokasi['lokasi'] . '",
         "mode": "instance",
         "telecom": [
             {
                 "system": "phone",
-                "value": "'.$this->settings->get('settings.nomor_telepon').'",
+                "value": "' . $this->settings->get('settings.nomor_telepon') . '",
                 "use": "work"
             },
             {
                 "system": "fax",
-                "value": "'.$this->settings->get('settings.nomor_telepon').'",
+                "value": "' . $this->settings->get('settings.nomor_telepon') . '",
                 "use": "work"
             },
             {
                 "system": "email",
-                "value": "'.$this->settings->get('settings.email').'"
+                "value": "' . $this->settings->get('settings.email') . '"
             },
             {
                 "system": "url",
-                "value": "'.$this->settings->get('settings.website').'",
+                "value": "' . $this->settings->get('settings.website') . '",
                 "use": "work"
             }
         ],
         "address": {
             "use": "work",
             "line": [
-                "'.$this->settings->get('settings.alamat').'"
+                "' . $this->settings->get('settings.alamat') . '"
             ],
-            "city": "'.$this->settings->get('settings.kota').'",
-            "postalCode": "'.$this->settings->get('satu_sehat.kodepos').'",
+            "city": "' . $this->settings->get('settings.kota') . '",
+            "postalCode": "' . $this->settings->get('satu_sehat.kodepos') . '",
             "country": "ID",
             "extension": [
                 {
@@ -647,19 +676,19 @@ class Admin extends AdminModule
                     "extension": [
                         {
                             "url": "province",
-                            "valueCode": "'.$this->settings->get('satu_sehat.propinsi').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.propinsi') . '"
                         },
                         {
                             "url": "city",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kabupaten').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kabupaten') . '"
                         },
                         {
                             "url": "district",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kecamatan').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kecamatan') . '"
                         },
                         {
                             "url": "village",
-                            "valueCode": "'.$this->settings->get('satu_sehat.kelurahan').'"
+                            "valueCode": "' . $this->settings->get('satu_sehat.kelurahan') . '"
                         },
                         {
                             "url": "rt",
@@ -688,27 +717,26 @@ class Admin extends AdminModule
             "altitude": 0
         },
         "managingOrganization": {
-            "reference": "Organization/'.$this->settings->get('satu_sehat.organizationid').'"
+            "reference": "Organization/' . $this->settings->get('satu_sehat.organizationid') . '"
         }
     }',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
     curl_close($curl);
     echo $response;
-    exit();    
-    
+    exit();
   }
 
   public function getEncounter($no_rawat)
   {
 
     $zonawaktu = '+07:00';
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WITA'){
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
       $zonawaktu = '+08:00';
-    } 
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
       $zonawaktu = '+09:00';
     }
 
@@ -717,7 +745,7 @@ class Admin extends AdminModule
     $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
     $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
     $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
-    $no_ktp_dokter = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+    $no_ktp_dokter = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
     $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
     $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
     $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
@@ -725,138 +753,407 @@ class Admin extends AdminModule
     $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
+    $endTime = date("H:i:s", strtotime('+10 minutes', strtotime($jam_reg)));
     $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
-    if($this->settings->get('satu_sehat.billing') == 'khanza') {
+    if ($this->settings->get('satu_sehat.billing') == 'khanza') {
       $mlite_billing = $this->core->mysql('nota_jalan')->select([
-        'tgl_billing' => 'tanggal', 
+        'tgl_billing' => 'tanggal',
         'jam_billing' => 'jam'
       ])
-      ->where('no_rawat', $no_rawat)
-      ->oneArray();
-      if($status_lanjut == 'Ranap') {
-        $mlite_billing = $this->core->mysql('nota_inap')->select([
-          'tgl_billing' => 'tanggal', 
-          'jam_billing' => 'jam'
-        ])
         ->where('no_rawat', $no_rawat)
         ->oneArray();
+      if ($status_lanjut == 'Ranap') {
+        $mlite_billing = $this->core->mysql('nota_inap')->select([
+          'tgl_billing' => 'tanggal',
+          'jam_billing' => 'jam'
+        ])
+          ->where('no_rawat', $no_rawat)
+          ->oneArray();
       }
     }
 
     $code = 'AMB';
     $display = 'ambulatory';
-    if($status_lanjut == 'Ranap') {
-      $kd_poli = $this->core->getKamarInapInfo('kd_poli', $no_rawat);
-      $kd_bangsal = $this->core->getKamarInfo('kd_bangsal', $kd_poli);  
-      $nm_poli = $this->core->getBangsalInfo('nm_bangsal', $kd_bangsal);  
+    if ($status_lanjut == 'Ranap') {
+      $kd_poli = $this->core->getKamarInapInfo('kd_kamar', $no_rawat);
+      $kd_bangsal = $this->core->getKamarInfo('kd_bangsal', $kd_poli);
+      $nm_poli = $this->core->getBangsalInfo('nm_bangsal', $kd_bangsal);
       $code = 'IMP';
-      $display = 'inpatient encounter';  
+      $display = 'inpatient encounter';
     }
 
     $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $kd_poli)->oneArray();
-    // $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] = '66c0e46d-6d35-423c-b3a6-4b8bd96eb728';
 
     $curl = curl_init();
-    
+    $json = '{
+      "resourceType": "Encounter",
+      "status": "arrived",
+      "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+      },
+      "subject": {
+          "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '",
+          "display": "' . $nama_pasien . '"
+      },
+      "participant": [
+          {
+              "type": [
+                  {
+                      "coding": [
+                          {
+                              "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                              "code": "ATND",
+                              "display": "attender"
+                          }
+                      ]
+                  }
+              ],
+              "individual": {
+                  "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '",
+                  "display": "' . $nama_dokter . '"
+              }
+          }
+      ],
+      "period": {
+          "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '"
+      },
+      "location": [
+          {
+              "location": {
+                  "reference": "Location/' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] . '",
+                  "display": "' . $kd_poli . ' ' . $nm_poli . '"
+              }
+          }
+      ],
+      "statusHistory": [
+          {
+              "status": "arrived",
+              "period": {
+                  "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '",
+                  "end": "' . $tgl_registrasi . 'T' . $endTime . '' . $zonawaktu . '"
+              }
+          }
+      ],
+      "serviceProvider": {
+          "reference": "Organization/' . $this->organizationid . '"
+      },
+      "identifier": [
+          {
+              "system": "http://sys-ids.kemkes.go.id/encounter/' . $this->organizationid . '",
+              "value": "' . $no_rawat . '"
+          }
+      ]
+  }';
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Encounter',
+      CURLOPT_URL => $this->fhirurl . '/Encounter',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>'{
-        "resourceType": "Encounter",
-        "status": "arrived",
-        "class": {
-            "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            "code": "AMB",
-            "display": "ambulatory"
-        },
-        "subject": {
-            "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'",
-            "display": "'.$nama_pasien.'"
-        },
-        "participant": [
-            {
-                "type": [
-                    {
-                        "coding": [
-                            {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
-                                "code": "ATND",
-                                "display": "attender"
-                            }
-                        ]
-                    }
-                ],
-                "individual": {
-                    "reference": "Practitioner/'.json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id.'",
-                    "display": "'.$nama_dokter.'"
-                }
-            }
-        ],
-        "period": {
-            "start": "'.$tgl_registrasi.'T'.$jam_reg.''.$zonawaktu.'"
-        },
-        "location": [
-            {
-                "location": {
-                    "reference": "Location/'.$mlite_satu_sehat_lokasi['id_lokasi_satusehat'].'",
-                    "display": "'.$kd_poli.' '.$nm_poli.'"
-                }
-            }
-        ],
-        "statusHistory": [
-            {
-                "status": "arrived",
-                "period": {
-                    "start": "'.$mlite_billing['tgl_billing'].'T'.$mlite_billing['jam_billing'].''.$zonawaktu.'"
-                }
-            }
-        ],
-        "serviceProvider": {
-            "reference": "Organization/'.$this->organizationid.'"
-        },
-        "identifier": [
-            {
-                "system": "http://sys-ids.kemkes.go.id/encounter/'.$this->organizationid.'",
-                "value": "'.$no_rawat.'"
-            }
-        ]
-    }',
+      CURLOPT_POSTFIELDS => $json,
     ));
-    
+
     $response = curl_exec($curl);
 
     $id_encounter = json_decode($response)->id;
     $pesan = 'Gagal mengirim encounter platform Satu Sehat!!';
-    if($id_encounter) {
+    if ($id_encounter) {
       $this->core->mysql('mlite_satu_sehat_response')->save([
         'no_rawat' => $no_rawat,
         'id_encounter' => $id_encounter
       ]);
       $pesan = 'Sukses mengirim encounter platform Satu Sehat!!';
     }
-    
+
+    curl_close($curl);
+    // echo $response;
+    echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response, 'json' => $json]);
+    exit();
+  }
+
+  public function getEncounterBundle($no_rawat)
+  {
+
+    $zonawaktu = '+07:00';
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
+      $zonawaktu = '+08:00';
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+      $zonawaktu = '+09:00';
+    }
+
+
+    $no_rawat = revertNoRawat($no_rawat);
+    $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
+    $nm_poli = $this->core->getPoliklinikInfo('nm_poli', $kd_poli);
+    $kd_dokter = $this->core->getRegPeriksaInfo('kd_dokter', $no_rawat);
+    $no_ktp_dokter = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')->select('practitioner_id')->where('kd_dokter', $kd_dokter)->oneArray();
+    $nama_dokter = $this->core->getPegawaiInfo('nama', $kd_dokter);
+    $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+    $no_ktp_pasien = $this->core->getPasienInfo('no_ktp', $no_rkm_medis);
+    $nama_pasien = $this->core->getPasienInfo('nm_pasien', $no_rkm_medis);
+    $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
+    $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
+    $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
+    $inProg = $this->core->mysql('pemeriksaan_ralan')->select(['tgl' => 'tgl_perawatan', 'jam' => 'jam_rawat'])->where('no_rawat', $no_rawat)->oneArray();
+    $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')
+      ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+      ->where('no_rawat', $no_rawat)
+      ->where('diagnosa_pasien.status', $status_lanjut)
+      ->where('prioritas', '1')
+      ->oneArray();
+    $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
+    if ($this->settings->get('satu_sehat.billing') == 'khanza') {
+      $mlite_billing = $this->core->mysql('nota_jalan')->select([
+        'tgl_billing' => 'tanggal',
+        'jam_billing' => 'jam'
+      ])
+        ->where('no_rawat', $no_rawat)
+        ->oneArray();
+      if ($status_lanjut == 'Ranap') {
+        $mlite_billing = $this->core->mysql('nota_inap')->select([
+          'tgl_billing' => 'tanggal',
+          'jam_billing' => 'jam'
+        ])
+          ->where('no_rawat', $no_rawat)
+          ->oneArray();
+      }
+    }
+
+    $kunjungan = 'Kunjungan';
+    if ($status_lanjut == 'Ranap') {
+      $kunjungan = 'Perawatan';
+    }
+
+    $code = 'AMB';
+    $display = 'ambulatory';
+    if ($status_lanjut == 'Ranap') {
+      $kd_poli = $this->core->getKamarInapInfo('kd_kamar', $no_rawat);
+      $kd_bangsal = $this->core->getKamarInfo('kd_bangsal', $kd_poli);
+      $nm_poli = $this->core->getBangsalInfo('nm_bangsal', $kd_bangsal);
+      $code = 'IMP';
+      $display = 'inpatient encounter';
+    }
+
+    $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $kd_poli)->oneArray();
+
+    $curl = curl_init();
+    $uuid_encounter = $this->gen_uuid();
+    $uuid_condition = $this->gen_uuid();
+    $ihs_patient = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+
+    $json_bundle = '{
+    "resourceType": "Bundle",
+    "type": "transaction",
+    "entry": [
+        {
+            "fullUrl": "urn:uuid:' . $uuid_encounter . '",
+            "resource": {
+                "resourceType": "Encounter",
+                "status": "finished",
+                "class": {
+                    "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+                    "code": "AMB",
+                    "display": "ambulatory"
+                },
+                "subject": {
+                    "reference": "Patient/' . $ihs_patient . '",
+                    "display": "' . $nama_pasien . '"
+                },
+                "participant": [
+                    {
+                        "type": [
+                            {
+                                "coding": [
+                                    {
+                                        "system": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType",
+                                        "code": "ATND",
+                                        "display": "attender"
+                                    }
+                                ]
+                            }
+                        ],
+                        "individual": {
+                            "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '",
+                            "display": "' . $nama_dokter . '"
+                        }
+                    }
+                ],
+                "period": {
+                    "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '",
+                    "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                },
+                "location": [
+                    {
+                        "location": {
+                            "reference": "Location/' . $mlite_satu_sehat_lokasi['id_lokasi_satusehat'] . '",
+                            "display": "' . $kd_poli . ' ' . $nm_poli . '"
+                        }
+                    }
+                ],
+                "diagnosis": [
+                    {
+                        "condition": {
+                            "reference": "urn:uuid:' . $uuid_condition . '",
+                            "display": "' . $diagnosa_pasien['nm_penyakit'] . '"
+                        },
+                        "use": {
+                            "coding": [
+                                {
+                                    "system": "http://terminology.hl7.org/CodeSystem/diagnosis-role",
+                                    "code": "DD",
+                                    "display": "Discharge diagnosis"
+                                }
+                            ]
+                        },
+                        "rank": 1
+                    }
+                ],
+                "statusHistory": [
+                    {
+                        "status": "arrived",
+                        "period": {
+                            "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '",
+                            "start": "' . $inProg['tgl'] . 'T' . $inProg['jam'] . '' . $zonawaktu . '"
+                        }
+                    },
+                    {
+                        "status": "in-progress",
+                        "period": {
+                            "start": "' . $inProg['tgl'] . 'T' . $inProg['jam'] . '' . $zonawaktu . '",
+                            "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                        }
+                    },
+                    {
+                        "status": "finished",
+                        "period": {
+                            "start": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '",
+                            "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                        }
+                    }
+                ],
+                "serviceProvider": {
+                    "reference": "Organization/' . $this->organizationid . '"
+                },
+                "identifier": [
+                    {
+                        "system": "http://sys-ids.kemkes.go.id/encounter/' . $this->organizationid . '",
+                        "value": "' . $no_rawat . '"
+                    }
+                ]
+            },
+            "request": {
+                "method": "POST",
+                "url": "Encounter"
+            }
+        },
+        {
+            "fullUrl": "urn:uuid:' . $uuid_condition . '",
+            "resource": {
+                "resourceType": "Condition",
+                "clinicalStatus": {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+                            "code": "active",
+                            "display": "Active"
+                        }
+                    ]
+                },
+                "category": [
+                    {
+                        "coding": [
+                            {
+                                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                                "code": "encounter-diagnosis",
+                                "display": "Encounter Diagnosis"
+                            }
+                        ]
+                    }
+                ],
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "' . $diagnosa_pasien['kd_penyakit'] . '",
+                            "display": "' . $diagnosa_pasien['nm_penyakit'] . '"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/' . $ihs_patient . '",
+                    "display": "' . $nama_pasien . '"
+                },
+                "encounter": {
+                    "reference": "urn:uuid:' . $uuid_encounter . '",
+                    "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
+                }
+            },
+            "request": {
+                "method": "POST",
+                "url": "Condition"
+            }
+        }
+    ]
+}';
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => $this->fhirurl,
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => $json_bundle,
+    ));
+
+    $response = curl_exec($curl);
+    $id_encounter = '';
+    $id_condition = '';
+
+    $entry = json_decode($response)->entry;
+    foreach ($entry as $value) {
+      $resourceType = $value->response->resourceType;
+      if ($resourceType == 'Encounter') {
+        $id_encounter = $value->response->resourceID;
+      }
+      if ($resourceType == 'Condition') {
+        $id_condition = $value->response->resourceID;
+      }
+    }
+
+    $pesan = 'Gagal mengirim encounter & condition platform Satu Sehat!!';
+    if ($id_encounter) {
+      $this->core->mysql('mlite_satu_sehat_response')->save([
+        'no_rawat' => $no_rawat,
+        'id_encounter' => $id_encounter,
+        'id_condition' => $id_condition
+      ]);
+      $pesan = 'Sukses mengirim encounter & condition platform Satu Sehat!!';
+    }
+
     curl_close($curl);
     // echo $response;
     echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response]);
     exit();
-
   }
 
   public function getCondition($no_rawat)
   {
 
     $zonawaktu = '+07:00';
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WITA'){
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
       $zonawaktu = '+08:00';
-    } 
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
       $zonawaktu = '+09:00';
     }
 
@@ -884,23 +1181,23 @@ class Admin extends AdminModule
     $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
 
     $kunjungan = 'Kunjungan';
-    if($status_lanjut == 'Ranap') {
+    if ($status_lanjut == 'Ranap') {
       $kunjungan = 'Perawatan';
     }
 
     $curl = curl_init();
-    
+
     curl_setopt_array($curl, array(
-      CURLOPT_URL => $this->fhirurl.'/Condition',
+      CURLOPT_URL => $this->fhirurl . '/Condition',
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => '',
       CURLOPT_MAXREDIRS => 10,
       CURLOPT_TIMEOUT => 0,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+      CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
       CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS =>'{
+      CURLOPT_POSTFIELDS => '{
        "resourceType": "Condition",
        "clinicalStatus": {
           "coding": [
@@ -926,61 +1223,60 @@ class Admin extends AdminModule
           "coding": [
              {
                 "system": "http://hl7.org/fhir/sid/icd-10",
-                "code": "'.$diagnosa_pasien['kd_penyakit'].'",
-                "display": "'.$diagnosa_pasien['nm_penyakit'].'"
+                "code": "' . $diagnosa_pasien['kd_penyakit'] . '",
+                "display": "' . $diagnosa_pasien['nm_penyakit'] . '"
              }
           ]
        },
        "subject": {
-          "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'",
-          "display": "'.$nama_pasien.'"
+          "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '",
+          "display": "' . $nama_pasien . '"
        },
        "encounter": {
-          "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
-          "display": "'.$kunjungan.' '.$nama_pasien.' dari tanggal '.$tgl_registrasi.'"
+          "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '",
+          "display": "' . $kunjungan . ' ' . $nama_pasien . ' dari tanggal ' . $tgl_registrasi . '"
        }
     }',
     ));
-    
+
     $response = curl_exec($curl);
-    
+
 
     $id_condition = json_decode($response)->id;
     $pesan = 'Gagal mengirim condition platform Satu Sehat!!';
-    if($id_condition) {
+    if ($id_condition) {
       $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
-      if($mlite_satu_sehat_response) {
+      if ($mlite_satu_sehat_response) {
         $this->core->mysql('mlite_satu_sehat_response')
           ->where('no_rawat', $no_rawat)
           ->save([
-          'no_rawat' => $no_rawat,
-          'id_condition' => $id_condition
-        ]);  
+            'no_rawat' => $no_rawat,
+            'id_condition' => $id_condition
+          ]);
       } else {
         $this->core->mysql('mlite_satu_sehat_response')
-        ->save([
-          'no_rawat' => $no_rawat,
-          'id_condition' => $id_condition
-        ]);          
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_condition' => $id_condition
+          ]);
       }
       $pesan = 'Sukses mengirim condition platform Satu Sehat!!';
     }
-    
+
     curl_close($curl);
     // echo $response;
     echo $this->draw('condition.html', ['pesan' => $pesan, 'response' => $response]);
     exit();
-
   }
 
   public function getObservation($no_rawat, $ttv)
   {
 
     $zonawaktu = '+07:00';
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WITA'){
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
       $zonawaktu = '+08:00';
-    } 
-    if($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
       $zonawaktu = '+09:00';
     }
 
@@ -1007,12 +1303,12 @@ class Admin extends AdminModule
       ->desc('tgl_perawatan')
       ->oneArray();
 
-    if($status_lanjut == 'Ranap') {
+    if ($status_lanjut == 'Ranap') {
       $pemeriksaan = $this->core->mysql('pemeriksaan_ranap')
-      ->where('no_rawat', $no_rawat)
-      ->limit(1)
-      ->desc('tgl_perawatan')
-      ->oneArray();
+        ->where('no_rawat', $no_rawat)
+        ->limit(1)
+        ->desc('tgl_perawatan')
+        ->oneArray();
     }
 
     $ttv_hl7_code = '';
@@ -1023,86 +1319,86 @@ class Admin extends AdminModule
     $ttv_unitsofmeasure_unit = '';
     $ttv_unitsofmeasure_code = '';
 
-    if($ttv == 'nadi') {
+    if ($ttv == 'nadi') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8867-4';
       $ttv_loinc_display = 'Heart rate';
       $ttv_unitsofmeasure_value = $pemeriksaan['nadi'];
       $ttv_unitsofmeasure_unit = 'beats/minute';
-      $ttv_unitsofmeasure_code = '/min';  
+      $ttv_unitsofmeasure_code = '/min';
     }
 
-    if($ttv == 'respirasi') {
+    if ($ttv == 'respirasi') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '9279-1';
       $ttv_loinc_display = 'Respiratory rate';
       $ttv_unitsofmeasure_value = $pemeriksaan['respirasi'];
       $ttv_unitsofmeasure_unit = 'breaths/minute';
-      $ttv_unitsofmeasure_code = '/min';  
+      $ttv_unitsofmeasure_code = '/min';
     }
 
-    if($ttv == 'suhu') {
+    if ($ttv == 'suhu') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8310-5';
       $ttv_loinc_display = 'Body temperature';
       $ttv_unitsofmeasure_value = $pemeriksaan['suhu_tubuh'];
       $ttv_unitsofmeasure_unit = 'degree Celsius';
-      $ttv_unitsofmeasure_code = 'Cel';  
+      $ttv_unitsofmeasure_code = 'Cel';
     }
 
-    if($ttv == 'spo2') {
+    if ($ttv == 'spo2') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '59408-5';
       $ttv_loinc_display = 'Oxygen saturation';
       $ttv_unitsofmeasure_value = $pemeriksaan['spo2'];
       $ttv_unitsofmeasure_unit = 'percent saturation';
-      $ttv_unitsofmeasure_code = '%';  
-    }    
+      $ttv_unitsofmeasure_code = '%';
+    }
 
-    if($ttv == 'gcs') {
+    if ($ttv == 'gcs') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '9269-2';
       $ttv_loinc_display = 'Glasgow coma score total';
       $ttv_unitsofmeasure_value = $pemeriksaan['gcs'];
-      $ttv_unitsofmeasure_code = '{score}';  
-    }    
+      $ttv_unitsofmeasure_code = '{score}';
+    }
 
-    if($ttv == 'tinggi') {
+    if ($ttv == 'tinggi') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8302-2';
       $ttv_loinc_display = 'Body height';
       $ttv_unitsofmeasure_value = $pemeriksaan['tinggi'];
       $ttv_unitsofmeasure_unit = 'centimeter';
-      $ttv_unitsofmeasure_code = 'cm';  
-    }    
+      $ttv_unitsofmeasure_code = 'cm';
+    }
 
-    if($ttv == 'berat') {
+    if ($ttv == 'berat') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '29463-7';
       $ttv_loinc_display = 'Body weight';
       $ttv_unitsofmeasure_value = $pemeriksaan['berat'];
       $ttv_unitsofmeasure_unit = 'kilogram';
-      $ttv_unitsofmeasure_code = 'kg';  
-    }    
+      $ttv_unitsofmeasure_code = 'kg';
+    }
 
-    if($ttv == 'perut') {
+    if ($ttv == 'perut') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '8280-0';
       $ttv_loinc_display = 'Waist Circumference at umbilicus by Tape measure';
       $ttv_unitsofmeasure_value = $pemeriksaan['berat'];
       $ttv_unitsofmeasure_unit = 'centimeter';
-      $ttv_unitsofmeasure_code = 'cm';  
-    }    
+      $ttv_unitsofmeasure_code = 'cm';
+    }
 
-    if($ttv == 'tensi') {
+    if ($ttv == 'tensi') {
       $ttv_hl7_code = 'vital-signs';
       $ttv_hl7_display = 'Vital Signs';
       $ttv_loinc_code = '35094-2';
@@ -1110,33 +1406,33 @@ class Admin extends AdminModule
       $sistole = strtok($pemeriksaan['tensi'], '/');
       $diastole = substr($pemeriksaan['tensi'], strpos($pemeriksaan['tensi'], '/') + 1);
       $ttv_unitsofmeasure_unit = 'mmHg';
-      $ttv_unitsofmeasure_code = 'mm[Hg]';  
-    }    
+      $ttv_unitsofmeasure_code = 'mm[Hg]';
+    }
 
-    if($ttv == 'kesadaran') {
+    if ($ttv == 'kesadaran') {
       $ttv_hl7_code = 'exam';
       $ttv_hl7_display = 'Exam';
       $ttv_unitsofmeasure_value = 'Alert';
-      if($pemeriksaan['kesadaran'] == 'Somnolence') {
+      if ($pemeriksaan['kesadaran'] == 'Somnolence') {
         $ttv_unitsofmeasure_value = 'Voice';
-      }  
-      if($pemeriksaan['kesadaran'] == 'Sopor') {
-        $ttv_unitsofmeasure_value = 'Pain';        
-      }  
-    }    
+      }
+      if ($pemeriksaan['kesadaran'] == 'Sopor') {
+        $ttv_unitsofmeasure_value = 'Pain';
+      }
+    }
 
     $curl = curl_init();
-    
-    if($ttv == 'kesadaran') {
+
+    if ($ttv == 'kesadaran') {
       curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->fhirurl.'/Observation',
+        CURLOPT_URL => $this->fhirurl . '/Observation',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -1146,8 +1442,8 @@ class Admin extends AdminModule
                   "coding": [
                       {
                           "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                          "code": "'.$ttv_hl7_code.'",
-                          "display": "'.$ttv_hl7_display.'"
+                          "code": "' . $ttv_hl7_code . '",
+                          "display": "' . $ttv_hl7_display . '"
                       }
                   ]
               }
@@ -1162,34 +1458,34 @@ class Admin extends AdminModule
               ]
           },
           "subject": {
-              "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'"
+              "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '"
           },
           "performer": [
               {
-                  "reference": "Practitioner/'.json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id.'"
+                  "reference": "Practitioner/' . json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id . '"
               }
           ],
           "encounter": {
-              "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
-              "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
+              "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '",
+              "display": "Pemeriksaan fisik ' . $ttv . ' ' . $nama_pasien . ' tanggal ' . $tgl_registrasi . '"
           },
-          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
-          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "effectiveDateTime": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
+          "issued": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
           "valueCodeableConcept": {
-              "text": "'.$ttv_unitsofmeasure_value.'"
+              "text": "' . $ttv_unitsofmeasure_value . '"
           }
         }',
       ));
     } elseif ($ttv == 'tensi') {
       curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->fhirurl.'/Observation',
+        CURLOPT_URL => $this->fhirurl . '/Observation',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -1199,8 +1495,8 @@ class Admin extends AdminModule
                   "coding": [
                       {
                           "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                          "code": "'.$ttv_hl7_code.'",
-                          "display": "'.$ttv_hl7_display.'"
+                          "code": "' . $ttv_hl7_code . '",
+                          "display": "' . $ttv_hl7_display . '"
                       }
                   ]
               }
@@ -1209,26 +1505,26 @@ class Admin extends AdminModule
             "coding": [
                 {
                     "system": "http://loinc.org",
-                    "code": "'.$ttv_loinc_code.'",
-                    "display": "'.$ttv_loinc_display.'"
+                    "code": "' . $ttv_loinc_code . '",
+                    "display": "' . $ttv_loinc_display . '"
                 }
             ],
             "text": "Blood pressure systolic & diastolic"
           },
           "subject": {
-              "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'"
+              "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '"
           },
           "performer": [
               {
-                  "reference": "Practitioner/'.json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id.'"
+                  "reference": "Practitioner/' . json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id . '"
               }
           ],
           "encounter": {
-              "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
-              "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
+              "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '",
+              "display": "Pemeriksaan fisik ' . $ttv . ' ' . $nama_pasien . ' tanggal ' . $tgl_registrasi . '"
           },
-          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
-          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "effectiveDateTime": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
+          "issued": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
           "component": [
             {
               "code": {
@@ -1241,10 +1537,10 @@ class Admin extends AdminModule
                 ]
               },
               "valueQuantity": {
-                "value": '.intval($sistole).',
-                "unit": "'.$ttv_unitsofmeasure_unit.'",
+                "value": ' . intval($sistole) . ',
+                "unit": "' . $ttv_unitsofmeasure_unit . '",
                 "system": "http://unitsofmeasure.org",
-                "code": "'.$ttv_unitsofmeasure_code.'"
+                "code": "' . $ttv_unitsofmeasure_code . '"
               }  
             }, 
             {
@@ -1258,10 +1554,10 @@ class Admin extends AdminModule
                 ]
               },
               "valueQuantity": {
-                "value": '.intval($diastole).',
-                "unit": "'.$ttv_unitsofmeasure_unit.'",
+                "value": ' . intval($diastole) . ',
+                "unit": "' . $ttv_unitsofmeasure_unit . '",
                 "system": "http://unitsofmeasure.org",
-                "code": "'.$ttv_unitsofmeasure_code.'"
+                "code": "' . $ttv_unitsofmeasure_code . '"
               } 
             }
           ]
@@ -1269,14 +1565,14 @@ class Admin extends AdminModule
       ));
     } else {
       curl_setopt_array($curl, array(
-        CURLOPT_URL => $this->fhirurl.'/Observation',
+        CURLOPT_URL => $this->fhirurl . '/Observation',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
         CURLOPT_TIMEOUT => 0,
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
         CURLOPT_CUSTOMREQUEST => 'POST',
         CURLOPT_POSTFIELDS => '{
           "resourceType": "Observation",
@@ -1286,8 +1582,8 @@ class Admin extends AdminModule
                   "coding": [
                       {
                           "system": "http://terminology.hl7.org/CodeSystem/observation-category",
-                          "code": "'.$ttv_hl7_code.'",
-                          "display": "'.$ttv_hl7_display.'"
+                          "code": "' . $ttv_hl7_code . '",
+                          "display": "' . $ttv_hl7_display . '"
                       }
                   ]
               }
@@ -1296,64 +1592,63 @@ class Admin extends AdminModule
               "coding": [
                   {
                       "system": "http://loinc.org",
-                      "code": "'.$ttv_loinc_code.'",
-                      "display": "'.$ttv_loinc_display.'"
+                      "code": "' . $ttv_loinc_code . '",
+                      "display": "' . $ttv_loinc_display . '"
                   }
               ]
           },
           "subject": {
-              "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'"
+              "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '"
           },
           "performer": [
               {
-                  "reference": "Practitioner/'.json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id.'"
+                  "reference": "Practitioner/' . json_decode($this->getPractitioner($no_ktp_dokter))->entry[0]->resource->id . '"
               }
           ],
           "encounter": {
-              "reference": "Encounter/'.$mlite_satu_sehat_response['id_encounter'].'",
-              "display": "Pemeriksaan fisik '.$ttv.' '.$nama_pasien.' tanggal '.$tgl_registrasi.'"
+              "reference": "Encounter/' . $mlite_satu_sehat_response['id_encounter'] . '",
+              "display": "Pemeriksaan fisik ' . $ttv . ' ' . $nama_pasien . ' tanggal ' . $tgl_registrasi . '"
           },
-          "effectiveDateTime": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
-          "issued": "'.$pemeriksaan['tgl_perawatan'].'T'.$pemeriksaan['jam_rawat'].''.$zonawaktu.'",
+          "effectiveDateTime": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
+          "issued": "' . $pemeriksaan['tgl_perawatan'] . 'T' . $pemeriksaan['jam_rawat'] . '' . $zonawaktu . '",
           "valueQuantity": {
-              "value": '.intval($ttv_unitsofmeasure_value).',
-              "unit": "'.$ttv_unitsofmeasure_unit.'",
+              "value": ' . intval($ttv_unitsofmeasure_value) . ',
+              "unit": "' . $ttv_unitsofmeasure_unit . '",
               "system": "http://unitsofmeasure.org",
-              "code": "'.$ttv_unitsofmeasure_code.'"
+              "code": "' . $ttv_unitsofmeasure_code . '"
           }
         }',
       ));
     }
-    
+
     $response = curl_exec($curl);
-    
+
 
     $id_observation = json_decode($response)->id;
-    $pesan = 'Gagal mengirim observation ttv '.$ttv.' ke platform Satu Sehat!!';
-    if($id_observation) {
+    $pesan = 'Gagal mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!';
+    if ($id_observation) {
       $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $no_rawat)->oneArray();
-      if($mlite_satu_sehat_response) {
+      if ($mlite_satu_sehat_response) {
         $this->core->mysql('mlite_satu_sehat_response')
           ->where('no_rawat', $no_rawat)
           ->save([
-          'no_rawat' => $no_rawat,
-          'id_observation_ttv'.$ttv.'' => $id_observation
-        ]);  
+            'no_rawat' => $no_rawat,
+            'id_observation_ttv' . $ttv . '' => $id_observation
+          ]);
       } else {
         $this->core->mysql('mlite_satu_sehat_response')
-        ->save([
-          'no_rawat' => $no_rawat,
-          'id_observation_ttv'.$ttv.'' => $id_condition
-        ]);          
+          ->save([
+            'no_rawat' => $no_rawat,
+            'id_observation_ttv' . $ttv . '' => $id_condition
+          ]);
       }
-      $pesan = 'Sukses mengirim observation ttv '.$ttv.' ke platform Satu Sehat!!';
+      $pesan = 'Sukses mengirim observation ttv ' . $ttv . ' ke platform Satu Sehat!!';
     }
-    
+
     curl_close($curl);
     // echo $response;
     echo $this->draw('observation.html', ['pesan' => $pesan, 'response' => $response]);
     exit();
-
   }
 
   public function getSettings()
@@ -1363,18 +1658,18 @@ class Admin extends AdminModule
 
   public function postSaveSettings()
   {
-      foreach ($_POST['satu_sehat'] as $key => $val) {
-          $this->settings('satu_sehat', $key, $val);
-      }
+    foreach ($_POST['satu_sehat'] as $key => $val) {
+      $this->settings('satu_sehat', $key, $val);
+    }
 
-      $this->notify('success', 'Pengaturan telah disimpan');
-      redirect(url([ADMIN, 'satu_sehat', 'settings']));
+    $this->notify('success', 'Pengaturan telah disimpan');
+    redirect(url([ADMIN, 'satu_sehat', 'settings']));
   }
 
   public function anyPraktisi()
   {
     $response = [];
-    if(isset($_POST['nik_dokter']) && $_POST['nik_dokter'] !='') {
+    if (isset($_POST['nik_dokter']) && $_POST['nik_dokter'] != '') {
       $response = json_decode($this->getPractitioner($_POST['nik_dokter']));
     }
     return $this->draw('praktisi.html', ['response' => json_encode($response, JSON_PRETTY_PRINT)]);
@@ -1383,7 +1678,7 @@ class Admin extends AdminModule
   public function anyPasien()
   {
     $response = [];
-    if(isset($_POST['nik_pasien']) && $_POST['nik_pasien'] !='') {
+    if (isset($_POST['nik_pasien']) && $_POST['nik_pasien'] != '') {
       $response = json_decode($this->getPatient($_POST['nik_pasien']));
     }
     return $this->draw('pasien.html', ['response' => json_encode($response, JSON_PRETTY_PRINT)]);
@@ -1391,43 +1686,67 @@ class Admin extends AdminModule
 
   public function getDepartemen()
   {
-    return $this->draw('departemen.html', ['departemen' => $this->core->mysql('departemen')->toArray(), 'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray()]);
+    $poli = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
+    $mlite_satset = $this->core->mysql('mlite_satu_sehat_departemen')->toArray();
+    $satu_sehat = [];
+    foreach ($mlite_satset as $value) {
+      $nama = $this->core->getDepartemenInfo($value['dep_id']);
+      if ($nama == '') {
+        $nama = $this->core->getPoliklinikInfo('nm_poli', $value['dep_id']);
+      }
+      $value['nama'] = $nama;
+      $satu_sehat[] = $value;
+    }
+    return $this->draw('departemen.html', ['departemen' => $this->core->mysql('departemen')->toArray(), 'poli' => $poli, 'satu_sehat_departemen' => $satu_sehat]);
   }
 
   public function postSaveDepartemen()
   {
-    if(isset($_POST['simpan'])) {
+    if (isset($_POST['simpan'])) {
+      $kode_departemen = $_POST['dep_id'];
+      $kode_organization = '';
+      if ($_POST['poli'] != '') {
+        $kode_departemen = $_POST['poli'];
+        $kode_organization = $_POST['id_organisasi_sub'];
+      }
+      $send_json = $this->getOrganization($kode_departemen, $kode_organization);
+      $id_organisasi_satusehat = json_decode($send_json)->id;
+      $issues = json_decode($send_json)->issue;
+      foreach ($issues as $value) {
+        $code_response = $value->code;
+        $err_response = $value->details->text;
+      }
 
-      $id_organisasi_satusehat = json_decode($this->getOrganization($_POST['dep_id']))->id;
-      
-      if($id_organisasi_satusehat !='') {
+      if ($id_organisasi_satusehat != '') {
         $query = $this->core->mysql('mlite_satu_sehat_departemen')->save(
           [
-            'dep_id' => $_POST['dep_id'], 
+            'dep_id' => $kode_departemen,
             'id_organisasi_satusehat' => $id_organisasi_satusehat
           ]
-        );  
-        if($query){
-          $this->notify('success', 'Mapping departemen telah disimpan');
+        );
+        if ($query) {
+          $this->notify('success', 'Mapping departemen telah disimpan ');
         } else {
           $this->notify('danger', 'Mapping departemen gagal disimpan');
         }
+      } else {
+        echo "<script>alert('" . $err_response . "');document.location='" . url([ADMIN, 'satu_sehat', 'departemen']) . "'</script>";
       }
     }
-    if(isset($_POST['update'])) {
+    if (isset($_POST['update'])) {
       $query = $this->core->mysql('mlite_satu_sehat_departemen')
-       ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
-       ->save(
-        [
-          'dep_id' => $_POST['dep_id'], 
-          'nama' => $_POST['nama']
-        ]
-      );
-      if($query) {
+        ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
+        ->save(
+          [
+            'dep_id' => $_POST['dep_id'],
+            'nama' => $_POST['nama']
+          ]
+        );
+      if ($query) {
         $this->notify('success', 'Mapping departemen telah disimpan');
       }
+      redirect(url([ADMIN, 'satu_sehat', 'departemen']));
     }
-    redirect(url([ADMIN, 'satu_sehat', 'departemen']));
   }
 
   public function getLokasi()
@@ -1442,8 +1761,8 @@ class Admin extends AdminModule
     ])->toArray();
     $lokasi = array_merge($poliklinik, $bangsal);
     return $this->draw('lokasi.html', [
-      'lokasi' => $lokasi, 
-      'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray(), 
+      'lokasi' => $lokasi,
+      'satu_sehat_departemen' => $this->core->mysql('mlite_satu_sehat_departemen')->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')->toArray(),
       'satu_sehat_lokasi' => $this->core->mysql('mlite_satu_sehat_lokasi')
         ->join('mlite_satu_sehat_departemen', 'mlite_satu_sehat_departemen.id_organisasi_satusehat=mlite_satu_sehat_lokasi.id_organisasi_satusehat')
         ->join('departemen', 'departemen.dep_id=mlite_satu_sehat_departemen.dep_id')
@@ -1453,63 +1772,104 @@ class Admin extends AdminModule
 
   public function postSaveLokasi()
   {
-    if(isset($_POST['simpan'])) {
+    if (isset($_POST['simpan'])) {
 
-      $id_lokasi_satusehat = json_decode($this->getLocation($_POST['kode']))->id;
       $mlite_satu_sehat_departemen = $this->core->mysql('mlite_satu_sehat_departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
       $id_organisasi_satusehat = $mlite_satu_sehat_departemen['id_organisasi_satusehat'];
-      
-      if($id_lokasi_satusehat !='') {
+      $id_lokasi_satusehat = json_decode($this->getLocation($_POST['kode'], $id_organisasi_satusehat))->id;
+
+      if ($id_lokasi_satusehat != '') {
         $query = $this->core->mysql('mlite_satu_sehat_lokasi')->save(
           [
             'kode' => $_POST['kode'],
-            'lokasi' => $_POST['lokasi'], 
-            'id_organisasi_satusehat' => $id_organisasi_satusehat, 
-            'id_lokasi_satusehat' => $id_lokasi_satusehat, 
-            'longitude' => $this->settings->get('satu_sehat.longitude'), 
-            'latitude' => $this->settings->get('satu_sehat.latitude'), 
+            'lokasi' => $_POST['lokasi'],
+            'id_organisasi_satusehat' => $id_organisasi_satusehat,
+            'id_lokasi_satusehat' => $id_lokasi_satusehat,
+            'longitude' => $this->settings->get('satu_sehat.longitude'),
+            'latitude' => $this->settings->get('satu_sehat.latitude'),
             'altitude' => '0'
-            ]
-        );  
-        if($query){
+          ]
+        );
+        if ($query) {
           $this->notify('success', 'Mapping lokasi telah disimpan');
         } else {
           $this->notify('danger', 'Mapping lokasi gagal disimpan');
         }
       }
     }
-    if(isset($_POST['update'])) {
+    if (isset($_POST['update'])) {
       $query = $this->core->mysql('mlite_satu_sehat_lokasi')
-       ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
-       ->save(
-        [
-          'kode' => $_POST['kode'],
-          'lokasi' => $_POST['lokasi'], 
-          'id_organisasi_satusehat' => $id_organisasi_satusehat, 
-          'longitude' => $this->settings->get('satu_sehat.longitude'), 
-          'latitude' => $this->settings->get('satu_sehat.latitude'), 
-          'altitude' => '0'
-      ]
-      );
-      if($query) {
+        ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
+        ->save(
+          [
+            'kode' => $_POST['kode'],
+            'lokasi' => $_POST['lokasi'],
+            'id_organisasi_satusehat' => $id_organisasi_satusehat,
+            'longitude' => $this->settings->get('satu_sehat.longitude'),
+            'latitude' => $this->settings->get('satu_sehat.latitude'),
+            'altitude' => '0'
+          ]
+        );
+      if ($query) {
         $this->notify('success', 'Mapping lokasi telah disimpan');
       }
     }
     redirect(url([ADMIN, 'satu_sehat', 'lokasi']));
-  }  
+  }
+
+  public function getMapPraktisi()
+  {
+    $poli = $this->core->mysql('dokter')->where('status', '1')->toArray();
+    $mlite_satset = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')->toArray();
+    $satu_sehat = [];
+    foreach ($mlite_satset as $value) {
+
+      $nama = $this->core->getDokterInfo('nm_dokter', $value['kd_dokter']);
+
+      $value['nama'] = $nama;
+      $satu_sehat[] = $value;
+    }
+    return $this->draw('map_praktisi.html', ['departemen' => $this->core->mysql('departemen')->toArray(), 'poli' => $poli, 'satu_sehat_departemen' => $satu_sehat]);
+  }
+
+  public function postSaveMapPraktisi()
+  {
+    if (isset($_POST['simpan'])) {
+      $kd_dokter = $_POST['dokter'];
+      $nik = $this->core->getPegawaiInfo('no_ktp', $kd_dokter);
+      $send_json = json_decode($this->getPractitioner($nik))->entry[0]->resource->id;
+
+      if ($send_json != '') {
+        $query = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')->save(
+          [
+            'practitioner_id' => $send_json,
+            'kd_dokter' => $_POST['dokter']
+          ]
+        );
+        if ($query) {
+          $this->notify('success', 'Mapping departemen telah disimpan ');
+        } else {
+          $this->notify('danger', 'Mapping departemen gagal disimpan');
+        }
+      }
+    }
+    redirect(url([ADMIN, 'satu_sehat', 'mappraktisi']));
+  }
 
   public function getResponse()
   {
     $this->_addHeaderFiles();
     $periode = date('Y-m-d');
-    if(isset($_GET['periode']) && $_GET['periode'] !='') {
+    if (isset($_GET['periode']) && $_GET['periode'] != '') {
       $periode = $_GET['periode'];
     }
     $data_response = [];
     $query = $this->core->mysql('reg_periksa')
-      ->like('reg_periksa.tgl_registrasi', $periode)
+      ->where('reg_periksa.tgl_registrasi', $periode)
+      ->where('stts','!=','Batal')
+      // ->limit(30)
       ->toArray();
-    foreach($query as $row) {
+    foreach ($query as $row) {
 
       $mlite_satu_sehat_response = $this->core->mysql('mlite_satu_sehat_response')->where('no_rawat', $row['no_rawat'])->oneArray();
 
@@ -1518,28 +1878,13 @@ class Admin extends AdminModule
       $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
       $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
       $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
-      $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-      if($this->settings->get('satu_sehat.billing') == 'khanza') {
-        $mlite_billing = $this->core->mysql('nota_jalan')->select([
-          'tgl_billing' => 'tanggal'
-        ])
-        ->where('no_rawat', $row['no_rawat'])
-        ->oneArray();
-        if($status_lanjut == 'Ranap') {
-          $mlite_billing = $this->core->mysql('nota_inap')->select([
-            'tgl_billing' => 'tanggal'
-          ])
-          ->where('no_rawat', $row['no_rawat'])
-          ->oneArray();
-        }
-      }      
-      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');
+      $mlite_billing = $this->core->mysql('billing')->where('no_rawat', $row['no_rawat'])->oneArray();
+      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_byr'], '');
 
-      if($row['status_lanjut'] == 'Ranap') {
+      if ($row['status_lanjut'] == 'Ranap') {
         $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);
         $row['kd_poli'] = $this->core->getKamarInfo('kd_bangsal', $row['kd_kamar']);
-        $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_bangsal']);
-        $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_bangsal']);
+        $row['nm_poli'] = $this->core->getBangsalInfo('nm_bangsal', $row['kd_poli']);
       }
 
       $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $row['kd_poli'])->oneArray();
@@ -1547,26 +1892,26 @@ class Admin extends AdminModule
       $row['id_lokasi'] = $mlite_satu_sehat_lokasi['id_lokasi_satusehat'];
 
       $row['pemeriksaan'] = $this->core->mysql('pemeriksaan_ralan')
-      ->where('no_rawat', $row['no_rawat'])
-      ->limit(1)
-      ->desc('tgl_perawatan')
-      ->oneArray();
-
-      if($row['status_lanjut'] == 'Ranap') {
-        $row['pemeriksaan'] = $this->core->mysql('pemeriksaan_ranap')
         ->where('no_rawat', $row['no_rawat'])
         ->limit(1)
         ->desc('tgl_perawatan')
         ->oneArray();
+
+      if ($row['status_lanjut'] == 'Ranap') {
+        $row['pemeriksaan'] = $this->core->mysql('pemeriksaan_ranap')
+          ->where('no_rawat', $row['no_rawat'])
+          ->limit(1)
+          ->desc('tgl_perawatan')
+          ->oneArray();
       }
 
       $row['diagnosa_pasien'] = $this->core->mysql('diagnosa_pasien')
-      ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
-      ->where('no_rawat', $row['no_rawat'])
-      ->where('diagnosa_pasien.status', $row['status_lanjut'])
-      ->where('prioritas', '1')
-      ->oneArray();
-      
+        ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
+        ->where('no_rawat', $row['no_rawat'])
+        ->where('diagnosa_pasien.status', $row['status_lanjut'])
+        ->where('prioritas', '1')
+        ->oneArray();
+
       $row['id_encounter'] = isset_or($mlite_satu_sehat_response['id_encounter'], '');
       $row['id_condition'] = isset_or($mlite_satu_sehat_response['id_condition'], '');
       $row['id_observation_ttvtensi'] = isset_or($mlite_satu_sehat_response['id_observation_ttvtensi'], '');
@@ -1584,16 +1929,37 @@ class Admin extends AdminModule
     return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
+  public function gen_uuid() {
+    return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        // 32 bits for "time_low"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_mid"
+        mt_rand( 0, 0xffff ),
+
+        // 16 bits for "time_hi_and_version",
+        // four most significant bits holds version number 4
+        mt_rand( 0, 0x0fff ) | 0x4000,
+
+        // 16 bits, 8 bits for "clk_seq_hi_res",
+        // 8 bits for "clk_seq_low",
+        // two most significant bits holds zero and one for variant DCE1.1
+        mt_rand( 0, 0x3fff ) | 0x8000,
+
+        // 48 bits for "node"
+        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+    );
+}
+
   private function _addHeaderFiles()
   {
-      $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-      $this->core->addCSS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css'));
-      $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
-      $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-      $this->core->addJS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js'));
-      $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
-      $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
-      $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
+    $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+    $this->core->addCSS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/css/fixedColumns.dataTables.min.css'));
+    $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
+    $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
+    $this->core->addJS(url('https://cdn.datatables.net/fixedcolumns/4.3.0/js/dataTables.fixedColumns.min.js'));
+    $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+    $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
+    $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
   }
-
 }
