@@ -773,8 +773,8 @@ class Admin extends AdminModule
         "status": "arrived",
         "class": {
             "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-            "code": "AMB",
-            "display": "ambulatory"
+            "code": "'.$code.'",
+            "display": "'.$display.'"
         },
         "subject": {
             "reference": "Patient/'.json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id.'",
