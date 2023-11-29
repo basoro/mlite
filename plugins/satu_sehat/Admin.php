@@ -790,8 +790,8 @@ class Admin extends AdminModule
       "status": "arrived",
       "class": {
           "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-          "code": "AMB",
-          "display": "ambulatory"
+          "code": "'.$code.'",
+          "display": "'.$display.'"
       },
       "subject": {
           "reference": "Patient/' . json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id . '",
@@ -880,14 +880,7 @@ class Admin extends AdminModule
   public function getEncounterBundle($no_rawat)
   {
 
-    $zonawaktu = '+07:00';
-    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
-      $zonawaktu = '+08:00';
-    }
-    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
-      $zonawaktu = '+09:00';
-    }
-
+    $zonawaktu = '+00:00';
 
     $no_rawat = revertNoRawat($no_rawat);
     $kd_poli = $this->core->getRegPeriksaInfo('kd_poli', $no_rawat);
@@ -901,13 +894,22 @@ class Admin extends AdminModule
     $status_lanjut = $this->core->getRegPeriksaInfo('status_lanjut', $no_rawat);
     $tgl_registrasi = $this->core->getRegPeriksaInfo('tgl_registrasi', $no_rawat);
     $jam_reg = $this->core->getRegPeriksaInfo('jam_reg', $no_rawat);
-    $inProg = $this->core->mysql('pemeriksaan_ralan')->select(['tgl' => 'tgl_perawatan', 'jam' => 'jam_rawat'])->where('no_rawat', $no_rawat)->oneArray();
+    $inProg = $this->core->mysql('pemeriksaan_ralan')->select(['tgl' => 'tgl_perawatan', 'jam' => 'jam_rawat','respirasi' => 'respirasi','suhu' => 'suhu_tubuh','tensi'=> 'tensi','nadi' => 'nadi'])->where('no_rawat', $no_rawat)->oneArray();
     $diagnosa_pasien = $this->core->mysql('diagnosa_pasien')
       ->join('penyakit', 'penyakit.kd_penyakit=diagnosa_pasien.kd_penyakit')
       ->where('no_rawat', $no_rawat)
       ->where('diagnosa_pasien.status', $status_lanjut)
       ->where('prioritas', '1')
       ->oneArray();
+    $_prosedure_pasien = $this->core->mysql('prosedur_pasien')->select(['deskripsi_pendek' => 'icd9.deskripsi_pendek','kode' => 'icd9.kode'])->join('icd9','icd9.kode = prosedur_pasien.kode')->where('prosedur_pasien.no_rawat',$no_rawat)->where('prosedur_pasien.status','Ralan')->where('prosedur_pasien.prioritas','1')->oneArray();
+    $prosedure_pasien = $_prosedure_pasien['deskripsi_pendek'];
+    $kode_prosedure_pasien = $_prosedure_pasien['kode'];
+    if (strpos($kode_prosedure_pasien, '.') !== false) {
+      $kode_prosedure_pasien = $kode_prosedure_pasien;
+    } else {
+      $kode_prosedure_pasien = substr_replace($kode_prosedure_pasien,'.',2,0);
+    }
+
     $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $no_rawat)->oneArray();
     if ($this->settings->get('satu_sehat.billing') == 'khanza') {
       $mlite_billing = $this->core->mysql('nota_jalan')->select([
@@ -943,11 +945,464 @@ class Admin extends AdminModule
 
     $mlite_satu_sehat_lokasi = $this->core->mysql('mlite_satu_sehat_lokasi')->where('kode', $kd_poli)->oneArray();
 
-    $curl = curl_init();
+    $respiratory = '';
+    $suhu = '';
+    $diastole = '';
+    $sistole = '';
+    $nadi = '';
+    $procedure = '';
     $uuid_encounter = $this->gen_uuid();
     $uuid_condition = $this->gen_uuid();
-    $ihs_patient = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+    $uuid_respiration = $this->gen_uuid();
+    $uuid_suhu = $this->gen_uuid();
+    $uuid_sistolik = $this->gen_uuid();
+    $uuid_diastolik = $this->gen_uuid();
+    $uuid_nadi = $this->gen_uuid();
+    $uuid_procedure = $this->gen_uuid();
+    $uuid_composition = $this->gen_uuid();
+    // $cek_ihs = $this->core->getPasienInfo('nip',$no_rkm_medis);
+    // $ihs_patient = $cek_ihs;
+    // if ($ihs_patient == '' || $ihs_patient == '-') {
+      $ihs_patient = json_decode($this->getPatient($no_ktp_pasien))->entry[0]->resource->id;
+      // $this->core->mysql('pasien')->where('no_rkm_medis',$no_rkm_medis)->update('nip',$ihs_patient);
+    // }
 
+    $sistole = strtok($inProg['tensi'], '/');
+    $diastole = substr($inProg['tensi'], strpos($inProg['tensi'], '/') + 1);
+
+    if ($inProg['respirasi'] != '') {
+      $respiratory = '{
+        "fullUrl": "urn:uuid:' . $uuid_respiration . '",
+        "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "category": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                            "code": "vital-signs",
+                            "display": "Vital Signs"
+                        }
+                    ]
+                }
+            ],
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://loinc.org",
+                        "code": "9279-1",
+                        "display": "Respiratory rate"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '"
+            },
+            "performer": [
+                {
+                    "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '"
+                }
+            ],
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Pemeriksaan Fisik Pernafasan ' . $nama_pasien . ' di ' . $tgl_registrasi . '"
+            },
+            "effectiveDateTime": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "issued": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "valueQuantity": {
+                "value": '.$inProg['respirasi'].',
+                "unit": "breaths/minute",
+                "system": "http://unitsofmeasure.org",
+                "code": "/min"
+            }
+        },
+        "request": {
+            "method": "POST",
+            "url": "Observation"
+        }
+      },';
+    }
+
+    if ($inProg['nadi'] != '') {
+      $nadi = '{
+        "fullUrl": "urn:uuid:' . $uuid_nadi . '",
+        "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "category": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                            "code": "vital-signs",
+                            "display": "Vital Signs"
+                        }
+                    ]
+                }
+            ],
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://loinc.org",
+                        "code": "8867-4",
+                        "display": "Heart rate"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '"
+            },
+            "performer": [
+                {
+                    "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '"
+                }
+            ],
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Pemeriksaan Fisik Nadi ' . $nama_pasien . ' di ' . $tgl_registrasi . '"
+            },
+            "effectiveDateTime": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "issued": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "valueQuantity": {
+                "value": '.$inProg['nadi'].',
+                "unit": "beats/minute",
+                "system": "http://unitsofmeasure.org",
+                "code": "/min"
+            }
+        },
+        "request": {
+            "method": "POST",
+            "url": "Observation"
+        }
+      },';
+    }
+    
+    if ($inProg['tensi'] != '') {
+      $diastole = '{
+        "fullUrl": "urn:uuid:' . $uuid_diastolik . '",
+        "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "category": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                            "code": "vital-signs",
+                            "display": "Vital Signs"
+                        }
+                    ]
+                }
+            ],
+            "code": {
+                "coding": [
+                    {
+                      "system": "http://loinc.org",
+                      "code": "8462-4",
+                      "display": "Diastolic blood pressure"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '"
+            },
+            "performer": [
+                {
+                    "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '"
+                }
+            ],
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Pemeriksaan Fisik Diastolik ' . $nama_pasien . ' di ' . $tgl_registrasi . '"
+            },
+            "effectiveDateTime": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "issued": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "bodySite": {
+              "coding": [
+                  {
+                      "system": "http://snomed.info/sct",
+                      "code": "368209003",
+                      "display": "Right arm"
+                  }
+              ]
+            },
+            "valueQuantity": {
+                "value": '.$diastole.',
+                "unit": "mm[Hg]",
+                "system": "http://unitsofmeasure.org",
+                "code": "mm[Hg]"
+            },
+            "interpretation": [
+              {
+                  "coding": [
+                      {
+                          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                          "code": "L",
+                          "display": "low"
+                      }
+                  ],
+                  "text": "Di bawah nilai referensi"
+              }
+            ]
+        },
+        "request": {
+            "method": "POST",
+            "url": "Observation"
+        }
+      },';
+      $sistole = '{
+        "fullUrl": "urn:uuid:' . $sistole . '",
+        "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "category": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                            "code": "vital-signs",
+                            "display": "Vital Signs"
+                        }
+                    ]
+                }
+            ],
+            "code": {
+                "coding": [
+                    {
+                      "system": "http://loinc.org",
+                      "code": "8462-4",
+                      "display": "Diastolic blood pressure"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '"
+            },
+            "performer": [
+                {
+                    "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '"
+                }
+            ],
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Pemeriksaan Fisik Sistole ' . $nama_pasien . ' di ' . $tgl_registrasi . '"
+            },
+            "effectiveDateTime": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "issued": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "valueQuantity": {
+                "value": '.$inProg['respirasi'].',
+                "unit": "breaths/minute",
+                "system": "http://unitsofmeasure.org",
+                "code": "/min"
+            }
+        },
+        "request": {
+            "method": "POST",
+            "url": "Observation"
+        }
+      },';
+    }
+
+    if ($inProg['suhu'] != '') {
+      $value_temp = 'N';
+      $display_temp = 'Normal';
+      $text_temp = 'antara';
+      if ($inProg['suhu'] > 37) {
+        $value_temp = 'H';
+        $display_temp = 'High';
+        $text_temp = 'atas';
+      }
+      if ($inProg['suhu'] < 36) {
+        $value_temp = 'L';
+        $display_temp = 'Low';
+        $text_temp = 'bawah';
+      }
+      $suhu = '{
+        "fullUrl": "urn:uuid:' . $uuid_suhu . '",
+        "resource": {
+            "resourceType": "Observation",
+            "status": "final",
+            "category": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                            "code": "vital-signs",
+                            "display": "Vital Signs"
+                        }
+                    ]
+                }
+            ],
+            "code": {
+                "coding": [
+                    {
+                      "system": "http://loinc.org",
+                      "code": "8310-5",
+                      "display": "Body temperature"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '"
+            },
+            "performer": [
+                {
+                    "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '"
+                }
+            ],
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Pemeriksaan Fisik Suhu ' . $nama_pasien . ' di ' . $tgl_registrasi . '"
+            },
+            "effectiveDateTime": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "issued": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+            "valueQuantity": {
+                "value": '.str_replace(',','.',$inProg['suhu']).',
+                "unit": "C",
+                "system": "http://unitsofmeasure.org",
+                "code": "Cel"
+            },
+            "interpretation": [
+              {
+                  "coding": [
+                      {
+                          "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                          "code": "'.$value_temp.'",
+                          "display": "'.$display_temp.'"
+                      }
+                  ],
+                  "text": "Di '.$text_temp.' nilai referensi"
+              }
+          ]
+        },
+        "request": {
+            "method": "POST",
+            "url": "Observation"
+        }
+      },';
+    }
+
+    if ($prosedure_pasien) {
+      $procedure = '{
+        "fullUrl": "urn:uuid:' . $uuid_procedure . '",
+        "resource": {
+            "resourceType": "Procedure",
+            "status": "completed",
+            "category": {
+                "coding": [
+                    {
+                        "system": "http://snomed.info/sct",
+                        "code": "103693007",
+                        "display": "Diagnostic procedure"
+                    }
+                ],
+                "text": "Diagnostic procedure"
+            },
+            "code": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sid/icd-9-cm",
+                        "code": "'.$kode_prosedure_pasien.'",
+                        "display": "'.$prosedure_pasien.'"
+                    }
+                ]
+            },
+            "subject": {
+                "reference": "Patient/' . $ihs_patient . '",
+                "display": "' . $nama_pasien . '"
+            },
+            "encounter": {
+                "reference": "urn:uuid:' . $uuid_encounter . '",
+                "display": "Tindakan pada ' . $nama_pasien . ' di tanggal ' . $tgl_registrasi . '"
+            },
+            "performedPeriod": {
+                "start": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+                "end": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '"
+            },
+            "performer": [
+                {
+                    "actor": {
+                        "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '",
+                        "display": "' . $nama_dokter . '"
+                    }
+                }
+            ],
+            "reasonCode": [
+                {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10",
+                            "code": "' . $diagnosa_pasien['kd_penyakit'] . '",
+                            "display": "' . $diagnosa_pasien['nm_penyakit'] . '"
+                        }
+                    ]
+                }
+            ]
+        },
+        "request": {
+            "method": "POST",
+            "url": "Procedure"
+        }
+      },';
+    }
+
+    $composition = '{
+      "fullUrl": "urn:uuid:' . $uuid_composition . '",
+      "resource": {
+          "resourceType": "Composition",
+          "identifier": {
+              "system": "http://sys-ids.kemkes.go.id/composition/' . $this->organizationid . '",
+              "value": "' . $no_rawat . '"
+          },
+          "status": "final",
+          "type": {
+              "coding": [
+                  {
+                      "system": "http://loinc.org",
+                      "code": "18842-5",
+                      "display": "Discharge summary"
+                  }
+              ]
+          },
+          "category": [
+              {
+                  "coding": [
+                      {
+                          "system": "http://loinc.org",
+                          "code": "LP173421-1",
+                          "display": "Report"
+                      }
+                  ]
+              }
+          ],
+          "subject": {
+              "reference": "Patient/' . $ihs_patient . '",
+              "display": "' . $nama_pasien . '"
+          },
+          "encounter": {
+              "reference": "urn:uuid:' . $uuid_encounter . '",
+              "display": "Kunjungan ' . $nama_pasien . ' di tanggal ' . $tgl_registrasi . '"
+          },
+          "date": "' . $this->convertTimeSatset($mlite_billing['tgl_billing'].' '.$mlite_billing['jam_billing']) . '' . $zonawaktu . '",
+          "author": [
+              {
+                  "reference": "Practitioner/' . $no_ktp_dokter['practitioner_id'] . '",
+                  "display": "' . $nama_dokter . '"
+              }
+          ],
+          "title": "Resume Medis Rawat Jalan",
+          "custodian": {
+              "reference": "Organization/' . $this->organizationid . '"
+          }
+      },
+      "request": {
+          "method": "POST",
+          "url": "Composition"
+      }
+    }';
+
+    // Bundle dari sini ----------------------------------------------------------------------
     $json_bundle = '{
     "resourceType": "Bundle",
     "type": "transaction",
@@ -959,8 +1414,8 @@ class Admin extends AdminModule
                 "status": "finished",
                 "class": {
                     "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
-                    "code": "AMB",
-                    "display": "ambulatory"
+                    "code": "'.$code.'",
+                    "display": "'.$display.'"
                 },
                 "subject": {
                     "reference": "Patient/' . $ihs_patient . '",
@@ -986,8 +1441,8 @@ class Admin extends AdminModule
                     }
                 ],
                 "period": {
-                    "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '",
-                    "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                    "start": "' . $this->convertTimeSatset($tgl_registrasi.' '.$jam_reg) . '' . $zonawaktu . '",
+                    "end": "' . $this->convertTimeSatset($mlite_billing['tgl_billing'].' '.$mlite_billing['jam_billing']) . '' . $zonawaktu . '"
                 },
                 "location": [
                     {
@@ -1019,22 +1474,22 @@ class Admin extends AdminModule
                     {
                         "status": "arrived",
                         "period": {
-                            "start": "' . $tgl_registrasi . 'T' . $jam_reg . '' . $zonawaktu . '",
-                            "start": "' . $inProg['tgl'] . 'T' . $inProg['jam'] . '' . $zonawaktu . '"
+                            "start": "' . $this->convertTimeSatset($tgl_registrasi.' '.$jam_reg) . '' . $zonawaktu . '",
+                            "end": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '"
                         }
                     },
                     {
                         "status": "in-progress",
                         "period": {
-                            "start": "' . $inProg['tgl'] . 'T' . $inProg['jam'] . '' . $zonawaktu . '",
-                            "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                            "start": "' . $this->convertTimeSatset($inProg['tgl'].' '.$inProg['jam']) . '' . $zonawaktu . '",
+                            "end": "' . $this->convertTimeSatset($mlite_billing['tgl_billing'].' '.$mlite_billing['jam_billing']) . '' . $zonawaktu . '"
                         }
                     },
                     {
                         "status": "finished",
                         "period": {
-                            "start": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '",
-                            "end": "' . $mlite_billing['tgl_billing'] . 'T' . $mlite_billing['jam_billing'] . '' . $zonawaktu . '"
+                            "start": "' . $this->convertTimeSatset($mlite_billing['tgl_billing'].' '.$mlite_billing['jam_billing']) . '' . $zonawaktu . '",
+                            "end": "' . $this->convertTimeSatset($mlite_billing['tgl_billing'].' '.$mlite_billing['jam_billing']) . '' . $zonawaktu . '"
                         }
                     }
                 ],
@@ -1052,8 +1507,11 @@ class Admin extends AdminModule
                 "method": "POST",
                 "url": "Encounter"
             }
-        },
-        {
+        },'.
+        $respiratory.
+        $suhu.
+        $nadi
+        .'{
             "fullUrl": "urn:uuid:' . $uuid_condition . '",
             "resource": {
                 "resourceType": "Condition",
@@ -1099,9 +1557,12 @@ class Admin extends AdminModule
                 "method": "POST",
                 "url": "Condition"
             }
-        }
-    ]
-}';
+        },'
+        .$procedure
+        .$composition.
+      ']
+    }';
+    $curl = curl_init();
     curl_setopt_array($curl, array(
       CURLOPT_URL => $this->fhirurl,
       CURLOPT_RETURNTRANSFER => true,
@@ -1118,15 +1579,81 @@ class Admin extends AdminModule
     $response = curl_exec($curl);
     $id_encounter = '';
     $id_condition = '';
+    $id_observation_respiratory = NULL;
+    $id_observation_temp = NULL;
+    $id_observation_nadi = NULL;
+    $id_procedure = NULL;
+    $id_composition = NULL;
 
     $entry = json_decode($response)->entry;
-    foreach ($entry as $value) {
+    $index = '';
+    foreach ($entry as $key => $value) {
       $resourceType = $value->response->resourceType;
+      $index = $index.' '.$key.'|'.$resourceType.' ';
       if ($resourceType == 'Encounter') {
         $id_encounter = $value->response->resourceID;
       }
       if ($resourceType == 'Condition') {
         $id_condition = $value->response->resourceID;
+      }
+      if ($resourceType == 'Observation') {
+        if (!empty($respiratory && $suhu && $nadi)) {
+          if ($key == '1') {
+            $id_observation_respiratory = $value->response->resourceID;
+          }
+          if ($key == '2') {
+            $id_observation_temp = $value->response->resourceID;
+          }
+          if ($key == '3') {
+            $id_observation_nadi = $value->response->resourceID;
+          }
+        }
+        if (!empty($respiratory && $suhu) && empty($nadi)) {
+          if ($key == '1') {
+            $id_observation_respiratory = $value->response->resourceID;
+          }
+          if ($key == '2') {
+            $id_observation_temp = $value->response->resourceID;
+          }
+        }
+        if (!empty($respiratory && $nadi) && empty($suhu)) {
+          if ($key == '1') {
+            $id_observation_respiratory = $value->response->resourceID;
+          }
+          if ($key == '2') {
+            $id_observation_nadi = $value->response->resourceID;
+          }
+        }
+        if (!empty($suhu && $nadi) && empty($respiratory)) {
+          if ($key == '1') {
+            $id_observation_temp = $value->response->resourceID;
+          }
+          if ($key == '2') {
+            $id_observation_nadi = $value->response->resourceID;
+          }
+        }
+        if (!empty($respiratory) && empty($suhu && $nadi)) {
+          if ($key == '1') {
+            $id_observation_respiratory = $value->response->resourceID;
+          }
+        }
+        if (!empty($suhu) && empty($respiratory && $nadi)) {
+          if ($key == '1') {
+            $id_observation_temp = $value->response->resourceID;
+          }
+        }
+        if (!empty($nadi) && empty($respiratory && $suhu)) {
+          if ($key == '1') {
+            $id_observation_nadi = $value->response->resourceID;
+          }
+        }
+
+      }
+      if ($resourceType == 'Procedure') {
+        $id_procedure = $value->response->resourceID;
+      }
+      if ($resourceType == 'Composition') {
+        $id_composition = $value->response->resourceID;
       }
     }
 
@@ -1135,14 +1662,22 @@ class Admin extends AdminModule
       $this->core->mysql('mlite_satu_sehat_response')->save([
         'no_rawat' => $no_rawat,
         'id_encounter' => $id_encounter,
-        'id_condition' => $id_condition
+        'id_condition' => $id_condition,
+        'id_observation_ttvrespirasi' => $id_observation_respiratory,
+        'id_observation_ttvsuhu' => $id_observation_temp,
+        'id_observation_ttvnadi' => $id_observation_nadi,
+        'id_procedure' => $id_procedure,
+        'id_composition' => $id_composition
       ]);
-      $pesan = 'Sukses mengirim encounter & condition platform Satu Sehat!!';
+      $pesan = 'Sukses mengirim '.$index.' platform Satu Sehat!! ';
     }
 
     curl_close($curl);
-    // echo $response;
     echo $this->draw('encounter.html', ['pesan' => $pesan, 'response' => $response]);
+
+    // DEBUG ******
+    // $response = json_decode($json_bundle);
+    // print_r($json_bundle);
     exit();
   }
 
@@ -1866,7 +2401,7 @@ class Admin extends AdminModule
     $data_response = [];
     $query = $this->core->mysql('reg_periksa')
       ->where('reg_periksa.tgl_registrasi', $periode)
-      ->where('stts','!=','Batal')
+      ->where('stts', '!=', 'Batal')
       // ->limit(30)
       ->toArray();
     foreach ($query as $row) {
@@ -1929,27 +2464,46 @@ class Admin extends AdminModule
     return $this->draw('response.html', ['data_response' => $data_response]);
   }
 
-  public function gen_uuid() {
-    return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-        // 32 bits for "time_low"
-        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+  public function gen_uuid()
+  {
+    return sprintf(
+      '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+      // 32 bits for "time_low"
+      mt_rand(0, 0xffff),
+      mt_rand(0, 0xffff),
 
-        // 16 bits for "time_mid"
-        mt_rand( 0, 0xffff ),
+      // 16 bits for "time_mid"
+      mt_rand(0, 0xffff),
 
-        // 16 bits for "time_hi_and_version",
-        // four most significant bits holds version number 4
-        mt_rand( 0, 0x0fff ) | 0x4000,
+      // 16 bits for "time_hi_and_version",
+      // four most significant bits holds version number 4
+      mt_rand(0, 0x0fff) | 0x4000,
 
-        // 16 bits, 8 bits for "clk_seq_hi_res",
-        // 8 bits for "clk_seq_low",
-        // two most significant bits holds zero and one for variant DCE1.1
-        mt_rand( 0, 0x3fff ) | 0x8000,
+      // 16 bits, 8 bits for "clk_seq_hi_res",
+      // 8 bits for "clk_seq_low",
+      // two most significant bits holds zero and one for variant DCE1.1
+      mt_rand(0, 0x3fff) | 0x8000,
 
-        // 48 bits for "node"
-        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+      // 48 bits for "node"
+      mt_rand(0, 0xffff),
+      mt_rand(0, 0xffff),
+      mt_rand(0, 0xffff)
     );
-}
+  }
+
+  public function convertTimeSatset($waktu)
+  {
+    $zonawaktu = '-7 hours';
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WITA') {
+      $zonawaktu = '-8 hours';
+    }
+    if ($this->settings->get('satu_sehat.zonawaktu') == 'WIT') {
+      $zonawaktu = '-9 hours';
+    }
+    $DateTime = new \DateTime($waktu);
+    $DateTime->modify($zonawaktu);
+    return $DateTime->format("Y-m-d\TH:i:s");
+  }
 
   private function _addHeaderFiles()
   {
