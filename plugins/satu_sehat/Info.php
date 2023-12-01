@@ -5,7 +5,7 @@ return [
   'description'   =>  'Modul Satu Sehat Kemkes',
   'author'        =>  'Basoro',
   'version'       =>  '1.0',
-  'compatibility' =>  '2022',
+  'compatibility' =>  '2023',
   'icon'          =>  'heart',
   'install'       =>  function () use ($core) {
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'organizationid', '')");
