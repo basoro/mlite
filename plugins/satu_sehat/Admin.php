@@ -33,7 +33,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
-      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
+      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappingpraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
@@ -47,7 +47,7 @@ class Admin extends AdminModule
       ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
       ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
-      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
+      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappingpraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
@@ -2352,22 +2352,16 @@ class Admin extends AdminModule
     redirect(url([ADMIN, 'satu_sehat', 'lokasi']));
   }
 
-  public function getMapPraktisi()
+  public function getMappingPraktisi()
   {
-    $poli = $this->core->mysql('dokter')->where('status', '1')->toArray();
-    $mlite_satset = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')->toArray();
-    $satu_sehat = [];
-    foreach ($mlite_satset as $value) {
-
-      $nama = $this->core->getDokterInfo('nm_dokter', $value['kd_dokter']);
-
-      $value['nama'] = $nama;
-      $satu_sehat[] = $value;
-    }
-    return $this->draw('map_praktisi.html', ['departemen' => $this->core->mysql('departemen')->toArray(), 'poli' => $poli, 'satu_sehat_departemen' => $satu_sehat]);
+    $mapping_praktisi = $this->core->mysql('mlite_satu_sehat_mapping_praktisi')
+    ->join('dokter', 'dokter.kd_dokter=mlite_satu_sehat_mapping_praktisi.kd_dokter')
+    ->toArray();
+    $dokter = $this->core->mysql('dokter')->where('status', '1')->toArray();
+    return $this->draw('mapping.praktisi.html', ['mapping_praktisi' => $mapping_praktisi, 'dokter' => $dokter]);
   }
 
-  public function postSaveMapPraktisi()
+  public function postSaveMappingPraktisi()
   {
     if (isset($_POST['simpan'])) {
       $kd_dokter = $_POST['dokter'];
@@ -2382,13 +2376,13 @@ class Admin extends AdminModule
           ]
         );
         if ($query) {
-          $this->notify('success', 'Mapping departemen telah disimpan ');
+          $this->notify('success', 'Mapping praktisi telah disimpan ');
         } else {
-          $this->notify('danger', 'Mapping departemen gagal disimpan');
+          $this->notify('danger', 'Mapping depapraktisirtemen gagal disimpan');
         }
       }
     }
-    redirect(url([ADMIN, 'satu_sehat', 'mappraktisi']));
+    redirect(url([ADMIN, 'satu_sehat', 'mappingpraktisi']));
   }
 
   public function getResponse()
@@ -2413,8 +2407,23 @@ class Admin extends AdminModule
       $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
       $row['no_ktp_dokter'] = $this->core->getPegawaiInfo('no_ktp', $row['kd_dokter']);
       $row['nm_poli'] = $this->core->getPoliklinikInfo('nm_poli', $row['kd_poli']);
-      $mlite_billing = $this->core->mysql('billing')->where('no_rawat', $row['no_rawat'])->oneArray();
-      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_byr'], '');
+
+      $mlite_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->oneArray();
+      if($this->settings->get('satu_sehat.billing') == 'khanza') {
+        $mlite_billing = $this->core->mysql('nota_jalan')->select([
+          'tgl_billing' => 'tanggal'
+        ])
+        ->where('no_rawat', $row['no_rawat'])
+        ->oneArray();
+        if($status_lanjut == 'Ranap') {
+          $mlite_billing = $this->core->mysql('nota_inap')->select([
+            'tgl_billing' => 'tanggal'
+          ])
+          ->where('no_rawat', $row['no_rawat'])
+          ->oneArray();
+        }
+      }      
+      $row['tgl_pulang'] = isset_or($mlite_billing['tgl_billing'], '');      
 
       if ($row['status_lanjut'] == 'Ranap') {
         $row['kd_kamar'] = $this->core->getKamarInapInfo('kd_kamar', $row['no_rawat']);
@@ -2459,6 +2468,8 @@ class Admin extends AdminModule
       $row['id_observation_ttvberat'] = isset_or($mlite_satu_sehat_response['id_observation_ttvberat'], '');
       $row['id_observation_ttvperut'] = isset_or($mlite_satu_sehat_response['id_observation_ttvperut'], '');
       $row['id_observation_ttvkesadaran'] = isset_or($mlite_satu_sehat_response['id_observation_ttvkesadaran'], '');
+      $row['id_procedure'] = isset_or($mlite_satu_sehat_response['id_procedure'], '');
+      $row['id_composition'] = isset_or($mlite_satu_sehat_response['id_composition'], '');
       $data_response[] = $row;
     }
     return $this->draw('response.html', ['data_response' => $data_response]);

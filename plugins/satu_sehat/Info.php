@@ -22,18 +22,7 @@ return [
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'latitude', '')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'zonawaktu', 'WIB')");
     $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('satu_sehat', 'billing', 'mlite')");
-    $core->db()->pdo()->exec("CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
-      `practitioner_id` varchar(40) primary key not null,
-      `kd_dokter` varchar(20)
-    );");
   },
-
-  /*
-    CREATE TABLE `mlite_satu_sehat_mapping_praktisi` (
-      `practitioner_id` varchar(40) primary key not null,
-      `kd_dokter` varchar(20)
-    );
-  */
   'uninstall'     =>  function () use ($core) {
     $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'satu_sehat'");
   }
