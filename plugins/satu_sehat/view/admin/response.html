@@ -52,6 +52,8 @@
                             <th style="white-space: nowrap;">ID Observation Berat</th>
                             <th style="white-space: nowrap;">ID Observation Perut</th>
                             <th style="white-space: nowrap;">ID Observation Kesadaran</th>
+                            <th style="white-space: nowrap;">ID Procedure</th>
+                            <th style="white-space: nowrap;">ID Composition</th>
                         </tr>    
                     </thead>
                     <tbody>
@@ -59,7 +61,7 @@
                         <tr>
                             <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
                             <td style="white-space: nowrap;">{$value.no_rawat}</td>
-                            <td style="white-space: nowrap;">{$value.no_rkm_medis}</td>
+                            <td style="white-space: nowrap;">{$value.no_rkm_medis} &nbsp; <a href="{?=url([ADMIN, 'satu_sehat', 'encounterbundle', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-plus"></i></a></td>
                             <td style="white-space: nowrap;">{$value.nm_pasien}</td>
                             <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
                             <td style="white-space: nowrap;">{$value.kd_dokter}</td>
@@ -85,6 +87,8 @@
                             <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvberat)}{if: isset($value.pemeriksaan.berat)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'berat'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvberat}{/if}</td>
                             <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvperut)}{if: isset($value.pemeriksaan.lingkar_perut)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'perut'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvperut}{/if}</td>
                             <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvkesadaran)}{if: isset($value.pemeriksaan.kesadaran)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'kesadaran'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvkesadaran}{/if}</td>
+                            <td style="white-space: nowrap;">{$value.id_procedure}</td>
+                            <td style="white-space: nowrap;">{$value.id_composition}</td>
                         </tr>
                         {/loop}
                     </tbody>
