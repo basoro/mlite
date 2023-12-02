@@ -1025,3 +1025,22 @@ select[multiple].form-control {
   color: white;
   font-size: 24px;
 }
+
+.fa-Tanggal:before {
+    content: "\f00d";
+}
+.fa-Tambalan:before {
+    content: "\f111";
+}
+.fa-Akar:before {
+    content: "\f00c";
+}
+.fa-Karies:before {
+    content: "\f10c";
+}
+.fa-Goyang:before {
+    content: "\f153";
+}
+.fa-Erupsi:before {
+    content: "\f07e";
+}
