@@ -1,0 +1,47 @@
+  <h4>Data Rujukan Tampil</h4>
+  <div class="table-responsive">
+  <table class="table table-bordered table-striped table-hover display nowrap datatabledirujuk" width="100%">
+    <thead>
+      <tr>
+        <th>No. SEP</th>
+        <th>Tgl. Rujukan</th>
+        <th>Tgl. Kunjungan</th>
+        <th>PPK Dirujuk</th>
+        <th>Nama PPK Dirujuk</th>
+        <th>Jenis Pelayanan</th>
+        <th>Catatan</th>
+        <th>Diagnosa Rujukan</th>
+        <th>Nama Diagnosa Rujukan</th>
+        <th>Tipe Rujukan</th>
+        <th>Poli Rujukan</th>
+        <th>Nama Poli Rujukan</th>
+        <th>Nomor Rujukan</th>
+        <th>User</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $dirujuk}
+      <tr>
+        <td>{$value.no_sep}</td>
+        <td>{$value.tglRujukan}</td>
+        <td>{$value.tglRencanaKunjungan}</td>
+        <td>{$value.ppkDirujuk}</td>
+        <td>{$value.nm_ppkDirujuk}</td>
+        <td>{$value.jnsPelayanan}</td>
+        <td>{$value.catatan}</td>
+        <td>{$value.diagRujukan}</td>
+        <td>{$value.nama_diagRujukan}</td>
+        <td>{$value.tipeRujukan}</td>
+        <td>{$value.poliRujukan}</td>
+        <td>{$value.nama_poliRujukan}</td>
+        <td>{$value.no_rujukan}</td>
+        <td>{$value.user}</td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
+  </div>
+</div>
+<script type="text/javascript">
+  $('.datatabledirujuk').DataTable();
+</script>

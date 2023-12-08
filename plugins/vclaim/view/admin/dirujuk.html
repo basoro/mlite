@@ -125,48 +125,46 @@
   <div class="tampildatadirujuk" style="margin-top:30px;">
     <h4>Data Rujukan</h4>
     <div class="table-responsive">
-    <table class="table table-bordered table-striped table-hover display nowrap datatabledirujuk" width="100%">
-      <thead>
-        <tr>
-          <th>Tgl. Rujukan</th>
-          <th>Tgl. Kunjungan</th>
-          <th>No. RM</th>
-          <th>Nama Pasien</th>
-          <th>No. Kartu</th>
-          <th>No. SEP</th>
-          <th>PPK Dirujuk</th>
-          <th>Nama Poli</th>
-          <th>Jenis Pelayanan</th>
-          <th>Tipe Rujukan</th>
-          <th>Diagnosa</th>
-          <th>Prosedur</th>
-          <th>Catatan</th>
-          <th>User</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {loop: $dirujuk}
-        <tr>
-          <td>{$value.tgl_kunjungan}</td>
-          <td>{$value.no_rawat}</td>
-          <td>{$value.no_rkm_medis}</td>
-          <td>{$value.nm_pasien}</td>
-          <td>{$value.nomor_jaminan}</td>
-          <td>{$value.nama_poli}</td>
-          <td>{$value.subyektif}</td>
-          <td>{?=($value.kunjungan_sakit === 'true') ? 'Kunjungan Sakit' : 'Kunjungan Sehat'?}</td>
-          <td>{$value.sistole}</td>
-          <td>{$value.diastole}</td>
-          <td>{$value.berat}</td>
-          <td>{$value.tinggi}</td>
-          <td>{$value.respirasi}</td>
-          <td>{$value.lingkar_perut}</td>
-          <td>{$value.status_kirim}</td>
-        </tr>
-        {/loop}
-      </tbody>
-    </table>
+      <table class="table table-bordered table-striped table-hover display nowrap datatabledirujuk" width="100%">
+        <thead>
+          <tr>
+            <th>No. SEP</th>
+            <th>Tgl. Rujukan</th>
+            <th>Tgl. Kunjungan</th>
+            <th>PPK Dirujuk</th>
+            <th>Nama PPK Dirujuk</th>
+            <th>Jenis Pelayanan</th>
+            <th>Catatan</th>
+            <th>Diagnosa Rujukan</th>
+            <th>Nama Diagnosa Rujukan</th>
+            <th>Tipe Rujukan</th>
+            <th>Poli Rujukan</th>
+            <th>Nama Poli Rujukan</th>
+            <th>Nomor Rujukan</th>
+            <th>User</th>
+          </tr>
+        </thead>
+        <tbody>
+          {loop: $dirujuk}
+          <tr>
+            <td>{$value.no_sep}</td>
+            <td>{$value.tglRujukan}</td>
+            <td>{$value.tglRencanaKunjungan}</td>
+            <td>{$value.ppkDirujuk}</td>
+            <td>{$value.nm_ppkDirujuk}</td>
+            <td>{$value.jnsPelayanan}</td>
+            <td>{$value.catatan}</td>
+            <td>{$value.diagRujukan}</td>
+            <td>{$value.nama_diagRujukan}</td>
+            <td>{$value.tipeRujukan}</td>
+            <td>{$value.poliRujukan}</td>
+            <td>{$value.nama_poliRujukan}</td>
+            <td>{$value.no_rujukan}</td>
+            <td>{$value.user}</td>
+          </tr>
+          {/loop}
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -362,8 +360,8 @@ $(document).ready(function(){
       var rujukankhusus = 'false';
     }
     var catatan = $('textarea[name=catatan]').val();
-    var url = baseURL + '/vclaim/rujukansave/?t=' + mlite.token;
-    //alert('No SEP: ' + noSep + ' Tanggal Rujukan: ' + tglRujukan + ' Rencana Kunjungan : ' + tglRencanaKunjungan + ' PPK Rujukan : ' + ppkDirujuk + ' Jenise Pelayanan : ' + jnsPelayanan + ' Diagnosa : ' + diagRujukan + ' Procedure : ' + procRujukan + ' Tipe Rujukan : ' + tipeRujukan + ' Poli Rujukan : ' + poliRujukan);
+    var url = baseURL + '/vclaim/dirujuksave/?t=' + mlite.token;
+    alert('No SEP: ' + noSep + ' Tanggal Rujukan: ' + tglRujukan + ' Rencana Kunjungan : ' + tglRencanaKunjungan + ' PPK Rujukan : ' + ppkDirujuk + ' Jenis Pelayanan : ' + jnsPelayanan + ' Diagnosa : ' + diagRujukan + ' Procedure : ' + procRujukan + ' Tipe Rujukan : ' + tipeRujukan + ' Poli Rujukan : ' + poliRujukan);
     $.post(url,{
       noSep: noSep,
       tglRujukan: tglRujukan,
@@ -377,7 +375,8 @@ $(document).ready(function(){
       rujukankhusus: rujukankhusus,
       catatan: catatan
     } ,function(data) {
-      $('.tampildatadirujuk').load(baseURL + '/vclaim/dirujuktampil/' + no_rkm_medis + '?t=' + mlite.token);
+      console.log(data);
+      $('.tampildatadirujuk').load(baseURL + '/vclaim/dirujuktampil/' + noSep + '?t=' + mlite.token);
     });
   });
 });

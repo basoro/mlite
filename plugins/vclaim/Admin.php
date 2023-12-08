@@ -3094,12 +3094,84 @@ class Admin extends AdminModule
   public function getDirujuk($no_rawat)
   {
     $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    if(empty($bridging_sep)) {
-      $bridging_sep = [];
-    }
-    $dirujuk = [];
+    $dirujuk = $this->core->mysql('bridging_rujukan_bpjs')->where('no_sep', $bridging_sep['no_sep'])->toArray();
+    echo $this->draw('dirujuk.html', ['bridging_sep' => isset_or($bridging_sep, ''), 'dirujuk' => $dirujuk]);
+    exit();
+  }
 
-    echo $this->draw('dirujuk.html', ['bridging_sep' => $bridging_sep, 'dirujuk' => $dirujuk]);
+  public function postDiRujukSave()
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $data = [
+      'request' => [
+        't_rujukan' => [
+          "noSep" => $_POST['noSep'],
+          "tglRujukan" => $_POST['tglRujukan'],
+          "tglRencanaKunjungan" => $_POST['tglRencanaKunjungan'],
+          "ppkDirujuk" => $_POST['ppkDirujuk'],
+          "jnsPelayanan" => $_POST['jnsPelayanan'],
+          "catatan" => $_POST['catatan'],
+          "diagRujukan" => $_POST['diagRujukan'],
+          "tipeRujukan" => $_POST['tipeRujukan'],
+          "poliRujukan" => $_POST['poliRujukan'],
+          "user" => $this->core->getUserInfo('fullname', null, true)
+        ]
+      ]
+    ];
+
+    $url = $this->api_url . 'Rujukan/2.0/insert';
+    $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      $response_data_rujukan = json_decode($decompress, true);
+
+      if($code == '200') {
+
+        $this->core->mysql('bridging_rujukan_bpjs')
+        ->save([
+          'no_sep' => $_POST['noSep'],
+          'tglRujukan' => $_POST['tglRujukan'], 
+          'tglRencanaKunjungan' => $_POST['tglRencanaKunjungan'], 
+          'ppkDirujuk' => $_POST['ppkDirujuk'], 
+          'nm_ppkDirujuk' => $response_data_rujukan['rujukan']['tujuanRujukan']['nama'], 
+          'jnsPelayanan' => $_POST['jnsPelayanan'], 
+          'catatan' => $_POST['catatan'], 
+          'diagRujukan' => $_POST['diagRujukan'], 
+          'nama_diagRujukan' => $response_data_rujukan['rujukan']['diagnosa']['nama'], 
+          'tipeRujukan' => $_POST['tipeRujukan'], 
+          'poliRujukan' => $_POST['poliRujukan'], 
+          'nama_poliRujukan' => $response_data_rujukan['rujukan']['poliTujuan']['nama'], 
+          'no_rujukan' => $response_data_rujukan['rujukan']['noRujukan'], 
+          'user' => $this->core->getUserInfo('fullname', null, true)
+        ]);
+
+      }
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function getDirujukTampil($noSep)
+  {
+    $bridging_rujukan_bpjs = $this->core->mysql('bridging_rujukan_bpjs')->where('no_sep', $noSep)->toArray();
+    echo $this->draw('dirujuk.tampil.html', ['dirujuk' => $bridging_rujukan_bpjs]);
     exit();
   }
 
