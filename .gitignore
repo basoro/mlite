@@ -3,6 +3,7 @@
 admin/tmp
 admin/pla.php
 tmp
+websocket
 uploads
 vendor
 systems/data/database.sdb
@@ -29,6 +30,7 @@ plugins/cssd
 jasperphp
 plugins/utd/Site.php
 plugins/utd/view/adonan.html
+plugins/khanza.zip
 
 .env
 logs/

@@ -19,7 +19,7 @@
 -- Table structure for table `aturan_pakai`
 --
 
---  DROP TABLE IF EXISTS `aturan_pakai`;
+-- DROP TABLE IF EXISTS `aturan_pakai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `aturan_pakai` (
@@ -49,7 +49,7 @@ UNLOCK TABLES;
 -- Table structure for table `bahasa_pasien`
 --
 
---  DROP TABLE IF EXISTS `bahasa_pasien`;
+-- DROP TABLE IF EXISTS `bahasa_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bahasa_pasien` (
@@ -74,7 +74,7 @@ UNLOCK TABLES;
 -- Table structure for table `bangsal`
 --
 
---  DROP TABLE IF EXISTS `bangsal`;
+-- DROP TABLE IF EXISTS `bangsal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bangsal` (
@@ -101,7 +101,7 @@ UNLOCK TABLES;
 -- Table structure for table `bank`
 --
 
---  DROP TABLE IF EXISTS `bank`;
+-- DROP TABLE IF EXISTS `bank`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bank` (
@@ -124,7 +124,7 @@ UNLOCK TABLES;
 -- Table structure for table `barcode`
 --
 
---  DROP TABLE IF EXISTS `barcode`;
+-- DROP TABLE IF EXISTS `barcode`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `barcode` (
@@ -149,7 +149,7 @@ UNLOCK TABLES;
 -- Table structure for table `beri_obat_operasi`
 --
 
---  DROP TABLE IF EXISTS `beri_obat_operasi`;
+-- DROP TABLE IF EXISTS `beri_obat_operasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `beri_obat_operasi` (
@@ -181,7 +181,7 @@ UNLOCK TABLES;
 -- Table structure for table `berkas_digital_perawatan`
 --
 
---  DROP TABLE IF EXISTS `berkas_digital_perawatan`;
+-- DROP TABLE IF EXISTS `berkas_digital_perawatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `berkas_digital_perawatan` (
@@ -208,7 +208,7 @@ UNLOCK TABLES;
 -- Table structure for table `bidang`
 --
 
---  DROP TABLE IF EXISTS `bidang`;
+-- DROP TABLE IF EXISTS `bidang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bidang` (
@@ -231,7 +231,7 @@ UNLOCK TABLES;
 -- Table structure for table `booking_operasi`
 --
 
---  DROP TABLE IF EXISTS `booking_operasi`;
+-- DROP TABLE IF EXISTS `booking_operasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `booking_operasi` (
@@ -267,7 +267,7 @@ UNLOCK TABLES;
 -- Table structure for table `booking_periksa`
 --
 
---  DROP TABLE IF EXISTS `booking_periksa`;
+-- DROP TABLE IF EXISTS `booking_periksa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `booking_periksa` (
@@ -301,7 +301,7 @@ UNLOCK TABLES;
 -- Table structure for table `booking_periksa_balasan`
 --
 
---  DROP TABLE IF EXISTS `booking_periksa_balasan`;
+-- DROP TABLE IF EXISTS `booking_periksa_balasan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `booking_periksa_balasan` (
@@ -325,7 +325,7 @@ UNLOCK TABLES;
 -- Table structure for table `booking_periksa_diterima`
 --
 
---  DROP TABLE IF EXISTS `booking_periksa_diterima`;
+-- DROP TABLE IF EXISTS `booking_periksa_diterima`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `booking_periksa_diterima` (
@@ -351,7 +351,7 @@ UNLOCK TABLES;
 -- Table structure for table `booking_registrasi`
 --
 
---  DROP TABLE IF EXISTS `booking_registrasi`;
+-- DROP TABLE IF EXISTS `booking_registrasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `booking_registrasi` (
@@ -391,7 +391,7 @@ UNLOCK TABLES;
 -- Table structure for table `bpjs_prb`
 --
 
---  DROP TABLE IF EXISTS `bpjs_prb`;
+-- DROP TABLE IF EXISTS `bpjs_prb`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bpjs_prb` (
@@ -412,10 +412,47 @@ LOCK TABLES `bpjs_prb` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `bridging_rujukan_bpjs`
+--
+
+-- DROP TABLE IF EXISTS `bridging_rujukan_bpjs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `bridging_rujukan_bpjs` (
+  `no_sep` varchar(40) NOT NULL,
+  `tglRujukan` date DEFAULT NULL,
+  `tglRencanaKunjungan` date NOT NULL,
+  `ppkDirujuk` varchar(20) DEFAULT NULL,
+  `nm_ppkDirujuk` varchar(100) DEFAULT NULL,
+  `jnsPelayanan` enum('1','2') DEFAULT NULL,
+  `catatan` varchar(200) DEFAULT NULL,
+  `diagRujukan` varchar(10) DEFAULT NULL,
+  `nama_diagRujukan` varchar(400) DEFAULT NULL,
+  `tipeRujukan` enum('0. Penuh','1. Partial','2. Rujuk Balik') DEFAULT NULL,
+  `poliRujukan` varchar(15) DEFAULT NULL,
+  `nama_poliRujukan` varchar(50) DEFAULT NULL,
+  `no_rujukan` varchar(40) NOT NULL,
+  `user` varchar(25) DEFAULT NULL,
+  PRIMARY KEY (`no_rujukan`),
+  KEY `no_sep` (`no_sep`),
+  CONSTRAINT `bridging_rujukan_bpjs_ibfk_1` FOREIGN KEY (`no_sep`) REFERENCES `bridging_sep` (`no_sep`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `bridging_rujukan_bpjs`
+--
+
+LOCK TABLES `bridging_rujukan_bpjs` WRITE;
+/*!40000 ALTER TABLE `bridging_rujukan_bpjs` DISABLE KEYS */;
+/*!40000 ALTER TABLE `bridging_rujukan_bpjs` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `bridging_sep`
 --
 
---  DROP TABLE IF EXISTS `bridging_sep`;
+-- DROP TABLE IF EXISTS `bridging_sep`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bridging_sep` (
@@ -490,7 +527,7 @@ UNLOCK TABLES;
 -- Table structure for table `bridging_sep_internal`
 --
 
---  DROP TABLE IF EXISTS `bridging_sep_internal`;
+-- DROP TABLE IF EXISTS `bridging_sep_internal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bridging_sep_internal` (
@@ -566,7 +603,7 @@ UNLOCK TABLES;
 -- Table structure for table `bridging_surat_kontrol_bpjs`
 --
 
---  DROP TABLE IF EXISTS `bridging_surat_kontrol_bpjs`;
+-- DROP TABLE IF EXISTS `bridging_surat_kontrol_bpjs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bridging_surat_kontrol_bpjs` (
@@ -597,7 +634,7 @@ UNLOCK TABLES;
 -- Table structure for table `bridging_surat_pri_bpjs`
 --
 
---  DROP TABLE IF EXISTS `bridging_surat_pri_bpjs`;
+-- DROP TABLE IF EXISTS `bridging_surat_pri_bpjs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `bridging_surat_pri_bpjs` (
@@ -631,7 +668,7 @@ UNLOCK TABLES;
 -- Table structure for table `cacat_fisik`
 --
 
---  DROP TABLE IF EXISTS `cacat_fisik`;
+-- DROP TABLE IF EXISTS `cacat_fisik`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `cacat_fisik` (
@@ -656,7 +693,7 @@ UNLOCK TABLES;
 -- Table structure for table `catatan_perawatan`
 --
 
---  DROP TABLE IF EXISTS `catatan_perawatan`;
+-- DROP TABLE IF EXISTS `catatan_perawatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `catatan_perawatan` (
@@ -685,7 +722,7 @@ UNLOCK TABLES;
 -- Table structure for table `databarang`
 --
 
---  DROP TABLE IF EXISTS `databarang`;
+-- DROP TABLE IF EXISTS `databarang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `databarang` (
@@ -762,7 +799,7 @@ UNLOCK TABLES;
 -- Table structure for table `departemen`
 --
 
---  DROP TABLE IF EXISTS `departemen`;
+-- DROP TABLE IF EXISTS `departemen`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `departemen` (
@@ -787,7 +824,7 @@ UNLOCK TABLES;
 -- Table structure for table `detail_pemberian_obat`
 --
 
---  DROP TABLE IF EXISTS `detail_pemberian_obat`;
+-- DROP TABLE IF EXISTS `detail_pemberian_obat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `detail_pemberian_obat` (
@@ -836,7 +873,7 @@ UNLOCK TABLES;
 -- Table structure for table `detail_periksa_lab`
 --
 
---  DROP TABLE IF EXISTS `detail_periksa_lab`;
+-- DROP TABLE IF EXISTS `detail_periksa_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `detail_periksa_lab` (
@@ -891,7 +928,7 @@ UNLOCK TABLES;
 -- Table structure for table `diagnosa_pasien`
 --
 
---  DROP TABLE IF EXISTS `diagnosa_pasien`;
+-- DROP TABLE IF EXISTS `diagnosa_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `diagnosa_pasien` (
@@ -923,7 +960,7 @@ UNLOCK TABLES;
 -- Table structure for table `dokter`
 --
 
---  DROP TABLE IF EXISTS `dokter`;
+-- DROP TABLE IF EXISTS `dokter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `dokter` (
@@ -975,7 +1012,7 @@ UNLOCK TABLES;
 -- Table structure for table `dpjp_ranap`
 --
 
---  DROP TABLE IF EXISTS `dpjp_ranap`;
+-- DROP TABLE IF EXISTS `dpjp_ranap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `dpjp_ranap` (
@@ -1001,7 +1038,7 @@ UNLOCK TABLES;
 -- Table structure for table `emergency_index`
 --
 
---  DROP TABLE IF EXISTS `emergency_index`;
+-- DROP TABLE IF EXISTS `emergency_index`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `emergency_index` (
@@ -1026,7 +1063,7 @@ UNLOCK TABLES;
 -- Table structure for table `gambar_radiologi`
 --
 
---  DROP TABLE IF EXISTS `gambar_radiologi`;
+-- DROP TABLE IF EXISTS `gambar_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `gambar_radiologi` (
@@ -1052,7 +1089,7 @@ UNLOCK TABLES;
 -- Table structure for table `golongan_barang`
 --
 
---  DROP TABLE IF EXISTS `golongan_barang`;
+-- DROP TABLE IF EXISTS `golongan_barang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `golongan_barang` (
@@ -1076,7 +1113,7 @@ UNLOCK TABLES;
 -- Table structure for table `gudangbarang`
 --
 
---  DROP TABLE IF EXISTS `gudangbarang`;
+-- DROP TABLE IF EXISTS `gudangbarang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `gudangbarang` (
@@ -1107,7 +1144,7 @@ UNLOCK TABLES;
 -- Table structure for table `hasil_radiologi`
 --
 
---  DROP TABLE IF EXISTS `hasil_radiologi`;
+-- DROP TABLE IF EXISTS `hasil_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `hasil_radiologi` (
@@ -1134,7 +1171,7 @@ UNLOCK TABLES;
 -- Table structure for table `icd9`
 --
 
---  DROP TABLE IF EXISTS `icd9`;
+-- DROP TABLE IF EXISTS `icd9`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `icd9` (
@@ -1158,7 +1195,7 @@ UNLOCK TABLES;
 -- Table structure for table `industrifarmasi`
 --
 
---  DROP TABLE IF EXISTS `industrifarmasi`;
+-- DROP TABLE IF EXISTS `industrifarmasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `industrifarmasi` (
@@ -1189,7 +1226,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris`
 --
 
---  DROP TABLE IF EXISTS `inventaris`;
+-- DROP TABLE IF EXISTS `inventaris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris` (
@@ -1229,7 +1266,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_barang`
 --
 
---  DROP TABLE IF EXISTS `inventaris_barang`;
+-- DROP TABLE IF EXISTS `inventaris_barang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_barang` (
@@ -1271,7 +1308,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_jenis`
 --
 
---  DROP TABLE IF EXISTS `inventaris_jenis`;
+-- DROP TABLE IF EXISTS `inventaris_jenis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_jenis` (
@@ -1295,7 +1332,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_kategori`
 --
 
---  DROP TABLE IF EXISTS `inventaris_kategori`;
+-- DROP TABLE IF EXISTS `inventaris_kategori`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_kategori` (
@@ -1319,7 +1356,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_merk`
 --
 
---  DROP TABLE IF EXISTS `inventaris_merk`;
+-- DROP TABLE IF EXISTS `inventaris_merk`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_merk` (
@@ -1343,7 +1380,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_peminjaman`
 --
 
---  DROP TABLE IF EXISTS `inventaris_peminjaman`;
+-- DROP TABLE IF EXISTS `inventaris_peminjaman`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_peminjaman` (
@@ -1377,7 +1414,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_produsen`
 --
 
---  DROP TABLE IF EXISTS `inventaris_produsen`;
+-- DROP TABLE IF EXISTS `inventaris_produsen`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_produsen` (
@@ -1409,7 +1446,7 @@ UNLOCK TABLES;
 -- Table structure for table `inventaris_ruang`
 --
 
---  DROP TABLE IF EXISTS `inventaris_ruang`;
+-- DROP TABLE IF EXISTS `inventaris_ruang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `inventaris_ruang` (
@@ -1433,7 +1470,7 @@ UNLOCK TABLES;
 -- Table structure for table `jabatan`
 --
 
---  DROP TABLE IF EXISTS `jabatan`;
+-- DROP TABLE IF EXISTS `jabatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jabatan` (
@@ -1458,7 +1495,7 @@ UNLOCK TABLES;
 -- Table structure for table `jadwal`
 --
 
---  DROP TABLE IF EXISTS `jadwal`;
+-- DROP TABLE IF EXISTS `jadwal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jadwal` (
@@ -1491,7 +1528,7 @@ UNLOCK TABLES;
 -- Table structure for table `jadwal_pegawai`
 --
 
---  DROP TABLE IF EXISTS `jadwal_pegawai`;
+-- DROP TABLE IF EXISTS `jadwal_pegawai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jadwal_pegawai` (
@@ -1557,7 +1594,7 @@ UNLOCK TABLES;
 -- Table structure for table `jadwal_tambahan`
 --
 
---  DROP TABLE IF EXISTS `jadwal_tambahan`;
+-- DROP TABLE IF EXISTS `jadwal_tambahan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jadwal_tambahan` (
@@ -1613,7 +1650,7 @@ UNLOCK TABLES;
 -- Table structure for table `jam_jaga`
 --
 
---  DROP TABLE IF EXISTS `jam_jaga`;
+-- DROP TABLE IF EXISTS `jam_jaga`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jam_jaga` (
@@ -1645,7 +1682,7 @@ UNLOCK TABLES;
 -- Table structure for table `jam_masuk`
 --
 
---  DROP TABLE IF EXISTS `jam_masuk`;
+-- DROP TABLE IF EXISTS `jam_masuk`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jam_masuk` (
@@ -1670,7 +1707,7 @@ UNLOCK TABLES;
 -- Table structure for table `jenis`
 --
 
---  DROP TABLE IF EXISTS `jenis`;
+-- DROP TABLE IF EXISTS `jenis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jenis` (
@@ -1697,7 +1734,7 @@ UNLOCK TABLES;
 -- Table structure for table `jnj_jabatan`
 --
 
---  DROP TABLE IF EXISTS `jnj_jabatan`;
+-- DROP TABLE IF EXISTS `jnj_jabatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jnj_jabatan` (
@@ -1725,7 +1762,7 @@ UNLOCK TABLES;
 -- Table structure for table `jns_perawatan`
 --
 
---  DROP TABLE IF EXISTS `jns_perawatan`;
+-- DROP TABLE IF EXISTS `jns_perawatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jns_perawatan` (
@@ -1779,7 +1816,7 @@ UNLOCK TABLES;
 -- Table structure for table `jns_perawatan_inap`
 --
 
---  DROP TABLE IF EXISTS `jns_perawatan_inap`;
+-- DROP TABLE IF EXISTS `jns_perawatan_inap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jns_perawatan_inap` (
@@ -1834,7 +1871,7 @@ UNLOCK TABLES;
 -- Table structure for table `jns_perawatan_lab`
 --
 
---  DROP TABLE IF EXISTS `jns_perawatan_lab`;
+-- DROP TABLE IF EXISTS `jns_perawatan_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jns_perawatan_lab` (
@@ -1882,7 +1919,7 @@ UNLOCK TABLES;
 -- Table structure for table `jns_perawatan_radiologi`
 --
 
---  DROP TABLE IF EXISTS `jns_perawatan_radiologi`;
+-- DROP TABLE IF EXISTS `jns_perawatan_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `jns_perawatan_radiologi` (
@@ -1929,7 +1966,7 @@ UNLOCK TABLES;
 -- Table structure for table `kabupaten`
 --
 
---  DROP TABLE IF EXISTS `kabupaten`;
+-- DROP TABLE IF EXISTS `kabupaten`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kabupaten` (
@@ -1954,7 +1991,7 @@ UNLOCK TABLES;
 -- Table structure for table `kamar`
 --
 
---  DROP TABLE IF EXISTS `kamar`;
+-- DROP TABLE IF EXISTS `kamar`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kamar` (
@@ -1988,7 +2025,7 @@ UNLOCK TABLES;
 -- Table structure for table `kamar_inap`
 --
 
---  DROP TABLE IF EXISTS `kamar_inap`;
+-- DROP TABLE IF EXISTS `kamar_inap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kamar_inap` (
@@ -2032,7 +2069,7 @@ UNLOCK TABLES;
 -- Table structure for table `kategori_barang`
 --
 
---  DROP TABLE IF EXISTS `kategori_barang`;
+-- DROP TABLE IF EXISTS `kategori_barang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kategori_barang` (
@@ -2056,7 +2093,7 @@ UNLOCK TABLES;
 -- Table structure for table `kategori_penyakit`
 --
 
---  DROP TABLE IF EXISTS `kategori_penyakit`;
+-- DROP TABLE IF EXISTS `kategori_penyakit`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kategori_penyakit` (
@@ -2083,7 +2120,7 @@ UNLOCK TABLES;
 -- Table structure for table `kategori_perawatan`
 --
 
---  DROP TABLE IF EXISTS `kategori_perawatan`;
+-- DROP TABLE IF EXISTS `kategori_perawatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kategori_perawatan` (
@@ -2108,7 +2145,7 @@ UNLOCK TABLES;
 -- Table structure for table `kecamatan`
 --
 
---  DROP TABLE IF EXISTS `kecamatan`;
+-- DROP TABLE IF EXISTS `kecamatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kecamatan` (
@@ -2132,7 +2169,7 @@ UNLOCK TABLES;
 -- Table structure for table `kelompok_jabatan`
 --
 
---  DROP TABLE IF EXISTS `kelompok_jabatan`;
+-- DROP TABLE IF EXISTS `kelompok_jabatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kelompok_jabatan` (
@@ -2157,7 +2194,7 @@ UNLOCK TABLES;
 -- Table structure for table `kelurahan`
 --
 
---  DROP TABLE IF EXISTS `kelurahan`;
+-- DROP TABLE IF EXISTS `kelurahan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kelurahan` (
@@ -2181,7 +2218,7 @@ UNLOCK TABLES;
 -- Table structure for table `kodesatuan`
 --
 
---  DROP TABLE IF EXISTS `kodesatuan`;
+-- DROP TABLE IF EXISTS `kodesatuan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `kodesatuan` (
@@ -2206,7 +2243,7 @@ UNLOCK TABLES;
 -- Table structure for table `laporan_operasi`
 --
 
---  DROP TABLE IF EXISTS `laporan_operasi`;
+-- DROP TABLE IF EXISTS `laporan_operasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `laporan_operasi` (
@@ -2236,7 +2273,7 @@ UNLOCK TABLES;
 -- Table structure for table `maping_dokter_dpjpvclaim`
 --
 
---  DROP TABLE IF EXISTS `maping_dokter_dpjpvclaim`;
+-- DROP TABLE IF EXISTS `maping_dokter_dpjpvclaim`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `maping_dokter_dpjpvclaim` (
@@ -2261,7 +2298,7 @@ UNLOCK TABLES;
 -- Table structure for table `maping_poli_bpjs`
 --
 
---  DROP TABLE IF EXISTS `maping_poli_bpjs`;
+-- DROP TABLE IF EXISTS `maping_poli_bpjs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `maping_poli_bpjs` (
@@ -2287,7 +2324,7 @@ UNLOCK TABLES;
 -- Table structure for table `maping_poliklinik_pcare`
 --
 
---  DROP TABLE IF EXISTS `maping_poliklinik_pcare`;
+-- DROP TABLE IF EXISTS `maping_poliklinik_pcare`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `maping_poliklinik_pcare` (
@@ -2312,7 +2349,7 @@ UNLOCK TABLES;
 -- Table structure for table `master_aturan_pakai`
 --
 
---  DROP TABLE IF EXISTS `master_aturan_pakai`;
+-- DROP TABLE IF EXISTS `master_aturan_pakai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `master_aturan_pakai` (
@@ -2335,7 +2372,7 @@ UNLOCK TABLES;
 -- Table structure for table `master_berkas_digital`
 --
 
---  DROP TABLE IF EXISTS `master_berkas_digital`;
+-- DROP TABLE IF EXISTS `master_berkas_digital`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `master_berkas_digital` (
@@ -2359,7 +2396,7 @@ UNLOCK TABLES;
 -- Table structure for table `metode_racik`
 --
 
---  DROP TABLE IF EXISTS `metode_racik`;
+-- DROP TABLE IF EXISTS `metode_racik`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `metode_racik` (
@@ -2383,7 +2420,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_akun_kegiatan`
 --
 
---  DROP TABLE IF EXISTS `mlite_akun_kegiatan`;
+-- DROP TABLE IF EXISTS `mlite_akun_kegiatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_akun_kegiatan` (
@@ -2407,7 +2444,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_antrian_loket`
 --
 
---  DROP TABLE IF EXISTS `mlite_antrian_loket`;
+-- DROP TABLE IF EXISTS `mlite_antrian_loket`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_antrian_loket` (
@@ -2437,7 +2474,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_antrian_referensi`
 --
 
---  DROP TABLE IF EXISTS `mlite_antrian_referensi`;
+-- DROP TABLE IF EXISTS `mlite_antrian_referensi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi` (
@@ -2465,7 +2502,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_antrian_referensi_batal`
 --
 
---  DROP TABLE IF EXISTS `mlite_antrian_referensi_batal`;
+-- DROP TABLE IF EXISTS `mlite_antrian_referensi_batal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_batal` (
@@ -2489,7 +2526,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_antrian_referensi_taskid`
 --
 
---  DROP TABLE IF EXISTS `mlite_antrian_referensi_taskid`;
+-- DROP TABLE IF EXISTS `mlite_antrian_referensi_taskid`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_antrian_referensi_taskid` (
@@ -2515,7 +2552,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_apamregister`
 --
 
---  DROP TABLE IF EXISTS `mlite_apamregister`;
+-- DROP TABLE IF EXISTS `mlite_apamregister`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_apamregister` (
@@ -2539,7 +2576,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_billing`
 --
 
---  DROP TABLE IF EXISTS `mlite_billing`;
+-- DROP TABLE IF EXISTS `mlite_billing`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_billing` (
@@ -2571,7 +2608,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_bridging_pcare`
 --
 
---  DROP TABLE IF EXISTS `mlite_bridging_pcare`;
+-- DROP TABLE IF EXISTS `mlite_bridging_pcare`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_bridging_pcare` (
@@ -2648,7 +2685,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_detailjurnal`
 --
 
---  DROP TABLE IF EXISTS `mlite_detailjurnal`;
+-- DROP TABLE IF EXISTS `mlite_detailjurnal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_detailjurnal` (
@@ -2679,7 +2716,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_duitku`
 --
 
---  DROP TABLE IF EXISTS `mlite_duitku`;
+-- DROP TABLE IF EXISTS `mlite_duitku`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_duitku` (
@@ -2713,7 +2750,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_geolocation_presensi`
 --
 
---  DROP TABLE IF EXISTS `mlite_geolocation_presensi`;
+-- DROP TABLE IF EXISTS `mlite_geolocation_presensi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_geolocation_presensi` (
@@ -2739,7 +2776,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_jurnal`
 --
 
---  DROP TABLE IF EXISTS `mlite_jurnal`;
+-- DROP TABLE IF EXISTS `mlite_jurnal`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_jurnal` (
@@ -2770,7 +2807,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_login_attempts`
 --
 
---  DROP TABLE IF EXISTS `mlite_login_attempts`;
+-- DROP TABLE IF EXISTS `mlite_login_attempts`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_login_attempts` (
@@ -2793,7 +2830,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_modules`
 --
 
---  DROP TABLE IF EXISTS `mlite_modules`;
+-- DROP TABLE IF EXISTS `mlite_modules`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_modules` (
@@ -2818,7 +2855,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_notifications`
 --
 
---  DROP TABLE IF EXISTS `mlite_notifications`;
+-- DROP TABLE IF EXISTS `mlite_notifications`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_notifications` (
@@ -2845,7 +2882,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_odontogram`
 --
 
---  DROP TABLE IF EXISTS `mlite_odontogram`;
+-- DROP TABLE IF EXISTS `mlite_odontogram`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_odontogram` (
@@ -2873,7 +2910,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_ohis`
 --
 
---  DROP TABLE IF EXISTS `mlite_ohis`;
+-- DROP TABLE IF EXISTS `mlite_ohis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_ohis` (
@@ -2914,7 +2951,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_pengaduan`
 --
 
---  DROP TABLE IF EXISTS `mlite_pengaduan`;
+-- DROP TABLE IF EXISTS `mlite_pengaduan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_pengaduan` (
@@ -2941,7 +2978,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_pengaduan_detail`
 --
 
---  DROP TABLE IF EXISTS `mlite_pengaduan_detail`;
+-- DROP TABLE IF EXISTS `mlite_pengaduan_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_pengaduan_detail` (
@@ -2969,7 +3006,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_rekening`
 --
 
---  DROP TABLE IF EXISTS `mlite_rekening`;
+-- DROP TABLE IF EXISTS `mlite_rekening`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_rekening` (
@@ -2998,7 +3035,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_rekeningtahun`
 --
 
---  DROP TABLE IF EXISTS `mlite_rekeningtahun`;
+-- DROP TABLE IF EXISTS `mlite_rekeningtahun`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_rekeningtahun` (
@@ -3025,7 +3062,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_remember_me`
 --
 
---  DROP TABLE IF EXISTS `mlite_remember_me`;
+-- DROP TABLE IF EXISTS `mlite_remember_me`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_remember_me` (
@@ -3051,7 +3088,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_satu_sehat_departemen`
 --
 
---  DROP TABLE IF EXISTS `mlite_satu_sehat_departemen`;
+-- DROP TABLE IF EXISTS `mlite_satu_sehat_departemen`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_departemen` (
@@ -3076,7 +3113,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_satu_sehat_lokasi`
 --
 
---  DROP TABLE IF EXISTS `mlite_satu_sehat_lokasi`;
+-- DROP TABLE IF EXISTS `mlite_satu_sehat_lokasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_lokasi` (
@@ -3107,7 +3144,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_satu_sehat_mapping_praktisi`
 --
 
---  DROP TABLE IF EXISTS `mlite_satu_sehat_mapping_praktisi`;
+-- DROP TABLE IF EXISTS `mlite_satu_sehat_mapping_praktisi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_mapping_praktisi` (
@@ -3132,7 +3169,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_satu_sehat_response`
 --
 
---  DROP TABLE IF EXISTS `mlite_satu_sehat_response`;
+-- DROP TABLE IF EXISTS `mlite_satu_sehat_response`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
@@ -3149,8 +3186,6 @@ CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
   `id_observation_ttvperut` varchar(50) DEFAULT NULL,
   `id_observation_ttvtensi` varchar(50) DEFAULT NULL,
   `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL,
-  `id_procedure` varchar(50) DEFAULT NULL,
-  `id_composition` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`no_rawat`),
   CONSTRAINT `mlite_satu_sehat_response_ibfk_1` FOREIGN KEY (`no_rawat`) REFERENCES `reg_periksa` (`no_rawat`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -3169,7 +3204,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_settings`
 --
 
---  DROP TABLE IF EXISTS `mlite_settings`;
+-- DROP TABLE IF EXISTS `mlite_settings`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_settings` (
@@ -3195,7 +3230,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_subrekening`
 --
 
---  DROP TABLE IF EXISTS `mlite_subrekening`;
+-- DROP TABLE IF EXISTS `mlite_subrekening`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_subrekening` (
@@ -3221,7 +3256,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_temporary`
 --
 
---  DROP TABLE IF EXISTS `mlite_temporary`;
+-- DROP TABLE IF EXISTS `mlite_temporary`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_temporary` (
@@ -3341,7 +3376,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_users`
 --
 
---  DROP TABLE IF EXISTS `mlite_users`;
+-- DROP TABLE IF EXISTS `mlite_users`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_users` (
@@ -3373,7 +3408,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_users_vedika`
 --
 
---  DROP TABLE IF EXISTS `mlite_users_vedika`;
+-- DROP TABLE IF EXISTS `mlite_users_vedika`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_users_vedika` (
@@ -3398,7 +3433,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_vedika`
 --
 
---  DROP TABLE IF EXISTS `mlite_vedika`;
+-- DROP TABLE IF EXISTS `mlite_vedika`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_vedika` (
@@ -3428,7 +3463,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_vedika_feedback`
 --
 
---  DROP TABLE IF EXISTS `mlite_vedika_feedback`;
+-- DROP TABLE IF EXISTS `mlite_vedika_feedback`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_vedika_feedback` (
@@ -3454,7 +3489,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_veronisa`
 --
 
---  DROP TABLE IF EXISTS `mlite_veronisa`;
+-- DROP TABLE IF EXISTS `mlite_veronisa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_veronisa` (
@@ -3483,7 +3518,7 @@ UNLOCK TABLES;
 -- Table structure for table `mlite_veronisa_feedback`
 --
 
---  DROP TABLE IF EXISTS `mlite_veronisa_feedback`;
+-- DROP TABLE IF EXISTS `mlite_veronisa_feedback`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mlite_veronisa_feedback` (
@@ -3509,7 +3544,7 @@ UNLOCK TABLES;
 -- Table structure for table `mutasi_berkas`
 --
 
---  DROP TABLE IF EXISTS `mutasi_berkas`;
+-- DROP TABLE IF EXISTS `mutasi_berkas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `mutasi_berkas` (
@@ -3538,7 +3573,7 @@ UNLOCK TABLES;
 -- Table structure for table `obat_racikan`
 --
 
---  DROP TABLE IF EXISTS `obat_racikan`;
+-- DROP TABLE IF EXISTS `obat_racikan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `obat_racikan` (
@@ -3573,7 +3608,7 @@ UNLOCK TABLES;
 -- Table structure for table `obatbhp_ok`
 --
 
---  DROP TABLE IF EXISTS `obatbhp_ok`;
+-- DROP TABLE IF EXISTS `obatbhp_ok`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `obatbhp_ok` (
@@ -3602,7 +3637,7 @@ UNLOCK TABLES;
 -- Table structure for table `operasi`
 --
 
---  DROP TABLE IF EXISTS `operasi`;
+-- DROP TABLE IF EXISTS `operasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `operasi` (
@@ -3706,7 +3741,7 @@ UNLOCK TABLES;
 -- Table structure for table `opname`
 --
 
---  DROP TABLE IF EXISTS `opname`;
+-- DROP TABLE IF EXISTS `opname`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `opname` (
@@ -3749,7 +3784,7 @@ UNLOCK TABLES;
 -- Table structure for table `paket_operasi`
 --
 
---  DROP TABLE IF EXISTS `paket_operasi`;
+-- DROP TABLE IF EXISTS `paket_operasi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `paket_operasi` (
@@ -3834,7 +3869,7 @@ UNLOCK TABLES;
 -- Table structure for table `pasien`
 --
 
---  DROP TABLE IF EXISTS `pasien`;
+-- DROP TABLE IF EXISTS `pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pasien` (
@@ -3912,7 +3947,7 @@ UNLOCK TABLES;
 -- Table structure for table `pegawai`
 --
 
---  DROP TABLE IF EXISTS `pegawai`;
+-- DROP TABLE IF EXISTS `pegawai`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pegawai` (
@@ -4010,7 +4045,7 @@ UNLOCK TABLES;
 -- Table structure for table `pemeliharaan_inventaris`
 --
 
---  DROP TABLE IF EXISTS `pemeliharaan_inventaris`;
+-- DROP TABLE IF EXISTS `pemeliharaan_inventaris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pemeliharaan_inventaris` (
@@ -4041,7 +4076,7 @@ UNLOCK TABLES;
 -- Table structure for table `pemeriksaan_ralan`
 --
 
---  DROP TABLE IF EXISTS `pemeriksaan_ralan`;
+-- DROP TABLE IF EXISTS `pemeriksaan_ralan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pemeriksaan_ralan` (
@@ -4087,7 +4122,7 @@ UNLOCK TABLES;
 -- Table structure for table `pemeriksaan_ranap`
 --
 
---  DROP TABLE IF EXISTS `pemeriksaan_ranap`;
+-- DROP TABLE IF EXISTS `pemeriksaan_ranap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pemeriksaan_ranap` (
@@ -4132,7 +4167,7 @@ UNLOCK TABLES;
 -- Table structure for table `pendidikan`
 --
 
---  DROP TABLE IF EXISTS `pendidikan`;
+-- DROP TABLE IF EXISTS `pendidikan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `pendidikan` (
@@ -4159,7 +4194,7 @@ UNLOCK TABLES;
 -- Table structure for table `penjab`
 --
 
---  DROP TABLE IF EXISTS `penjab`;
+-- DROP TABLE IF EXISTS `penjab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `penjab` (
@@ -4188,7 +4223,7 @@ UNLOCK TABLES;
 -- Table structure for table `penyakit`
 --
 
---  DROP TABLE IF EXISTS `penyakit`;
+-- DROP TABLE IF EXISTS `penyakit`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `penyakit` (
@@ -4219,7 +4254,7 @@ UNLOCK TABLES;
 -- Table structure for table `perbaikan_inventaris`
 --
 
---  DROP TABLE IF EXISTS `perbaikan_inventaris`;
+-- DROP TABLE IF EXISTS `perbaikan_inventaris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `perbaikan_inventaris` (
@@ -4251,7 +4286,7 @@ UNLOCK TABLES;
 -- Table structure for table `periksa_lab`
 --
 
---  DROP TABLE IF EXISTS `periksa_lab`;
+-- DROP TABLE IF EXISTS `periksa_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `periksa_lab` (
@@ -4298,7 +4333,7 @@ UNLOCK TABLES;
 -- Table structure for table `periksa_radiologi`
 --
 
---  DROP TABLE IF EXISTS `periksa_radiologi`;
+-- DROP TABLE IF EXISTS `periksa_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `periksa_radiologi` (
@@ -4352,7 +4387,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_detail_permintaan_lab`
 --
 
---  DROP TABLE IF EXISTS `permintaan_detail_permintaan_lab`;
+-- DROP TABLE IF EXISTS `permintaan_detail_permintaan_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_detail_permintaan_lab` (
@@ -4382,7 +4417,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_lab`
 --
 
---  DROP TABLE IF EXISTS `permintaan_lab`;
+-- DROP TABLE IF EXISTS `permintaan_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_lab` (
@@ -4419,7 +4454,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_pemeriksaan_lab`
 --
 
---  DROP TABLE IF EXISTS `permintaan_pemeriksaan_lab`;
+-- DROP TABLE IF EXISTS `permintaan_pemeriksaan_lab`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_pemeriksaan_lab` (
@@ -4446,7 +4481,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_pemeriksaan_radiologi`
 --
 
---  DROP TABLE IF EXISTS `permintaan_pemeriksaan_radiologi`;
+-- DROP TABLE IF EXISTS `permintaan_pemeriksaan_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_pemeriksaan_radiologi` (
@@ -4473,7 +4508,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_perbaikan_inventaris`
 --
 
---  DROP TABLE IF EXISTS `permintaan_perbaikan_inventaris`;
+-- DROP TABLE IF EXISTS `permintaan_perbaikan_inventaris`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_perbaikan_inventaris` (
@@ -4503,7 +4538,7 @@ UNLOCK TABLES;
 -- Table structure for table `permintaan_radiologi`
 --
 
---  DROP TABLE IF EXISTS `permintaan_radiologi`;
+-- DROP TABLE IF EXISTS `permintaan_radiologi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `permintaan_radiologi` (
@@ -4540,7 +4575,7 @@ UNLOCK TABLES;
 -- Table structure for table `personal_pasien`
 --
 
---  DROP TABLE IF EXISTS `personal_pasien`;
+-- DROP TABLE IF EXISTS `personal_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `personal_pasien` (
@@ -4565,7 +4600,7 @@ UNLOCK TABLES;
 -- Table structure for table `perusahaan_pasien`
 --
 
---  DROP TABLE IF EXISTS `perusahaan_pasien`;
+-- DROP TABLE IF EXISTS `perusahaan_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `perusahaan_pasien` (
@@ -4592,7 +4627,7 @@ UNLOCK TABLES;
 -- Table structure for table `petugas`
 --
 
---  DROP TABLE IF EXISTS `petugas`;
+-- DROP TABLE IF EXISTS `petugas`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `petugas` (
@@ -4636,7 +4671,7 @@ UNLOCK TABLES;
 -- Table structure for table `poliklinik`
 --
 
---  DROP TABLE IF EXISTS `poliklinik`;
+-- DROP TABLE IF EXISTS `poliklinik`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `poliklinik` (
@@ -4666,7 +4701,7 @@ UNLOCK TABLES;
 -- Table structure for table `propinsi`
 --
 
---  DROP TABLE IF EXISTS `propinsi`;
+-- DROP TABLE IF EXISTS `propinsi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `propinsi` (
@@ -4691,7 +4726,7 @@ UNLOCK TABLES;
 -- Table structure for table `prosedur_pasien`
 --
 
---  DROP TABLE IF EXISTS `prosedur_pasien`;
+-- DROP TABLE IF EXISTS `prosedur_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `prosedur_pasien` (
@@ -4719,7 +4754,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_inap_dr`
 --
 
---  DROP TABLE IF EXISTS `rawat_inap_dr`;
+-- DROP TABLE IF EXISTS `rawat_inap_dr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_inap_dr` (
@@ -4760,7 +4795,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_inap_drpr`
 --
 
---  DROP TABLE IF EXISTS `rawat_inap_drpr`;
+-- DROP TABLE IF EXISTS `rawat_inap_drpr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_inap_drpr` (
@@ -4801,7 +4836,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_inap_pr`
 --
 
---  DROP TABLE IF EXISTS `rawat_inap_pr`;
+-- DROP TABLE IF EXISTS `rawat_inap_pr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_inap_pr` (
@@ -4840,7 +4875,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_jl_dr`
 --
 
---  DROP TABLE IF EXISTS `rawat_jl_dr`;
+-- DROP TABLE IF EXISTS `rawat_jl_dr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_jl_dr` (
@@ -4880,7 +4915,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_jl_drpr`
 --
 
---  DROP TABLE IF EXISTS `rawat_jl_drpr`;
+-- DROP TABLE IF EXISTS `rawat_jl_drpr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_jl_drpr` (
@@ -4923,7 +4958,7 @@ UNLOCK TABLES;
 -- Table structure for table `rawat_jl_pr`
 --
 
---  DROP TABLE IF EXISTS `rawat_jl_pr`;
+-- DROP TABLE IF EXISTS `rawat_jl_pr`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rawat_jl_pr` (
@@ -4963,7 +4998,7 @@ UNLOCK TABLES;
 -- Table structure for table `reg_periksa`
 --
 
---  DROP TABLE IF EXISTS `reg_periksa`;
+-- DROP TABLE IF EXISTS `reg_periksa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `reg_periksa` (
@@ -5013,7 +5048,7 @@ UNLOCK TABLES;
 -- Table structure for table `rekap_presensi`
 --
 
---  DROP TABLE IF EXISTS `rekap_presensi`;
+-- DROP TABLE IF EXISTS `rekap_presensi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `rekap_presensi` (
@@ -5045,7 +5080,7 @@ UNLOCK TABLES;
 -- Table structure for table `resep_dokter`
 --
 
---  DROP TABLE IF EXISTS `resep_dokter`;
+-- DROP TABLE IF EXISTS `resep_dokter`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resep_dokter` (
@@ -5073,7 +5108,7 @@ UNLOCK TABLES;
 -- Table structure for table `resep_dokter_racikan`
 --
 
---  DROP TABLE IF EXISTS `resep_dokter_racikan`;
+-- DROP TABLE IF EXISTS `resep_dokter_racikan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resep_dokter_racikan` (
@@ -5104,7 +5139,7 @@ UNLOCK TABLES;
 -- Table structure for table `resep_dokter_racikan_detail`
 --
 
---  DROP TABLE IF EXISTS `resep_dokter_racikan_detail`;
+-- DROP TABLE IF EXISTS `resep_dokter_racikan_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resep_dokter_racikan_detail` (
@@ -5135,7 +5170,7 @@ UNLOCK TABLES;
 -- Table structure for table `resep_obat`
 --
 
---  DROP TABLE IF EXISTS `resep_obat`;
+-- DROP TABLE IF EXISTS `resep_obat`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resep_obat` (
@@ -5170,7 +5205,7 @@ UNLOCK TABLES;
 -- Table structure for table `resep_pulang`
 --
 
---  DROP TABLE IF EXISTS `resep_pulang`;
+-- DROP TABLE IF EXISTS `resep_pulang`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resep_pulang` (
@@ -5208,7 +5243,7 @@ UNLOCK TABLES;
 -- Table structure for table `resiko_kerja`
 --
 
---  DROP TABLE IF EXISTS `resiko_kerja`;
+-- DROP TABLE IF EXISTS `resiko_kerja`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resiko_kerja` (
@@ -5233,7 +5268,7 @@ UNLOCK TABLES;
 -- Table structure for table `resume_pasien`
 --
 
---  DROP TABLE IF EXISTS `resume_pasien`;
+-- DROP TABLE IF EXISTS `resume_pasien`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resume_pasien` (
@@ -5283,7 +5318,7 @@ UNLOCK TABLES;
 -- Table structure for table `resume_pasien_ranap`
 --
 
---  DROP TABLE IF EXISTS `resume_pasien_ranap`;
+-- DROP TABLE IF EXISTS `resume_pasien_ranap`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `resume_pasien_ranap` (
@@ -5348,7 +5383,7 @@ UNLOCK TABLES;
 -- Table structure for table `riwayat_barang_medis`
 --
 
---  DROP TABLE IF EXISTS `riwayat_barang_medis`;
+-- DROP TABLE IF EXISTS `riwayat_barang_medis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `riwayat_barang_medis` (
@@ -5386,7 +5421,7 @@ UNLOCK TABLES;
 -- Table structure for table `ruang_ok`
 --
 
---  DROP TABLE IF EXISTS `ruang_ok`;
+-- DROP TABLE IF EXISTS `ruang_ok`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `ruang_ok` (
@@ -5409,7 +5444,7 @@ UNLOCK TABLES;
 -- Table structure for table `set_keterlambatan`
 --
 
---  DROP TABLE IF EXISTS `set_keterlambatan`;
+-- DROP TABLE IF EXISTS `set_keterlambatan`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `set_keterlambatan` (
@@ -5432,7 +5467,7 @@ UNLOCK TABLES;
 -- Table structure for table `set_no_rkm_medis`
 --
 
---  DROP TABLE IF EXISTS `set_no_rkm_medis`;
+-- DROP TABLE IF EXISTS `set_no_rkm_medis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `set_no_rkm_medis` (
@@ -5454,7 +5489,7 @@ UNLOCK TABLES;
 -- Table structure for table `skdp_bpjs`
 --
 
---  DROP TABLE IF EXISTS `skdp_bpjs`;
+-- DROP TABLE IF EXISTS `skdp_bpjs`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `skdp_bpjs` (
@@ -5492,7 +5527,7 @@ UNLOCK TABLES;
 -- Table structure for table `spesialis`
 --
 
---  DROP TABLE IF EXISTS `spesialis`;
+-- DROP TABLE IF EXISTS `spesialis`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `spesialis` (
@@ -5516,7 +5551,7 @@ UNLOCK TABLES;
 -- Table structure for table `stts_kerja`
 --
 
---  DROP TABLE IF EXISTS `stts_kerja`;
+-- DROP TABLE IF EXISTS `stts_kerja`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `stts_kerja` (
@@ -5541,7 +5576,7 @@ UNLOCK TABLES;
 -- Table structure for table `stts_wp`
 --
 
---  DROP TABLE IF EXISTS `stts_wp`;
+-- DROP TABLE IF EXISTS `stts_wp`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `stts_wp` (
@@ -5565,7 +5600,7 @@ UNLOCK TABLES;
 -- Table structure for table `suku_bangsa`
 --
 
---  DROP TABLE IF EXISTS `suku_bangsa`;
+-- DROP TABLE IF EXISTS `suku_bangsa`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `suku_bangsa` (
@@ -5590,7 +5625,7 @@ UNLOCK TABLES;
 -- Table structure for table `tambahan_biaya`
 --
 
---  DROP TABLE IF EXISTS `tambahan_biaya`;
+-- DROP TABLE IF EXISTS `tambahan_biaya`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `tambahan_biaya` (
@@ -5615,7 +5650,7 @@ UNLOCK TABLES;
 -- Table structure for table `template_laboratorium`
 --
 
---  DROP TABLE IF EXISTS `template_laboratorium`;
+-- DROP TABLE IF EXISTS `template_laboratorium`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `template_laboratorium` (
@@ -5671,7 +5706,7 @@ UNLOCK TABLES;
 -- Table structure for table `temporary_presensi`
 --
 
---  DROP TABLE IF EXISTS `temporary_presensi`;
+-- DROP TABLE IF EXISTS `temporary_presensi`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `temporary_presensi` (
@@ -5701,7 +5736,7 @@ UNLOCK TABLES;
 -- Table structure for table `utd_donor`
 --
 
---  DROP TABLE IF EXISTS `utd_donor`;
+-- DROP TABLE IF EXISTS `utd_donor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `utd_donor` (
@@ -5745,7 +5780,7 @@ UNLOCK TABLES;
 -- Table structure for table `utd_komponen_darah`
 --
 
---  DROP TABLE IF EXISTS `utd_komponen_darah`;
+-- DROP TABLE IF EXISTS `utd_komponen_darah`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `utd_komponen_darah` (
@@ -5775,7 +5810,7 @@ UNLOCK TABLES;
 -- Table structure for table `utd_pendonor`
 --
 
---  DROP TABLE IF EXISTS `utd_pendonor`;
+-- DROP TABLE IF EXISTS `utd_pendonor`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `utd_pendonor` (
@@ -5817,7 +5852,7 @@ UNLOCK TABLES;
 -- Table structure for table `utd_stok_darah`
 --
 
---  DROP TABLE IF EXISTS `utd_stok_darah`;
+-- DROP TABLE IF EXISTS `utd_stok_darah`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE IF NOT EXISTS `utd_stok_darah` (
@@ -5853,4 +5888,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-01 11:57:48
+-- Dump completed on 2023-12-08 10:18:10
