@@ -2857,6 +2857,203 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getRujukKeluar($no_kartu)
+  {
+    $this->_addHeaderFiles();
+    $rujuk_keluar = $this->core->mysql('bridging_rujukan_bpjs')
+      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
+      ->where('bridging_sep.no_kartu', $no_kartu)
+      ->toArray();
+    $this->tpl->set('rujuk_keluar', $this->tpl->noParse_array(htmlspecialchars_array($rujuk_keluar)));
+    $this->tpl->set('no_kartu', $no_kartu);
+    echo $this->draw('rujukkeluar.html');
+    exit();
+  }
+
+  public function getRujukKeluarDisplay($no_kartu)
+  {
+    $rujuk_keluar = $this->core->mysql('bridging_rujukan_bpjs')
+      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
+      ->where('bridging_sep.no_kartu', $no_kartu)
+      ->toArray();
+    $this->tpl->set('rujuk_keluar', $this->tpl->noParse_array(htmlspecialchars_array($rujuk_keluar)));
+    $this->tpl->set('no_kartu', $no_kartu);
+    echo $this->draw('rujukkeluar.display.html');
+    exit();
+  }
+
+  public function postSaveRujukKeluar()
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+    $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
+    $data = [
+      'request' => [
+        't_rujukan' => [
+          'noSep' => $_POST['no_sep'],
+          'tglRujukan' => $_POST['tanggal_surat'],
+          'ppkDirujuk' => $_POST['sep_asal_rujukan_kode_rujuk'],
+          'tglRencanaKunjungan' => $_POST['tanggal_periksa'],
+          'jnsPelayanan' => $_POST['jns_rujuk'],
+          'catatan' => $_POST['catatan'],
+          'diagRujukan' => $_POST['sep_diagnosa_kode_rujuk'],
+          'tipeRujukan' => substr($_POST['tipe_rujuk'], 0, 1),
+          'poliRujukan' => $_POST['sep_spesialis_kode_rujuk'],
+          'user' => $_POST['sep_user']
+        ]
+      ]
+    ];
+    $method = 'post';
+
+
+    $data = json_encode($data);
+
+    $url = $this->api_url . 'Rujukan/2.0/insert';
+    $output = BpjsService::$method($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $data = json_decode($output, true);
+    // echo $data;
+    //echo $data['metaData']['message'];
+    if ($data == NULL) {
+      echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+    } else if ($data['metaData']['code'] == 200) {
+      $stringDecrypt = stringDecrypt($key, $data['response']);
+      $decompress = '""';
+      $decompress = decompress($stringDecrypt);
+      $spri = json_decode($decompress, true);
+      // echo $spri['rujukan']['noRujukan'];
+
+      $bridging_surat_pri_bpjs = $this->core->mysql('bridging_rujukan_bpjs')->save([
+        'no_sep' => $_POST['no_sep'],
+        'tglRujukan' => $_POST['tanggal_surat'],
+        'no_rujukan' => $spri['rujukan']['noRujukan'],
+        'tglRencanaKunjungan' => $_POST['tanggal_periksa'],
+        'ppkDirujuk' => $_POST['sep_asal_rujukan_kode_rujuk'],
+        'nm_ppkDirujuk' => $_POST['sep_asal_rujukan_nama_rujuk'],
+        'jnsPelayanan' => $_POST['jns_rujuk'],
+        'diagRujukan' => $_POST['sep_diagnosa_kode_rujuk'],
+        'nama_diagRujukan' => $_POST['sep_diagnosa_nama_rujuk'],
+        'tipeRujukan' => $_POST['tanggal_periksa'],
+        'poliRujukan' => $_POST['sep_spesialis_kode_rujuk'],
+        'nama_poliRujukan' => $_POST['sep_spesialis_nama_rujuk'],
+        'user' => $_POST['sep_user'],
+        'catatan' => $_POST['catatan'],
+      ]);
+      if ($bridging_surat_pri_bpjs) {
+        echo 'Sukses Simpan';
+      }
+    } else {
+      echo $data['metaData']['code'] . ' ' . $data['metaData']['message'];
+    }
+    exit();
+  }
+
+  public function getSrb($no_kartu, $no_rawat)
+  {
+    $this->_addHeaderFiles();
+    $no_rawat = revertNorawat($no_rawat);
+    $rujuk_keluar = $this->core->mysql('bridging_sep')
+      ->where('bridging_sep.no_rawat', $no_rawat)
+      ->oneArray();
+    $reg = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
+    $alamat = $this->core->getPasienInfo('alamat', $reg);
+    $this->tpl->set('no_kartu', $no_kartu);
+    $this->tpl->set('alamat', $alamat);
+    $this->tpl->set('no_sep', $rujuk_keluar['no_sep']);
+    $this->tpl->set('kddpjp', $rujuk_keluar['kddpjp']);
+    $this->tpl->set('nmdpjp', $rujuk_keluar['nmdpdjp']);
+    echo $this->draw('srb.html');
+    exit();
+  }
+
+  public function getSrbDisplay($no_kartu)
+  {
+    $rujuk_keluar = $this->core->mysql('bridging_srb_bpjs')
+      ->join('bridging_sep', 'bridging_sep.no_sep=bridging_srb_bpjs.no_sep')
+      ->where('bridging_sep.no_kartu', $no_kartu)
+      ->toArray();
+    $this->tpl->set('rujuk_keluar', $this->tpl->noParse_array(htmlspecialchars_array($rujuk_keluar)));
+    $this->tpl->set('no_kartu', $no_kartu);
+    echo $this->draw('srb.display.html');
+    exit();
+  }
+
+  public function postSaveSrb()
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+    $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
+    $data = [
+      'request' => [
+        't_prb' => [
+          'noSep' => $_POST['no_sep'],
+          'noKartu' => $_POST['no_peserta'],
+          'alamat' => $_POST['alamat'],
+          'email' => $_POST['email'],
+          'programPRB' => $_POST['sep_diagnosa_kode_srb'],
+          'kodeDPJP' => $_POST['dpjp'],
+          'keterangan' => $_POST['keterangan'],
+          'saran' => $_POST['saran'],
+          'user' => '123123123',
+          'obat' => [
+            [
+              'kdObat' => $_POST['sep_kode_obat'],
+              'signa1' => $_POST['signa1'],
+              'signa2' => $_POST['signa1'],
+              'jmlObat' => $_POST['jumlah'],
+            ],
+          ]
+        ]
+      ]
+    ];
+    $method = 'post';
+
+
+    $data = json_encode($data);
+    echo $data;
+    $url = $this->api_url . 'PRB/insert';
+    $output = BpjsService::$method($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $data = json_decode($output, true);
+    // echo $data['metaData']['message'];
+    if ($data == NULL) {
+      echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
+    } else if ($data['metaData']['code'] == 200) {
+      $stringDecrypt = stringDecrypt($key, $data['response']);
+      $decompress = '""';
+      $decompress = decompress($stringDecrypt);
+      $spri = json_decode($decompress, true);
+      echo $spri['noSRB'];
+
+      $bridging_srb_bpjs = $this->core->mysql('bridging_srb_bpjs')->save([
+        'no_sep' => $_POST['no_sep'],
+        'no_srb' => $spri['noSRB'],
+        'tgl_srb' => $_POST['tanggal_srb'],
+        'alamat' => $_POST['alamat'],
+        'email' => $_POST['email'],
+        'kodeprogram' => $_POST['sep_diagnosa_kode_srb'],
+        'namaprogram' => $_POST['sep_diagnosa_nama_srb'],
+        'kodedpjp' => $_POST['dpjp'],
+        'nmdpjp' => $_POST['nm_dpjp'],
+        'user' => $_POST['sep_user'],
+        'keterangan' => $_POST['keterangan'],
+        'saran' => $_POST['saran'],
+      ]);
+      $bridging_srb_bpjs_obat = $this->core->mysql('bridging_srb_bpjs_obat')->save([
+        'no_sep' => $_POST['no_sep'],
+        'no_srb' => $spri['noSRB'],
+        'kd_obat' => $_POST['sep_kode_obat'],
+        'nm_obat' => $_POST['sep_nama_obat'],
+        'jumlah' => $_POST['jumlah'],
+        'signa1' => $_POST['signa1'],
+        'signa2' => $_POST['signa2'],
+      ]);
+    } else {
+      echo $data['metaData']['code'] . ' ' . $data['metaData']['message'];
+    }
+    exit();
+  }
+
   public function getDataKontrol($no_kartu,$tanggal)
   {
     $tahun = substr($tanggal,0,4);
