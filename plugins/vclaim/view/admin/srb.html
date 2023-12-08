@@ -1,0 +1,333 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+    Tutup</button>
+  <h4 class="modal-title">Program PRB / SRB</h4>
+</div>
+<div class="modal-body">
+  <div id="form_srb">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row clearfix">
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Nomor SEP</label>
+                <input type="text" name="no_sep" id="no_sep" class="form-control" value="{$no_sep}" />
+                <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">No Peserta</label>
+                <input type="text" name="no_peserta" id="no_peserta" class="form-control"
+                  value="{$no_kartu}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Keterangan</label>
+                <input type="text" name="keterangan" id="keterangan" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Saran</label>
+                <input type="text" name="saran" id="saran" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Alamat</label>
+                <input type="text" name="alamat" id="alamat" class="form-control" value="{$alamat}" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="text" name="email" id="email" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tanggal SRB</label>
+                <input type="text" name="tanggal_srb" id="tanggal_srb" class="form-control tanggal"
+                  value="{?=date('Y-m-d')?}" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Kode DPJP</label>
+                <input type="text" name="dpjp" id="dpjp" class="form-control"
+                  value="{$kddpjp}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Nama DPJP</label>
+                <input type="text" name="nm_dpjp" id="nm_dpjp" class="form-control"
+                  value="{$nmdpjp}">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Diagnosa</label>
+                <input type="text" name="sep_diagnosa_nama_srb" id="sep_diagnosa_nama_srb" class="form-control" value="">
+                <ul class="list-group" id="diagnosaListSrb" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Kode</label>
+                <input type="text" name="sep_diagnosa_kode_srb" id="sep_diagnosa_kode_srb" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label for="" class="">Obat</label>
+                <input type="text" name="sep_nama_obat" id="sep_nama_obat" class="form-control" value="">
+                <ul class="list-group" id="ListObat" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="">Kode</label>
+                <input type="text" name="sep_kode_obat" id="sep_kode_obat" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="">Jumlah</label>
+                <input type="text" name="jumlah_obat" id="jumlah_obat" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="">Signa 1</label>
+                <input type="text" name="signa1" id="signa1" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-2">
+              <div class="form-group">
+                <label for="" class="">Signa 2</label>
+                <input type="text" name="signa2" id="signa2" class="form-control" value="">
+              </div>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-primary" id="simpan_srb">Simpan</button>
+              <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+
+  <div id="srbdisplay">
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $("#hapus_kontrol").hide();
+  $('select').selectator();
+  $(function () {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#form_skontrol").on("click", "#load_kontrol", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+    $("#hapus_kontrol").hide();
+  });
+
+  $(document).ready(function () {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#srbdisplay").show().load(baseURL + '/vclaim/srbdisplay/{$no_kartu}?t=' + mlite.token);
+  });
+
+  $("#form_srb").on("click", "#simpan_srb", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $('#no_sep').val();
+    var alamat = $('#alamat').val();
+    var saran = $('#saran').val();
+    var keterangan = $('#keterangan').val();
+    var email = $('#email').val();
+    var tanggal_srb = $('#tanggal_srb').val();
+    var no_peserta = $('#no_peserta').val();
+    var sep_diagnosa_nama_srb = $('#sep_diagnosa_nama_srb').val();
+    var sep_diagnosa_kode_srb = $('#sep_diagnosa_kode_srb').val();
+    var dpjp = $('#dpjp').val();
+    var nm_dpjp = $('#nm_dpjp').val();
+    var sep_nama_obat = $('#sep_nama_obat').val();
+    var sep_kode_obat = $('#sep_kode_obat').val();
+    var jumlah = $('#jumlah_obat').val();
+    var signa1 = $('#signa1').val();
+    var signa2 = $('#signa2').val();
+    var url = baseURL + '/vclaim/savesrb?t=' + mlite.token;
+
+    $.post(url, {
+      no_sep: no_sep,
+      no_peserta: no_peserta,
+      alamat: alamat,
+      saran: saran,
+      keterangan: keterangan,
+      email: email,
+      tanggal_srb: tanggal_srb,
+      sep_diagnosa_nama_srb: sep_diagnosa_nama_srb,
+      sep_diagnosa_kode_srb: sep_diagnosa_kode_srb,
+      dpjp: dpjp,
+      nm_dpjp: nm_dpjp,
+      sep_nama_obat: sep_nama_obat,
+      sep_kode_obat: sep_kode_obat,
+      jumlah: jumlah,
+      signa1: signa1,
+      signa2: signa2,
+    }, function (data) {
+      alert(data);
+      console.log(data);
+      $("#srbdisplay").show().load(baseURL + '/vclaim/srbdisplay/{$no_kartu}?t=' + mlite.token);
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data SRB telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
+    });
+  });
+
+  $("#form_rujuk").on("click", "#hapus_rujuk", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $('#no_sep').val();
+    var no_surkon = $('#no_surkon').val();
+    var tanggal_surat = $('#tanggal_rujukan').val();
+    var tanggal_periksa = $('#tanggal_datang').val();
+    var poli = $('#poli').val();
+    var dokter = $('#dokter').val();
+
+    var url = baseURL + '/vclaim/saverujukkeluar?t=' + mlite.token;
+
+    $.post(url, {
+      no_sep: no_sep,
+      no_surkon: no_surkon,
+      tanggal_surat: tanggal_surat,
+      tanggal_periksa: tanggal_periksa,
+      dokter: dokter,
+      poli: poli
+    }, function (data) {
+      alert(data);
+      $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data Kontrol VClaim telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
+    });
+  });
+
+  $("#srbdisplay").on("click", ".pilih_nosurat", function (event) {
+    var no_surat = $(this).attr("data-no_surat");
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    // $('input:text[name=sep_nomor_skdp]').val(no_surat);
+    // $('#kontrolModal').modal('hide');
+    // alert(no_surat)
+    window.open(baseURL + '/vclaim/cetaksrb/' + no_surat + '?t=' + mlite.token);
+  });
+
+  $("#kontroldisplay").on("click", "#ubah_kontrol", function (event) {
+    var no_surkon = $(this).attr("data-no_surat");
+    var no_sep = $(this).attr("data-no_sep");
+    var kd_poli = $(this).attr("data-kd_poli");
+    var kd_dokter = $(this).attr("data-kd_dokter");
+    var tanggal_surat = $(this).attr("data-tanggal_surat");
+    var tanggal_kontrol = $(this).attr("data-tanggal_kontrol");
+
+    $('input:text[name=no_sep]').val(no_sep);
+    $('input:text[name=no_surkon]').val(no_surkon);
+    $('input:text[name=tanggal_rujukan]').val(tanggal_surat);
+    $('input:text[name=tanggal_datang]').val(tanggal_kontrol);
+    $("div.dokter select").val(kd_dokter).change();
+    $("div.poli select").val(kd_poli).change();
+    $('#tanggal_rujukan').attr('readonly', true);
+    $('#no_sep').attr('readonly', true);
+    $("#hapus_kontrol").show();
+  });
+</script>
+<script type="text/javascript">
+  $("#form_srb").on("click","#sep_diagnosa_nama_srb", function(event){
+    $.ajax({
+      url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosaprb?t={?=$_SESSION['token']?}',
+      method: "GET",
+      data: {},
+      success: function (data) {
+        var data = JSON.parse(data);
+        var json_obj = [data];
+        var output = '';
+        // console.log(json_obj[0].metaData.code);
+        if (json_obj[0].metaData.code == 200) {
+          var diagnosa = json_obj[0].response.list;
+          for (var i in diagnosa) {
+            output += '<li class=\"list-group-item link-class\">' + diagnosa[i].kode + ': ' + diagnosa[i].nama + '</li>';
+          }
+        } else {
+          output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+        }
+        output += '';
+        // console.log(output);
+        $('#diagnosaListSrb').fadeIn();
+        $('#diagnosaListSrb').html(output).show();
+      }
+    });
+
+  });
+  $('#diagnosaListSrb').on('click', 'li', function () {
+    $('#sep_diagnosa_nama_srb').val($(this).text().split(': ')[1]);
+    $('#sep_diagnosa_kode_srb').val($(this).text().split(': ')[0]);
+    var sep_diagnosa_kode = $('#sep_diagnosa_kode_srb').val();
+    $('#diagnosaListSrb').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_nama_obat').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/obatprb/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+        method: "GET",
+        data: {},
+        success: function (data) {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output = '';
+          if (json_obj[0].metaData.code == 200) {
+            var poli = json_obj[0].response.list;
+            for (var i in poli) {
+              output += '<li class=\"list-group-item link-class\">' + poli[i].kode + ': ' + poli[i].nama + '</li>';
+            }
+          } else {
+            output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output += '';
+          //console.log(output);
+          $('#ListObat').fadeIn();
+          $('#ListObat').html(output).show();
+        }
+      });
+    }
+  });
+  $('#ListObat').on('click', 'li', function () {
+    $('#sep_nama_obat').val($(this).text().split(': ')[1]);
+    $('#sep_kode_obat').val($(this).text().split(': ')[0]);
+    var sep_spesialis_kode = $('#sep_kode_obat').val();
+    $('#ListObat').fadeOut();
+  });
+</script>

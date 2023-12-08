@@ -409,6 +409,42 @@ class Admin extends AdminModule
     exit();
   }
 
+  public function getCetakSEPInternal($no_sep)
+  {
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+    $data_sep = $this->core->mysql('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
+    $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
+
+    $qr = QRCode::getMinimumQRCode($data_sep['no_sep'], QR_ERROR_CORRECT_LEVEL_L);
+    //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
+    $im = $qr->createImage(4, 4);
+    imagepng($im, '../tmp/qrcode.png');
+    imagedestroy($im);
+    $image = "../../../tmp/qrcode.png";
+
+    $data_sep['qrCode'] = $image;
+    $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
+    $potensi_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+    $data_sep['potensi_prb'] = $potensi_prb['prb'];
+
+    echo $this->draw('cetak.sep.internal.html', ['data_sep' => $data_sep]);
+    exit();
+  }
+
+  public function getCetakSRB($no_sep)
+  {
+    $settings = $this->settings('settings');
+    $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
+    $data_sep = $this->core->mysql('bridging_srb_bpjs')
+    ->join('bridging_sep', 'bridging_sep.no_sep=bridging_srb_bpjs.no_sep')
+    ->where('bridging_sep.no_sep', $no_sep)->oneArray();
+    $obat_srb = $this->core->mysql('bridging_srb_bpjs_obat')->where('no_srb',$data_sep['no_srb'])->toArray();
+
+    echo $this->draw('cetak.srb.html', ['data_sep' => $data_sep,'obat_srb'=>$obat_srb]);
+    exit();
+  }
+
   public function postSyncSEP()
   {
     $_POST['kdppkpelayanan'] = $this->settings->get('settings.ppk_bpjs');
@@ -535,6 +571,76 @@ class Admin extends AdminModule
     $key = $this->consid . $this->secretkey . $tStamp;
 
     $url = $this->api_url . 'referensi/diagnosa/' . $keyword;
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function getDiagnosaPrb()
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . 'referensi/diagnosaprb';
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function getObatPrb($keyword)
+  {
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . 'referensi/obatprb/' . $keyword;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
     //echo json_encode($json);
@@ -865,6 +971,95 @@ class Admin extends AdminModule
           	"metaData": {
           		"code": "' . $code . '",
           		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+
+    exit();
+  }
+
+  public function getFinger($keyword)
+  {
+    $dateNow = date('Y-m-d');
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . '/SEP/FingerPrint/Peserta/' . $keyword . '/TglPelayanan/'.$dateNow.'';
+    $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+
+    exit();
+  }
+
+  public function getApproveFinger($keyword)
+  {
+    $dateNow = date('Y-m-d');
+    $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $data = [
+      'request' => [
+        't_sep' => [
+          'noKartu' => $keyword,
+          'tglSep' => $dateNow,
+          'jnsPelayanan' => '2',
+          'jnsPengajuan' => '2',
+          'keterangan' => 'Approval Finger Manual',
+          'user' => $_POST['sep_user']
+        ]
+      ]
+    ];
+
+    $data = json_encode($data);
+    $url = $this->api_url . '/Sep/aprovalSEP';
+    $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $data . '"
           	},
           	"response": ' . $decompress . '}';
     } else {
@@ -1211,6 +1406,52 @@ class Admin extends AdminModule
     $key = $this->consid . $this->secretkey . $tStamp;
 
     $url = $this->api_url . 'SEP/2.0/delete';
+    $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+    $json = json_decode($output, true);
+    //echo json_encode($json);
+    $code = $json['metaData']['code'];
+    $message = $json['metaData']['message'];
+    $stringDecrypt = stringDecrypt($key, $json['response']);
+    $decompress = '""';
+    if (!empty($stringDecrypt)) {
+      $decompress = decompress($stringDecrypt);
+    }
+    if ($json != null) {
+      echo '{
+          	"metaData": {
+          		"code": "' . $code . '",
+          		"message": "' . $message . '"
+          	},
+          	"response": ' . $decompress . '}';
+    } else {
+      echo '{
+          	"metaData": {
+          		"code": "5000",
+          		"message": "ERROR"
+          	},
+          	"response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+    }
+    exit();
+  }
+
+  public function postDeleteSuratKontrol()
+  {
+    $data = [
+      'request' => [
+        't_suratkontrol' => [
+          'noSuratKontrol' => $_POST['no_surkon'],
+          'user' => 'admin'
+        ]
+      ]
+    ];
+
+    $data = json_encode($data);
+
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consid . $this->secretkey . $tStamp;
+
+    $url = $this->api_url . 'RencanaKontrol/Delete';
     $output = BpjsService::delete($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
     //echo json_encode($json);
