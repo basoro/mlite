@@ -1,0 +1,26 @@
+  <table class="table">
+    <thead>
+      <tr>
+        <th>No Rawat</th>
+        <th>No SEP</th>
+        <th>No Surat</th>
+        <th>Tgl. Surat</th>
+        <th>Tgl. Periksa</th>
+        <th>Dokter</th>
+        <th>Poli</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $rujuk_keluar}
+      <tr>
+        <td>{$value.no_rawat}</td>
+        <td id="ubah_kontrol" data-no_surat="{$value.no_surat}" data-no_sep="{$value.no_sep}" data-kd_poli="{$value.kd_poli_bpjs}" data-kd_dokter="{$value.kd_dokter_bpjs}" data-tanggal_kontrol="{$value.tgl_rencana}" data-tanggal_surat="{$value.tgl_surat}">{$value.no_sep}</td>
+        <td class="pilih_nosurat" data-no_surat="{$value.no_surat}">{$value.no_surat}</td>
+        <td>{$value.tgl_surat}</td>
+        <td>{$value.tgl_rencana}</td>
+        <td>{$value.nm_dokter_bpjs}</td>
+        <td>{$value.nm_poli_bpjs}</td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>
