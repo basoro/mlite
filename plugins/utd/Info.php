@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul unit transfusi darah untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'heart',
     'install'       =>  function () use ($core) {
     },

@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul anjungan pasien rawat jalan',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'desktop',
     'pages'            =>  ['Anjungan Pasien Mandiri' => 'anjungan'],
     'install'       =>  function () use ($core) {

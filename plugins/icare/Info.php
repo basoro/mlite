@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul iCare BPJS',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'heart',
     'install'       =>  function () use ($core) {
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('icare', 'url', 'https://apijkn.bpjs-kesehatan.go.id/wsihs/api/rs/validate')");

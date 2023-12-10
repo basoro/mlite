@@ -5,7 +5,7 @@ return [
     'description'   =>  'Membuat website dan berita.',
     'author'        =>  'Basoro',
     'version'       =>  '1.3',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'pencil-square',
     'pages'         =>  ['Homepage' => 'homepage', 'Berita' => 'news'],
     'install'       =>  function () use ($core) {

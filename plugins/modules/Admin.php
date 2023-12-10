@@ -215,7 +215,7 @@ class Admin extends AdminModule
                     $other['basic'] = false;
                 }
 
-                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '2023'));
+                $other['compatible'] = $this->checkCompatibility(isset_or($details['compatibility'], '4.0.0'));
                 $result[] = $details + $urls + $other;
             }
         }
@@ -250,6 +250,6 @@ class Admin extends AdminModule
     {
         $systemVersion = $this->settings('settings', 'version');
         $version = str_replace(['.', '*'], ['\\.', '[0-9]+'], $version);
-        return preg_match('/^'.$version.'[a-z]*$/', substr($systemVersion, 0, 4));
+        return preg_match('/^'.$version.'[a-z]*$/', $systemVersion);
     }
 }
