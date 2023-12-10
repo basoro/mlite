@@ -19,10 +19,10 @@ function rrmdir($dir)
 
 switch ($version) {
     case '4.0.0':
-        $this->core->db()->pdo()->exec('CREATE TABLE `mlite_test` (
+        $this->db()->pdo()->exec("CREATE TABLE `mlite_test` (
             `id`	int(11) NOT NULL AUTO_INCREMENT,
             `name`	TEXT
-        );');
+        );");
         // Upgrade version
         $return = '4.0.1';
 }
