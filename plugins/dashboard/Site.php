@@ -43,7 +43,7 @@ class Site extends SiteModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->core->mysql('poliklinik')->toArray();
+        $rows = $this->db('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];

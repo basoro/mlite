@@ -27,6 +27,11 @@ plugins/cssd
 jasperphp
 plugins/utd/Site.php
 plugins/utd/view/adonan.html
+websocket
+plugins/khanza.zip
+plugins/dokter_ulun
+plugins/khanza
+plugins/pasien_galleries
 
 .env
 logs/

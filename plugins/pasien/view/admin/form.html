@@ -360,7 +360,7 @@
           $('.sex').val(data.response.sex);
           $('.tgl_lahir').val(moment(data.response.tglLahir).format('YYYY-MM-DD'));
           $('.noTelepon').val(data.response.noHP);
-          if(data.response.kdProviderPst.kdProvider !== '{$usernamePcare}'){
+          if(data.response.kdProviderPst.kdProvider !== '{$usernamePcare}' || data.response.kdProviderPst.kdProviderGigi !== '{$usernamePcare}'){
             alert('Pasien tidak terdaftar sebagai peserta.');
           }
         } else {
@@ -408,7 +408,6 @@
     if (event.key === 'Enter' || event.keyCode === 13) {
 
       $.get(url, function(data){
-        //console.log(data);
         var data = JSON.parse(data);
         var json_obj = [data];
         if(!json_obj[0]) {
@@ -417,9 +416,9 @@
           $('.nama').val(data.response.nama);
           $('.no_ktp').val(data.response.noKTP);
           $('.sex').val(data.response.sex);
-          $('.tgl_lahir').val(moment(data.response.tglLahir).format('YYYY-MM-DD'));
+          $('.tgl_lahir').val(moment(data.response.tglLahir, 'DD-MM-YYYY').format('YYYY-MM-DD'));
           $('.noTelepon').val(data.response.noHP);
-          if(data.response.kdProviderPst.kdProvider !== '{$usernamePcare}'){
+          if(data.response.kdProviderPst.kdProvider == '{$usernamePcare}' || data.response.kdProviderPst.kdProviderGigi == '{$usernamePcare}'){
             alert('Pasien tidak terdaftar sebagai peserta.');
           }
         } else {

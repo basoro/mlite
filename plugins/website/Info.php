@@ -10,93 +10,52 @@ return [
     'pages'         =>  ['Homepage' => 'homepage', 'Berita' => 'news'],
     'install'       =>  function () use ($core) {
 
-        if(MULTI_APP) {
-            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news` (
-              `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-              `title`	TEXT NOT NULL,
-              `slug`	TEXT NOT NULL,
-              `user_id`	INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-              `content`	TEXT NOT NULL,
-              `intro`	TEXT DEFAULT NULL,
-              `cover_photo`	TEXT DEFAULT NULL,
-              `status`	INTEGER NOT NULL,
-              `comments`	INTEGER DEFAULT 1,
-              `markdown`	INTEGER DEFAULT 0,
-              `published_at`	INTEGER DEFAULT 0,
-              `updated_at`	INTEGER NOT NULL,
-              `created_at`	INTEGER NOT NULL
-            );");
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news` (
+          `id` int(11) NOT NULL,
+          `title` VARCHAR(225) NOT NULL,
+          `slug` VARCHAR(225) NOT NULL,
+          `user_id` int(11) NOT NULL,
+          `content` text NOT NULL,
+          `intro` text,
+          `cover_photo` text,
+          `status` int(11) NOT NULL,
+          `comments` int(11) DEFAULT '1',
+          `markdown` int(11) DEFAULT '0',
+          `published_at` int(11) DEFAULT '0',
+          `updated_at` int(11) NOT NULL,
+          `created_at` int(11) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags` (
-              `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-              `name`	TEXT,
-              `slug`	TEXT
-            );");
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags` (
+          `id` int(11) NOT NULL,
+          `name` VARCHAR(225),
+          `slug` VARCHAR(225)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-            $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags_relationship` (
-              `news_id`	INTEGER NOT NULL REFERENCES mlite_news(id) ON DELETE CASCADE,
-              `tag_id`	INTEGER NOT NULL REFERENCES mlite_news_tags(id) ON DELETE CASCADE
-            );");
+        $core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags_relationship` (
+          `news_id` int(11) NOT NULL,
+          `tag_id` int(11) NOT NULL
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-            $core->mysql()->pdo()->exec("CREATE TABLE `mlite_pages` (
-              `id` integer NOT NULL PRIMARY KEY AUTOINCREMENT,
-              `title` text NOT NULL,
-              `slug` text NOT NULL,
-              `desc` text NULL,
-              `template` text NOT NULL,
-              `date` text NOT NULL,
-              `content` text NOT NULL,
-              `markdown` INTEGER DEFAULT 0
-            );");
+        $core->mysdbql()->pdo()->exec("ALTER TABLE `mlite_news`
+          ADD PRIMARY KEY (`id`);");
 
-        } else {
-            $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news` (
-              `id` int(11) NOT NULL,
-              `title` VARCHAR(225) NOT NULL,
-              `slug` VARCHAR(225) NOT NULL,
-              `user_id` int(11) NOT NULL,
-              `content` text NOT NULL,
-              `intro` text,
-              `cover_photo` text,
-              `status` int(11) NOT NULL,
-              `comments` int(11) DEFAULT '1',
-              `markdown` int(11) DEFAULT '0',
-              `published_at` int(11) DEFAULT '0',
-              `updated_at` int(11) NOT NULL,
-              `created_at` int(11) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news_tags`
+          ADD PRIMARY KEY (`id`);");
 
-            $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags` (
-              `id` int(11) NOT NULL,
-              `name` VARCHAR(225),
-              `slug` VARCHAR(225)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`
+          ADD KEY `mlite_news_tags_relationship_ibfk_1` (`news_id`),
+          ADD KEY `tag_id` (`tag_id`);");
 
-            $core->mysql()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_news_tags_relationship` (
-              `news_id` int(11) NOT NULL,
-              `tag_id` int(11) NOT NULL
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news`
-              ADD PRIMARY KEY (`id`);");
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news_tags`
+          MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
 
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags`
-              ADD PRIMARY KEY (`id`);");
-
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`
-              ADD KEY `mlite_news_tags_relationship_ibfk_1` (`news_id`),
-              ADD KEY `tag_id` (`tag_id`);");
-
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news`
-              MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
-
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags`
-              MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;");
-
-            $core->mysql()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`
-              ADD CONSTRAINT `mlite_news_tags_relationship_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `mlite_news` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
-              ADD CONSTRAINT `mlite_news_tags_relationship_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `mlite_news_tags` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;");
-        }
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news_tags_relationship`
+          ADD CONSTRAINT `mlite_news_tags_relationship_ibfk_1` FOREIGN KEY (`news_id`) REFERENCES `mlite_news` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+          ADD CONSTRAINT `mlite_news_tags_relationship_ibfk_2` FOREIGN KEY (`tag_id`) REFERENCES `mlite_news_tags` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;");
 
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings`
             (`module`, `field`, `value`)

@@ -1,0 +1,183 @@
+
+<style>
+    .dataTables_wrapper th, td { white-space: nowrap; }
+    .datatable-search input {padding:18px 10px;}
+</style>
+<div class="row">
+  <div class="col-md-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelola</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">      
+          <table class="table table-striped table-hover table-sm" width="100%">
+            <thead>
+              <tr>
+                <th style="white-space: nowrap;">Aksi</th>
+                <th style="white-space: nowrap;">No. RM</th>
+                <th style="white-space: nowrap;">Nama Pasien</th>
+                <th style="white-space: nowrap;">Tgl. Lahir</th>
+                <th style="white-space: nowrap;">Jenis Kelamin</th>
+                <th style="white-space: nowrap;">Gol. Darah</th>
+                <th style="white-space: nowrap;">Pekerjaan</th>
+                <th style="white-space: nowrap;">Alamat</th>
+                <th style="white-space: nowrap;">Telepon</th>
+                <th style="white-space: nowrap;">Tgl. Daftar</th>
+                <th style="white-space: nowrap;">Email</th>      
+              </tr>
+            </thead>
+            <tbody>
+              <!-- List Data Menggunakan DataTable -->             
+            </tbody>
+          </table>
+        </div>
+      </div>    
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="statusModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+  
+<script>
+
+
+  $(function(){
+       $(".datepicker").datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+       });
+       var dtable = $('.table').DataTable({
+          "processing": true,
+          "serverSide": true,
+          "ajax":{
+              // "url": "{?=url()?}/{?=ADMIN?}/vedika/alldata?t={?=$_SESSION['token']?}",
+              "url": "{?=url([ADMIN, 'pasien', 'datapasien'])?}",
+              "dataType": "json",
+              "type": "POST", 
+              "data": function(data){
+                  // Read values
+                  var from_date = $('#tanggal_awal').val();
+                  var to_date = $('#tanggal_akhir').val();
+                  var sortByPenjab = $('#sortByPenjab').val();
+
+                  // Append to data
+                  data.searchByFromdate = from_date;
+                  data.searchByTodate = to_date;
+                  data.sortByPenjab = sortByPenjab;
+              }            
+          },
+          "initComplete": function() {
+            var $searchInput = $('div.dataTables_filter input');
+            $searchInput.unbind();
+            $searchInput.bind('keyup', function(e) {
+                if(this.value.length > 2) {
+                    dtable.search( this.value ).draw();
+                }
+                if(this.value == '') {
+                    dtable.search('').draw();
+                }
+            });           
+          }, 
+          "fnDrawCallback": function () {
+            $('.selectator').selectator();
+          },           
+          "columns": [
+            { "data": "aksi" }, 
+            { "data": "no_rkm_medis" },
+            { "data": "nm_pasien" },
+            { "data": "tgl_lahir" },
+            { "data": "jk" },
+            { "data": "gol_darah" },
+            { "data": "pekerjaan" },
+            { "data": "alamat" },
+            { "data": "no_tlp" },
+            { "data": "tgl_daftar" },
+            { "data": "email" }
+          ], 
+          "language": {
+          "paginate": {
+            "first": "&laquo;",
+            "last": "&raquo;",
+            "previous": "‹",
+            "next":     "›"
+          },
+          "search": "",
+          "searchPlaceholder": "Pencarian..."
+          },
+          "lengthChange": false,
+          "scrollX": true,
+          dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      $(".data-table-title").html('<div style="display:inline;float:left;margin-top:0;">'+
+        '<span class="hidden-xs">'+
+        '<select class="form-control selectator" id="sortByenjab"> '+
+        '<option value="">Penjab</option> '+
+        '{loop: $penjab}'+
+        '<option value="{$value.kd_pj}">{$value.png_jawab}</option> '+
+        '{/loop}'+
+        '</select> '+
+        '<input type="date" class="form-control" id="tanggal_awal" placeholder="Tanggal Awal"> '+
+        '<input type="date" class="form-control" id="tanggal_akhir" placeholder="Tanggal Awal"> '+
+        '<input type="button" class="btn btn-primary" id="btn_search" value="OK"> '+
+        '</span> '+
+        '</div>');
+
+      $('#btn_search').click(function(){
+        dtable.draw();
+      });      
+      $('#sortByPenjab').bind("keyup change", function(){
+        dtable.draw();
+      });   
+    });
+
+    //fix menu overflow under the responsive table 
+    // hide menu on click... (This is a must because when we open a menu )
+    $(document).click(function (event) {
+        //hide all our dropdowns
+        $('.dropdown-menu[data-parent]').hide();
+
+    });
+    $(document).on('click', '.table-responsive [data-toggle="dropdown"]', function () {
+        // if the button is inside a modal
+        if ($('body').hasClass('modal-open')) {
+            throw new Error("This solution is not working inside a responsive table inside a modal, you need to find out a way to calculate the modal Z-index and add it to the element")
+            return true;
+        }
+
+        $buttonGroup = $(this).parent();
+        if (!$buttonGroup.attr('data-attachedUl')) {
+            var ts = +new Date;
+            $ul = $(this).siblings('ul');
+            $ul.attr('data-parent', ts);
+            $buttonGroup.attr('data-attachedUl', ts);
+            $(window).resize(function () {
+                $ul.css('display', 'none').data('top');
+            });
+        } else {
+            $ul = $('[data-parent=' + $buttonGroup.attr('data-attachedUl') + ']');
+        }
+        if (!$buttonGroup.hasClass('open')) {
+            $ul.css('display', 'none');
+            return;
+        }
+        dropDownFixPosition($(this).parent(), $ul);
+        function dropDownFixPosition(button, dropdown) {
+            var dropDownTop = button.offset().top + button.outerHeight();
+            dropdown.css('top', dropDownTop + "px");
+            dropdown.css('left', button.offset().left + "px");
+            dropdown.css('position', "absolute");
+   
+            dropdown.css('width', dropdown.width());
+            dropdown.css('heigt', dropdown.height());
+            dropdown.css('display', 'block');
+            dropdown.appendTo('body');
+        }
+    });
+</script>

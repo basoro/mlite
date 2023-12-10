@@ -3,6 +3,10 @@ namespace Plugins\Kasir_Rawat_Inap;
 
 use Systems\AdminModule;
 use Systems\Lib\QRCode;
+use Systems\Lib\Fpdf\PDF_MC_Table;
+use Systems\Lib\PHPMailer\PHPMailer;
+use Systems\Lib\PHPMailer\SMTP;
+use Systems\Lib\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
@@ -60,9 +64,9 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $this->assign['kd_billing'] = 'RI.'.date('d.m.Y.H.i.s');
-        $this->assign['kamar'] = $this->core->mysql('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
-        $this->assign['dokter']         = $this->core->mysql('dokter')->where('status', '1')->toArray();
-        $this->assign['penjab']       = $this->core->mysql('penjab')->where('status', '1')->toArray();
+        $this->assign['kamar'] = $this->db('kamar')->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')->where('statusdata', '1')->toArray();
+        $this->assign['dokter']         = $this->db('dokter')->where('status', '1')->toArray();
+        $this->assign['penjab']       = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['no_rawat'] = '';
         $this->assign['tgl_registrasi']= date('Y-m-d');
         $this->assign['jam_reg']= date('H:i:s');
@@ -107,20 +111,20 @@ class Admin extends AdminModule
           $sql .= " AND kamar_inap.tgl_keluar BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
         }
 
-        $stmt = $this->core->mysql()->pdo()->prepare($sql);
+        $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
           $row['status_billing'] = 'Sudah Bayar';
-          $get_billing = $this->core->mysql('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
+          $get_billing = $this->db('mlite_billing')->where('no_rawat', $row['no_rawat'])->like('kd_billing', 'RI%')->oneArray();
           if(empty($get_billing['kd_billing'])) {
             $row['kd_billing'] = 'RI.'.date('d.m.Y.H.i.s');
             $row['tgl_billing'] = date('Y-m-d H:i');
             $row['status_billing'] = 'Belum Bayar';
           }
-          $dpjp_ranap = $this->core->mysql('dpjp_ranap')
+          $dpjp_ranap = $this->db('dpjp_ranap')
             ->join('dokter', 'dokter.kd_dokter=dpjp_ranap.kd_dokter')
             ->where('no_rawat', $row['no_rawat'])
             ->oneArray();
@@ -136,10 +140,10 @@ class Admin extends AdminModule
     public function postSaveDetail()
     {
       if($_POST['kat'] == 'tindakan') {
-        $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         if($_POST['provider'] == 'rawat_inap_dr') {
           for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
-            $this->core->mysql('rawat_inap_dr')->save([
+            $this->db('rawat_inap_dr')->save([
               'no_rawat' => $_POST['no_rawat'],
               'kd_jenis_prw' => $_POST['kd_jenis_prw'],
               'kd_dokter' => $_POST['kode_provider'],
@@ -157,7 +161,7 @@ class Admin extends AdminModule
         }
         if($_POST['provider'] == 'rawat_inap_pr') {
           for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
-            $this->core->mysql('rawat_inap_pr')->save([
+            $this->db('rawat_inap_pr')->save([
               'no_rawat' => $_POST['no_rawat'],
               'kd_jenis_prw' => $_POST['kd_jenis_prw'],
               'nip' => $_POST['kode_provider2'],
@@ -174,7 +178,7 @@ class Admin extends AdminModule
         }
         if($_POST['provider'] == 'rawat_inap_drpr') {
           for ($i = 0; $i < $_POST['jml_tindakan']; $i++) {
-            $this->core->mysql('rawat_inap_drpr')->save([
+            $this->db('rawat_inap_drpr')->save([
               'no_rawat' => $_POST['no_rawat'],
               'kd_jenis_prw' => $_POST['kd_jenis_prw'],
               'kd_dokter' => $_POST['kode_provider'],
@@ -194,16 +198,16 @@ class Admin extends AdminModule
       }
       if($_POST['kat'] == 'obat') {
 
-        $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
+        $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kd_jenis_prw'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
 
-        $this->core->mysql('gudangbarang')
+        $this->db('gudangbarang')
           ->where('kode_brng', $_POST['kd_jenis_prw'])
           ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
           ->update([
             'stok' => $get_gudangbarang['stok'] - $_POST['jml']
           ]);
 
-        $this->core->mysql('riwayat_barang_medis')
+        $this->db('riwayat_barang_medis')
           ->save([
             'kode_brng' => $_POST['kd_jenis_prw'],
             'stok_awal' => $get_gudangbarang['stok'],
@@ -221,7 +225,7 @@ class Admin extends AdminModule
             'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
           ]);
 
-        $this->core->mysql('detail_pemberian_obat')
+        $this->db('detail_pemberian_obat')
           ->save([
             'tgl_perawatan' => $_POST['tgl_perawatan'],
             'jam' => $_POST['jam_rawat'],
@@ -239,7 +243,7 @@ class Admin extends AdminModule
             'no_faktur' => $get_gudangbarang['no_faktur']
           ]);
 
-        $this->core->mysql('aturan_pakai')
+        $this->db('aturan_pakai')
           ->save([
             'tgl_perawatan' => $_POST['tgl_perawatan'],
             'jam' => $_POST['jam_rawat'],
@@ -250,7 +254,7 @@ class Admin extends AdminModule
 
       }
       if($_POST['kat'] == 'tambahan_biaya') {
-        $this->core->mysql('tambahan_biaya')
+        $this->db('tambahan_biaya')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nama_biaya' => $_POST['nm_perawatan'],
@@ -259,8 +263,8 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'laboratorium') {
-        $jns_perawatan = $this->core->mysql('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $this->core->mysql('periksa_lab')
+        $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        $this->db('periksa_lab')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $_POST['kode_provider2'],
@@ -282,8 +286,8 @@ class Admin extends AdminModule
       }
 
       if($_POST['kat'] == 'radiologi') {
-        $jns_perawatan = $this->core->mysql('jns_perawatan_radiologi')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
-        $this->core->mysql('periksa_radiologi')
+        $jns_perawatan = $this->db('jns_perawatan_radiologi')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+        $this->db('periksa_radiologi')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'nip' => $_POST['kode_provider2'],
@@ -310,7 +314,7 @@ class Admin extends AdminModule
     public function postHapusDetail()
     {
       if($_POST['provider'] == 'rawat_inap_dr') {
-        $this->core->mysql('rawat_inap_dr')
+        $this->db('rawat_inap_dr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
@@ -318,7 +322,7 @@ class Admin extends AdminModule
         ->delete();
       }
       if($_POST['provider'] == 'rawat_inap_pr') {
-        $this->core->mysql('rawat_inap_pr')
+        $this->db('rawat_inap_pr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
@@ -326,7 +330,7 @@ class Admin extends AdminModule
         ->delete();
       }
       if($_POST['provider'] == 'rawat_inap_drpr') {
-        $this->core->mysql('rawat_inap_drpr')
+        $this->db('rawat_inap_drpr')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
         ->where('tgl_perawatan', $_POST['tgl_perawatan'])
@@ -338,7 +342,7 @@ class Admin extends AdminModule
 
     public function postHapusLaboratorium()
     {
-      $this->core->mysql('periksa_lab')
+      $this->db('periksa_lab')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
@@ -350,7 +354,7 @@ class Admin extends AdminModule
 
     public function postHapusRadiologi()
     {
-      $this->core->mysql('periksa_radiologi')
+      $this->db('periksa_radiologi')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
       ->where('tgl_periksa', $_POST['tgl_perawatan'])
@@ -362,7 +366,7 @@ class Admin extends AdminModule
 
     public function postHapusTambahanBiaya()
     {
-      $this->core->mysql('tambahan_biaya')
+      $this->db('tambahan_biaya')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('nama_biaya', $_POST['nama_biaya'])
       ->delete();
@@ -371,16 +375,16 @@ class Admin extends AdminModule
 
     public function postHapusObat()
     {
-      $get_gudangbarang = $this->core->mysql('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
+      $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $_POST['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))->oneArray();
 
-      $this->core->mysql('gudangbarang')
+      $this->db('gudangbarang')
         ->where('kode_brng', $_POST['kode_brng'])
         ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->update([
           'stok' => $get_gudangbarang['stok'] + $_POST['jml']
         ]);
 
-      $this->core->mysql('riwayat_barang_medis')
+      $this->db('riwayat_barang_medis')
         ->save([
           'kode_brng' => $_POST['kode_brng'],
           'stok_awal' => $get_gudangbarang['stok'],
@@ -398,7 +402,7 @@ class Admin extends AdminModule
           'keterangan' => $_POST['no_rawat'] . ' ' . $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']) . ' ' . $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))
         ]);
 
-      $this->core->mysql('detail_pemberian_obat')
+      $this->db('detail_pemberian_obat')
         ->where('tgl_perawatan', $_POST['tgl_peresepan'])
         ->where('jam', $_POST['jam_peresepan'])
         ->where('no_rawat', $_POST['no_rawat'])
@@ -414,7 +418,7 @@ class Admin extends AdminModule
     public function anyRincian()
     {
 
-      $rows_bangsal = $this->core->mysql('bangsal')
+      $rows_bangsal = $this->db('bangsal')
         ->join('kamar', 'kamar.kd_bangsal=bangsal.kd_bangsal')
         ->join('kamar_inap', 'kamar_inap.kd_kamar=kamar.kd_kamar')
         ->where('no_rawat', $_POST['no_rawat'])
@@ -429,9 +433,9 @@ class Admin extends AdminModule
         $bangsal[] = $row;
       }
 
-      $rows_rawat_inap_dr = $this->core->mysql('rawat_inap_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
-      $rows_rawat_inap_pr = $this->core->mysql('rawat_inap_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
-      $rows_rawat_inap_drpr = $this->core->mysql('rawat_inap_drpr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_dr = $this->db('rawat_inap_dr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_pr = $this->db('rawat_inap_pr')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $rows_rawat_inap_drpr = $this->db('rawat_inap_drpr')->where('no_rawat', $_POST['no_rawat'])->toArray();
 
       $jumlah_total = 0;
       $rawat_inap_dr = [];
@@ -441,7 +445,7 @@ class Admin extends AdminModule
 
       if($rows_rawat_inap_dr) {
         foreach ($rows_rawat_inap_dr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
           $row['provider'] = 'Dokter';
@@ -451,7 +455,7 @@ class Admin extends AdminModule
 
       if($rows_rawat_inap_pr) {
         foreach ($rows_rawat_inap_pr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
           $row['provider'] = 'Perawat';
@@ -461,7 +465,7 @@ class Admin extends AdminModule
 
       if($rows_rawat_inap_drpr) {
         foreach ($rows_rawat_inap_drpr as $row) {
-          $jns_perawatan = $this->core->mysql('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+          $jns_perawatan = $this->db('jns_perawatan_inap')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
           $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
           $jumlah_total = $jumlah_total + $row['biaya_rawat'];
           $row['provider'] = 'Dokter & Perawat';
@@ -476,7 +480,7 @@ class Admin extends AdminModule
         $tindakan[] = $row;
       }
 
-      $rows_pemberian_obat = $this->core->mysql('detail_pemberian_obat')
+      $rows_pemberian_obat = $this->db('detail_pemberian_obat')
       ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('detail_pemberian_obat.status', 'Ranap')
@@ -491,7 +495,7 @@ class Admin extends AdminModule
         $detail_pemberian_obat[] = $row;
       }
 
-      $rows_periksa_lab = $this->core->mysql('periksa_lab')
+      $rows_periksa_lab = $this->db('periksa_lab')
       ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('periksa_lab.status', 'Ranap')
@@ -506,7 +510,7 @@ class Admin extends AdminModule
         $periksa_lab[] = $row;
       }
 
-      $rows_periksa_radiologi = $this->core->mysql('periksa_radiologi')
+      $rows_periksa_radiologi = $this->db('periksa_radiologi')
       ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
       ->where('no_rawat', $_POST['no_rawat'])
       ->where('periksa_radiologi.status', 'Ranap')
@@ -522,19 +526,19 @@ class Admin extends AdminModule
       }
 
       $jumlah_total_operasi = 0;
-      $operasis = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('status', 'Ranap')->toArray();
+      $operasis = $this->db('operasi')->where('no_rawat', $_POST['no_rawat'])->where('status', 'Ranap')->toArray();
       foreach ($operasis as $operasi) {
         $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
         $jumlah_total_operasi += $operasi['jumlah'];
       }
       $jumlah_total_obat_operasi = 0;
-      $obat_operasis = $this->core->mysql('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
+      $obat_operasis = $this->db('beri_obat_operasi')->where('no_rawat', $_POST['no_rawat'])->toArray();
       foreach ($obat_operasis as $obat_operasi) {
         $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
         $jumlah_total_obat_operasi += $obat_operasi['harga'];
       }
 
-      $rows_tambahan_biaya = $this->core->mysql('tambahan_biaya')
+      $rows_tambahan_biaya = $this->db('tambahan_biaya')
         ->where('no_rawat', $_POST['no_rawat'])
         ->toArray();
       $tambahan_biaya = [];
@@ -571,7 +575,7 @@ class Admin extends AdminModule
 
     public function anyLayanan()
     {
-      $layanan = $this->core->mysql('jns_perawatan_inap')
+      $layanan = $this->db('jns_perawatan_inap')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
@@ -582,7 +586,7 @@ class Admin extends AdminModule
 
     public function anyObat()
     {
-      $obat = $this->core->mysql('databarang')
+      $obat = $this->db('databarang')
         ->join('gudangbarang', 'gudangbarang.kode_brng=databarang.kode_brng')
         ->where('kd_bangsal', $this->settings->get('farmasi.deporanap'))
         ->where('status', '1')
@@ -595,7 +599,7 @@ class Admin extends AdminModule
 
     public function anyTambahanBiaya()
     {
-      $tambahan_biaya = $this->core->mysql('tambahan_biaya')
+      $tambahan_biaya = $this->db('tambahan_biaya')
         ->like('nama_biaya', '%'.$_POST['tambahan_biaya'].'%')
         ->limit(10)
         ->toArray();
@@ -605,7 +609,7 @@ class Admin extends AdminModule
 
     public function anyLaboratorium()
     {
-      $laboratorium = $this->core->mysql('jns_perawatan_lab')
+      $laboratorium = $this->db('jns_perawatan_lab')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['laboratorium'].'%')
         ->limit(10)
@@ -616,7 +620,7 @@ class Admin extends AdminModule
 
     public function anyRadiologi()
     {
-      $radiologi = $this->core->mysql('jns_perawatan_radiologi')
+      $radiologi = $this->db('jns_perawatan_radiologi')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['radiologi'].'%')
         ->limit(10)
@@ -631,7 +635,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->core->mysql('master_aturan_pakai')->like('aturan', $key)->limit(10)->toArray();
+        $rows = $this->db('master_aturan_pakai')->like('aturan', $key)->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -651,7 +655,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->core->mysql('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
+        $rows = $this->db('dokter')->like('nm_dokter', $key)->where('status', '1')->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -671,7 +675,7 @@ class Admin extends AdminModule
       if(isset($_POST["query"])){
         $output = '';
         $key = "%".$_POST["query"]."%";
-        $rows = $this->core->mysql('petugas')->like('nama', $key)->limit(10)->toArray();
+        $rows = $this->db('petugas')->like('nama', $key)->limit(10)->toArray();
         $output = '';
         if(count($rows)){
           foreach ($rows as $row) {
@@ -688,9 +692,9 @@ class Admin extends AdminModule
     public function postSave()
     {
       $_POST['id_user']	= $this->core->getUserInfo('id');
-      $query = $this->core->mysql('mlite_billing')->save($_POST);
+      $query = $this->db('mlite_billing')->save($_POST);
       if($query) {
-        $this->core->mysql('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
+        $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->update(['status_bayar' => 'Sudah Bayar']);
       }
       exit();
     }
@@ -702,19 +706,19 @@ class Admin extends AdminModule
       $show = isset($_GET['show']) ? $_GET['show'] : "";
       switch($show){
        default:
-        if($this->core->mysql('mlite_billing')->where('no_rawat', $_POST['no_rawat'])->like('kd_billing', 'RI%')->oneArray()) {
+        if($this->db('mlite_billing')->where('no_rawat', $_POST['no_rawat'])->like('kd_billing', 'RI%')->oneArray()) {
           echo 'OK';
         }
         break;
         case "besar":
-        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
+        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
 
-        $result_detail['kamar_inap'] = $this->core->mysql('kamar_inap')
+        $result_detail['kamar_inap'] = $this->db('kamar_inap')
           ->join('reg_periksa', 'reg_periksa.no_rawat = kamar_inap.no_rawat')
           ->where('reg_periksa.no_rawat', $_GET['no_rawat'])
           ->oneArray();
 
-        $result_detail['rawat_inap_dr'] = $this->core->mysql('rawat_inap_dr')
+        $result_detail['rawat_inap_dr'] = $this->db('rawat_inap_dr')
           ->select('jns_perawatan_inap.nm_perawatan')
           ->select(['biaya_rawat' => 'rawat_inap_dr.biaya_rawat'])
           ->select(['jml' => 'COUNT(rawat_inap_dr.kd_jenis_prw)'])
@@ -724,7 +728,7 @@ class Admin extends AdminModule
           ->group('jns_perawatan_inap.nm_perawatan')
           ->toArray();
 
-        $result_detail['rawat_inap_pr'] = $this->core->mysql('rawat_inap_pr')
+        $result_detail['rawat_inap_pr'] = $this->db('rawat_inap_pr')
           ->select('jns_perawatan_inap.nm_perawatan')
           ->select(['biaya_rawat' => 'rawat_inap_pr.biaya_rawat'])
           ->select(['jml' => 'COUNT(rawat_inap_pr.kd_jenis_prw)'])
@@ -734,7 +738,7 @@ class Admin extends AdminModule
           ->group('jns_perawatan_inap.nm_perawatan')
           ->toArray();
 
-        $result_detail['rawat_inap_drpr'] = $this->core->mysql('rawat_inap_drpr')
+        $result_detail['rawat_inap_drpr'] = $this->db('rawat_inap_drpr')
           ->select('jns_perawatan_inap.nm_perawatan')
           ->select(['biaya_rawat' => 'rawat_inap_drpr.biaya_rawat'])
           ->select(['jml' => 'COUNT(rawat_inap_drpr.kd_jenis_prw)'])
@@ -744,30 +748,30 @@ class Admin extends AdminModule
           ->group('jns_perawatan_inap.nm_perawatan')
           ->toArray();
 
-        $result_detail['detail_pemberian_obat'] = $this->core->mysql('detail_pemberian_obat')
+        $result_detail['detail_pemberian_obat'] = $this->db('detail_pemberian_obat')
           ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
           ->where('no_rawat', $_GET['no_rawat'])
           ->where('detail_pemberian_obat.status', 'Ranap')
           ->toArray();
 
-        $result_detail['periksa_lab'] = $this->core->mysql('periksa_lab')
+        $result_detail['periksa_lab'] = $this->db('periksa_lab')
           ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=periksa_lab.kd_jenis_prw')
           ->where('no_rawat', $_GET['no_rawat'])
           ->where('periksa_lab.status', 'Ranap')
           ->toArray();
 
-        $result_detail['periksa_radiologi'] = $this->core->mysql('periksa_radiologi')
+        $result_detail['periksa_radiologi'] = $this->db('periksa_radiologi')
           ->join('jns_perawatan_radiologi', 'jns_perawatan_radiologi.kd_jenis_prw=periksa_radiologi.kd_jenis_prw')
           ->where('no_rawat', $_GET['no_rawat'])
           ->where('periksa_radiologi.status', 'Ranap')
           ->toArray();
 
-        $result_detail['tambahan_biaya'] = $this->core->mysql('tambahan_biaya')
+        $result_detail['tambahan_biaya'] = $this->db('tambahan_biaya')
           ->where('no_rawat', $_GET['no_rawat'])
           ->toArray();
 
         $jumlah_total_operasi = 0;
-        $operasis = $this->core->mysql('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('operasi.status', 'Ranap')->toArray();
+        $operasis = $this->db('operasi')->join('paket_operasi', 'paket_operasi.kode_paket=operasi.kode_paket')->where('no_rawat', $_GET['no_rawat'])->where('operasi.status', 'Ranap')->toArray();
         $result_detail['operasi'] = [];
         foreach ($operasis as $operasi) {
           $operasi['jumlah'] = $operasi['biayaoperator1']+$operasi['biayaoperator2']+$operasi['biayaoperator3']+$operasi['biayaasisten_operator1']+$operasi['biayaasisten_operator2']+$operasi['biayadokter_anak']+$operasi['biayaperawaat_resusitas']+$operasi['biayadokter_anestesi']+$operasi['biayaasisten_anestesi']+$operasi['biayabidan']+$operasi['biayaperawat_luar'];
@@ -775,7 +779,7 @@ class Admin extends AdminModule
           $result_detail['operasi'][] = $operasi;
         }
         $jumlah_total_obat_operasi = 0;
-        $obat_operasis = $this->core->mysql('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $_GET['no_rawat'])->toArray();
+        $obat_operasis = $this->db('beri_obat_operasi')->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')->where('no_rawat', $_GET['no_rawat'])->toArray();
         $result_detail['obat_operasi'] = [];
         foreach ($obat_operasis as $obat_operasi) {
           $obat_operasi['harga'] = $obat_operasi['hargasatuan'] * $obat_operasi['jumlah'];
@@ -783,8 +787,161 @@ class Admin extends AdminModule
           $result_detail['obat_operasi'][] = $obat_operasi;
         }
 
-        $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
-        $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+
+        /* Print as pdf */
+        $pdf = new PDF_MC_Table('P','mm','A4');
+        $pdf->AddPage();
+
+        $pdf->Image('../'.$settings['logo'], 10, 10, '18', '18', 'png');
+
+        //set font to arial, bold, 14pt
+        $pdf->SetFont('Arial','B',14);
+
+        //Cell(width , height , text , border , end line , [align] )
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(100 ,5,$settings['nama_instansi'],0,0);
+        $pdf->Cell(69 ,5,'INVOICE',0,1);//end of line
+
+        //set font to arial, regular, 12pt
+        $pdf->SetFont('Arial','',12);
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(100 ,5,$settings['alamat'],0,0);
+        $pdf->Cell(69 ,5,'',0,1);//end of line
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(100 ,5,$settings['kota'].' - '.$settings['propinsi'],0,0);
+        $pdf->Cell(25 ,5,'Tanggal',0,0);
+        $pdf->Cell(44 ,5,': '.$result['tgl_billing'],0,1);//end of line
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(100 ,5,$settings['nomor_telepon'],0,0);
+        $pdf->Cell(25 ,5,'Faktur',0,0);
+        $pdf->Cell(44 ,5,': '.$result['kd_billing'],0,1);//end of line
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(100 ,5,$settings['email'],0,0);
+        $pdf->Cell(25 ,5,'Nomor RM',0,0);
+        $pdf->Cell(44 ,5,': '.$pasien['no_rkm_medis'],0,1);//end of line
+
+        //make a dummy empty cell as a vertical spacer
+        $pdf->Cell(189 ,10,'',0,1);//end of line
+
+        //billing address
+        $pdf->Cell(20 ,5,'Kepada :',0,0);//end of line
+        $pdf->SetFont('Arial','B',12);
+        $pdf->Cell(90 ,5,$pasien['nm_pasien'],0,1);
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(90 ,5,$pasien['alamat'],0,1);
+
+        $pdf->Cell(20 ,5,'',0,0);
+        $pdf->Cell(90 ,5,$pasien['no_tlp'],0,1);
+
+        //make a dummy empty cell as a vertical spacer
+        $pdf->Cell(189 ,10,'',0,1);//end of line
+
+        //invoice contents
+        $pdf->SetFont('Arial','B',12);
+
+        $pdf->Cell(10 ,7,'No',1,0);
+        $pdf->Cell(110 ,7,'Item',1,0);
+        $pdf->Cell(25 ,7,'Jumlah',1,0);
+        $pdf->Cell(44 ,7,'Total',1,1);//end of line
+
+        $pdf->SetFont('Arial','',11);
+
+        //Numbers are right-aligned so we give 'R' after new line parameter
+
+        $pdf->Cell(10 ,5,'1',1,0);
+        $pdf->Cell(110 ,5,'Biaya Kamar',1,0);
+        $pdf->Cell(25 ,5,'1',1,0, 'C');
+        $pdf->Cell(44 ,5,number_format($result_detail['kamar_inap']['ttl_biaya'],2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'2',1,0);
+        $pdf->Cell(110 ,5,'Biaya Obat & BHP',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['detail_pemberian_obat']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['detail_pemberian_obat'], 'total')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'3',1,0);
+        $pdf->Cell(110 ,5,'Jasa Dokter',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['rawat_inap_dr']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['rawat_inap_dr'], 'total_biaya_rawat_dr')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'4',1,0);
+        $pdf->Cell(110 ,5,'Jasa Perawat',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['rawat_inap_pr']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['rawat_inap_pr'], 'total_biaya_rawat_pr')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'5',1,0);
+        $pdf->Cell(110 ,5,'Jasa Dokter & Perawat',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['rawat_inap_drpr']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['rawat_inap_drpr'], 'total_biaya_rawat_drpr')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'6',1,0);
+        $pdf->Cell(110 ,5,'Jasa Laboratorium',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['periksa_lab']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['periksa_lab'], 'biaya')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'7',1,0);
+        $pdf->Cell(110 ,5,'Jasa Radiologi',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['periksa_radiologi']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['periksa_radiologi'], 'biaya')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'8',1,0);
+        $pdf->Cell(110 ,5,'Jasa Operasi',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['operasi']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['operasi'], 'jumlah')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'9',1,0);
+        $pdf->Cell(110 ,5,'Obat dan BHP Operasi',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['obat_operasi']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['obat_operasi'], 'harga')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->Cell(10 ,5,'10',1,0);
+        $pdf->Cell(110 ,5,'Biaya Tambahan',1,0);
+        $pdf->Cell(25 ,5,count($result_detail['tambahan_biaya']),1,0, 'C');
+        $pdf->Cell(44 ,5,number_format(array_sum(array_column($result_detail['tambahan_biaya'], 'besar_biaya')),2,',','.'),1,1,'R');//end of line
+
+        $pdf->SetFont('Arial','B',14);
+
+        //summary
+        /*$pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(25 ,5,'Subtotal',0,0);
+        $pdf->Cell(44 ,5,'4,450',1,1,'R');//end of line
+
+        $pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(25 ,5,'Taxable',0,0);
+        $pdf->Cell(44 ,5,'0',1,1,'R');//end of line
+
+        $pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(25 ,5,'Tax Rate',0,0);
+        $pdf->Cell(44 ,5,'10%',1,1,'R');//end of line*/
+
+        $pdf->Cell(120 ,15,'',0,0);
+        $pdf->Cell(25 ,15,'Total',0,0);
+        $pdf->Cell(44 ,15,'Rp. '.number_format(
+          $result_detail['kamar_inap']['ttl_biaya']+
+          array_sum(array_column($result_detail['detail_pemberian_obat'], 'total'))+
+          array_sum(array_column($result_detail['rawat_inap_dr'], 'total_biaya_rawat_dr'))+
+          array_sum(array_column($result_detail['rawat_inap_pr'], 'total_biaya_rawat_pr'))+
+          array_sum(array_column($result_detail['rawat_inap_drpr'], 'total_biaya_rawat_drpr'))+
+          array_sum(array_column($result_detail['periksa_lab'], 'biaya'))+
+          array_sum(array_column($result_detail['periksa_radiologi'], 'biaya'))+
+          array_sum(array_column($result_detail['operasi'], 'jumlah'))+
+          array_sum(array_column($result_detail['obat_operasi'], 'harga'))+
+          array_sum(array_column($result_detail['tambahan_biaya'], 'besar_biaya')),
+          2,',','.'),0,0,'R');//end of line
+
+        $pdf->Cell(189 ,20,'',0,1);//end of line
+
+        $pdf->SetFont('Arial','',11);
+
+        $pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
 
         $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
         //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
@@ -793,18 +950,77 @@ class Admin extends AdminModule
         imagedestroy($im);
 
         $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-        $qrCode = "../../tmp/qrcode.png";
+        $qrCode = "../../".ADMIN."/tmp/qrcode.png";
 
+        $pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
+        $pdf->Cell(189 ,32,'',0,1);//end of line
+        $pdf->Cell(120 ,5,'',0,0);
+        $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
+
+        if (file_exists(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf')) {
+          unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
+        }
+
+        $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
+        //$pdf->Output();        
         echo $this->draw('billing.besar.html', ['billing' => $result, 'billing_besar_detail' => $result_detail, 'jumlah_total_operasi' => $jumlah_total_operasi, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
         case "kecil":
-        $result = $this->core->mysql('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
-        $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
-        $pasien = $this->core->mysql('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
+        $result = $this->db('mlite_billing')->where('no_rawat', $_GET['no_rawat'])->like('kd_billing', 'RI%')->desc('id_billing')->oneArray();
+        $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
+        $pasien = $this->db('pasien')->where('no_rkm_medis', $reg_periksa['no_rkm_medis'])->oneArray();
         echo $this->draw('billing.kecil.html', ['billing' => $result, 'pasien' => $pasien, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;
       }
       exit();
+    }
+
+    public function postKirimEmail() {
+      $email = $_POST['email'];
+      $nama_lengkap = $_POST['receiver'];
+      $file = $_POST['file'];
+      $this->sendEmail($email, $nama_lengkap, $file);
+      exit();
+    }
+
+    private function sendEmail($email, $receiver, $file)
+    {
+      $binary_content = file_get_contents($file);
+
+      if ($binary_content === false) {
+         throw new Exception("Could not fetch remote content from: '$file'");
+      }
+
+	    $mail = new PHPMailer(true);
+      $temp  = @file_get_contents(MODULES."/kasir_rawat_inap/email/email.send.html");
+
+      $temp  = str_replace("{SITENAME}", $this->core->settings->get('settings.nama_instansi'), $temp);
+      $temp  = str_replace("{ADDRESS}", $this->core->settings->get('settings.alamat')." - ".$this->core->settings->get('settings.kota'), $temp);
+      $temp  = str_replace("{TELP}", $this->core->settings->get('settings.nomor_telepon'), $temp);
+      //$temp  = str_replace("{NUMBER}", $number, $temp);
+
+	    //$mail->SMTPDebug = SMTP::DEBUG_SERVER; // for detailed debug output
+      $mail->isSMTP();
+      $mail->Host = $this->settings->get('api.apam_smtp_host');
+      $mail->SMTPAuth = true;
+      $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+      $mail->Port = $this->settings->get('api.apam_smtp_port');
+
+      $mail->Username = $this->settings->get('api.apam_smtp_username');
+      $mail->Password = $this->settings->get('api.apam_smtp_password');
+
+      // Sender and recipient settings
+      $mail->setFrom($this->core->settings->get('settings.email'), $this->core->settings->get('settings.nama_instansi'));
+      $mail->addAddress($email, $receiver);
+      $mail->AddStringAttachment($binary_content, "invoice.pdf", $encoding = 'base64', $type = 'application/pdf');
+
+      // Setting the email content
+      $mail->IsHTML(true);
+      $mail->Subject = "Detail pembayaran anda di ".$this->core->settings->get('settings.nama_instansi');
+      $mail->Body = $temp;
+
+      $mail->send();
     }
 
     public function postCekWaktu()

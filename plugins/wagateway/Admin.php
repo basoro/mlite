@@ -2,7 +2,7 @@
 namespace Plugins\Wagateway;
 
 use Systems\AdminModule;
-use Systems\MySQL;
+
 
 class Admin extends AdminModule
 {
@@ -91,7 +91,7 @@ class Admin extends AdminModule
         $response = curl_exec($curlHandle);
         curl_close($curlHandle);
         $response = json_decode($response, true);
-        if($response['status'] == 'false') {
+        if($response['status'] == 'true') {
           $this->notify('success', 'Sukses mengirim pesan');
         } else {
           $this->notify('failure', 'Gagal mengirim pesan');
@@ -158,11 +158,6 @@ class Admin extends AdminModule
         }
       }
       return $this->draw('send.file.html');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

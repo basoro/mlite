@@ -11,7 +11,11 @@
 <div class="modal-body">
 
 	<div class="embed-responsive embed-responsive-16by9">
+  {if: $message == '200'}
 	<iframe class="embed-responsive-item" src="{$url}" allowfullscreen></iframe>
+  {else}
+    <h3>{$message}</h3>
+  {/if}
 	</div>
 
 </div>

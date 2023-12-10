@@ -1,0 +1,63 @@
+<style>
+    .nowrap th, .nowrap td {
+      white-space: nowrap;
+    }
+</style>
+<h4>Mapping Praktisi Satu Sehat</h4>
+<form action="{?=url(ADMIN.'/satu_sehat/savemappingpraktisi')?}" method="POST">
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label>Dokter</label>
+                        <select name="dokter" id="dokter" class="form-control">
+                            <option value="">Pilih Dokter</option>
+                            {loop: $dokter}
+                            <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                            {/loop}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-12" style="padding-top: 20px;">
+                    <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
+                    <input type="submit" name="update" class="btn btn-info" value="Update" />
+                    <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="row">
+<div class="col-md-12">
+    <div class="table-responsive no-margin" id="mapping_praktisi">
+    <table class="table table-striped table-bordered no-padding nowrap dataTables" width="100%">
+        <thead>
+        <tr>
+            <th>ID Dokter</th>
+            <th>Nama Dokter</th>
+            <th>ID Praktisi Satu Sehat</th>
+        </tr>
+        </thead>
+        <tbody>
+        {loop: $mapping_praktisi}
+        <tr class="mapping_praktisi"
+        data-kd_dokter="{$value.kd_dokter}"
+        >
+            <td>{$value.practitioner_id}</td>
+            <td>{$value.nm_dokter}</td>
+            <td>{$value.kd_dokter}</td>
+        </tr>
+        {/loop}
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$("#mapping_praktisi").on("click", ".mapping_praktisi", function(event){
+    var kd_dokter  = $(this).attr("data-kd_dokter");
+    $('#dokter').val(kd_dokter).change();
+});
+</script>
+  

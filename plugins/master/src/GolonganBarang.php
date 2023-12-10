@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class GolonganBarang
 {
@@ -16,7 +16,7 @@ class GolonganBarang
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('golongan_barang')
+      $totalRecords = $this->db('golongan_barang')
         ->select('kode')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class GolonganBarang
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('golongan_barang')
+      $return['list'] = $this->db('golongan_barang')
         ->desc('kode')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class GolonganBarang
     public function anyForm()
     {
         if (isset($_POST['kode'])){
-          $return['form'] = $this->mysql('golongan_barang')->where('kode', $_POST['kode'])->oneArray();
+          $return['form'] = $this->db('golongan_barang')->where('kode', $_POST['kode'])->oneArray();
         } else {
           $return['form'] = [
             'kode' => '',
@@ -51,7 +51,7 @@ class GolonganBarang
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('golongan_barang')
+        $totalRecords = $this->db('golongan_barang')
           ->select('kode')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class GolonganBarang
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('golongan_barang')
+        $return['list'] = $this->db('golongan_barang')
           ->desc('kode')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('golongan_barang')
+          $return['list'] = $this->db('golongan_barang')
             ->like('kode', '%'.$_POST['cari'].'%')
             ->orLike('nama', '%'.$_POST['cari'].'%')
             ->desc('kode')
@@ -78,7 +78,7 @@ class GolonganBarang
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('golongan_barang')
+          $return['list'] = $this->db('golongan_barang')
             ->desc('kode')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class GolonganBarang
 
     public function postSave()
     {
-      if (!$this->mysql('golongan_barang')->where('kode', $_POST['kode'])->oneArray()) {
-        $query = $this->mysql('golongan_barang')->save($_POST);
+      if (!$this->db('golongan_barang')->where('kode', $_POST['kode'])->oneArray()) {
+        $query = $this->db('golongan_barang')->save($_POST);
       } else {
-        $query = $this->mysql('golongan_barang')->where('kode', $_POST['kode'])->save($_POST);
+        $query = $this->db('golongan_barang')->where('kode', $_POST['kode'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('golongan_barang')->where('kode', $_POST['kode'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('golongan_barang')->where('kode', $_POST['kode'])->delete();
     }
 
 }

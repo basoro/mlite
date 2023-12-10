@@ -1,0 +1,469 @@
+<script>
+function printContent(el){
+  var restorepage = document.body.innerHTML;
+  var printcontent = document.getElementById(el).innerHTML;
+  document.body.innerHTML = printcontent;
+  window.print();
+  document.body.innerHTML = restorepage;
+  window.close();
+}
+</script>
+<body>
+  {if: isset($data_sep.no_sep)}
+  <div id="cetaksep">
+    <style  type="text/css">
+      html {
+        font-size:16px;
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      table td {
+        font-size:16px;
+        padding: 0;
+      }
+      .cetak {
+    		display:inline-block;
+    		padding:6px 12px;
+    		margin:10px;
+    		font-size:14px;
+    		font-weight:400;
+    		line-height:1.5;
+    		white-space:nowrap;
+        float: right;
+        bottom: 10px;
+        right: 10px;
+    	}
+      .tutup {
+    		display:inline-block;
+    		padding:6px 12px;
+        margin:10px;
+    		font-size:14px;
+    		font-weight:400;
+    		line-height:1.5;
+    		white-space:nowrap;
+        float: right;
+        bottom: 10px;
+        right: 10px;
+    	}
+      .btn {
+    		display:inline-block;
+    		padding:6px 12px;
+        margin:10px;
+    		font-size:14px;
+    		font-weight:400;
+    		line-height:1.5;
+    		white-space:nowrap;
+        bottom: 10px;
+        right: 10px;
+    	}
+    </style>
+    <table width="1000">
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="420">
+                <img src="{?=url()?}/plugins/vclaim/img/bpjslogo.png" alt="Image" width="400" height="68">
+              </td>
+              <td width="580">
+                <div style="font-size:28px;text-align:center;font-weight:bold;">
+                  SURAT RUJUK BALIK (PRB)
+                </div>
+                <div style="font-size:21px;text-align:center;">
+                  {$settings.nama_instansi}
+                </div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                  Kepada Yth
+              </td>
+              <td>:</td>
+              <td width="450">
+              </td>
+              <td width="90">
+                No.SRB
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.no_srb}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="400">
+                  Mohon Pemeriksaan dan Penanganan Lebih Lanjut :
+              </td>
+              <td width="225">
+              </td>
+              <td width="160">
+                Tanggal {$data_sep.tgl_srb}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                No. Kartu
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.no_kartu}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Nama Peserta
+              </td>
+              <td>
+                :
+              </td>
+              <td>
+                {$data_sep.nama_pasien} ({$data_sep.jkel})
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Tgl. Lahir
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.tanggal_lahir}
+              </td>
+              <td width="90">
+                R/.
+              </td>
+              
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Diagnosa
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.nmdiagnosaawal}
+              </td>
+              <td width="260">
+                {loop: $obat_srb}
+                {$value.signa1}x{$value.signa2}&nbsp;&nbsp;{$value.nm_obat} &nbsp;&nbsp;&nbsp;&nbsp;{$value.jumlah}
+                {/loop}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Program PRB
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.namaprogram}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="170">
+                Keterangan
+              </td>
+              <td>
+                :
+              </td>
+              <td width="450">
+                {$data_sep.keterangan}
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="450">
+                Saran Pengelolaan lanjutan di FKTP:
+              </td>
+              <td>
+                
+              </td>
+              <td>
+              </td>
+              <td width="90">
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="120">
+              </td>
+              <td>
+                {$data_sep.saran}
+              </td>
+              <td>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="450">
+                Demikian atas bantuannya, diucapkan banyak terima kasih.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td width="720" height="0">
+                <i style="font-size:11px;">
+                  Tgl.Cetak {?=date('d/m/Y H:i:s')?}<br>
+                </i>
+              </td>
+              <td valign="bottom" halign="center" padding="0" margin="0">
+                <center>
+                  Mengetahui<br><br><br>
+                </center>
+                -----------------------------------
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <center style="margin-top:100px;">
+    <button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>
+    <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
+  </center>
+  {else}
+    <center>
+      <div class="alert alert-danger" id="sync">
+        Data SEP <span id="no_sep">{?=parseURL()[2]?}</span> di server SIMRS tidak ditemukan.<br>
+        Apakah akan menarik data dari v-Claim?<br>
+        <button class="btn" type="button" id="syncsep">Ya</button>
+        <button class="btn" type="button" onclick="javascript:window.close();opener.window.focus();">TUTUP</button>
+      </div>
+    </center>
+    <div id="carisep">
+      <pre>
+      </pre>
+    </div>
+    <div id="caribynorujukan">
+      <pre>
+      </pre>
+    </div>
+    <center style="margin-top:100px;">
+      <button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>
+      <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
+    </center>
+      <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+      <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+      <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+      <script>
+            var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
+            $('#syncsep').on('click',function(e){
+              var baseURL = mlite.url + '/' + mlite.admin;
+              event.preventDefault();
+              $.get("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}", function(data){
+                var data = JSON.parse(data);
+                $("#carisep pre").text(JSON.stringify(data, null, '\t'));
+                var json_obj = [data];
+                if(!json_obj[0]) {
+                  // console.log("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}");
+
+                  alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+                } else if(json_obj[0].metaData.code == 200) {
+
+                  $.get(baseURL + '/vclaim/caribynorujukan/PCare/' + json_obj[0].response.noRujukan + '?t=' + mlite.token, function(data){
+                    var data = JSON.parse(data);
+                    $("#caribynorujukan pre").text(JSON.stringify(data, null, '\t'));
+                    var json_obj2 = [data];
+                    if(!json_obj2[0]) {
+                      alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
+                    } else if(json_obj2[0].metaData.code == 200) {
+                      // alert(json_obj2[0].metaData.message);
+                      alert(json_obj[0].response.noSep);
+                      var no_sep = json_obj[0].response.noSep;
+                      var no_rawat = '';
+                      var tglsep = json_obj[0].response.tglSep;
+                      var tglrujukan = json_obj2[0].response.rujukan.tglKunjungan;
+                      var no_rujukan = json_obj[0].response.noRujukan;
+                      var kdppkrujukan = json_obj2[0].response.rujukan.provPerujuk.kode;
+                      var nmppkrujukan = json_obj2[0].response.rujukan.provPerujuk.nama;
+                      var jnspelayanan = json_obj2[0].response.rujukan.pelayanan.kode;
+                      var catatan = json_obj[0].response.catatan;
+                      var diagawal = json_obj2[0].response.rujukan.diagnosa.kode;
+                      var nmdiagnosaawal = json_obj2[0].response.rujukan.diagnosa.nama;
+                      var kdpolitujuan = '';
+                      var nmpolitujuan = '';
+                      var klsrawat = '';
+                      var lakalantas = '';
+                      var user = '';
+                      var nomr = '';
+                      var nama_pasien = '';
+                      var tanggal_lahir = '';
+                      var peserta = '';
+                      var jkel = '';
+                      var no_kartu = json_obj2[0].response.rujukan.peserta.noKartu;;
+                      var tglpulang = '';
+                      var asal_rujukan = '';
+                      var eksekutif = '';
+                      var cob = '';
+                      var penjamin = '';
+                      var notelep = '';
+                      var katarak = '';
+                      var tglkkl = '';
+                      var keterangankkl = '';
+                      var suplesi = '';
+                      var no_sep_suplesi = '';
+                      var kdprop = '';
+                      var nmprop = '';
+                      var kdkab = '';
+                      var nmkab = '';
+                      var kdkec = '';
+                      var nmkec = '';
+                      var noskdp = '';
+                      var kddpjp = '';
+                      var nmdpdjp = '';
+
+                      $.ajax({
+                        type: "POST",
+                        url: "{?=url([ADMIN,'vclaim','syncsep'])?}",
+                        data: {
+                          no_sep: no_sep,
+                          tglsep: tglsep,
+                          tglrujukan: tglrujukan,
+                          no_rujukan: no_rujukan,
+                          kdppkrujukan: kdppkrujukan,
+                          nmppkrujukan: nmppkrujukan,
+                          jnspelayanan: jnspelayanan,
+                          catatan: catatan,
+                          diagawal: diagawal,
+                          nmdiagnosaawal: nmdiagnosaawal,
+                          kdpolitujuan: kdpolitujuan,
+                          nmpolitujuan: nmpolitujuan,
+                          klsrawa: klsrawat,
+                          lakalantas: lakalantas,
+                          user: user,
+                          nomr: nomr,
+                          nama_pasien: nama_pasien,
+                          tanggal_lahir: tanggal_lahir,
+                          peserta: peserta,
+                          jkel: jkel,
+                          no_kartu: no_kartu,
+                          tglpulang: tglpulang,
+                          asal_rujukan: asal_rujukan,
+                          eksekutif: eksekutif,
+                          cob: cob,
+                          penjamin: penjamin,
+                          notelep: notelep,
+                          katarak: katarak,
+                          tglkkl: tglkkl,
+                          keterangankkl: keterangankkl,
+                          suplesi: suplesi,
+                          no_sep_suplesi: no_sep_suplesi,
+                          kdprop: kdprop,
+                          nmprop: nmprop,
+                          kdkab: kdkab,
+                          nmkab: nmkab,
+                          kdkec: kdkec,
+                          nmkec: nmkec,
+                          noskdp: noskdp,
+                          kddpjp: kddpjp,
+                          nmdpdjp: nmdpdjp
+                        },
+                        success: function(result){
+                          var messages = result.split(' ');
+                          if (messages.length == 1) {
+                            //location.reload();
+                          } else if(messages.length > 1) {
+                            alert(result)
+                          } else {
+                            alert('Gagal menyimpan data ke database SIMRS');
+                          }
+                        }
+                      });
+
+                    } else {
+                      alert(json_obj[0].metaData.message);
+                    }
+                  });
+                } else {
+                  alert(json_obj[0].metaData.message);
+                }
+              });
+            });
+      </script>
+    {/if}
+    <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
+    <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
+    <script>
+      jQuery('#qrcodeSEP').qrcode({
+        text	: "No.SEP: {$data_sep.no_sep}",
+        width : 80,
+        height: 80
+      });
+    </script>
+  </body>

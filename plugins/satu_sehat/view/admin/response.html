@@ -1,0 +1,130 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="btn-group pull-right" style="margin-top:-8px;">
+            <span class="btn btn-sm dropdown-toggle" data-toggle="dropdown">
+              <i class="fa fa-calendar"></i><span class="hidden-xs"> Periode</span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-right">
+                <form action="">
+                    <li style="padding-left:5px;padding-right:5px;">
+                        <input type="text" id="periode" class="form-control periode" name="periode" required>
+                    </li>
+                    <li style="padding-left:5px;padding-right:5px;margin-top:5px;">
+                        <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                        <input type="submit" class="btn btn-primary btn-block value="Cari">
+                    </li>        
+                </form>
+            </ul>
+        </div>
+        <h3 class="panel-title">Data Response Satu Sehat</h3>
+    </div>
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table display table-bordered table-striped" width="100%">
+                    <thead>
+                        <tr>
+                            <th style="white-space: nowrap;">Tgl. Rawat</th>
+                            <th style="white-space: nowrap;">No. Rawat</th>
+                            <th style="white-space: nowrap;">No. RM</th>
+                            <th style="white-space: nowrap;">Nama Pasien</th>
+                            <th style="white-space: nowrap;">No. KTP Pasien</th>
+                            <th style="white-space: nowrap;">Kd. Dokter</th>
+                            <th style="white-space: nowrap;">Nama Dokter</th>
+                            <th style="white-space: nowrap;">No. KTP Dokter</th>
+                            <th style="white-space: nowrap;">Kd. Poli/Unit</th>
+                            <th style="white-space: nowrap;">Poli/Unit</th>
+                            <th style="white-space: nowrap;">Status Rawat</th>
+                            <th style="white-space: nowrap;">Status Lanjut</th>
+                            <th style="white-space: nowrap;">Status Bayar</th>
+                            <th style="white-space: nowrap;">Tgl. Pulang</th>
+                            <th style="white-space: nowrap;">ID Departemen</th>
+                            <th style="white-space: nowrap;">ID Lokasi</th>
+                            <th style="white-space: nowrap;">ID Encounter</th>
+                            <th style="white-space: nowrap;">ID Condition</th>
+                            <th style="white-space: nowrap;">ID Observation Tensi</th>
+                            <th style="white-space: nowrap;">ID Observation Nadi</th>
+                            <th style="white-space: nowrap;">ID Observation RR</th>
+                            <th style="white-space: nowrap;">ID Observation Suhu</th>
+                            <th style="white-space: nowrap;">ID Observation SPO2</th>
+                            <th style="white-space: nowrap;">ID Observation GCS</th>
+                            <th style="white-space: nowrap;">ID Observation Tinggi</th>
+                            <th style="white-space: nowrap;">ID Observation Berat</th>
+                            <th style="white-space: nowrap;">ID Observation Perut</th>
+                            <th style="white-space: nowrap;">ID Observation Kesadaran</th>
+                            <th style="white-space: nowrap;">ID Procedure</th>
+                            <th style="white-space: nowrap;">ID Composition</th>
+                        </tr>    
+                    </thead>
+                    <tbody>
+                        {loop: $data_response}
+                        <tr>
+                            <td style="white-space: nowrap;">{$value.tgl_registrasi}</td>
+                            <td style="white-space: nowrap;">{$value.no_rawat}</td>
+                            <td style="white-space: nowrap;">{$value.no_rkm_medis} &nbsp; <a href="{?=url([ADMIN, 'satu_sehat', 'encounterbundle', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-plus"></i></a></td>
+                            <td style="white-space: nowrap;">{$value.nm_pasien}</td>
+                            <td style="white-space: nowrap;">{$value.no_ktp_pasien}</td>
+                            <td style="white-space: nowrap;">{$value.kd_dokter}</td>
+                            <td style="white-space: nowrap;">{$value.nm_dokter}</td>
+                            <td style="white-space: nowrap;">{$value.no_ktp_dokter}</td>
+                            <td style="white-space: nowrap;">{$value.kd_poli}</td>
+                            <td style="white-space: nowrap;">{$value.nm_poli}</td>
+                            <td style="white-space: nowrap;">{$value.stts}</td>
+                            <td style="white-space: nowrap;">{$value.status_lanjut}</td>
+                            <td style="white-space: nowrap;">{$value.status_bayar}</td>
+                            <td style="white-space: nowrap;">{$value.tgl_pulang}</td>
+                            <td style="white-space: nowrap;">{$value.id_organisasi}</td>
+                            <td style="white-space: nowrap;">{$value.id_lokasi}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_encounter)}{if: $value.tgl_pulang}<a href="{?=url([ADMIN, 'satu_sehat', 'encounter', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_encounter}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_condition)}{if: $value.diagnosa_pasien} <a href="{?=url([ADMIN, 'satu_sehat', 'condition', convertNorawat($value.no_rawat)])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_condition}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvtensi)}{if: isset($value.pemeriksaan.tensi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tensi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvtensi}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvnadi)}{if: isset($value.pemeriksaan.nadi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'nadi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvnadi}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvrespirasi)}{if: isset($value.pemeriksaan.respirasi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'respirasi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvrespirasi}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvsuhu)}{if: isset($value.pemeriksaan.suhu_tubuh)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'suhu'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvsuhu}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvspo2)}{if: isset($value.pemeriksaan.spo2)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'spo2'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvspo2}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvgcs)}{if: isset($value.pemeriksaan.gcs)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'gcs'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvgcs}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvtinggi)}{if: isset($value.pemeriksaan.tinggi)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'tinggi'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvtinggi}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvberat)}{if: isset($value.pemeriksaan.berat)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'berat'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvberat}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvperut)}{if: isset($value.pemeriksaan.lingkar_perut)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'perut'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvperut}{/if}</td>
+                            <td style="white-space: nowrap;">{if: empty($value.id_observation_ttvkesadaran)}{if: isset($value.pemeriksaan.kesadaran)} <a href="{?=url([ADMIN, 'satu_sehat', 'observation', convertNorawat($value.no_rawat), 'kesadaran'])?}" data-toggle="modal" data-target="#asuransiModal"><i class="fa fa-check"></i></a>{/if}{else}{$value.id_observation_ttvkesadaran}{/if}</td>
+                            <td style="white-space: nowrap;">{$value.id_procedure}</td>
+                            <td style="white-space: nowrap;">{$value.id_composition}</td>
+                        </tr>
+                        {/loop}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="asuransiModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            ...
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.display').DataTable({
+        "language": { "search": "", "searchPlaceholder": "Search..." },
+        "fixedColumns": {
+            "left": 4
+        },
+        "lengthChange": false,
+        "scrollX": true,
+        dom: "<<'data-table-title'><'datatable-search'f>><'row'<'col-sm-12'tr>><<'pmd-datatable-pagination' l i p>>"
+      });
+      var t = $(".display").DataTable().rows().count();
+      $(".data-table-title").html('<h3 style="display:inline;float:left;margin-top:0;" class="hidden-xs">Total: ' + t + '</h3>');
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('.periode').datetimepicker({
+          defaultDate: '{?=date('Y-m-d')?}',
+          format: 'YYYY-MM-DD',
+          locale: 'id'
+        });
+    });
+ </script>

@@ -95,8 +95,8 @@ class Admin extends AdminModule
       $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
       $this->_addHeaderFiles();
       $curr_year = date('Y');
-      $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
-      $rekeningtahun = $this->core->mysql('mlite_rekeningtahun')
+      $akunrekening = $this->db('mlite_rekening')->toArray();
+      $rekeningtahun = $this->db('mlite_rekeningtahun')
       ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_rekeningtahun.kd_rek')
       ->where('thn', $curr_year)
       ->toArray();
@@ -106,7 +106,7 @@ class Admin extends AdminModule
     public function postSaveRekeningTahun()
     {
       if($_POST['simpan']) {
-        $this->core->mysql('mlite_rekeningtahun')
+        $this->db('mlite_rekeningtahun')
         ->save([
           'thn' => $_POST['tahun'],
           'kd_rek' => $_POST['kd_rek'],
@@ -114,7 +114,7 @@ class Admin extends AdminModule
         ]);
         $this->notify('success', 'Rekening tahun telah disimpan');
       } else if ($_POST['update']) {
-        $this->core->mysql('mlite_rekeningtahun')
+        $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
         ->save([
@@ -122,7 +122,7 @@ class Admin extends AdminModule
         ]);
         $this->notify('failure', 'Rekening tahun telah diubah');
       } else if ($_POST['hapus']) {
-        $this->core->mysql('mlite_rekeningtahun')
+        $this->db('mlite_rekeningtahun')
         ->where('thn', $_POST['tahun'])
         ->where('kd_rek', $_POST['kd_rek'])
         ->delete();
@@ -134,16 +134,16 @@ class Admin extends AdminModule
     public function getPengaturanRekening()
     {
       $this->core->addJS(url([ADMIN, 'keuangan', 'akunrekeningjs']), 'footer');
-      $akunkegiatan = $this->core->mysql('mlite_akun_kegiatan')->toArray();
-      $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
+      $akunkegiatan = $this->db('mlite_akun_kegiatan')->toArray();
+      $akunrekening = $this->db('mlite_rekening')->toArray();
       return $this->draw('pengaturan.rekening.html', ['akunkegiatan' => $akunkegiatan, 'akunrekening' => $akunrekening]);
     }
 
     public function getPostingJurnal()
     {
       $this->_addHeaderFiles();
-      $kegiatan = $this->core->mysql('mlite_akun_kegiatan')->toArray();
-      $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
+      $kegiatan = $this->db('mlite_akun_kegiatan')->toArray();
+      $akunrekening = $this->db('mlite_rekening')->toArray();
       return $this->draw('posting.jurnal.html', ['kegiatan' => $kegiatan, 'akunrekening' => $akunrekening, 'no_jurnal' => $this->core->setNoJurnal()]);
     }
 
@@ -164,7 +164,7 @@ class Admin extends AdminModule
       }
 
       $jurnalharian = [];
-      $rows = $this->core->mysql('mlite_jurnal')
+      $rows = $this->db('mlite_jurnal')
         ->join('mlite_detailjurnal', 'mlite_detailjurnal.no_jurnal=mlite_jurnal.no_jurnal')
         ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
         ->where('tgl_jurnal', '>=', $tgl_awal)
@@ -176,7 +176,7 @@ class Admin extends AdminModule
         } else {
           $row['jenis'] = 'Penyesuaian';
         }
-        $rekening = $this->core->mysql('mlite_rekening')
+        $rekening = $this->db('mlite_rekening')
           ->where('kd_rek', $row['kd_rek'])->oneArray();
         $row['nm_rek'] = $rekening['nm_rek'];
         $jurnalharian[] = $row;
@@ -209,7 +209,7 @@ class Admin extends AdminModule
         $tgl_akhir = $_GET['tgl_akhir'];
       }
 
-      $query = $this->core->mysql()->pdo()->query("SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, cast((@saldo:= @saldo+kredit-debet) AS DECIMAL(12,0)) AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal WHERE (mlite_jurnal.tgl_jurnal BETWEEN '$tgl_awal' AND '$tgl_akhir') ORDER BY mlite_detailjurnal.no_jurnal ASC");
+      $query = $this->db()->pdo()->query("SELECT mlite_detailjurnal.no_jurnal, tgl_jurnal, keterangan, debet, kredit, cast((@saldo:= @saldo+kredit-debet) AS DECIMAL(12,0)) AS saldo FROM mlite_detailjurnal JOIN (SELECT @saldo := 0) as saldo_sementara JOIN mlite_jurnal ON mlite_detailjurnal.no_jurnal = mlite_jurnal.no_jurnal WHERE (mlite_jurnal.tgl_jurnal BETWEEN '$tgl_awal' AND '$tgl_akhir') ORDER BY mlite_detailjurnal.no_jurnal ASC");
       $query->execute();
       $bukubesar = $query->fetchAll(\PDO::FETCH_ASSOC);;
 
@@ -257,7 +257,7 @@ class Admin extends AdminModule
         $row['total_saldo_awal_masuk'] = 0;
         $row['total_saldo_awal_keluar'] = 0;
         $jumlah_total_saldo = 0;
-        $rows_kredit = $this->core->mysql('mlite_detailjurnal')
+        $rows_kredit = $this->db('mlite_detailjurnal')
         ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
         ->where('tipe', $row['tipe'])
         ->where('balance', 'K')
@@ -265,13 +265,13 @@ class Admin extends AdminModule
         ->toArray();
         $row['jurnal_masuk'] = [];
         foreach ($rows_kredit as $row_kredit) {
-          $kredits = $this->core->mysql('mlite_detailjurnal')->where('kd_rek', $row_kredit['kd_rek'])->toArray();
+          $kredits = $this->db('mlite_detailjurnal')->where('kd_rek', $row_kredit['kd_rek'])->toArray();
           $row_kredit['kredit_all'] = 0;
           foreach ($kredits as $kredit) {
             $row['total_masuk'] += $kredit['kredit'];
             $row_kredit['kredit_all'] += $kredit['kredit'];
           }
-          $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_kredit['kd_rek'])->oneArray();
+          $saldo_awal = $this->db('mlite_rekeningtahun')->where('kd_rek', $row_kredit['kd_rek'])->oneArray();
           $row_kredit['saldo_awal'] = 0;
           if(!empty($saldo_awal)) {
             $row_kredit['saldo_awal'] = $saldo_awal['saldo_awal'];
@@ -282,7 +282,7 @@ class Admin extends AdminModule
           $total_kredit += $row_kredit['kredit_all'];
         }
 
-        $rows_debet = $this->core->mysql('mlite_detailjurnal')
+        $rows_debet = $this->db('mlite_detailjurnal')
         ->join('mlite_rekening', 'mlite_rekening.kd_rek=mlite_detailjurnal.kd_rek')
         ->where('tipe', $row['tipe'])
         ->where('balance', 'D')
@@ -290,13 +290,13 @@ class Admin extends AdminModule
         ->toArray();
         $row['jurnal_keluar'] = [];
         foreach ($rows_debet as $row_debet) {
-          $debets = $this->core->mysql('mlite_detailjurnal')->where('kd_rek', $row_debet['kd_rek'])->toArray();
+          $debets = $this->db('mlite_detailjurnal')->where('kd_rek', $row_debet['kd_rek'])->toArray();
           $row_debet['debet_all'] = 0;
           foreach ($debets as $debet) {
             $row['total_keluar'] += $debet['debet'];
             $row_debet['debet_all'] += $debet['debet'];
           }
-          $saldo_awal = $this->core->mysql('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
+          $saldo_awal = $this->db('mlite_rekeningtahun')->where('kd_rek', $row_debet['kd_rek'])->oneArray();
           $row_debet['saldo_awal'] = 0;
           if(!empty($saldo_awal)) {
             $row_debet['saldo_awal'] = $saldo_awal['saldo_awal'];
@@ -307,12 +307,12 @@ class Admin extends AdminModule
           $total_debet += $row_debet['debet_all'];
         }
         $aruskas[] = $row;
-        $total_saldo_awal = $this->core->mysql('mlite_rekeningtahun')->toArray();
+        $total_saldo_awal = $this->db('mlite_rekeningtahun')->toArray();
         foreach ($total_saldo_awal as $saldo) {
           $jumlah_total_saldo += $saldo['saldo_awal'];
         }
       }
-      $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
+      $akunrekening = $this->db('mlite_rekening')->toArray();
       if(isset($_GET['action']) && $_GET['action'] == 'print') {
         echo $this->draw('cash.flow.print.html', ['aruskas' => $aruskas, 'akunrekening' => $akunrekening, 'masuk_all' => $total_kredit, 'keluar_all' => $total_debet, 'saldo_masuk' => $total_saldo_kredit, 'saldo_keluar' => $total_saldo_debet, 'jumlah_total_saldo' => $jumlah_total_saldo]);
         exit();
@@ -434,8 +434,8 @@ class Admin extends AdminModule
     {
         $this->assign['title'] = 'Pengaturan Modul Keuangan';
         $this->assign['keuangan'] = htmlspecialchars_array($this->settings('keuangan'));
-        $akunkegiatan = $this->core->mysql('mlite_settings')->where('module', 'keuangan')->where('field', '<>', 'jurnal_kasir')->toArray();
-        $akunrekening = $this->core->mysql('mlite_rekening')->toArray();
+        $akunkegiatan = $this->db('mlite_settings')->where('module', 'keuangan')->where('field', '<>', 'jurnal_kasir')->toArray();
+        $akunrekening = $this->db('mlite_rekening')->toArray();
         return $this->draw('settings.html', ['settings' => $this->assign, 'akunkegiatan' => $akunkegiatan, 'akunrekening' => $akunrekening]);
     }
 
@@ -452,7 +452,7 @@ class Admin extends AdminModule
     public function postSaveAkunKegiatan()
     {
         if($_POST['simpan']) {
-          $this->core->mysql('mlite_akun_kegiatan')
+          $this->db('mlite_akun_kegiatan')
           ->save([
             'id' => NULL,
             'kegiatan' => $_POST['nama_kegiatan'],
@@ -460,7 +460,7 @@ class Admin extends AdminModule
           ]);
           $this->notify('success', 'Nama kegiatan keuangan telah disimpan');
         } else if ($_POST['update']) {
-          $this->core->mysql('mlite_akun_kegiatan')
+          $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->save([
             'kegiatan' => $_POST['nama_kegiatan'],
@@ -468,7 +468,7 @@ class Admin extends AdminModule
           ]);
           $this->notify('failure', 'Nama kegiatan keuangan telah diubah');
         } else if ($_POST['hapus']) {
-          $this->core->mysql('mlite_akun_kegiatan')
+          $this->db('mlite_akun_kegiatan')
           ->where('id', $_POST['id'])
           ->delete();
           $this->notify('failure', 'Nama kegiatan keuangan telah dihapus');
@@ -479,7 +479,7 @@ class Admin extends AdminModule
     public function postSaveSettingsRekening()
     {
         foreach ($_POST['kegiatan'] as $key => $val) {
-            $this->core->mysql('mlite_akun_kegiatan')
+            $this->db('mlite_akun_kegiatan')
             ->where('id', $key)
             ->save([
               'kd_rek' => $val
@@ -492,7 +492,7 @@ class Admin extends AdminModule
 
     public function postSaveJurnal()
     {
-        $query = $this->core->mysql('mlite_jurnal')
+        $query = $this->db('mlite_jurnal')
         ->save([
           'no_jurnal' => $_POST['no_jurnal'],
           'no_bukti' => $_POST['no_bukti'],
@@ -500,7 +500,7 @@ class Admin extends AdminModule
           'jenis' => $_POST['jenis'],
           'keterangan' => $_POST['kegiatan'].'. Diposting oleh '.$this->core->getUserInfo('fullname', null, true).'. ('.$_POST['keterangan'].').'
           ]);
-        $this->core->mysql('mlite_detailjurnal')
+        $this->db('mlite_detailjurnal')
         ->save([
           'no_jurnal' => $_POST['no_jurnal'],
           'kd_rek' => $_POST['kd_rek'],

@@ -1,0 +1,174 @@
+<article class="row">
+    <form action="{?=url(ADMIN.'/satu_sehat/saveSettings')?}" method="POST">
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Pengaturan Satu Sehat Kemenkes</h3>
+                </div>
+            	  <div class="panel-body">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Organization ID</label> <span class="pull-right"></span>
+                            <input type="text" name="satu_sehat[organizationid]" class="form-control" value="{$satu_sehat.organizationid}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Client ID</label> <span class="pull-right"></span>
+                            <input type="text" name="satu_sehat[clientid]" class="form-control" value="{$satu_sehat.clientid}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Secret Key</label>
+                            <input type="text" name="satu_sehat[secretkey]" class="form-control" value="{$satu_sehat.secretkey}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Auth URL</label>
+                            <input type="text" name="satu_sehat[authurl]" class="form-control" value="{$satu_sehat.authurl}" />
+                        </div>
+                        <div class="form-group">
+                            <label>FHIR URL</label>
+                            <input type="text" name="satu_sehat[fhirurl]" class="form-control" value="{$satu_sehat.fhirurl}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Longitude</label>
+                            <input type="text" name="satu_sehat[longitude]" class="form-control" value="{$satu_sehat.longitude}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Latitude</label>
+                            <input type="text" name="satu_sehat[latitude]" class="form-control" value="{$satu_sehat.latitude}" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label>Kode Kelurahan</label>
+                            <input type="text" name="satu_sehat[kelurahan]" id="kd_kel" class="form-control" value="{$satu_sehat.kelurahan}" />
+                            <ul class="list-group" id="kelurahanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Kecamatan</label>
+                            <input type="text" name="satu_sehat[kecamatan]" id="kd_kec" class="form-control" value="{$satu_sehat.kecamatan}" />
+                            <ul class="list-group" id="kecamatanList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Kabupaten</label>
+                            <input type="text" name="satu_sehat[kabupaten]" id="kd_kab" class="form-control" value="{$satu_sehat.kabupaten}" />
+                            <ul class="list-group" id="kabupatenList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kode Propinsi</label>
+                            <input type="text" name="satu_sehat[propinsi]" id="kd_prop" class="form-control" value="{$satu_sehat.propinsi}" />
+                            <ul class="list-group" id="propinsiList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                        <div class="form-group">
+                            <label>Kodepos</label>
+                            <input type="text" name="satu_sehat[kodepos]" class="form-control" value="{$satu_sehat.kodepos}" />
+                        </div>
+                        <div class="form-group">
+                            <label>Zona Waktu</label>
+                            <select name="satu_sehat[zonawaktu]" class="form-control">
+                                <option value="WIB"{if: $satu_sehat.zonawaktu == 'WIB'} selected{/if}>WIB</option>
+                                <option value="WITA"{if: $satu_sehat.zonawaktu == 'WITA'} selected{/if}>WITA</option>
+                                <option value="WIT"{if: $satu_sehat.zonawaktu == 'WIT'} selected{/if}>WIT</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Jenis Billing</label>
+                            <select name="satu_sehat[billing]" class="form-control">
+                                <option value="mlite"{if: $satu_sehat.billing == 'mlite'} selected{/if}>mLITE</option>
+                                <option value="khanza"{if: $satu_sehat.billing == 'khanza'} selected{/if}>Khanza</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</article>
+<script>
+    $('#kd_prop').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+          $.ajax({
+             url: "{?=url([ADMIN, 'pasien', 'wilayah?show=caripropinsi'])?}",
+             method:"POST",
+             data:{query:query},
+             success:function(data)
+             {
+                $('#propinsiList').fadeIn();
+                $('#propinsiList').html(data);
+             }
+          });
+       }
+    });
+    $('#propinsiList').on('click', 'li', function(){
+       $('#kd_prop').val($(this).text().split(': ')[0]);
+       $('#propinsiList').fadeOut();
+    });
+    $('#kd_kab').keyup(function(){
+       event.preventDefault();
+       var query = $(this).val();
+       if(query != '')
+       {
+          $.ajax({
+             url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikabupaten'])?}",
+             method:"POST",
+             data:{query:query},
+             success:function(data)
+             {
+                $('#kabupatenList').fadeIn();
+                $('#kabupatenList').html(data);
+             }
+          });
+       }
+    });
+    $('#kabupatenList').on('click', 'li', function(){
+         $('#kd_kab').val($(this).text().split(': ')[0]);
+         $('#kabupatenList').fadeOut();
+    });
+    $('#kd_kec').keyup(function(){
+         event.preventDefault();
+         var query = $(this).val();
+         if(query != '')
+         {
+              $.ajax({
+                   url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikecamatan'])?}",
+                   method:"POST",
+                   data:{query:query},
+                   success:function(data)
+                   {
+                        $('#kecamatanList').fadeIn();
+                        $('#kecamatanList').html(data);
+                   }
+              });
+         }
+    });
+    $('#kecamatanList').on('click', 'li', function(){
+         $('#kd_kec').val($(this).text().split(': ')[0]);
+         $('#kecamatanList').fadeOut();
+    });
+    $('#kd_kel').keyup(function(){
+         event.preventDefault();
+         var query = $(this).val();
+         if(query != '')
+         {
+              $.ajax({
+                   url: "{?=url([ADMIN, 'pasien', 'wilayah?show=carikelurahan'])?}",
+                   method:"POST",
+                   data:{query:query},
+                   success:function(data)
+                   {
+                        $('#kelurahanList').fadeIn();
+                        $('#kelurahanList').html(data);
+                   }
+              });
+         }
+    });
+    $('#kelurahanList').on('click', 'li', function(){
+         $('#kd_kel').val($(this).text().split(': ')[0]);
+         $('#kelurahanList').fadeOut();
+    });
+  
+   </script>

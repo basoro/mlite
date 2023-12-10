@@ -513,17 +513,6 @@ function formatDuit($duit){
     return "Rp. ".number_format($duit,0,",",".").",-";
 }
 
-function stringDecrypt($key, $string){
-
-    $encrypt_method = 'AES-256-CBC';
-    $key_hash = hex2bin(hash('sha256', $key));
-    $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
-
-    $output = openssl_decrypt(base64_decode(isset_or($string,'')), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
-
-    return $output;
-}
-
 function hitungUmur($tanggal_lahir)
 {
   $birthDate = new \DateTime($tanggal_lahir);
@@ -536,6 +525,17 @@ function hitungUmur($tanggal_lahir)
     $umur =  $y." Th ".$m." Bl ".$d." Hr";
   }
   return $umur;
+}
+
+function stringDecrypt($key, $string){
+
+    $encrypt_method = 'AES-256-CBC';
+    $key_hash = hex2bin(hash('sha256', $key));
+    $iv = substr(hex2bin(hash('sha256', $key)), 0, 16);
+
+    $output = openssl_decrypt(base64_decode(isset_or($string,'')), $encrypt_method, $key_hash, OPENSSL_RAW_DATA, $iv);
+
+    return $output;
 }
 
 function decompress($string){

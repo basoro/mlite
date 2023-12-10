@@ -1,0 +1,345 @@
+<div class="modal-header">
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+    Tutup</button>
+  <h4 class="modal-title">Rujukan Keluar</h4>
+</div>
+<div class="modal-body">
+  <div id="form_rujuk">
+    <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div class="row clearfix">
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Nomor SEP</label>
+                <input type="text" name="no_sep" id="no_sep" class="form-control" />
+                <input type="text" style="display: none;" name="no_surkon" id="no_surkon" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-group">
+                <label>Catatan Rujuk</label>
+                <input type="text" name="catatan" id="catatan" class="form-control" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Poli Rujukan</label>
+                <input type="text" name="sep_spesialis_nama" id="sep_spesialis_nama_rujuk" class="form-control" value="">
+                <ul class="list-group" id="poliListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Kode</label>
+                <input type="text" name="sep_spesialis_kode" id="sep_spesialis_kode_rujuk" class="form-control" value="">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tipe Rujukan</label>
+                <select class="form-control" name="tipe_rujuk" id="tipe_rujuk" data-use-search="true">
+                  <option value="0. Penuh">Penuh</option>
+                  <option value="1. Partial">Partial</option>
+                  <option value="2. Rujuk Balik">Balik PRB</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Jenis Rujukan</label>
+                <select class="form-control" name="jns_rujuk" id="jns_rujuk" data-use-search="true">
+                  <option value="1">Rawat Inap</option>
+                  <option value="2" selected>Rawat Jalan</option>
+                </select>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tanggal Rujukan</label>
+                <input type="text" name="tanggal_rujukan" id="tanggal_rujukan" class="form-control tanggal"
+                  value="{?=date('Y-m-d')?}" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label>Tanggal Rencana Rujukan</label>
+                <input type="text" name="tanggal_datang" id="tanggal_datang" class="form-control tanggal" />
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">PPK Rujukan</label>
+                <input type="text" name="sep_asal_rujukan_nama" id="sep_asal_rujukan_nama_rujuk" class="form-control"
+                  value="">
+                <ul class="list-group" id="faskesListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Kode</label>
+                <input type="text" name="sep_asal_rujukan_kode" id="sep_asal_rujukan_kode_rujuk" class="form-control"
+                  value="">
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Diagnosa</label>
+                <input type="text" name="sep_diagnosa_nama" id="sep_diagnosa_nama_rujuk" class="form-control" value="">
+                <ul class="list-group" id="diagnosaListRujuk" style="z-index:1000;position:absolute;width:100%;"></ul>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-group">
+                <label for="" class="">Kode</label>
+                <input type="text" name="sep_diagnosa_kode" id="sep_diagnosa_kode_rujuk" class="form-control" value="">
+              </div>
+            </div>
+          </div>
+          <div class="row clearfix">
+            <div class="col-md-12">
+              <button type="button" class="btn btn-primary" id="simpan_rujuk">Simpan</button>
+              <button type="button" class="btn btn-danger" id="hapus_rujuk">Hapus</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br><br>
+
+  <div id="rujukdisplay">
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script type="text/javascript">
+  $("#hapus_kontrol").hide();
+  $('select').selectator();
+  $(function () {
+    $('.tanggal').datetimepicker({
+      format: 'YYYY-MM-DD',
+      locale: 'id'
+    });
+  });
+</script>
+<script type="text/javascript">
+  $("#form_skontrol").on("click", "#load_kontrol", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+    $("#hapus_kontrol").hide();
+  });
+
+  $(document).ready(function () {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    $("#rujukdisplay").show().load(baseURL + '/vclaim/rujukkeluardisplay/{$no_kartu}?t=' + mlite.token);
+  });
+
+  $("#form_rujuk").on("click", "#simpan_rujuk", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $('#no_sep').val();
+    var catatan = $('#catatan').val();
+    var tanggal_surat = $('#tanggal_rujukan').val();
+    var tanggal_periksa = $('#tanggal_datang').val();
+    var tipe_rujuk = $('#tipe_rujuk').val();
+    var jns_rujuk = $('#jns_rujuk').val();
+    var sep_spesialis_nama_rujuk = $('#sep_spesialis_nama_rujuk').val();
+    var sep_spesialis_kode_rujuk = $('#sep_spesialis_kode_rujuk').val();
+    var sep_asal_rujukan_nama_rujuk = $('#sep_asal_rujukan_nama_rujuk').val();
+    var sep_asal_rujukan_kode_rujuk = $('#sep_asal_rujukan_kode_rujuk').val();
+    var sep_diagnosa_nama_rujuk = $('#sep_diagnosa_nama_rujuk').val();
+    var sep_diagnosa_kode_rujuk = $('#sep_diagnosa_kode_rujuk').val();
+
+    var url = baseURL + '/vclaim/saverujukkeluar?t=' + mlite.token;
+
+    $.post(url, {
+      no_sep: no_sep,
+      catatan: catatan,
+      tanggal_surat: tanggal_surat,
+      tanggal_periksa: tanggal_periksa,
+      tipe_rujuk: tipe_rujuk,
+      jns_rujuk: jns_rujuk,
+      sep_spesialis_nama_rujuk: sep_spesialis_nama_rujuk,
+      sep_spesialis_kode_rujuk: sep_spesialis_kode_rujuk,
+      sep_asal_rujukan_nama_rujuk: sep_asal_rujukan_nama_rujuk,
+      sep_asal_rujukan_kode_rujuk: sep_asal_rujukan_kode_rujuk,
+      sep_diagnosa_nama_rujuk: sep_diagnosa_nama_rujuk,
+      sep_diagnosa_kode_rujuk: sep_diagnosa_kode_rujuk,
+    }, function (data) {
+      alert(data);
+      console.log(data);
+      $("#kontroldisplay").show().load(baseURL + '/vclaim/rujukkeluardisplay/{$no_kartu}?t=' + mlite.token);
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data Rujukan telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
+    });
+  });
+
+  $("#form_rujuk").on("click", "#hapus_rujuk", function (event) {
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_sep = $('#no_sep').val();
+    var no_surkon = $('#no_surkon').val();
+    var tanggal_surat = $('#tanggal_rujukan').val();
+    var tanggal_periksa = $('#tanggal_datang').val();
+    var poli = $('#poli').val();
+    var dokter = $('#dokter').val();
+
+    var url = baseURL + '/vclaim/saverujukkeluar?t=' + mlite.token;
+
+    $.post(url, {
+      no_sep: no_sep,
+      no_surkon: no_surkon,
+      tanggal_surat: tanggal_surat,
+      tanggal_periksa: tanggal_periksa,
+      dokter: dokter,
+      poli: poli
+    }, function (data) {
+      alert(data);
+      $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+      $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">" +
+        "Data Kontrol VClaim telah disimpan!" +
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>" +
+        "</div>").show();
+    });
+  });
+
+  $("#kontroldisplay").on("click", ".pilih_nosurat", function (event) {
+    var no_surat = $(this).attr("data-no_surat");
+    $('input:text[name=sep_nomor_skdp]').val(no_surat);
+    $('#kontrolModal').modal('hide');
+  });
+
+  $("#kontroldisplay").on("click", "#ubah_kontrol", function (event) {
+    var no_surkon = $(this).attr("data-no_surat");
+    var no_sep = $(this).attr("data-no_sep");
+    var kd_poli = $(this).attr("data-kd_poli");
+    var kd_dokter = $(this).attr("data-kd_dokter");
+    var tanggal_surat = $(this).attr("data-tanggal_surat");
+    var tanggal_kontrol = $(this).attr("data-tanggal_kontrol");
+
+    $('input:text[name=no_sep]').val(no_sep);
+    $('input:text[name=no_surkon]').val(no_surkon);
+    $('input:text[name=tanggal_rujukan]').val(tanggal_surat);
+    $('input:text[name=tanggal_datang]').val(tanggal_kontrol);
+    $("div.dokter select").val(kd_dokter).change();
+    $("div.poli select").val(kd_poli).change();
+    $('#tanggal_rujukan').attr('readonly', true);
+    $('#no_sep').attr('readonly', true);
+    $("#hapus_kontrol").show();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_asal_rujukan_nama_rujuk').keyup(function () {
+    //console.log('Spesialis Nama');
+    var query = $(this).val();
+    var sep_asal_faskes_kode = "2";
+    //  var sep_asal_faskes_kode = $('input:text[name=sep_asal_faskes_kode]').val();
+
+    if (query != '') {
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/faskes/' + encodeURIComponent(query) + '/' + encodeURIComponent(sep_asal_faskes_kode) + '?t={?=$_SESSION['token']?}',
+        method: "GET",
+        data: {},
+        success: function (data) {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output = '';
+          if (json_obj[0].metaData.code == 200) {
+            var faskes = json_obj[0].response.faskes;
+            for (var i in faskes) {
+              output += '<li class=\"list-group-item link-class\">' + faskes[i].kode + ': ' + faskes[i].nama + '</li>';
+            }
+          } else {
+            output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output += '';
+          //console.log(output);
+          $('#faskesListRujuk').fadeIn();
+          $('#faskesListRujuk').html(output).show();
+        }
+      });
+    }
+  });
+  $('#faskesListRujuk').on('click', 'li', function () {
+    $('#sep_asal_rujukan_nama_rujuk').val($(this).text().split(': ')[1]);
+    $('#sep_asal_rujukan_kode_rujuk').val($(this).text().split(': ')[0]);
+    var sep_asal_rujukan_kode = $('#sep_asal_rujukan_kode_rujuk').val();
+    $('#faskesListRujuk').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_diagnosa_nama_rujuk').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/diagnosa/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+        method: "GET",
+        data: {},
+        success: function (data) {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output = '';
+          if (json_obj[0].metaData.code == 200) {
+            var diagnosa = json_obj[0].response.diagnosa;
+            for (var i in diagnosa) {
+              output += '<li class=\"list-group-item link-class\">' + diagnosa[i].kode + ': ' + diagnosa[i].nama + '</li>';
+            }
+          } else {
+            output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output += '';
+          //console.log(output);
+          $('#diagnosaListRujuk').fadeIn();
+          $('#diagnosaListRujuk').html(output).show();
+        }
+      });
+    }
+  });
+  $('#diagnosaListRujuk').on('click', 'li', function () {
+    $('#sep_diagnosa_nama_rujuk').val($(this).text().split(': ')[1]);
+    $('#sep_diagnosa_kode_rujuk').val($(this).text().split(': ')[0]);
+    var sep_diagnosa_kode = $('#sep_diagnosa_kode_rujuk').val();
+    $('#diagnosaListRujuk').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#sep_spesialis_nama_rujuk').keyup(function () {
+    var query = $(this).val();
+    if (query != '') {
+      $.ajax({
+        url: '{?=url()?}/{?=ADMIN?}/vclaim/poli/' + encodeURIComponent(query) + '?t={?=$_SESSION['token']?}',
+        method: "GET",
+        data: {},
+        success: function (data) {
+          var data = JSON.parse(data);
+          var json_obj = [data];
+          var output = '';
+          if (json_obj[0].metaData.code == 200) {
+            var poli = json_obj[0].response.poli;
+            for (var i in poli) {
+              output += '<li class=\"list-group-item link-class\">' + poli[i].kode + ': ' + poli[i].nama + '</li>';
+            }
+          } else {
+            output += '<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+          }
+          output += '';
+          //console.log(output);
+          $('#poliListRujuk').fadeIn();
+          $('#poliListRujuk').html(output).show();
+        }
+      });
+    }
+  });
+  $('#poliListRujuk').on('click', 'li', function () {
+    $('#sep_spesialis_nama_rujuk').val($(this).text().split(': ')[1]);
+    $('#sep_spesialis_kode_rujuk').val($(this).text().split(': ')[0]);
+    var sep_spesialis_kode = $('#sep_spesialis_kode_rujuk').val();
+    $('#poliListRujuk').fadeOut();
+  });
+</script>

@@ -2,7 +2,7 @@
 namespace Plugins\Master;
 
 use Systems\AdminModule;
-use Systems\MySQL;
+
 use Plugins\Master\Src\Dokter;
 use Plugins\Master\Src\Petugas;
 use Plugins\Master\Src\Poliklinik;
@@ -652,13 +652,13 @@ class Admin extends AdminModule
 
     public function postJnsPerawatanLabTemplateSave()
     {
-      $this->mysql('template_laboratorium')->save($_POST);
+      $this->db('template_laboratorium')->save($_POST);
       exit();
     }
 
     public function postJnsPerawatanLabTemplateHapus()
     {
-      $this->mysql('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
+      $this->db('template_laboratorium')->where('id_template', $_POST['id_template'])->delete();
       exit();
     }
 
@@ -2011,11 +2011,6 @@ class Admin extends AdminModule
         // MODULE SCRIPTS
         $this->core->addCSS(url([ADMIN, 'master', 'css']));
         $this->core->addJS(url([ADMIN, 'master', 'javascript']), 'footer');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

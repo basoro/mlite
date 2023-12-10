@@ -135,7 +135,7 @@ input:focus {
     margin-bottom: 0px;
 }
 .content-title {
-    margin: 11px 0 30px 0;
+    margin: 20px 0 30px 0;
 }
 h3.panel-title {
     font-weight: 400;
@@ -1024,4 +1024,23 @@ select[multiple].form-control {
   transition: all 0.3s ease;
   color: white;
   font-size: 24px;
+}
+
+.fa-Tanggal:before {
+    content: "\f00d";
+}
+.fa-Tambalan:before {
+    content: "\f111";
+}
+.fa-Akar:before {
+    content: "\f00c";
+}
+.fa-Karies:before {
+    content: "\f10c";
+}
+.fa-Goyang:before {
+    content: "\f153";
+}
+.fa-Erupsi:before {
+    content: "\f07e";
 }

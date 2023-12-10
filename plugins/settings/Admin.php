@@ -15,7 +15,6 @@ use Plugins\Settings\Inc\RecursiveDotFilterIterator;
 class Admin extends AdminModule
 {
     private $assign = [];
-    private $feed_url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
 
     public function init()
     {
@@ -57,8 +56,8 @@ class Admin extends AdminModule
         $settings['poliklinik'] = [];
         $settings['dokter'] = [];
         if($settings['master']) {
-          $settings['poliklinik'] = $this->core->mysql('poliklinik')->where('status', '1')->toArray();
-          $settings['dokter'] = $this->core->mysql('dokter')->where('status', '1')->toArray();
+          $settings['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+          $settings['dokter'] = $this->db('dokter')->where('status', '1')->toArray();
         }
         $settings['bridging_sep'] = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
         $settings['rawat_jalan'] = $this->db('mlite_modules')->where('dir', 'rawat_jalan')->oneArray();
@@ -67,7 +66,7 @@ class Admin extends AdminModule
         $settings['timezones'] = $this->_getTimezones();
         $settings['system'] = [
             'php'           => PHP_VERSION,
-            'mysql'         => $this->core->mysql()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
+            'mysql'         => $this->db()->pdo()->query('SELECT VERSION() as version')->fetch()[0]
         ];
 
         $settings['license'] = [];
@@ -241,30 +240,24 @@ class Admin extends AdminModule
     {
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
 
-        if (isset($_POST['check'])) {
-
-            $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
-            $opts = [
-                'http' => [
-                    'method' => 'GET',
-                    'header' => [
-                            'User-Agent: PHP'
-                    ]
+        $url = "https://api.github.com/repos/basoro/khanza-lite/releases";
+        $opts = [
+            'http' => [
+                'method' => 'GET',
+                'header' => [
+                        'User-Agent: PHP'
                 ]
-            ];
+            ]
+        ];
+        $json = file_get_contents($url, false, stream_context_create($opts));
+        $obj = json_decode($json, true);
 
-            $json = file_get_contents($url, false, stream_context_create($opts));
-            $obj = json_decode($json, true);
-            $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-
+        if (isset($_POST['check'])) {
             if (!is_array($obj)) {
                 $this->tpl->set('error', $obj);
             } else {
-                if(mb_strlen($this->settings->get('settings.version'), 'UTF-8') < 5) {
-                  $this->settings('settings', 'version', '2023-01-01 00:00:00');
-                }
-                $this->settings('settings', 'update_version', $new_date_format);
-                $this->settings('settings', 'update_changelog', $obj['commit']['message']);
+                $this->settings('settings', 'update_version', $obj[0]['tag_name']);
+                $this->settings('settings', 'update_changelog', $obj[0]['body']);
             }
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
@@ -272,22 +265,9 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                $url = "https://api.github.com/repos/basoro/khanza-lite/commits/master";
-                $opts = [
-                    'http' => [
-                        'method' => 'GET',
-                        'header' => [
-                                'User-Agent: PHP'
-                        ]
-                    ]
-                ];
-
-                $json = file_get_contents($url, false, stream_context_create($opts));
-                $obj = json_decode($json, true);
-                $new_date_format = date('Y-m-d H:i:s', strtotime($obj['commit']['author']['date']));
-                $this->download('https://github.com/basoro/khanza-lite/archive/master.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/khanza-lite/archive/refs/tags/'.$obj[0]['tag_name'].'.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
-                $package = glob(BASE_DIR.'/khanza-lite-master.zip');
+                $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {
                     $package = array_shift($package);
                     $this->rcopy($package, BASE_DIR.'/tmp/latest.zip');
@@ -302,7 +282,6 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/plugins', BASE_DIR.'/backup/'.$backup_date.'/plugins');
             $this->rcopy(BASE_DIR.'/assets', BASE_DIR.'/backup/'.$backup_date.'/assets');
             $this->rcopy(BASE_DIR.'/themes', BASE_DIR.'/backup/'.$backup_date.'/themes');
-            $this->rcopy(BASE_DIR.'/vendor', BASE_DIR.'/backup/'.$backup_date.'/vendor');
             $this->rcopy(BASE_DIR.'/config.php', BASE_DIR.'/backup/'.$backup_date.'/config.php');
             $this->rcopy(BASE_DIR.'/manifest.json', BASE_DIR.'/backup/'.$backup_date.'/manifest.json');
 
@@ -312,11 +291,10 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/themes', BASE_DIR.'/themes');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-master/vendor', BASE_DIR.'/vendor');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -327,9 +305,9 @@ class Admin extends AdminModule
             unlink(BASE_DIR.'/tmp/latest.zip');
             deleteDir(BASE_DIR.'/tmp/update');
 
-            $this->settings('settings', 'version', $new_date_format);
-            $this->settings('settings', 'update_version', $new_date_format);
-            $this->settings('settings', 'update_changelog', $obj['commit']['message']);
+            $this->settings('settings', 'version', $obj[0]['tag_name']);
+            $this->settings('settings', 'update_version', $obj[0]['tag_name']);
+            $this->settings('settings', 'update_changelog', $obj[0]['body']);
 
             sleep(2);
             redirect(url([ADMIN, 'settings', 'updates']));

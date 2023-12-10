@@ -2,7 +2,7 @@
 namespace Plugins\Operasi;
 
 use Systems\AdminModule;
-use Systems\MySQL;
+
 
 class Admin extends AdminModule
 {
@@ -43,7 +43,7 @@ class Admin extends AdminModule
         $tgl_masuk_akhir = $_POST['periode_rawat_akhir'];
       }
       $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-      $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
+      $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
       $this->_Display($tgl_masuk, $tgl_masuk_akhir);
       return $this->draw('pasienoperasi.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
     }
@@ -60,7 +60,7 @@ class Admin extends AdminModule
           $tgl_masuk_akhir = $_POST['periode_rawat_akhir'];
         }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $master_berkas_digital = $this->core->mysql('master_berkas_digital')->toArray();
+        $master_berkas_digital = $this->db('master_berkas_digital')->toArray();
         $this->_Display($tgl_masuk, $tgl_masuk_akhir);
         echo $this->draw('display.html', ['operasi' => $this->assign, 'cek_vclaim' => $cek_vclaim, 'master_berkas_digital' => $master_berkas_digital]);
         exit();
@@ -71,9 +71,9 @@ class Admin extends AdminModule
         $this->_addHeaderFiles();
 
         $this->assign['kategori'] = $this->core->getEnum('operasi','kategori');
-        $this->assign['paket_operasi'] = $this->core->mysql('paket_operasi')->where('status', '1')->toArray();
-        $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
-        $this->assign['petugas'] = $this->core->mysql('petugas')->toArray();
+        $this->assign['paket_operasi'] = $this->db('paket_operasi')->where('status', '1')->toArray();
+        $this->assign['dokter'] = $this->db('dokter')->toArray();
+        $this->assign['petugas'] = $this->db('petugas')->toArray();
         $this->assign['no_rawat'] = '';
 
         $bangsal = str_replace(",","','", $this->core->getUserInfo('cap', null, true));
@@ -97,20 +97,20 @@ class Admin extends AdminModule
           AND
             reg_periksa.kd_pj=penjab.kd_pj";
 
-        $stmt = $this->core->mysql()->pdo()->prepare($sql);
+        $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
         $this->assign['list'] = [];
         foreach ($rows as $row) {
-          $paket_operasi = $this->core->mysql('paket_operasi')->where('kode_paket', $row['kode_paket'])->oneArray();
+          $paket_operasi = $this->db('paket_operasi')->where('kode_paket', $row['kode_paket'])->oneArray();
           $row['nm_perawatan'] = $paket_operasi['nm_perawatan'];
           $this->assign['list'][] = $row;
         }
 
 
         if (isset($_POST['no_rawat'])){
-          $this->assign['operasi'] = $this->core->mysql('operasi')
+          $this->assign['operasi'] = $this->db('operasi')
             ->join('reg_periksa', 'reg_periksa.no_rawat=operasi.no_rawat')
             ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
             ->where('operasi.no_rawat', $_POST['no_rawat'])
@@ -143,12 +143,12 @@ class Admin extends AdminModule
     {
 
       $this->assign['kategori'] = $this->core->getEnum('operasi','kategori');
-      $this->assign['paket_operasi'] = $this->core->mysql('paket_operasi')->where('status', '1')->toArray();
-      $this->assign['dokter'] = $this->core->mysql('dokter')->toArray();
-      $this->assign['petugas'] = $this->core->mysql('petugas')->toArray();
+      $this->assign['paket_operasi'] = $this->db('paket_operasi')->where('status', '1')->toArray();
+      $this->assign['dokter'] = $this->db('dokter')->toArray();
+      $this->assign['petugas'] = $this->db('petugas')->toArray();
       $this->assign['no_rawat'] = '';
       if (isset($_POST['no_rawat'])){
-        $this->assign['operasi'] = $this->core->mysql('operasi')
+        $this->assign['operasi'] = $this->db('operasi')
           ->join('reg_periksa', 'reg_periksa.no_rawat=operasi.no_rawat')
           ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
           ->where('operasi.no_rawat', $_POST['no_rawat'])
@@ -186,9 +186,9 @@ class Admin extends AdminModule
 
     public function postSave()
     {
-      $paket_operasi = $this->core->mysql('paket_operasi')->where('kode_paket', $_POST['kode_paket'])->oneArray();
-      if(!$this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->oneArray()) {
-        $operasi = $this->core->mysql('operasi')->save([
+      $paket_operasi = $this->db('paket_operasi')->where('kode_paket', $_POST['kode_paket'])->oneArray();
+      if(!$this->db('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->oneArray()) {
+        $operasi = $this->db('operasi')->save([
           'no_rawat' => $_POST['no_rawat'],
           'tgl_operasi' => $_POST['tgl_operasi'],
           'jenis_anasthesi' => $_POST['jenis_anasthesi'],
@@ -248,7 +248,7 @@ class Admin extends AdminModule
           'status' => $_POST['status']
         ]);
       } else {
-        $operasi = $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->update([
+        $operasi = $this->db('operasi')->where('no_rawat', $_POST['no_rawat'])->where('kode_paket', $_POST['kode_paket'])->update([
           'tgl_operasi' => $_POST['tgl_operasi'],
           'jenis_anasthesi' => $_POST['jenis_anasthesi'],
           'kategori' => $_POST['kategori'],
@@ -326,7 +326,7 @@ class Admin extends AdminModule
             reg_periksa.no_rawat = '$cari'
           LIMIT 10";
 
-        $stmt = $this->core->mysql()->pdo()->prepare($sql);
+        $stmt = $this->db()->pdo()->prepare($sql);
         $stmt->execute();
         $pasien = $stmt->fetchAll();
 
@@ -338,7 +338,7 @@ class Admin extends AdminModule
     public function anyRincian()
     {
 
-      $rows_beri_obat_operasi = $this->core->mysql('beri_obat_operasi')
+      $rows_beri_obat_operasi = $this->db('beri_obat_operasi')
       ->join('obatbhp_ok', 'obatbhp_ok.kd_obat=beri_obat_operasi.kd_obat')
       ->where('no_rawat', $_POST['no_rawat'])
       ->toArray();
@@ -359,7 +359,7 @@ class Admin extends AdminModule
 
     public function anyObat()
     {
-      $obat = $this->core->mysql('obatbhp_ok')
+      $obat = $this->db('obatbhp_ok')
         ->like('nm_obat', '%'.$_POST['obat'].'%')
         ->limit(10)
         ->toArray();
@@ -369,13 +369,13 @@ class Admin extends AdminModule
 
     public function postHapus()
     {
-      $this->core->mysql('operasi')->where('no_rawat', $_POST['no_rawat'])->delete();
+      $this->db('operasi')->where('no_rawat', $_POST['no_rawat'])->delete();
       exit();
     }
 
     public function postSaveDetail()
     {
-      $this->core->mysql('beri_obat_operasi')->save([
+      $this->db('beri_obat_operasi')->save([
         'no_rawat' => $_POST['no_rawat'],
         'tanggal' => date('Y-m-d H:i:s'),
         'kd_obat' => $_POST['kd_obat'],
@@ -387,7 +387,7 @@ class Admin extends AdminModule
 
     public function postHapusDetail()
     {
-      $this->core->mysql('beri_obat_operasi')
+      $this->db('beri_obat_operasi')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('kd_obat', $_POST['kd_obat'])
         ->where('tanggal', $_POST['tanggal'])
@@ -404,10 +404,10 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
       $status = $this->core->getEnum('booking_operasi','status');
-      $dokter = $this->core->mysql('dokter')->where('status', '1')->toArray();
-      $ruang_ok = $this->core->mysql('ruang_ok')->toArray();
-      $paket_operasi = $this->core->mysql('paket_operasi')->toArray();
-      $rows = $this->core->mysql('booking_operasi')->join('ruang_ok', 'ruang_ok.kd_ruang_ok=booking_operasi.kd_ruang_ok')->toArray();
+      $dokter = $this->db('dokter')->where('status', '1')->toArray();
+      $ruang_ok = $this->db('ruang_ok')->toArray();
+      $paket_operasi = $this->db('paket_operasi')->toArray();
+      $rows = $this->db('booking_operasi')->join('ruang_ok', 'ruang_ok.kd_ruang_ok=booking_operasi.kd_ruang_ok')->toArray();
       $booking_operasi = [];
       foreach ($rows as $row) {
         $row['nm_dokter'] = $this->core->getDokterInfo('nm_dokter', $row['kd_dokter']);
@@ -425,7 +425,7 @@ class Admin extends AdminModule
         unset($_POST['no_rkm_medis']);
         unset($_POST['pasien']);
         unset($_POST['nm_pasien']);
-        $this->core->mysql('booking_operasi')->save($_POST);
+        $this->db('booking_operasi')->save($_POST);
         $this->notify('success', 'Booking operasi telah disimpan');
       } else if ($_POST['update']) {
         $no_rawat = $_POST['no_rawat'];
@@ -434,12 +434,12 @@ class Admin extends AdminModule
         unset($_POST['no_rkm_medis']);
         unset($_POST['pasien']);
         unset($_POST['nm_pasien']);
-        $this->core->mysql('booking_operasi')
+        $this->db('booking_operasi')
           ->where('no_rawat', $no_rawat)
           ->save($_POST);
         $this->notify('failure', 'Booking operasi telah diubah');
       } else if ($_POST['hapus']) {
-        $this->core->mysql('booking_operasi')
+        $this->db('booking_operasi')
           ->where('no_rawat', $_POST['no_rawat'])
           ->delete();
         $this->notify('failure', 'Booking operasi telah dihapus');
@@ -453,12 +453,12 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
       $kategori = $this->core->getEnum('paket_operasi','kategori');
-      $penjab = $this->core->mysql('penjab')->where('status', '1')->toArray();
+      $penjab = $this->db('penjab')->where('status', '1')->toArray();
       $kelas = $this->core->getEnum('paket_operasi','kelas');
-      $rows_paketoperasi = $this->core->mysql('paket_operasi')->toArray();
+      $rows_paketoperasi = $this->db('paket_operasi')->toArray();
       $paketoperasi = [];
       foreach ($rows_paketoperasi as $row) {
-        $rows = $this->core->mysql('penjab')->where('kd_pj', $row['kd_pj'])->oneArray();
+        $rows = $this->db('penjab')->where('kd_pj', $row['kd_pj'])->oneArray();
         $row['png_jawab'] = $rows['png_jawab'];
         $paketoperasi[] = $row;
       }
@@ -469,18 +469,18 @@ class Admin extends AdminModule
     {
       if($_POST['simpan']) {
         unset($_POST['simpan']);
-        $this->core->mysql('paket_operasi')->save($_POST);
+        $this->db('paket_operasi')->save($_POST);
         $this->notify('success', 'Paket operasi telah disimpan');
       } else if ($_POST['update']) {
         $kode_paket = $_POST['kode_paket'];
         unset($_POST['update']);
         unset($_POST['kode_paket']);
-        $this->core->mysql('paket_operasi')
+        $this->db('paket_operasi')
           ->where('kode_paket', $kode_paket)
           ->save($_POST);
         $this->notify('failure', 'Paket operasi telah diubah');
       } else if ($_POST['hapus']) {
-        $this->core->mysql('paket_operasi')
+        $this->db('paket_operasi')
           ->where('kode_paket', $_POST['kode_paket'])
           ->delete();
         $this->notify('failure', 'Paket operasi telah dihapus');
@@ -493,8 +493,8 @@ class Admin extends AdminModule
       $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
       $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
       $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-      $satuan = $this->core->mysql('kodesatuan')->toArray();
-      $obatoperasi = $this->core->mysql('obatbhp_ok')
+      $satuan = $this->db('kodesatuan')->toArray();
+      $obatoperasi = $this->db('obatbhp_ok')
         ->join('kodesatuan', 'kodesatuan.kode_sat=obatbhp_ok.kode_sat')
         ->toArray();
       return $this->draw('obatoperasi.html', ['obatoperasi' => $obatoperasi, 'satuan' => $satuan]);
@@ -504,18 +504,18 @@ class Admin extends AdminModule
     {
       if($_POST['simpan']) {
         unset($_POST['simpan']);
-        $this->core->mysql('obatbhp_ok')->save($_POST);
+        $this->db('obatbhp_ok')->save($_POST);
         $this->notify('success', 'Obat operasi telah disimpan');
       } else if ($_POST['update']) {
         $kd_obat = $_POST['kd_obat'];
         unset($_POST['update']);
         unset($_POST['kd_obat']);
-        $this->core->mysql('obatbhp_ok')
+        $this->db('obatbhp_ok')
           ->where('kd_obat', $kd_obat)
           ->save($_POST);
         $this->notify('failure', 'Obat operasi telah diubah');
       } else if ($_POST['hapus']) {
-        $this->core->mysql('obatbhp_ok')
+        $this->db('obatbhp_ok')
           ->where('kd_obat', $_POST['kd_obat'])
           ->delete();
         $this->notify('failure', 'Obat operasi telah dihapus');
@@ -532,7 +532,7 @@ class Admin extends AdminModule
       $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
       $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
       $permintaan_pa = $this->core->getEnum('laporan_operasi','permintaan_pa');
-      $rows = $this->core->mysql('laporan_operasi')->toArray();
+      $rows = $this->db('laporan_operasi')->toArray();
       $laporanoperasi = [];
       foreach ($rows as $row) {
         $row['no_rkm_medis'] = $this->core->getRegPeriksaInfo('no_rkm_medis', $row['no_rawat']);
@@ -550,7 +550,7 @@ class Admin extends AdminModule
         unset($_POST['no_rkm_medis']);
         unset($_POST['pasien']);
         unset($_POST['nm_pasien']);
-        $this->core->mysql('laporan_operasi')->save($_POST);
+        $this->db('laporan_operasi')->save($_POST);
         $this->notify('success', 'Laporan operasi telah disimpan');
       } else if ($_POST['update']) {
         $no_rawat = $_POST['no_rawat'];
@@ -559,12 +559,12 @@ class Admin extends AdminModule
         unset($_POST['no_rkm_medis']);
         unset($_POST['pasien']);
         unset($_POST['nm_pasien']);
-        $this->core->mysql('laporan_operasi')
+        $this->db('laporan_operasi')
           ->where('no_rawat', $no_rawat)
           ->save($_POST);
         $this->notify('failure', 'Laporan operasi telah diubah');
       } else if ($_POST['hapus']) {
-        $this->core->mysql('laporan_operasi')
+        $this->db('laporan_operasi')
           ->where('no_rawat', $_POST['no_rawat'])
           ->delete();
         $this->notify('failure', 'Laporan operasi telah dihapus');

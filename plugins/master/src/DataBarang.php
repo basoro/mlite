@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class DataBarang
 {
@@ -16,7 +16,7 @@ class DataBarang
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('databarang')
+      $totalRecords = $this->db('databarang')
         ->select('kode_brng')
         ->toArray();
       $offset         = 30;
@@ -24,7 +24,7 @@ class DataBarang
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('databarang')
+      $return['list'] = $this->db('databarang')
         ->select([
           'kode_brng' => 'kode_brng',
           'nama_brng' => 'nama_brng',
@@ -68,14 +68,14 @@ class DataBarang
 
     public function anyForm()
     {
-        $return['golongan_barang'] = $this->mysql('golongan_barang')->toArray();
-        $return['kategori_barang'] = $this->mysql('kategori_barang')->toArray();
-        $return['industrifarmasi'] = $this->mysql('industrifarmasi')->toArray();
-        $return['jenis'] = $this->mysql('jenis')->toArray();
-        $return['kodesatuan'] = $this->mysql('kodesatuan')->toArray();
+        $return['golongan_barang'] = $this->db('golongan_barang')->toArray();
+        $return['kategori_barang'] = $this->db('kategori_barang')->toArray();
+        $return['industrifarmasi'] = $this->db('industrifarmasi')->toArray();
+        $return['jenis'] = $this->db('jenis')->toArray();
+        $return['kodesatuan'] = $this->db('kodesatuan')->toArray();
         $return['status'] = ['1','0'];
         if (isset($_POST['kode_brng'])){
-          $return['form'] = $this->mysql('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray();
+          $return['form'] = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray();
         } else {
           $return['form'] = [
             'kode_brng' => '',
@@ -114,7 +114,7 @@ class DataBarang
     {
 
         $perpage = '30';
-        $totalRecords = $this->mysql('databarang')
+        $totalRecords = $this->db('databarang')
           ->select('kode_brng')
           ->toArray();
         $offset         = 30;
@@ -122,7 +122,7 @@ class DataBarang
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('databarang')
+        $return['list'] = $this->db('databarang')
           ->select([
             'kode_brng' => 'kode_brng',
             'nama_brng' => 'nama_brng',
@@ -162,7 +162,7 @@ class DataBarang
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('databarang')
+          $return['list'] = $this->db('databarang')
             ->select([
               'kode_brng' => 'kode_brng',
               'nama_brng' => 'nama_brng',
@@ -207,7 +207,7 @@ class DataBarang
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('databarang')
+          $return['list'] = $this->db('databarang')
             ->select([
               'kode_brng' => 'kode_brng',
               'nama_brng' => 'nama_brng',
@@ -253,22 +253,22 @@ class DataBarang
 
     public function postSave()
     {
-      if (!$this->mysql('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray()) {
-        $query = $this->mysql('databarang')->save($_POST);
+      if (!$this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->oneArray()) {
+        $query = $this->db('databarang')->save($_POST);
       } else {
-        $query = $this->mysql('databarang')->where('kode_brng', $_POST['kode_brng'])->save($_POST);
+        $query = $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('databarang')->where('kode_brng', $_POST['kode_brng'])->update(['status', '0']);
+      return $this->db('databarang')->where('kode_brng', $_POST['kode_brng'])->update(['status', '0']);
     }
 
     public function postMaxId()
     {
-      $max_id = $this->mysql('databarang')->select(['kode_brng' => 'ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0)'])->oneArray();
+      $max_id = $this->db('databarang')->select(['kode_brng' => 'ifnull(MAX(CONVERT(RIGHT(kode_brng,5),signed)),0)'])->oneArray();
       if(empty($max_id['kode_brng'])) {
         $max_id['kode_brng'] = '00000';
       }
@@ -276,11 +276,6 @@ class DataBarang
       $next_max_id = 'B'.$_next_max_id;
       echo $next_max_id;
       exit();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

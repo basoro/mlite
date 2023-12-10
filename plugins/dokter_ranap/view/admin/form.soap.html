@@ -22,6 +22,10 @@
             <label for="nama_pasien">Nama Pasien</label>
             <input type="text" name="nm_pasien" class="form-control" placeholder="Nama pasien" value="" readonly>
           </div>
+          <div class="form-group">
+            <label for="nama_pasien">Umur</label>
+            <input type="text" name="umur" class="form-control" placeholder="Umur pasien" value="" readonly>
+          </div>
       </div>
     </div>
   </div>
@@ -126,6 +130,9 @@
           <button type="button" name="button" class="btn btn-danger" id="buka_icd10dan9"><i class="fa fa-download"></i><span class="hidden-xs"> ICD 10 & 9</span></button>
           <button type="button" name="button" class="btn btn-info" id="buka_riwayat"><i class="fa fa-file-o"></i><span class="hidden-xs"> Riwayat</span></button>
           <button type="button" name="button" class="btn btn-success" id="selesai_soap"><i class="fa fa-check"></i><span class="hidden-xs"> Selesai</span></button>
+          <span class="pull-right">
+            <a href="#" class="btn btn-warning resume"><i class="fa fa-file-text"></i><span class="hidden-xs"> Resume</span></a>
+          </span>
         </div>
       </div>
     </div>
@@ -393,4 +400,23 @@
     $("#tutup_icd10dan9").val("Buka Form");
     $("#tutup_icd10dan9").attr("id", "buka_icd10dan9");
   });
+</script>
+
+<script>
+$("#form_soap").on("click",".resume", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $('input:text[name=no_rawat]').val().replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_ranap/resume/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#resumeModal');
+  var modalContent = $('#resumeModal .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});
 </script>

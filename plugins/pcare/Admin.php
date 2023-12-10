@@ -1424,18 +1424,18 @@ class Admin extends AdminModule
   public function getBridgingPCare($no_rkm_medis, $date)
   {
     $date = date('Y-m-d', strtotime($date));
-    $pendaftaran = $this->core->mysql('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->like('tgl_registrasi', $date)->oneArray();
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $pendaftaran = $this->db('reg_periksa')->where('no_rkm_medis', $no_rkm_medis)->like('tgl_registrasi', $date)->oneArray();
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
-    echo $this->draw('bridgingpcare.html', ['pasien' => $this->core->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray(), 'pemeriksaan' => $this->core->mysql('pemeriksaan_ralan')->where('no_rawat', $pendaftaran['no_rawat'])->oneArray(), 'bridging_pcare' => $bridging_pcare]);
+    echo $this->draw('bridgingpcare.html', ['pasien' => $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray(), 'pemeriksaan' => $this->db('pemeriksaan_ralan')->where('no_rawat', $pendaftaran['no_rawat'])->oneArray(), 'bridging_pcare' => $bridging_pcare]);
     exit();
   }
 
   public function getBridgingPCarePendaftaranTampil($no_rkm_medis)
   {
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
       ->toArray();
@@ -1445,7 +1445,7 @@ class Admin extends AdminModule
 
   public function getBridgingPCareKunjunganTampil($no_rkm_medis)
   {
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('terapi', '<>', '')
       ->where('mlite_bridging_pcare.no_rkm_medis', $no_rkm_medis)
@@ -1456,7 +1456,7 @@ class Admin extends AdminModule
 
   public function getBridgingPCareRujukanTampil($no_rkm_medis)
   {
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('kode_faskeskhusus', '<>', '')
       ->orWhere('kode_ppk', '<>', '')
@@ -1471,7 +1471,7 @@ class Admin extends AdminModule
     $settings = $this->settings('pcare');
     $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
 
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('nomor_kunjungan', $nomor_kunjungan)
       ->oneArray();
@@ -1482,7 +1482,7 @@ class Admin extends AdminModule
   public function getBridgingPCareTindakan($nomor_kunjungan)
   {
     $this->_addHeaderFiles();
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('nomor_kunjungan', $nomor_kunjungan)
       ->oneArray();
@@ -1494,16 +1494,19 @@ class Admin extends AdminModule
     $url = $this->api_url.'tindakan/kunjungan/'.$nomor_kunjungan;
     $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    // echo json_encode($json);
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
-    if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+    $data_tindakan = [];
+    if($code == '200') {
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      if (!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+          $data_tindakan = json_decode($decompress,true);
+      }  
     }
-    $data_tindakan = json_decode($decompress,true);
 
     $ref_tindakan = '[
       {
@@ -1745,7 +1748,7 @@ class Admin extends AdminModule
   public function getBridgingPCareObat($nomor_kunjungan)
   {
     $this->_addHeaderFiles();
-    $bridging_pcare = $this->core->mysql('mlite_bridging_pcare')
+    $bridging_pcare = $this->db('mlite_bridging_pcare')
       ->join('pasien', 'pasien.no_rkm_medis=mlite_bridging_pcare.no_rkm_medis')
       ->where('nomor_kunjungan', $nomor_kunjungan)
       ->oneArray();
@@ -1761,12 +1764,16 @@ class Admin extends AdminModule
 
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
-    $stringDecrypt = stringDecrypt($key, $json['response']);
+
     $decompress = '""';
-    if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+    $data_obat = [];
+    if($code == '200') {
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      if (!empty($stringDecrypt)) {
+          $decompress = decompress($stringDecrypt);
+          $data_obat = json_decode($decompress,true);
+      }  
     }
-    $data_obat = json_decode($decompress,true);
 
     echo $this->draw('bridgingpcare.obat.html', ['bridging_pcare' => $bridging_pcare, 'data_obat' => $data_obat]);
     exit();
@@ -2075,7 +2082,7 @@ class Admin extends AdminModule
     }
 
     if($noUrut !="") {
-      $this->core->mysql('mlite_bridging_pcare')->save([
+      $this->db('mlite_bridging_pcare')->save([
         "no_rawat" => $_POST['id_pendaftaran'],
         "no_rkm_medis" => $_POST['id_pasien'],
         "tgl_daftar" => $_POST['tglDaftar'],

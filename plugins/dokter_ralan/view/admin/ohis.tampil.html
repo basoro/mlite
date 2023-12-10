@@ -1,0 +1,41 @@
+<h4>History OHIS</h4>
+<table class="table table-bordered table-striped table-hover display nowrap" width="100%">
+  <thead>
+    <tr>
+      <th>Tanggal</th>
+      <th>Debris Index</th>
+      <th>Calculus Index</th>
+      <th>Index OHIS</th>
+      <th>Kriteria OHIS</th>
+      <th>Aksi</th>
+    </tr>
+  </thead>
+  <tbody>
+    {loop: $ohis}
+      <tr>
+        <td>{$value.tgl_input}</td>
+        <td>{$value.debris}</td>
+        <td>{$value.calculus}</td>
+        <td>{$value.nilai}</td>
+        <td>{$value.kriteria}</td>
+        <td><a href="#" class="btn btn-xs btn-danger deleteohis" data-tgl_input="{$value.tgl_input}"><span class="fa fa-trash"></span><span class="hidden-xs">Hapus</span></a></td>
+      </tr>
+    {/loop}
+  </tbody>
+</table>
+<script type="text/javascript">
+$(document).ready(function(){
+  $(".deleteohis").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var id_pasien = $('input:text[name=no_rkm_medis]').val();
+    var tgl_input  = $(this).attr("data-tgl_input");
+    var url = baseURL + '/dokter_ralan/ohisdelete/?t=' + mlite.token;
+    $.post(url,{
+      no_rkm_medis:id_pasien,
+      tgl_input: tgl_input
+    } ,function(data) {
+      $('.tampildataohis').load(baseURL + '/dokter_ralan/ohistampil/' + id_pasien + '?t=' + mlite.token);
+    });
+  });
+});
+</script>

@@ -36,7 +36,7 @@ class Admin extends AdminModule
     {
         $this->_addHeaderFiles();
         $this->assign['title'] = 'Pengaturan Modul JKN Mobile FKTP';
-        $this->assign['penjab'] = $this->core->mysql('penjab')->where('status', '1')->toArray();
+        $this->assign['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         $this->assign['poliklinik'] = $this->_getPoliklinik($this->settings->get('jkn_mobile_fktp.display'));
         $this->assign['jkn_mobile_fktp'] = htmlspecialchars_array($this->settings('jkn_mobile_fktp'));
         return $this->draw('settings.html', ['settings' => $this->assign]);
@@ -45,7 +45,7 @@ class Admin extends AdminModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->core->mysql('poliklinik')->toArray();
+        $rows = $this->db('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
@@ -83,7 +83,7 @@ class Admin extends AdminModule
     {
         $this->core->addJS(url([ADMIN, 'jkn_mobile_fktp', 'mappingpolijs']), 'footer');
 
-        $totalRecords = $this->core->mysql('maping_poliklinik_pcare')
+        $totalRecords = $this->db('maping_poliklinik_pcare')
           ->select('kd_poli_rs')
           ->toArray();
         $jumlah_data    = count($totalRecords);
@@ -91,7 +91,7 @@ class Admin extends AdminModule
         $jml_halaman    = ceil($jumlah_data / $offset);
         $halaman    = 1;
 
-        $mappingpoli = $this->core->mysql('maping_poliklinik_pcare')
+        $mappingpoli = $this->db('maping_poliklinik_pcare')
           ->desc('kd_poli_rs')
           ->limit(10)
           ->toArray();
@@ -109,7 +109,7 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'jkn_mobile_fktp', 'mappingpolijs']), 'footer');
 
         $perpage = '10';
-        $totalRecords = $this->core->mysql('maping_poliklinik_pcare')
+        $totalRecords = $this->db('maping_poliklinik_pcare')
           ->select('kd_poli_rs')
           ->toArray();
         $jumlah_data    = count($totalRecords);
@@ -118,7 +118,7 @@ class Admin extends AdminModule
         $halaman    = 1;
 
         if(isset($_POST['cari'])) {
-          $mappingpoli = $this->core->mysql('maping_poliklinik_pcare')
+          $mappingpoli = $this->db('maping_poliklinik_pcare')
             ->like('kd_poli_pcare', '%'.$_POST['cari'].'%')
             ->orLike('nm_poli_pcare', '%'.$_POST['cari'].'%')
             ->desc('kd_poli_rs')
@@ -129,14 +129,14 @@ class Admin extends AdminModule
           $jml_halaman = ceil($jumlah_data / $offset);
         }elseif(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $mappingpoli = $this->core->mysql('maping_poliklinik_pcare')
+          $mappingpoli = $this->db('maping_poliklinik_pcare')
             ->desc('kd_poli_rs')
             ->offset($offset)
             ->limit($perpage)
             ->toArray();
           $halaman = $_POST['halaman'];
         }else{
-          $mappingpoli = $this->core->mysql('maping_poliklinik_pcare')
+          $mappingpoli = $this->db('maping_poliklinik_pcare')
             ->desc('kd_poli_rs')
             ->offset(0)
             ->limit($perpage)
@@ -155,9 +155,9 @@ class Admin extends AdminModule
 
     public function anyMappingPoliForm()
     {
-      $poliklinik = $this->core->mysql('poliklinik')->toArray();
+      $poliklinik = $this->db('poliklinik')->toArray();
       if (isset($_POST['kd_poli_rs'])){
-        $mappingpoli = $this->core->mysql('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray();
+        $mappingpoli = $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray();
         echo $this->draw('mappingpoli.form.html', ['poliklinik' => $poliklinik, 'mappingpoli' => $mappingpoli]);
       } else {
         $mappingpoli = [
@@ -174,14 +174,14 @@ class Admin extends AdminModule
     {
       $kd_poli_pcare = strtok($_POST['getPoli'], ':');
       $nm_poli_pcare = substr($_POST['getPoli'], strpos($_POST['getPoli'], ': ') + 1);
-      if (!$this->core->mysql('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray()) {
-        $query = $this->core->mysql('maping_poliklinik_pcare')->save([
+      if (!$this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->oneArray()) {
+        $query = $this->db('maping_poliklinik_pcare')->save([
           'kd_poli_rs' => $_POST['kd_poli_rs'],
           'kd_poli_pcare' => $kd_poli_pcare,
           'nm_poli_pcare' => $nm_poli_pcare
         ]);
       } else {
-        $query = $this->core->mysql('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->save([
+        $query = $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->save([
           'kd_poli_pcare' => $kd_poli_pcare,
           'nm_poli_pcare' => $nm_poli_pcare
         ]);
@@ -191,7 +191,7 @@ class Admin extends AdminModule
 
     public function postMappingPoliHapus()
     {
-      $this->core->mysql('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->delete();
+      $this->db('maping_poliklinik_pcare')->where('kd_poli_rs', $_POST['kd_poli_rs'])->delete();
       exit();
     }
 

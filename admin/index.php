@@ -41,26 +41,10 @@ if ($core->loginCheck()) {
                 $url = array_merge([ADMIN], $arrayURL);
                 redirect(url($url));
             }
-            if(MULTI_APP) {
-                if(!empty(MULTI_APP_REDIRECT)) {
-                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
-                } else {
-                    redirect(url([ADMIN, 'dashboard', 'main']));
-                }
-            } else {
-                redirect(url([ADMIN, 'dashboard', 'main']));
-            }
+            redirect(url([ADMIN, 'dashboard', 'main']));
         }
     }
-    if(MULTI_APP) {
-      if(!empty(MULTI_APP_REDIRECT)) {
-        echo $core->tpl->draw(MODULES.'/'.MULTI_APP_REDIRECT.'/view/login.html', true);
-      } else {
-        $core->drawTheme('login.html');
-      }
-    } else {
-      $core->drawTheme('login.html');
-    }
+    $core->drawTheme('login.html');
 
 }
 

@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class StatusWP
 {
@@ -16,7 +16,7 @@ class StatusWP
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('stts_wp')
+      $totalRecords = $this->db('stts_wp')
         ->select('stts')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class StatusWP
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('stts_wp')
+      $return['list'] = $this->db('stts_wp')
         ->desc('stts')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class StatusWP
     public function anyForm()
     {
         if (isset($_POST['stts'])){
-          $return['form'] = $this->mysql('stts_wp')->where('stts', $_POST['stts'])->oneArray();
+          $return['form'] = $this->db('stts_wp')->where('stts', $_POST['stts'])->oneArray();
         } else {
           $return['form'] = [
             'stts' => '',
@@ -51,7 +51,7 @@ class StatusWP
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('stts_wp')
+        $totalRecords = $this->db('stts_wp')
           ->select('stts')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class StatusWP
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('stts_wp')
+        $return['list'] = $this->db('stts_wp')
           ->desc('stts')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('stts_wp')
+          $return['list'] = $this->db('stts_wp')
             ->like('stts', '%'.$_POST['cari'].'%')
             ->orLike('ktg', '%'.$_POST['cari'].'%')
             ->desc('stts')
@@ -78,7 +78,7 @@ class StatusWP
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('stts_wp')
+          $return['list'] = $this->db('stts_wp')
             ->desc('stts')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class StatusWP
 
     public function postSave()
     {
-      if (!$this->mysql('stts_wp')->where('stts', $_POST['stts'])->oneArray()) {
-        $query = $this->mysql('stts_wp')->save($_POST);
+      if (!$this->db('stts_wp')->where('stts', $_POST['stts'])->oneArray()) {
+        $query = $this->db('stts_wp')->save($_POST);
       } else {
-        $query = $this->mysql('stts_wp')->where('stts', $_POST['stts'])->save($_POST);
+        $query = $this->db('stts_wp')->where('stts', $_POST['stts'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('stts_wp')->where('stts', $_POST['stts'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('stts_wp')->where('stts', $_POST['stts'])->delete();
     }
 
 }

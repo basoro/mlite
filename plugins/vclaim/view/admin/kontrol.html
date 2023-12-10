@@ -127,9 +127,29 @@
     });
   });
 
+  $("#form_skontrol").on("click","#hapus_kontrol", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_surkon       = $('#no_surkon').val();
+
+    var url = baseURL + '/vclaim/deletesuratkontrol?t=' + mlite.token;
+
+    $.post(url,{
+      no_surkon: no_surkon
+    } ,function(data) {
+        alert(data);
+        $("#kontroldisplay").show().load(baseURL + '/vclaim/kontroldisplay/{$no_kartu}?t=' + mlite.token);
+        $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+        "Data Kontrol VClaim telah disimpan!"+
+        "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+        "</div>").show();
+    });
+  });
+
   $("#kontroldisplay").on("click", ".pilih_nosurat", function(event){
     var no_surat = $(this).attr("data-no_surat");
     $('input:text[name=sep_nomor_skdp]').val(no_surat);
+    $('input:text[name=sep_nomor_rujukan]').val(no_surat);
     $('#kontrolModal').modal('hide');
   });
 

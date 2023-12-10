@@ -1,0 +1,26 @@
+  <table class="table">
+    <thead>
+      <tr>
+        <th>No Rawat</th>
+        <th>No SEP</th>
+        <th>No Surat</th>
+        <th>Nama Program</th>
+        <th>Dokter</th>
+        <th>Keterangan</th>
+        <th>Saran</th>
+      </tr>
+    </thead>
+    <tbody>
+      {loop: $rujuk_keluar}
+      <tr>
+        <td>{$value.no_rawat}</td>
+        <td>{$value.no_sep}</td>
+        <td class="pilih_nosurat" data-no_surat="{$value.no_sep}">{$value.no_srb}</td>
+        <td>{$value.namaprogram}</td>
+        <td>{$value.nmdpjp}</td>
+        <td>{$value.keterangan}</td>
+        <td>{$value.saran}</td>
+      </tr>
+      {/loop}
+    </tbody>
+  </table>

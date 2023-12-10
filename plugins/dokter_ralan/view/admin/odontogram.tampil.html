@@ -30,7 +30,7 @@ $(document).ready(function(){
     var kondisi  = $(this).attr("data-kondisi");
     var catatan  = $(this).attr("data-catatan");
     var tgl_input  = $(this).attr("data-tgl_input");
-    var url = baseURL + '/rawat_jalan/odontogramdelete/?t=' + mlite.token;
+    var url = baseURL + '/dokter_ralan/odontogramdelete/?t=' + mlite.token;
     $.post(url,{
       no_rkm_medis:id_pasien,
       pemeriksaan:gg_xx,
@@ -38,7 +38,7 @@ $(document).ready(function(){
       catatan: catatan,
       tgl_input: tgl_input
     } ,function(data) {
-      $('.tampildata').load(baseURL + '/rawat_jalan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
+      $('.tampildata').load(baseURL + '/dokter_ralan/odontogramtampil/' + id_pasien + '?t=' + mlite.token);
     });
   });
 });

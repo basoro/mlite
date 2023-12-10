@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class Bahasa
 {
@@ -16,7 +16,7 @@ class Bahasa
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('bahasa_pasien')
+      $totalRecords = $this->db('bahasa_pasien')
         ->select('id')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class Bahasa
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('bahasa_pasien')
+      $return['list'] = $this->db('bahasa_pasien')
         ->desc('id')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class Bahasa
     public function anyForm()
     {
         if (isset($_POST['id'])){
-          $return['form'] = $this->mysql('bahasa_pasien')->where('id', $_POST['id'])->oneArray();
+          $return['form'] = $this->db('bahasa_pasien')->where('id', $_POST['id'])->oneArray();
         } else {
           $return['form'] = [
             'id' => '',
@@ -51,7 +51,7 @@ class Bahasa
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('bahasa_pasien')
+        $totalRecords = $this->db('bahasa_pasien')
           ->select('id')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class Bahasa
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('bahasa_pasien')
+        $return['list'] = $this->db('bahasa_pasien')
           ->desc('id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('bahasa_pasien')
+          $return['list'] = $this->db('bahasa_pasien')
             ->like('id', '%'.$_POST['cari'].'%')
             ->orLike('nama_bahasa', '%'.$_POST['cari'].'%')
             ->desc('id')
@@ -78,7 +78,7 @@ class Bahasa
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('bahasa_pasien')
+          $return['list'] = $this->db('bahasa_pasien')
             ->desc('id')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class Bahasa
 
     public function postSave()
     {
-      if (!$this->mysql('bahasa_pasien')->where('id', $_POST['id'])->oneArray()) {
-        $query = $this->mysql('bahasa_pasien')->save($_POST);
+      if (!$this->db('bahasa_pasien')->where('id', $_POST['id'])->oneArray()) {
+        $query = $this->db('bahasa_pasien')->save($_POST);
       } else {
-        $query = $this->mysql('bahasa_pasien')->where('id', $_POST['id'])->save($_POST);
+        $query = $this->db('bahasa_pasien')->where('id', $_POST['id'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('bahasa_pasien')->where('id', $_POST['id'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('bahasa_pasien')->where('id', $_POST['id'])->delete();
     }
 
 }

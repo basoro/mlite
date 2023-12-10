@@ -1,0 +1,29 @@
+<table class="table" width="100%">
+  <thead>
+    <tr>
+      <th>Nomor Rawat</th>
+      <th>Keluhan</th>
+      <th>Diagnosa</th>
+      <th>Prosedur</th>
+      <th>Pulang</th>
+    </tr>
+  </thead>
+  <tbody>
+    {if: $resume_pasien}
+    {loop: $resume_pasien}
+    <tr>
+      <td>{$value.no_rawat}</td>
+      <td>{$value.keluhan_utama}</td>
+      <td>{$value.diagnosa_utama}</td>
+      <td>{$value.prosedur_utama}</td>
+      <td>{$value.keadaan}</td>
+      <td>{$value.nm_dokter}</td>
+    </tr>
+    {/loop}
+    {else}
+    <tr>
+      <td colspan="5">Tidak ada data</td>
+    </tr>
+    {/if}
+  </tbody>
+</table>
