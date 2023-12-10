@@ -276,6 +276,7 @@ class Admin extends AdminModule
             }
 
             define("UPGRADABLE", true);
+
             // Making backup
             $backup_date = date('YmdHis');
             //$this->rcopy(BASE_DIR, BASE_DIR.'/backup/'.$backup_date.'/', 0755, [BASE_DIR.'/backup', BASE_DIR.'/tmp/latest.zip', (isset($package) ? BASE_DIR.'/'.basename($package) : '')]);
@@ -303,7 +304,7 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/upgrade.php');
+            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/upgrade.php');
 
             // Close archive and delete all unnecessary files
             $zip->close();
