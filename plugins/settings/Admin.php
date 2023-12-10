@@ -304,7 +304,7 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/upgrade.php');
+            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/systems/upgrade.php');
 
             // Close archive and delete all unnecessary files
             $zip->close();
