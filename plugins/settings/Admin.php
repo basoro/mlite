@@ -239,6 +239,7 @@ class Admin extends AdminModule
     public function anyUpdates()
     {
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
+        $settings = $this->settings('settings');
 
         $url = "https://api.github.com/repos/basoro/khanza-lite/releases";
         $opts = [
@@ -300,14 +301,18 @@ class Admin extends AdminModule
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/manifest.json', BASE_DIR.'/manifest.json');
 
+            // Run upgrade script
+            $version = $settings['version'];
+            $new_version = include(BASE_DIR.'/tmp/update/upgrade.php');
+
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
             deleteDir(BASE_DIR.'/tmp/update');
 
-            $this->settings('settings', 'version', $obj[0]['tag_name']);
-            $this->settings('settings', 'update_version', $obj[0]['tag_name']);
-            $this->settings('settings', 'update_changelog', $obj[0]['body']);
+            $this->settings('settings', 'version', $new_version);
+            $this->settings('settings', 'update_version', 0);
+            $this->settings('settings', 'update_changelog', '');
 
             sleep(2);
             redirect(url([ADMIN, 'settings', 'updates']));
