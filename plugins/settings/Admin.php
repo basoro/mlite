@@ -309,7 +309,7 @@ class Admin extends AdminModule
             // Close archive and delete all unnecessary files
             $zip->close();
             unlink(BASE_DIR.'/tmp/latest.zip');
-            deleteDir(BASE_DIR.'/tmp/update');
+            rrmdir(BASE_DIR.'/tmp/update');
 
             $this->settings('settings', 'version', $new_version);
             $this->settings('settings', 'update_version', 0);
