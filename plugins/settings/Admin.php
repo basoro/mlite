@@ -314,12 +314,14 @@ class Admin extends AdminModule
             $this->settings('settings', 'version', $new_version);
             $this->settings('settings', 'update_version', 0);
             $this->settings('settings', 'update_changelog', '');
+            $this->settings('settings', 'update_check', time());
 
             sleep(2);
             redirect(url([ADMIN, 'settings', 'updates']));
         } elseif (isset($_GET['reset'])) {
             $this->settings('settings', 'update_version', 0);
             $this->settings('settings', 'update_changelog', '');
+            $this->settings('settings', 'update_check', 0);
         } elseif (isset($_GET['manual'])) {
             $package = glob(BASE_DIR.'/khanza-lite-*.zip');
             $version = false;
