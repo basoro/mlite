@@ -241,24 +241,27 @@ class Admin extends AdminModule
         $this->tpl->set('allow_curl', intval(function_exists('curl_init')));
         $settings = $this->settings('settings');
 
-        $url = "https://api.github.com/repos/basoro/khanza-lite/releases";
-        $opts = [
-            'http' => [
-                'method' => 'GET',
-                'header' => [
-                        'User-Agent: PHP'
-                ]
-            ]
-        ];
-        $json = file_get_contents($url, false, stream_context_create($opts));
-        $obj = json_decode($json, true);
-
         if (isset($_POST['check'])) {
+            $url = "https://api.github.com/repos/basoro/khanza-lite/releases/latest";
+            $opts = [
+                'http' => [
+                    'method' => 'GET',
+                    'header' => [
+                            'User-Agent: PHP'
+                    ]
+                ]
+            ];
+            $json = file_get_contents($url, false, stream_context_create($opts));
+            $obj = json_decode($json, true);
+    
+            $this->settings('settings', 'update_check', time());
+
             if (!is_array($obj)) {
                 $this->tpl->set('error', $obj);
             } else {
-                $this->settings('settings', 'update_version', $obj[0]['tag_name']);
-                $this->settings('settings', 'update_changelog', $obj[0]['body']);
+                $this->settings('settings', 'update_version', $obj['tag_name']);
+                $this->settings('settings', 'update_changelog', $obj['body']);
+                $this->tpl->set('update_version', $obj['tag_name']);
             }
         } elseif (isset($_POST['update'])) {
             if (!class_exists("ZipArchive")) {
@@ -266,7 +269,7 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                $this->download('https://github.com/basoro/khanza-lite/archive/refs/tags/'.$obj[0]['tag_name'].'.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/khanza-lite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
                 $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {
@@ -293,10 +296,10 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -304,7 +307,7 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$obj[0]['tag_name'].'/systems/upgrade.php');
+            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
 
             // Close archive and delete all unnecessary files
             $zip->close();
@@ -334,9 +337,7 @@ class Admin extends AdminModule
         }
 
         $this->settings->reload();
-        $settings['version'] = $this->settings->get('settings.version');
-        $settings['update_changelog'] = $this->settings->get('settings.update_changelog');
-        $settings['update_version'] = $this->settings->get('settings.update_version');
+        $settings = $this->settings('settings');
         $this->tpl->set('settings', $settings);
         $this->tpl->set('manual_mode', isset_or($manual_mode, false));
         return $this->draw('update.html');
