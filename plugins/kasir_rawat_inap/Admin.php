@@ -23,6 +23,7 @@ class Admin extends AdminModule
         $tgl_masuk = '';
         $tgl_masuk_akhir = '';
         $status_pulang = '';
+        $status_periksa = '';
 
         if(isset($_POST['periode_rawat_inap'])) {
           $tgl_masuk = $_POST['periode_rawat_inap'];
@@ -33,8 +34,11 @@ class Admin extends AdminModule
         if(isset($_POST['status_pulang'])) {
           $status_pulang = $_POST['status_pulang'];
         }
+        if(isset($_POST['status_periksa'])) {
+          $status_periksa = $_POST['status_periksa'];
+        }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
+        $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang, $status_periksa);
         return $this->draw('manage.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
     }
 
@@ -43,6 +47,7 @@ class Admin extends AdminModule
         $tgl_masuk = '';
         $tgl_masuk_akhir = '';
         $status_pulang = '';
+        $status_periksa = '';
 
         if(isset($_POST['periode_rawat_inap'])) {
           $tgl_masuk = $_POST['periode_rawat_inap'];
@@ -53,13 +58,16 @@ class Admin extends AdminModule
         if(isset($_POST['status_pulang'])) {
           $status_pulang = $_POST['status_pulang'];
         }
+        if(isset($_POST['status_periksa'])) {
+          $status_periksa = $_POST['status_periksa'];
+        }
         $cek_vclaim = $this->db('mlite_modules')->where('dir', 'vclaim')->oneArray();
-        $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang);
+        $this->_Display($tgl_masuk, $tgl_masuk_akhir, $status_pulang, $status_periksa);
         echo $this->draw('display.html', ['rawat_inap' => $this->assign, 'cek_vclaim' => $cek_vclaim]);
         exit();
     }
 
-    public function _Display($tgl_masuk='', $tgl_masuk_akhir='', $status_pulang='')
+    public function _Display($tgl_masuk='', $tgl_masuk_akhir='', $status_pulang='', $status_periksa='')
     {
         $this->_addHeaderFiles();
 
@@ -109,6 +117,9 @@ class Admin extends AdminModule
         }
         if($status_pulang == 'pulang') {
           $sql .= " AND kamar_inap.tgl_keluar BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
+        }
+        if($status_periksa == 'lunas' && $status_pulang == '-' && $tgl_masuk !== '' && $tgl_masuk_akhir !== '') {
+          $sql .= " AND reg_periksa.status_bayar = 'Sudah Bayar' AND kamar_inap.tgl_masuk BETWEEN '$tgl_masuk' AND '$tgl_masuk_akhir'";
         }
 
         $stmt = $this->db()->pdo()->prepare($sql);
