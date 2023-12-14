@@ -3,6 +3,7 @@
 admin/tmp
 admin/pla.php
 tmp
+websocket
 uploads
 vendor
 systems/data/database.sdb
@@ -21,8 +22,10 @@ assets/easyui
 plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
-#plugins/dokter_ulun
+plugins/dokter_ulun
 #plugins/satu_sehat
+plugins/khanza
+plugins/pasien_galleries
 plugins/cssd
 jasperphp
 plugins/utd/Site.php
@@ -32,6 +35,7 @@ plugins/khanza.zip
 plugins/dokter_ulun
 plugins/khanza
 plugins/pasien_galleries
+
 
 .env
 logs/
