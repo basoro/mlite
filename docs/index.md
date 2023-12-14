@@ -14,7 +14,7 @@ Persyaratan sistem untuk mLITE sangat sederhana, jadi setiap server modern sudah
 + Apache 2.2+ or Nginx dengan `mod_rewrite`
 + PHP version 7.0+
 + MySQL Server 5.5+
-+ Akses ke MySQL dan SQLite
++ Akses ke MySQL
 
 Konfigurasi PHP harus memiliki ekstensi berikut:
 
@@ -458,7 +458,7 @@ Plugin memiliki trik khusus yang memfasilitasi akses ke metode skrip utama. Ini 
 ### db
 
 ```php
-void mysql([string $table])
+void db([string $table])
 ```
 
 Memungkinkan Anda untuk beroperasi pada database. Rincian dijelaskan di bagian inti.
@@ -468,7 +468,7 @@ Memungkinkan Anda untuk beroperasi pada database. Rincian dijelaskan di bagian i
 
 #### Contoh
 ```php
-$this->core->mysql('table')->where('age', 20)->delete();
+$this->db('table')->where('age', 20)->delete();
 ```
 
 
@@ -558,7 +558,7 @@ $this->setTemplate('index.html'); // $this->core->template = 'index.html';
 Database
 --------
 
-Basis data yang digunakan pada mLITE adalah MySQL dan SQLite versi 3. Untuk penggunaannya mLITE menggunakan class sederhana yang memudahkan untuk membangun query. Anda tidak perlu tahu SQL untuk dapat mengoperasikannya.
+Basis data yang digunakan pada mLITE adalah MySQL atau MariaDB. Untuk penggunaannya mLITE menggunakan class sederhana yang memudahkan untuk membangun query. Anda tidak perlu tahu SQL untuk dapat mengoperasikannya.
 
 ### SELECT
 
@@ -566,14 +566,14 @@ Pilih beberapa data:
 
 ```php
 
-$rows = $this->core->mysql('table')->select('foo')->select('bar')->toArray();
+$rows = $this->db('table')->select('foo')->select('bar')->toArray();
 
 ```
 
 Pilih satu data:
 ```php
 
-$row = $this->core->mysql('table')->select('foo')->select('bar')->oneArray();
+$row = $this->db('table')->select('foo')->select('bar')->oneArray();
 
 ```
 
@@ -582,58 +582,58 @@ $row = $this->core->mysql('table')->select('foo')->select('bar')->oneArray();
 Pilih record dengan nomor yang ditentukan di kolom `id`:
 
 ```php
-$row = $this->core->mysql('table')->oneArray(1);
+$row = $this->db('table')->oneArray(1);
 // atau
-$row = $this->core->mysql('table')->oneArray('id', 1);
+$row = $this->db('table')->oneArray('id', 1);
 // atau
-$row = $this->core->mysql('table')->where(1)->oneArray();
+$row = $this->db('table')->where(1)->oneArray();
 // atau
-$row = $this->core->mysql('table')->where('id', 1)->oneArray();
+$row = $this->db('table')->where('id', 1)->oneArray();
 ```
 
 Kondisi kompleks:
 ```php
 // Ambil baris yang nilai kolomnya 'foo' LEBIH BESAR dari 4
-$rows = $this->core->mysql('table')->where('foo', '>', 4)->toArray();
+$rows = $this->db('table')->where('foo', '>', 4)->toArray();
 
 // Ambil baris yang nilai kolomnya 'foo' LEBIH BESAR dari 4 dan LEBIH RENDAH dari 8
-$rows = $this->core->mysql('table')->where('foo', '>', 4)->where('foo', '<', 8)->toArray();
+$rows = $this->db('table')->where('foo', '>', 4)->where('foo', '<', 8)->toArray();
 ```
 
 OR WHERE:
 ```php
 // Ambil baris yang nilai kolomnya 'foo' SAMA DENGAN 4 atau 8
-$rows = $this->core->mysql('table')->where('foo', '=', 4)->orWhere('foo', '=', 8)->toArray();
+$rows = $this->db('table')->where('foo', '=', 4)->orWhere('foo', '=', 8)->toArray();
 ```
 
 WHERE LIKE:
 ```php
 // Ambil baris yang kolomnya 'foo' BERISI string 'bar' ATAU 'basis'
-$rows = $this->core->mysql('table')->like('foo', '%bar%')->orLike('foo', '%baz%')->toArray();
+$rows = $this->db('table')->like('foo', '%bar%')->orLike('foo', '%baz%')->toArray();
 ```
 
 WHERE NOT LIKE:
 ```php
 // Ambil baris yang kolomnya 'foo' TIDAK MENGANDUNG string 'bar' ATAU 'baz'
-$rows = $this->core->mysql('table')->notLike('foo', '%bar%')->orNotLike('foo', '%baz%')->toArray();
+$rows = $this->db('table')->notLike('foo', '%bar%')->orNotLike('foo', '%baz%')->toArray();
 ```
 
 WHERE IN:
 ```php
 // Ambil baris yang nilai kolomnya 'foo' BERISI dalam baris [1,2,3] ATAU [7,8,9]
-$rows = $this->core->mysql('table')->in('foo', [1,2,3])->orIn('foo', [7,8,9])->toArray();
+$rows = $this->db('table')->in('foo', [1,2,3])->orIn('foo', [7,8,9])->toArray();
 ```
 
 WHERE NOT IN:
 ```php
 // Ambil baris yang nilai kolomnya 'foo' TIDAK BERISI dalam baris [1,2,3] ATAU [7,8,9]
-$rows = $this->core->mysql('table')->notIn('foo', [1,2,3])->orNotIn('foo', [7,8,9])->toArray();
+$rows = $this->db('table')->notIn('foo', [1,2,3])->orNotIn('foo', [7,8,9])->toArray();
 ```
 
 Kondisi pengelompokan:
 ```php
 // Ambil baris yang nilai kolomnya 'foo' adalah 1 atau 2 DAN statusnya adalah 1
-$rows = $this->core->mysql('table')->where(function($st) {
+$rows = $this->db('table')->where(function($st) {
             $st->where('foo', 1)->orWhere('foo', 2);
         })->where('status', 1)->toArray();
 ```
@@ -645,24 +645,24 @@ Operator pembanding yang diizinkan: `=`, `>`, `<`, `>=`, `<=`, `<>`, `!=`.
 
 INNER JOIN:
 ```php
-$rows = $this->core->mysql('table')->join('foo', 'foo.table_id = table.id')->toJson();
+$rows = $this->db('table')->join('foo', 'foo.table_id = table.id')->toJson();
 ```
 
 LEFT JOIN:
 ```php
-$rows = $this->core->mysql('table')->leftJoin('foo', 'foo.table_id = table.id')->toJson();
+$rows = $this->db('table')->leftJoin('foo', 'foo.table_id = table.id')->toJson();
 ```
 
 
 ### HAVING
 
 ```php
-$rows = $this->core->mysql('table')->having('COUNT(*)', '>', 5)->toArray();
+$rows = $this->db('table')->having('COUNT(*)', '>', 5)->toArray();
 ```
 
 OR HAVING:
 ```php
-$rows = $this->core->mysql('table')->orHaving('COUNT(*)', '>', 5)->toArray();
+$rows = $this->db('table')->orHaving('COUNT(*)', '>', 5)->toArray();
 ```
 
 
@@ -672,11 +672,11 @@ Metode `save` dapat menambahkan catatan baru ke tabel atau memperbarui yang suda
 
 ```php
 // Tambahkan data baru
-$id = $this->core->mysql('table')->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
+$id = $this->db('table')->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
 // Nilai pengembalian: nomor ID dari catatan baru
 
 // Perbarui data yang ada
-$this->core->mysql('table')->where('age', 50)->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
+$this->db('table')->where('age', 50)->save(['name' => 'Fulan bin Fulan', 'city' => 'Barabai']);
 // Nilai pengembalian: BENAR jika berhasil atau SALAH jika gagal
 ```
 
@@ -687,17 +687,17 @@ Memperbarui catatan jika berhasil akan mengembalikan `TRUE`. Jika tidak, itu aka
 
 ```php
 // Mengubah satu kolom
-$this->core->mysql('table')->where('city', 'Barabai')->update('name', 'Fulan');
+$this->db('table')->where('city', 'Barabai')->update('name', 'Fulan');
 
 // Mengubah beberapa kolom
-$this->core->mysql('table')->where('city', 'Barabai')->update(['name' => 'Fulan', 'type' => 'Pasien']);
+$this->db('table')->where('city', 'Barabai')->update(['name' => 'Fulan', 'type' => 'Pasien']);
 ```
 
 
 ### SET
 
 ```php
-$this->core->mysql('table')->where('age', 65)->set('age', 70)->set('name', 'Fulani Binti Fulan')->update();
+$this->db('table')->where('age', 65)->set('age', 70)->set('name', 'Fulani Binti Fulan')->update();
 ```
 
 
@@ -707,10 +707,10 @@ Penghapusan catatan yang berhasil mengembalikan nomornya.
 
 ```php
 // Hapus data dengan `id` sama dengan 1
-$this->core->mysql('table')->delete(1);
+$this->db('table')->delete(1);
 
 // Penghapusan data dengan kondisi
-$this->core->mysql('table')->where('age', 20)->delete();
+$this->db('table')->where('age', 20)->delete();
 ```
 
 
@@ -718,24 +718,24 @@ $this->core->mysql('table')->where('age', 20)->delete();
 
 Ascending:
 ```php
-$this->core->mysql('table')->asc('created_at')->toArray();
+$this->db('table')->asc('created_at')->toArray();
 ```
 
 Descending:
 ```php
-$this->core->mysql('table')->desc('created_at')->toArray();
+$this->db('table')->desc('created_at')->toArray();
 ```
 
 Kombinasi:
 ```php
-$this->core->mysql('table')->desc('created_at')->asc('id')->toArray();
+$this->db('table')->desc('created_at')->asc('id')->toArray();
 ```
 
 
 ### GROUP BY
 
 ```php
-$this->core->mysql('table')->group('city')->toArray();
+$this->db('table')->group('city')->toArray();
 ```
 
 
@@ -743,7 +743,7 @@ $this->core->mysql('table')->group('city')->toArray();
 
 ```php
 // Ambil 5 catatan mulai dari kesepuluh
-$this->core->mysql('table')->offset(10)->limit(5)->toArray();
+$this->db('table')->offset(10)->limit(5)->toArray();
 ```
 
 
@@ -752,7 +752,7 @@ $this->core->mysql('table')->offset(10)->limit(5)->toArray();
 Tidak semua kueri dapat dibuat menggunakan metode di atas *(mis. membuat atau menghapus tabel)*, jadi Anda juga dapat menulis kueri menggunakan [PDO](http://php.net/manual/en/book.pdo.php):
 
 ```php
-$this->core->mysql()->pdo()->exec("DROP TABLE `example`");
+$this->db()->pdo()->exec("DROP TABLE `example`");
 ```
 
 Sistem Template

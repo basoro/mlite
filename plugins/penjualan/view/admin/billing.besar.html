@@ -1,0 +1,203 @@
+
+<!doctype html>
+<html lang="id">
+	<head>
+		<title>Bukti Pembayaran </title>
+		<meta charset="UTF-8">
+		<link href="{?=url()?}/assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+		<script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
+		<script src="{?=url()?}/assets/jscripts/bootstrap.min.js"></script>
+	<style>
+	body {
+		margin-top:20px;
+	}
+	th,td {padding:0px 0px 0px 10px;}
+	</style>
+
+	<script>
+	function printContent(el){
+	var restorepage = document.body.innerHTML;
+	var printcontent = document.getElementById(el).innerHTML;
+	document.body.innerHTML = printcontent;
+	window.print();
+	document.body.innerHTML = restorepage; window.close();
+	}
+	</script>
+	</head>
+
+	<body>
+		<div id="faktur">
+		<center>
+		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
+			<tr>
+			<td colspan="3">
+				<strong style="font-size: 15pt;" >{$settings.nama_instansi}</strong>
+			</td>
+			</tr>
+			<tr>
+			<td width="80px">
+				<img width="70px" src='{?=url()?}/{$settings.logo}' />
+			</td>
+			<td>
+				<p style="font-size: 10px;">
+				{$settings.alamat}<br>
+				 Telp : {$settings.nomor_telepon}<br>
+         E-Mail : {$settings.email}<br>
+				Website : {$settings.website}</p></td>
+			<td align="right"><strong   style="font-size: 12px" >BUKTI PEMBAYARAN</strong>
+				<p align="right" style="font-size: 10px;">
+				ID : #{$billing.id_penjualan}<br>
+				Pembeli : {$pembeli.nama_pembeli}<br>
+				No. Telp : {$pembeli.nomor_telepon}<br>
+				Alamat : {$pembeli.alamat_pembeli}<br></p>
+			</td>
+			</tr>
+		</table>
+		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
+		  <tr align="left" height='30px'>
+			<th width="20px">No</th>
+			<th with="400px">Item</th>
+			<th width="100px">Harga</th>
+			<th width="30px">Jumlah</th>
+			<th width="150px">Total</th>
+		  </tr>
+			{loop: $billing_besar_detail as $data}
+			<tr border='0', height='20px'>
+				<td>{$data.no}</td>
+				<td>{$data.nama_barang}</td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.harga,2,',','.')?}</span></td>
+				<td><center>{$data.jumlah}</center></td>
+				<td>Rp. <span class="pull-right">{?= number_format($data.harga_total,2,',','.')?}</span></td>
+			</tr>
+			{/loop}
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_total,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Potongan</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.potongan,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td colspan="2"></td>
+				<td colspan="2">Jumlah Bayar</td>
+				<td>Rp. <span class="pull-right">{?= number_format($billing.jumlah_harus_bayar,2,',','.')?}</span></td>
+			</tr>
+			<tr >
+				<td style="font-size: 9pt;" colspan="6"><i>Terbilang : # {?=terbilang($billing.jumlah_harus_bayar,3,"")?} Rupiah # </i></td>
+			</tr>
+			<tr>
+				<td colspan="3"></td>
+				<td colspan=3>
+					<br><br>
+				<p align="center" ><strong>{$settings.kota}, {?=date('d-m-Y')?}</strong><br>
+				 Kasir<br><br>
+				 <img src="{$qrCode}">
+				 <br><br>
+				{$fullname}<br>
+				</p>
+				</td>
+			</tr>
+		</table></center>
+		</div>
+		<br><br><br>
+		<center>
+			<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+		</center>
+
+		<!-- Modal -->
+	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	          <h4 class="modal-title">Kirim WhatsApp</h4>
+	        </div>
+	        <div class="modal-body">
+		        <div class="form-floating number">
+							<label for="floatingPassword">Nomor</label>
+		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{$pasien.no_tlp}">
+		        </div>
+		        <div class="form-floating message">
+							<label for="floatingPassword">Pesan</label>
+		          <input type="text" name="message" class="form-control" id="message" placeholder="Tulis pesan anda.." value="Bukti Pembayaran">
+		        </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+	          <button type="button" class="btn btn-primary" onclick="KirimWA()" data-dismiss="modal">Kirim</button>
+	        </div>
+	      </div><!-- /.modal-content -->
+	    </div><!-- /.modal-dialog -->
+	  </div><!-- /.modal -->
+
+		<!-- Modal -->
+	  <div class="modal fade" id="emailModal" tabindex="-1" role="dialog" aria-labelledby="emailModalLabel" aria-hidden="true">
+	    <div class="modal-dialog">
+	      <div class="modal-content">
+	        <div class="modal-header">
+	          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+	          <h4 class="modal-title">Kirim Email</h4>
+	        </div>
+	        <div class="modal-body">
+		        <div class="form-floating number">
+							<label for="floatingPassword">Email</label>
+		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{$pasien.email}">
+		        </div>
+		        <div class="form-floating message">
+							<label for="floatingPassword">Nama Pasien</label>
+		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{$pasien.nm_pasien}">
+		        </div>
+	        </div>
+	        <div class="modal-footer">
+	          <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+	          <button type="button" class="btn btn-primary" onclick="KirimEmail()" data-dismiss="modal">Kirim</button>
+	        </div>
+	      </div><!-- /.modal-content -->
+	    </div><!-- /.modal-dialog -->
+	  </div><!-- /.modal -->
+
+</body>
+<script>
+function KirimEmail() {
+	var xhttp = new XMLHttpRequest();
+	var email = document.getElementById("email").value;
+	var receiver = document.getElementById("receiver").value;
+	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	xhttp.open("POST", "{?=url([ADMIN,'kasir_rawat_jalan','kirimemail'])?}", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
+}
+function KirimWA() {
+	var xhttp = new XMLHttpRequest();
+	var api_key = '{$wagateway.token}';
+	var sender = '{$wagateway.phonenumber}';
+	var number = document.getElementById("number").value;
+	var message = document.getElementById("message").value;
+	var tipe = 'pdf';
+	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	console.log(number + " - " + message);
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var data=xhttp.responseText;
+			var jsonResponse = JSON.parse(data);
+			if(jsonResponse["status"] == true) {
+				alert('Sukses mengirim pesan.');
+			} else {
+				alert('Gagal mengirim pesan.\n' + jsonResponse["msg"]);
+			}
+		}
+	};
+	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwa'])?}", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message);
+	xhttp.open("POST", "{?=url([ADMIN,'api','kirimwadocument'])?}", true);
+	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	xhttp.send("api_key=" + api_key + "&sender=" + sender + "&number=" + number + "&message=" + message + "&tipe=" + tipe + "&file=" + file);
+}
+</script>
+</html>

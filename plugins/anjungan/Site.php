@@ -5,6 +5,7 @@ namespace Plugins\Anjungan;
 use Systems\SiteModule;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
+use Systems\Lib\LZCompressor;
 
 class Site extends SiteModule
 {
@@ -2676,7 +2677,7 @@ class Site extends SiteModule
               $sep_response = $message;
             } else {
               if(!empty($stringDecrypt)) {
-                $decompress = decompress($stringDecrypt);
+                $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
                 $sep_response = json_decode($decompress, true);
               } else {
                 $sep_response = "Sambungan ke server BPJS sedang ada gangguan. Silahkan ulangi lagi dengan menekan tombol REFRESH";
@@ -2766,7 +2767,7 @@ class Site extends SiteModule
       $decompress = '""';
       //$rujukan = [];
       if ($code == "200") {
-          $decompress = decompress($stringDecrypt);
+          $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
           $rujukan = json_decode($decompress, true);
       }
 
@@ -3042,7 +3043,7 @@ class Site extends SiteModule
           $stringDecrypt = stringDecrypt($key, $data['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
-            $decompress = decompress($stringDecrypt);
+            $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
           }
 
           $data = '{
@@ -3262,7 +3263,7 @@ class Site extends SiteModule
         $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
         //$rujukan = [];
-        $decompress = decompress($stringDecrypt);
+        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         $rujukan = json_decode($decompress, true);
         //var_dump($rujukan);
         $noKontrol = $rujukan['noSuratKontrol'];
@@ -3448,7 +3449,7 @@ class Site extends SiteModule
         $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if (!empty($stringDecrypt)) {
-          $decompress = decompress($stringDecrypt);
+          $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         }
         if ($json != null) {
           $data = '{

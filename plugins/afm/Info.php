@@ -5,7 +5,7 @@ return [
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
     'compatibility' =>  '4.0.*',
-    'icon'          =>  'database',
+    'icon'          =>  'laptop',
     'pages'         =>  ['API AFM mLITE' => 'afm'],
     'install'       =>  function () use ($core) {
       $core->db()->pdo()->exec("INSERT INTO mlite_settings (module, field, value) VALUES ('afm', 'afm_token', 'fc4eba4aa3ea79a7bba3070cba848696')");

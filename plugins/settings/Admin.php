@@ -242,7 +242,7 @@ class Admin extends AdminModule
         $settings = $this->settings('settings');
 
         if (isset($_POST['check'])) {
-            $url = "https://api.github.com/repos/basoro/khanza-lite/releases/latest";
+            $url = "https://api.github.com/repos/basoro/mlite/releases/latest";
             $opts = [
                 'http' => [
                     'method' => 'GET',
@@ -269,7 +269,7 @@ class Admin extends AdminModule
             }
 
             if (!isset($_GET['manual'])) {
-                $this->download('https://github.com/basoro/khanza-lite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
+                $this->download('https://github.com/basoro/mlite/archive/refs/tags/'.$this->settings->get('settings.update_version').'.zip', BASE_DIR.'/tmp/latest.zip');
             } else {
                 $package = glob(BASE_DIR.'/mlite-*.zip');
                 if (!empty($package)) {
@@ -296,10 +296,10 @@ class Admin extends AdminModule
             $zip->extractTo(BASE_DIR.'/tmp/update');
 
             // Copy files
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
-            $this->rcopy(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems', BASE_DIR.'/systems');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/plugins', BASE_DIR.'/plugins');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/assets', BASE_DIR.'/assets');
+            $this->rcopy(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/themes', BASE_DIR.'/themes');
 
             // Restore defines
             $this->rcopy(BASE_DIR.'/backup/'.$backup_date.'/config.php', BASE_DIR.'/config.php');
@@ -307,7 +307,7 @@ class Admin extends AdminModule
 
             // Run upgrade script
             $version = $settings['version'];
-            $new_version = include(BASE_DIR.'/tmp/update/khanza-lite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
+            $new_version = include(BASE_DIR.'/tmp/update/mlite-'.$this->settings->get('settings.update_version').'/systems/upgrade.php');
 
             // Close archive and delete all unnecessary files
             $zip->close();
@@ -326,11 +326,11 @@ class Admin extends AdminModule
             $this->settings('settings', 'update_changelog', '');
             $this->settings('settings', 'update_check', 0);
         } elseif (isset($_GET['manual'])) {
-            $package = glob(BASE_DIR.'/khanza-lite-*.zip');
+            $package = glob(BASE_DIR.'/mlite-*.zip');
             $version = false;
             if (!empty($package)) {
                 $package_path = array_shift($package);
-                preg_match('/khanza-lite\-([0-9\.a-z]+)\.zip$/', $package_path, $matches);
+                preg_match('/mlite\-([0-9\.a-z]+)\.zip$/', $package_path, $matches);
                 $version = $matches[1];
             }
             $manual_mode = ['version' => $version];

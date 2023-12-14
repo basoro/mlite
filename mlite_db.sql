@@ -3003,6 +3003,123 @@ LOCK TABLES `mlite_pengaduan_detail` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `mlite_penjualan`
+--
+
+-- DROP TABLE IF EXISTS `mlite_penjualan`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `mlite_penjualan` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_pembeli` varchar(100) DEFAULT NULL,
+  `alamat_pembeli` varchar(100) DEFAULT NULL,
+  `nomor_telepon` varchar(50) DEFAULT NULL,
+  `email` varchar(50) DEFAULT NULL,
+  `tanggal` date NOT NULL,
+  `jam` time NOT NULL,
+  `id_user` varchar(50) NOT NULL,
+  `keterangan` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mlite_penjualan`
+--
+
+LOCK TABLES `mlite_penjualan` WRITE;
+/*!40000 ALTER TABLE `mlite_penjualan` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mlite_penjualan` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mlite_penjualan_barang`
+--
+
+-- DROP TABLE IF EXISTS `mlite_penjualan_barang`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `mlite_penjualan_barang` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_barang` varchar(100) DEFAULT NULL,
+  `stok` varchar(100) DEFAULT NULL,
+  `harga` varchar(100) DEFAULT NULL,
+  `keterangan` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mlite_penjualan_barang`
+--
+
+LOCK TABLES `mlite_penjualan_barang` WRITE;
+/*!40000 ALTER TABLE `mlite_penjualan_barang` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mlite_penjualan_barang` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mlite_penjualan_billing`
+--
+
+-- DROP TABLE IF EXISTS `mlite_penjualan_billing`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `mlite_penjualan_billing` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_penjualan` int(11) NOT NULL,
+  `jumlah_total` int(100) NOT NULL,
+  `potongan` int(100) DEFAULT NULL,
+  `jumlah_harus_bayar` int(100) NOT NULL,
+  `jumlah_bayar` int(100) NOT NULL,
+  `tanggal` date NOT NULL,
+  `jam` time NOT NULL,
+  `id_user` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mlite_penjualan_billing`
+--
+
+LOCK TABLES `mlite_penjualan_billing` WRITE;
+/*!40000 ALTER TABLE `mlite_penjualan_billing` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mlite_penjualan_billing` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `mlite_penjualan_detail`
+--
+
+-- DROP TABLE IF EXISTS `mlite_penjualan_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE IF NOT EXISTS `mlite_penjualan_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_penjualan` int(11) NOT NULL,
+  `id_barang` int(11) NOT NULL,
+  `nama_barang` varchar(100) NOT NULL,
+  `harga` int(11) NOT NULL,
+  `jumlah` int(100) NOT NULL,
+  `harga_total` int(11) NOT NULL,
+  `tanggal` date NOT NULL,
+  `jam` time NOT NULL,
+  `id_user` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `mlite_penjualan_detail`
+--
+
+LOCK TABLES `mlite_penjualan_detail` WRITE;
+/*!40000 ALTER TABLE `mlite_penjualan_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `mlite_penjualan_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `mlite_rekening`
 --
 
@@ -3222,7 +3339,7 @@ CREATE TABLE IF NOT EXISTS `mlite_settings` (
 
 LOCK TABLES `mlite_settings` WRITE;
 /*!40000 ALTER TABLE `mlite_settings` DISABLE KEYS */;
-INSERT INTO `mlite_settings` VALUES (1,'settings','logo','uploads/settings/logo.png'),(2,'settings','nama_instansi','mLITE Indonesia'),(3,'settings','alamat','Jl. Perintis Kemerdekaan 45'),(4,'settings','kota','Barabai'),(5,'settings','propinsi','Kalimantan Selatan'),(6,'settings','nomor_telepon','0812345678'),(7,'settings','email','info@mlite.id'),(8,'settings','website','https://mlite.id'),(9,'settings','ppk_bpjs','-'),(10,'settings','footer','Copyright {?=date(\"Y\")?} &copy; by drg. F. Basoro. All rights reserved.'),(11,'settings','homepage','main'),(12,'settings','wallpaper','uploads/settings/wallpaper.jpg'),(13,'settings','text_color','#44813e'),(14,'settings','igd','IGDK'),(15,'settings','laboratorium','-'),(16,'settings','pj_laboratorium','DR001'),(17,'settings','radiologi','-'),(18,'settings','pj_radiologi','DR001'),(19,'settings','dokter_ralan_per_dokter','false'),(20,'settings','cekstatusbayar','false'),(21,'settings','ceklimit','false'),(22,'settings','responsivevoice','false'),(23,'settings','notif_presensi','true'),(24,'settings','BpjsApiUrl','https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),(25,'settings','BpjsConsID','-'),(26,'settings','BpjsSecretKey','-'),(27,'settings','BpjsUserKey','-'),(28,'settings','timezone','Asia/Makassar'),(29,'settings','theme','default'),(30,'settings','theme_admin','mlite'),(31,'settings','admin_mode','complex'),(32,'settings','input_kasir','tidak'),(33,'settings','editor','wysiwyg'),(34,'settings','version','4.0.0'),(35,'settings','update_check','0'),(36,'settings','update_changelog',''),(37,'settings','update_version','0'),(38,'settings','license',''),(39,'farmasi','deporalan','-'),(40,'farmasi','igd','-'),(41,'farmasi','deporanap','-'),(42,'farmasi','gudang','-'),(43,'wagateway','server','https://mlite.id'),(44,'wagateway','token','-'),(45,'wagateway','phonenumber','-'),(46,'anjungan','display_poli',''),(47,'anjungan','carabayar',''),(48,'anjungan','antrian_loket','1'),(49,'anjungan','antrian_cs','2'),(50,'anjungan','antrian_apotek','3'),(51,'anjungan','panggil_loket','1'),(52,'anjungan','panggil_loket_nomor','1'),(53,'anjungan','panggil_cs','1'),(54,'anjungan','panggil_cs_nomor','1'),(55,'anjungan','panggil_apotek','1'),(56,'anjungan','panggil_apotek_nomor','1'),(57,'anjungan','text_anjungan','Running text anjungan pasien mandiri.....'),(58,'anjungan','text_loket','Running text display antrian loket.....'),(59,'anjungan','text_poli','Running text display antrian poliklinik.....'),(60,'anjungan','text_laboratorium','Running text display antrian laboratorium.....'),(61,'anjungan','text_apotek','Running text display antrian apotek.....'),(62,'anjungan','text_farmasi','Running text display antrian farmasi.....'),(63,'anjungan','vidio','G4im8_n0OoI'),(64,'api','apam_key','qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),(65,'api','apam_status_daftar','Terdaftar'),(66,'api','apam_status_dilayani','Anda siap dilayani'),(67,'api','apam_webappsurl','http://localhost/webapps/'),(68,'api','apam_normpetugas','000001,000002'),(69,'api','apam_limit','2'),(70,'api','apam_smtp_host','ssl://smtp.gmail.com'),(71,'api','apam_smtp_port','465'),(72,'api','apam_smtp_username',''),(73,'api','apam_smtp_password',''),(74,'api','apam_kdpj',''),(75,'api','apam_kdprop',''),(76,'api','apam_kdkab',''),(77,'api','apam_kdkec',''),(78,'api','duitku_merchantCode',''),(79,'api','duitku_merchantKey',''),(80,'api','duitku_paymentAmount',''),(81,'api','duitku_paymentMethod',''),(82,'api','duitku_productDetails',''),(83,'api','duitku_expiryPeriod',''),(84,'api','duitku_kdpj',''),(85,'api','berkasdigital_key','qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),(86,'jkn_mobile','x_username','jkn'),(87,'jkn_mobile','x_password','mobile'),(88,'jkn_mobile','header_token','X-Token'),(89,'jkn_mobile','header_username','X-Username'),(90,'jkn_mobile','header_password','X-Password'),(91,'jkn_mobile','BpjsConsID',''),(92,'jkn_mobile','BpjsSecretKey',''),(93,'jkn_mobile','BpjsUserKey',''),(94,'jkn_mobile','BpjsAntrianUrl','https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),(95,'jkn_mobile','kd_pj_bpjs',''),(96,'jkn_mobile','exclude_taskid',''),(97,'jkn_mobile','display',''),(98,'jkn_mobile','kdprop','1'),(99,'jkn_mobile','kdkab','1'),(100,'jkn_mobile','kdkec','1'),(101,'jkn_mobile','kdkel','1'),(102,'jkn_mobile','perusahaan_pasien',''),(103,'jkn_mobile','suku_bangsa',''),(104,'jkn_mobile','bahasa_pasien',''),(105,'jkn_mobile','cacat_fisik',''),(106,'keuangan','jurnal_kasir','0'),(107,'keuangan','akun_kredit_pendaftaran',''),(108,'keuangan','akun_kredit_tindakan',''),(109,'keuangan','akun_kredit_obat_bhp',''),(110,'keuangan','akun_kredit_laboratorium',''),(111,'keuangan','akun_kredit_radiologi',''),(112,'keuangan','akun_kredit_tambahan_biaya',''),(113,'manajemen','penjab_umum','UMU'),(114,'manajemen','penjab_bpjs','BPJ'),(115,'presensi','lat','-2.58'),(116,'presensi','lon','115.37'),(117,'presensi','distance','2'),(118,'presensi','helloworld','Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),(119,'vedika','carabayar',''),(120,'vedika','sep',''),(121,'vedika','skdp',''),(122,'vedika','operasi',''),(123,'vedika','individual',''),(124,'vedika','billing','mlite'),(125,'vedika','periode','2023-01'),(126,'vedika','verifikasi','2023-01'),(127,'vedika','inacbgs_prosedur_bedah',''),(128,'vedika','inacbgs_prosedur_non_bedah',''),(129,'vedika','inacbgs_konsultasi',''),(130,'vedika','inacbgs_tenaga_ahli',''),(131,'vedika','inacbgs_keperawatan',''),(132,'vedika','inacbgs_penunjang',''),(133,'vedika','inacbgs_pelayanan_darah',''),(134,'vedika','inacbgs_rehabilitasi',''),(135,'vedika','inacbgs_rawat_intensif',''),(136,'vedika','eklaim_url',''),(137,'vedika','eklaim_key',''),(138,'vedika','eklaim_kelasrs','CP'),(139,'vedika','eklaim_payor_id','3'),(140,'vedika','eklaim_payor_cd','JKN'),(141,'vedika','eklaim_cob_cd','#'),(142,'orthanc','server','http://localhost:8042'),(143,'orthanc','username','orthanc'),(144,'orthanc','password','orthanc'),(145,'veronisa','username',''),(146,'veronisa','password',''),(147,'veronisa','obat_kronis',''),(148,'jkn_mobile','kirimantrian','tidak'),(149,'settings','keamanan','ya');
+INSERT INTO `mlite_settings` VALUES (1,'settings','logo','uploads/settings/logo.png'),(2,'settings','nama_instansi','mLITE Indonesia'),(3,'settings','alamat','Jl. Perintis Kemerdekaan 45'),(4,'settings','kota','Barabai'),(5,'settings','propinsi','Kalimantan Selatan'),(6,'settings','nomor_telepon','0812345678'),(7,'settings','email','info@mlite.id'),(8,'settings','website','https://mlite.id'),(9,'settings','ppk_bpjs','-'),(10,'settings','footer','Copyright {?=date(\"Y\")?} &copy; by drg. F. Basoro. All rights reserved.'),(11,'settings','homepage','main'),(12,'settings','wallpaper','uploads/settings/wallpaper.jpg'),(13,'settings','text_color','#44813e'),(14,'settings','igd','IGDK'),(15,'settings','laboratorium','-'),(16,'settings','pj_laboratorium','DR001'),(17,'settings','radiologi','-'),(18,'settings','pj_radiologi','DR001'),(19,'settings','dokter_ralan_per_dokter','false'),(20,'settings','cekstatusbayar','false'),(21,'settings','ceklimit','false'),(22,'settings','responsivevoice','false'),(23,'settings','notif_presensi','true'),(24,'settings','BpjsApiUrl','https://apijkn-dev.bpjs-kesehatan.go.id/vclaim-rest-dev/'),(25,'settings','BpjsConsID','-'),(26,'settings','BpjsSecretKey','-'),(27,'settings','BpjsUserKey','-'),(28,'settings','timezone','Asia/Makassar'),(29,'settings','theme','default'),(30,'settings','theme_admin','mlite'),(31,'settings','admin_mode','complex'),(32,'settings','input_kasir','tidak'),(33,'settings','editor','wysiwyg'),(34,'settings','version','4.0.0'),(35,'settings','update_check','0'),(36,'settings','update_changelog',''),(37,'settings','update_version','0'),(38,'settings','license',''),(39,'farmasi','deporalan','-'),(40,'farmasi','igd','-'),(41,'farmasi','deporanap','-'),(42,'farmasi','gudang','-'),(43,'wagateway','server','https://mlite.id'),(44,'wagateway','token','-'),(45,'wagateway','phonenumber','-'),(46,'anjungan','display_poli',''),(47,'anjungan','carabayar',''),(48,'anjungan','antrian_loket','1'),(49,'anjungan','antrian_cs','2'),(50,'anjungan','antrian_apotek','3'),(51,'anjungan','panggil_loket','1'),(52,'anjungan','panggil_loket_nomor','1'),(53,'anjungan','panggil_cs','1'),(54,'anjungan','panggil_cs_nomor','1'),(55,'anjungan','panggil_apotek','1'),(56,'anjungan','panggil_apotek_nomor','1'),(57,'anjungan','text_anjungan','Running text anjungan pasien mandiri.....'),(58,'anjungan','text_loket','Running text display antrian loket.....'),(59,'anjungan','text_poli','Running text display antrian poliklinik.....'),(60,'anjungan','text_laboratorium','Running text display antrian laboratorium.....'),(61,'anjungan','text_apotek','Running text display antrian apotek.....'),(62,'anjungan','text_farmasi','Running text display antrian farmasi.....'),(63,'anjungan','vidio','G4im8_n0OoI'),(64,'api','apam_key','qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),(65,'api','apam_status_daftar','Terdaftar'),(66,'api','apam_status_dilayani','Anda siap dilayani'),(67,'api','apam_webappsurl','http://localhost/webapps/'),(68,'api','apam_normpetugas','000001,000002'),(69,'api','apam_limit','2'),(70,'api','apam_smtp_host','ssl://smtp.gmail.com'),(71,'api','apam_smtp_port','465'),(72,'api','apam_smtp_username',''),(73,'api','apam_smtp_password',''),(74,'api','apam_kdpj',''),(75,'api','apam_kdprop',''),(76,'api','apam_kdkab',''),(77,'api','apam_kdkec',''),(78,'api','duitku_merchantCode',''),(79,'api','duitku_merchantKey',''),(80,'api','duitku_paymentAmount',''),(81,'api','duitku_paymentMethod',''),(82,'api','duitku_productDetails',''),(83,'api','duitku_expiryPeriod',''),(84,'api','duitku_kdpj',''),(85,'api','berkasdigital_key','qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341'),(86,'jkn_mobile','x_username','jkn'),(87,'jkn_mobile','x_password','mobile'),(88,'jkn_mobile','header_token','X-Token'),(89,'jkn_mobile','header_username','X-Username'),(90,'jkn_mobile','header_password','X-Password'),(91,'jkn_mobile','BpjsConsID',''),(92,'jkn_mobile','BpjsSecretKey',''),(93,'jkn_mobile','BpjsUserKey',''),(94,'jkn_mobile','BpjsAntrianUrl','https://apijkn-dev.bpjs-kesehatan.go.id/antreanrs_dev/'),(95,'jkn_mobile','kd_pj_bpjs',''),(96,'jkn_mobile','exclude_taskid',''),(97,'jkn_mobile','display',''),(98,'jkn_mobile','kdprop','1'),(99,'jkn_mobile','kdkab','1'),(100,'jkn_mobile','kdkec','1'),(101,'jkn_mobile','kdkel','1'),(102,'jkn_mobile','perusahaan_pasien',''),(103,'jkn_mobile','suku_bangsa',''),(104,'jkn_mobile','bahasa_pasien',''),(105,'jkn_mobile','cacat_fisik',''),(106,'keuangan','jurnal_kasir','0'),(107,'keuangan','akun_kredit_pendaftaran',''),(108,'keuangan','akun_kredit_tindakan',''),(109,'keuangan','akun_kredit_obat_bhp',''),(110,'keuangan','akun_kredit_laboratorium',''),(111,'keuangan','akun_kredit_radiologi',''),(112,'keuangan','akun_kredit_tambahan_biaya',''),(113,'manajemen','penjab_umum','UMU'),(114,'manajemen','penjab_bpjs','BPJ'),(115,'presensi','lat','-2.58'),(116,'presensi','lon','115.37'),(117,'presensi','distance','2'),(118,'presensi','helloworld','Jangan Lupa Bahagia; \nCara untuk memulai adalah berhenti berbicara dan mulai melakukan; \nWaktu yang hilang tidak akan pernah ditemukan lagi; \nKamu bisa membodohi semua orang, tetapi kamu tidak bisa membohongi pikiranmu; \nIni bukan tentang ide. Ini tentang mewujudkan ide; \nBekerja bukan hanya untuk mencari materi. Bekerja merupakan manfaat bagi banyak orang'),(119,'vedika','carabayar',''),(120,'vedika','sep',''),(121,'vedika','skdp',''),(122,'vedika','operasi',''),(123,'vedika','individual',''),(124,'vedika','billing','mlite'),(125,'vedika','periode','2023-01'),(126,'vedika','verifikasi','2023-01'),(127,'vedika','inacbgs_prosedur_bedah',''),(128,'vedika','inacbgs_prosedur_non_bedah',''),(129,'vedika','inacbgs_konsultasi',''),(130,'vedika','inacbgs_tenaga_ahli',''),(131,'vedika','inacbgs_keperawatan',''),(132,'vedika','inacbgs_penunjang',''),(133,'vedika','inacbgs_pelayanan_darah',''),(134,'vedika','inacbgs_rehabilitasi',''),(135,'vedika','inacbgs_rawat_intensif',''),(136,'vedika','eklaim_url',''),(137,'vedika','eklaim_key',''),(138,'vedika','eklaim_kelasrs','CP'),(139,'vedika','eklaim_payor_id','3'),(140,'vedika','eklaim_payor_cd','JKN'),(141,'vedika','eklaim_cob_cd','#'),(142,'orthanc','server','http://localhost:8042'),(143,'orthanc','username','orthanc'),(144,'orthanc','password','orthanc'),(145,'veronisa','username',''),(146,'veronisa','password',''),(147,'veronisa','obat_kronis',''),(148,'jkn_mobile','kirimantrian','tidak'),(149,'settings','keamanan','ya'),(150,'dokter_ralan','set_sudah','tidak');
 /*!40000 ALTER TABLE `mlite_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -5888,4 +6005,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-12-08 10:18:10
+-- Dump completed on 2023-12-12 16:34:46

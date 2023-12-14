@@ -4,6 +4,7 @@ namespace Plugins\Veronisa;
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
+use Systems\Lib\LZCompressor;
 
 class Admin extends AdminModule
 {
@@ -237,7 +238,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($data != null) {
       $data = '{
@@ -285,7 +286,7 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       if ($data_rujukan != null) {
         $data_rujukan = '{

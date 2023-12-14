@@ -537,7 +537,3 @@ function stringDecrypt($key, $string){
 
     return $output;
 }
-
-function decompress($string){
-    return \LZCompressor\LZString::decompressFromEncodedURIComponent($string);
-}

@@ -1,0 +1,51 @@
+<div class="form-group">
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Jumlah Tagihan</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_total" maxlength="11" disabled>
+    </div>
+    <input type="text" class="form-control" style="background-color:white;border:none;box-shadow:none;text-align:right;font-weight:bold;" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_total" disabled >
+    </div>
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Potongan</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" />
+    </div>
+    </div>
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_harus_bayar" maxlength="11" disabled />
+    </div>
+    <input type="text" class="form-control" style="background-color:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_harus_bayar" disabled >
+    </div>
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Jumlah Bayar</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" />
+    </div>
+    </div>
+    <div class="form-group">
+    <label class="col-sm-5 control-label">Kembalian</label>
+    <div class="col-sm-7">
+        <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="0" name="kembalian" disabled maxlength="11" />
+    </div>
+    <input type="text" class="form-control" style="background-color:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" disabled >
+    </div>
+    <div class="form-group">
+        <label for="keterangan" class="col-sm-5 control-label">Cara Bayar</label>
+        <div class="col-sm-7">
+        <select class="form-control" name="keterangan" id="keterangan">
+            <option value="Tunai">Tunai</option>
+            <option value="Kurang Bayar">Kurang Bayar</option>
+            <option value="Belum Bayar">Belum Bayar</option>
+        </select>
+        </div>
+    </div>
+</div>
+<div class="pull-right">
+  <button type="button" name="button" class="btn btn-success" id="simpan_billing_penjualan"><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
+  <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil_penjualan" data-no_rawat="{$no_rawat}"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
+  <button type="button" name="button" class="btn btn-info" id="cetak_billing_penjualan" data-no_rawat="{$no_rawat}"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
+  <button type="button" name="button" class="btn btn-warning" id="selesai_billing_penjualan"><span class="fa fa-check"></span><span class="hidden-xs"> Selesai</span></button>
+</div> 

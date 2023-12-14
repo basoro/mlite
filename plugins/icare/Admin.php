@@ -4,6 +4,7 @@ namespace Plugins\Icare;
 
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
+use Systems\Lib\LZCompressor;
 
 class Admin extends AdminModule
 {
@@ -69,7 +70,7 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $json['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       $message = $json['metaData']['code'];
     } else {
