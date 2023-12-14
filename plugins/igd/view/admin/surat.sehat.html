@@ -12,7 +12,23 @@
     font-size: 14px;
     font-family: georgia;
   }
+  @media print {
+    #printPageButton {
+      display: none;
+    }
+  }
 </style>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }  
+  function auto_grow(element) {
+    element.style.height = "5px";
+    element.style.height = (element.scrollHeight) + "px";
+  }  
+</script>
+
 <div style="width:960px;">
   <table>
     <thead>
@@ -93,10 +109,10 @@
         <td><input type="text" class="form-control" name="" value="" style="width: 200px;border: 0;padding:5px;margin: 2px 0;background-color:#eee;"></td>
       </tr>
       <tr>
-        <td width="200">Riwayat Penyakit</td>
-        <td> : </td>
+        <td width="200" style="vertical-align: top;">Riwayat Penyakit</td>
+        <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="4" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
 
@@ -124,3 +140,5 @@
       </tr>
   </table>
 </div>
+<br><br>
+<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

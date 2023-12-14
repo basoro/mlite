@@ -5,20 +5,19 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
-define('DBUSER', '');
-define('DBPASS', '');
-define('DBNAME', '');
+define('DBUSER', 'mlite_official');
+define('DBPASS', 'mlite_official');
+define('DBNAME', 'mlite_official');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://mlite.loc/webapps');
 define('WEBAPPS_PATH', BASE_DIR . '/webapps');
 
-// Admin cat name
-define('ADMIN', 'admin');
-
 // Multi APP
 define('MULTI_APP', false);
-define('MULTI_APP_REDIRECT', '');
+
+// Admin cat name
+define('ADMIN', 'admin');
 
 // Themes path
 define('THEMES', BASE_DIR . '/themes');

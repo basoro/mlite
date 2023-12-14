@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class Penjab
 {
@@ -16,7 +16,7 @@ class Penjab
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('penjab')
+      $totalRecords = $this->db('penjab')
         ->select('kd_pj')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class Penjab
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('penjab')
+      $return['list'] = $this->db('penjab')
         ->desc('kd_pj')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class Penjab
     public function anyForm()
     {
         if (isset($_POST['kd_pj'])){
-          $return['form'] = $this->mysql('penjab')->where('kd_pj', $_POST['kd_pj'])->oneArray();
+          $return['form'] = $this->db('penjab')->where('kd_pj', $_POST['kd_pj'])->oneArray();
         } else {
           $return['form'] = [
             'kd_pj' => '',
@@ -56,7 +56,7 @@ class Penjab
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('penjab')
+        $totalRecords = $this->db('penjab')
           ->select('kd_pj')
           ->toArray();
         $offset         = 10;
@@ -64,14 +64,14 @@ class Penjab
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('penjab')
+        $return['list'] = $this->db('penjab')
           ->desc('kd_pj')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('penjab')
+          $return['list'] = $this->db('penjab')
             ->like('kd_pj', '%'.$_POST['cari'].'%')
             ->orLike('png_jawab', '%'.$_POST['cari'].'%')
             ->desc('kd_pj')
@@ -83,7 +83,7 @@ class Penjab
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('penjab')
+          $return['list'] = $this->db('penjab')
             ->desc('kd_pj')
             ->offset($offset)
             ->limit($perpage)
@@ -96,22 +96,17 @@ class Penjab
 
     public function postSave()
     {
-      if (!$this->mysql('penjab')->where('kd_pj', $_POST['kd_pj'])->oneArray()) {
-        $query = $this->mysql('penjab')->save($_POST);
+      if (!$this->db('penjab')->where('kd_pj', $_POST['kd_pj'])->oneArray()) {
+        $query = $this->db('penjab')->save($_POST);
       } else {
-        $query = $this->mysql('penjab')->where('kd_pj', $_POST['kd_pj'])->save($_POST);
+        $query = $this->db('penjab')->where('kd_pj', $_POST['kd_pj'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('penjab')->where('kd_pj', $_POST['kd_pj'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('penjab')->where('kd_pj', $_POST['kd_pj'])->delete();
     }
 
 }

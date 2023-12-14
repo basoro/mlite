@@ -2,7 +2,7 @@
 namespace Plugins\Wagateway;
 
 use Systems\AdminModule;
-use Systems\MySQL;
+
 
 class Admin extends AdminModule
 {
@@ -158,11 +158,6 @@ class Admin extends AdminModule
         }
       }
       return $this->draw('send.file.html');
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

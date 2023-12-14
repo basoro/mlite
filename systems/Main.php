@@ -3,7 +3,6 @@
 namespace Systems;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
 use Systems\Lib\Templates;
 use Systems\Lib\Router;
 use Systems\Lib\Settings;
@@ -25,24 +24,14 @@ abstract class Main
     public function __construct()
     {
         $this->setSession();
-        if(MULTI_APP) {
-            $dbFile = BASE_DIR.'/systems/data/database.sdb';
+        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
 
-            if (file_exists($dbFile)) {
-                QueryWrapper::connect("sqlite:{$dbFile}");
-            } else {
-                $this->freshInstall();
-            }
-        } else {
-          QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
+        $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
+        $check_db->execute();
+        $check_db = $check_db->fetch();
 
-          $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
-          $check_db->execute();
-          $check_db = $check_db->fetch();
-
-          if(empty($check_db)) {
-              $this->freshInstall();
-          }
+        if(empty($check_db)) {
+            $this->freshInstall();
         }
 
         if (!is_dir(WEBAPPS_PATH)) {
@@ -93,6 +82,18 @@ abstract class Main
             mkdir(UPLOADS."/settings", 0777);
         }
 
+        if (!is_dir(UPLOADS."/invoices")) {
+            mkdir(UPLOADS."/invoices", 0777);
+        }
+
+        if (!is_dir(UPLOADS."/laboratorium")) {
+            mkdir(UPLOADS."/laboratorium", 0777);
+        }
+
+        if (!is_dir(UPLOADS."/radiologi")) {
+            mkdir(UPLOADS."/radiologi", 0777);
+        }
+        
         copy(THEMES.'/admin/img/logo.png', UPLOADS.'/settings/logo.png');
         copy(THEMES.'/admin/img/wallpaper.jpg', UPLOADS.'/settings/wallpaper.jpg');
 
@@ -108,11 +109,6 @@ abstract class Main
     public function db($table = null)
     {
         return new QueryWrapper($table);
-    }
-
-    public function mysql($table = null)
-    {
-        return new MySQL($table);
     }
 
     public function getSettings($module = 'settings', $field = null, $refresh = false)
@@ -215,15 +211,7 @@ abstract class Main
             }
 
             if (empty(parseURL(1))) {
-                if(MULTI_APP) {
-                    if(!empty(MULTI_APP_REDIRECT)) {
-                        redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
-                    } else {
-                        redirect(url([ADMIN, 'dashboard', 'main']));
-                    }
-                } else {
-                    redirect(url([ADMIN, 'dashboard', 'main']));
-                }
+                redirect(url([ADMIN, 'dashboard', 'main']));
             } elseif (!isset($_GET['t']) || ($_SESSION['token'] != @$_GET['t'])) {
                 return false;
             }
@@ -246,15 +234,7 @@ abstract class Main
                         $this->db('mlite_remember_me')->where('remember_me.user_id', $token[0])->where('remember_me.token', $token[1])->save(['expiry' => time()+60*60*24*30]);
 
                         if (strpos($_SERVER['SCRIPT_NAME'], '/'.ADMIN.'/') !== false) {
-                            if(MULTI_APP) {
-                                if(!empty(MULTI_APP_REDIRECT)) {
-                                    redirect(url([ADMIN, MULTI_APP_REDIRECT, 'main']));
-                                } else {
-                                    redirect(url([ADMIN, 'dashboard', 'main']));
-                                }
-                            } else {
-                                redirect(url([ADMIN, 'dashboard', 'main']));
-                            }
+                            redirect(url([ADMIN, 'dashboard', 'main']));
                         }
 
                         return true;
@@ -281,7 +261,7 @@ abstract class Main
     }
 
     public function getEnum($table_name, $column_name) {
-      $result = $this->mysql()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
+      $result = $this->db()->pdo()->prepare("SHOW COLUMNS FROM $table_name LIKE '$column_name'");
       $result->execute();
       $result = $result->fetch();
       $result = explode("','",preg_replace("/(enum|set)\('(.+?)'\)/","\\2", $result[1]));
@@ -290,67 +270,67 @@ abstract class Main
 
     public function getDokterInfo($field, $kd_dokter)
     {
-        $row = $this->mysql('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
+        $row = $this->db('dokter')->where('kd_dokter', $kd_dokter)->oneArray();
         return $row[$field];
     }
 
     public function getPoliklinikInfo($field, $kd_poli)
     {
-        $row = $this->mysql('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
+        $row = $this->db('poliklinik')->where('kd_poli', $kd_poli)->oneArray();
         return isset_or($row[$field],'');
     }
 
     public function getBangsalInfo($field, $kd_bangsal)
     {
-        $row = $this->mysql('bangsal')->where('kd_bangsal', $kd_bangsal)->oneArray();
+        $row = $this->db('bangsal')->where('kd_bangsal', $kd_bangsal)->oneArray();
         return isset_or($row[$field],'');
     }
 
     public function getKamarInfo($field, $kd_kamar)
     {
-        $row = $this->mysql('kamar')->where('kd_kamar', $kd_kamar)->oneArray();
+        $row = $this->db('kamar')->where('kd_kamar', $kd_kamar)->oneArray();
         return isset_or($row[$field],'');
     }
 
     public function getPenjabInfo($field, $kd_pj)
     {
-        $row = $this->mysql('penjab')->where('kd_pj', $kd_pj)->oneArray();
+        $row = $this->db('penjab')->where('kd_pj', $kd_pj)->oneArray();
         return $row[$field];
     }
 
     public function getPegawaiInfo($field, $nik)
     {
-        $row = $this->mysql('pegawai')->where('nik', $nik)->oneArray();
+        $row = $this->db('pegawai')->where('nik', $nik)->oneArray();
         return $row[$field];
     }
 
     public function getPasienInfo($field, $no_rkm_medis)
     {
-        $row = $this->mysql('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
+        $row = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
         return $row[$field];
     }
 
     public function getRegPeriksaInfo($field, $no_rawat)
     {
-        $row = $this->mysql('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
+        $row = $this->db('reg_periksa')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
     }
 
     public function getKamarInapInfo($field, $no_rawat)
     {
-        $row = $this->mysql('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
+        $row = $this->db('kamar_inap')->where('no_rawat', $no_rawat)->oneArray();
         return $row[$field];
     }
 
     public function getDepartemenInfo($dep_id)
     {
-        $row = $this->mysql('departemen')->where('dep_id', $dep_id)->oneArray();
+        $row = $this->db('departemen')->where('dep_id', $dep_id)->oneArray();
         return $row['nama'];
     }
 
     public function setNoRM()
     {
-        $last_no_rm = $this->mysql('set_no_rkm_medis')->oneArray();
+        $last_no_rm = $this->db('set_no_rkm_medis')->oneArray();
         $last_no_rm = substr($last_no_rm['no_rkm_medis'], 0, 6);
         $next_no_rm = sprintf('%06s', ($last_no_rm + 1));
         return $next_no_rm;
@@ -358,7 +338,7 @@ abstract class Main
 
     public function setNoRawat($date)
     {
-        $last_no_rawat = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
+        $last_no_rawat = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_rawat,6),signed)),0) FROM reg_periksa WHERE tgl_registrasi = '$date'");
         $last_no_rawat->execute();
         $last_no_rawat = $last_no_rawat->fetch();
         if(empty($last_no_rawat[0])) {
@@ -372,9 +352,9 @@ abstract class Main
 
     public function setNoReg($kd_dokter, $kd_poli = null)
     {
-        $max_id = $this->mysql('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+        $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
         if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-          $max_id = $this->mysql('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
+          $max_id = $this->db('reg_periksa')->select(['no_reg' => 'ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0)'])->where('kd_poli', $kd_poli)->where('kd_dokter', $kd_dokter)->where('tgl_registrasi', date('Y-m-d'))->desc('no_reg')->limit(1)->oneArray();
         }
         if(empty($max_id['no_reg'])) {
           $max_id['no_reg'] = '000';
@@ -386,9 +366,9 @@ abstract class Main
 
     public function setNoBooking($kd_dokter, $date, $kd_poli = null)
     {
-        $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+        $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE kd_poli = '$kd_poli' AND tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
         if($this->settings->get('settings.dokter_ralan_per_dokter') == 'true') {
-          $last_no_reg = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
+          $last_no_reg = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_reg,3),signed)),0) FROM booking_registrasi WHERE tanggal_periksa = '$date' AND kd_dokter = '$kd_dokter'");
         }
         $last_no_reg->execute();
         $last_no_reg = $last_no_reg->fetch();
@@ -402,7 +382,7 @@ abstract class Main
 
     public function setNoResep($date)
     {
-        $last_no_resep = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
+        $last_no_resep = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_resep,4),signed)),0) FROM resep_obat WHERE tgl_peresepan = '$date' OR tgl_perawatan =  '$date'");
         $last_no_resep->execute();
         $last_no_resep = $last_no_resep->fetch();
         if(empty($last_no_resep[0])) {
@@ -417,7 +397,7 @@ abstract class Main
     public function setNoOrderLab()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_lab WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -432,7 +412,7 @@ abstract class Main
     public function setNoOrderRad()
     {
         $date = date('Y-m-d');
-        $last_no_order = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
+        $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(noorder,4),signed)),0) FROM permintaan_rad WHERE tgl_permintaan = '$date'");
         $last_no_order->execute();
         $last_no_order = $last_no_order->fetch();
         if(empty($last_no_order[0])) {
@@ -447,7 +427,7 @@ abstract class Main
     public function setNoSKDP()
     {
         $year = date('Y');
-        $last_no = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_antrian,6),signed)),0) FROM skdp_bpjs WHERE tahun = '$year'");
         $last_no->execute();
         $last_no = $last_no->fetch();
         if(empty($last_no[0])) {
@@ -460,7 +440,7 @@ abstract class Main
     public function setNoNotaRalan()
     {
         $date = date('Y-m');
-        $last_no = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
+        $last_no = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_nota,6),signed)),0) FROM nota_jalan WHERE left(tanggal,7) = '$date'");
         $last_no->execute();
         $last_no = $last_no->fetch();
         if(empty($last_no[0])) {
@@ -474,7 +454,7 @@ abstract class Main
     public function setNoJurnal()
     {
         $date = date('Y-m-d');
-        $last_no_jurnal = $this->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
+        $last_no_jurnal = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_jurnal,6),signed)),0) FROM mlite_jurnal WHERE tgl_jurnal = '$date'");
         $last_no_jurnal->execute();
         $last_no_jurnal = $last_no_jurnal->fetch();
         if(empty($last_no_jurnal[0])) {
@@ -496,12 +476,7 @@ abstract class Main
     private function freshInstall()
     {
 
-        if(MULTI_APP) {
-            $dbFile = BASE_DIR.'/systems/data/database.sdb';
-            QueryWrapper::connect("sqlite:{$dbFile}");
-        } else {
-            QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
-        }
+        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
 
         $pdo = QueryWrapper::pdo();
 

@@ -159,7 +159,7 @@ class Admin extends AdminModule
          $new_image_path = WEBAPPS_PATH.'/radiologi/pages/upload/'.$filename;
          file_put_contents($new_image_path, $image_data);
          $message = 'Hasil PACS telah disimpan ke server SIMRS';
-         $result = $this->core->mysql('gambar_radiologi')
+         $result = $this->db('gambar_radiologi')
            ->save([
              'no_rawat' => $_POST['no_rawat'],
              'tgl_periksa' => $_POST['tgl_periksa'],
@@ -184,7 +184,7 @@ class Admin extends AdminModule
     public function postSaveHasilBaca()
     {
       if(isset($_POST['hasil']) && $_POST['hasil'] != '') {
-        $result = $this->core->mysql('hasil_radiologi')
+        $result = $this->db('hasil_radiologi')
           ->save([
             'no_rawat' => $_POST['no_rawat'],
             'tgl_periksa' => $_POST['tgl_periksa'],

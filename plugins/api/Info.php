@@ -4,7 +4,7 @@ return [
     'description'   =>  'Katalog API mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'database',
     'pages'         =>  ['API mLITE' => 'api'],
     'install'       =>  function () use ($core) {
@@ -33,6 +33,6 @@ return [
       $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('api', 'berkasdigital_key', 'qtbexUAxzqO3M8dCOo2vDMFvgYjdUEdMLVo341')");
     },
     'uninstall'     =>  function () use ($core) {
-      $core->mysql()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'api'");
+      $core->db()->pdo()->exec("DELETE FROM `mlite_settings` WHERE `module` = 'api'");
     }
 ];

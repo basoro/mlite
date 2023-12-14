@@ -53,7 +53,7 @@ class Admin extends AdminModule
     private function _getPoliklinik($kd_poli = null)
     {
         $result = [];
-        $rows = $this->core->mysql('poliklinik')->toArray();
+        $rows = $this->db('poliklinik')->toArray();
 
         if (!$kd_poli) {
             $kd_poliArray = [];
@@ -79,7 +79,7 @@ class Admin extends AdminModule
     private function _getPenjab($kd_pj = null)
     {
         $result = [];
-        $rows = $this->core->mysql('penjab')->where('status', '1')->toArray();
+        $rows = $this->db('penjab')->where('status', '1')->toArray();
 
         if (!$kd_pj) {
             $kd_pjArray = [];
@@ -105,13 +105,13 @@ class Admin extends AdminModule
     public function getResetAnjunganLoket(){
       date_default_timezone_set($this->settings->get('settings.timezone'));
       $date = date('Y-m-d');
-      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
       if($checkAnjungan){
-        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        $this->db('mlite_antrian_loket')->where('postdate',$date)->delete();
         echo 'Berhasil Reset Antrian Anjungan Loket<br>';
-        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
         if(!$checkAnjungan){
-          $this->core->mysql('mlite_antrian_loket')->save([
+          $this->db('mlite_antrian_loket')->save([
             'type' => 'Loket',
             'noantrian' => '1',
             'postdate' => $date,
@@ -128,13 +128,13 @@ class Admin extends AdminModule
     public function getResetAnjunganCS(){
       date_default_timezone_set($this->settings->get('settings.timezone'));
       $date = date('Y-m-d');
-      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
       if($checkAnjungan){
-        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        $this->db('mlite_antrian_loket')->where('postdate',$date)->delete();
         echo 'Berhasil Reset Antrian Anjungan CS<br>';
-        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
         if(!$checkAnjungan){
-          $this->core->mysql('mlite_antrian_loket')->save([
+          $this->db('mlite_antrian_loket')->save([
             'type' => 'CS',
             'noantrian' => '1',
             'postdate' => $date,
@@ -151,13 +151,13 @@ class Admin extends AdminModule
     public function getResetAnjunganApotek(){
       date_default_timezone_set($this->settings->get('settings.timezone'));
       $date = date('Y-m-d');
-      $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+      $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
       if($checkAnjungan){
-        $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->delete();
+        $this->db('mlite_antrian_loket')->where('postdate',$date)->delete();
         echo 'Berhasil Reset Antrian Anjungan Apotek<br>';
-        $checkAnjungan = $this->core->mysql('mlite_antrian_loket')->where('postdate',$date)->oneArray();
+        $checkAnjungan = $this->db('mlite_antrian_loket')->where('postdate',$date)->oneArray();
         if(!$checkAnjungan){
-          $this->core->mysql('mlite_antrian_loket')->save([
+          $this->db('mlite_antrian_loket')->save([
             'type' => 'Apotek',
             'noantrian' => '1',
             'postdate' => $date,

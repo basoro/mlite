@@ -388,7 +388,7 @@ function KirimEmail() {
 	var email = document.getElementById("email").value;
 	var receiver = document.getElementById("receiver").value;
 	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
-	xhttp.open("POST", "{?=url([ADMIN,'kasir_rawat_jalan','kirimemail'])?}", true);
+	xhttp.open("POST", "{?=url([ADMIN,'kasir_rawat_inap','kirimemail'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
 }

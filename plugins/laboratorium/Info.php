@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul Laboratorium untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'flask',
     'install'       =>  function () use ($core) {
         if (!is_dir(UPLOADS."/laboratorium")) {

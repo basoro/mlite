@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class JnsPerawatan
 {
@@ -16,7 +16,7 @@ class JnsPerawatan
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('jns_perawatan')
+      $totalRecords = $this->db('jns_perawatan')
         ->where('status', '1')
         ->select('kd_jenis_prw')
         ->toArray();
@@ -25,7 +25,7 @@ class JnsPerawatan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('jns_perawatan')
+      $return['list'] = $this->db('jns_perawatan')
         ->join('kategori_perawatan', 'kategori_perawatan.kd_kategori=jns_perawatan.kd_kategori')
         ->join('penjab', 'penjab.kd_pj=jns_perawatan.kd_pj')
         ->join('poliklinik', 'poliklinik.kd_poli=jns_perawatan.kd_poli')
@@ -40,11 +40,11 @@ class JnsPerawatan
 
     public function anyForm()
     {
-        $return['poliklinik'] = $this->mysql('poliklinik')->where('status', '1')->toArray();
-        $return['kategori_perawatan'] = $this->mysql('kategori_perawatan')->toArray();
-        $return['penjab'] = $this->mysql('penjab')->where('status', '1')->toArray();
+        $return['poliklinik'] = $this->db('poliklinik')->where('status', '1')->toArray();
+        $return['kategori_perawatan'] = $this->db('kategori_perawatan')->toArray();
+        $return['penjab'] = $this->db('penjab')->where('status', '1')->toArray();
         if (isset($_POST['kd_jenis_prw'])){
-          $return['form'] = $this->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
+          $return['form'] = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray();
         } else {
           $return['form'] = [
             'kd_jenis_prw' => '',
@@ -72,7 +72,7 @@ class JnsPerawatan
     {
 
         $perpage = '20';
-        $totalRecords = $this->mysql('jns_perawatan')
+        $totalRecords = $this->db('jns_perawatan')
           ->where('status', '1')
           ->select('kd_jenis_prw')
           ->toArray();
@@ -81,7 +81,7 @@ class JnsPerawatan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('jns_perawatan')
+        $return['list'] = $this->db('jns_perawatan')
           ->join('kategori_perawatan', 'kategori_perawatan.kd_kategori=jns_perawatan.kd_kategori')
           ->join('penjab', 'penjab.kd_pj=jns_perawatan.kd_pj')
           ->join('poliklinik', 'poliklinik.kd_poli=jns_perawatan.kd_poli')
@@ -92,7 +92,7 @@ class JnsPerawatan
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('jns_perawatan')
+          $return['list'] = $this->db('jns_perawatan')
             ->join('kategori_perawatan', 'kategori_perawatan.kd_kategori=jns_perawatan.kd_kategori')
             ->join('penjab', 'penjab.kd_pj=jns_perawatan.kd_pj')
             ->join('poliklinik', 'poliklinik.kd_poli=jns_perawatan.kd_poli')
@@ -107,7 +107,7 @@ class JnsPerawatan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('jns_perawatan')
+          $return['list'] = $this->db('jns_perawatan')
             ->join('kategori_perawatan', 'kategori_perawatan.kd_kategori=jns_perawatan.kd_kategori')
             ->join('penjab', 'penjab.kd_pj=jns_perawatan.kd_pj')
             ->join('poliklinik', 'poliklinik.kd_poli=jns_perawatan.kd_poli')
@@ -124,22 +124,22 @@ class JnsPerawatan
 
     public function postSave()
     {
-      if (!$this->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray()) {
-        $query = $this->mysql('jns_perawatan')->save($_POST);
+      if (!$this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->oneArray()) {
+        $query = $this->db('jns_perawatan')->save($_POST);
       } else {
-        $query = $this->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->save($_POST);
+        $query = $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->delete();
+      return $this->db('jns_perawatan')->where('kd_jenis_prw', $_POST['kd_jenis_prw'])->delete();
     }
 
     public function postMaxId()
     {
-      $max_id = $this->mysql('jns_perawatan')->select(['kd_jenis_prw' => 'ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0)'])->oneArray();
+      $max_id = $this->db('jns_perawatan')->select(['kd_jenis_prw' => 'ifnull(MAX(CONVERT(RIGHT(kd_jenis_prw,3),signed)),0)'])->oneArray();
       if(empty($max_id['kd_jenis_prw'])) {
         $max_id['kd_jenis_prw'] = '000';
       }
@@ -147,11 +147,6 @@ class JnsPerawatan
       $next_max_id = 'RJ'.$_next_max_id;
       echo $next_max_id;
       exit();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
     }
 
 }

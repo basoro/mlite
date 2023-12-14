@@ -4,6 +4,7 @@ namespace Plugins\Icare;
 
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
+use Systems\Lib\LZCompressor;
 
 class Admin extends AdminModule
 {
@@ -49,9 +50,9 @@ class Admin extends AdminModule
   public function getRiwayat($no_rawat)
   {
 
-    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $bridging_sep = $this->db('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
     $no_rkm_medis = $this->core->getRegPeriksaInfo('no_rkm_medis',revertNoRawat($no_rawat));
-    $kd_dokter_bpjs = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter',revertNoRawat($no_rawat)))->oneArray();
+    $kd_dokter_bpjs = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $this->core->getRegPeriksaInfo('kd_dokter',revertNoRawat($no_rawat)))->oneArray();
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
@@ -69,7 +70,7 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $json['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       $message = $json['metaData']['code'];
     } else {

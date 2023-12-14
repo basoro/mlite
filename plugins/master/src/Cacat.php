@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class Cacat
 {
@@ -16,7 +16,7 @@ class Cacat
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('cacat_fisik')
+      $totalRecords = $this->db('cacat_fisik')
         ->select('id')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class Cacat
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('cacat_fisik')
+      $return['list'] = $this->db('cacat_fisik')
         ->desc('id')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class Cacat
     public function anyForm()
     {
         if (isset($_POST['id'])){
-          $return['form'] = $this->mysql('cacat_fisik')->where('id', $_POST['id'])->oneArray();
+          $return['form'] = $this->db('cacat_fisik')->where('id', $_POST['id'])->oneArray();
         } else {
           $return['form'] = [
             'id' => '',
@@ -51,7 +51,7 @@ class Cacat
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('cacat_fisik')
+        $totalRecords = $this->db('cacat_fisik')
           ->select('id')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class Cacat
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('cacat_fisik')
+        $return['list'] = $this->db('cacat_fisik')
           ->desc('id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('cacat_fisik')
+          $return['list'] = $this->db('cacat_fisik')
             ->like('id', '%'.$_POST['cari'].'%')
             ->orLike('nama_cacat', '%'.$_POST['cari'].'%')
             ->desc('id')
@@ -78,7 +78,7 @@ class Cacat
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('cacat_fisik')
+          $return['list'] = $this->db('cacat_fisik')
             ->desc('id')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class Cacat
 
     public function postSave()
     {
-      if (!$this->mysql('cacat_fisik')->where('id', $_POST['id'])->oneArray()) {
-        $query = $this->mysql('cacat_fisik')->save($_POST);
+      if (!$this->db('cacat_fisik')->where('id', $_POST['id'])->oneArray()) {
+        $query = $this->db('cacat_fisik')->save($_POST);
       } else {
-        $query = $this->mysql('cacat_fisik')->where('id', $_POST['id'])->save($_POST);
+        $query = $this->db('cacat_fisik')->where('id', $_POST['id'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('cacat_fisik')->where('id', $_POST['id'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('cacat_fisik')->where('id', $_POST['id'])->delete();
     }
 
 }

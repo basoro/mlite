@@ -4,7 +4,7 @@ return [
     'description'   =>  'Modul JKN Mobile API untuk FKTP',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'tasks',
     'pages'         =>  ['JKN Mobile FKTP' => 'jknmobilefktp'],
     'install'       =>  function () use ($core) {

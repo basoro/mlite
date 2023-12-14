@@ -28,7 +28,7 @@
               {/if}
               <li><a href="{?=url([ADMIN, 'pasien', 'riwayatperawatan', $value.no_rkm_medis])?}" data-toggle="modal" data-target="#riwayatModal">Elektronik Rekam Medis</a></li>
               {if: $this->core->getUserInfo('role') == 'admin' || $this->core->getUserInfo('role') == 'medis' || $this->core->getUserInfo('role') == 'paramedis'}
-              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">SOAP & Pemeriksaan</a></li>
+              <li><a href="#soap" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-umur="{$value.umurdaftar} {$value.sttsumur}">SOAP & Pemeriksaan</a></li>
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="#berkas_digital" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Berkas Digital</a></li>
               <li><a href="#set_dpjp" data-no_rawat="{$value.no_rawat}">Set DPJP</a></li>
@@ -194,11 +194,13 @@
     var no_rawat = $(this).attr("data-no_rawat");
     var no_rkm_medis = $(this).attr("data-no_rkm_medis");
     var nm_pasien = $(this).attr("data-nm_pasien");
+    var umur = $(this).attr("data-umur");
     var tgl_registrasi = $(this).attr("data-tgl_registrasi");
 
     $('input:text[name=no_rawat]').val(no_rawat);
     $('input:text[name=no_rkm_medis]').val(no_rkm_medis);
     $('input:text[name=nm_pasien]').val(nm_pasien);
+    $('input:text[name=umur]').val(umur);
     $('input:text[name=tgl_registrasi]').val(tgl_registrasi);
     $("#display").hide();
 

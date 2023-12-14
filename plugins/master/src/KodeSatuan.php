@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class KodeSatuan
 {
@@ -16,7 +16,7 @@ class KodeSatuan
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('kodesatuan')
+      $totalRecords = $this->db('kodesatuan')
         ->select('kode_sat')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class KodeSatuan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('kodesatuan')
+      $return['list'] = $this->db('kodesatuan')
         ->desc('kode_sat')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class KodeSatuan
     public function anyForm()
     {
         if (isset($_POST['kode_sat'])){
-          $return['form'] = $this->mysql('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray();
+          $return['form'] = $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray();
         } else {
           $return['form'] = [
             'kode_sat' => '',
@@ -51,7 +51,7 @@ class KodeSatuan
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('kodesatuan')
+        $totalRecords = $this->db('kodesatuan')
           ->select('kode_sat')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class KodeSatuan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('kodesatuan')
+        $return['list'] = $this->db('kodesatuan')
           ->desc('kode_sat')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('kodesatuan')
+          $return['list'] = $this->db('kodesatuan')
             ->like('kode_sat', '%'.$_POST['cari'].'%')
             ->orLike('satuan', '%'.$_POST['cari'].'%')
             ->desc('kode_sat')
@@ -78,7 +78,7 @@ class KodeSatuan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('kodesatuan')
+          $return['list'] = $this->db('kodesatuan')
             ->desc('kode_sat')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class KodeSatuan
 
     public function postSave()
     {
-      if (!$this->mysql('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray()) {
-        $query = $this->mysql('kodesatuan')->save($_POST);
+      if (!$this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->oneArray()) {
+        $query = $this->db('kodesatuan')->save($_POST);
       } else {
-        $query = $this->mysql('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->save($_POST);
+        $query = $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('kodesatuan')->where('kode_sat', $_POST['kode_sat'])->delete();
     }
 
 }

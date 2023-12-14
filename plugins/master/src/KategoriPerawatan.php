@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class KategoriPerawatan
 {
@@ -16,7 +16,7 @@ class KategoriPerawatan
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('kategori_perawatan')
+      $totalRecords = $this->db('kategori_perawatan')
         ->select('kd_kategori')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class KategoriPerawatan
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('kategori_perawatan')
+      $return['list'] = $this->db('kategori_perawatan')
         ->desc('kd_kategori')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class KategoriPerawatan
     public function anyForm()
     {
         if (isset($_POST['kd_kategori'])){
-          $return['form'] = $this->mysql('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->oneArray();
+          $return['form'] = $this->db('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->oneArray();
         } else {
           $return['form'] = [
             'kd_kategori' => '',
@@ -51,7 +51,7 @@ class KategoriPerawatan
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('kategori_perawatan')
+        $totalRecords = $this->db('kategori_perawatan')
           ->select('kd_kategori')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class KategoriPerawatan
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('kategori_perawatan')
+        $return['list'] = $this->db('kategori_perawatan')
           ->desc('kd_kategori')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('kategori_perawatan')
+          $return['list'] = $this->db('kategori_perawatan')
             ->like('kd_kategori', '%'.$_POST['cari'].'%')
             ->orLike('nm_kategori', '%'.$_POST['cari'].'%')
             ->desc('kd_kategori')
@@ -78,7 +78,7 @@ class KategoriPerawatan
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('kategori_perawatan')
+          $return['list'] = $this->db('kategori_perawatan')
             ->desc('kd_kategori')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class KategoriPerawatan
 
     public function postSave()
     {
-      if (!$this->mysql('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->oneArray()) {
-        $query = $this->mysql('kategori_perawatan')->save($_POST);
+      if (!$this->db('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->oneArray()) {
+        $query = $this->db('kategori_perawatan')->save($_POST);
       } else {
-        $query = $this->mysql('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->save($_POST);
+        $query = $this->db('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('kategori_perawatan')->where('kd_kategori', $_POST['kd_kategori'])->delete();
     }
 
 }

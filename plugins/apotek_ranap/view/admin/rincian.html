@@ -5,7 +5,7 @@
       <tr>
         <th>Nama Obat</th>
         <th>Jumlah</th>
-        <th>Aturan Pakai</th>
+        <th>Aturan Pakai {if: $detail_pemberian_obat}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($detail_pemberian_obat.0.no_rawat)?}" data-tgl_peresepan="{$detail_pemberian_obat.0.tgl_perawatan}" data-jam_peresepan="{$detail_pemberian_obat.0.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}</th>
         <th>Harga</th>
         <th>Aksi</th>
       </tr>
@@ -57,7 +57,7 @@
       <tr>
         <th>Nama Obat</th>
         <th>Jumlah</th>
-        <th>Aturan Pakai</th>
+        <th>Aturan Pakai {if: $resep}<button type="button" class="btn btn-danger btn-xs cetak_etiket" data-no_rawat="{?=convertNoRawat($value.no_rawat)?}" data-tgl_peresepan="{$value.tgl_perawatan}" data-jam_peresepan="{$value.jam}" data-tipe="nonracikan"><i class="fa fa-print"></i><span class="hidden-xs"> Etiket</span></button>{/if}</th>
         <th>Harga</th>
         <th>Aksi</th>
       </tr>
@@ -83,6 +83,32 @@
     </tfoot>
   </table>
 </div>
+<div class="modal fade" id="cetakEtiket" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Cetak Etiket</h4>
+      </div>
+      <div class="modal-body">
+        <div class="cetak-kartu">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Batal</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+</script>
+<script type="text/javascript">
+  $(".cetak_etiket").click(function(){
+      var baseURL = mlite.url + '/' + mlite.admin;
+      var no_rawat = $(this).attr("data-no_rawat");
+      var tgl_peresepan = $(this).attr("data-tgl_peresepan");
+      var tipe = $(this).attr("data-tipe");
+      $("#cetakEtiket").modal('show').html('<div style="text-align:center;margin:20px auto;width:500px;height:360px;"><iframe src="' + baseURL + '/apotek_ranap/cetaklabel/' + no_rawat +'/' + tipe +'/' + tgl_peresepan + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
+  })
 </script>

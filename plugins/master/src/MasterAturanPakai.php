@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class MasterAturanPakai
 {
@@ -16,7 +16,7 @@ class MasterAturanPakai
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('master_aturan_pakai')
+      $totalRecords = $this->db('master_aturan_pakai')
         ->select('aturan')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class MasterAturanPakai
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('master_aturan_pakai')
+      $return['list'] = $this->db('master_aturan_pakai')
         ->desc('aturan')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class MasterAturanPakai
     public function anyForm()
     {
         if (isset($_POST['aturan'])){
-          $return['form'] = $this->mysql('master_aturan_pakai')->where('aturan', $_POST['aturan'])->oneArray();
+          $return['form'] = $this->db('master_aturan_pakai')->where('aturan', $_POST['aturan'])->oneArray();
         } else {
           $return['form'] = [
             'aturan' => ''
@@ -50,7 +50,7 @@ class MasterAturanPakai
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('master_aturan_pakai')
+        $totalRecords = $this->db('master_aturan_pakai')
           ->select('aturan')
           ->toArray();
         $offset         = 10;
@@ -58,14 +58,14 @@ class MasterAturanPakai
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('master_aturan_pakai')
+        $return['list'] = $this->db('master_aturan_pakai')
           ->desc('aturan')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('master_aturan_pakai')
+          $return['list'] = $this->db('master_aturan_pakai')
             ->like('aturan', '%'.$_POST['cari'].'%')
             ->desc('aturan')
             ->offset(0)
@@ -76,7 +76,7 @@ class MasterAturanPakai
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('master_aturan_pakai')
+          $return['list'] = $this->db('master_aturan_pakai')
             ->desc('aturan')
             ->offset($offset)
             ->limit($perpage)
@@ -89,22 +89,17 @@ class MasterAturanPakai
 
     public function postSave()
     {
-      if (!$this->mysql('master_aturan_pakai')->where('aturan', $_POST['aturan'])->oneArray()) {
-        $query = $this->mysql('master_aturan_pakai')->save($_POST);
+      if (!$this->db('master_aturan_pakai')->where('aturan', $_POST['aturan'])->oneArray()) {
+        $query = $this->db('master_aturan_pakai')->save($_POST);
       } else {
-        $query = $this->mysql('master_aturan_pakai')->where('aturan', $_POST['aturan'])->save($_POST);
+        $query = $this->db('master_aturan_pakai')->where('aturan', $_POST['aturan'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('master_aturan_pakai')->where('aturan', $_POST['aturan'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('master_aturan_pakai')->where('aturan', $_POST['aturan'])->delete();
     }
 
 }

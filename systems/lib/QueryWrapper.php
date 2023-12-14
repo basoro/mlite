@@ -544,21 +544,7 @@ class QueryWrapper
 
     protected function _getColumns()
     {
-        if(MULTI_APP) {
-            $dbFile = BASE_DIR.'/systems/data/database.sdb';
-            $db = new \PDO('sqlite:'.$dbFile);
-            $table = $this->table;
-            $check = $db->query("SELECT name FROM sqlite_master WHERE type='table' AND name='".$table."'")->fetchColumn();
-            if ($db->query("PRAGMA table_info(".$this->table.")")->fetchAll()) {
-              $q = $this->pdo()->query("PRAGMA table_info(".$this->table.")")->fetchAll();
-              return array_column($q, 'name');
-            } else {
-              $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
-              return array_column($q, 'Field');
-            }
-        } else {
-            $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
-            return array_column($q, 'Field');
-        }
+        $q = $this->pdo()->query("DESCRIBE $this->table;")->fetchAll();
+        return array_column($q, 'Field');
     }
 }

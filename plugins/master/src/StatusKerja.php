@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class StatusKerja
 {
@@ -16,7 +16,7 @@ class StatusKerja
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('stts_kerja')
+      $totalRecords = $this->db('stts_kerja')
         ->select('stts')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class StatusKerja
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('stts_kerja')
+      $return['list'] = $this->db('stts_kerja')
         ->desc('stts')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class StatusKerja
     public function anyForm()
     {
         if (isset($_POST['stts'])){
-          $return['form'] = $this->mysql('stts_kerja')->where('stts', $_POST['stts'])->oneArray();
+          $return['form'] = $this->db('stts_kerja')->where('stts', $_POST['stts'])->oneArray();
         } else {
           $return['form'] = [
             'stts' => '',
@@ -52,7 +52,7 @@ class StatusKerja
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('stts_kerja')
+        $totalRecords = $this->db('stts_kerja')
           ->select('stts')
           ->toArray();
         $offset         = 10;
@@ -60,14 +60,14 @@ class StatusKerja
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('stts_kerja')
+        $return['list'] = $this->db('stts_kerja')
           ->desc('stts')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('stts_kerja')
+          $return['list'] = $this->db('stts_kerja')
             ->like('stts', '%'.$_POST['cari'].'%')
             ->orLike('ktg', '%'.$_POST['cari'].'%')
             ->desc('stts')
@@ -79,7 +79,7 @@ class StatusKerja
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('stts_kerja')
+          $return['list'] = $this->db('stts_kerja')
             ->desc('stts')
             ->offset($offset)
             ->limit($perpage)
@@ -92,22 +92,17 @@ class StatusKerja
 
     public function postSave()
     {
-      if (!$this->mysql('stts_kerja')->where('stts', $_POST['stts'])->oneArray()) {
-        $query = $this->mysql('stts_kerja')->save($_POST);
+      if (!$this->db('stts_kerja')->where('stts', $_POST['stts'])->oneArray()) {
+        $query = $this->db('stts_kerja')->save($_POST);
       } else {
-        $query = $this->mysql('stts_kerja')->where('stts', $_POST['stts'])->save($_POST);
+        $query = $this->db('stts_kerja')->where('stts', $_POST['stts'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('stts_kerja')->where('stts', $_POST['stts'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('stts_kerja')->where('stts', $_POST['stts'])->delete();
     }
 
 }

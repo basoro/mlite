@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class IndustriFarmasi
 {
@@ -16,7 +16,7 @@ class IndustriFarmasi
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('industrifarmasi')
+      $totalRecords = $this->db('industrifarmasi')
         ->select('kode_industri')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class IndustriFarmasi
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('industrifarmasi')
+      $return['list'] = $this->db('industrifarmasi')
         ->desc('kode_industri')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class IndustriFarmasi
     public function anyForm()
     {
         if (isset($_POST['kode_industri'])){
-          $return['form'] = $this->mysql('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->oneArray();
+          $return['form'] = $this->db('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->oneArray();
         } else {
           $return['form'] = [
             'kode_industri' => '',
@@ -54,7 +54,7 @@ class IndustriFarmasi
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('industrifarmasi')
+        $totalRecords = $this->db('industrifarmasi')
           ->select('kode_industri')
           ->toArray();
         $offset         = 10;
@@ -62,14 +62,14 @@ class IndustriFarmasi
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('industrifarmasi')
+        $return['list'] = $this->db('industrifarmasi')
           ->desc('kode_industri')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('industrifarmasi')
+          $return['list'] = $this->db('industrifarmasi')
             ->like('kode_industri', '%'.$_POST['cari'].'%')
             ->orLike('nama_industri', '%'.$_POST['cari'].'%')
             ->desc('kode_industri')
@@ -81,7 +81,7 @@ class IndustriFarmasi
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('industrifarmasi')
+          $return['list'] = $this->db('industrifarmasi')
             ->desc('kode_industri')
             ->offset($offset)
             ->limit($perpage)
@@ -94,22 +94,17 @@ class IndustriFarmasi
 
     public function postSave()
     {
-      if (!$this->mysql('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->oneArray()) {
-        $query = $this->mysql('industrifarmasi')->save($_POST);
+      if (!$this->db('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->oneArray()) {
+        $query = $this->db('industrifarmasi')->save($_POST);
       } else {
-        $query = $this->mysql('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->save($_POST);
+        $query = $this->db('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('industrifarmasi')->where('kode_industri', $_POST['kode_industri'])->delete();
     }
 
 }

@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class Departemen
 {
@@ -16,7 +16,7 @@ class Departemen
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('departemen')
+      $totalRecords = $this->db('departemen')
         ->select('dep_id')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class Departemen
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('departemen')
+      $return['list'] = $this->db('departemen')
         ->desc('dep_id')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class Departemen
     public function anyForm()
     {
         if (isset($_POST['dep_id'])){
-          $return['form'] = $this->mysql('departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
+          $return['form'] = $this->db('departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
         } else {
           $return['form'] = [
             'dep_id' => '',
@@ -51,7 +51,7 @@ class Departemen
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('departemen')
+        $totalRecords = $this->db('departemen')
           ->select('dep_id')
           ->toArray();
         $offset         = 10;
@@ -59,14 +59,14 @@ class Departemen
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('departemen')
+        $return['list'] = $this->db('departemen')
           ->desc('dep_id')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('departemen')
+          $return['list'] = $this->db('departemen')
             ->like('dep_id', '%'.$_POST['cari'].'%')
             ->orLike('nama', '%'.$_POST['cari'].'%')
             ->desc('dep_id')
@@ -78,7 +78,7 @@ class Departemen
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('departemen')
+          $return['list'] = $this->db('departemen')
             ->desc('dep_id')
             ->offset($offset)
             ->limit($perpage)
@@ -91,22 +91,17 @@ class Departemen
 
     public function postSave()
     {
-      if (!$this->mysql('departemen')->where('dep_id', $_POST['dep_id'])->oneArray()) {
-        $query = $this->mysql('departemen')->save($_POST);
+      if (!$this->db('departemen')->where('dep_id', $_POST['dep_id'])->oneArray()) {
+        $query = $this->db('departemen')->save($_POST);
       } else {
-        $query = $this->mysql('departemen')->where('dep_id', $_POST['dep_id'])->save($_POST);
+        $query = $this->db('departemen')->where('dep_id', $_POST['dep_id'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('departemen')->where('dep_id', $_POST['dep_id'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('departemen')->where('dep_id', $_POST['dep_id'])->delete();
     }
 
 }

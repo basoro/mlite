@@ -378,6 +378,7 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
   var periode_rawat_inap  = $('input:text[name=periode_rawat_inap]').val();
   var periode_rawat_inap_akhir  = $('input:text[name=periode_rawat_inap_akhir]').val();
   var status_periksa = 'lunas';
+  var status_pulang = '-';
 
   if(periode_rawat_inap == '') {
     alert('Tanggal awal masih kosong!')
@@ -386,7 +387,7 @@ $('#manage').on('click', '#lunas_periode_rawat_inap', function(event){
     alert('Tanggal akhir masih kosong!')
   }
 
-  $.post(url, {periode_rawat_inap: periode_rawat_inap, periode_rawat_inap_akhir: periode_rawat_inap_akhir, status_periksa: status_periksa} ,function(data) {
+  $.post(url, {periode_rawat_inap: periode_rawat_inap, periode_rawat_inap_akhir: periode_rawat_inap_akhir, status_periksa: status_periksa, status_pulang: status_pulang} ,function(data) {
   // tampilkan data
     $("#form").show();
     $("#display").html(data).show();

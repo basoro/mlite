@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan data gudang farmasi.',
     'author'        =>  'Basoro',
     'version'       =>  '1.1',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'medkit',
     'install'       =>  function () use ($core) {
         $core->db()->pdo()->exec("INSERT INTO `mlite_settings` (`module`, `field`, `value`) VALUES ('farmasi', 'deporalan', '-')");

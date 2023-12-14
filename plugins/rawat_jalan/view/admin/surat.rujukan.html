@@ -12,7 +12,22 @@
     font-size: 14px;
     font-family: georgia;
   }
-</style>
+  @media print {
+    #printPageButton {
+      display: none;
+    }
+  }
+  </style>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }  
+  function auto_grow(element) {
+    element.style.height = "px";
+    element.style.height = (element.scrollHeight) + "px";
+  }  
+</script>
 <div style="width:960px;">
   <table>
     <thead>
@@ -88,42 +103,42 @@
         <td width="200" style="vertical-align: top;">a. Anamnesis</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">b. Pemeriksaan fisik</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">c. Pemeriksaan penunjang </td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">d. Diagnosis</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">e. Terapi</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
         <td width="200" style="vertical-align: top;">e. Alasan dirujuk</td>
         <td style="vertical-align: top;"> : </td>
         <td>
-          <textarea name="name" rows="3" cols="80" style="border:0px solid #fff;background-color: #eee;"></textarea>
+          <textarea name="name" cols="80" style="border:0px solid #fff;background-color: #eee;" oninput="auto_grow(this)"></textarea>
         </td>
       </tr>
       <tr>
@@ -144,3 +159,5 @@
       </tr>
   </table>
 </div>
+<br><br>
+<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

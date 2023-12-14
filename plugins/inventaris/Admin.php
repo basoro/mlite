@@ -23,20 +23,20 @@ class Admin extends AdminModule
       $date_start = $_GET['tgl_awal'];
       $date_end = $_GET['tgl_akhir'];
     }
-    $aset = $this->core->mysql('inventaris')->toArray();
+    $aset = $this->db('inventaris')->toArray();
 
-    $pemeliharaan = $this->core->mysql('pemeliharaan_inventaris')
+    $pemeliharaan = $this->db('pemeliharaan_inventaris')
       ->where('tanggal', '>=', $date_start)
       ->where('tanggal', '<=', $date_end)
       ->toArray();
-    $rows = $this->core->mysql('permintaan_perbaikan_inventaris')
+    $rows = $this->db('permintaan_perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=permintaan_perbaikan_inventaris.nik')
       ->where('tanggal', '>=', $date_start.' 00:00:00')
       ->where('tanggal', '<=', $date_end.' 23:59:59')
       ->toArray();
     $perbaikan = [];
     foreach ($rows as $row) {
-      $perbaikan_inventaris = $this->core->mysql('perbaikan_inventaris')
+      $perbaikan_inventaris = $this->db('perbaikan_inventaris')
         ->where('no_permintaan', $row['no_permintaan'])
         ->oneArray();
       $row['status_perbaikan'] = 'Belum';
@@ -46,7 +46,7 @@ class Admin extends AdminModule
       $perbaikan[] = $row;
     }
 
-    $peminjaman = $this->core->mysql('inventaris_peminjaman')
+    $peminjaman = $this->db('inventaris_peminjaman')
       ->where('tgl_pinjam', '>=', $date_start)
       ->where('tgl_pinjam', '<=', $date_end)
       ->toArray();
@@ -57,7 +57,7 @@ class Admin extends AdminModule
   public function getDataAset()
   {
     $this->_addHeaderFiles();
-    $rows = $this->core->mysql('inventaris')
+    $rows = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('inventaris_ruang', 'inventaris_ruang.id_ruang=inventaris.id_ruang')
       ->toArray();
@@ -68,8 +68,8 @@ class Admin extends AdminModule
       $row['hapus'] = url([ADMIN,'inventaris','asethapus',$row['no_inventaris']]);
       $inventaris[] = $row;
     }
-    $inventaris_barang = $this->core->mysql('inventaris_barang')->toArray();
-    $inventaris_ruang = $this->core->mysql('inventaris_ruang')->toArray();
+    $inventaris_barang = $this->db('inventaris_barang')->toArray();
+    $inventaris_ruang = $this->db('inventaris_ruang')->toArray();
     return $this->draw('data.aset.html', ['inventaris' => $inventaris, 'inventaris_barang' => $inventaris_barang, 'inventaris_ruang' => $inventaris_ruang]);
   }
 
@@ -77,18 +77,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris')->save($_POST);
+      $this->db('inventaris')->save($_POST);
       $this->notify('success', 'Data aset telah disimpan');
     } else if ($_POST['update']) {
       $no_inventaris = $_POST['no_inventaris'];
       unset($_POST['update']);
       unset($_POST['no_inventaris']);
-      $this->core->mysql('inventaris')
+      $this->db('inventaris')
         ->where('no_inventaris', $no_inventaris)
         ->save($_POST);
       $this->notify('failure', 'Data aset telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris')
+      $this->db('inventaris')
         ->where('no_inventaris', $_POST['no_inventaris'])
         ->delete();
       $this->notify('failure', 'Data aset telah dihapus');
@@ -98,7 +98,7 @@ class Admin extends AdminModule
 
   public function getPemeliharaan()
   {
-    $pemeliharaan = $this->core->mysql('pemeliharaan_inventaris')
+    $pemeliharaan = $this->db('pemeliharaan_inventaris')
       ->join('inventaris', 'inventaris.no_inventaris=pemeliharaan_inventaris.no_inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('pegawai', 'pegawai.nik=pemeliharaan_inventaris.nip')
@@ -109,12 +109,12 @@ class Admin extends AdminModule
   public function getPermintaanPerbaikan()
   {
     $this->_addHeaderFiles();
-    $rows = $this->core->mysql('permintaan_perbaikan_inventaris')
+    $rows = $this->db('permintaan_perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=permintaan_perbaikan_inventaris.nik')
       ->toArray();
     $perbaikan = [];
     foreach ($rows as $row) {
-      $perbaikan_inventaris = $this->core->mysql('perbaikan_inventaris')
+      $perbaikan_inventaris = $this->db('perbaikan_inventaris')
         ->where('no_permintaan', $row['no_permintaan'])
         ->oneArray();
       $row['status_perbaikan'] = 'Belum';
@@ -141,10 +141,10 @@ class Admin extends AdminModule
       'deskripsi_kerusakan' => ''
     ];
 
-    $this->assign['aset'] = $this->core->mysql('inventaris')
+    $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
-    $this->assign['pegawai'] = $this->core->mysql('pegawai')
+    $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
     return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
@@ -152,13 +152,13 @@ class Admin extends AdminModule
 
   public function getPermintaanPerbaikanUbah($no_permintaan)
   {
-    $this->assign['form'] = $this->core->mysql('permintaan_perbaikan_inventaris')
+    $this->assign['form'] = $this->db('permintaan_perbaikan_inventaris')
       ->where('no_permintaan', $no_permintaan)
       ->oneArray();
-    $this->assign['aset'] = $this->core->mysql('inventaris')
+    $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
-    $this->assign['pegawai'] = $this->core->mysql('pegawai')
+    $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
     return $this->draw('form.permintaan.perbaikan.html', ['permintaanperbaikan' => $this->assign]);
@@ -166,11 +166,11 @@ class Admin extends AdminModule
 
   public function getPermintaanPerbaikanDetail($no_permintaan)
   {
-    $permintaan_perbaikan_inventaris = $this->core->mysql('permintaan_perbaikan_inventaris')
+    $permintaan_perbaikan_inventaris = $this->db('permintaan_perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=permintaan_perbaikan_inventaris.nik')
       ->where('no_permintaan', $no_permintaan)
       ->oneArray();
-    $perbaikandetail = $this->core->mysql('perbaikan_inventaris')
+    $perbaikandetail = $this->db('perbaikan_inventaris')
       ->join('pegawai', 'pegawai.nik=perbaikan_inventaris.nip')
       ->where('no_permintaan', $no_permintaan)
       ->oneArray();
@@ -191,8 +191,8 @@ class Admin extends AdminModule
         $location = url([ADMIN, 'inventaris', 'permintaanperbaikanubah', $no_permintaan]);
     }
 
-    if (!$this->core->mysql('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
-        $query = $this->core->mysql('permintaan_perbaikan_inventaris')->save(
+    if (!$this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
+        $query = $this->db('permintaan_perbaikan_inventaris')->save(
           [
             'no_permintaan' => $_POST['no_permintaan'],
             'no_inventaris' => $_POST['no_inventaris'],
@@ -202,7 +202,7 @@ class Admin extends AdminModule
           ]
         );
     } else {        // edit
-        $query = $this->core->mysql('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->save(
+        $query = $this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->save(
           [
             'no_inventaris' => $_POST['no_inventaris'],
             'nik' => $_POST['nik'],
@@ -225,7 +225,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
 
-    if (!$this->core->mysql('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
+    if (!$this->db('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
       $this->assign['form'] = [
         'no_permintaan' => $no_permintaan,
         'tanggal' => '',
@@ -237,13 +237,13 @@ class Admin extends AdminModule
         'status' => ''
       ];
     } else {
-      $this->assign['form'] = $this->core->mysql('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray();
+      $this->assign['form'] = $this->db('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray();
     }
 
-    $this->assign['aset'] = $this->core->mysql('inventaris')
+    $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
-    $this->assign['pegawai'] = $this->core->mysql('pegawai')
+    $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
@@ -257,8 +257,8 @@ class Admin extends AdminModule
 
     $location = url([ADMIN, 'inventaris', 'permintaanperbaikandetail', $no_permintaan]);
 
-    if (!$this->core->mysql('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
-        $query = $this->core->mysql('perbaikan_inventaris')->save(
+    if (!$this->db('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->oneArray()) {    // new
+        $query = $this->db('perbaikan_inventaris')->save(
           [
             'no_permintaan' => $no_permintaan,
             'tanggal' => $_POST['tanggal'],
@@ -271,7 +271,7 @@ class Admin extends AdminModule
           ]
         );
     } else {        // edit
-      $query = $this->core->mysql('perbaikan_inventaris')
+      $query = $this->db('perbaikan_inventaris')
         ->where('no_permintaan', $no_permintaan)
         ->save(
         [
@@ -297,13 +297,13 @@ class Admin extends AdminModule
 
   public function getPermintaanPerbaikanHapus($no_permintaan)
   {
-    $this->core->mysql('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
+    $this->db('permintaan_perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
     redirect(url([ADMIN,'inventaris','permintaanperbaikan']));
   }
 
   public function getPerbaikanHapus($no_permintaan)
   {
-    $this->core->mysql('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
+    $this->db('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
     redirect(url([ADMIN,'inventaris','permintaanperbaikandetail', $no_permintaan]));
   }
 
@@ -321,10 +321,10 @@ class Admin extends AdminModule
       'jenis_pemeliharaan' => ''
     ];
 
-    $this->assign['aset'] = $this->core->mysql('inventaris')
+    $this->assign['aset'] = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
-    $this->assign['pegawai'] = $this->core->mysql('pegawai')
+    $this->assign['pegawai'] = $this->db('pegawai')
       ->where('stts_aktif', 'AKTIF')
       ->toArray();
 
@@ -338,8 +338,8 @@ class Admin extends AdminModule
 
     $location = url([ADMIN, 'inventaris', 'pemeliharaan']);
 
-    if (!$this->core->mysql('pemeliharaan_inventaris')->where('no_inventaris', $no_inventaris)->oneArray()) {    // new
-        $query = $this->core->mysql('pemeliharaan_inventaris')->save(
+    if (!$this->db('pemeliharaan_inventaris')->where('no_inventaris', $no_inventaris)->oneArray()) {    // new
+        $query = $this->db('pemeliharaan_inventaris')->save(
           [
             'no_inventaris' => $_POST['no_inventaris'],
             'tanggal' => $_POST['tanggal'],
@@ -351,7 +351,7 @@ class Admin extends AdminModule
           ]
         );
     } else {        // edit
-      $query = $this->core->mysql('pemeliharaan_inventaris')
+      $query = $this->db('pemeliharaan_inventaris')
         ->where('no_inventaris', $no_inventaris)
         ->save(
         [
@@ -376,13 +376,13 @@ class Admin extends AdminModule
 
   public function getPemeliharaanHapus($no_permintaan)
   {
-    $this->core->mysql('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
+    $this->db('perbaikan_inventaris')->where('no_permintaan', $no_permintaan)->delete();
     redirect(url([ADMIN,'inventaris','permintaanperbaikandetail', $no_permintaan]));
   }
 
   public function setNoInventaris()
   {
-      $last_no_order = $this->core->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_inventaris,4),signed)),0) FROM inventaris");
+      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_inventaris,4),signed)),0) FROM inventaris");
       $last_no_order->execute();
       $last_no_order = $last_no_order->fetch();
       if(empty($last_no_order[0])) {
@@ -397,7 +397,7 @@ class Admin extends AdminModule
   public function setNoPermintaan()
   {
       $date = date('Y-m-d');
-      $last_no_order = $this->core->mysql()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_permintaan,4),signed)),0) FROM permintaan_perbaikan_inventaris WHERE tanggal LIKE '%$date%'");
+      $last_no_order = $this->db()->pdo()->prepare("SELECT ifnull(MAX(CONVERT(RIGHT(no_permintaan,4),signed)),0) FROM permintaan_perbaikan_inventaris WHERE tanggal LIKE '%$date%'");
       $last_no_order->execute();
       $last_no_order = $last_no_order->fetch();
       if(empty($last_no_order[0])) {
@@ -412,16 +412,16 @@ class Admin extends AdminModule
   public function getInventarisBarang()
   {
     $this->_addHeaderFiles();
-    $inventaris_barang = $this->core->mysql('inventaris_barang')
+    $inventaris_barang = $this->db('inventaris_barang')
       ->join('inventaris_produsen', 'inventaris_produsen.kode_produsen=inventaris_barang.kode_produsen')
       ->join('inventaris_merk', 'inventaris_merk.id_merk=inventaris_barang.id_merk')
       ->join('inventaris_kategori', 'inventaris_kategori.id_kategori=inventaris_barang.id_kategori')
       ->join('inventaris_jenis', 'inventaris_jenis.id_jenis=inventaris_barang.id_jenis')
       ->toArray();
-    $produsen = $this->core->mysql('inventaris_produsen')->toArray();
-    $merk = $this->core->mysql('inventaris_merk')->toArray();
-    $kategori = $this->core->mysql('inventaris_kategori')->toArray();
-    $jenis = $this->core->mysql('inventaris_jenis')->toArray();
+    $produsen = $this->db('inventaris_produsen')->toArray();
+    $merk = $this->db('inventaris_merk')->toArray();
+    $kategori = $this->db('inventaris_kategori')->toArray();
+    $jenis = $this->db('inventaris_jenis')->toArray();
     return $this->draw('data.barang.html', ['inventaris_barang' => $inventaris_barang, 'produsen' => $produsen, 'merk' => $merk, 'kategori' => $kategori, 'jenis' => $jenis]);
   }
 
@@ -429,18 +429,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_barang')->save($_POST);
+      $this->db('inventaris_barang')->save($_POST);
       $this->notify('success', 'Data barang telah disimpan');
     } else if ($_POST['update']) {
       $kode_barang = $_POST['kode_barang'];
       unset($_POST['update']);
       unset($_POST['kode_barang']);
-      $this->core->mysql('inventaris_barang')
+      $this->db('inventaris_barang')
         ->where('kode_barang', $kode_barang)
         ->save($_POST);
       $this->notify('failure', 'Data barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_barang')
+      $this->db('inventaris_barang')
         ->where('kode_barang', $_POST['kode_barang'])
         ->delete();
       $this->notify('failure', 'Data barang telah dihapus');
@@ -451,7 +451,7 @@ class Admin extends AdminModule
   public function getInventarisJenis()
   {
     $this->_addHeaderFiles();
-    $inventaris_jenis = $this->core->mysql('inventaris_jenis')->toArray();
+    $inventaris_jenis = $this->db('inventaris_jenis')->toArray();
     return $this->draw('data.jenis.html', ['inventaris_jenis' => $inventaris_jenis]);
   }
 
@@ -459,18 +459,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_jenis')->save($_POST);
+      $this->db('inventaris_jenis')->save($_POST);
       $this->notify('success', 'Data jenis barang telah disimpan');
     } else if ($_POST['update']) {
       $id_jenis = $_POST['id_jenis'];
       unset($_POST['update']);
       unset($_POST['id_jenis']);
-      $this->core->mysql('inventaris_jenis')
+      $this->db('inventaris_jenis')
         ->where('id_jenis', $id_jenis)
         ->save($_POST);
       $this->notify('failure', 'Data jenis barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_jenis')
+      $this->db('inventaris_jenis')
         ->where('id_jenis', $_POST['id_jenis'])
         ->delete();
       $this->notify('failure', 'Data jenis barang telah dihapus');
@@ -481,7 +481,7 @@ class Admin extends AdminModule
   public function getInventarisKategori()
   {
     $this->_addHeaderFiles();
-    $inventaris_kategori = $this->core->mysql('inventaris_kategori')->toArray();
+    $inventaris_kategori = $this->db('inventaris_kategori')->toArray();
     return $this->draw('data.kategori.html', ['inventaris_kategori' => $inventaris_kategori]);
   }
 
@@ -489,18 +489,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_kategori')->save($_POST);
+      $this->db('inventaris_kategori')->save($_POST);
       $this->notify('success', 'Data kategori barang telah disimpan');
     } else if ($_POST['update']) {
       $id_kategori = $_POST['id_kategori'];
       unset($_POST['update']);
       unset($_POST['id_kategori']);
-      $this->core->mysql('inventaris_kategori')
+      $this->db('inventaris_kategori')
         ->where('id_kategori', $id_kategori)
         ->save($_POST);
       $this->notify('failure', 'Data kategori barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_kategori')
+      $this->db('inventaris_kategori')
         ->where('id_kategori', $_POST['id_kategori'])
         ->delete();
       $this->notify('failure', 'Data kategori barang telah dihapus');
@@ -511,7 +511,7 @@ class Admin extends AdminModule
   public function getInventarisMerk()
   {
     $this->_addHeaderFiles();
-    $inventaris_merk = $this->core->mysql('inventaris_merk')->toArray();
+    $inventaris_merk = $this->db('inventaris_merk')->toArray();
     return $this->draw('data.merk.html', ['inventaris_merk' => $inventaris_merk]);
   }
 
@@ -519,18 +519,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_merk')->save($_POST);
+      $this->db('inventaris_merk')->save($_POST);
       $this->notify('success', 'Data merk barang telah disimpan');
     } else if ($_POST['update']) {
       $id_merk = $_POST['id_merk'];
       unset($_POST['update']);
       unset($_POST['id_merk']);
-      $this->core->mysql('inventaris_merk')
+      $this->db('inventaris_merk')
         ->where('id_merk', $id_merk)
         ->save($_POST);
       $this->notify('failure', 'Data merk barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_merk')
+      $this->db('inventaris_merk')
         ->where('id_merk', $_POST['id_merk'])
         ->delete();
       $this->notify('failure', 'Data merk barang telah dihapus');
@@ -541,7 +541,7 @@ class Admin extends AdminModule
   public function getInventarisProdusen()
   {
     $this->_addHeaderFiles();
-    $inventaris_produsen = $this->core->mysql('inventaris_produsen')->toArray();
+    $inventaris_produsen = $this->db('inventaris_produsen')->toArray();
     return $this->draw('data.produsen.html', ['inventaris_produsen' => $inventaris_produsen]);
   }
 
@@ -549,18 +549,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_produsen')->save($_POST);
+      $this->db('inventaris_produsen')->save($_POST);
       $this->notify('success', 'Data produsen barang telah disimpan');
     } else if ($_POST['update']) {
       $kode_produsen = $_POST['kode_produsen'];
       unset($_POST['update']);
       unset($_POST['kode_produsen']);
-      $this->core->mysql('inventaris_produsen')
+      $this->db('inventaris_produsen')
         ->where('kode_produsen', $kode_produsen)
         ->save($_POST);
       $this->notify('failure', 'Data produsen barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_produsen')
+      $this->db('inventaris_produsen')
         ->where('kode_produsen', $_POST['kode_produsen'])
         ->delete();
       $this->notify('failure', 'Data produsen barang telah dihapus');
@@ -571,7 +571,7 @@ class Admin extends AdminModule
   public function getInventarisRuang()
   {
     $this->_addHeaderFiles();
-    $inventaris_ruang = $this->core->mysql('inventaris_ruang')->toArray();
+    $inventaris_ruang = $this->db('inventaris_ruang')->toArray();
     return $this->draw('data.ruang.html', ['inventaris_ruang' => $inventaris_ruang]);
   }
 
@@ -579,18 +579,18 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_ruang')->save($_POST);
+      $this->db('inventaris_ruang')->save($_POST);
       $this->notify('success', 'Data ruang barang telah disimpan');
     } else if ($_POST['update']) {
       $id_ruang = $_POST['id_ruang'];
       unset($_POST['update']);
       unset($_POST['id_ruang']);
-      $this->core->mysql('inventaris_ruang')
+      $this->db('inventaris_ruang')
         ->where('id_ruang', $id_ruang)
         ->save($_POST);
       $this->notify('failure', 'Data ruang barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_ruang')
+      $this->db('inventaris_ruang')
         ->where('id_ruang', $_POST['id_ruang'])
         ->delete();
       $this->notify('failure', 'Data ruang barang telah dihapus');
@@ -601,15 +601,15 @@ class Admin extends AdminModule
   public function getPeminjaman()
   {
     $this->_addHeaderFiles();
-    $inventaris_peminjaman = $this->core->mysql('inventaris_peminjaman')
+    $inventaris_peminjaman = $this->db('inventaris_peminjaman')
       ->join('inventaris', 'inventaris.no_inventaris=inventaris_peminjaman.no_inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->join('pegawai', 'pegawai.nik=inventaris_peminjaman.nip')
       ->toArray();
-    $inventaris = $this->core->mysql('inventaris')
+    $inventaris = $this->db('inventaris')
       ->join('inventaris_barang', 'inventaris_barang.kode_barang=inventaris.kode_barang')
       ->toArray();
-    $pegawai = $this->core->mysql('pegawai')->toArray();
+    $pegawai = $this->db('pegawai')->toArray();
     return $this->draw('data.peminjaman.html', ['inventaris_peminjaman' => $inventaris_peminjaman, 'inventaris' => $inventaris, 'pegawai' => $pegawai]);
   }
 
@@ -617,7 +617,7 @@ class Admin extends AdminModule
   {
     if($_POST['simpan']) {
       unset($_POST['simpan']);
-      $this->core->mysql('inventaris_peminjaman')->save($_POST);
+      $this->db('inventaris_peminjaman')->save($_POST);
       $this->notify('success', 'Data peminjaman barang telah disimpan');
     } else if ($_POST['update']) {
       $peminjam = $_POST['peminjam'];
@@ -627,14 +627,14 @@ class Admin extends AdminModule
       unset($_POST['peminjam']);
       unset($_POST['no_inventaris']);
       unset($_POST['tgl_pinjam']);
-      $this->core->mysql('inventaris_peminjaman')
+      $this->db('inventaris_peminjaman')
         ->where('peminjam', $peminjam)
         ->where('no_inventaris', $no_inventaris)
         ->where('tgl_pinjam', $tgl_pinjam)
         ->save($_POST);
       $this->notify('failure', 'Data ruang barang telah diubah');
     } else if ($_POST['hapus']) {
-      $this->core->mysql('inventaris_peminjaman')
+      $this->db('inventaris_peminjaman')
         ->where('peminjam', $_POST['peminjam'])
         ->where('no_inventaris', $no_inventaris)
         ->where('tgl_pinjam', $tgl_pinjam)

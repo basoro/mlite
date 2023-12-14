@@ -1,0 +1,37 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+      <div class="table-responsive no-margin">
+        <table class="table table-stripped dataTables" width="100%">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Pembeli</th>
+              <th>Alamat</th>
+              <th>Nomor Telepon</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {if: $penjualan}
+            {loop: $penjualan}
+            <tr class="pilih_layanan" data-id="{$value.id}" data-nm_perawatan="{$value.nama_barang}" data-biaya="{$value.harga}">
+              <td>{$value.no}</td>
+              <td><a href="{?=url([ADMIN,'penjualan','order', $value.id])?}">{$value.nama_pembeli}</a></td>
+              <td>{$value.alamat_pembeli}</td>
+              <td>{$value.nomor_telepon}</td>
+              <td>{$value.total}</td>
+            </tr>
+            {/loop}
+            {else}
+            <tr>
+              <td colspan="4"class="text-center">Data layanan tidak ditemukan.</td>
+            </tr>
+            {/if}
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+<script>
+$('.dataTables').DataTable();
+</script>

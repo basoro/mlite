@@ -1,0 +1,35 @@
+<div class="panel panel-default">
+    <div class="panel-body">
+      <div class="table-responsive no-margin">
+        <table class="table table-stripped dataTables" width="100%">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Nama Barang</th>
+              <th>Harga</th>
+              <th>Stok</th>
+            </tr>
+          </thead>
+          <tbody>
+            {if: $barang}
+            {loop: $barang}
+            <tr class="pilih_layanan" data-id="{$value.id}" data-nm_perawatan="{$value.nama_barang}" data-biaya="{$value.harga}">
+              <td>{$value.id}</td>
+              <td>{$value.nama_barang}</td>
+              <td>Rp. <span class="pull-right">{?= number_format($value.harga,2,',','.')?}</span></td>
+              <td>{$value.stok}</td>
+            </tr>
+            {/loop}
+            {else}
+            <tr>
+              <td colspan="4"class="text-center">Data layanan tidak ditemukan.</td>
+            </tr>
+            {/if}
+          </tbody>
+        </table>
+      </div>
+    </div>
+</div>
+<script>
+$('.dataTables').DataTable();
+</script>

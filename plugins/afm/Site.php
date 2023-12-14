@@ -60,7 +60,7 @@ class Site extends SiteModule
       $cari = isset_or($decode['nomor_kartu'],'');
       $field = isset_or($decode['kolom'], 'no_rkm_medis');
       $sql = "SELECT no_peserta , no_rkm_medis , no_ktp , no_tlp FROM pasien WHERE " . $field . " = '" . $cari . "'";
-      $query = $this->core->mysql()->pdo()->prepare($sql);
+      $query = $this->db()->pdo()->prepare($sql);
       $query->execute();
       $cek_bookings = $query->fetch();
       if (!is_array($cek_bookings)) {
@@ -174,7 +174,7 @@ class Site extends SiteModule
         http_response_code(201);
     } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = $decode['nomor_kartu'];
-      $reg = $this->core->mysql('reg_periksa')->where('no_rkm_medis',$cari)->where('tgl_registrasi',$date)->oneArray();
+      $reg = $this->db('reg_periksa')->where('no_rkm_medis',$cari)->where('tgl_registrasi',$date)->oneArray();
       if ($reg['no_rawat']) {
         $list = array(
           'no_rawat' => $reg['no_rawat'],
@@ -293,7 +293,7 @@ class Site extends SiteModule
         http_response_code(201);
     } else if ($header[$this->settings->get('afm.x_header_token')] == $this->settings->get('afm.afm_token')){
       $cari = $decode['nomor_kartu'];
-      $cekSep = $this->core->mysql('bridging_sep')->where('no_kartu',$cari)->where('tglsep',$date)->oneArray();
+      $cekSep = $this->db('bridging_sep')->where('no_kartu',$cari)->where('tglsep',$date)->oneArray();
       if ($cekSep['no_rawat']) {
         $list = array(
           'no_sep' => $cekSep['no_sep'],

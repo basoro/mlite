@@ -1,0 +1,532 @@
+<div class="continer-fluid">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Informasi Penjualan</h3>
+        </div>
+        <div class="panel-body">
+          <div class="form-horizontal" id="form_penjualan">
+            <input type="hidden" name="id" value="{$id_penjualan}">
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Tanggal</label>
+              <div class="col-sm-4">
+                <input type="text" id="tanggal" name="tanggal" class="form-control tanggal" value="{?=isset_or($penjualan.tanggal, date('Y-m-d'))?}">
+              </div>
+              <label for="" class="col-sm-1 control-label">Jam</label>
+              <div class="col-sm-4">
+                <input type="text" id="jam" name="jam" class="form-control jam" value="{?=isset_or($penjualan.jam, date('H:i:s'))?}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Nama Pembeli</label>
+              <div class="col-sm-9">
+                <input type="text" name="nama_pembeli" placeholder="Nama Pembeli" class="form-control" value="{?=isset_or($penjualan.nama_pembeli, '')?}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Alamat Pembeli</label>
+              <div class="col-sm-9">
+                <input type="text" name="alamat_pembeli" placeholder="Alamat Pembeli" class="form-control" value="{?=isset_or($penjualan.alamat_pembeli, '')?}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">No. Telepon</label>
+              <div class="col-sm-4">
+                <input type="text" name="nomor_telepon" placeholder="Nomor Telepon" class="form-control" value="{?=isset_or($penjualan.nomor_telepon, '')?}">
+              </div>
+              <label for="" class="col-sm-1 control-label">Email</label>
+              <div class="col-sm-4">
+                <input type="text" name="email" placeholder="Email" class="form-control" value="{?=isset_or($penjualan.email, '')?}">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Nama Barang</label>
+              <div class="col-sm-7">
+                <select class="form-control" id="barang" name="barang">
+                  <option value="">&nbsp;</option>
+                  {loop: $barang}
+                  <option value="{$value.id}" data-subtitle="{$value.keterangan}" data-right="{$value.stok}">{$value.nama_barang}</option>
+                  {/loop}
+                </select>
+              </div>
+              <div class="col-sm-2">
+                <input type="text" name="jumlah" class="form-control" placeholder="Jml" value="">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="" class="col-sm-3 control-label">Keterangan</label>
+              <div class="col-sm-9">
+                <input type="text" name="keterangan" placeholder="Keterangan" class="form-control" value="{?=isset_or($penjualan.keterangan, '')?}">
+              </div>
+            </div>
+            <div class="pull-right">
+              <button type="button" name="button" class="btn btn-primary" id="simpan_penjualan"><i class="fa fa-save"></i><span class="hidden-xs"> Masukkan Rincian</span></button>
+              <button type="button" name="button" class="btn btn-danger" id="penjualan_baru"><i class="fa fa-close"></i><span class="hidden-xs"> Order Baru</span></button>
+            </div>        
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Rincian Penjualan</h3>
+        </div>
+        <div class="panel-body">
+          <div class="table-responsive no-margin" id="rincian_penjualan">
+            <table class="table table-striped table-bordered no-padding" width="100%">
+              <thead>
+                <tr>
+                  <th width="20px;">No.</th>
+                  <th>Nama Barang</th>
+                  <th>Jumlah</th>
+                  <th>Harga</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {loop: $rincian_penjualan}
+                  <tr>
+                      <td>{$value.no}</td>
+                      <td>{$value.nama_barang}</td>
+                      <td>{$value.jumlah}</td>
+                      <td>{$value.harga}</td>
+                      <td><button class="btn btn-xs btn-danger"><i class="fa fa-trash"></i></button></td>
+                  </tr>
+                  {/loop}
+              </tbody>
+            </table>
+          </div>    
+          <div class="form-horizontal">
+            <div class="container-fluid" id="form_rincian_penjualan">
+              <div class="form-group">
+                <div class="form-group">
+                <label class="col-sm-5 control-label">Jumlah Tagihan</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_total" maxlength="11" disabled>
+                </div>
+                <input type="text" class="form-control" style="background-color:white;border:none;box-shadow:none;text-align:right;font-weight:bold;" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_total" disabled >
+                </div>
+                <div class="form-group">
+                <label class="col-sm-5 control-label">Potongan</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Potongan Faktur" value="" name="potongan_faktur" id="potongan_faktur2" maxlength="15" tabindex="1" />
+                </div>
+                </div>
+                <div class="form-group">
+                <label class="col-sm-5 control-label">Jumlah Harus Bayar</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="0" value="{$total_tagihan}" name="jumlah_harus_bayar" maxlength="11" disabled />
+                </div>
+                <input type="text" class="form-control" style="background-color:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" placeholder="jumlah total"  value="{?=terbilang($total_tagihan)?}" name="terbilang_jumlah_harus_bayar" disabled >
+                </div>
+                <div class="form-group">
+                <label class="col-sm-5 control-label">Jumlah Bayar</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" style="text-align:right;font-weight:bold" placeholder="Jumlah Bayar" value="0" name="jumlah_bayar" id="jumlah_bayar2" maxlength="15" tabindex="2" />
+                </div>
+                </div>
+                <div class="form-group">
+                <label class="col-sm-5 control-label">Kembalian</label>
+                <div class="col-sm-7">
+                    <input type="text" class="form-control" style="text-align:right;font-weight:bold"  placeholder="Kembalian" value="0" name="kembalian" disabled maxlength="11" />
+                </div>
+                <input type="text" class="form-control" style="background-color:white;color:blue;border:none;box-shadow:none;text-align:right;font-weight:bold" name="terbilang_kembalian" disabled >
+                </div>
+                <div class="form-group">
+                    <label for="keterangan" class="col-sm-5 control-label">Cara Bayar</label>
+                    <div class="col-sm-7">
+                    <select class="form-control" name="keterangan" id="keterangan">
+                        <option value="Tunai">Tunai</option>
+                        <option value="Kurang Bayar">Kurang Bayar</option>
+                        <option value="Belum Bayar">Belum Bayar</option>
+                    </select>
+                    </div>
+                </div>
+              </div>
+              <div class="pull-right">
+                <button type="button" name="button" class="btn btn-success" id="simpan_billing_penjualan"><span class="fa fa-save"></span><span class="hidden-xs"> Simpan</span></button>
+                <button type="button" name="button" class="btn btn-primary" id="cetak_billing_kecil_penjualan"><span class="fa fa-file-o"></span><span class="hidden-xs"> Nota</span></button>
+                <button type="button" name="button" class="btn btn-info" id="cetak_billing_penjualan"><span class="fa fa-file"></span><span class="hidden-xs"> Invoice</span></button>
+                <button type="button" name="button" class="btn btn-warning" id="selesai_billing_penjualan"><span class="fa fa-check"></span><span class="hidden-xs"> Selesai</span></button>
+              </div>               
+            </div>      
+          </div> 
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+$('.dataTables').DataTable();
+// ketika inputbox pencarian diisi
+$('input:text[name=layanan]').on('input',function(e){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  var url    = baseURL + '/penjualan/barang?t=' + mlite.token;
+
+  $.post(url, {} ,function(data) {
+  // tampilkan data yang sudah di perbaharui
+    $("#barang").html(data).show();
+  });
+
+});
+// end pencarian  
+
+$('select').selectator();
+// var potongan_faktur2 = document.getElementById('potongan_faktur2');
+// potongan_faktur2.addEventListener('keyup', function(e){
+//   potongan_faktur2.value = formatRupiah(this.value, 'Rp.');
+// });
+
+// var jumlah_bayar2 = document.getElementById('jumlah_bayar2');
+// jumlah_bayar2.addEventListener('keyup', function(e){
+//   jumlah_bayar2.value = formatRupiah(this.value, 'Rp.');
+// });
+
+
+$("#form_penjualan").on("click", "#simpan_penjualan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+
+  var id          = $('input:hidden[name=id]').val();
+  var nama_pembeli = $('input:text[name=nama_pembeli]').val();
+  var alamat_pembeli = $('input:text[name=alamat_pembeli]').val();
+  var nomor_telepon = $('input:text[name=nomor_telepon]').val();
+  var email = $('input:text[name=email]').val();
+  var tanggal = $('input:text[name=tanggal]').val();
+  var jam = $('input:text[name=jam]').val();
+  var id_barang = $('#barang').val();
+  var nama_barang = $('#barang option:selected').text();
+  var jumlah = $('input:text[name=jumlah]').val();
+  var keterangan = $('input:text[name=keterangan]').val();
+
+  var url = baseURL + '/penjualan/simpanpenjualan?t=' + mlite.token;
+  $.post(url, {id : id, 
+    nama_pembeli : nama_pembeli, 
+    alamat_pembeli : alamat_pembeli, 
+    nomor_telepon : nomor_telepon, 
+    email : email, 
+    tanggal : tanggal, 
+    jam : jam, 
+    id_barang: id_barang, 
+    nama_barang: nama_barang, 
+    jumlah: jumlah , 
+    keterangan : keterangan
+  }, function(data) {
+    // console.log(data);
+    $('input:hidden[name=id]').val(data);
+    // tampilkan data
+    var url = baseURL + '/penjualan/rincianpenjualan?t=' + mlite.token;
+    $.post(url, {id_penjualan : data,
+    }, function(data) {
+      // console.log(data);
+      // tampilkan data
+      $("#rincian_penjualan").html(data).show();
+    });
+    var url = baseURL + '/penjualan/formrincianpenjualan?t=' + mlite.token;
+    $.post(url, {id_penjualan : data,
+    }, function(data) {
+      // console.log(data);
+      // tampilkan data
+      $("#form_rincian_penjualan").html(data).show();
+    });
+  });
+});
+
+$("#form_rincian_penjualan").on("click","#simpan_billing_penjualan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var id          = $('input:hidden[name=id]').val();
+  var jumlah_total       = $('input:text[name=jumlah_total]').val();
+  var potongan_faktur    = $('input:text[name=potongan_faktur]').val();
+  var jumlah_harus_bayar = $('input:text[name=jumlah_harus_bayar]').val();
+  var jumlah_bayar       = $('input:text[name=jumlah_bayar]').val();
+  var tanggal            = $('#tanggal').val();
+  var jam            = $('#jam').val();
+
+  // alert(id + ' - ' + jumlah_total + ' - ' + potongan_faktur + ' - ' + jumlah_harus_bayar + ' - ' + jumlah_bayar + ' - ' + tanggal + ' - ' + jam);
+
+  if 	(potongan_faktur == "" )
+  {
+    alert ("potongan belum diisi ");
+    $('input:text[name=potongan_faktur]').focus();
+
+  }
+  else if ( Number(jumlah_bayar) < Number(jumlah_harus_bayar && keterangan != 'Tunai'))
+  {
+    alert ("Jumlah bayar masih kurang ! ");
+    $('input:text[name=jumlah_bayar]').focus();
+  }
+  else
+  {
+    // tampilkan dialog konfirmasi
+    bootbox.confirm("Apakah data faktur sudah sesuai?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+        // mengirimkan perintah penghapusan
+        var url = baseURL + '/penjualan/simpanbilling?t=' + mlite.token;
+        $.post(url, {id_penjualan : id,
+        jumlah_total       : jumlah_total,
+        potongan    : potongan_faktur,
+        tanggal   		   : tanggal,
+        jam: jam,
+        jumlah_harus_bayar : jumlah_harus_bayar,
+        jumlah_bayar       : jumlah_bayar
+        } ,function(data) {
+          $('#notif').html("<div class=\"alert alert-success alert-dismissible fade in\" role=\"alert\" style=\"border-radius:0px;margin-top:-15px;\">"+
+          "Data rincian penjualan telah disimpan!"+
+          "<button type=\"button\" class=\"close\" data-dismiss=\"alert\" aria-label=\"Close\">&times;</button>"+
+          "</div>").show();
+        });
+      }
+    });
+
+  }
+
+});
+
+// ketika inputbox potongan faktur diisi
+$("#form_rincian_penjualan").on("input","#potongan_faktur2", function(event){
+  event.preventDefault();
+
+  var jumlah_total_belanja = $('input:text[name=jumlah_total]').val()
+  var potongan_faktur      = $('input:text[name=potongan_faktur]').val();
+  potongan_faktur = potongan_faktur.replace(/\.|R|p/g,'');
+  var jumlah_diskon               = (Number(jumlah_total_belanja)) - (Number(potongan_faktur));
+
+  $('input:text[name=jumlah_harus_bayar]').val(jumlah_diskon);
+  $('input:text[name=terbilang_jumlah_harus_bayar]').val(terbilang(Number(jumlah_diskon)));
+
+
+  var jumlah_bayar        = $('input:text[name=jumlah_bayar]').val();
+  jumlah_bayar = jumlah_bayar.replace(/\.|R|p/g,'')
+  var kembalian           = (Number(jumlah_bayar)) - (Number(jumlah_diskon));
+
+  if (kembalian  < 0 ){
+    $('input:text[name=kembalian]').val("");
+    $('input:text[name=terbilang_kembalian]').val("Kurang Bayar");
+  }
+  else if (jumlah_bayar == "" || jumlah_bayar == 0)
+  {
+    $('input:text[name=kembalian]').val(0);
+    $('input:text[name=jumlah_bayar]').val(0);
+    $('input:text[name=terbilang_kembalian]').val("");
+  } else
+  {
+    $('input:text[name=kembalian]').val(kembalian);
+    $('input:text[name=terbilang_kembalian]').val(terbilang(Number(kembalian)));
+  }
+});
+// end potongan faktur
+
+// ketika inputbox jumlah bayar diisi
+$("#form_rincian_penjualan").on("input","#jumlah_bayar2", function(event){
+  event.preventDefault();
+
+  var jumlah_harus_bayar  = $('input:text[name=jumlah_harus_bayar]').val();
+  var jumlah_bayar        = $('input:text[name=jumlah_bayar]').val();
+    jumlah_bayar = jumlah_bayar.replace(/\.|R|p/g,'')
+  var kembalian           = (Number(jumlah_bayar)) - (Number(jumlah_harus_bayar));
+
+  if (kembalian  < 0 ){
+    $('input:text[name=kembalian]').val("");
+    $('input:text[name=terbilang_kembalian]').val("Kurang Bayar");
+  }
+  else if (jumlah_bayar == "" || jumlah_bayar == 0)
+  {
+    $('input:text[name=kembalian]').val(0);
+    $('input:text[name=jumlah_bayar]').val(0);
+    $('input:text[name=terbilang_kembalian]').val("");
+  } else
+  {
+    $('input:text[name=kembalian]').val(kembalian);
+    $('input:text[name=terbilang_kembalian]').val(terbilang(Number(kembalian)));
+  }
+
+});
+// end jumlah bayar
+
+// ketika tombol antrian ditekan
+$("#form_rincian_penjualan").on("click","#cetak_billing_penjualan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/penjualan/faktur?t=' + mlite.token;
+  var id_penjualan = $('input:hidden[name=id]').val();
+  $.post(url, {id_penjualan : id_penjualan,
+  }, function(data) {
+    // tampilkan data
+    if(data == 'OK') {
+      bootbox.confirm("Apakah data penjualan sudah sesuai? Jika berbeda, silahkan simpan dulu sebelum mencetak!", function(result){
+        // ketika ditekan tombol ok
+        if (result){
+          window.open(baseURL + '/penjualan/faktur?show=besar&id_penjualan=' + id_penjualan + '&t=' + mlite.token);
+        }
+      });
+    } else {
+      bootbox.alert("Data penjualan belum disimpan. Silahkan simpan dulu sebelum mencetak?");
+    }
+  });
+});
+
+// ketika tombol antrian ditekan
+$("#form_rincian_penjualan").on("click","#cetak_billing_kecil_penjualan", function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var url = baseURL + '/penjualan/faktur?t=' + mlite.token;
+  var id_penjualan = $('input:hidden[name=id]').val();
+  $.post(url, {id_penjualan : id_penjualan,
+  }, function(data) {
+    // tampilkan data
+    if(data == 'OK') {
+      bootbox.confirm("Apakah data penjualan sudah sesuai? Jika berbeda, silahkan simpan dulu sebelum mencetak!", function(result){
+        // ketika ditekan tombol ok
+        if (result){
+          window.open(baseURL + '/penjualan/faktur?show=kecil&id_penjualan=' + id_penjualan + '&t=' + mlite.token);
+        }
+      });
+    } else {
+      bootbox.alert("Data penjualan belum disimpan. Silahkan simpan dulu sebelum mencetak!");
+    }
+  });
+});
+
+/* Fungsi formatRupiah */
+function formatRupiah(angka, prefix){
+	var number_string = angka.replace(/[^,\d]/g, '').toString(),
+	split   		= number_string.split(','),
+	sisa     		= split[0].length % 3,
+	rupiah     		= split[0].substr(0, sisa),
+	ribuan     		= split[0].substr(sisa).match(/\d{3}/gi);
+
+	// tambahkan titik jika yang di input sudah menjadi angka ribuan
+	if(ribuan){
+		separator = sisa ? '.' : '';
+		rupiah += separator + ribuan.join('.');
+	}
+
+	rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+	return prefix == undefined ? rupiah : (rupiah ? 'Rp.' + rupiah : '');
+}
+
+function terbilang(a){
+	var bilangan = ['','Satu','Dua','Tiga','Empat','Lima','Enam','Tujuh','Delapan','Sembilan','Sepuluh','Sebelas'];
+
+	// 1 - 11
+	if(a < 12){
+		var kalimat = bilangan[a];
+	}
+	// 12 - 19
+	else if(a < 20){
+		var kalimat = bilangan[a-10]+' Belas';
+	}
+	// 20 - 99
+	else if(a < 100){
+		var utama = a/10;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%10;
+		var kalimat = bilangan[depan]+' Puluh '+bilangan[belakang];
+	}
+	// 100 - 199
+	else if(a < 200){
+		var kalimat = 'Seratus '+ terbilang(a - 100);
+	}
+	// 200 - 999
+	else if(a < 1000){
+		var utama = a/100;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%100;
+		var kalimat = bilangan[depan] + ' Ratus '+ terbilang(belakang);
+	}
+	// 1,000 - 1,999
+	else if(a < 2000){
+		var kalimat = 'Seribu '+ terbilang(a - 1000);
+	}
+	// 2,000 - 9,999
+	else if(a < 10000){
+		var utama = a/1000;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%1000;
+		var kalimat = bilangan[depan] + ' Ribu '+ terbilang(belakang);
+	}
+	// 10,000 - 99,999
+	else if(a < 100000){
+		var utama = a/100;
+		var depan = parseInt(String(utama).substr(0,2));
+		var belakang = a%1000;
+		var kalimat = terbilang(depan) + ' Ribu '+ terbilang(belakang);
+	}
+	// 100,000 - 999,999
+	else if(a < 1000000){
+		var utama = a/1000;
+		var depan = parseInt(String(utama).substr(0,3));
+		var belakang = a%1000;
+		var kalimat = terbilang(depan) + ' Ribu '+ terbilang(belakang);
+	}
+	// 1,000,000 - 	99,999,999
+	else if(a < 100000000){
+		var utama = a/1000000;
+		var depan = parseInt(String(utama).substr(0,4));
+		var belakang = a%1000000;
+		var kalimat = terbilang(depan) + ' Juta '+ terbilang(belakang);
+	}
+	else if(a < 1000000000){
+		var utama = a/1000000;
+		var depan = parseInt(String(utama).substr(0,4));
+		var belakang = a%1000000;
+		var kalimat = terbilang(depan) + ' Juta '+ terbilang(belakang);
+	}
+	else if(a < 10000000000){
+		var utama = a/1000000000;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%1000000000;
+		var kalimat = terbilang(depan) + ' Milyar '+ terbilang(belakang);
+	}
+	else if(a < 100000000000){
+		var utama = a/1000000000;
+		var depan = parseInt(String(utama).substr(0,2));
+		var belakang = a%1000000000;
+		var kalimat = terbilang(depan) + ' Milyar '+ terbilang(belakang);
+	}
+	else if(a < 1000000000000){
+		var utama = a/1000000000;
+		var depan = parseInt(String(utama).substr(0,3));
+		var belakang = a%1000000000;
+		var kalimat = terbilang(depan) + ' Milyar '+ terbilang(belakang);
+	}
+	else if(a < 10000000000000){
+		var utama = a/10000000000;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%10000000000;
+		var kalimat = terbilang(depan) + ' Triliun '+ terbilang(belakang);
+	}
+	else if(a < 100000000000000){
+		var utama = a/1000000000000;
+		var depan = parseInt(String(utama).substr(0,2));
+		var belakang = a%1000000000000;
+		var kalimat = terbilang(depan) + ' Triliun '+ terbilang(belakang);
+	}
+
+	else if(a < 1000000000000000){
+		var utama = a/1000000000000;
+		var depan = parseInt(String(utama).substr(0,3));
+		var belakang = a%1000000000000;
+		var kalimat = terbilang(depan) + ' Triliun '+ terbilang(belakang);
+	}
+
+  else if(a < 10000000000000000){
+		var utama = a/1000000000000000;
+		var depan = parseInt(String(utama).substr(0,1));
+		var belakang = a%1000000000000000;
+		var kalimat = terbilang(depan) + ' Kuadriliun '+ terbilang(belakang);
+	}
+
+	var pisah = kalimat.split(' ');
+	var full = [];
+	for(var i=0;i<pisah.length;i++){
+	 if(pisah[i] != ""){full.push(pisah[i]);}
+	}
+	return full.join(' ');
+}
+
+</script>

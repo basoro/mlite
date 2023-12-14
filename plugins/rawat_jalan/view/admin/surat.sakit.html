@@ -12,7 +12,19 @@
     font-size: 14px;
     font-family: georgia;
   }
+  @media print {
+    #printPageButton {
+      display: none;
+    }
+  }
 </style>
+<script>
+  function Cetak()
+  {
+      window.print();
+  }  
+</script>
+
 <div style="width:960px;">
   <table>
     <thead>
@@ -95,3 +107,5 @@
       </tr>
   </table>
 </div>
+<br><br>
+<button id="printPageButton" onclick="Cetak()">&#128424; Cetak</button>

@@ -5,6 +5,7 @@ namespace Plugins\Vclaim;
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
+use Systems\Lib\LZCompressor;
 
 class Admin extends AdminModule
 {
@@ -184,7 +185,7 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
-        $decompress = decompress($stringDecrypt);
+        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       if ($data != null) {
         $data = '{
@@ -199,12 +200,12 @@ class Admin extends AdminModule
         $_POST['sep_no_sep'] = $data['response']['sep']['noSep'];
 
         if ($_POST['jnspelayanan'] == 1) {
-          $this->core->mysql('bridging_surat_pri_bpjs')->where('no_surat', $_POST['noskdp'])->update([
+          $this->db('bridging_surat_pri_bpjs')->where('no_surat', $_POST['noskdp'])->update([
             'no_sep' => $_POST['sep_no_sep']
           ]);
         }
 
-        $simpan_sep = $this->core->mysql('bridging_sep')->save([
+        $simpan_sep = $this->db('bridging_sep')->save([
           'no_sep' => $_POST['sep_no_sep'],
           'no_rawat' => $_POST['no_rawat'],
           'tglsep' => $_POST['tglsep'],
@@ -261,14 +262,14 @@ class Admin extends AdminModule
 
         if ($simpan_sep) {
           if ($_POST['prolanis_prb'] !== '') {
-            $simpan_prb = $this->core->mysql('bpjs_prb')->save([
+            $simpan_prb = $this->db('bpjs_prb')->save([
               'no_sep' => $_POST['sep_no_sep'],
               'prb' => $_POST['prolanis_prb']
             ]);
           }
           echo $_POST['sep_no_sep'];
         } else {
-          $simpan_sep = $this->core->mysql('bridging_sep_internal')->save([
+          $simpan_sep = $this->db('bridging_sep_internal')->save([
             'no_sep' => $_POST['sep_no_sep'],
             'no_rawat' => $_POST['no_rawat'],
             'tglsep' => $_POST['tglsep'],
@@ -323,7 +324,7 @@ class Admin extends AdminModule
             'nmdpjplayanan' => $_POST['nmdpjppelayanan']
           ]);
           if ($_POST['prolanis_prb'] !== '') {
-            $simpan_prb = $this->core->mysql('bpjs_prb')->save([
+            $simpan_prb = $this->db('bpjs_prb')->save([
               'no_sep' => $_POST['sep_no_sep'],
               'prb' => $_POST['prolanis_prb']
             ]);
@@ -373,9 +374,9 @@ class Admin extends AdminModule
 
       echo 'Koneksi ke server BPJS terputus. Silahkan ulangi beberapa saat lagi!';
     } else if ($data['metaData']['code'] == 200) {
-      $hapus_sep = $this->core->mysql('bridging_sep')->where('no_sep', $_POST['no_sep'])->delete();
-      $hapus_sep_internal = $this->core->mysql('bridging_sep_internal')->where('no_sep', $_POST['no_sep'])->delete();
-      $hapus_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $_POST['no_sep'])->delete();
+      $hapus_sep = $this->db('bridging_sep')->where('no_sep', $_POST['no_sep'])->delete();
+      $hapus_sep_internal = $this->db('bridging_sep_internal')->where('no_sep', $_POST['no_sep'])->delete();
+      $hapus_prb = $this->db('bpjs_prb')->where('no_sep', $_POST['no_sep'])->delete();
       echo $data['metaData']['message'] . '!! Menghapus data SEP dengan nomor ' . $_POST['no_sep'] . '....';
     } else {
       echo $data['metaData']['message'];
@@ -387,9 +388,9 @@ class Admin extends AdminModule
   {
     $settings = $this->settings('settings');
     $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-    $data_sep = $this->core->mysql('bridging_sep')->where('no_sep', $no_sep)->oneArray();
+    $data_sep = $this->db('bridging_sep')->where('no_sep', $no_sep)->oneArray();
     if (!$data_sep) {
-      $data_sep = $this->core->mysql('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
+      $data_sep = $this->db('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
     }
     $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
 
@@ -402,7 +403,7 @@ class Admin extends AdminModule
 
     $data_sep['qrCode'] = $image;
     $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
-    $potensi_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+    $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
     $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
     echo $this->draw('cetak.sep.html', ['data_sep' => $data_sep]);
@@ -413,7 +414,7 @@ class Admin extends AdminModule
   {
     $settings = $this->settings('settings');
     $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-    $data_sep = $this->core->mysql('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
+    $data_sep = $this->db('bridging_sep_internal')->where('no_sep', $no_sep)->oneArray();
     $batas_rujukan = strtotime('+87 days', strtotime($data_sep['tglrujukan']));
 
     $qr = QRCode::getMinimumQRCode($data_sep['no_sep'], QR_ERROR_CORRECT_LEVEL_L);
@@ -425,7 +426,7 @@ class Admin extends AdminModule
 
     $data_sep['qrCode'] = $image;
     $data_sep['batas_rujukan'] = date('Y-m-d', $batas_rujukan);
-    $potensi_prb = $this->core->mysql('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
+    $potensi_prb = $this->db('bpjs_prb')->where('no_sep', $no_sep)->oneArray();
     $data_sep['potensi_prb'] = $potensi_prb['prb'];
 
     echo $this->draw('cetak.sep.internal.html', ['data_sep' => $data_sep]);
@@ -436,10 +437,10 @@ class Admin extends AdminModule
   {
     $settings = $this->settings('settings');
     $this->tpl->set('settings', $this->tpl->noParse_array(htmlspecialchars_array($settings)));
-    $data_sep = $this->core->mysql('bridging_srb_bpjs')
+    $data_sep = $this->db('bridging_srb_bpjs')
     ->join('bridging_sep', 'bridging_sep.no_sep=bridging_srb_bpjs.no_sep')
     ->where('bridging_sep.no_sep', $no_sep)->oneArray();
-    $obat_srb = $this->core->mysql('bridging_srb_bpjs_obat')->where('no_srb',$data_sep['no_srb'])->toArray();
+    $obat_srb = $this->db('bridging_srb_bpjs_obat')->where('no_srb',$data_sep['no_srb'])->toArray();
 
     echo $this->draw('cetak.srb.html', ['data_sep' => $data_sep,'obat_srb'=>$obat_srb]);
     exit();
@@ -451,7 +452,7 @@ class Admin extends AdminModule
     $_POST['nmppkpelayanan'] = $this->settings->get('settings.nama_instansi');
     $_POST['sep_user']  = $this->core->getUserInfo('fullname', null, true);
 
-    $data = $this->core->mysql('reg_periksa')
+    $data = $this->db('reg_periksa')
       ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
       ->where('no_peserta', $_POST['no_kartu'])
       ->where('tgl_registrasi', $_POST['tglsep'])
@@ -462,7 +463,7 @@ class Admin extends AdminModule
       echo 'Data pasien tidak ditemukan!';
     } else {
 
-      $simpan_sep = $this->core->mysql('bridging_sep')->save([
+      $simpan_sep = $this->db('bridging_sep')->save([
             'no_sep' => $_POST['noSep'],
             'no_rawat' => $data['no_rawat'],
             'tglsep' => $_POST['tglsep'],
@@ -508,7 +509,7 @@ class Admin extends AdminModule
             'kddpjp' => $_POST['kddpjp'],
             'nmdpdjp' => $_POST['nmdpdjp']
           ]);
-          $simpan_prb = $this->core->mysql('bpjs_prb')->save([
+          $simpan_prb = $this->db('bpjs_prb')->save([
             'no_sep' => $_POST['sep_no_sep'],
             'prb' => $_POST['prolanis_prb']
           ]);
@@ -542,7 +543,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       $json = '{
@@ -579,7 +580,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -614,7 +615,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -649,7 +650,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -685,7 +686,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -720,7 +721,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -754,7 +755,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -789,7 +790,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -824,7 +825,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -859,7 +860,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -894,7 +895,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -929,7 +930,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -964,7 +965,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1001,7 +1002,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1053,7 +1054,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1089,7 +1090,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1124,7 +1125,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1159,7 +1160,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1194,7 +1195,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1229,7 +1230,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1264,7 +1265,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1368,7 +1369,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1414,7 +1415,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1460,7 +1461,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1495,7 +1496,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1530,7 +1531,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1564,7 +1565,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1598,7 +1599,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1633,7 +1634,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1682,7 +1683,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1717,7 +1718,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1752,7 +1753,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1787,7 +1788,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1822,7 +1823,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1863,7 +1864,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1904,7 +1905,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1945,7 +1946,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2026,7 +2027,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2061,7 +2062,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2096,7 +2097,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2131,7 +2132,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2166,7 +2167,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2201,7 +2202,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2236,7 +2237,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2271,7 +2272,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2306,7 +2307,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2329,9 +2330,9 @@ class Admin extends AdminModule
   public function getSPRI($no_kartu, $no_rawat)
   {
     $this->_addHeaderFiles();
-    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->toArray();
-    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->toArray();
-    $bridging_surat_pri_bpjs = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_kartu', $no_kartu)->toArray();
+    $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
+    $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+    $bridging_surat_pri_bpjs = $this->db('bridging_surat_pri_bpjs')->where('no_kartu', $no_kartu)->toArray();
     $this->tpl->set('spri', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_pri_bpjs)));
     $this->tpl->set('maping_dokter_dpjpvclaim', $this->tpl->noParse_array(htmlspecialchars_array($maping_dokter_dpjpvclaim)));
     $this->tpl->set('maping_poli_bpjs', $this->tpl->noParse_array(htmlspecialchars_array($maping_poli_bpjs)));
@@ -2343,7 +2344,7 @@ class Admin extends AdminModule
 
   public function getSPRIDisplay($no_kartu, $no_rawat)
   {
-    $bridging_surat_pri_bpjs = $this->core->mysql('bridging_surat_pri_bpjs')->where('no_kartu', $no_kartu)->toArray();
+    $bridging_surat_pri_bpjs = $this->db('bridging_surat_pri_bpjs')->where('no_kartu', $no_kartu)->toArray();
     $this->tpl->set('spri', $this->tpl->noParse_array(htmlspecialchars_array($bridging_surat_pri_bpjs)));
     echo $this->draw('spri.display.html');
     exit();
@@ -2377,13 +2378,13 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       //echo $spri['noSPRI'];
-      $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
-      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['poli'])->oneArray();
+      $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
+      $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['poli'])->oneArray();
 
-      $bridging_surat_pri_bpjs = $this->core->mysql('bridging_surat_pri_bpjs')->save([
+      $bridging_surat_pri_bpjs = $this->db('bridging_surat_pri_bpjs')->save([
         'no_rawat' => revertNorawat($no_rawat),
         'no_kartu' => $no_kartu,
         'tgl_surat' => $_POST['tanggal_surat'],
@@ -2419,10 +2420,10 @@ class Admin extends AdminModule
     );
     $hari=$day[$tentukan_hari];
 
-    $reg_periksa = $this->core->mysql('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
-    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
-    $jadwaldokter = $this->core->mysql('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
+    $reg_periksa = $this->db('reg_periksa')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $reg_periksa['kd_dokter'])->oneArray();
+    $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_rs', $reg_periksa['kd_poli'])->oneArray();
+    $jadwaldokter = $this->db('jadwal')->where('kd_dokter', $reg_periksa['kd_dokter'])->where('kd_poli', $reg_periksa['kd_poli'])->where('hari_kerja', $hari)->oneArray();
 
     $no_urut_reg = substr($reg_periksa['no_reg'], 0, 3);
     $minutes = $no_urut_reg * 10;
@@ -2471,7 +2472,7 @@ class Admin extends AdminModule
     $response = json_encode($data, JSON_PRETTY_PRINT);
     //$data['metadata']['code'] = '200';
     if($data['metadata']['code'] == 200) {
-      $this->core->mysql('mlite_antrian_referensi')->save([
+      $this->db('mlite_antrian_referensi')->save([
           'tanggal_periksa' => $date,
           'no_rkm_medis' => $no_rkm_medis,
           'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
@@ -2492,9 +2493,9 @@ class Admin extends AdminModule
 
   public function getSync_SEP($no_kartu, $no_rawat)
   {
-    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->toArray();
-    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->toArray();
-    $bridging_sep = $this->core->mysql('bridging_sep')
+    $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
+    $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+    $bridging_sep = $this->db('bridging_sep')
       ->where('no_kartu', $no_kartu)
       ->toArray();
     $this->tpl->set('bridging_sep', $this->tpl->noParse_array(htmlspecialchars_array($bridging_sep)));
@@ -2508,7 +2509,7 @@ class Admin extends AdminModule
 
   public function getSyncSepDisplay($no_kartu)
   {
-    $bridging_sep = $this->core->mysql('bridging_sep')
+    $bridging_sep = $this->db('bridging_sep')
       ->where('no_kartu', $no_kartu)
       ->toArray();
     $this->tpl->set('bridging_sep', $this->tpl->noParse_array(htmlspecialchars_array($bridging_sep)));
@@ -2537,7 +2538,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($data != null) {
       $data = '{
@@ -2570,7 +2571,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($data_rujukan != null) {
       $data_rujukan = '{
@@ -2619,7 +2620,7 @@ class Admin extends AdminModule
       if ($data['response']['klsRawat']['penanggungJawab'] === NULL) {
         $data['response']['klsRawat']['penanggungJawab'] = '';
       }
-      $insert = $this->core->mysql('bridging_sep')
+      $insert = $this->db('bridging_sep')
         ->save([
           'no_sep' => $data['response']['noSep'],
           'no_rawat' => $_POST['no_rawat'],
@@ -2634,8 +2635,8 @@ class Admin extends AdminModule
           'catatan' => $data['response']['catatan'],
           'diagawal' => $data_rujukan['response']['rujukan']['diagnosa']['kode'],
           'nmdiagnosaawal' => $data_rujukan['response']['rujukan']['diagnosa']['nama'],
-          'kdpolitujuan' => $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['kd_poli_bpjs'],
-          'nmpolitujuan' => $this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['nm_poli_bpjs'],
+          'kdpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['kd_poli_bpjs'],
+          'nmpolitujuan' => $this->db('maping_poli_bpjs')->where('kd_poli_rs', $_POST['kd_poli'])->oneArray()['nm_poli_bpjs'],
           'klsrawat' =>  $data['response']['klsRawat']['klsRawatHak'],
           'klsnaik' => $data['response']['klsRawat']['klsRawatNaik'],
           'pembiayaan' => $data['response']['klsRawat']['pembiayaan'],
@@ -2666,7 +2667,7 @@ class Admin extends AdminModule
           'nmkec' => '-',
           'noskdp' => '0',
           'kddpjp' => $_POST['kd_dokter'],
-          'nmdpdjp' => $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'],
+          'nmdpdjp' => $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['kd_dokter'])->oneArray()['nm_dokter_bpjs'],
           'tujuankunjungan' => '',
           'flagprosedur' => '',
           'penunjang' => '',
@@ -2677,7 +2678,7 @@ class Admin extends AdminModule
     }
 
     if ($insert) {
-      $this->core->mysql('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']]);
+      $this->db('bpjs_prb')->save(['no_sep' => $data['response']['noSep'], 'prb' => $data_rujukan['response']['rujukan']['peserta']['informasi']['prolanisPRB']]);
       $this->notify('success', 'Simpan sukes');
     } else {
       $this->notify('failure', 'Simpan gagal');
@@ -2688,9 +2689,9 @@ class Admin extends AdminModule
   public function getKontrol($no_kartu)
   {
     $this->_addHeaderFiles();
-    $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->toArray();
-    $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->toArray();
-    $bridging_surat_kontrol_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')
+    $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->toArray();
+    $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
+    $bridging_surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -2704,7 +2705,7 @@ class Admin extends AdminModule
 
   public function getKontrolDisplay($no_kartu)
   {
-    $bridging_surat_kontrol_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')
+    $bridging_surat_kontrol_bpjs = $this->db('bridging_surat_kontrol_bpjs')
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_surat_kontrol_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -2758,14 +2759,14 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       //echo $spri['noSuratKontrol'];
-      $maping_dokter_dpjpvclaim = $this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
-      $maping_poli_bpjs = $this->core->mysql('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['poli'])->oneArray();
+      $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
+      $maping_poli_bpjs = $this->db('maping_poli_bpjs')->where('kd_poli_bpjs', $_POST['poli'])->oneArray();
 
       if ($_POST['no_surkon'] == '') {
-        $bridging_surat_pri_bpjs = $this->core->mysql('bridging_surat_kontrol_bpjs')->save([
+        $bridging_surat_pri_bpjs = $this->db('bridging_surat_kontrol_bpjs')->save([
           'no_sep' => $_POST['no_sep'],
           'tgl_surat' => $_POST['tanggal_surat'],
           'no_surat' => $spri['noSuratKontrol'],
@@ -2776,7 +2777,7 @@ class Admin extends AdminModule
           'nm_poli_bpjs' => $maping_poli_bpjs['nm_poli_bpjs']
         ]);
 
-        $query = $this->core->mysql('skdp_bpjs')->save([
+        $query = $this->db('skdp_bpjs')->save([
           'tahun' => date('Y'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'diagnosa' => $_POST['diagnosa'],
@@ -2793,7 +2794,7 @@ class Admin extends AdminModule
         ]);
 
         if ($query) {
-          $this->core->mysql('booking_registrasi')
+          $this->db('booking_registrasi')
             ->save([
               'tanggal_booking' => date('Y-m-d'),
               'jam_booking' => date('H:i:s'),
@@ -2809,7 +2810,7 @@ class Admin extends AdminModule
             ]);
         }
       } else {
-        $this->core->mysql('bridging_surat_kontrol_bpjs')->where('no_sep',$_POST['no_sep'])->save([
+        $this->db('bridging_surat_kontrol_bpjs')->where('no_sep',$_POST['no_sep'])->save([
           'no_surat' => $spri['noSuratKontrol'],
           'tgl_rencana' => $_POST['tanggal_periksa'],
           'kd_dokter_bpjs' => $_POST['dokter'],
@@ -2818,7 +2819,7 @@ class Admin extends AdminModule
           'nm_poli_bpjs' => $maping_poli_bpjs['nm_poli_bpjs']
         ]);
 
-        $query = $this->core->mysql('skdp_bpjs')->save([
+        $query = $this->db('skdp_bpjs')->save([
           'tahun' => date('Y'),
           'no_rkm_medis' => $_POST['no_rkm_medis'],
           'diagnosa' => $_POST['diagnosa'],
@@ -2835,7 +2836,7 @@ class Admin extends AdminModule
         ]);
 
         if ($query) {
-          $this->core->mysql('booking_registrasi')
+          $this->db('booking_registrasi')
             ->save([
               'tanggal_booking' => date('Y-m-d'),
               'jam_booking' => date('H:i:s'),
@@ -2860,7 +2861,7 @@ class Admin extends AdminModule
   public function getRujukKeluar($no_kartu)
   {
     $this->_addHeaderFiles();
-    $rujuk_keluar = $this->core->mysql('bridging_rujukan_bpjs')
+    $rujuk_keluar = $this->db('bridging_rujukan_bpjs')
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -2872,7 +2873,7 @@ class Admin extends AdminModule
 
   public function getRujukKeluarDisplay($no_kartu)
   {
-    $rujuk_keluar = $this->core->mysql('bridging_rujukan_bpjs')
+    $rujuk_keluar = $this->db('bridging_rujukan_bpjs')
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_rujukan_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -2919,11 +2920,11 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       // echo $spri['rujukan']['noRujukan'];
 
-      $bridging_surat_pri_bpjs = $this->core->mysql('bridging_rujukan_bpjs')->save([
+      $bridging_surat_pri_bpjs = $this->db('bridging_rujukan_bpjs')->save([
         'no_sep' => $_POST['no_sep'],
         'tglRujukan' => $_POST['tanggal_surat'],
         'no_rujukan' => $spri['rujukan']['noRujukan'],
@@ -2952,7 +2953,7 @@ class Admin extends AdminModule
   {
     $this->_addHeaderFiles();
     $no_rawat = revertNorawat($no_rawat);
-    $rujuk_keluar = $this->core->mysql('bridging_sep')
+    $rujuk_keluar = $this->db('bridging_sep')
       ->where('bridging_sep.no_rawat', $no_rawat)
       ->oneArray();
     $reg = $this->core->getRegPeriksaInfo('no_rkm_medis', $no_rawat);
@@ -2968,7 +2969,7 @@ class Admin extends AdminModule
 
   public function getSrbDisplay($no_kartu)
   {
-    $rujuk_keluar = $this->core->mysql('bridging_srb_bpjs')
+    $rujuk_keluar = $this->db('bridging_srb_bpjs')
       ->join('bridging_sep', 'bridging_sep.no_sep=bridging_srb_bpjs.no_sep')
       ->where('bridging_sep.no_kartu', $no_kartu)
       ->toArray();
@@ -3021,11 +3022,11 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       echo $spri['noSRB'];
 
-      $bridging_srb_bpjs = $this->core->mysql('bridging_srb_bpjs')->save([
+      $bridging_srb_bpjs = $this->db('bridging_srb_bpjs')->save([
         'no_sep' => $_POST['no_sep'],
         'no_srb' => $spri['noSRB'],
         'tgl_srb' => $_POST['tanggal_srb'],
@@ -3039,7 +3040,7 @@ class Admin extends AdminModule
         'keterangan' => $_POST['keterangan'],
         'saran' => $_POST['saran'],
       ]);
-      $bridging_srb_bpjs_obat = $this->core->mysql('bridging_srb_bpjs_obat')->save([
+      $bridging_srb_bpjs_obat = $this->db('bridging_srb_bpjs_obat')->save([
         'no_sep' => $_POST['no_sep'],
         'no_srb' => $spri['noSRB'],
         'kd_obat' => $_POST['sep_kode_obat'],
@@ -3071,7 +3072,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -3093,8 +3094,8 @@ class Admin extends AdminModule
 
   public function getDirujuk($no_rawat)
   {
-    $bridging_sep = $this->core->mysql('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
-    $dirujuk = $this->core->mysql('bridging_rujukan_bpjs')->where('no_sep', $bridging_sep['no_sep'])->toArray();
+    $bridging_sep = $this->db('bridging_sep')->where('no_rawat', revertNoRawat($no_rawat))->oneArray();
+    $dirujuk = $this->db('bridging_rujukan_bpjs')->where('no_sep', $bridging_sep['no_sep'])->toArray();
     echo $this->draw('dirujuk.html', ['bridging_sep' => isset_or($bridging_sep, ''), 'dirujuk' => $dirujuk]);
     exit();
   }
@@ -3131,14 +3132,14 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       $response_data_rujukan = json_decode($decompress, true);
 
       if($code == '200') {
 
-        $this->core->mysql('bridging_rujukan_bpjs')
+        $this->db('bridging_rujukan_bpjs')
         ->save([
           'no_sep' => $_POST['noSep'],
           'tglRujukan' => $_POST['tglRujukan'], 
@@ -3170,7 +3171,7 @@ class Admin extends AdminModule
 
   public function getDirujukTampil($noSep)
   {
-    $bridging_rujukan_bpjs = $this->core->mysql('bridging_rujukan_bpjs')->where('no_sep', $noSep)->toArray();
+    $bridging_rujukan_bpjs = $this->db('bridging_rujukan_bpjs')->where('no_sep', $noSep)->toArray();
     echo $this->draw('dirujuk.tampil.html', ['dirujuk' => $bridging_rujukan_bpjs]);
     exit();
   }
@@ -3178,8 +3179,8 @@ class Admin extends AdminModule
   public function getMappingPoli()
   {
       $this->_addHeaderFiles();
-      $poliklinik = $this->core->mysql('poliklinik')->where('status','1')->toArray();
-      return $this->draw('mappingpoli.html', ['row' => $this->core->mysql('maping_poli_bpjs')->toArray(), 'poliklinik' => $poliklinik]);
+      $poliklinik = $this->db('poliklinik')->where('status','1')->toArray();
+      return $this->draw('mappingpoli.html', ['row' => $this->db('maping_poli_bpjs')->toArray(), 'poliklinik' => $poliklinik]);
   }
 
   public function postPoliklinik_Save()
@@ -3189,7 +3190,7 @@ class Admin extends AdminModule
 
       unset($_POST['save']);
 
-      $query = $this->core->mysql('maping_poli_bpjs')->save([
+      $query = $this->db('maping_poli_bpjs')->save([
           'kd_poli_rs' => $_POST['kd_poli_rs'],
           'kd_poli_bpjs' => $_POST['poli_kode'],
           'nm_poli_bpjs' => $_POST['poli_nama']
@@ -3206,7 +3207,7 @@ class Admin extends AdminModule
 
   public function getPoliklinik_Delete($id)
   {
-      if ($this->core->mysql('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
+      if ($this->db('maping_poli_bpjs')->where('kd_poli_rs', $id)->delete()) {
           $this->notify('success', 'Hapus maping poli bpjs sukses');
       } else {
           $this->notify('failure', 'Hapus maping poli bpjs gagal');
@@ -3217,8 +3218,8 @@ class Admin extends AdminModule
   public function getMappingDokter()
   {
       $this->_addHeaderFiles();
-      $dokter = $this->core->mysql('dokter')->where('status','1')->toArray();
-      return $this->draw('mappingdokter.html', ['row' => $this->core->mysql('maping_dokter_dpjpvclaim')->toArray(), 'dokter' => $dokter]);
+      $dokter = $this->db('dokter')->where('status','1')->toArray();
+      return $this->draw('mappingdokter.html', ['row' => $this->db('maping_dokter_dpjpvclaim')->toArray(), 'dokter' => $dokter]);
   }
 
   public function postDokter_Save()
@@ -3228,7 +3229,7 @@ class Admin extends AdminModule
 
       unset($_POST['save']);
 
-      $query = $this->core->mysql('maping_dokter_dpjpvclaim')->save([
+      $query = $this->db('maping_dokter_dpjpvclaim')->save([
           'kd_dokter' => $_POST['kd_dokter'],
           'kd_dokter_bpjs' => $_POST['dokter_kode'],
           'nm_dokter_bpjs' => $_POST['dokter_nama']
@@ -3245,7 +3246,7 @@ class Admin extends AdminModule
 
   public function getDokter_Delete($id)
   {
-      if ($this->core->mysql('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
+      if ($this->db('maping_dokter_dpjpvclaim')->where('kd_dokter', $id)->delete()) {
           $this->notify('success', 'Hapus maping poli bpjs sukses');
       } else {
           $this->notify('failure', 'Hapus maping poli bpjs gagal');

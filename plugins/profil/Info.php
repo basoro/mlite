@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul profil',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.1',
-    'compatibility' =>  '2023',
+    'compatibility' =>  '4.0.*',
     'icon'          =>  'address-book',
     'install'       =>  function () use ($core) {
     },

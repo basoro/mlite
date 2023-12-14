@@ -3,7 +3,7 @@
 namespace Plugins\Master\Src;
 
 use Systems\Lib\QueryWrapper;
-use Systems\MySQL;
+
 
 class Bangsal
 {
@@ -16,7 +16,7 @@ class Bangsal
     public function getIndex()
     {
 
-      $totalRecords = $this->mysql('bangsal')
+      $totalRecords = $this->db('bangsal')
         ->select('kd_bangsal')
         ->toArray();
       $offset         = 10;
@@ -24,7 +24,7 @@ class Bangsal
       $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
       $return['jumlah_data']    = count($totalRecords);
 
-      $return['list'] = $this->mysql('bangsal')
+      $return['list'] = $this->db('bangsal')
         ->desc('kd_bangsal')
         ->limit(10)
         ->toArray();
@@ -36,7 +36,7 @@ class Bangsal
     public function anyForm()
     {
         if (isset($_POST['kd_bangsal'])){
-          $return['form'] = $this->mysql('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
+          $return['form'] = $this->db('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray();
         } else {
           $return['form'] = [
             'kd_bangsal' => '',
@@ -52,7 +52,7 @@ class Bangsal
     {
 
         $perpage = '10';
-        $totalRecords = $this->mysql('bangsal')
+        $totalRecords = $this->db('bangsal')
           ->select('kd_bangsal')
           ->toArray();
         $offset         = 10;
@@ -60,14 +60,14 @@ class Bangsal
         $return['jml_halaman']    = ceil(count($totalRecords) / $offset);
         $return['jumlah_data']    = count($totalRecords);
 
-        $return['list'] = $this->mysql('bangsal')
+        $return['list'] = $this->db('bangsal')
           ->desc('kd_bangsal')
           ->offset(0)
           ->limit($perpage)
           ->toArray();
 
         if(isset($_POST['cari'])) {
-          $return['list'] = $this->mysql('bangsal')
+          $return['list'] = $this->db('bangsal')
             ->like('kd_bangsal', '%'.$_POST['cari'].'%')
             ->orLike('nm_bangsal', '%'.$_POST['cari'].'%')
             ->desc('kd_bangsal')
@@ -79,7 +79,7 @@ class Bangsal
         }
         if(isset($_POST['halaman'])){
           $offset     = (($_POST['halaman'] - 1) * $perpage);
-          $return['list'] = $this->mysql('bangsal')
+          $return['list'] = $this->db('bangsal')
             ->desc('kd_bangsal')
             ->offset($offset)
             ->limit($perpage)
@@ -92,22 +92,17 @@ class Bangsal
 
     public function postSave()
     {
-      if (!$this->mysql('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
-        $query = $this->mysql('bangsal')->save($_POST);
+      if (!$this->db('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->oneArray()) {
+        $query = $this->db('bangsal')->save($_POST);
       } else {
-        $query = $this->mysql('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->save($_POST);
+        $query = $this->db('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->save($_POST);
       }
       return $query;
     }
 
     public function postHapus()
     {
-      return $this->mysql('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->delete();
-    }
-
-    protected function mysql($table = NULL)
-    {
-        return new MySQL($table);
+      return $this->db('bangsal')->where('kd_bangsal', $_POST['kd_bangsal'])->delete();
     }
 
 }
