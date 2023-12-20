@@ -18,8 +18,8 @@ class Admin extends AdminModule
             'Penjualan' => 'index',
             'Order Baru' => 'order',
             'Barang Jualan' => 'barang',
-            'Laporan' => 'laporan',
-            'Pengaturan' => 'settings'
+            // 'Laporan' => 'laporan',
+            // 'Pengaturan' => 'settings'
         ];
     }
 
@@ -29,8 +29,8 @@ class Admin extends AdminModule
         ['name' => 'Penjualan', 'url' => url([ADMIN, 'penjualan', 'index']), 'icon' => 'money', 'desc' => 'Data Penjualan'],
         ['name' => 'Order Baru', 'url' => url([ADMIN, 'penjualan', 'order']), 'icon' => 'cart-plus', 'desc' => 'Data Penjualan'],
         ['name' => 'Barang Jualan', 'url' => url([ADMIN, 'penjualan', 'barang']), 'icon' => 'money', 'desc' => 'Data Barang Jualan'],
-        ['name' => 'Laporan', 'url' => url([ADMIN, 'penjualan', 'laporan']), 'icon' => 'money', 'desc' => 'Laporan Penjualan'],
-        ['name' => 'Pengaturan', 'url' => url([ADMIN, 'penjualan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaturan Penjualan']
+        // ['name' => 'Laporan', 'url' => url([ADMIN, 'penjualan', 'laporan']), 'icon' => 'money', 'desc' => 'Laporan Penjualan'],
+        // ['name' => 'Pengaturan', 'url' => url([ADMIN, 'penjualan', 'settings']), 'icon' => 'money', 'desc' => 'Pengaturan Penjualan']
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
     }
@@ -79,6 +79,30 @@ class Admin extends AdminModule
         return $this->draw('barang.html', ['barang' => $this->db('mlite_penjualan_barang')->toArray()]);
     }
 
+    public function postSaveBarang()
+    {
+      if($_POST['simpan']) {
+        unset($_POST['simpan']);
+        unset($_POST['id']);
+        $this->db('mlite_penjualan_barang')->save($_POST);
+        $this->notify('success', 'Data barang penjualan telah disimpan');
+      } else if ($_POST['update']) {
+        $id = $_POST['id'];
+        unset($_POST['update']);
+        unset($_POST['id']);
+        $this->db('mlite_penjualan_barang')
+          ->where('id', $id)
+          ->save($_POST);
+        $this->notify('failure', 'Data barang penjualan telah diubah');
+      } else if ($_POST['hapus']) {
+        $this->db('mlite_penjualan_barang')
+          ->where('id', $_POST['id'])
+          ->delete();
+        $this->notify('failure', 'Data barang penjualan telah dihapus');
+      }
+      redirect(url([ADMIN, 'penjualan', 'barang']));
+    }
+  
     public function getLaporan()
     {
 
@@ -94,7 +118,7 @@ class Admin extends AdminModule
         $barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
         $harga_total = $barang['harga'] * $_POST['jumlah'];
         if(isset($_POST['id']) && $_POST['id'] !='') {
-            $this->db('mlite_penjualan_detail')
+            $detail = $this->db('mlite_penjualan_detail')
             ->save([
                 'id_penjualan' => $_POST['id'], 
                 'id_barang' => $_POST['id_barang'], 
@@ -107,7 +131,11 @@ class Admin extends AdminModule
                 'id_user' => $this->core->getUserInfo('username', null, true) 
             ]);
             echo $_POST['id'];
-        } else {
+            if($detail) {
+                $mlite_penjualan_barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
+                $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+            }
+    } else {
             $penjualan = $this->db('mlite_penjualan')
             ->save([
                 'nama_pembeli' => $_POST['nama_pembeli'], 
@@ -121,7 +149,7 @@ class Admin extends AdminModule
             ]);
             $lastInsertID = $this->db()->pdo()->lastInsertId();
             if($penjualan) {
-                $this->db('mlite_penjualan_detail')
+                $detail = $this->db('mlite_penjualan_detail')
                 ->save([
                     'id_penjualan' => $lastInsertID, 
                     'id_barang' => $_POST['id_barang'], 
@@ -134,6 +162,10 @@ class Admin extends AdminModule
                     'id_user' => $this->core->getUserInfo('username', null, true) 
                 ]);
                 echo $lastInsertID;
+                if($detail) {
+                    $mlite_penjualan_barang = $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->oneArray();
+                    $this->db('mlite_penjualan_barang')->where('id', $_POST['id_barang'])->update(['stok' => $mlite_penjualan_barang['stok'] - $_POST['jumlah']]);
+                }
             }
         }
         exit();
