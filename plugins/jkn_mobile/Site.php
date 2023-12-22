@@ -40,9 +40,11 @@ class Site extends SiteModule
         $this->route('jknmobile/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile/antrian/add/(:str)', '_getAntreanAdd');
         $this->route('jknmobile/antrian-ausy/add/(:str)', '_getAntreanAddAusy');
+        $this->route('jknmobile/antrian-kci/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
         $this->route('jknmobile/antrian-ausy/updatewaktu/(:str)', '_getAntreanUpdateWaktuAusy');
+        $this->route('jknmobile/antrian-kci/updatewaktu/(:str)', '_getAntreanUpdateWaktuAusy');
         $this->route('jknmobile/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile/antrian/listtask/(:str)', '_getAntreanGetListTask');
@@ -67,10 +69,12 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
-        $this->route('jknmobile/antrian-ausy/add/(:str)', '_getAntreanAddAusy');
+        $this->route('jknmobile_v2/antrian-ausy/add/(:str)', '_getAntreanAddAusy');
+        $this->route('jknmobile_v2/antrian-kci/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian/updatewaktu/(:str)', '_getAntreanUpdateWaktu');
         $this->route('jknmobile_v2/antrian-ausy/updatewaktu/(:str)', '_getAntreanUpdateWaktuAusy');
+        $this->route('jknmobile_v2/antrian-kci/updatewaktu/(:str)', '_getAntreanUpdateWaktuAusy');
         $this->route('jknmobile_v2/antrian/waktutunggu/(:str)/(:str)/(:str)', '_getAntreanWaktuTunggu');
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
