@@ -2521,10 +2521,10 @@ class Admin extends AdminModule
     $environment = 'production';
         
     // nama petugas/operator Fasilitas Pelayanan Kesehatan (Fasyankes) yang akan melakukan validasi
-    $agent_name = 'drg. FAISOL BASORO';
+    $agent_name = $this->core->getUserInfo('fullname', null, true);
     
     // NIK petugas/operator Fasilitas Pelayanan Kesehatan (Fasyankes) yang akan melakukan validasi
-    $agent_nik ='3509191704780005';
+    $agent_nik = $this->core->getPegawaiInfo('no_ktp',  $this->core->getUserInfo('username', null, true));
     
     // auth to satusehat
     $auth_result = $this->authenticateWithOAuth2($client_id, $client_secret, $auth_url);
