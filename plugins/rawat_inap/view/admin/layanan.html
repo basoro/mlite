@@ -6,7 +6,8 @@
           <tr>
             <th>ID Tindakan</th>
             <th>Nama Tindakan</th>
-            <th>Tarif</th>
+            <th>Tarif Dokter</th>
+            <th>Tarif Perawat</th>
           </tr>
         </thead>
         <tbody>
@@ -16,11 +17,12 @@
             <td>{$value.kd_jenis_prw}</td>
             <td>{$value.nm_perawatan}</td>
             <td>Rp. <span class="pull-right">{?= number_format($value.total_byrdr,2,',','.')?}</span></td>
+            <td>Rp. <span class="pull-right">{?= number_format($value.total_byrpr,2,',','.')?}</span></td>
           </tr>
           {/loop}
           {else}
           <tr>
-            <td colspan="3"class="text-center">Data layanan tidak ditemukan.</td>
+            <td colspan="4"class="text-center">Data layanan tidak ditemukan.</td>
           </tr>
           {/if}
         </tbody>
