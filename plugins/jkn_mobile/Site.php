@@ -39,6 +39,7 @@ class Site extends SiteModule
         $this->route('jknmobile/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile/antrian/add/(:str)', '_getAntreanAdd');
+        $this->route('jknmobile/antrian-alt/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile/antrian-ausy/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile/antrian-kci/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile/antrian/updatewaktu', '_getAntreanUpdateWaktu');
@@ -69,6 +70,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/operasi/pasien', 'getOperasiPasien');
         $this->route('jknmobile_v2/antrian/add', '_getAntreanAdd');
         $this->route('jknmobile_v2/antrian/add/(:str)', '_getAntreanAdd');
+        $this->route('jknmobile_v2/antrian-alt/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile_v2/antrian-ausy/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile_v2/antrian-kci/add/(:str)', '_getAntreanAddAusy');
         $this->route('jknmobile_v2/antrian/updatewaktu', '_getAntreanUpdateWaktu');
