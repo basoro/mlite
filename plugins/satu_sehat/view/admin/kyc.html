@@ -1,0 +1,16 @@
+  <script type="text/javascript">
+
+    const url = "{$url}";
+
+    function loadFormPopup() {
+      let params = `scrollbars=no,resizable=no,status=no,location=no,toolbar=no,menubar=no,width=0,height=0,left=100,top=100`;
+      window.open(url,"KYC",params)
+    }
+
+    function loadFormNewTab() {
+      window.open(url,"_blank")
+    }
+
+  </script>
+  <button class="btn btn-primary" onclick="loadFormPopup()">KYC Pasien Popup</button>
+  <button class="btn btn-danger" onclick="loadFormNewTab()">KYC Pasien New Tab</button>
