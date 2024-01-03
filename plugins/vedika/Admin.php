@@ -3570,7 +3570,11 @@ class Admin extends AdminModule
                                        "kondisi": "'.$kondisi.'",
                                        "use_manual": "'.$use_manual.'",
                                        "use_forcep": "'.$use_forcep.'",
-                                       "use_vacuum": "'.$use_vacuum.'"
+                                       "use_vacuum": "'.$use_vacuum.'", 
+                                       "shk_spesimen_ambil": "tidak", 
+                                       "shk_lokasi": "", 
+                                       "shk_alasan": "tidak-dapt", 
+                                       "shk_spesimen_dttm": ""
                                    }
                                ]
                            },
