@@ -3573,7 +3573,7 @@ class Admin extends AdminModule
                                        "use_vacuum": "'.$use_vacuum.'", 
                                        "shk_spesimen_ambil": "tidak", 
                                        "shk_lokasi": "", 
-                                       "shk_alasan": "tidak-dapt", 
+                                       "shk_alasan": "tidak-dapat", 
                                        "shk_spesimen_dttm": ""
                                    }
                                ]
