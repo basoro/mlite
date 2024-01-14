@@ -3,15 +3,15 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
     exit("mLITE requires at least <b>PHP 7.0</b>");
 }
 
-define('DBHOST', 'localhost');
+define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
 define('DBUSER', 'mlite_official');
 define('DBPASS', 'mlite_official');
 define('DBNAME', 'mlite_official');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/webapps');
-define('WEBAPPS_PATH', BASE_DIR . '/webapps');
+define('WEBAPPS_URL', 'http://mlite.loc/uploads');
+define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
 define('MULTI_APP', false);
@@ -47,6 +47,6 @@ define('BASIC_MODULES', serialize([
 ]));
 
 // Developer mode
-define('DEV_MODE', false);
+define('DEV_MODE', true);
 
 ?>
