@@ -2304,6 +2304,16 @@ class Admin extends AdminModule
         $this->notify('success', 'Mapping departemen telah disimpan');
       }
     }
+
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_departemen')
+        ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping departemen telah dihapus');
+      }
+    }
+
     redirect(url([ADMIN, 'satu_sehat', 'departemen']));
   }
 
@@ -2355,6 +2365,7 @@ class Admin extends AdminModule
         }
       }
     }
+
     if (isset($_POST['update'])) {
       $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
       $id_organisasi_satusehat = $mlite_satu_sehat_departemen['id_organisasi_satusehat'];
@@ -2375,6 +2386,16 @@ class Admin extends AdminModule
         $this->notify('success', 'Mapping lokasi telah disimpan');
       }
     }
+
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_lokasi')
+        ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping lokasi telah dihapus');
+      }
+    }
+
     redirect(url([ADMIN, 'satu_sehat', 'lokasi']));
   }
 
@@ -2408,6 +2429,16 @@ class Admin extends AdminModule
         }
       }
     }
+ 
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_mapping_praktisi')
+        ->where('kd_dokter', $_POST['dokter'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping praktisi telah dihapus ');
+      }
+    }
+
     redirect(url([ADMIN, 'satu_sehat', 'mappingpraktisi']));
   }
 
