@@ -317,7 +317,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getOrganizationByPart()
+  public function getOrganizationByPart($kode_departemen)
   {
 
     $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('dep_id', $kode_departemen)->oneArray();
@@ -560,10 +560,28 @@ class Admin extends AdminModule
 
     $response = curl_exec($curl);
 
+    if(json_decode($response)->issue[0]->code == 'duplicate') {
+      $curl = curl_init();
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $this->settings->get('satu_sehat.fhirurl').'/Location?organization='.$kode_organization,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+        CURLOPT_CUSTOMREQUEST => 'GET',
+      ));
+      
+      $response = curl_exec($curl);
+      
+    }
+
     curl_close($curl);
+
     return $response;
     // echo $response;
-    // exit();
   }
 
   public function getLocationByOrgId($kode_departemen)
@@ -2218,51 +2236,75 @@ class Admin extends AdminModule
 
   public function postSaveDepartemen()
   {
-    if (isset($_POST['simpan'])) {
-      $kode_departemen = $_POST['dep_id'];
-      $kode_organization = '';
-      if ($_POST['poli'] != '') {
-        $kode_departemen = $_POST['poli'];
-        $kode_organization = $_POST['id_organisasi_sub'];
-      }
-      $send_json = $this->getOrganization($kode_departemen, $kode_organization);
-      $id_organisasi_satusehat = json_decode($send_json)->id;
-      $issues = json_decode($send_json)->issue;
-      foreach ($issues as $value) {
-        $code_response = $value->code;
-        $err_response = $value->details->text;
-      }
+    if(isset($_POST['simpan'])) {
 
-      if ($id_organisasi_satusehat != '') {
+      $get_id_organisasi_satusehat = json_decode($this->getOrganization($_POST['dep_id']));
+      // $id_organisasi_satusehat = $get_id_organisasi_satusehat->id;
+
+      // echo json_encode($get_id_organisasi_satusehat, true);
+
+      if($get_id_organisasi_satusehat->issue[0]->code == 'duplicate') {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $this->fhirurl . '/Organization?partof=' . $this->organizationid,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+    
+        $response = curl_exec($curl);
+    
+        curl_close($curl);
+    
+        $get_id_organisasi_satusehat = json_decode($response);
+        $get_id_organisasi_satusehat = json_encode($get_id_organisasi_satusehat, true);
+        // echo $get_id_organisasi_satusehat;
+
+        foreach (json_decode($get_id_organisasi_satusehat)->entry as $item) {
+            if ($item->resource->identifier[0]->value == $_POST['dep_id']) {
+                $id_organisasi_satusehat = $item->resource->id;
+                echo $id_organisasi_satusehat;
+            }
+        }        
+  
+      }
+      
+      if($id_organisasi_satusehat !='') {
         $query = $this->db('mlite_satu_sehat_departemen')->save(
           [
-            'dep_id' => $kode_departemen,
+            'dep_id' => $_POST['dep_id'], 
             'id_organisasi_satusehat' => $id_organisasi_satusehat
           ]
-        );
-        if ($query) {
-          $this->notify('success', 'Mapping departemen telah disimpan ');
+        );  
+        if($query){
+          $this->notify('success', 'Mapping departemen telah disimpan');
         } else {
           $this->notify('danger', 'Mapping departemen gagal disimpan');
         }
-      } else {
-        echo "<script>alert('" . $err_response . "');document.location='" . url([ADMIN, 'satu_sehat', 'departemen']) . "'</script>";
       }
     }
+
     if (isset($_POST['update'])) {
+      $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])->oneArray();
       $query = $this->db('mlite_satu_sehat_departemen')
-        ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
+        ->where('id_organisasi_satusehat', $mlite_satu_sehat_departemen['id_organisasi_satusehat'])
         ->save(
           [
-            'dep_id' => $_POST['dep_id'],
-            'nama' => $_POST['nama']
+            'dep_id' => $_POST['dep_id']
           ]
         );
       if ($query) {
         $this->notify('success', 'Mapping departemen telah disimpan');
       }
-      redirect(url([ADMIN, 'satu_sehat', 'departemen']));
     }
+    redirect(url([ADMIN, 'satu_sehat', 'departemen']));
   }
 
   public function getLokasi()
@@ -2314,6 +2356,9 @@ class Admin extends AdminModule
       }
     }
     if (isset($_POST['update'])) {
+      $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
+      $id_organisasi_satusehat = $mlite_satu_sehat_departemen['id_organisasi_satusehat'];
+
       $query = $this->db('mlite_satu_sehat_lokasi')
         ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
         ->save(

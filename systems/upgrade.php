@@ -26,6 +26,8 @@ switch ($version) {
         // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         // Upgrade version
         $return = '4.0.1';
-}
+    case '4.0.1':
+        $return = '4.0.2';
+    }
 
 return $return;

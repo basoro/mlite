@@ -5,45 +5,22 @@
 </style>
 <h4>Mapping Departemen Satu Sehat</h4>
 <form action="{?=url(ADMIN.'/satu_sehat/savedepartemen')?}" method="POST">
+    <input type="hidden" name="id_organisasi_satusehat">
     <div class="panel panel-default">
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label>ID Organisasi</label>
-                        <input type="text" name="id_organisasi_sub" id="id_organisasi_sub" class="form-control" value="" placeholder="Optional" />
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="form-group">
                         <label>ID Departemen</label>
                         <select name="dep_id" id="dep_id" class="form-control" onchange="document.getElementById('nama_departemen').value=this.options[this.selectedIndex].text.split('- ')[1]">
-                            <option value="">Pilih Departemen</option>
                             {loop: $departemen}
-                            <option value="{$value.dep_id}">{$value.dep_id} - {$value.nama}</option>
+                            <option value="{$value.dep_id}">[{$value.dep_id}] - {$value.nama}</option>
                             {/loop}
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Nama Departemen</label>
-                        <input type="text" name="nama" id="nama_departemen" class="form-control" value="" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label>ID Poli</label>
-                        <select name="poli" id="poli" class="form-control" onchange="document.getElementById('nama_poli').value=this.options[this.selectedIndex].text">
-                            <option value="">Pilih Poliklinik</option>
-                            {loop: $poli}
-                            <option value="{$value.kd_poli}">{$value.nm_poli}</option>
-                            {/loop}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Nama Departemen</label>
-                        <input type="text" name="nama_poli" id="nama_poli" class="form-control" value="" />
+                        <input type="text" name="nama" id="nama_departemen" class="form-control" value="" required />
                     </div>
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">
@@ -71,6 +48,7 @@
         <tr class="mapping_departemen"
         data-dep_id="{$value.dep_id}"
         data-nama="{$value.nama}"
+        data-id_organisasi_satusehat="{$value.id_organisasi_satusehat}"
         >
             <td>{$value.dep_id}</td>
             <td>{$value.nama}</td>
@@ -83,11 +61,13 @@
 </div>
 </div>
 <script type="text/javascript">
-// $("#mapping_departemen").on("click", ".mapping_departemen", function(event){
-//     var dep_id  = $(this).attr("data-dep_id");
-//     var nama  = $(this).attr("data-nama");
-//     $('#dep_id').val(dep_id).change();
-//     $('input:text[name=nama]').val(nama);
-// });
+$("#mapping_departemen").on("click", ".mapping_departemen", function(event){
+    var dep_id  = $(this).attr("data-dep_id");
+    var nama  = $(this).attr("data-nama");
+    var id_organisasi_satusehat  = $(this).attr("data-id_organisasi_satusehat");
+    $('#dep_id').val(dep_id).change();
+    $('input:text[name=nama]').val(nama);
+    $('input:hidden[name=id_organisasi_satusehat]').val(id_organisasi_satusehat);
+});
 </script>
   
