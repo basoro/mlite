@@ -3,7 +3,7 @@ namespace Plugins\Dokter_Ralan;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
-use Systems\Lib\LZCompressor;
+use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
@@ -990,7 +990,7 @@ class Admin extends AdminModule
       } else if ($data['metaData']['code'] == 200) {
         $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
-        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         $spri = json_decode($decompress, true);
         //echo $spri['noSuratKontrol'];
 

@@ -4,7 +4,7 @@ namespace Plugins\JKN_Mobile;
 
 use Systems\SiteModule;
 use Systems\Lib\BpjsService;
-use Systems\Lib\LZCompressor;
+use LZCompressor\LZString;
 
 class Site extends SiteModule
 {
@@ -2093,7 +2093,7 @@ class Site extends SiteModule
         $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
-          $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         }
         if($json != null) {
           echo '{

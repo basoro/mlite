@@ -4,7 +4,7 @@ namespace Plugins\JKN_Mobile;
 
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
-use Systems\Lib\LZCompressor;
+use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
@@ -79,7 +79,7 @@ class Admin extends AdminModule
         $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
-          $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         }
         if($json != null) {
           echo '{
@@ -159,7 +159,7 @@ class Admin extends AdminModule
         $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if(!empty($stringDecrypt)) {
-          $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         }
         if($json != null) {
           echo '{
@@ -246,7 +246,7 @@ class Admin extends AdminModule
           $stringDecrypt = stringDecrypt($key, $json['response']);
           $decompress = '""';
           if(!empty($stringDecrypt)) {
-            $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+            $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
           }
           $response = [];
           if($json['metadata']['code'] == '200') {
