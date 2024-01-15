@@ -5,7 +5,7 @@ namespace Plugins\Vclaim;
 use Systems\AdminModule;
 use Systems\Lib\BpjsService;
 use Systems\Lib\QRCode;
-use Systems\Lib\LZCompressor;
+use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
@@ -185,7 +185,7 @@ class Admin extends AdminModule
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
       if (!empty($stringDecrypt)) {
-        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
       if ($data != null) {
         $data = '{
@@ -543,7 +543,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       $json = '{
@@ -580,7 +580,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -615,7 +615,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -650,7 +650,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -686,7 +686,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -721,7 +721,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -755,7 +755,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -790,7 +790,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -825,7 +825,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -860,7 +860,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -895,7 +895,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -930,7 +930,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -965,7 +965,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1002,7 +1002,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1054,7 +1054,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1090,7 +1090,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1125,7 +1125,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1160,7 +1160,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1195,7 +1195,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1230,7 +1230,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1265,7 +1265,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1369,7 +1369,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1415,7 +1415,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1461,7 +1461,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1496,7 +1496,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1531,7 +1531,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1565,7 +1565,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1599,7 +1599,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1634,7 +1634,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1683,7 +1683,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1718,7 +1718,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1753,7 +1753,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1788,7 +1788,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1823,7 +1823,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1864,7 +1864,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1905,7 +1905,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -1946,7 +1946,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2027,7 +2027,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2062,7 +2062,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2097,7 +2097,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2132,7 +2132,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2167,7 +2167,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2202,7 +2202,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2237,7 +2237,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2272,7 +2272,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2307,7 +2307,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -2378,7 +2378,7 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       //echo $spri['noSPRI'];
       $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
@@ -2538,7 +2538,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($data != null) {
       $data = '{
@@ -2571,7 +2571,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $data_rujukan['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($data_rujukan != null) {
       $data_rujukan = '{
@@ -2759,7 +2759,7 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       //echo $spri['noSuratKontrol'];
       $maping_dokter_dpjpvclaim = $this->db('maping_dokter_dpjpvclaim')->where('kd_dokter_bpjs', $_POST['dokter'])->oneArray();
@@ -2920,7 +2920,7 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       // echo $spri['rujukan']['noRujukan'];
 
@@ -3022,7 +3022,7 @@ class Admin extends AdminModule
     } else if ($data['metaData']['code'] == 200) {
       $stringDecrypt = stringDecrypt($key, $data['response']);
       $decompress = '""';
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       $spri = json_decode($decompress, true);
       echo $spri['noSRB'];
 
@@ -3072,7 +3072,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       echo '{
@@ -3132,7 +3132,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     if ($json != null) {
       $response_data_rujukan = json_decode($decompress, true);

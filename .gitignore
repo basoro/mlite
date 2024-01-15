@@ -5,7 +5,7 @@ admin/pla.php
 tmp
 websocket
 uploads
-vendor
+#vendor
 systems/data/database.sdb
 webapps
 backup/
