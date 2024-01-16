@@ -10,8 +10,8 @@ define('DBPASS', 'mlite_official');
 define('DBNAME', 'mlite_official');
 
 // URL Webapps
-define('WEBAPPS_URL', 'http://mlite.loc/webapps');
-define('WEBAPPS_PATH', BASE_DIR . '/webapps');
+define('WEBAPPS_URL', 'http://mlite.loc/uploads');
+define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
 define('MULTI_APP', false);

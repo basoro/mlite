@@ -9,6 +9,7 @@
               <th>Alamat</th>
               <th>Nomor Telepon</th>
               <th>Total</th>
+              <th>Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -20,6 +21,7 @@
               <td>{$value.alamat_pembeli}</td>
               <td>{$value.nomor_telepon}</td>
               <td>{$value.total}</td>
+              <td><a href="{?=url([ADMIN,'penjualan','order', $value.id])?}"><div class="btn btn-xs btn-info"><i class="fa fa-edit"></i></div></a></td>
             </tr>
             {/loop}
             {else}

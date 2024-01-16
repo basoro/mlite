@@ -21,7 +21,6 @@
                 </div>
                 <div class="col-md-12" style="padding-top: 20px;">
                     <input type="submit" name="simpan" class="btn btn-success" value="Simpan" />
-                    <input type="submit" name="update" class="btn btn-info" value="Update" />
                     <input type="submit" name="hapus" class="btn btn-danger" value="Hapus" />
                 </div>
             </div>
@@ -44,9 +43,9 @@
         <tr class="mapping_praktisi"
         data-kd_dokter="{$value.kd_dokter}"
         >
-            <td>{$value.practitioner_id}</td>
-            <td>{$value.nm_dokter}</td>
             <td>{$value.kd_dokter}</td>
+            <td>{$value.nm_dokter}</td>
+            <td>{$value.practitioner_id}</td>
         </tr>
         {/loop}
         </tbody>

@@ -899,6 +899,7 @@ class Admin extends AdminModule
     public function anyLayanan()
     {
       $layanan = $this->db('jns_perawatan')
+        ->where('total_byrdr', '<>', '0')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)

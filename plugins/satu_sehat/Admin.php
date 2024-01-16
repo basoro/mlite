@@ -3,7 +3,6 @@
 namespace Plugins\Satu_Sehat;
 
 use Systems\AdminModule;
-use Systems\Lib\BpjsService;
 
 class Admin extends AdminModule
 {
@@ -20,24 +19,16 @@ class Admin extends AdminModule
   public function navigation()
   {
     return [
-      'Index'   => 'index',
       'Kelola'   => 'manage',
+      'Referensi Praktisi'   => 'praktisi',
+      'Referensi Pasien'   => 'pasien',
+      'Mapping Departemen'   => 'departemen',
+      'Mapping Lokasi'   => 'lokasi',
+      'Mapping Praktisi'   => 'mappingpraktisi',
+      'Data Response'   => 'response',
+      'Verifikasi KYC' => 'kyc', 
       'Pengaturan'   => 'settings',
     ];
-  }
-
-  public function getIndex()
-  {
-    $sub_modules = [
-      ['name' => 'Referensi Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'praktisi']), 'icon' => 'heart', 'desc' => 'Referensi praktisi satu sehat'],
-      ['name' => 'Referensi Pasien', 'url' => url([ADMIN, 'satu_sehat', 'pasien']), 'icon' => 'heart', 'desc' => 'Referensi pasien satu sehat'],
-      ['name' => 'Mapping Departemen', 'url' => url([ADMIN, 'satu_sehat', 'departemen']), 'icon' => 'heart', 'desc' => 'Mapping departemen satu sehat'],
-      ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
-      ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappingpraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
-      ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
-      ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
-    ];
-    return $this->draw('index.html', ['sub_modules' => $sub_modules]);
   }
 
   public function getManage()
@@ -49,9 +40,10 @@ class Admin extends AdminModule
       ['name' => 'Mapping Lokasi', 'url' => url([ADMIN, 'satu_sehat', 'lokasi']), 'icon' => 'heart', 'desc' => 'Mapping lokasi satu sehat'],
       ['name' => 'Mapping Praktisi', 'url' => url([ADMIN, 'satu_sehat', 'mappingpraktisi']), 'icon' => 'heart', 'desc' => 'Mapping praktisi satu sehat'],
       ['name' => 'Data Response', 'url' => url([ADMIN, 'satu_sehat', 'response']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
+      ['name' => 'Verifikasi KYC', 'url' => url([ADMIN, 'satu_sehat', 'kyc']), 'icon' => 'heart', 'desc' => 'Data encounter satu sehat'],
       ['name' => 'Pengaturan', 'url' => url([ADMIN, 'satu_sehat', 'settings']), 'icon' => 'heart', 'desc' => 'Pengaturan satu sehat'],
     ];
-    return $this->draw('index.html', ['sub_modules' => $sub_modules]);
+    return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
   }
 
   public function getToken()
@@ -77,17 +69,6 @@ class Admin extends AdminModule
     return $response;
     // echo $response;    
     // exit();
-  }
-
-  public function getTest()
-  {
-    $pemeriksaan = $this->db('pemeriksaan_ralan')
-      ->where('no_rawat', '2023/11/09/000001')
-      ->limit(1)
-      ->desc('tgl_perawatan')
-      ->oneArray();
-    var_dump($pemeriksaan);
-    exit();
   }
 
   public function getPractitioner($nik_dokter)
@@ -336,7 +317,7 @@ class Admin extends AdminModule
     exit();
   }
 
-  public function getOrganizationByPart()
+  public function getOrganizationByPart($kode_departemen)
   {
 
     $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('dep_id', $kode_departemen)->oneArray();
@@ -579,10 +560,28 @@ class Admin extends AdminModule
 
     $response = curl_exec($curl);
 
+    if(json_decode($response)->issue[0]->code == 'duplicate') {
+      $curl = curl_init();
+      curl_setopt_array($curl, array(
+        CURLOPT_URL => $this->settings->get('satu_sehat.fhirurl').'/Location?organization='.$kode_organization,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer '.json_decode($this->getToken())->access_token),
+        CURLOPT_CUSTOMREQUEST => 'GET',
+      ));
+      
+      $response = curl_exec($curl);
+      
+    }
+
     curl_close($curl);
+
     return $response;
     // echo $response;
-    // exit();
   }
 
   public function getLocationByOrgId($kode_departemen)
@@ -2237,51 +2236,85 @@ class Admin extends AdminModule
 
   public function postSaveDepartemen()
   {
-    if (isset($_POST['simpan'])) {
-      $kode_departemen = $_POST['dep_id'];
-      $kode_organization = '';
-      if ($_POST['poli'] != '') {
-        $kode_departemen = $_POST['poli'];
-        $kode_organization = $_POST['id_organisasi_sub'];
-      }
-      $send_json = $this->getOrganization($kode_departemen, $kode_organization);
-      $id_organisasi_satusehat = json_decode($send_json)->id;
-      $issues = json_decode($send_json)->issue;
-      foreach ($issues as $value) {
-        $code_response = $value->code;
-        $err_response = $value->details->text;
-      }
+    if(isset($_POST['simpan'])) {
 
-      if ($id_organisasi_satusehat != '') {
+      $get_id_organisasi_satusehat = json_decode($this->getOrganization($_POST['dep_id']));
+      // $id_organisasi_satusehat = $get_id_organisasi_satusehat->id;
+
+      // echo json_encode($get_id_organisasi_satusehat, true);
+
+      if($get_id_organisasi_satusehat->issue[0]->code == 'duplicate') {
+
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+          CURLOPT_URL => $this->fhirurl . '/Organization?partof=' . $this->organizationid,
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => '',
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 0,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_HTTPHEADER => array('Content-Type: application/json', 'Authorization: Bearer ' . json_decode($this->getToken())->access_token),
+          CURLOPT_CUSTOMREQUEST => 'GET',
+        ));
+    
+        $response = curl_exec($curl);
+    
+        curl_close($curl);
+    
+        $get_id_organisasi_satusehat = json_decode($response);
+        $get_id_organisasi_satusehat = json_encode($get_id_organisasi_satusehat, true);
+        // echo $get_id_organisasi_satusehat;
+
+        foreach (json_decode($get_id_organisasi_satusehat)->entry as $item) {
+            if ($item->resource->identifier[0]->value == $_POST['dep_id']) {
+                $id_organisasi_satusehat = $item->resource->id;
+                echo $id_organisasi_satusehat;
+            }
+        }        
+  
+      }
+      
+      if($id_organisasi_satusehat !='') {
         $query = $this->db('mlite_satu_sehat_departemen')->save(
           [
-            'dep_id' => $kode_departemen,
+            'dep_id' => $_POST['dep_id'], 
             'id_organisasi_satusehat' => $id_organisasi_satusehat
           ]
-        );
-        if ($query) {
-          $this->notify('success', 'Mapping departemen telah disimpan ');
+        );  
+        if($query){
+          $this->notify('success', 'Mapping departemen telah disimpan');
         } else {
           $this->notify('danger', 'Mapping departemen gagal disimpan');
         }
-      } else {
-        echo "<script>alert('" . $err_response . "');document.location='" . url([ADMIN, 'satu_sehat', 'departemen']) . "'</script>";
       }
     }
+
     if (isset($_POST['update'])) {
+      $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])->oneArray();
       $query = $this->db('mlite_satu_sehat_departemen')
-        ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
+        ->where('id_organisasi_satusehat', $mlite_satu_sehat_departemen['id_organisasi_satusehat'])
         ->save(
           [
-            'dep_id' => $_POST['dep_id'],
-            'nama' => $_POST['nama']
+            'dep_id' => $_POST['dep_id']
           ]
         );
       if ($query) {
         $this->notify('success', 'Mapping departemen telah disimpan');
       }
-      redirect(url([ADMIN, 'satu_sehat', 'departemen']));
     }
+
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_departemen')
+        ->where('id_organisasi_satusehat', $_POST['id_organisasi_satusehat'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping departemen telah dihapus');
+      }
+    }
+
+    redirect(url([ADMIN, 'satu_sehat', 'departemen']));
   }
 
   public function getLokasi()
@@ -2332,7 +2365,11 @@ class Admin extends AdminModule
         }
       }
     }
+
     if (isset($_POST['update'])) {
+      $mlite_satu_sehat_departemen = $this->db('mlite_satu_sehat_departemen')->where('dep_id', $_POST['dep_id'])->oneArray();
+      $id_organisasi_satusehat = $mlite_satu_sehat_departemen['id_organisasi_satusehat'];
+
       $query = $this->db('mlite_satu_sehat_lokasi')
         ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
         ->save(
@@ -2349,6 +2386,16 @@ class Admin extends AdminModule
         $this->notify('success', 'Mapping lokasi telah disimpan');
       }
     }
+
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_lokasi')
+        ->where('id_lokasi_satusehat', $_POST['id_lokasi_satusehat'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping lokasi telah dihapus');
+      }
+    }
+
     redirect(url([ADMIN, 'satu_sehat', 'lokasi']));
   }
 
@@ -2382,6 +2429,16 @@ class Admin extends AdminModule
         }
       }
     }
+ 
+    if (isset($_POST['hapus'])) {
+      $query = $this->db('mlite_satu_sehat_mapping_praktisi')
+        ->where('kd_dokter', $_POST['dokter'])
+        ->delete();
+      if ($query) {
+        $this->notify('success', 'Mapping praktisi telah dihapus ');
+      }
+    }
+
     redirect(url([ADMIN, 'satu_sehat', 'mappingpraktisi']));
   }
 
@@ -2514,6 +2571,76 @@ class Admin extends AdminModule
     $DateTime = new \DateTime($waktu);
     $DateTime->modify($zonawaktu);
     return $DateTime->format("Y-m-d\TH:i:s");
+  }
+
+  public function getKyc()
+  {
+
+    $this->authurl = $this->settings->get('satu_sehat.authurl');
+    $this->fhirurl = $this->settings->get('satu_sehat.fhirurl');
+    $this->clientid = $this->settings->get('satu_sehat.clientid');
+    $this->secretkey = $this->settings->get('satu_sehat.secretkey');
+    $this->organizationid = $this->settings->get('satu_sehat.organizationid');
+
+    $client_id = $this->clientid;
+    $client_secret = $this->secretkey;
+    $auth_url = $this->authurl;
+    $api_url = 'https://api-satusehat.kemkes.go.id/kyc/v1/generate-url';
+    $environment = 'production';
+        
+    // nama petugas/operator Fasilitas Pelayanan Kesehatan (Fasyankes) yang akan melakukan validasi
+    $agent_name = $this->core->getUserInfo('fullname', null, true);
+    
+    // NIK petugas/operator Fasilitas Pelayanan Kesehatan (Fasyankes) yang akan melakukan validasi
+    $agent_nik = $this->core->getPegawaiInfo('no_ktp',  $this->core->getUserInfo('username', null, true));
+    
+    // auth to satusehat
+    $auth_result = $this->authenticateWithOAuth2($client_id, $client_secret, $auth_url);
+    
+    // Example usage
+    $kyc = new Kyc;
+    $json = $kyc->generateUrl($agent_name, $agent_nik , $auth_result, $api_url, $environment);
+    
+    $validation_web = json_decode($json, TRUE);
+
+    $url = $validation_web["data"]["url"];
+
+    return $this->draw('kyc.html', ['url' => $url]);
+  }
+
+  public function authenticateWithOAuth2($clientId, $clientSecret, $tokenUrl) {
+    
+    $curl = curl_init();
+    $params = [
+      'grant_type' => 'client_credentials',
+      'client_id' => $clientId,
+      'client_secret' => $clientSecret
+    ];
+    
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => "${tokenUrl}/accesstoken?grant_type=client_credentials",
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => http_build_query($params),
+      CURLOPT_HTTPHEADER => array(
+        'Content-Type: application/x-www-form-urlencoded'
+      ),
+    ));
+    
+    $response = curl_exec($curl);
+    
+    curl_close($curl);
+    // echo $response;
+    // Parse the response body
+    $data = json_decode($response, true);
+  
+      // Return the access token
+    return $data['access_token'];
   }
 
   private function _addHeaderFiles()

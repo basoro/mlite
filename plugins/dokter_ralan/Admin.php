@@ -3,7 +3,7 @@ namespace Plugins\Dokter_Ralan;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
-use Systems\Lib\LZCompressor;
+use LZCompressor\LZString;
 
 class Admin extends AdminModule
 {
@@ -990,7 +990,7 @@ class Admin extends AdminModule
       } else if ($data['metaData']['code'] == 200) {
         $stringDecrypt = stringDecrypt($key, $data['response']);
         $decompress = '""';
-        $decompress = LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         $spri = json_decode($decompress, true);
         //echo $spri['noSuratKontrol'];
 
@@ -1019,6 +1019,7 @@ class Admin extends AdminModule
     public function anyLayanan()
     {
       $layanan = $this->db('jns_perawatan')
+        ->where('total_byrdr', '<>', '0')
         ->where('status', '1')
         ->like('nm_perawatan', '%'.$_POST['layanan'].'%')
         ->limit(10)
