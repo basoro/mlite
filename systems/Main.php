@@ -26,14 +26,6 @@ abstract class Main
         $this->setSession();
         QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."", DBUSER, DBPASS);
 
-        $check_db = $this->db()->pdo()->query("SHOW TABLES LIKE 'mlite_modules'");
-        $check_db->execute();
-        $check_db = $check_db->fetch();
-
-        if(empty($check_db)) {
-            $this->freshInstall();
-        }
-
         if (!is_dir(WEBAPPS_PATH)) {
             mkdir(WEBAPPS_PATH, 0777);
         }
@@ -466,6 +458,67 @@ abstract class Main
         return $next_no_jurnal;
     }
 
+    public function setPrintHeader()
+    {
+        $header = '
+            <table width="100%">
+                <tr>
+                    <td width="120" align="center"><img src="'.url().'/'.$this->settings->get('settings.logo').'" height="75px"></td>
+                    <td width="100%" align="left">
+                        <span style="font-size:32px;">'.$this->settings->get('settings.nama_instansi').'</span><br>
+                        '.$this->settings->get('settings.alamat').' - 
+                        '.$this->settings->get('settings.kota').' - 
+                        '.$this->settings->get('settings.propinsi').'<br>
+                        Telepon: '.$this->settings->get('settings.nomor_telepon').' - 
+                        E-Mail: '.$this->settings->get('settings.email').'
+                    </td>
+                </tr>
+            </table>
+            <hr style="height:1px;margin:3px;">
+            <hr style="height:3px;margin:0;">
+        ';
+        return $header;
+    }
+
+    public function setPrintFooter()
+    {
+        $footer = '
+            <table width="100%">
+                <tr>
+                    <td width="33%">Dicetak tanggal {DATE j-m-Y}</td>
+                    <td width="33%" align="center">{PAGENO}/{nbpg}</td>
+                    <td width="33%" style="text-align: right;">'.$this->settings->get('settings.nama_instansi').'</td>
+                </tr>
+            </table>
+        ';
+        return $footer;
+    }
+
+    public function setPrintCss()
+    {
+        $css = '
+        * {
+          font-family: arial, sans-serif;
+        }
+        div, table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        .table td, .table th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        ';  
+        return $css;
+    }
+    
     public function loadModules()
     {
         if ($this->module == null) {
@@ -473,31 +526,4 @@ abstract class Main
         }
     }
 
-    private function freshInstall()
-    {
-
-        QueryWrapper::connect("mysql:host=".DBHOST.";port=".DBPORT.";dbname=".DBNAME."",DBUSER, DBPASS);
-
-        $pdo = QueryWrapper::pdo();
-
-        $core = $this;
-
-        $modules = unserialize(BASIC_MODULES);
-        foreach ($modules as $module) {
-            $file = MODULES.'/'.$module.'/Info.php';
-
-            if (file_exists($file)) {
-                $info = include($file);
-                if (isset($info['install'])) {
-                    $info['install']();
-                }
-            }
-        }
-
-        foreach ($modules as $order => $name) {
-            $core->db('mlite_modules')->save(['dir' => $name, 'sequence' => $order]);
-        }
-
-        redirect(url());
-    }
 }

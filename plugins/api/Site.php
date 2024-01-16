@@ -3,9 +3,9 @@
 namespace Plugins\Api;
 
 use Systems\SiteModule;
-use Systems\Lib\PHPMailer\PHPMailer;
-use Systems\Lib\PHPMailer\SMTP;
-use Systems\Lib\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class Site extends SiteModule
 {

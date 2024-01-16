@@ -2,7 +2,6 @@
 namespace Plugins\Pasien;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use Plugins\Pasien\DB_Wilayah;
 use Plugins\Icd\DB_ICD;
 
@@ -693,44 +692,10 @@ class Admin extends AdminModule
       FROM `pasien`
       WHERE (`no_rkm_medis` LIKE '%$cari%' OR `nm_pasien` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
       ");
+
+      $cetak = $this->db('mlite_temporary')->toArray();
+      return $this->draw('cetak.pasien.html', ['cetak' => $cetak]);
       exit();
-    }
-
-    public function getCetakPdf()
-    {
-      $tmp = $this->db('mlite_temporary')->toArray();
-      $logo = $this->settings->get('settings.logo');
-
-      $pdf = new PDF_MC_Table('L','mm','Legal');
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
-
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 345, 30);
-      $pdf->Line(10, 31, 345, 31);
-      $pdf->SetFont('Arial', 'B', 13);
-      $pdf->Text(10, 40, 'DATA PASIEN');
-      $pdf->Ln(34);
-      $pdf->SetFont('Arial', 'B', 11);
-      $pdf->SetWidths(array(20,65,35,25,25,70,25,30,40));
-      $pdf->Row(array('No. RM','Nama Pasien','No. KTP','J. Kelamin','Tgl. Lahir','Alamat','Tgl. Daftar','No. Telp','Email'));
-      $pdf->SetFont('Arial', '', 10);
-      foreach ($tmp as $hasil) {
-        $j_kelamin = 'Laki-Laki';
-        if($hasil['temp4'] == 'P') {
-          $j_kelamin = 'Perempuan';
-        }
-        $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3'],$j_kelamin,$hasil['temp6'],$hasil['temp8'],$hasil['temp13'],$hasil['temp14'],$hasil['temp33']));
-      }
-      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
     public function anyWilayah()
@@ -958,6 +923,26 @@ class Admin extends AdminModule
     protected function data_icd($table)
     {
         return new DB_ICD($table);
+    }
+
+    public function getCetakMpdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.pasien.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();      
     }
 
 }

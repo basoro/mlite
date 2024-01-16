@@ -4,9 +4,9 @@ namespace Plugins\Kasir_Rawat_Inap;
 use Systems\AdminModule;
 use Systems\Lib\QRCode;
 use Systems\Lib\Fpdf\PDF_MC_Table;
-use Systems\Lib\PHPMailer\PHPMailer;
-use Systems\Lib\PHPMailer\SMTP;
-use Systems\Lib\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
 
 class Admin extends AdminModule
 {
