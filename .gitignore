@@ -6,6 +6,7 @@ tmp
 websocket
 uploads
 #vendor
+__vendor
 systems/data/database.sdb
 webapps
 backup/
