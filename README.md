@@ -35,7 +35,7 @@ Pemasangan
 ----------
 
 ### Pemasangan menggunakan composer.
-1. Jalankan perintah composer untuk pemasangan paket utama dan independensi
+1. Install composer di server/PC dan jalankan perintah composer untuk pemasangan paket utama dan independensi
 
 ```
 $ composer create-project basoro/mlite
@@ -54,7 +54,7 @@ $ composer create-project basoro/mlite
 
 2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
 
-3. Jalankan perintah composer untuk pemasangan independensi
+3. Install composer di server/PC dan jalankan perintah composer untuk pemasangan independensi
 ```
 $ composer install
 ```
@@ -66,6 +66,13 @@ $ composer install
 6. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
 
 7. Silahkan login dengan Username: admin dan Password: admin
+
+#### Catatan:
+Untuk setiap kali update, silahkan jalankan perintah
+```
+$ composer update
+```
+Ini untuk menambahkan dependensi baru pada aplikasi
 
 
 ### Peringatan!
