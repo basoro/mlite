@@ -120,7 +120,7 @@
 		      {loop: $periksa_lab}
 		      <tr>
 		        <td>{$value.nomor}</td>
-		        <td colspan="6">{$value.nm_perawatan}</td>
+		        <td colspan="5">{$value.nm_perawatan}</td>
 		      </tr>
 		      {loop: $value.detail_periksa_lab as $data2}
 		      <tr>
@@ -154,11 +154,13 @@
 		</center>
 		</div>
 		<br><br><br>
-		<center>
-			<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
-			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-		</center>
+		<del>
+			<center>
+				<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+				<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+				<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+			</center>	
+		</del>
 		<!-- Modal -->
 	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
 	    <div class="modal-dialog">

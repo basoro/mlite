@@ -55,11 +55,11 @@
 		</table>
 		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
 		  <tr align="left" height='30px'>
-			<th width="20px">No</th>
-			<th with="400px">Item</th>
-			<th width="100px">Harga</th>
-			<th width="30px">Jumlah</th>
-			<th width="150px">Total</th>
+			<th>No</th>
+			<th>Item</th>
+			<th>Harga</th>
+			<th>Jumlah</th>
+			<th>Total</th>
 		  </tr>
 			{loop: $billing_besar_detail as $data}
 			<tr border='0', height='20px'>
@@ -103,11 +103,13 @@
 		</table></center>
 		</div>
 		<br><br><br>
-		<center>
-			<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
-			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-		</center>
+		<del>
+			<center>
+				<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+				<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+				<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+			</center>	
+		</del>
 
 		<!-- Modal -->
 	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">
@@ -120,7 +122,7 @@
 	        <div class="modal-body">
 		        <div class="form-floating number">
 							<label for="floatingPassword">Nomor</label>
-		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{$pasien.no_tlp}">
+		          <input type="text" name="number" class="form-control" id="number" placeholder="Nomor WhatsApp Tujuan" value="{$pembeli.nomor_telepon}">
 		        </div>
 		        <div class="form-floating message">
 							<label for="floatingPassword">Pesan</label>
@@ -146,11 +148,11 @@
 	        <div class="modal-body">
 		        <div class="form-floating number">
 							<label for="floatingPassword">Email</label>
-		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{$pasien.email}">
+		          <input type="text" name="email" class="form-control" id="email" placeholder="Email Tujuan" value="{$pembeli.email}">
 		        </div>
 		        <div class="form-floating message">
 							<label for="floatingPassword">Nama Pasien</label>
-		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{$pasien.nm_pasien}">
+		          <input type="text" name="receiver" class="form-control" id="receiver" placeholder="Nama Pasien" value="{$pembeli.nama_pembeli}">
 		        </div>
 	        </div>
 	        <div class="modal-footer">
@@ -167,7 +169,7 @@ function KirimEmail() {
 	var xhttp = new XMLHttpRequest();
 	var email = document.getElementById("email").value;
 	var receiver = document.getElementById("receiver").value;
-	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	var file = "{?=url()?}/uploads/invoices/{$billing.id_penjualan}.pdf";
 	xhttp.open("POST", "{?=url([ADMIN,'kasir_rawat_jalan','kirimemail'])?}", true);
 	xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 	xhttp.send("email=" + email + "&receiver=" + receiver + "&file=" + file);
@@ -179,7 +181,7 @@ function KirimWA() {
 	var number = document.getElementById("number").value;
 	var message = document.getElementById("message").value;
 	var tipe = 'pdf';
-	var file = "{?=url()?}/uploads/invoices/{$billing.kd_billing}.pdf";
+	var file = "{?=url()?}/uploads/invoices/{$billing.id_penjualan}.pdf";
 	console.log(number + " - " + message);
 	xhttp.onreadystatechange = function() {
 		if (this.readyState == 4 && this.status == 200) {

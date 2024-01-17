@@ -2,7 +2,6 @@
 namespace Plugins\Penjualan;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use Systems\Lib\QRCode;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
@@ -270,110 +269,8 @@ class Admin extends AdminModule
         }
 
         $pembeli = $this->db('mlite_penjualan')->where('id', $_GET['id_penjualan'])->oneArray();
-
-        /* Print as pdf */
-        $pdf = new PDF_MC_Table('P','mm','A4');
-        $pdf->AddPage();
-
-        $pdf->Image('../'.$settings['logo'], 10, 10, '18', '18', 'png');
-
-        //set font to arial, bold, 14pt
-        $pdf->SetFont('Arial','B',14);
-
-        //Cell(width , height , text , border , end line , [align] )
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['nama_instansi'],0,0);
-        $pdf->Cell(69 ,5,'INVOICE #'.$result['id_penjualan'],0,1);//end of line
-
-        //set font to arial, regular, 12pt
-        $pdf->SetFont('Arial','',12);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['alamat'],0,0);
-        $pdf->Cell(69 ,5,'',0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['kota'].' - '.$settings['propinsi'],0,0);
-        $pdf->Cell(25 ,5,'Tanggal',0,0);
-        $pdf->Cell(44 ,5,': '.$result['tanggal'],0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['nomor_telepon'],0,1);
-        // $pdf->Cell(25 ,5,'Faktur',0,0);
-        // $pdf->Cell(44 ,5,': '.$result['id_penjualan'],0,1);//end of line
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(100 ,5,$settings['email'],0,1);
-        // $pdf->Cell(25 ,5,'ID',0,0);
-        // $pdf->Cell(44 ,5,': '.$pembeli['id'],0,1);//end of line
-
-        //make a dummy empty cell as a vertical spacer
-        $pdf->Cell(189 ,10,'',0,1);//end of line
-
-        //billing address
-        $pdf->Cell(20 ,5,'Kepada :',0,0);//end of line
-        $pdf->SetFont('Arial','B',12);
-        $pdf->Cell(90 ,5,$pembeli['nama_pembeli'],0,1);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(90 ,5,$pembeli['alamat_pembeli'],0,1);
-
-        $pdf->Cell(20 ,5,'',0,0);
-        $pdf->Cell(90 ,5,$pembeli['nomor_telepon'],0,1);
-
-        //make a dummy empty cell as a vertical spacer
-        $pdf->Cell(189 ,10,'',0,1);//end of line
-
-        //invoice contents
-        $pdf->SetFont('Arial','B',12);
-
-        $pdf->Cell(10 ,7,'No',1,0);
-        $pdf->Cell(100 ,7,'Item',1,0);
-        $pdf->Cell(25 ,7,'Harga',1,0);
-        $pdf->Cell(25 ,7,'Jumlah',1,0);
-        $pdf->Cell(30 ,7,'Total',1,1);//end of line
-
-        $pdf->SetFont('Arial','',11);
-
-        //Numbers are right-aligned so we give 'R' after new line parameter
-        $no = 1;
-        foreach ($rows as $row) {
-            $pdf->Cell(10 ,5,$no++,1,0);
-            $pdf->Cell(100 ,5,$row['nama_barang'],1,0);
-            $pdf->Cell(25 ,5,$row['harga'],1,0, 'R');
-            $pdf->Cell(25 ,5,$row['jumlah'],1,0, 'C');
-            $pdf->Cell(30 ,5,number_format($row['harga'],2,',','.'),1,1,'R');//end of line    
-        }
-
-        $pdf->SetFont('Arial','B',14);
-
-        //summary
-        /*$pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Subtotal',0,0);
-        $pdf->Cell(44 ,5,'4,450',1,1,'R');//end of line
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Taxable',0,0);
-        $pdf->Cell(44 ,5,'0',1,1,'R');//end of line
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(25 ,5,'Tax Rate',0,0);
-        $pdf->Cell(44 ,5,'10%',1,1,'R');//end of line*/
-
-        $pdf->Cell(120 ,15,'',0,0);
-        $pdf->Cell(25 ,15,'Total',0,0);
-        $pdf->Cell(44 ,15,'Rp. '.number_format($total_penjualan,2,',','.'),0,0,'R');//end of line
-
-        $pdf->Cell(189 ,20,'',0,1);//end of line
-
-        $pdf->SetFont('Arial','',11);
-
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(69 ,10,$settings['kota'].', '.date('Y-m-d'),0,1);//end of line
-
+        
         $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
-        //$qr=QRCode::getMinimumQRCode('Petugas: '.$this->core->getUserInfo('fullname', null, true).'; Lokasi: '.UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf',QR_ERROR_CORRECT_LEVEL_L);
         $im=$qr->createImage(4,4);
         imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
         imagedestroy($im);
@@ -381,18 +278,43 @@ class Admin extends AdminModule
         $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
         $qrCode = "../../".ADMIN."/tmp/qrcode.png";
 
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(64, 5, $pdf->Image($image, $pdf->GetX(), $pdf->GetY(),30,30,'png'), 0, 0, 'C', false );
-        $pdf->Cell(189 ,32,'',0,1);//end of line
-        $pdf->Cell(120 ,5,'',0,0);
-        $pdf->Cell(69 ,5,$this->core->getUserInfo('fullname', null, true),0,1);//end of line
-
         if (file_exists(UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf')) {
           unlink(UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf');
         }
 
-        $pdf->Output('F', UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf', true);
-        // $pdf->Output();
+        $mpdf = new \Mpdf\Mpdf([
+          'mode' => 'utf-8',
+          'format' => 'A4', 
+          'orientation' => 'P'
+        ]);
+  
+        $css = '
+        <style>
+          del { 
+            display: none;
+          }
+          table {
+            padding-top: 1cm;
+            padding-bottom: 1cm;
+          }
+          td, th {
+            border-bottom: 1px solid #dddddd;
+            padding: 5px;
+          }        
+          tr:nth-child(even) {
+            background-color: #ffffff;
+          }
+        </style>
+        ';
+        
+        $url = url('admin/tmp/billing.besar.html');
+        $html = file_get_contents($url);
+        $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+        $mpdf->WriteHTML($css);
+        $mpdf->WriteHTML($html);
+    
+        // Output a PDF file save to server
+        $mpdf->Output(UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf','F');
 
         echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pembeli' => $pembeli, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
         break;

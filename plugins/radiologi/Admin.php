@@ -4,7 +4,6 @@ namespace Plugins\Radiologi;
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
 use Systems\Lib\QRCode;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\SMTP;
 use PHPMailer\PHPMailer\Exception;
@@ -487,93 +486,6 @@ class Admin extends AdminModule
         ->where('jam', $_GET['jam'])
         ->toArray();
 
-      $pdf = new PDF_MC_Table('P','mm','Legal');
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
-
-      $pdf->Image('../'.$this->settings->get('settings.logo'), 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 205, 30);
-      $pdf->Line(10, 31, 205, 31);
-
-      //make a dummy empty cell as a vertical spacer
-      $pdf->Cell(189 ,30,'',0,1);//end of line
-
-      //billing address
-      $pdf->SetFont('Arial','',12);
-      $pdf->Cell(45 ,6,'Nama',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['nm_pasien'],0,1);
-      $pdf->Cell(45 ,6,'Umur',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['umur'],0,1);
-      $pdf->Cell(45 ,6,'Poli/Ruangan',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['nm_poli'],0,1);
-      $pdf->Cell(45 ,6,'Dokter PJ',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pj_radiologi['nm_dokter'],0,1);
-      $pdf->Cell(45 ,6,'Dokter Pengirim',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$dokter_perujuk['nama'],0,1);
-      $pdf->Cell(45 ,6,'Tanggal',0,0);//end of line
-      $pdf->Cell(5 ,6,':',0,0);//end of line
-      $pdf->Cell(150 ,6,$pasien['tgl_registrasi'],0,1);
-
-      $pdf->SetXY(10, 85);
-      $pdf->SetFont('Arial','B',14);
-      $pdf->Cell(0, 4, 'Hasil Pemeriksaan Radiologi', 0, 1, 'C', false);
-
-      //make a dummy empty cell as a vertical spacer
-      $pdf->Cell(205 ,10,'',0,1);//end of line
-      $pdf->SetFont('Arial', '', 11);
-      $no_radiologi_pdf = 1;
-      $pdf->SetFont('Arial','B',13);
-      $pdf->Cell(45 ,4,'Pemeriksaan',0,0);//end of line
-      $pdf->Cell(5 ,4,':',0,0);//end of line
-      $pdf->SetFont('Arial', '', 11);
-      foreach ($rows_periksa_radiologi as $row) {
-        // $row['nomor'] = $no_radiologi_pdf++;
-        // $pdf->Cell(5 ,4,'- ',0,0);//end of line
-        $pdf->Cell(150, 4,$row['nm_perawatan'],0,1);//end of line
-      }
-
-      if($hasil_radiologi) {
-        $pdf->Cell(189 ,6,'',0,1);//end of line
-        $pdf->SetFont('Arial','B',13);
-        $pdf->Cell(45 ,4,'Interpretasi',0,0);//end of line
-        $pdf->Cell(5 ,4,':',0,0);//end of line
-        $pdf->SetFont('Arial', '', 11);
-      }
-
-      foreach ($hasil_radiologi as $row1) {
-        $pdf->MultiCell(150, 4,$row1['hasil'],0,1);//end of line
-      }
-
-      if($gambar_radiologi){
-        $pdf->Cell(189 ,6,'',0,1);//end of line
-        $pdf->SetFont('Arial','B',13);
-        $pdf->Cell(45 ,4,'Gambar',0,0);//end of line
-        $pdf->Cell(5 ,4,':',0,1);//end of line
-        $pdf->SetFont('Arial', '', 11);
-      }
-
-      foreach ($gambar_radiologi as $row2) {
-        $pdf->Cell(10 ,4,'',0,1);//end of line
-        $pdf->Cell(0, 4, $pdf->Image(WEBAPPS_PATH.'/radiologi/'.$row2['lokasi_gambar'], $pdf->GetX(), $pdf->GetY(),160,0,'png'), 0, 0, 'C', false);
-      }
-
-      $pdf->Cell(189 ,10,'',0,1);//end of line
-
-      $pdf->SetFont('Arial','',11);
-
       $qr=QRCode::getMinimumQRCode($this->core->getUserInfo('fullname', null, true),QR_ERROR_CORRECT_LEVEL_L);
       $im=$qr->createImage(4,4);
       imagepng($im,BASE_DIR.'/'.ADMIN.'/tmp/qrcode.png');
@@ -581,17 +493,10 @@ class Admin extends AdminModule
 
       $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
 
-      $pdf->Text(140,290,$settings['kota'].', '.date('Y-m-d'));//end of line
-      $pdf->Image($image, 140, 295, '30', '30', 'png');
-      $pdf->Text(140,330,'('.$this->core->getUserInfo('fullname', null, true).')');//end of line
-
       $filename = convertNorawat($dokter_perujuk['no_rawat']).'_'.$dokter_perujuk['kd_jenis_prw'].'_'.$dokter_perujuk['tgl_periksa'];
       if (file_exists(UPLOADS.'/radiologi/'.$filename.'.pdf')) {
         unlink(UPLOADS.'/radiologi/'.$filename.'.pdf');
       }
-
-      $pdf->Output('F', UPLOADS.'/radiologi/'.$filename.'.pdf', true);
-      //$pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
 
       echo $this->draw('cetakhasil.html', [
         'periksa_radiologi' => $periksa_radiologi,
@@ -606,6 +511,41 @@ class Admin extends AdminModule
         'no_rawat' => $_GET['no_rawat'],
         'wagateway' => $this->settings->get('wagateway')
       ]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4', 
+        'orientation' => 'P'
+      ]);
+
+      $css = '
+      <style>
+        del { 
+          display: none;
+        }
+        table {
+          padding-top: 1cm;
+          padding-bottom: 1cm;
+        }
+        td, th {
+          border-bottom: 1px solid #dddddd;
+          padding: 5px;
+        }        
+        tr:nth-child(even) {
+          background-color: #ffffff;
+        }
+      </style>
+      ';
+      
+      $url = url('admin/tmp/cetakhasil.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($css);
+      $mpdf->WriteHTML($html);
+  
+      // Output a PDF file save to server
+      $mpdf->Output(UPLOADS.'/radiologi/'.$filename.'.pdf','F');
+
       exit();
     }
 
