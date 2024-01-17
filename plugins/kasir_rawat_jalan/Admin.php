@@ -1055,7 +1055,7 @@ class Admin extends AdminModule
           unlink(UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf');
         }
 
-        $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
+        // $pdf->Output('F', UPLOADS.'/invoices/'.$result['kd_billing'].'.pdf', true);
         //$pdf->Output();
 
         echo $this->draw('billing.besar.html', ['wagateway' => $this->settings->get('wagateway'), 'billing' => $result, 'billing_besar_detail' => $result_detail, 'pasien' => $pasien, 'qrCode' => $qrCode, 'fullname' => $this->core->getUserInfo('fullname', null, true)]);
@@ -1139,6 +1139,42 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'kasir_rawat_jalan', 'javascript']), 'footer');
+    }
+
+    public function getPrintPdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'P'
+      ]);
+
+      $css = '
+      <style>
+        del { 
+          display: none;
+        }
+        table {
+          width: 100%;
+        }
+        td, th {
+          border-top: 1px solid #dddddd;
+          padding: 5px;
+        }        
+        tr:nth-child(even) {
+          background-color: #ffffff;
+        }
+      </style>
+      ';
+      
+      $url = url('admin/tmp/billing.besar.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($css);
+      $mpdf->WriteHTML($html);
+  
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();
     }
 
 }

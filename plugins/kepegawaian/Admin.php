@@ -3,7 +3,6 @@
 namespace Plugins\Kepegawaian;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -236,34 +235,28 @@ class Admin extends AdminModule
 
     public function getPrint()
     {
-      $pasien = $this->db('pegawai')->toArray();
-      $logo = $this->settings->get('settings.logo');
+      $pegawai = $this->db('pegawai')->toArray();
 
-      $pdf = new PDF_MC_Table();
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
+      echo $this->draw('cetak.pegawai.html', [
+        'pegawai' => $pegawai
+      ]);
 
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 200, 30);
-      $pdf->Line(10, 31, 200, 31);
-      $pdf->Text(10, 40, 'DATA PEGAWAI');
-      $pdf->Ln(34);
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->SetWidths(array(50,70,25,25,20));
-      $pdf->Row(array('Kode Pegawai','Nama Pegawai','Tempat Lahir', 'Tanggal Lahir', 'Status'));
-      foreach ($pasien as $hasil) {
-        $pdf->Row(array($hasil['nik'],$hasil['nama'],$hasil['tmp_lahir'],$hasil['tgl_lahir'],$hasil['stts_aktif']));
-      }
-      $pdf->Output('laporan_pegawai_'.date('Y-m-d').'.pdf','I');
-
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'P'
+      ]);
+  
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.pegawai.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+  
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();    
     }
 
     public function getCSS()

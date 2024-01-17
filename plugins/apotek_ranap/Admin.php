@@ -2,7 +2,6 @@
 namespace Plugins\Apotek_Ranap;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {
@@ -466,39 +465,34 @@ class Admin extends AdminModule
 
       }
 
-      $logo = $this->settings->get('settings.logo');
-      $pdf = new PDF_MC_Table('L','mm', array(100,50));
+      $tanggal = dateIndonesia(date('Y-m-d'));
+      $pasien = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
+      $no_rm = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+      echo $this->draw('cetak.etiket.html', [
+        'pasien' => $pasien, 
+        'no_rm' => $no_rm, 
+        'tanggal' => $tanggal, 
+        'settings' => $this->settings('settings'), 
+        'detail' => $detail_pemberian_obat
+      ]);
 
-      foreach($detail_pemberian_obat as $dpo){
-        $pdf->AddPage();
-        $pdf->SetAutoPageBreak(true, 10);
-        $pdf->SetTopMargin(10);
-        $pdf->SetLeftMargin(10);
-        $pdf->SetRightMargin(10);
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [100, 70], 
+        'margin_left' => 2,
+        'margin_right' => 2,
+        'margin_top' => 2,
+        'margin_bottom' => 2
+      ]);
 
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Text(10,7,'Instalasi Farmasi',0,1, 'C');
-        $pdf->Text(10, 10, $this->settings->get('settings.nama_instansi'));
-        $pdf->SetFont('Arial', '', 9);
-        $pdf->Text(10,14,'Email: '.$this->settings->get('settings.email').' - Telp: '.$this->settings->get('settings.nomor_telepon'),0,1);
-        $pdf->Line(10, 16, 90, 16);
-        $pdf->Line(10, 17, 90, 17);
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Text(64, 20, ''.dateIndonesia(date('Y-m-d')),0,1, 'L');
-        $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Text(10, 23, ''.$this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat))),0,1, 'C');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Text(10, 26, 'No. RM: '.$this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)),0,1, 'L');
-        $pdf->Text(40, 26, 'Kamar: '.$dpo['nm_bangsal'].' ('.$dpo['kd_kamar'].')',0,1);
-        $pdf->Text(15, 31, ''.$dpo['nama_brng'],0,1, 'L');
-        $pdf->Text(80, 31, '('.$dpo['jml'].')',0,1);
-        $pdf->Text(20, 34, ''.$dpo['aturan_pakai'],0,1, 'L');
-        $pdf->Text(20, 38, ''.$dpo['keterangan'],0,1, 'L');
-        $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Text(33, 47, 'SEMOGA LEKAS SEMBUH', 0, 1, 'C');
-      }
+      $url = url('admin/tmp/cetak.etiket.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-      $pdf->Output('etiket-obat-'.date('Y-m-d').'.pdf','I');
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+
       exit();
     }
 

@@ -1,0 +1,25 @@
+<br><br><br>
+<h3>Data Pasien Pegawai</h3>
+<table class="table" style="margin-top:2cm;" width="100%">
+    <thead>
+        <tr>
+        <th>Kode Pegawai</th>
+        <th>Nama Pegawai</th>
+        <th>Tempat Lahir</th>
+        <th>Tanggal Lahir</th>
+        <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {loop: $pegawai}
+        <tr>
+        <td>{$value.nik}</td>
+        <td>{$value.nama}</td>
+        <td>{$value.tmp_lahir}</td>
+        <td>{$value.tgl_lahir}</td>
+        <td>{$value.stts_aktif}</td>
+        </tr>
+        {/loop}
+    </tbody>
+</table>
+    
