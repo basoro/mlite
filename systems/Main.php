@@ -195,11 +195,14 @@ abstract class Main
     public function loginCheck()
     {
         if (isset($_SESSION['mlite_user']) && isset($_SESSION['token']) && isset($_SESSION['userAgent']) && isset($_SESSION['IPaddress'])) {
-            if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
-                return false;
-            }
-            if ($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
-                return false;
+            
+            if($this->settings->get('settings.keamanan') == 'ya') {
+                if ($_SESSION['IPaddress'] != $_SERVER['REMOTE_ADDR']) {
+                    return false;
+                }
+                if ($_SESSION['userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
+                    return false;
+                }
             }
 
             if (empty(parseURL(1))) {
@@ -515,6 +518,8 @@ abstract class Main
         tr:nth-child(even) {
           background-color: #dddddd;
         }
+        .right {
+            float: right;
         ';  
         return $css;
     }
