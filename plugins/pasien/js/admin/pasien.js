@@ -238,7 +238,8 @@ $("#form").on("click","#kartu", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-  window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  // window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:50%;height:50%;"><iframe src="' + baseURL + '/pasien/cetakkartu/' + no_rkm_medis + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
 });
 
 // ketika tombol cetak ditekan

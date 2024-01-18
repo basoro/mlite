@@ -445,12 +445,29 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getKartu()
+    public function getCetakKartu($no_rkm_medis)
     {
       $kartu['settings'] = $this->settings('settings');
-      $kartu['pasien'] = $this->db('pasien')->where('no_rkm_medis', $_GET['no_rkm_medis'])->oneArray();
+      $kartu['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
       $this->tpl->set('kartu', $this->tpl->noParse_array(htmlspecialchars_array($kartu)));
       echo $this->draw('kartu.html');
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [100, 70], 
+        'margin_left' => 4,
+        'margin_right' => 4,
+        'margin_top' => 4,
+        'margin_bottom' => 4
+      ]);
+
+      $url = url('admin/tmp/kartu.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($html);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+            
       exit();
     }
 
