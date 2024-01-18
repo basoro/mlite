@@ -134,7 +134,7 @@
 </div>
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
-  $("#btn_cetak_fpdf").click(function() {
+  $("#btn_cetak_pdf").click(function() {
     var baseURL = mlite.url + '/' + mlite.admin;
     var url    = baseURL + '/pasien/cetak?t=' + mlite.token;
     var cari = $('input:text[name=cari]').val();
