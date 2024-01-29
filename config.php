@@ -5,9 +5,9 @@ if (!version_compare(PHP_VERSION, '7.0.0', '>=')) {
 
 define('DBHOST', '127.0.0.1');
 define('DBPORT', '3306');
-define('DBUSER', 'mlite_official');
-define('DBPASS', 'mlite_official');
-define('DBNAME', 'mlite_official');
+define('DBUSER', 'mlite_coba');
+define('DBPASS', 'mlite_coba');
+define('DBNAME', 'mlite_coba');
 
 // URL Webapps
 define('WEBAPPS_URL', 'http://mlite.loc/uploads');
