@@ -60,6 +60,7 @@ $("#form").on("click", "#simpan", function(event){
   var nm_kel = $('#nm_kel').val();
   var kd_pj = $('select[name=kd_pj]').val();
   var no_peserta = $('input:text[name=no_peserta]').val();
+  var manual = $('#norm_manual').prop("checked") ? 1 : 0 ;
 
   var url = baseURL + '/pasien/save?t=' + mlite.token;
 
@@ -111,9 +112,10 @@ $("#form").on("click", "#simpan", function(event){
       nm_kec:nm_kec,
       nm_kel:nm_kel,
       kd_pj: kd_pj,
-      no_peserta: no_peserta
+      no_peserta: no_peserta,
+      manual: manual 
     } ,function(data) {
-      //alert(data);
+      // alert(data);
       var data = JSON.parse(data);
       if(data.status == 'success')
       {

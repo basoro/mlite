@@ -306,8 +306,13 @@ class Admin extends AdminModule
         $this->db('kelurahan')->save(['kd_kel' => $_POST['kd_kel'], 'nm_kel' => $_POST['nm_kel']]);
       }
 
+      $manual = $_POST['manual'];
+      unset($_POST['manual']);
+
       if (!$pasien) {
-        $_POST['no_rkm_medis'] = $this->core->setNoRM();
+        if($manual == '0') {
+          $_POST['no_rkm_medis'] = $this->core->setNoRM();
+        }
         $_POST['tmp_lahir'] = '-';
         $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $_POST['pekerjaanpj'] = '-';
@@ -327,7 +332,9 @@ class Admin extends AdminModule
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->save($_POST);
         if($this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray()) {
-          $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+          if($manual == '0') {
+            $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+          }
           $data['status'] = 'success';
           echo json_encode($data);
         } else {
@@ -930,6 +937,24 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
         $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
         $this->core->addJS(url([ADMIN, 'pasien', 'javascript']), 'footer');
+    }
+
+    public function getSettings()
+    {
+      $set_no_rkm_medis = $this->db('set_no_rkm_medis')->oneArray();
+      return $this->draw('settings.html', ['set_no_rkm_medis' => $set_no_rkm_medis]);
+    }
+
+    public function postSaveSettings()
+    {
+        $this->db()->pdo()->exec("DELETE FROM `set_no_rkm_medis`");
+        $set_no_rkm_medis = $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
+        if($set_no_rkm_medis) {
+          $this->notify('success', 'Pengaturan telah disimpan');
+        } else {
+          $this->notify('error', 'Pengaturan gagal disimpan');
+        }
+        redirect(url([ADMIN, 'pasien', 'settings']));
     }
 
     protected function data_wilayah($table)
