@@ -3,27 +3,17 @@
   table th {
     padding: 5px;
   }
+  del {
+    text-decoration: none !important;
+  }  
 </style>
-<script type="text/javascript">
-  function nWin() {
-    var w = window.open();
-    var html = $("#toNewWindow").html();
-
-      $(w.document.body).html(html);
-      w.print();
-      w.close();
-  }
-
-  $(function() {
-      $("a#print").click(nWin);
-  });
-</script>
-<div class="modal-header">
+<del>
+  <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
     <h4 class="modal-title">Riwayat Perawatan</h4>
-</div>
+  </div>
+</del>
 <div class="modal-body">
-  <div id="toNewWindow">
   <h4>Data Riwayat Perawatan Pasien</h4>
   <div class="table table-responsive">
     <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
@@ -160,7 +150,7 @@
              <tr>
                <td valign="top" width="100px">{$data.kode}</td>
                <td valign="top">{$data.deskripsi_panjang}</td>
-               <td valign="top" width="10100pxpx">{$data.prioritas}</td>
+               <td valign="top" width="100px">{$data.prioritas}</td>
              </tr>
              {/loop}
           </table>
@@ -174,19 +164,19 @@
           <table width="100%" border="1" align="center" cellpadding="3px" cellspacing="0" class="tbl_form">
             {if: $value.pemeriksaan_ralan}
              <tr align="center">
-                <td valign="top" width="14%" bgcolor="#eee">Unit</td>
-                <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
-                <td valign="top" width="6%" bgcolor="#eee">Jam</td>
-                <td valign="top" width="3%" bgcolor="#eee">Suhu(C)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Tensi(mmHg)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Nadi(/menit)</td>
-                <td valign="top" width="9%" bgcolor="#eee">RR(/menit)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
-                <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
-                <td valign="top" width="9%" bgcolor="#eee">SPO2</td>
-                <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
-                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
+                <td valign="top" bgcolor="#eee">Unit</td>
+                <td valign="top" bgcolor="#eee">Tanggal</td>
+                <td valign="top" bgcolor="#eee">Jam</td>
+                <td valign="top" bgcolor="#eee">Suhu(C)</td>
+                <td valign="top" bgcolor="#eee">Tensi(mmHg)</td>
+                <td valign="top" bgcolor="#eee">Nadi(/menit)</td>
+                <td valign="top" bgcolor="#eee">RR(/menit)</td>
+                <td valign="top" bgcolor="#eee">Tinggi(Cm)</td>
+                <td valign="top" bgcolor="#eee">Berat(Kg)</td>
+                <td valign="top" bgcolor="#eee">GCS(E,V,M)</td>
+                <td valign="top" bgcolor="#eee">SPO2</td>
+                <td valign="top" bgcolor="#eee">Alergi</td>
+                <td valign="top" bgcolor="#eee">Kesadaran</td>
              </tr>
              {loop: $value.pemeriksaan_ralan as $data}
                <tr>
@@ -226,19 +216,19 @@
              {/if}
              {if: $value.pemeriksaan_ranap}
              <tr align="center">
-                <td valign="top" width="14%" bgcolor="#eee">Unit</td>
-                <td valign="top" width="14%" bgcolor="#eee">Tanggal</td>
-                <td valign="top" width="6%" bgcolor="#eee">Jam</td>
-                <td valign="top" width="3%" bgcolor="#eee">Suhu(C)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Tensi(mmHg)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Nadi(/menit)</td>
-                <td valign="top" width="9%" bgcolor="#eee">RR(/menit)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Tinggi(Cm)</td>
-                <td valign="top" width="9%" bgcolor="#eee">Berat(Kg)</td>
-                <td valign="top" width="9%" bgcolor="#eee">GCS(E,V,M)</td>
-                <td valign="top" width="9%" bgcolor="#eee">SPO2</td>
-                <td valign="top" width="9%" bgcolor="#eee">Alergi</td>
-                <td valign="top" width="9%" bgcolor="#eee">Kesadaran</td>
+                <td valign="top" bgcolor="#eee">Unit</td>
+                <td valign="top" bgcolor="#eee">Tanggal</td>
+                <td valign="top" bgcolor="#eee">Jam</td>
+                <td valign="top" bgcolor="#eee">Suhu(C)</td>
+                <td valign="top" bgcolor="#eee">Tensi(mmHg)</td>
+                <td valign="top" bgcolor="#eee">Nadi(/menit)</td>
+                <td valign="top" bgcolor="#eee">RR(/menit)</td>
+                <td valign="top" bgcolor="#eee">Tinggi(Cm)</td>
+                <td valign="top" bgcolor="#eee">Berat(Kg)</td>
+                <td valign="top" bgcolor="#eee">GCS(E,V,M)</td>
+                <td valign="top" bgcolor="#eee">SPO2</td>
+                <td valign="top" bgcolor="#eee">Alergi</td>
+                <td valign="top" bgcolor="#eee">Kesadaran</td>
              </tr>
              {loop: $value.pemeriksaan_ranap as $data}
                <tr>
@@ -741,9 +731,10 @@
     <br>
     {/loop}
   </div>
-  </div>
 </div>
-<div class="modal-footer">
-    <a class="btn btn-danger" href="javascript:;" id="print">Cetak</a>
+<del>
+  <div class="modal-footer">
+    <a class="btn btn-danger" href="{?=url([ADMIN,'pasien','cetakriwayatmpdf'])?}" target="_blank">Cetak</a>
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
-</div>
+  </div>
+</del>

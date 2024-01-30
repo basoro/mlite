@@ -987,4 +987,45 @@ class Admin extends AdminModule
       exit();      
     }
 
+    public function getCetakRiwayatMpdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $css = '
+      <style>
+        del { 
+          display: none;
+        }
+        table {
+          padding-top: 1cm;
+          padding-bottom: 1cm;
+          font-size: 10px;
+        }
+        td, th {
+          border-bottom: 1px solid #dddddd;
+          padding: 5px;
+        }        
+        tr:nth-child(even) {
+          background-color: #ffffff;
+        }
+      </style>
+      ';
+
+      // $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      // $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/riwayat.perawatan.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($css);
+      $mpdf->WriteHTML($html);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();      
+    }    
+
 }
