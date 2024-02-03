@@ -89,7 +89,7 @@ class Admin extends Main
                     $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
                 } else {
                     http_response_code(404);
-                    $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+                    $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
                     $details['content'] = null;
                 }
 
@@ -198,7 +198,7 @@ class Admin extends Main
             return call_user_func_array([$this->module->{$name}, $method], array_values($params));
         }
 
-        $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+        $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
         return false;
     }
 
