@@ -902,9 +902,6 @@ ALTER TABLE `mlite_pengaduan_detail`
 ALTER TABLE `mlite_rekeningtahun`
   ADD CONSTRAINT `mlite_rekeningtahun_ibfk_1` FOREIGN KEY (`kd_rek`) REFERENCES `mlite_rekening` (`kd_rek`) ON UPDATE CASCADE;
 
-ALTER TABLE `mlite_satu_sehat_departemen`
-  ADD CONSTRAINT `mlite_satu_sehat_departemen_ibfk_1` FOREIGN KEY (`dep_id`) REFERENCES `departemen` (`dep_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
 ALTER TABLE `mlite_satu_sehat_lokasi`
   ADD CONSTRAINT `mlite_satu_sehat_lokasi_ibfk_2` FOREIGN KEY (`id_organisasi_satusehat`) REFERENCES `mlite_satu_sehat_departemen` (`id_organisasi_satusehat`) ON DELETE CASCADE ON UPDATE CASCADE;
 
