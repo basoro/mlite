@@ -253,14 +253,10 @@ class Admin extends Main
 
                 // ... and block if reached maximum attempts
                 if ($attempt['attempts'] % 3 == 0) {
-                    if($this->settings->get('settings.keamanan') == 'ya') {
-                        $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
-                        $attempt['expires'] = strtotime("+10 minutes");
+                    $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
+                    $attempt['expires'] = strtotime("+10 minutes");
 
-                        $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
-                    } else {
-                    $this->setNotify('failure', 'Anda mencoba login berkali-kali. Pastikan username dan password anda sesuai.');                    
-                    }
+                    $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
                 } else {
                     $this->setNotify('failure', 'Username atau password salah!');
                 }
