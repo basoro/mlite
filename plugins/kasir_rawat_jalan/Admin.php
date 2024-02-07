@@ -443,7 +443,6 @@ class Admin extends AdminModule
       }
 
       $rows_pemberian_obat = $this->db('detail_pemberian_obat')
-      ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
       ->where('detail_pemberian_obat.no_rawat', $_POST['no_rawat'])
       ->where('detail_pemberian_obat.status', 'Ralan')
       ->toArray();
@@ -453,6 +452,8 @@ class Admin extends AdminModule
       $no_obat = 1;
       foreach ($rows_pemberian_obat as $row) {
         $row['nomor'] = $no_obat++;
+        $databarang = $this->db('databarang')->where('kode_brng', $row['kode_brng'])->oneArray();
+        $row['nama_brng'] = $databarang['nama_brng'];
         $jumlah_total_obat += floatval($row['total']);
         $detail_pemberian_obat[] = $row;
       }
