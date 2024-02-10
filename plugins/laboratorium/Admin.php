@@ -423,6 +423,7 @@ class Admin extends AdminModule
         ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
         ->where('no_rawat', $_GET['no_rawat'])
         ->oneArray();
+      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_GET['no_rawat'])->oneArray();
       $dokter_perujuk = $this->db('periksa_lab')
         ->join('pegawai', 'pegawai.nik=periksa_lab.dokter_perujuk')
         ->where('no_rawat', $_GET['no_rawat'])
@@ -473,6 +474,7 @@ class Admin extends AdminModule
         'pj_lab' => $pj_lab['nm_dokter'],
         'dokter_perujuk' => $dokter_perujuk['nama'],
         'pasien' => $pasien,
+        'reg_periksa' => $reg_periksa, 
         'filename' => $filename,
         'no_rawat' => $_GET['no_rawat'],
         'wagateway' => $this->settings->get('wagateway')
@@ -739,7 +741,10 @@ class Admin extends AdminModule
         $periksa_lab[] = $row;
       }
 
-      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium]);
+      $pasien = $this->db('pasien')->where('no_rkm_medis', $this->core->getRegPeriksaInfo('no_rkm_medis', $_POST['no_rawat']))->oneArray();
+      $reg_periksa = $this->db('reg_periksa')->where('no_rawat', $_POST['no_rawat'])->oneArray();
+      
+      echo $this->draw('rincian.html', ['periksa_lab' => $periksa_lab, 'no_rawat' => $_POST['no_rawat'], 'laboratorium' => $laboratorium, 'pasien' => $pasien, 'reg_periksa' => $reg_periksa]);
       exit();
     }
 
