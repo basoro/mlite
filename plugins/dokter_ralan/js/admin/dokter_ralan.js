@@ -1370,3 +1370,20 @@ $('a[href="#resume"]').click(function(event){
   }).modal();
   return false;
 });
+
+$('a[href="#medisRalan"]').click(function(event){
+  var baseURL = mlite.url + '/' + mlite.admin;
+  event.preventDefault();
+  var no_rawat = $(this).attr("data-no_rawat").replace(/\//g, '');
+
+  var loadURL =  baseURL + '/dokter_ralan/medisralan/' + no_rawat + '?t=' + mlite.token;
+
+  var modal = $('#medisRalan');
+  var modalContent = $('#medisRalan .modal-content');
+
+  modal.off('show.bs.modal');
+  modal.on('show.bs.modal', function () {
+      modalContent.load(loadURL);
+  }).modal();
+  return false;
+});

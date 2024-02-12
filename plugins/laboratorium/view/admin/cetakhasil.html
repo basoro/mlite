@@ -127,7 +127,12 @@
 		        <td></td>
 		        <td>{$data2.Pemeriksaan}</td>
 		        <td>{$data2.nilai}</td>
-		        <td>{$data2.nilai_rujukan}</td>
+		        <td>
+					{if: $pasien.jk == 'L' && $reg_periksa.umurdaftar < '16'}{$data2.nilai_rujukan_la}{/if}
+					{if: $pasien.jk == 'L' && $reg_periksa.umurdaftar >= '16'}{$data2.nilai_rujukan_ld}{/if}
+					{if: $pasien.jk == 'P' && $reg_periksa.umurdaftar < '16'}{$data2.nilai_rujukan_pa}{/if}
+					{if: $pasien.jk == 'P' && $reg_periksa.umurdaftar >= '16'}{$data2.nilai_rujukan_pd}{/if}		  
+				</td>
 		        <td>{$data2.satuan}</td>
 		        <td>{?=nl2br($data2.keterangan)?}</td>
 		      </tr>

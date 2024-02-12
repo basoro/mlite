@@ -140,9 +140,9 @@ class Templates
 
             ob_start();
             include($tmpFile);
-            if (!DEV_MODE) {
-                unlink($tmpFile);
-            }
+            // if (!DEV_MODE) {
+            //     unlink($tmpFile);
+            // }
             return ob_get_clean();
         }
     }
