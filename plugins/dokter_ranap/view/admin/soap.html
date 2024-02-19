@@ -84,6 +84,7 @@
       <tr>
         <td>
           <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$value.no_rawat}"
               data-tgl_perawatan="{$value.tgl_perawatan}"
@@ -113,6 +114,7 @@
               data-jam_rawat="{$value.jam_rawat}"
               disabled
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+              {/if}
           </div>
         </td>
         <th colspan="2">Plan</th>
@@ -171,6 +173,7 @@
       <tr>
         <td>
           <div class="">
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"
@@ -197,6 +200,7 @@
               data-tgl_perawatan="{$data.tgl_perawatan}"
               data-jam_rawat="{$data.jam_rawat}"
               ><span class="fa fa-trash"></span><span class="hidden-xs"> Hapus</span></button>
+              {/if}
           </div>
         </td>
         <th colspan="2">Plan</th>
