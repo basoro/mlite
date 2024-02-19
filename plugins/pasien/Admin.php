@@ -1033,4 +1033,16 @@ class Admin extends AdminModule
       exit();      
     }    
 
+    public function getExcel()
+    {
+      $file = "data.pasien.xls";
+      $html = file_get_contents(url('admin/tmp/cetak.pasien.html'));
+      header("Content-type: application/vnd-ms-excel");
+      header("Content-Disposition: attachment; filename=$file");
+      echo "<!DOCTYPE html><html><head></head><body>";
+      echo $html;
+      echo "</body></html>";
+      exit();
+    }
+
 }

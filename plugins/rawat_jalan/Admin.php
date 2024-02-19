@@ -1354,6 +1354,18 @@ class Admin extends AdminModule
       exit();      
     }
 
+    public function getExcel()
+    {
+      $file = "data.pasien.rawat.jalan.xls";
+      $html = file_get_contents(url('admin/tmp/cetak.rawat_jalan.html'));
+      header("Content-type: application/vnd-ms-excel");
+      header("Content-Disposition: attachment; filename=$file");
+      echo "<!DOCTYPE html><html><head></head><body>";
+      echo $html;
+      echo "</body></html>";
+      exit();
+    }
+    
     public function postObatKronis()
     {
       if (isset($_POST['no_rawat']) && $_POST['no_rawat'] !='') {
