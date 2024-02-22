@@ -18,10 +18,10 @@
         <td>{$value.temp3}</td>
         <td>{$value.temp2}</td>
         <td>{$value.temp1}</td>
+        <td>{?=$this->core->getPasienInfo('nm_pasien', $value.temp6)?}</td>
         <td>{$value.temp6}</td>
-        <td>{$value.temp6}</td>
-        <td>{$value.temp5}</td>
-        <td>{$value.temp15}</td>
+        <td>{?=$this->core->getDokterInfo('nm_dokter', $value.temp5)?}</td>
+        <td>{?=$this->core->getPenjabInfo('png_jawab', $value.temp15)?}</td>
         </tr>
         {/loop}
     </tbody>
