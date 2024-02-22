@@ -559,7 +559,7 @@ class Admin extends AdminModule
       $im = $qr->createImage(4, 4);
       imagepng($im, BASE_DIR .'/'.ADMIN.'/tmp/qrcode.png');
       imagedestroy($im);
-     = "../../".ADMIN."/tmp/qrcode.png";
+      $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
       $pasien = $this->db('reg_periksa')
         ->join('pasien', 'pasien.no_rkm_medis=reg_periksa.no_rkm_medis')
