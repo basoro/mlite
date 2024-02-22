@@ -290,7 +290,7 @@ class Site extends SiteModule
         imagedestroy($im);
 
         $image = BASE_DIR."/tmp/qrcode.png";
-        $qrCode = "../../tmp/qrcode.png";
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
         $this->tpl->set('billing_mlite_detail', $result_detail);
         $this->tpl->set('billing_mlite', $billing_result);
@@ -625,7 +625,7 @@ class Site extends SiteModule
         imagedestroy($im);
 
         $image = BASE_DIR."/tmp/qrcode.png";
-        $qrCode = "../../tmp/qrcode.png";
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
         $this->tpl->set('billing_mlite_detail', $result_detail);
         $this->tpl->set('billing_mlite', $billing_result);

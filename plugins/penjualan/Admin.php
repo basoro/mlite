@@ -276,7 +276,7 @@ class Admin extends AdminModule
         imagedestroy($im);
 
         $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-        $qrCode = "../../".ADMIN."/tmp/qrcode.png";
+        $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
         if (file_exists(UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf')) {
           unlink(UPLOADS.'/invoices/'.$result['id_penjualan'].'.pdf');

@@ -526,7 +526,7 @@ class Admin extends AdminModule
     imagedestroy($im);
 
     $image = BASE_DIR."/".ADMIN."/tmp/qrcode.png";
-    $qrCode = "../../../".ADMIN."/tmp/qrcode.png";
+    $qrCode = url()."/".ADMIN."/tmp/qrcode.png";
 
     $this->tpl->set('billing_mlite_detail', $result_detail);
     $this->tpl->set('billing_mlite', $billing_result);
