@@ -868,6 +868,9 @@ class Admin extends AdminModule
         $sql_query = "select * from pasien where ";
         $sql_query .= "tgl_daftar between ? and ? and ";
         $sql_query .= "(no_rkm_medis like ? or nm_pasien like ?) ";
+        if($penjab) {
+          $sql_query .= "and kd_pj = '$penjab' ";
+        }
 
         $total = $this->db()->pdo()->prepare($sql_query);
         $total->execute([$start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%']);
@@ -909,7 +912,7 @@ class Admin extends AdminModule
               </ul>
               </div>
               ';
-              // $row['aksi'] = '<a href="#" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$row['no_rkm_medis'].'</a>';
+              // $row['aksi'] = '<a href="#" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$penjab.'</a>';
               $data[] = $row;
             }
         }
