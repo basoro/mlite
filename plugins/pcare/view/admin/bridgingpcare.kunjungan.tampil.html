@@ -35,7 +35,11 @@
     {loop: $bridging_pcare}
     <tr>
       <td>{$value.tgl_kunjungan}</td>
-      <td>{$value.nomor_kunjungan} <a href="#" class="btn btn-xs btn-info bridgingpcaretindakan" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-send"></span></a> <a href="#" class="btn btn-xs btn-primary bridgingpcareobat" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-medkit"></span></a></td>
+      <td>{$value.nomor_kunjungan} 
+        <a href="#" class="btn btn-xs btn-info bridgingpcaretindakan" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-send"></span></a> 
+        <a href="#" class="btn btn-xs btn-primary bridgingpcareobat" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-medkit"></span></a>
+        <a href="#" class="btn btn-xs btn-info bridgingpcaredeletekunjungan" data-nomor_kunjungan="{$value.nomor_kunjungan}"><span class="fa fa-send"></span></a>
+      </td>
       <td>{$value.no_rawat}</td>
       <td>{$value.no_rkm_medis}</td>
       <td>{$value.nm_pasien}</td>
@@ -100,5 +104,21 @@
         modalContent.load(loadURL);
     }).modal();
     return false;
+  });
+</script>
+<script type="text/javascript">
+  $("#tindakanobat").on("click",".bridgingpcaredeletekunjungan", function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var nomor_kunjungan = $(this).attr("data-nomor_kunjungan");
+    var loadURL =  baseURL + '/pcare/delkunjungan/' + nomor_kunjungan + '?t=' + mlite.token;
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+         if (this.readyState == 4 && this.status == 200) {
+             alert(this.responseText);
+         }
+    };
+    xhttp.open("GET", "{?=url([ADMIN,'pcare','delkunjungan',"+nomor_kunjungan+"])?}", true);
+    xhttp.send();
   });
 </script>
