@@ -364,8 +364,8 @@ CREATE TABLE IF NOT EXISTS `mlite_satu_sehat_response` (
   `id_observation_ttvberat` varchar(50) DEFAULT NULL,
   `id_observation_ttvperut` varchar(50) DEFAULT NULL,
   `id_observation_ttvtensi` varchar(50) DEFAULT NULL,
-  `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL
-  `id_procedure` varchar(50) DEFAULT NULL
+  `id_observation_ttvkesadaran` varchar(50) DEFAULT NULL, 
+  `id_procedure` varchar(50) DEFAULT NULL, 
   `id_composition` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
