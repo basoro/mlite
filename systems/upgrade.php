@@ -19,6 +19,11 @@ function rrmdir($dir)
 
 switch ($version) {
     case '4.0.0':
+        // $this->core->db()->pdo()->exec("CREATE TABLE IF NOT EXISTS `mlite_test` (
+        //         `id` int(11) NOT NULL AUTO_INCREMENT,
+        //         `name` varchar(30) DEFAULT NULL,
+        //         PRIMARY KEY (`id`) USING BTREE
+        // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
         $return = '4.0.1';
     case '4.0.1':
         $return = '4.0.2';

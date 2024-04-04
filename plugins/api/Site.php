@@ -38,11 +38,14 @@ class Site extends SiteModule
             case "signin":
               $no_rkm_medis = trim($_REQUEST['no_rkm_medis']);
               $no_ktp = trim($_REQUEST['no_ktp']);
+              $retensi_pasien = $this->db('retensi_pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
               $pasien = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->where('no_ktp', $no_ktp)->oneArray();
-              if($pasien) {
+              if($retensi_pasien) {
+                $data['state'] = 'retensi';
+              } else if($pasien) {
                 $data['state'] = 'valid';
                 $data['no_rkm_medis'] = $pasien['no_rkm_medis'];
-              } else {
+              } else  { 
                 $data['state'] = 'invalid';
               }
               echo json_encode($data);
@@ -1059,6 +1062,22 @@ class Site extends SiteModule
                 $results[] = $row;
               }
               echo json_encode($results, JSON_PRETTY_PRINT);
+            break;
+            case "simpanretensirekammedik":
+              $send_data = array();
+              unset($_POST);
+              $_POST['no_rkm_medis'] =  trim($_REQUEST['no_rkm_medis']);
+              $_POST['terakhir_daftar'] = date('Y-m-d');
+              $_POST['tgl_retensi'] = date('Y-m-d');
+              $_POST['lokasi_pdf'] = '-';
+
+              $simpan = $this->db('retensi_pasien')->save($_POST);
+              if($simpan) {
+                $data['state'] = 'success';
+              } else {
+                $data['state'] = 'error';
+              }
+              echo json_encode($data);
             break;
             default:
               echo 'Default';
