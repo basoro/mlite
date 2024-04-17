@@ -184,8 +184,8 @@ class Admin extends AdminModule
 
     public function postValidasiResep()
     {
-      $get_resep_dokter_nonracikan = $this->db('resep_dokter')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
-      $get_resep_dokter_racikan = $this->db('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter_nonracikan = $this->db('resep_dokter')->select('kode_brng')->select('jml')->select('aturan_pakai')->where('no_resep', $_POST['no_resep'])->toArray();
+      $get_resep_dokter_racikan = $this->db('resep_dokter_racikan_detail')->select('kode_brng')->select('jml')->select('aturan_pakai')->where('no_resep', $_POST['no_resep'])->toArray();
       $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
 
       foreach ($get_resep_dokter as $item) {
@@ -493,6 +493,169 @@ class Admin extends AdminModule
       // Output a PDF file directly to the browser
       $mpdf->Output();
 
+      exit();
+    }
+
+    public function getCetakEresep($no_rawat, $tipe, $tgl_peresepan, $jam_peresepan){
+      if($tipe == 'nonracikan') {
+        $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+        ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+        ->join('kamar_inap', 'kamar_inap.no_rawat=detail_pemberian_obat.no_rawat')
+        ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+        ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')
+        ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+        ->where('detail_pemberian_obat.status', 'Ranap')
+        ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
+        ->where('detail_pemberian_obat.jam', $jam_peresepan)
+        ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $aturan_pakai = $this->db('aturan_pakai')
+          ->where('no_rawat', $row['no_rawat'])
+          ->where('kode_brng', $row['kode_brng'])
+          ->where('tgl_perawatan', $row['tgl_perawatan'])
+          ->where('jam', $row['jam'])
+          ->oneArray();
+          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['keterangan'] = '';
+          $detail_pemberian_obat[] = $row;
+        }
+      }
+      if($tipe == 'racikan') {
+        $rows_pemberian_obat = $this->db('obat_racikan')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=obat_racikan.no_rawat')
+          ->join('kamar_inap', 'kamar_inap.no_rawat=detail_pemberian_obat.no_rawat')
+          ->join('kamar', 'kamar.kd_kamar=kamar_inap.kd_kamar')
+          ->join('bangsal', 'bangsal.kd_bangsal=kamar.kd_bangsal')  
+          ->where('obat_racikan.no_rawat', revertNoRawat($no_rawat))
+          ->where('obat_racikan.tgl_perawatan', $tgl_peresepan)
+          ->where('obat_racikan.jam', $jam_peresepan)
+          ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $row['nama_brng'] = $row['nama_racik'];
+          $row['jml'] = $row['jml_dr'];
+          $detail_pemberian_obat[] = $row;
+        }
+
+      }
+
+      $tanggal = dateIndonesia(date('Y-m-d'));
+      $pasien = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
+      $no_rm = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+      $umur = $this->core->getRegPeriksaInfo('umurdaftar', revertNoRawat($no_rawat));
+      $sttsumur = $this->core->getRegPeriksaInfo('sttsumur', revertNoRawat($no_rawat));
+      $alamat = $this->core->getPasienInfo('alamat', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
+
+      echo $this->draw('cetak.eresep.html', [
+        'pasien' => $pasien, 
+        'no_rm' => $no_rm, 
+        'umur' => $umur . ' ' . $sttsumur, 
+        'alamat' => $alamat, 
+        'tanggal' => $tanggal, 
+        'settings' => $this->settings('settings'), 
+        'detail' => $detail_pemberian_obat
+      ]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [200, 400], 
+        'margin_left' => 20,
+        'margin_right' => 20,
+        'margin_top' => 2,
+        'margin_bottom' => 2
+      ]);
+
+      $url = url('admin/tmp/cetak.eresep.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+
+      exit();
+    }
+
+    public function getCetakEresepsss($no_rawat, $tipe, $tgl_peresepan, $jam_peresepan){
+      if($tipe == 'nonracikan') {
+        $rows_pemberian_obat = $this->db('detail_pemberian_obat')
+        ->join('databarang', 'databarang.kode_brng=detail_pemberian_obat.kode_brng')
+        ->join('reg_periksa', 'reg_periksa.no_rawat=detail_pemberian_obat.no_rawat')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->where('detail_pemberian_obat.no_rawat', revertNoRawat($no_rawat))
+        ->where('detail_pemberian_obat.status', 'Ralan')
+        ->where('detail_pemberian_obat.tgl_perawatan', $tgl_peresepan)
+        ->where('detail_pemberian_obat.jam', $jam_peresepan)
+        ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $aturan_pakai = $this->db('aturan_pakai')
+          ->where('no_rawat', $row['no_rawat'])
+          ->where('kode_brng', $row['kode_brng'])
+          ->where('tgl_perawatan', $row['tgl_perawatan'])
+          ->where('jam', $row['jam'])
+          ->oneArray();
+          $row['aturan_pakai'] = $aturan_pakai['aturan'];
+          $row['keterangan'] = '';
+          $detail_pemberian_obat[] = $row;
+        }
+      }
+      if($tipe == 'racikan') {
+        $rows_pemberian_obat = $this->db('obat_racikan')
+          ->join('reg_periksa', 'reg_periksa.no_rawat=obat_racikan.no_rawat')
+          ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+          ->where('obat_racikan.no_rawat', revertNoRawat($no_rawat))
+          ->where('obat_racikan.tgl_perawatan', $tgl_peresepan)
+          ->where('obat_racikan.jam', $jam_peresepan)
+          ->toArray();
+        $detail_pemberian_obat = [];
+        $jumlah_total_obat = 0;
+        foreach ($rows_pemberian_obat as $row) {
+          $row['nama_brng'] = $row['nama_racik'];
+          $row['jml'] = $row['jml_dr'];
+          $detail_pemberian_obat[] = $row;
+        }
+
+      }
+
+      $tanggal = dateIndonesia(date('Y-m-d'));
+      $pasien = $this->core->getPasienInfo('nm_pasien', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
+      $no_rm = $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat));
+      $umur = $this->core->getRegPeriksaInfo('umurdaftar', revertNoRawat($no_rawat));
+      $sttsumur = $this->core->getRegPeriksaInfo('sttsumur', revertNoRawat($no_rawat));
+      $alamat = $this->core->getPasienInfo('alamat', $this->core->getRegPeriksaInfo('no_rkm_medis', revertNoRawat($no_rawat)));
+
+      echo $this->draw('cetak.eresep.html', [
+        'pasien' => $pasien, 
+        'no_rm' => $no_rm, 
+        'umur' => $umur . ' ' . $sttsumur, 
+        'alamat' => $alamat, 
+        'tanggal' => $tanggal, 
+        'settings' => $this->settings('settings'), 
+        'detail' => $detail_pemberian_obat
+      ]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [200, 400], 
+        'margin_left' => 20,
+        'margin_right' => 20,
+        'margin_top' => 2,
+        'margin_bottom' => 2
+      ]);
+
+      $url = url('admin/tmp/cetak.eresep.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      // $mpdf->Output(UPLOADS.'/test.pdf', 'F');
       exit();
     }
 
