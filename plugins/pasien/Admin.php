@@ -506,6 +506,19 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function getRiwayatPerawatanXXX($no_rkm_medis)
+    {
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->where('no_rkm_medis', $no_rkm_medis)
+        ->desc('tgl_registrasi')
+        ->toArray();
+      echo json_encode($reg_periksa, true);
+      exit();
+    }
+
     public function getRiwayatPerawatan($no_rkm_medis)
     {
       $riwayat['settings'] = $this->settings('settings');
@@ -547,12 +560,12 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
         $row['rawat_jl_drpr'] = [];
-        foreach ($rows['rawat_jl_drpr'] as $row) {
-          $dokter = $this->db('dokter')->where('kd_dokter', $row['kd_dokter'])->oneArray();
-          $petugas = $this->db('petugas')->where('nip', $row['nip'])->oneArray();
-          $row['nm_dokter'] = $dokter['nm_dokter'];
-          $row['nama'] = $petugas['nama'];
-          $row['rawat_jl_drpr'][] = $row;
+        foreach ($rows['rawat_jl_drpr'] as $row2) {
+          $dokter = $this->db('dokter')->where('kd_dokter', $row2['kd_dokter'])->oneArray();
+          $petugas = $this->db('petugas')->where('nip', $row2['nip'])->oneArray();
+          $row2['nm_dokter'] = $dokter['nm_dokter'];
+          $row2['nama'] = $petugas['nama'];
+          $row['rawat_jl_drpr'][] = $row2;
         }
         $row['pemeriksaan_ranap'] = [];
         $row['rawat_inap_dr'] = [];
@@ -577,12 +590,12 @@ class Admin extends AdminModule
             ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
-          foreach ($rows['rawat_inap_drpr'] as $row) {
-            $dokter = $this->db('dokter')->where('kd_dokter', $row['kd_dokter'])->oneArray();
-            $petugas = $this->db('petugas')->where('nip', $row['nip'])->oneArray();
-            $row['nm_dokter'] = $dokter['nm_dokter'];
-            $row['nama'] = $petugas['nama'];
-            $row['rawat_inap_drpr'][] = $row;
+          foreach ($rows['rawat_inap_drpr'] as $row3) {
+            $dokter = $this->db('dokter')->where('kd_dokter', $row3['kd_dokter'])->oneArray();
+            $petugas = $this->db('petugas')->where('nip', $row3['nip'])->oneArray();
+            $row3['nm_dokter'] = $dokter['nm_dokter'];
+            $row3['nama'] = $petugas['nama'];
+            $row['rawat_inap_drpr'][] = $row3;
           }
         }
 
