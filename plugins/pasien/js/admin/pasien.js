@@ -60,6 +60,7 @@ $("#form").on("click", "#simpan", function(event){
   var nm_kel = $('#nm_kel').val();
   var kd_pj = $('select[name=kd_pj]').val();
   var no_peserta = $('input:text[name=no_peserta]').val();
+  var manual = $('#norm_manual').prop("checked") ? 1 : 0 ;
 
   var url = baseURL + '/pasien/save?t=' + mlite.token;
 
@@ -111,9 +112,10 @@ $("#form").on("click", "#simpan", function(event){
       nm_kec:nm_kec,
       nm_kel:nm_kel,
       kd_pj: kd_pj,
-      no_peserta: no_peserta
+      no_peserta: no_peserta,
+      manual: manual 
     } ,function(data) {
-      //alert(data);
+      // alert(data);
       var data = JSON.parse(data);
       if(data.status == 'success')
       {
@@ -238,7 +240,8 @@ $("#form").on("click","#kartu", function(event){
   var baseURL = mlite.url + '/' + mlite.admin;
   event.preventDefault();
   var no_rkm_medis = $(this).attr("data-no_rkm_medis");
-  window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  // window.open(baseURL + '/pasien/kartu?no_rkm_medis=' + no_rkm_medis + '&t=' + mlite.token);
+  $("#printModal").modal('show').html('<div style="text-align:center;margin:20px auto;width:50%;height:50%;"><iframe src="' + baseURL + '/pasien/cetakkartu/' + no_rkm_medis + '?t=' + mlite.token + '" frameborder="no" width="100%" height="100%"></iframe></div>');
 });
 
 // ketika tombol cetak ditekan

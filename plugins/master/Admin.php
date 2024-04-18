@@ -41,7 +41,6 @@ use Plugins\Master\Src\StatusKerja;
 use Plugins\Master\Src\StatusWP;
 use Plugins\Master\Src\MetodeRacik;
 use Plugins\Master\Src\RuangOk;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 
 class Admin extends AdminModule
 {

@@ -4,9 +4,6 @@ namespace Plugins\Utd;
 
 use Systems\AdminModule;
 use Plugins\Utd\DB_Wilayah;
-use Systems\Lib\Fpdf\FPDF;
-use Systems\Lib\Fpdf\PDF_MC_Table;
-use Systems\Lib\Fpdf\PDF_Code128;
 
 class Admin extends AdminModule
 {
@@ -136,44 +133,31 @@ class Admin extends AdminModule
     FROM `utd_pendonor`
     WHERE (`no_pendonor` LIKE '%$cari%' OR `nama` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
     ");
+
+    $cetak = $this->db('mlite_temporary')->toArray();
+    return $this->draw('cetak.utd.html', ['cetak' => $cetak]);
     exit();
   }
 
   public function getCetakPendonor()
   {
-    $tmp = $this->db('mlite_temporary')->toArray();
-    $logo = $this->settings->get('settings.logo');
+    $mpdf = new \Mpdf\Mpdf([
+      'mode' => 'utf-8',
+      'orientation' => 'L'
+    ]);
 
-    $pdf = new PDF_MC_Table('L','mm','Legal');
-    $pdf->AddPage();
-    $pdf->SetAutoPageBreak(true, 10);
-    $pdf->SetTopMargin(10);
-    $pdf->SetLeftMargin(10);
-    $pdf->SetRightMargin(10);
+    $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+    $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+          
+    $url = url('admin/tmp/cetak.utd.html');
+    $html = file_get_contents($url);
+    $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+    $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
 
-    $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-    $pdf->SetFont('Arial', '', 24);
-    $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-    $pdf->SetFont('Arial', '', 10);
-    $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-    $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-    $pdf->Line(10, 30, 345, 30);
-    $pdf->Line(10, 31, 345, 31);
-    $pdf->SetFont('Arial', 'B', 13);
-    $pdf->Text(10, 40, 'DATA PENDONOR');
-    $pdf->Ln(34);
-    $pdf->SetFont('Arial', 'B', 11);
-    $pdf->SetWidths(array(30,65,35,25,25,90,35,30));
-    $pdf->Row(array('No. Pendonor','Nama Pasien','No. KTP','J. Kelamin','Tgl. Lahir','Alamat','G.Darah/Resus','No. Telp'));
-    $pdf->SetFont('Arial', '', 10);
-    foreach ($tmp as $hasil) {
-      $j_kelamin = 'Laki-Laki';
-      if($hasil['temp4'] == 'P') {
-        $j_kelamin = 'Perempuan';
-      }
-      $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3'],$j_kelamin,$hasil['temp6'],$hasil['temp7'],$hasil['temp12'].' / '.$hasil['temp13'],$hasil['temp14']));
-    }
-    $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+    // Output a PDF file directly to the browser
+    $mpdf->Output();
+    exit();      
+
   }
 
   public function getDonor()

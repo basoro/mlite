@@ -8,6 +8,14 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title">Kelola</h3>
+        <ul class="nav nav-tabs">
+          <li class="active">
+              <a href="{?=url(ADMIN.'/pasien/pasien')?}" role="tab">Input Form</a>
+          </li>
+          <li class="{if: $tab == 'inactive'}active{/if}">
+              <a href="{?=url(ADMIN.'/pasien/pasien/data')?}" role="tab">Data Pasien</a>
+          </li>
+        </ul>
       </div>
       <div class="panel-body">
         <div class="table-responsive">      
@@ -117,8 +125,8 @@
       });
       $(".data-table-title").html('<div style="display:inline;float:left;margin-top:0;">'+
         '<span class="hidden-xs">'+
-        '<select class="form-control selectator" id="sortByenjab"> '+
-        '<option value="">Penjab</option> '+
+        '<select class="form-control selectator" id="sortByPenjab"> '+
+        '<option value=""></option> '+
         '{loop: $penjab}'+
         '<option value="{$value.kd_pj}">{$value.png_jawab}</option> '+
         '{/loop}'+

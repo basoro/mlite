@@ -5,9 +5,9 @@
         <tr>
           <th>Kode Perawatan</th>
           <th>Nama Perawatan</th>
-          <th>Kategori</th>
-          <th>Bangsal</th>
-          <th>Cara Bayar</th>
+          <th>Tarif Dokter</th>
+          <th>Tarif Perawat</th>
+          <th>Total</th>
         </tr>
       </thead>
       <tbody>
@@ -16,9 +16,9 @@
         <tr class="edit" data-kd_jenis_prw="{$value.kd_jenis_prw}">
           <td>{$value.kd_jenis_prw}</td>
           <td>{$value.nm_perawatan}</td>
-          <td>{$value.nm_kategori}</td>
-          <td>{$value.nm_bangsal}</td>
-          <td>{$value.png_jawab}</td>
+          <td>{$value.tarif_tindakandr}</td>
+          <td>{$value.tarif_tindakanpr}</td>
+          <td>{$value.total_byrdrpr}</td>
         </tr>
         {/loop}
         {else}

@@ -3,7 +3,6 @@ namespace Plugins\Rawat_Jalan;
 
 use Systems\AdminModule;
 use Plugins\Icd\DB_ICD;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use Systems\Lib\BpjsService;
 use LZCompressor\LZString;
 
@@ -1103,10 +1102,10 @@ class Admin extends AdminModule
     {
       $_POST['nip'] = $this->core->getUserInfo('username', null, true);
 
-      if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
+      if(!$this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->oneArray()) {
         $this->db('pemeriksaan_ralan')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        $this->db('pemeriksaan_ralan')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->save($_POST);
       }
       exit();
     }
@@ -1328,45 +1327,45 @@ class Admin extends AdminModule
       WHERE `kd_poli` <> '$igd'
       AND `tgl_registrasi` BETWEEN '$tgl_awal' AND '$tgl_akhir'
       ");
+
+      $cetak = $this->db('mlite_temporary')->toArray();
+      echo $this->draw('cetak.rawat_jalan.html', ['cetak' => $cetak]);
+
       exit();
     }
 
     public function getCetakPdf()
     {
-      $tmp = $this->db('mlite_temporary')->toArray();
-      $logo = $this->settings->get('settings.logo');
-
-      $pdf = new PDF_MC_Table('L','mm','Legal');
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
-
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 345, 30);
-      $pdf->Line(10, 31, 345, 31);
-      $pdf->SetFont('Arial', 'B', 13);
-      $pdf->Text(10, 40, 'DATA PENDAFTARAN POLIKLINIK');
-      $pdf->Ln(34);
-      $pdf->SetFont('Arial', 'B', 11);
-      $pdf->SetWidths(array(25,35,20,80,25,50,50,50));
-      $pdf->Row(array('Tanggal','No. Rawat','No. Reg','Nama Pasien','No. RM','Poliklinik','Dokter','Penjamin'));
-      $pdf->SetFont('Arial', '', 10);
-      foreach ($tmp as $hasil) {
-        $poliklinik = $this->db('poliklinik')->where('kd_poli', $hasil['temp7'])->oneArray();
-        $dokter = $this->db('dokter')->where('kd_dokter', $hasil['temp5'])->oneArray();
-        $penjab = $this->db('penjab')->where('kd_pj', $hasil['temp15'])->oneArray();
-        $pdf->Row(array($hasil['temp3'],$hasil['temp2'],$hasil['temp1'],$this->core->getPasienInfo('nm_pasien', $hasil['temp6']),$hasil['temp6'],$poliklinik['nm_poli'],$dokter['nm_dokter'],$penjab['png_jawab']));
-      }
-      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+  
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.rawat_jalan.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+  
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();      
     }
 
+    public function getExcel()
+    {
+      $file = "data.pasien.rawat.jalan.xls";
+      $html = file_get_contents(url('admin/tmp/cetak.rawat_jalan.html'));
+      header("Content-type: application/vnd-ms-excel");
+      header("Content-Disposition: attachment; filename=$file");
+      echo "<!DOCTYPE html><html><head></head><body>";
+      echo $html;
+      echo "</body></html>";
+      exit();
+    }
+    
     public function postObatKronis()
     {
       if (isset($_POST['no_rawat']) && $_POST['no_rawat'] !='') {

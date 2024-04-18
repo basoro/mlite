@@ -24,10 +24,16 @@ switch ($version) {
         //         `name` varchar(30) DEFAULT NULL,
         //         PRIMARY KEY (`id`) USING BTREE
         // ) ENGINE=InnoDB DEFAULT CHARSET=latin1;");
-        // Upgrade version
         $return = '4.0.1';
     case '4.0.1':
         $return = '4.0.2';
+    case '4.0.2':
+        $return = '4.0.3';
+    case '4.0.3':
+        $return = '4.0.4';
+    case '4.0.4':
+        $return = '4.0.5';
+    case '4.0.5':
+        $return = '4.0.6';
     }
-
 return $return;

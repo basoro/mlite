@@ -704,7 +704,9 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_sep = $(this).attr("data-no_sep");
-    window.open(baseURL + '/vclaim/cetaksep/' + no_sep + '?t=' + mlite.token);
+    var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
+    var no_rawat = find_no_rawat.replace(/\//g,'');
+    window.open(baseURL + '/vclaim/cetaksep/' + no_sep + '/' + no_rawat + '?t=' + mlite.token);
   });
   $("#form_sep").on("click",".print_sep_internal", function(event){
     var baseURL = mlite.url + '/' + mlite.admin;

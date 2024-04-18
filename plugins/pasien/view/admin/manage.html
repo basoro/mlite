@@ -3,8 +3,11 @@
     <div class="panel panel-default">
       <div class="panel-heading">
         <div class="btn-group pull-right" style="margin-top:-8px;">
-          <span class="btn btn-sm" id="btn_cetak_fpdf">
-            <i class="fa fa-print"></i><span class="hidden-xs"> Cetak</span>
+          <span class="btn btn-sm" id="btn_cetak_pdf">
+            <i class="fa fa-print"></i><span class="hidden-xs"> Export PDF</span>
+          </span>
+          <span class="btn btn-sm">
+            <a href="{?=url([ADMIN,'pasien','excel'])?}" target="_blank"><i class="fa fa-file-excel-o"></i><span class="hidden-xs"> Export XLS</span></a>
           </span>
         </div>
         <h3 class="panel-title">Kelola Pasien</h3>

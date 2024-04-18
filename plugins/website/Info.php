@@ -37,7 +37,7 @@ return [
           `tag_id` int(11) NOT NULL
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
 
-        $core->mysdbql()->pdo()->exec("ALTER TABLE `mlite_news`
+        $core->db()->pdo()->exec("ALTER TABLE `mlite_news`
           ADD PRIMARY KEY (`id`);");
 
         $core->db()->pdo()->exec("ALTER TABLE `mlite_news_tags`

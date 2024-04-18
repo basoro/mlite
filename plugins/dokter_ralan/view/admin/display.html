@@ -33,6 +33,7 @@
               <li><a href="#layanan_obat" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}">Layanan & Obat</a></li>
               <li><a href="#surat_kontrol" data-no_rawat="{$value.no_rawat}" data-no_rkm_medis="{$value.no_rkm_medis}" data-nm_pasien="{$value.nm_pasien}" data-tgl_registrasi="{$value.tgl_registrasi}">Surat Kontrol</a></li>
               <li><a href="#resume" data-no_rawat="{$value.no_rawat}">Resume Perawatan</a></li>
+              <li><a href="#medisRalan" data-no_rawat="{$value.no_rawat}">Awal Medis Dokter</a></li>
               {/if}
             </ul>
           </td>
@@ -79,6 +80,13 @@
             ...
         </div>
     </div>
+</div>
+<div class="modal fade" id="medisRalan" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-full" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
 </div>
 <script>
   // ketika baris data diklik
@@ -168,6 +176,39 @@
       $("#form_kontrol").show();
       $("#surat_kontrol").html(data).show();
     });
+  });
+  $('a[href="#resume"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat").replace(/\//g, '');
+
+    var loadURL =  baseURL + '/dokter_ralan/resume/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#eresepModal');
+    var modalContent = $('#eresepModal .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
+  });
+
+  $('a[href="#medisRalan"]').click(function(event){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    event.preventDefault();
+    var no_rawat = $(this).attr("data-no_rawat").replace(/\//g, '');
+
+    var loadURL =  baseURL + '/dokter_ralan/medisralan/' + no_rawat + '?t=' + mlite.token;
+
+    var modal = $('#medisRalan');
+    var modalContent = $('#medisRalan .modal-content');
+
+    modal.off('show.bs.modal');
+    modal.on('show.bs.modal', function () {
+        modalContent.load(loadURL);
+    }).modal();
+    return false;
   });
 </script>
 <script type="text/javascript">

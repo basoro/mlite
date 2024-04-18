@@ -89,7 +89,7 @@ class Admin extends Main
                     $details['content'] = call_user_func_array([$this->module->{$name}, $anyMethod], array_values($params));
                 } else {
                     http_response_code(404);
-                    $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+                    $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
                     $details['content'] = null;
                 }
 
@@ -198,7 +198,7 @@ class Admin extends Main
             return call_user_func_array([$this->module->{$name}, $method], array_values($params));
         }
 
-        $this->setNotify('failure', "[@{$method}] Alamat yang anda diminta tidak ada.");
+        $this->setNotify('failure', "[@{$method}] Alamat yang Anda minta tidak ada.");
         return false;
     }
 
@@ -208,12 +208,14 @@ class Admin extends Main
         $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
 
         // Create attempt if does not exist
-        if (!$attempt) {
+        if($this->settings->get('settings.keamanan') == 'ya') {
+            if (!$attempt) {
             $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
             $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
-        } else {
-            $attempt['attempts'] = intval($attempt['attempts']);
-            $attempt['expires'] = intval($attempt['expires']);
+            } else {
+                $attempt['attempts'] = intval($attempt['attempts']);
+                $attempt['expires'] = intval($attempt['expires']);
+            }
         }
 
         // Is IP blocked?
@@ -244,19 +246,19 @@ class Admin extends Main
             }
             return true;
         } else {
-            // Increase attempt
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
-            $attempt['attempts'] += 1;
+            if($this->settings->get('settings.keamanan') == 'ya') {
+                // Increase attempt
+                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
+                $attempt['attempts'] += 1;
 
-            // ... and block if reached maximum attempts
-            if ($attempt['attempts'] % 3 == 0) {
-                if($this->settings->get('settings.keamanan') == 'ya') {
+                // ... and block if reached maximum attempts
+                if ($attempt['attempts'] % 3 == 0) {
                     $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
                     $attempt['expires'] = strtotime("+10 minutes");
 
                     $this->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
                 } else {
-                  $this->setNotify('failure', 'Anda mencoba login berkali-kali. Pastikan username dan password anda sesuai.');                    
+                    $this->setNotify('failure', 'Username atau password salah!');
                 }
             } else {
                 $this->setNotify('failure', 'Username atau password salah!');

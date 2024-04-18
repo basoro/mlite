@@ -203,7 +203,7 @@
     </div>
     <div role="tabpanel" class="tab-pane fade in" id="lab">
       <h4>Permintaan Laboratorium</h4>
-      <div class="table-responsive no-margin">
+      <!-- <div class="table-responsive no-margin">
         <table class="table table-striped table-bordered no-padding" width="100%">
           <thead>
             <tr>
@@ -232,6 +232,71 @@
               <th></th>
             </tr>
           </tfoot>
+        </table>
+      </div> -->
+      <div class="table-responsive no-margin">
+        <table class="table table-striped table-bordered no-padding" width="100%">
+          <thead>
+            <tr>
+              <th>Nama Dokter</th>
+              <th>Nomor Order</th>
+              <th>Tanggal Order</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {loop: $laboratorium}
+            <tr>
+              <td>{$value.nm_dokter}</td>
+              <td>{$value.noorder}</td>
+              <td>{$value.tgl_permintaan} {$value.jam_permintaan}</td>
+              <td>
+                <button type="button" class="btn btn-danger btn-xs {if: $value.tgl_sampel !== '0000-00-00' || $value.jam_sampel !== '00:00:00'}disabled{else}hapus_permintaan_lab{/if}" data-no_rawat="{$value.no_rawat}" data-tgl_permintaan="{$value.tgl_permintaan}" data-jam_permintaan="{$value.jam_permintaan}" data-noorder="{$value.noorder}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+              </td>
+            </tr>
+            <tr>
+              <th colspan="2">Nama Pemeriksaan</th>
+              <th>Status Bayar</th>
+              <th>Aksi</th>
+            </tr>
+              {loop: $value.permintaan_pemeriksaan_lab as $data}
+              <tr>
+                <td colspan="2">{$data.nm_perawatan}</td>
+                <td>{$data.stts_bayar}</td>
+                <td>
+                  <button type="button" class="btn btn-danger btn-xs hapus_permintaan" data-noorder="{$value.noorder}" data-kd_jenis_prw="{$data.kd_jenis_prw}"><i class="fa fa-trash"></i><span class="hidden-xs"> Hapus</span></button>
+                  <a href="{?=url([ADMIN, 'dokter_ranap', 'detailpermintaan', $data.noorder, $data.kd_jenis_prw])?}" data-toggle="modal" data-target="#detailModal" class="btn btn-success btn-xs"><i class="fa fa-search"></i><span class="hidden-xs"> Detail</span></a>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="4">
+                  <table class="table table-striped table-bordered table-condensed">
+                    <tr>
+                      <th>Pemeriksaan</th>
+                      <th>Satuan</th>
+                      <th>Rujukan LA</th>
+                      <th>Rujukan PA</th>
+                      <th>Rujukan LD</th>
+                      <th>Rujukan PD</th>
+                      <th>Aksi</th>
+                    </tr>
+                    {loop: $data.permintaan_detail_permintaan_lab as $data2}
+                    <tr>
+                      <td>- {$data2.template_laboratorium.Pemeriksaan}</td>
+                      <td>{$data2.template_laboratorium.satuan}</td>
+                      <td>{$data2.template_laboratorium.nilai_rujukan_la}</td>
+                      <td>{$data2.template_laboratorium.nilai_rujukan_pa}</td>
+                      <td>{$data2.template_laboratorium.nilai_rujukan_ld}</td>
+                      <td>{$data2.template_laboratorium.nilai_rujukan_pd}</td>
+                      <td><span class="fa fa-trash btn btn-danger hapus_detail_permintaan" data-noorder={$data.noorder} data-kd_jenis_prw={$data.kd_jenis_prw}  data-id_template={$data2.template_laboratorium.id_template}><span></td>
+                    </tr>
+                    {/loop}
+                  </table>
+                </td>
+              </tr>
+              {/loop}
+            {/loop}
+          </tbody>
         </table>
       </div>
     </div>
@@ -270,7 +335,70 @@
       </div>
     </div>
 </div>
+<!-- Modal -->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          ...
+      </div>
+  </div>
+</div>
 
 <script type="text/javascript">
   $(".alert-dismissible").fadeTo(3000, 500).slideUp(500);
+  $("#rincian").on("click",".hapus_permintaan", function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_ranap/hapuspermintaanlaboratorium?t=' + mlite.token;
+    var no_rawat = $('input:text[name=no_rawat]').val();
+    var noorder = $(this).attr("data-noorder");
+    var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+    //console.log(noorder + ' - ' + kd_jenis_prw + ' - ' + tgl_permintaan + ' - ' + jam_permintaan);
+    bootbox.confirm("Apakah Anda yakin ingin menghapus data ini?", function(result){
+      // ketika ditekan tombol ok
+      if (result){
+          $.post(url, {
+            no_rawat: no_rawat,
+            noorder: noorder,
+            kd_jenis_prw: kd_jenis_prw
+          } ,function(data) {
+            console.log(data);
+            var url = baseURL + '/dokter_ranap/rincian?t=' + mlite.token;
+            $.post(url, {no_rawat : no_rawat,
+            }, function(data) {
+              // tampilkan data
+              $("#rincian").html(data).show();
+            });
+          });
+      }
+    });
+    //$('#detailModal').modal('hidden');
+    //$('body').removeClass('modal-open')
+    //$('.modal-backdrop').remove()
+  });
+  $("#rincian").on("click",".hapus_detail_permintaan", function(event){
+    event.preventDefault();
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var url = baseURL + '/dokter_ranap/hapusdetailpermintaan?t=' + mlite.token;
+    var noorder = $(this).attr("data-noorder");
+    var kd_jenis_prw = $(this).attr("data-kd_jenis_prw");
+    var id_template = $(this).attr("data-id_template");
+    //console.log(noorder + ' - ' + kd_jenis_prw + ' - ' + id_template);
+    $.post(url, {
+      noorder: noorder,
+      kd_jenis_prw: kd_jenis_prw,
+      id_template: id_template
+    } ,function(data) {
+      var no_rawat = $('input:text[name=no_rawat]').val();
+      var url = baseURL + '/dokter_ranap/rincian?t=' + mlite.token;
+      $.post(url, {no_rawat : no_rawat,
+      }, function(data) {
+        // tampilkan data
+        $("#rincian").html(data).show();
+      });
+    });
+    //$('#detailModal').modal('hidden');
+    //$('body').removeClass('modal-open')
+    //$('.modal-backdrop').remove()
+  });  
 </script>

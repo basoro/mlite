@@ -441,6 +441,60 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postHapusNomorPermintaanLaboratorium()
+    {
+      $this->db('permintaan_lab')
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->where('noorder', $_POST['noorder'])
+      ->where('tgl_permintaan', $_POST['tgl_permintaan'])
+      ->where('jam_permintaan', $_POST['jam_permintaan'])
+      ->where('status', 'Ranap')
+      ->delete();
+      exit();
+    }
+
+    public function postHapusPermintaanLab()
+    {
+      $this->db('permintaan_lab')
+      ->where('noorder', $_POST['noorder'])
+      ->where('no_rawat', $_POST['no_rawat'])
+      ->delete();
+      exit();
+    }
+
+    public function postHapusPermintaanLaboratorium()
+    {
+      $this->db('permintaan_pemeriksaan_lab')
+      ->where('noorder', $_POST['noorder'])
+      ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+      ->where('stts_bayar', 'Belum')
+      ->delete();
+      exit();
+    }
+
+    public function getDetailPermintaan($noorder, $kd_jenis_prw)
+    {
+      $rows = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $noorder)->where('kd_jenis_prw', $kd_jenis_prw)->toArray();
+      $detail_permintaan_lab = [];
+      foreach ($rows as $row) {
+        $row['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row['kd_jenis_prw'])->where('id_template', $row['id_template'])->oneArray();
+        $detail_permintaan_lab[] = $row;
+      }
+      $this->tpl->set('detail', $detail_permintaan_lab);
+      echo $this->tpl->draw(MODULES.'/dokter_ranap/view/admin/details.html', true);
+      exit();
+    }
+
+    public function postHapusDetailPermintaan()
+    {
+      $this->db('permintaan_detail_permintaan_lab')
+        ->where('noorder', $_POST['noorder'])
+        ->where('kd_jenis_prw', $_POST['kd_jenis_prw'])
+        ->where('id_template', $_POST['id_template'])
+        ->delete();
+      exit();
+    }
+
     public function postHapusResep()
     {
       if(isset($_POST['kd_jenis_prw'])) {
@@ -598,24 +652,57 @@ class Admin extends AdminModule
         $resep_racikan[] = $row;
       }
 
+      // $rows_laboratorium = $this->db('permintaan_lab')
+      //   ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')
+      //   ->where('no_rawat', $_POST['no_rawat'])
+      //   ->where('permintaan_lab.status', 'ranap')
+      //   ->toArray();
+      // $jumlah_total_lab = 0;
+      // $laboratorium = [];
+
+      // if($rows_laboratorium) {
+      //   foreach ($rows_laboratorium as $row) {
+      //     $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
+      //     $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
+      //     $row['kelas'] = $jns_perawatan['kelas'];
+      //     $row['total_byr'] = $jns_perawatan['total_byr'];
+      //     $jumlah_total_lab += $jns_perawatan['total_byr'];
+      //     $laboratorium[] = $row;
+      //   }
+      // }
+
       $rows_laboratorium = $this->db('permintaan_lab')
-        ->join('permintaan_pemeriksaan_lab', 'permintaan_pemeriksaan_lab.noorder=permintaan_lab.noorder')
+        ->join('dokter', 'dokter.kd_dokter=permintaan_lab.dokter_perujuk')
         ->where('no_rawat', $_POST['no_rawat'])
         ->where('permintaan_lab.status', 'ranap')
         ->toArray();
-      $jumlah_total_lab = 0;
       $laboratorium = [];
-
-      if($rows_laboratorium) {
-        foreach ($rows_laboratorium as $row) {
-          $jns_perawatan = $this->db('jns_perawatan_lab')->where('kd_jenis_prw', $row['kd_jenis_prw'])->oneArray();
-          $row['nm_perawatan'] = $jns_perawatan['nm_perawatan'];
-          $row['kelas'] = $jns_perawatan['kelas'];
-          $row['total_byr'] = $jns_perawatan['total_byr'];
-          $jumlah_total_lab += $jns_perawatan['total_byr'];
-          $laboratorium[] = $row;
-        }
-      }
+      foreach ($rows_laboratorium as $row) {
+        $rows2 = $this->db('permintaan_pemeriksaan_lab')
+          ->join('jns_perawatan_lab', 'jns_perawatan_lab.kd_jenis_prw=permintaan_pemeriksaan_lab.kd_jenis_prw')
+          //->join('permintaan_detail_permintaan_lab', 'permintaan_detail_permintaan_lab.noorder=permintaan_pemeriksaan_lab.noorder')
+          ->where('permintaan_pemeriksaan_lab.noorder', $row['noorder'])
+          ->toArray();
+          $row['permintaan_pemeriksaan_lab'] = [];
+          foreach ($rows2 as $row2) {
+            $row2['noorder'] = $row2['noorder'];
+            $row2['kd_jenis_prw'] = $row2['kd_jenis_prw'];
+            $row2['stts_bayar'] = $row2['stts_bayar'];
+            $row2['nm_perawatan'] = $row2['nm_perawatan'];
+            $row2['kd_pj'] = $row2['kd_pj'];
+            $row2['status'] = $row2['status'];
+            $row2['kelas'] = $row2['kelas'];
+            $row2['kategori'] = $row2['kategori'];
+            $rows3 = $this->db('permintaan_detail_permintaan_lab')->where('noorder', $row2['noorder'])->where('kd_jenis_prw', $row2['kd_jenis_prw'])->toArray();
+            $row2['permintaan_detail_permintaan_lab'] = [];
+            foreach ($rows3 as $row3) {
+              $row3['template_laboratorium'] = $this->db('template_laboratorium')->where('kd_jenis_prw', $row3['kd_jenis_prw'])->where('id_template', $row3['id_template'])->oneArray();
+              $row2['permintaan_detail_permintaan_lab'][] = $row3;
+            }
+            $row['permintaan_pemeriksaan_lab'][] = $row2;
+          }
+        $laboratorium[] = $row;
+      }      
 
       $rows_radiologi = $this->db('permintaan_radiologi')
         ->join('permintaan_pemeriksaan_radiologi', 'permintaan_pemeriksaan_radiologi.noorder=permintaan_radiologi.noorder')
@@ -727,10 +814,10 @@ class Admin extends AdminModule
     {
       $_POST['nip'] = $this->core->getUserInfo('username', null, true);
 
-      if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->oneArray()) {
+      if(!$this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->oneArray()) {
         $this->db('pemeriksaan_ranap')->save($_POST);
       } else {
-        $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->save($_POST);
+        $this->db('pemeriksaan_ranap')->where('no_rawat', $_POST['no_rawat'])->where('tgl_perawatan', $_POST['tgl_perawatan'])->where('jam_rawat', $_POST['jam_rawat'])->where('nip', $_POST['nip'])->save($_POST);
       }
       exit();
     }

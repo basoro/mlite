@@ -1219,20 +1219,6 @@ class Site extends SiteModule
 
     private function _login($username, $password)
     {
-        // Check attempt
-        $attempt = $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->oneArray();
-
-        // Create attempt if does not exist
-        if (!$attempt) {
-            $this->db('mlite_login_attempts')->save(['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0]);
-            $attempt = ['ip' => $_SERVER['REMOTE_ADDR'], 'attempts' => 0, 'expires' => 0];
-        } else {
-            $attempt['attempts'] = intval($attempt['attempts']);
-            $attempt['expires'] = intval($attempt['expires']);
-        }
-
-        //$row_username = $this->settings->get('vedika.username');
-        //$row_password = $this->settings->get('vedika.password');
         $users_vedika = $this->db('mlite_users_vedika')->where('username', $username)->oneArray();
         $row_username = $users_vedika['username'];
         $row_password = $users_vedika['password'];
@@ -1248,19 +1234,7 @@ class Site extends SiteModule
 
             return true;
         } else {
-            // Increase attempt
-            $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['attempts' => $attempt['attempts']+1]);
-            $attempt['attempts'] += 1;
-
-            // ... and block if reached maximum attempts
-            if ($attempt['attempts'] % 3 == 0) {
-                $this->db('mlite_login_attempts')->where('ip', $_SERVER['REMOTE_ADDR'])->save(['expires' => strtotime("+10 minutes")]);
-                $attempt['expires'] = strtotime("+10 minutes");
-
-                $this->core->setNotify('failure', sprintf('Batas maksimum login tercapai. Tunggu %s menit untuk coba lagi.', ceil(($attempt['expires']-time())/60)));
-            } else {
-                $this->core->setNotify('failure', 'Username atau password salah!');
-            }
+            $this->core->setNotify('failure', 'Username atau password salah!');
 
             return false;
         }
@@ -1269,12 +1243,6 @@ class Site extends SiteModule
     private function _loginCheck()
     {
         if (isset($_SESSION['vedika_user']) && isset($_SESSION['vedika_token']) && isset($_SESSION['vedika_userAgent']) && isset($_SESSION['vedika_IPaddress'])) {
-            if ($_SESSION['vedika_IPaddress'] != $_SERVER['REMOTE_ADDR']) {
-                return false;
-            }
-            if ($_SESSION['vedika_userAgent'] != $_SERVER['HTTP_USER_AGENT']) {
-                return false;
-            }
 
             if (empty(parseURL(1))) {
                 redirect(url('veda'));

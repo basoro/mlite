@@ -1,0 +1,420 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span> Tutup</button>
+    <h4 class="modal-title">Penilaian Awal Medis Dokter</h4>
+</div>
+<div class="modal-body">
+  <h4>I. Riwayat Kesehatan</h4>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="form-group">
+          <label>Nomor Rawat</label>
+          <input type="text" name="no_rawat_medisRalan" class="form-control" placeholder="Nomor Rawat" required value="{$reg_periksa.no_rawat}" readonly />
+      </div>
+    </div>
+     <div class="col-md-6">
+      <div class="form-group">
+          <label>Nama Pasien</label>
+          <input type="text" name="nm_pasien" class="form-control" placeholder="Nomor Rawat" required value="{$pasien.nm_pasien}" readonly />
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="kd_dokter">Dokter</label>
+        <input type="text" name="kd_dokter" class="form-control" required value="{$dokter.nm_dokter}" readonly>
+      </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="tanggal">Tanggal & Jam Pemeriksaan</label>
+        <input type="text" name="tanggal" id="tanggal" class="form-control" placeholder="" value="{?=date('Y-m-d')?} {?=date('H:i:s')?}" readonly>
+      </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+          <label>Anamnesis</label>
+          <select name="anamnesis" id="anamnesis" class="form-control">
+              <option value="Autoanamnesis">Autoanamnesis</option>
+              <option value="Alloanamnesis">Alloanamnesis</option>
+          </select>
+        </div>
+    </div>
+    <div class="col-sm-3">
+      <div class="form-group">
+        <label for="hubungan">Hubungan</label>
+        <input type="text" name="hubungan" id="hubungan" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.hubungan,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.hubungan,'')?}{/if}">
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="keluhan_utama">Keluhan Utama</label>
+        <textarea name="keluhan_utama" id="keluhan_utama" class="form-control" cols="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.keluhan_utama,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.keluhan_utama,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rps">Riawayat Penyakit Sekarang</label>
+        <textarea name="rps" id="rps" class="form-control" cols="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.rps,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.rps,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpk">Riawayat Penyakit Keluarga</label>
+        <textarea name="rpk" id="rpk" class="form-control" cols="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.rpk,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.rpk,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpd">Riawayat Penyakit Dahulu</label>
+        <textarea name="rpd" id="rpd" class="form-control" cols="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.rpd,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.rpd,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="rpo">Riawayat Penggunaan Obat</label>
+        <textarea name="rpo" id="rpo" class="form-control" cols="3">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.rpo,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.rpo,'')?}{/if}</textarea>
+      </div>
+    </div>
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label for="alergi">Alergi</label>
+        <textarea name="alergi" id="alergi" class="form-control" cols="3">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.alergi,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.alergi,'')?}{/if}</textarea>
+      </div>
+    </div>
+  </div>
+
+<h4>II. Pemeriksaan Fisik</h4>
+ <div class="row">
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="keadaan">Keadaan Umum</label>
+          <select name="keadaan" id="keadaan" class="form-control">
+                <option value="Sehat">Sehat</option>
+                <option value="Sakit Ringan">Sakit Ringan</option>
+                <option value="Sakit Sedang">Sakit Sedang</option>
+                <option value="Sakit Berat">Sakit Berat</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="kesadaran">Kesadaran</label>
+          <select name="kesadaran" id="kesadaran" class="form-control">
+                <option value="Compos Mentis">Compos Mentis</option>
+                <option value="Apatis">Apatis</option>
+                <option value="Somnolen">Somnolen</option>
+                <option value="Sopor">Sopor</option>
+                <option value="Koma">Koma</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="gcs">GCS (E,V,M)</label>
+          <input type="text" name="gcs" id="gcs" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.gcs,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.gcs,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="tb">Tinggi Badan (Cm)</label>
+          <input type="text" name="tb" id="tb" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.tb,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.tb,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="bb">Berat Badan (Kg)</label>
+          <input type="text" name="bb" id="bb" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.bb,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.bb,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="td">TD (mmHg)</label>
+          <input type="text" name="td" id="td" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.td,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.td,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="nadi">Nadi (x/Menit)</label>
+          <input type="text" name="nadi" id="nadi" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.nadi,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.nadi,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="rr">RR (x/Menit)</label>
+          <input type="text" name="rr" id="rr" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.rr,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.rr,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="suhu">Suhu</label>
+          <input type="text" name="suhu" id="suhu" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.suhu,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.suhu,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-2">
+        <div class="form-group">
+          <label for="spo">SPO2 (%)</label>
+          <input type="text" name="spo" id="spo" class="form-control" value="{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.spo,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.spo,'')?}{/if}">
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="kepala">Kepala</label>
+          <select name="kepala" id="kepala" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="abdomen">Abdomen</label>
+          <select name="abdomen" id="abdomen" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+     <div class="col-sm-3">
+        <div class="form-group">
+          <label for="gigi">Gigi & Mulut</label>
+          <select name="gigi" id="gigi" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="genital">Genita & Anus</label>
+          <select name="genital" id="genital" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+       <div class="col-sm-3">
+        <div class="form-group">
+          <label for="tht">THT</label>
+          <select name="tht" id="tht" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="ekstremitas">Ekstremitas</label>
+          <select name="ekstremitas" id="ekstremitas" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+        <div class="col-sm-3">
+        <div class="form-group">
+          <label for="thoraks">Thorax</label>
+          <select name="thoraks" id="thoraks" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+      <div class="col-sm-3">
+        <div class="form-group">
+          <label for="kulit">Kulit</label>
+          <select name="kulit" id="kulit" class="form-control">
+                <option value="Normal">Normal</option>
+                <option value="Abnormal">Abnormal</option>
+                <option value="Tidak Diperiksa">Tidak Diperiksa</option>
+            </select>
+        </div>
+      </div>
+
+       <div class="col-sm-12">
+        <div class="form-group">
+          <label for="hubungan">Riawayat Penyakit Dahulu</label>
+          <textarea name="ket_fisik" id="ket_fisik" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.ket_fisik,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.ket_fisik,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      
+
+      <div class="col-sm-6">
+        <h4>III. Status Lokalisasi</h4>
+        <div class="form-group">
+          <textarea name="ket_lokalis" id="ket_lokalis" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.ket_lokalis,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.ket_lokalis,'')?}{/if}</textarea>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <h4>IV. Pemeriksaan Penunjang</h4>
+        <div class="form-group">
+          <textarea name="penunjang" id="penunjang" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.penunjang,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.penunjang,'')?}{/if}</textarea>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <h4>V. Diagnosis/Assesmen</h4>
+        <div class="form-group">
+          <textarea name="diagnosis" id="diagnosis" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.diagnosis,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.diagnosis,'')?}{/if}</textarea>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <h4>VI. Tata Laksana</h4>
+        <div class="form-group">
+          <textarea name="tata" id="tata" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.tata,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.tata,'')?}{/if}</textarea>
+        </div>
+      </div>
+       <div class="col-sm-6">
+        <h4>VII. Konsul/Rujuk</h4>
+        <div class="form-group">
+          <textarea name="konsulrujuk" id="konsulrujuk" class="form-control" cols="5" rows="5">{if: $penilaian_medis_ralan}{?=isset_or($penilaian_medis_ralan.konsulrujuk,'')?}{else}{?=isset_or($data_medisRalan.penilaian_medis_ralan.konsulrujuk,'')?}{/if}</textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-12">
+        <button class="btn btn-success" id="saveMedisRalan">Simpan</button>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Kembali</button>
+      </div>
+
+    <br>
+    <div class="tampildata">
+      <table class="table" width="100%">
+        <thead>
+          <tr>
+            <th>Nomor Rawat</th>
+            <th>Keluhan</th>
+            <th>Hubungan</th>
+            <th>Dokter</th>
+          </tr>
+        </thead>
+        <tbody>
+          {if: $penilaian_medis_ralan}
+          <tr>
+            <td>{$penilaian_medis_ralan.no_rawat}</td>
+            <td>{$penilaian_medis_ralan.keluhan_utama}</td>
+            <td>{$penilaian_medis_ralan.hubungan}</td>
+            <td>{$penilaian_medis_ralan.nm_dokter}</td>
+          </tr>
+          {else}
+          <tr>
+            <td colspan="6">Tidak ada data</td>
+          </tr>
+          {/if}
+        </tbody>
+      </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+$('select').selectator();
+$(document).ready(function(){
+  $("#saveMedisRalan").click(function(){
+    var baseURL = mlite.url + '/' + mlite.admin;
+    var no_rawat = $('input:text[name=no_rawat_medisRalan]').val();
+    var set_no_rawat = $('input:text[name=no_rawat_medisRalan]').val().replace(/\//g, '');
+    var kd_dokter = $('#kd_dokter').val();
+    var tanggal = $('#tanggal').val();
+    var anamnesis = $('#anamnesis').val();
+    var hubungan = $('#hubungan').val();
+    var keluhan_utama = $('#keluhan_utama').val();
+    var rps = $('#rps').val();
+    var rpd = $('#rpd').val();
+    var rpk = $('#rpk').val();
+    var rpo = $('#rpo').val();
+    var alergi = $('#alergi').val();
+    var keadaan = $('select[name=keadaan]').val();
+    var gcs = $('#gcs').val();
+    var kesadaran = $('select[name=kesadaran]').val();
+    var td = $('#td').val();
+    var nadi = $('#nadi').val();
+    var rr = $('#rr').val();
+    var suhu = $('#suhu').val();
+    var spo = $('#spo').val();
+    var bb = $('#bb').val();
+    var tb = $('#tb').val();
+    var kepala = $('select[name=kepala]').val();
+    var gigi = $('select[name=gigi]').val();
+    var tht = $('select[name=tht]').val();
+    var thoraks = $('select[name=thoraks]').val();
+    var abdomen = $('select[name=abdomen]').val();
+    var genital = $('select[name=genital]').val();
+    var ekstremitas = $('select[name=ekstremitas]').val();
+    var kulit = $('select[name=kulit]').val();
+    var ket_fisik = $('#ket_fisik').val();
+    var ket_lokalis = $('#ket_lokalis').val();
+    var penunjang = $('#penunjang').val();
+    var diagnosis = $('#diagnosis').val();
+    var tata = $('#tata').val();
+    var konsulrujuk = $('#konsulrujuk').val();
+
+    var url = baseURL + '/dokter_ralan/medisralan/?t=' + mlite.token;
+    $.post(url,{
+      no_rawat:no_rawat,
+      kd_dokter:kd_dokter,
+      tanggal:tanggal,
+      anamnesis:anamnesis,
+      hubungan:hubungan,
+      keluhan_utama:keluhan_utama,
+      rps:rps,
+      rpd:rpd,
+      rpk:rpk,
+      rpo:rpo,
+      alergi:alergi,
+      keadaan:keadaan,
+      gcs:gcs,
+      kesadaran:kesadaran,
+      td:td,
+      nadi:nadi,
+      rr:rr,
+      suhu:suhu,
+      spo:spo,
+      bb:bb,
+      tb:tb,
+      kepala:kepala,
+      gigi:gigi,
+      tht:tht,
+      thoraks:thoraks,
+      abdomen:abdomen,
+      genital:genital,
+      ekstremitas:ekstremitas,
+      kulit:kulit,
+      ket_fisik:ket_fisik,
+      ket_lokalis:ket_lokalis,
+      penunjang:penunjang,
+      diagnosis:diagnosis,
+      tata:tata,
+      konsulrujuk:konsulrujuk
+    } ,function(data) {
+      console.log(data);
+      $('.tampildata').load(baseURL + '/dokter_ralan/medisralantampil/' + set_no_rawat + '?t=' + mlite.token);
+    });
+  });
+});
+</script>
+
+
+

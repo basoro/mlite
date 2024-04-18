@@ -345,7 +345,7 @@ function printContent(el){
               <td valign="bottom" halign="center" padding="0" margin="0">
                 <center>
                   <!-- <div id="qrcodeSEP" style="margin-top:2px;width:50px;"></div><br> -->
-                  <img src="{$data_sep.qrCode}" width="100px" style="margin: 0.2em;"/><br>
+                  <img src="{?=url($data_sep.qrCode)?}" width="100px" style="margin: 0.2em;"/><br>
                   {$data_sep.nama_pasien}<br>
                 </center>
                 -----------------------------------
@@ -361,164 +361,98 @@ function printContent(el){
     <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
   </center>
   {else}
+
+  <script src="{?=url()?}/assets/jscripts/jquery.min.js?v=4.0.3"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap.min.js?v=4.0.3"></script>  
+  <link rel="stylesheet" href="{?=url()?}/assets/css/bootstrap-datetimepicker.css">
+  <script src="{?=url()?}/assets/jscripts/moment-with-locales.js"></script>
+  <script src="{?=url()?}/assets/jscripts/bootstrap-datetimepicker.js"></script>  
     <center>
       <div class="alert alert-danger" id="sync">
         Data SEP <span id="no_sep">{?=parseURL()[2]?}</span> di server SIMRS tidak ditemukan.<br>
         Apakah akan menarik data dari v-Claim?<br>
-        <button class="btn" type="button" id="syncsep">Ya</button>
+        Jika YA silahkan isikan form dibawah, kemudian klik tombol Simpan ke SIMRS<br>
+        <!-- <button class="btn" type="button" id="syncsep">Ya</button> -->
         <button class="btn" type="button" onclick="javascript:window.close();opener.window.focus();">TUTUP</button>
       </div>
     </center>
-    <div id="carisep">
-      <pre>
-      </pre>
+    <div class="container" id="form_tarik_sep">
+      
+      <link href="{?=url()?}/assets/css/ataaka.min.css" rel="stylesheet">
+
+      <form name="vedika" action="{?=url(ADMIN.'/vclaim/syncsep/')?}" method="POST" enctype="multipart/form-data">
+        <div class="col-md-12">
+          <div class="form-group">
+              <label>Nomor Rawat</label>
+              <input type="text" name="no_rawat" class="form-control" value="{?=revertNoRawat(parseUrl()[3])?}" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Nomor SEP</label>
+              <input type="text" name="no_sep" class="form-control" placeholder="Nomor SEP" required value="{?=parseUrl()[2]?}" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Asal Rujukan</label>
+              <select name="asal_rujukan" class="form-control">
+                  <option value="1">Faskes 1</option>
+                  <option value="2">Faskes 2</option>
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Tanggal Rujukan</label>
+              <input type="text" name="tgl_kunjungan" class="form-control tanggal" placeholder="Tanggal Rujukan" required value="" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Kode Diagnosa</label>
+              <input type="text" name="kd_diagnosa" class="form-control" placeholder="Kode ICD-X" required value="" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Poli Tujuan</label>
+              <select name="kd_poli" class="form-control" data-use-search="true">
+                  {loop: $poliklinik}
+                  <option value="{$value.kd_poli}">{$value.nm_poli}</option>
+                  {/loop}
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+              <label>Dokter Penanggung Jawab</label>
+              <select name="kd_dokter" class="form-control">
+                  {loop: $dokter}
+                  <option value="{$value.kd_dokter}">{$value.nm_dokter}</option>
+                  {/loop}
+              </select>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <input type="submit" class="btn btn-primary" value="Simpan Ke SIMRS" />
+          </div>
+        </div>
+      </form>      
     </div>
-    <div id="caribynorujukan">
-      <pre>
-      </pre>
-    </div>
-    <center style="margin-top:100px;">
+    <!-- <center style="margin-top:100px;">
       <button class="tutup" type="button" onclick="javascript:window.close();opener.window.focus();">Tutup Window</button>
       <button class="cetak" onclick="printContent('cetaksep')" type="button">Cetak SEP</button>
-    </center>
-      <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
-      <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>
-      <script type="text/javascript" src="{?=url()?}/assets/jscripts/qrcode.js"></script>
-      <script>
-            var mlite = {token:"{$_SESSION['token']}", url:"{?=url()?}", admin:"{?=ADMIN?}"};
-            $('#syncsep').on('click',function(e){
-              var baseURL = mlite.url + '/' + mlite.admin;
-              event.preventDefault();
-              $.get("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}", function(data){
-                var data = JSON.parse(data);
-                $("#carisep pre").text(JSON.stringify(data, null, '\t'));
-                var json_obj = [data];
-                if(!json_obj[0]) {
-                  // console.log("{?=url([ADMIN, 'vclaim', 'carisep', parseURL()[2]])?}");
+    </center> -->
 
-                  alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
-                } else if(json_obj[0].metaData.code == 200) {
-
-                  $.get(baseURL + '/vclaim/caribynorujukan/PCare/' + json_obj[0].response.noRujukan + '?t=' + mlite.token, function(data){
-                    var data = JSON.parse(data);
-                    $("#caribynorujukan pre").text(JSON.stringify(data, null, '\t'));
-                    var json_obj2 = [data];
-                    if(!json_obj2[0]) {
-                      alert('Koneksi ke server BPJS terputus. Silahkan ulangi lagi!');
-                    } else if(json_obj2[0].metaData.code == 200) {
-                      // alert(json_obj2[0].metaData.message);
-                      alert(json_obj[0].response.noSep);
-                      var no_sep = json_obj[0].response.noSep;
-                      var no_rawat = '';
-                      var tglsep = json_obj[0].response.tglSep;
-                      var tglrujukan = json_obj2[0].response.rujukan.tglKunjungan;
-                      var no_rujukan = json_obj[0].response.noRujukan;
-                      var kdppkrujukan = json_obj2[0].response.rujukan.provPerujuk.kode;
-                      var nmppkrujukan = json_obj2[0].response.rujukan.provPerujuk.nama;
-                      var jnspelayanan = json_obj2[0].response.rujukan.pelayanan.kode;
-                      var catatan = json_obj[0].response.catatan;
-                      var diagawal = json_obj2[0].response.rujukan.diagnosa.kode;
-                      var nmdiagnosaawal = json_obj2[0].response.rujukan.diagnosa.nama;
-                      var kdpolitujuan = '';
-                      var nmpolitujuan = '';
-                      var klsrawat = '';
-                      var lakalantas = '';
-                      var user = '';
-                      var nomr = '';
-                      var nama_pasien = '';
-                      var tanggal_lahir = '';
-                      var peserta = '';
-                      var jkel = '';
-                      var no_kartu = json_obj2[0].response.rujukan.peserta.noKartu;;
-                      var tglpulang = '';
-                      var asal_rujukan = '';
-                      var eksekutif = '';
-                      var cob = '';
-                      var penjamin = '';
-                      var notelep = '';
-                      var katarak = '';
-                      var tglkkl = '';
-                      var keterangankkl = '';
-                      var suplesi = '';
-                      var no_sep_suplesi = '';
-                      var kdprop = '';
-                      var nmprop = '';
-                      var kdkab = '';
-                      var nmkab = '';
-                      var kdkec = '';
-                      var nmkec = '';
-                      var noskdp = '';
-                      var kddpjp = '';
-                      var nmdpdjp = '';
-
-                      $.ajax({
-                        type: "POST",
-                        url: "{?=url([ADMIN,'vclaim','syncsep'])?}",
-                        data: {
-                          no_sep: no_sep,
-                          tglsep: tglsep,
-                          tglrujukan: tglrujukan,
-                          no_rujukan: no_rujukan,
-                          kdppkrujukan: kdppkrujukan,
-                          nmppkrujukan: nmppkrujukan,
-                          jnspelayanan: jnspelayanan,
-                          catatan: catatan,
-                          diagawal: diagawal,
-                          nmdiagnosaawal: nmdiagnosaawal,
-                          kdpolitujuan: kdpolitujuan,
-                          nmpolitujuan: nmpolitujuan,
-                          klsrawa: klsrawat,
-                          lakalantas: lakalantas,
-                          user: user,
-                          nomr: nomr,
-                          nama_pasien: nama_pasien,
-                          tanggal_lahir: tanggal_lahir,
-                          peserta: peserta,
-                          jkel: jkel,
-                          no_kartu: no_kartu,
-                          tglpulang: tglpulang,
-                          asal_rujukan: asal_rujukan,
-                          eksekutif: eksekutif,
-                          cob: cob,
-                          penjamin: penjamin,
-                          notelep: notelep,
-                          katarak: katarak,
-                          tglkkl: tglkkl,
-                          keterangankkl: keterangankkl,
-                          suplesi: suplesi,
-                          no_sep_suplesi: no_sep_suplesi,
-                          kdprop: kdprop,
-                          nmprop: nmprop,
-                          kdkab: kdkab,
-                          nmkab: nmkab,
-                          kdkec: kdkec,
-                          nmkec: nmkec,
-                          noskdp: noskdp,
-                          kddpjp: kddpjp,
-                          nmdpdjp: nmdpdjp
-                        },
-                        success: function(result){
-                          var messages = result.split(' ');
-                          if (messages.length == 1) {
-                            //location.reload();
-                          } else if(messages.length > 1) {
-                            alert(result)
-                          } else {
-                            alert('Gagal menyimpan data ke database SIMRS');
-                          }
-                        }
-                      });
-
-                    } else {
-                      alert(json_obj[0].metaData.message);
-                    }
-                  });
-                } else {
-                  alert(json_obj[0].metaData.message);
-                }
-              });
-            });
-      </script>
+    <script type="text/javascript">
+      $('.tanggal').datetimepicker({
+        format: 'YYYY-MM-DD',
+        locale: 'id'
+      });
+    </script>
+    
     {/if}
     <script src="{?=url()?}/assets/jscripts/jquery.min.js"></script>
     <script type="text/javascript" src="{?=url()?}/assets/jscripts/jquery.qrcode.js"></script>

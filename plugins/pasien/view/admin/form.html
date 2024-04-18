@@ -6,8 +6,11 @@
           <div class="form-group">
             <label for="no_rkm_medis" class="col-sm-3 control-label">Nomor RM</label>
             <div class="col-sm-4">
-              <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$pasien.no_rkm_medis}" {if: !empty($pasien.no_rkm_medis)}disabled{/if}>
-              <input name="no_rkm_medis_baru" class="form-control" type="hidden" value="{$no_rkm_medis_baru}" id="no_rkm_medis_baru" >
+              <div class="input-group" style="width: 100%">
+                <input type="text" id="no_rkm_medis" name="no_rkm_medis" class="form-control" value="{$pasien.no_rkm_medis}" {if: !empty($pasien.no_rkm_medis)}disabled{/if}>
+                <input name="no_rkm_medis_baru" class="form-control" type="hidden" value="{$no_rkm_medis_baru}" id="no_rkm_medis_baru" >
+                <span class="input-group-addon"><input type="checkbox" name="manual" id="norm_manual"></span>
+              </div>
             </div>
             <label for="tgl_daftar" class="col-sm-2 control-label">Tgl. Daftar</label>
             <div class="col-sm-3">

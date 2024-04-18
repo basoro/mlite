@@ -34,7 +34,45 @@ Konfigurasi PHP harus memiliki ekstensi berikut:
 Pemasangan
 ----------
 
-Silahkan mengacu ke halaman dokumentasi.
+### Pemasangan menggunakan composer.
+1. Install composer di server/PC dan jalankan perintah composer untuk pemasangan paket utama dan independensi
+
+```
+$ composer create-project basoro/mlite
+```
+
+2. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+
+3. Sesuaikan pengaturan di config.php
+
+4. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+
+5. Silahkan login dengan Username: admin dan Password: admin
+
+### Pemasangan Manual
+1. Unduh versi terbaru [mLITE] (https://github.com/basoro/mlite).
+
+2. Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Biasanya, file diunggah ke `www`,` htdocs` atau `public_html`.
+
+3. Install composer di server/PC dan jalankan perintah composer untuk pemasangan independensi
+```
+$ composer install
+```
+
+4. Buat folder `uploads`, `tmp/` dan `admin/tmp`. Beberapa server mungkin memerlukan izin tambahan `chmod 777` untuk direktori dan file tersebut.
+
+5. Sesuaikan pengaturan di config.php
+
+6. Buka browser Anda dan navigasikan ke alamat tempat file mLITE berada.
+
+7. Silahkan login dengan Username: admin dan Password: admin
+
+#### Catatan:
+Untuk setiap kali update, silahkan jalankan perintah
+```
+$ composer update
+```
+Ini untuk menambahkan dependensi baru pada aplikasi
 
 
 ### Peringatan!

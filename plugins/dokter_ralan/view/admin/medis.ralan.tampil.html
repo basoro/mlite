@@ -1,0 +1,25 @@
+<table class="table" width="100%">
+  <thead>
+    <tr>
+      <th>Nomor Rawat</th>
+      <th>Keluhan</th>
+      <th>Hubungan</th>
+      <th>Dokter</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {if: $penilaian_medis_ralan}
+    <tr>
+      <td>{$penilaian_medis_ralan.no_rawat}</td>
+      <td>{$penilaian_medis_ralan.keluhan_utama}</td>
+      <td>{$penilaian_medis_ralan.hubungan}</td>
+      <td>{$penilaian_medis_ralan.nm_dokter}</td>
+    </tr>
+    {else}
+    <tr>
+      <td colspan="5">Tidak ada data</td>
+    </tr>
+    {/if}
+  </tbody>
+</table>

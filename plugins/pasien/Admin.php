@@ -2,7 +2,6 @@
 namespace Plugins\Pasien;
 
 use Systems\AdminModule;
-use Systems\Lib\Fpdf\PDF_MC_Table;
 use Plugins\Pasien\DB_Wilayah;
 use Plugins\Icd\DB_ICD;
 
@@ -307,8 +306,13 @@ class Admin extends AdminModule
         $this->db('kelurahan')->save(['kd_kel' => $_POST['kd_kel'], 'nm_kel' => $_POST['nm_kel']]);
       }
 
+      $manual = $_POST['manual'];
+      unset($_POST['manual']);
+
       if (!$pasien) {
-        $_POST['no_rkm_medis'] = $this->core->setNoRM();
+        if($manual == '0') {
+          $_POST['no_rkm_medis'] = $this->core->setNoRM();
+        }
         $_POST['tmp_lahir'] = '-';
         $_POST['umur'] = $this->hitungUmur($_POST['tgl_lahir']);
         $_POST['pekerjaanpj'] = '-';
@@ -328,7 +332,9 @@ class Admin extends AdminModule
         unset($_POST['nm_kel']);
         $query = $this->db('pasien')->save($_POST);
         if($this->db('pasien')->where('no_rkm_medis', $_POST['no_rkm_medis'])->oneArray()) {
-          $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+          if($manual == '0') {
+            $this->db()->pdo()->exec("UPDATE set_no_rkm_medis SET no_rkm_medis='$_POST[no_rkm_medis]'");
+          }
           $data['status'] = 'success';
           echo json_encode($data);
         } else {
@@ -446,12 +452,29 @@ class Admin extends AdminModule
       exit();
     }
 
-    public function getKartu()
+    public function getCetakKartu($no_rkm_medis)
     {
       $kartu['settings'] = $this->settings('settings');
-      $kartu['pasien'] = $this->db('pasien')->where('no_rkm_medis', $_GET['no_rkm_medis'])->oneArray();
+      $kartu['pasien'] = $this->db('pasien')->where('no_rkm_medis', $no_rkm_medis)->oneArray();
       $this->tpl->set('kartu', $this->tpl->noParse_array(htmlspecialchars_array($kartu)));
       echo $this->draw('kartu.html');
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => [100, 70], 
+        'margin_left' => 4,
+        'margin_right' => 4,
+        'margin_top' => 4,
+        'margin_bottom' => 4
+      ]);
+
+      $url = url('admin/tmp/kartu.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($html);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+            
       exit();
     }
 
@@ -480,6 +503,19 @@ class Admin extends AdminModule
     {
       $url = url([ADMIN, 'pcare', 'byjeniskartu', 'nik', $nik]);
       echo $this->draw('pcare.bynik.html', ['url' => $url]);
+      exit();
+    }
+
+    public function getRiwayatPerawatanXXX($no_rkm_medis)
+    {
+      $reg_periksa = $this->db('reg_periksa')
+        ->join('poliklinik', 'poliklinik.kd_poli=reg_periksa.kd_poli')
+        ->join('dokter', 'dokter.kd_dokter=reg_periksa.kd_dokter')
+        ->join('penjab', 'penjab.kd_pj=reg_periksa.kd_pj')
+        ->where('no_rkm_medis', $no_rkm_medis)
+        ->desc('tgl_registrasi')
+        ->toArray();
+      echo json_encode($reg_periksa, true);
       exit();
     }
 
@@ -524,12 +560,12 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
         $row['rawat_jl_drpr'] = [];
-        foreach ($rows['rawat_jl_drpr'] as $row) {
-          $dokter = $this->db('dokter')->where('kd_dokter', $row['kd_dokter'])->oneArray();
-          $petugas = $this->db('petugas')->where('nip', $row['nip'])->oneArray();
-          $row['nm_dokter'] = $dokter['nm_dokter'];
-          $row['nama'] = $petugas['nama'];
-          $row['rawat_jl_drpr'][] = $row;
+        foreach ($rows['rawat_jl_drpr'] as $row2) {
+          $dokter = $this->db('dokter')->where('kd_dokter', $row2['kd_dokter'])->oneArray();
+          $petugas = $this->db('petugas')->where('nip', $row2['nip'])->oneArray();
+          $row2['nm_dokter'] = $dokter['nm_dokter'];
+          $row2['nama'] = $petugas['nama'];
+          $row['rawat_jl_drpr'][] = $row2;
         }
         $row['pemeriksaan_ranap'] = [];
         $row['rawat_inap_dr'] = [];
@@ -554,12 +590,12 @@ class Admin extends AdminModule
             ->join('jns_perawatan_inap', 'jns_perawatan_inap.kd_jenis_prw=rawat_inap_drpr.kd_jenis_prw')
             ->where('no_rawat', $row['no_rawat'])
             ->toArray();
-          foreach ($rows['rawat_inap_drpr'] as $row) {
-            $dokter = $this->db('dokter')->where('kd_dokter', $row['kd_dokter'])->oneArray();
-            $petugas = $this->db('petugas')->where('nip', $row['nip'])->oneArray();
-            $row['nm_dokter'] = $dokter['nm_dokter'];
-            $row['nama'] = $petugas['nama'];
-            $row['rawat_inap_drpr'][] = $row;
+          foreach ($rows['rawat_inap_drpr'] as $row3) {
+            $dokter = $this->db('dokter')->where('kd_dokter', $row3['kd_dokter'])->oneArray();
+            $petugas = $this->db('petugas')->where('nip', $row3['nip'])->oneArray();
+            $row3['nm_dokter'] = $dokter['nm_dokter'];
+            $row3['nama'] = $petugas['nama'];
+            $row['rawat_inap_drpr'][] = $row3;
           }
         }
 
@@ -640,6 +676,11 @@ class Admin extends AdminModule
           ->where('no_rawat', $row['no_rawat'])
           ->toArray();
 
+        $row['penilaian_medis_ralan'] = $this->db('penilaian_medis_ralan')
+        ->join('dokter', 'dokter.kd_dokter=penilaian_medis_ralan.kd_dokter')
+        ->where('no_rawat', $row['no_rawat'])
+        ->toArray();
+
         $riwayat['reg_periksa'][] = $row;
       }
       $this->tpl->set('riwayat', $this->tpl->noParse_array(htmlspecialchars_array($riwayat)));
@@ -693,44 +734,10 @@ class Admin extends AdminModule
       FROM `pasien`
       WHERE (`no_rkm_medis` LIKE '%$cari%' OR `nm_pasien` LIKE '%$cari%' OR `alamat` LIKE '%$cari%')
       ");
+
+      $cetak = $this->db('mlite_temporary')->toArray();
+      return $this->draw('cetak.pasien.html', ['cetak' => $cetak]);
       exit();
-    }
-
-    public function getCetakPdf()
-    {
-      $tmp = $this->db('mlite_temporary')->toArray();
-      $logo = $this->settings->get('settings.logo');
-
-      $pdf = new PDF_MC_Table('L','mm','Legal');
-      $pdf->AddPage();
-      $pdf->SetAutoPageBreak(true, 10);
-      $pdf->SetTopMargin(10);
-      $pdf->SetLeftMargin(10);
-      $pdf->SetRightMargin(10);
-
-      $pdf->Image('../'.$logo, 10, 8, '18', '18', 'png');
-      $pdf->SetFont('Arial', '', 24);
-      $pdf->Text(30, 16, $this->settings->get('settings.nama_instansi'));
-      $pdf->SetFont('Arial', '', 10);
-      $pdf->Text(30, 21, $this->settings->get('settings.alamat').' - '.$this->settings->get('settings.kota'));
-      $pdf->Text(30, 25, $this->settings->get('settings.nomor_telepon').' - '.$this->settings->get('settings.email'));
-      $pdf->Line(10, 30, 345, 30);
-      $pdf->Line(10, 31, 345, 31);
-      $pdf->SetFont('Arial', 'B', 13);
-      $pdf->Text(10, 40, 'DATA PASIEN');
-      $pdf->Ln(34);
-      $pdf->SetFont('Arial', 'B', 11);
-      $pdf->SetWidths(array(20,65,35,25,25,70,25,30,40));
-      $pdf->Row(array('No. RM','Nama Pasien','No. KTP','J. Kelamin','Tgl. Lahir','Alamat','Tgl. Daftar','No. Telp','Email'));
-      $pdf->SetFont('Arial', '', 10);
-      foreach ($tmp as $hasil) {
-        $j_kelamin = 'Laki-Laki';
-        if($hasil['temp4'] == 'P') {
-          $j_kelamin = 'Perempuan';
-        }
-        $pdf->Row(array($hasil['temp1'],$hasil['temp2'],$hasil['temp3'],$j_kelamin,$hasil['temp6'],$hasil['temp8'],$hasil['temp13'],$hasil['temp14'],$hasil['temp33']));
-      }
-      $pdf->Output('cetak'.date('Y-m-d').'.pdf','I');
     }
 
     public function anyWilayah()
@@ -874,6 +881,9 @@ class Admin extends AdminModule
         $sql_query = "select * from pasien where ";
         $sql_query .= "tgl_daftar between ? and ? and ";
         $sql_query .= "(no_rkm_medis like ? or nm_pasien like ?) ";
+        if($penjab) {
+          $sql_query .= "and kd_pj = '$penjab' ";
+        }
 
         $total = $this->db()->pdo()->prepare($sql_query);
         $total->execute([$start_date, $end_date, '%'.$keyword.'%', '%'.$keyword.'%']);
@@ -915,7 +925,7 @@ class Admin extends AdminModule
               </ul>
               </div>
               ';
-              // $row['aksi'] = '<a href="#" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$row['no_rkm_medis'].'</a>';
+              // $row['aksi'] = '<a href="#" data-toggle="modal" data-target="#statusModal" class="btn btn-sm btn-warning"><i class="fa fa-refresh"></i> '.$penjab.'</a>';
               $data[] = $row;
             }
         }
@@ -950,6 +960,24 @@ class Admin extends AdminModule
         $this->core->addJS(url([ADMIN, 'pasien', 'javascript']), 'footer');
     }
 
+    public function getSettings()
+    {
+      $set_no_rkm_medis = $this->db('set_no_rkm_medis')->oneArray();
+      return $this->draw('settings.html', ['set_no_rkm_medis' => $set_no_rkm_medis]);
+    }
+
+    public function postSaveSettings()
+    {
+        $this->db()->pdo()->exec("DELETE FROM `set_no_rkm_medis`");
+        $set_no_rkm_medis = $this->db('set_no_rkm_medis')->save(['no_rkm_medis' => $_POST['set_no_rkm_medis']]);
+        if($set_no_rkm_medis) {
+          $this->notify('success', 'Pengaturan telah disimpan');
+        } else {
+          $this->notify('error', 'Pengaturan gagal disimpan');
+        }
+        redirect(url([ADMIN, 'pasien', 'settings']));
+    }
+
     protected function data_wilayah($table)
     {
         return new DB_Wilayah($table);
@@ -958,6 +986,79 @@ class Admin extends AdminModule
     protected function data_icd($table)
     {
         return new DB_ICD($table);
+    }
+
+    public function getCetakMpdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/cetak.pasien.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();      
+    }
+
+    public function getCetakRiwayatMpdf()
+    {
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $css = '
+      <style>
+        del { 
+          display: none;
+        }
+        table {
+          padding-top: 1cm;
+          padding-bottom: 1cm;
+          font-size: 10px;
+        }
+        td, th {
+          border-bottom: 1px solid #dddddd;
+          padding: 5px;
+        }        
+        tr:nth-child(even) {
+          background-color: #ffffff;
+        }
+      </style>
+      ';
+
+      // $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      // $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/riwayat.perawatan.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($css);
+      $mpdf->WriteHTML($html);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();      
+    }    
+
+    public function getExcel()
+    {
+      $file = "data.pasien.xls";
+      $html = file_get_contents(url('admin/tmp/cetak.pasien.html'));
+      header("Content-type: application/vnd-ms-excel");
+      header("Content-Disposition: attachment; filename=$file");
+      echo "<!DOCTYPE html><html><head></head><body>";
+      echo $html;
+      echo "</body></html>";
+      exit();
     }
 
 }

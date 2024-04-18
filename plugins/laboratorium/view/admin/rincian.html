@@ -31,7 +31,12 @@
         <td></td>
         <td>{$data2.Pemeriksaan}</td>
         <td with="200" contenteditable="true" data-old_value="{$data2.nilai}" onBlur="saveNilai(this,'nilai','{$data2.no_rawat}','{$data2.tgl_periksa}','{$data2.jam}','{$data2.id_template}')" onClick="highlightEdit(this);">{$data2.nilai}</td>
-        <td>{$data2.nilai_rujukan}</td>
+        <td>
+          {if: $pasien.jk == 'L' && $reg_periksa.umurdaftar < '16'}{$data2.nilai_rujukan_la}{/if}
+          {if: $pasien.jk == 'L' && $reg_periksa.umurdaftar >= '16'}{$data2.nilai_rujukan_ld}{/if}
+          {if: $pasien.jk == 'P' && $reg_periksa.umurdaftar < '16'}{$data2.nilai_rujukan_pa}{/if}
+          {if: $pasien.jk == 'P' && $reg_periksa.umurdaftar >= '16'}{$data2.nilai_rujukan_pd}{/if}
+        </td>
         <td>{$data2.satuan}</td>
         <td contenteditable="true" data-old_value="{$data2.keterangan}" onBlur="saveKeterangan(this,'keterangan','{$data2.no_rawat}','{$data2.tgl_periksa}','{$data2.jam}','{$data2.id_template}')" onClick="highlightEdit(this);">{?=nl2br($data2.keterangan)?}</td>
       </tr>

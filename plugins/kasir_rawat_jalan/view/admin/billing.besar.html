@@ -53,13 +53,14 @@
 			</td>
 			</tr>
 		</table>
+		<br><br>
 		<table  rules='rows' width="700px" style="font-size: 11px;font-family: verdana, sans-serif;">
 		  <tr align="left" height='30px'>
-			<th width="20px">No</th>
-			<th with="400px">Item</th>
-			<th width="100px">Tarif</th>
-			<th width="30px">Jumlah</th>
-			<th width="150px">Total</th>
+			<th>No</th>
+			<th>Item</th>
+			<th>Tarif</th>
+			<th>Jumlah</th>
+			<th>Total</th>
 		  </tr>
 			<tr border='1', height='20px'>
 				<td>I</td>
@@ -84,7 +85,8 @@
 			</tr>
 			{if: $billing_besar_detail.detail_pemberian_obat}
 			<tr>
-				<td colspan="5">Non Racikan</td>
+				<td></td>
+				<td colspan="4">Non Racikan</td>
 			</tr>
 			{/if}
 			{loop: $billing_besar_detail.detail_pemberian_obat as $data}
@@ -241,11 +243,13 @@
 		</table></center>
 		</div>
 		<br><br><br>
-		<center>
-			<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
-			<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
-			<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
-		</center>
+		<del>
+			<center>
+				<button type="button" class="btn btn-warning" data-toggle="modal" href="#emailModal"><span class="glyphicon glyphicon-send"></span> Kirim Email</button>
+				<button type="button" class="btn btn-info" data-toggle="modal" href="#waModal"><span class="glyphicon glyphicon-send"></span> Kirim WA</button>
+				<button onclick="printContent('faktur')" type="button" class="btn btn-danger"><span class="glyphicon glyphicon-print"></span> Cetak</button>
+			</center>	
+		</del>
 
 		<!-- Modal -->
 	  <div class="modal fade" id="waModal" tabindex="-1" role="dialog" aria-labelledby="waModalLabel" aria-hidden="true">

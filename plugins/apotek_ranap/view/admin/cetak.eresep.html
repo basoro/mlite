@@ -1,0 +1,33 @@
+<div>
+    <table>
+        <tr>
+            <td>
+                <img width="70px" src='{?=url()?}/{$settings.logo}'/>
+            </td>
+            <td>
+                <span style="font-size:24px">{$settings.nama_instansi}</span><br>
+                {$settings.alamat} - {$settings.nomor_telepon} - {$settings.email}<br>
+                {$settings.kota} - {$settings.propinsi}        
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <table>
+        <tr>
+            <td><h3><center>Salinan e-Resep</center></h3></td>
+        </tr>
+    </table>
+    <div align="right">{$settings.kota}, {$tanggal}</div>
+    <hr>
+    <br>
+    Nama   : <b>{$pasien}</b><br>
+    Umur   : <b>{$umur}</b><br>
+    Alamat : <b>{$alamat}</b><br>
+    <hr>
+    {loop: $detail}
+    <h3>R/</h3>
+          {$value.nama_brng} - {$value.jml}<br>
+          {$value.aturan_pakai}<br>
+    {/loop}
+    <br><br><br>
+</div>
