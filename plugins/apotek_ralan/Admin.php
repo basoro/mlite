@@ -490,7 +490,7 @@ class Admin extends AdminModule
 
       $mpdf = new \Mpdf\Mpdf([
         'mode' => 'utf-8',
-        'format' => [100, 65], 
+        'format' => [100, 70], 
         'margin_left' => 2,
         'margin_right' => 2,
         'margin_top' => 2,
