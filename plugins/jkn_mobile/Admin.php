@@ -227,36 +227,36 @@ class Admin extends AdminModule
 
     public function getJadwalDokter()
     {
-        $maping_poli_bpjs = $this->db('maping_poli_bpjs')->toArray();
-        foreach ($maping_poli_bpjs as $value) {
-          $_POST['kodepoli'] = $value['kd_poli_bpjs'];
-          $kodepoli = $_POST['kodepoli'];
-          $_POST['tanggal'] = date('Y-m-d');
-          $tanggal = $_POST['tanggal'];
-          date_default_timezone_set('UTC');
-          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-          $key = $this->consid.$this->secretkey.$tStamp;
-          date_default_timezone_set($this->settings->get('settings.timezone'));
+        $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
+        return $this->draw('jadwaldokter.html',['poli'=>$poli]);
+    }
 
-          $url = $this->bpjsurl.'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
-          $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-          $json = json_decode($output, true);
-          $code = $json['metadata']['code'];
-          $message = $json['metadata']['message'];
-          $stringDecrypt = stringDecrypt($key, $json['response']);
-          $decompress = '""';
-          if(!empty($stringDecrypt)) {
-            $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-          }
-          $response = [];
-          if($json['metadata']['code'] == '200') {
-            $response = $decompress;
-          }
+    public function postHfis() {
+        $kodepoli = $_POST['poli'];
+        // $_POST['tanggal'] = date('Y-m-d');
+        $tanggal = $_POST['tgl'];
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid . $this->secretkey . $tStamp;
+        date_default_timezone_set($this->settings->get('settings.timezone'));
+
+        $url = $this->bpjsurl . 'jadwaldokter/kodepoli/'.$kodepoli.'/tanggal/'.$tanggal;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        $code = $json['metadata']['code'];
+        $message = $json['metadata']['message'];
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if (!empty($stringDecrypt)) {
+            $decompress = decompress($stringDecrypt);
         }
-        //echo $response;
+        // $response = [];
+        if ($json['metadata']['code'] == '200') {
+            $response = $decompress;
+        }
         $response = json_decode($response, true);
-        $this->assign['list'] = $response;
-        return $this->draw('jadwaldokter.html', ['row' => $this->assign]);
+        echo json_encode($response);
+        exit();
     }
 
     public function anyTaskID()
