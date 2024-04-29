@@ -14,8 +14,8 @@ define('WEBAPPS_URL', 'http://localhost/mlite/uploads');
 define('WEBAPPS_PATH', BASE_DIR . '/uploads');
 
 // Multi APP
-define('MULTI_APP', false);
-define('MULTI_APP_REDIRECT', '');
+define('MULTI_APP', true);
+define('MULTI_APP_REDIRECT', 'dokter_ulun');
 
 // Admin cat name
 define('ADMIN', 'admin');
