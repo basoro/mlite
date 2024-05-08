@@ -37,7 +37,7 @@ class Admin extends AdminModule
     $this->_addHeaderFiles();
     $dokter = $this->db('maping_dokter_dpjpvclaim')->toArray();
     $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
-    return $this->draw('barang.html', ['dokter' => $dokter, 'poli' => $poli]);
+    return $this->draw('update.hfis.html', ['dokter' => $dokter, 'poli' => $poli]);
   }
 
   public function postUpdateBridgeHfis()
@@ -135,7 +135,7 @@ class Admin extends AdminModule
   public function getLihatHfis()
   {
     $poli = $this->db('maping_poli_bpjs')->group('kd_poli_bpjs')->toArray();
-    return $this->draw('jadwalhfis.html', ['poli' => $poli]);
+    return $this->draw('jadwal.hfis.html', ['poli' => $poli]);
   }
 
   public function postHfis()
@@ -171,7 +171,7 @@ class Admin extends AdminModule
   {
     $poli = $this->db('poliklinik')->where('status', '1')->toArray();
     $dokter = $this->db('dokter')->where('status', '1')->toArray();
-    return $this->draw('jadwaldokter.html', ['poli' => $poli, 'dokter' => $dokter]);
+    return $this->draw('jadwal.dokter.html', ['poli' => $poli, 'dokter' => $dokter]);
   }
 
   public function postListJadwalDokter()
@@ -217,7 +217,7 @@ class Admin extends AdminModule
   public function getJavascript()
   {
     header('Content-type: text/javascript');
-    echo $this->draw(MODULES . '/bridging_hfis/js/admin/onepiece.js');
+    echo $this->draw(MODULES . '/bridging_hfis/js/admin/scripts.js');
     exit();
   }
 
@@ -226,8 +226,6 @@ class Admin extends AdminModule
     $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
     $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
     $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-    $this->core->addJS(url('assets/jscripts/lightbox/lightbox.min.js'));
-    $this->core->addCSS(url('assets/jscripts/lightbox/lightbox.min.css'));
     $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
     $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
     $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
