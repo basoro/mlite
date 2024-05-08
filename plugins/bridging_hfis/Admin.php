@@ -10,10 +10,10 @@ class Admin extends AdminModule
 
   public function init()
   {
-    $this->consid = $this->settings->get('jkn_mobile_v2.BpjsConsID');
-    $this->secretkey = $this->settings->get('jkn_mobile_v2.BpjsSecretKey');
-    $this->bpjsurl = $this->settings->get('jkn_mobile_v2.BpjsAntrianUrl');
-    $this->user_key = $this->settings->get('jkn_mobile_v2.BpjsUserKey');
+    $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');
+    $this->secretkey = $this->settings->get('jkn_mobile.BpjsSecretKey');
+    $this->bpjsurl = $this->settings->get('jkn_mobile.BpjsAntrianUrl');
+    $this->user_key = $this->settings->get('jkn_mobile.BpjsUserKey');
   }
 
   public function navigation()
