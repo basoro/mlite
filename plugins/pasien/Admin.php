@@ -1013,13 +1013,15 @@ class Admin extends AdminModule
     public function getExportPDF()
     {
       $query = $_GET['query'];
-      $tgl_awal = isset_or($_GET['tgl_awal'], date('Y-m-d'));
-      $tgl_akhir = isset_or($_GET['tgl_akhir'], date('Y-m-d'));
+      $tgl_awal = $_GET['tgl_awal'];
+      $tgl_akhir = $_GET['tgl_akhir'];
       $filter = $_GET['filter'];
 
       $sql = "SELECT *
-        FROM pasien 
-        WHERE tgl_daftar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+        FROM pasien";
+        if(isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir']) && $_GET['tgl_awal'] !='' && $_GET['tgl_akhir'] !='') {
+          $sql .=" WHERE tgl_daftar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+        }
         if(isset($_GET['query']) && $_GET['query'] !='') {
           $sql .=" AND nm_pasien LIKE '%$query%'";
         }
