@@ -2,10 +2,10 @@
 
     return [
         'name'          =>  'Bridging HFIS',
-        'description'   =>  'Modul Bridging HFIS di KhanzaLITE',
+        'description'   =>  'Modul Bridging HFIS di mLITE',
         'author'        =>  'Adly',
         'version'       =>  '1.0',
-        'compatibility' =>  '2022',
+        'compatibility' =>  '4.0.*',
         'icon'          =>  'shield',
         'install'       =>  function () use ($core) {
         },
