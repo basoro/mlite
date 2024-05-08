@@ -1017,8 +1017,7 @@ class Admin extends AdminModule
       $tgl_akhir = $_GET['tgl_akhir'];
       $filter = $_GET['filter'];
 
-      $sql = "SELECT *
-        FROM pasien";
+      $sql = "SELECT * FROM pasien";
         if(isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir']) && $_GET['tgl_awal'] !='' && $_GET['tgl_akhir'] !='') {
           $sql .=" WHERE tgl_daftar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
         }
