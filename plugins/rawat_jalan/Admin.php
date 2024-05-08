@@ -563,7 +563,7 @@ class Admin extends AdminModule
                 'tanggal_booking' => 'booking_periksa.tanggal_booking'
               ])
               ->join('poliklinik', 'poliklinik.kd_poli = booking_periksa.kd_poli')
-              //->where('tambahan_pesan', 'jkn_mobile_v2')
+              //->where('tambahan_pesan', 'jkn_mobile')
               ->toArray()
           ]
         );
