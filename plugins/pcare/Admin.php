@@ -189,6 +189,90 @@ class Admin extends AdminModule
       exit();
   }
 
+  public function getRefAlergi()
+  {
+      return $this->draw('kesadaran.html');
+  }
+
+  public function getAlergi($jenis)
+  {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
+
+      $url = $this->api_url.'alergi/jenis/'.$jenis;
+      $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      //echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      }
+      if ($json != null) {
+          echo '{
+              "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+              },
+              "response": ' . $decompress . '}';
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      }
+
+      exit();
+  }
+
+  public function getRefPrognosa()
+  {
+      return $this->draw('kesadaran.html');
+  }
+
+  public function getPrognosa()
+  {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
+
+      $url = $this->api_url.'prognosa';
+      $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      //echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      }
+      if ($json != null) {
+          echo '{
+              "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+              },
+              "response": ' . $decompress . '}';
+      } else {
+          echo '{
+              "metaData": {
+                "code": "5000",
+                "message": "ERROR"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      }
+
+      exit();
+  }
+
   public function getRefKunjungan()
   {
       $this->_addHeaderFiles();
@@ -414,37 +498,38 @@ class Admin extends AdminModule
 
   public function getDelKunjungan($noKunjungan)
   {
-      date_default_timezone_set('UTC');
-      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-      $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
-      $url = $this->api_url.'kunjungan/'.$noKunjungan;
-      $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
-      $json = json_decode($output, true);
-      echo json_encode($json);
+    date_default_timezone_set('UTC');
+    $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+    $key = $this->consumerID . $this->consumerSecret . $tStamp;
 
-      $code = $json['metaData']['code'];
-      $message = $json['metaData']['message'];
-      $stringDecrypt = stringDecrypt($key, $json['response']);
-      $decompress = '""';
-      if (!empty($stringDecrypt)) {
-          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
-      }
-      if ($json != null) {
-          echo '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-      } else {
-          echo '{
-              "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-              },
-              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+    $url = $this->api_url.'kunjungan/'.$noKunjungan;
+    $output = PcareService::delete($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);   
+    $json = json_decode($output, true);
+    echo json_encode($json);
+
+      // $code = $json['metaData']['code'];
+      // $message = $json['metaData']['message'];
+      // $stringDecrypt = stringDecrypt($key, $json['response']);
+      // $decompress = '""';
+      // if (!empty($stringDecrypt)) {
+      //     $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      // }
+      // if ($json != null) {
+      //     echo '{
+      //         "metaData": {
+      //           "code": "' . $code . '",
+      //           "message": "' . $message . '"
+      //         },
+      //         "response": ' . $decompress . '}';
+      // } else {
+      //     echo '{
+      //         "metaData": {
+      //           "code": "5000",
+      //           "message": "ERROR"
+      //         },
+      //         "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      // }
 
       exit();
   }
@@ -1173,7 +1258,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'tindakan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1182,21 +1267,21 @@ class Admin extends AdminModule
       if (!empty($stringDecrypt)) {
           $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
       }
-      if ($json != null) {
-          echo '{
-              "metaData": {
-                "code": "' . $code . '",
-                "message": "' . $message . '"
-              },
-              "response": ' . $decompress . '}';
-      } else {
-          echo '{
-              "metaData": {
-                "code": "5000",
-                "message": "ERROR"
-              },
-              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
-      }
+      // if ($json != null) {
+      //     echo '{
+      //         "metaData": {
+      //           "code": "' . $code . '",
+      //           "message": "' . $message . '"
+      //         },
+      //         "response": ' . $decompress . '}';
+      // } else {
+      //     echo '{
+      //         "metaData": {
+      //           "code": "5000",
+      //           "message": "ERROR"
+      //         },
+      //         "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      // }
 
       exit();
   }
@@ -1511,234 +1596,315 @@ class Admin extends AdminModule
 
     $ref_tindakan = '[
       {
-        "kdTindakan": "01001",
-        "nmTindakan": "Rawat jalan di Poliklinik Umum / KIA - KB/Gigi setiap kali kunjungan ",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01005",
-        "nmTindakan": "Pelayanan KB : Pemasangan IUD / Implant\r\n",
-        "maxTarif": 100000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01006",
-        "nmTindakan": "Pelayanan KB : Suntik\r\n",
-        "maxTarif": 15000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01023",
-        "nmTindakan": "Pelayanan ANC 1 (Satu)",
-        "maxTarif": 50000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01024",
-        "nmTindakan": "Pelayanan ANC 2 (Dua)",
-        "maxTarif": 50000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01025",
-        "nmTindakan": "Pelayanan ANC 3 (Tiga)",
-        "maxTarif": 50000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01026",
-        "nmTindakan": "Pelayanan ANC 4 (Empat)",
-        "maxTarif": 50000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01027",
-        "nmTindakan": "Pelayanan PNC 1 (Satu)",
-        "maxTarif": 25000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01028",
-        "nmTindakan": "Pelayanan PNC 2 (Dua)",
-        "maxTarif": 25000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01029",
-        "nmTindakan": "Pelayanan PNC 3 (Tiga)",
-        "maxTarif": 25000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "01030",
-        "nmTindakan": "Pelayanan PNC 4 (Empat)",
-        "maxTarif": 25000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "02004",
-        "nmTindakan": "Pelayanan pra-rujukan pada komplikasi kebidanan dan neonatal",
-        "maxTarif": 125000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03005",
-        "nmTindakan": "Perawatan Luka tanpa jahitan / ganti verban",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03052",
-        "nmTindakan": "Tampon Hidung",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03092",
-        "nmTindakan": "Pemasangan/ pengangkatan IUD oleh Bidan",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03095",
-        "nmTindakan": "Injeksi KB",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03096",
-        "nmTindakan": "Kontrol IUD",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03113",
-        "nmTindakan": "Skintest",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "03122",
-        "nmTindakan": "MOP / Vasektomi",
-        "maxTarif": 350000,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04002",
-        "nmTindakan": "Tambalan Composite",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04003",
-        "nmTindakan": "Tambalan GIC",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04010",
-        "nmTindakan": "Kontrol Pasca Tindakan",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04011",
-        "nmTindakan": "Pencabutan gigi tetap dengan anestesi topikal",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04014",
-        "nmTindakan": "Hecting 1-3 jahitan",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04015",
-        "nmTindakan": "Buka jahitan / post pencabutan gigi dengan tindakan",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04017",
-        "nmTindakan": "Kontrol post pencabutan gigi",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "04024",
-        "nmTindakan": "Kontrol Pasca Tindakan",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "09001",
-        "nmTindakan": "Evakuasi medis / Ambulans Darat\r\n",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "09002",
-        "nmTindakan": "Evakuasi medis / Ambulans Air\r\n",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05022",
-        "nmTindakan": "Ureum",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05023",
-        "nmTindakan": "Kreatinin",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05049",
-        "nmTindakan": "Gula Darah Puasa (GDP) - PRB/Prolanis",
-        "maxTarif": 17500,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05051",
-        "nmTindakan": "HbA1c - PRB/Prolanis",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05052",
-        "nmTindakan": "Microalbuminaria",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05053",
-        "nmTindakan": "Kolesterol Total",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05054",
-        "nmTindakan": "Kolesterol LDL",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05055",
-        "nmTindakan": "Kolesterol HDL",
-        "maxTarif": 0,
-        "withValue": false
-      },
-      {
-        "kdTindakan": "05056",
-        "nmTindakan": "Trigliserida",
-        "maxTarif": 0,
-        "withValue": false
-      }
+				"kdTindakan": "01006",
+				"nmTindakan": "Pelayanan KB : Suntik",
+				"maxTarif": 20000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01023",
+				"nmTindakan": "Pelayanan ANC 1 (Satu) oleh Dokter",
+				"maxTarif": 90000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01024",
+				"nmTindakan": "Pelayanan ANC 2 (Dua) oleh Dokter",
+				"maxTarif": 90000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01025",
+				"nmTindakan": "Pelayanan ANC 3 (Tiga) oleh Dokter",
+				"maxTarif": 90000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01026",
+				"nmTindakan": "Pelayanan ANC 4 (Empat) oleh Dokter",
+				"maxTarif": 90000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01027",
+				"nmTindakan": "Pelayanan PNC 1 (Satu)",
+				"maxTarif": 50000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01028",
+				"nmTindakan": "Pelayanan PNC 2 (Dua)",
+				"maxTarif": 50000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01029",
+				"nmTindakan": "Pelayanan PNC 3 (Tiga)",
+				"maxTarif": 50000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "01030",
+				"nmTindakan": "Pelayanan PNC 4 (Empat)",
+				"maxTarif": 50000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "02004",
+				"nmTindakan": "Pelayanan pra-rujukan pada komplikasi kebidanan dan neonatal",
+				"maxTarif": 200000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "03122",
+				"nmTindakan": "MOP / Vasektomi",
+				"maxTarif": 370000,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "09001",
+				"nmTindakan": "Evakuasi medis / Ambulans Darat",
+				"maxTarif": 0,
+				"withValue": false
+			},
+			{
+				"kdTindakan": "09002",
+				"nmTindakan": "Evakuasi medis / Ambulans Air",
+				"maxTarif": 0,
+				"withValue": false
+			}
     ]';
+
+    // $ref_tindakan = '[
+    //   {
+    //     "kdTindakan": "01001",
+    //     "nmTindakan": "Rawat jalan di Poliklinik Umum / KIA - KB/Gigi setiap kali kunjungan ",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01005",
+    //     "nmTindakan": "Pelayanan KB : Pemasangan IUD / Implant\r\n",
+    //     "maxTarif": 100000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01006",
+    //     "nmTindakan": "Pelayanan KB : Suntik\r\n",
+    //     "maxTarif": 15000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01023",
+    //     "nmTindakan": "Pelayanan ANC 1 (Satu)",
+    //     "maxTarif": 50000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01024",
+    //     "nmTindakan": "Pelayanan ANC 2 (Dua)",
+    //     "maxTarif": 50000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01025",
+    //     "nmTindakan": "Pelayanan ANC 3 (Tiga)",
+    //     "maxTarif": 50000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01026",
+    //     "nmTindakan": "Pelayanan ANC 4 (Empat)",
+    //     "maxTarif": 50000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01027",
+    //     "nmTindakan": "Pelayanan PNC 1 (Satu)",
+    //     "maxTarif": 25000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01028",
+    //     "nmTindakan": "Pelayanan PNC 2 (Dua)",
+    //     "maxTarif": 25000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01029",
+    //     "nmTindakan": "Pelayanan PNC 3 (Tiga)",
+    //     "maxTarif": 25000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "01030",
+    //     "nmTindakan": "Pelayanan PNC 4 (Empat)",
+    //     "maxTarif": 25000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "02004",
+    //     "nmTindakan": "Pelayanan pra-rujukan pada komplikasi kebidanan dan neonatal",
+    //     "maxTarif": 125000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03005",
+    //     "nmTindakan": "Perawatan Luka tanpa jahitan / ganti verban",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03052",
+    //     "nmTindakan": "Tampon Hidung",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03092",
+    //     "nmTindakan": "Pemasangan/ pengangkatan IUD oleh Bidan",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03095",
+    //     "nmTindakan": "Injeksi KB",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03096",
+    //     "nmTindakan": "Kontrol IUD",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03113",
+    //     "nmTindakan": "Skintest",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "03122",
+    //     "nmTindakan": "MOP / Vasektomi",
+    //     "maxTarif": 350000,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04002",
+    //     "nmTindakan": "Tambalan Composite",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04003",
+    //     "nmTindakan": "Tambalan GIC",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04010",
+    //     "nmTindakan": "Kontrol Pasca Tindakan",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04011",
+    //     "nmTindakan": "Pencabutan gigi tetap dengan anestesi topikal",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04014",
+    //     "nmTindakan": "Hecting 1-3 jahitan",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04015",
+    //     "nmTindakan": "Buka jahitan / post pencabutan gigi dengan tindakan",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04017",
+    //     "nmTindakan": "Kontrol post pencabutan gigi",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "04024",
+    //     "nmTindakan": "Kontrol Pasca Tindakan",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "09001",
+    //     "nmTindakan": "Evakuasi medis / Ambulans Darat\r\n",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "09002",
+    //     "nmTindakan": "Evakuasi medis / Ambulans Air\r\n",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05022",
+    //     "nmTindakan": "Ureum",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05023",
+    //     "nmTindakan": "Kreatinin",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05049",
+    //     "nmTindakan": "Gula Darah Puasa (GDP) - PRB/Prolanis",
+    //     "maxTarif": 17500,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05051",
+    //     "nmTindakan": "HbA1c - PRB/Prolanis",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05052",
+    //     "nmTindakan": "Microalbuminaria",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05053",
+    //     "nmTindakan": "Kolesterol Total",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05054",
+    //     "nmTindakan": "Kolesterol LDL",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05055",
+    //     "nmTindakan": "Kolesterol HDL",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   },
+    //   {
+    //     "kdTindakan": "05056",
+    //     "nmTindakan": "Trigliserida",
+    //     "maxTarif": 0,
+    //     "withValue": false
+    //   }
+    // ]';
 
     $ref_tindakan = json_decode($ref_tindakan,true);
 
@@ -1872,7 +2038,6 @@ class Admin extends AdminModule
         'respRate' => intval($_POST['respirasi']),
         'heartRate' => intval($_POST['nadi']),
         'lingkarPerut' => intval($_POST['lingkar_perut']),
-        'terapi' => $_POST['terapi'],
         'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
         'tglPulang' => $_POST['tglPulang'],
         'kdDokter' => strtok($_POST['getDokter'], ':'),
@@ -1882,7 +2047,16 @@ class Admin extends AdminModule
         'kdPoliRujukInternal' => null,
         'rujukLanjut' => null,
         'kdTacc' => -1,
-        'alasanTacc' => null
+        'alasanTacc' => null,
+        "anamnesa"=> $_POST['anamnesa'],
+        "alergiMakan"=> "00",
+        "alergiUdara"=> "00",
+        "alergiObat"=> "00",
+        "kdPrognosa"=> "01",
+        "terapiObat"=> $_POST['terapi'],
+        "terapiNonObat"=> "",
+        "bmhp"=> "",
+        "suhu"=> $_POST['suhu_tubuh']
       ];
 
       $data = json_encode($data);
@@ -1894,7 +2068,7 @@ class Admin extends AdminModule
       $url = $this->api_url . 'kunjungan';
       $output = PcareService::post($url, $data, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
       $json = json_decode($output, true);
-      //echo json_encode($json);
+      echo json_encode($json);
 
       $code = $json['metaData']['code'];
       $message = $json['metaData']['message'];
@@ -1912,11 +2086,19 @@ class Admin extends AdminModule
               },
               "response": ' . $decompress . '}';
 
-          //echo $data;
-          $data = json_decode($data, true);
+              echo $data;
+              $data = json_decode($data, true);
 
           $noKunjungan = $data['response'][0]['message'];
 
+      } else if ($code == '412') {
+          $data = '{
+            "metaData": {
+              "code": "' . $code . '",
+              "message": "' . $message . '"
+            },
+            "response": ' . $json['response'] . '}';
+            echo $data;
       } else {
           echo '{
               "metaData": {
@@ -1944,7 +2126,6 @@ class Admin extends AdminModule
         'respRate' => intval($_POST['respirasi']),
         'heartRate' => intval($_POST['nadi']),
         'lingkarPerut' => intval($_POST['lingkar_perut']),
-        'terapi' => $_POST['terapi'],
         'kdStatusPulang' => strtok($_POST['getStatusPulang'], ':'),
         'tglPulang' => $_POST['tglPulang'],
         'kdDokter' => strtok($_POST['getDokter'], ':'),
@@ -1962,7 +2143,16 @@ class Admin extends AdminModule
             'khusus' => null
         ],
         'kdTacc' => intval(strtok($_POST['getTACC'], ':')),
-        'alasanTacc' => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1)
+        'alasanTacc' => substr($_POST['alasanTacc'], strpos($_POST['alasanTacc'], ': ') + 1),
+        "anamnesa"=> "test anamnesa",
+        "alergiMakan"=> "00",
+        "alergiUdara"=> "00",
+        "alergiObat"=> "00",
+        "kdPrognosa"=> "01",
+        "terapiObat"=> $_POST['terapi'],
+        "terapiNonObat"=> "",
+        "bmhp"=> "",
+        "suhu"=> $_POST['suhu_tubuh']
       ];
 
       $data = json_encode($data);
@@ -2042,7 +2232,16 @@ class Admin extends AdminModule
             ]
         ],
         'kdTacc' => 0,
-        'alasanTacc' => null
+        'alasanTacc' => null,
+        "anamnesa"=> "test anamnesa",
+        "alergiMakan"=> "00",
+        "alergiUdara"=> "00",
+        "alergiObat"=> "00",
+        "kdPrognosa"=> "01",
+        "terapiObat"=> $_POST['terapi'],
+        "terapiNonObat"=> "",
+        "bmhp"=> "",
+        "suhu"=> $_POST['suhu_tubuh']
       ];
 
       $data = json_encode($data);
@@ -2066,8 +2265,8 @@ class Admin extends AdminModule
                 "message": "' . $message . '"
               },
               "response": ' . $decompress . '}';
-          //echo $data;
-          $data = json_decode($data, true);
+              $data = json_decode($data, true);
+              echo $data;
 
           $noKunjungan = $data['response'][0]['message'];
 
@@ -2082,7 +2281,7 @@ class Admin extends AdminModule
       }
     }
 
-    if($noUrut !="") {
+    if($noUrut !="" && $noKunjungan !="") {
       $this->db('mlite_bridging_pcare')->save([
         "no_rawat" => $_POST['id_pendaftaran'],
         "no_rkm_medis" => $_POST['id_pasien'],
@@ -2142,6 +2341,48 @@ class Admin extends AdminModule
       ]);
     }
     exit();
+  }
+
+  public function getRefKelompok()
+  {
+      return $this->draw('kelompok.html');
+  }
+
+  public function getKelompok($kode)
+  {
+      date_default_timezone_set('UTC');
+      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+      $key = $this->consumerID . $this->consumerSecret . $tStamp;
+
+      $url = $this->api_url.'kelompok/club/'.$kode;
+      $output = PcareService::get($url, NULL, $this->consumerID, $this->consumerSecret, $this->consumerUserKey, $this->usernamePcare, $this->passwordPcare, $this->kdAplikasi);
+      $json = json_decode($output, true);
+      //echo json_encode($json);
+
+      $code = $json['metaData']['code'];
+      $message = $json['metaData']['message'];
+      $stringDecrypt = stringDecrypt($key, $json['response']);
+      $decompress = '""';
+      if (!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+      }
+      if ($json != null) {
+          echo '{
+              "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+              },
+              "response": ' . $decompress . '}';
+      } else {
+          echo '{
+              "metaData": {
+                "code": "' . $code . '",
+                "message": "' . $message . '"
+              },
+              "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+      }
+
+      exit();
   }
 
   public function hitungUmur($tanggal_lahir)

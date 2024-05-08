@@ -162,18 +162,31 @@
                           <textarea name="terapi_bridging" id="terapi_bridging" class="form-control" rows="2" cols="80">{$pemeriksaan.pemeriksaan}</textarea>
                         </div>
                       </div>
-                      <div class="col col-md-6">
+                      <div class="col col-md-12">
+                        <div class="form-group">
+                          <label for="poli">Anamnesa</label>
+                          <textarea name="anamnesa" id="anamnesa" class="form-control" rows="2" cols="80">{$pemeriksaan.evaluasi}</textarea>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
                         <div class="form-group">
                           <label for="poli">Status Pulang</label>
                           <input type="text" name="getStatusPulang" id="getStatusPulang" class="form-control" value="">
                           <ul class="list-group" id="statuspulangList" style="z-index:1000;position:absolute;width:100%;"></ul>
                         </div>
                       </div>
-                      <div class="col col-md-6">
+                      <div class="col col-md-4">
                         <div class="form-group">
                           <label for="poli">Kesadaran</label>
                           <input type="text" name="getKesadaran" id="getKesadaran" class="form-control" value="">
                           <ul class="list-group" id="kesadaranList" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Prognosa</label>
+                          <input type="text" name="getPrognosa" id="getPrognosa" class="form-control" value="">
+                          <ul class="list-group" id="prognosaList" style="z-index:1000;position:absolute;width:100%;"></ul>
                         </div>
                       </div>
                       <div class="col col-md-4">
@@ -193,6 +206,27 @@
                       <div class="col col-md-4">
                         <div class="form-group">
                           <label for="poli">Diagnosa 3</label>
+                          <input type="text" name="getDiagnosa3" id="getDiagnosa3" class="form-control" value="">
+                          <ul class="list-group" id="diagnosaList3" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Alergi Makan</label>
+                          <input type="text" name="getAlergi1" id="getAlergi1" class="form-control" value="">
+                          <ul class="list-group" id="alergiList1" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Alergi Udara</label>
+                          <input type="text" name="getDiagnosa2" id="getDiagnosa2" class="form-control" value="">
+                          <ul class="list-group" id="diagnosaList2" style="z-index:1000;position:absolute;width:100%;"></ul>
+                        </div>
+                      </div>
+                      <div class="col col-md-4">
+                        <div class="form-group">
+                          <label for="poli">Alergi Obat</label>
                           <input type="text" name="getDiagnosa3" id="getDiagnosa3" class="form-control" value="">
                           <ul class="list-group" id="diagnosaList3" style="z-index:1000;position:absolute;width:100%;"></ul>
                         </div>
@@ -497,6 +531,7 @@ $(document).ready(function(){
     var tglKunjungan = $('input:text[name=tglKunjungan]').val();
     var getDokter = $('input:text[name=getDokter]').val();
     var terapi = $('textarea[name=terapi_bridging]').val();
+    var anamnesa = $('textarea[name=anamnesa]').val();
     var getStatusPulang = $('input:text[name=getStatusPulang]').val();
     var getKesadaran = $('input:text[name=getKesadaran]').val();
     var getDiagnosa1 = $('input:text[name=getDiagnosa1]').val();
@@ -549,6 +584,7 @@ $(document).ready(function(){
       tglKunjungan: tglKunjungan,
       getDokter: getDokter,
       terapi: terapi,
+      anamnesa: anamnesa,
       getStatusPulang: getStatusPulang,
       getKesadaran: getKesadaran,
       getDiagnosa1: getDiagnosa1,
@@ -567,7 +603,9 @@ $(document).ready(function(){
       getTACC: getTACC,
       alasanTacc: alasanTacc
     } ,function(data) {
-      //console.log(data);
+      console.log(data);
+      // data = JSON.parse(data);
+      alert(data);
       $('.tampildatapendaftaran').load(baseURL + '/pcare/bridgingpcarependaftarantampil/' + id_pasien + '?t=' + mlite.token);
     });
   });
@@ -689,6 +727,78 @@ $(document).ready(function(){
        $('#getKesadaran').val($(this).text());
        var getKesadaran = $('#getKesadaran').val();
        $('#kesadaranList').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getAlergi1').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/alergi/01?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var kesadaran = json_obj[0].response.list;
+                       for (var i in kesadaran) {
+                         output+='<li class=\"list-group-item link-class\">' + kesadaran[i].kdSadar + ': ' + kesadaran[i].nmSadar + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#alergiList1').fadeIn();
+                     $('#alergiList1').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#alergiList1').on('click', 'li', function(){
+       $('#getAlergi1').val($(this).text());
+       var getKesadaran = $('#getAlergi1').val();
+       $('#alergiList1').fadeOut();
+  });
+</script>
+<script type="text/javascript">
+  $('#getPrognosa').keyup(function(){
+       var query = $(this).val();
+       if(query != '')
+       {
+            $.ajax({
+                 url: '{?=url()?}/{?=ADMIN?}/pcare/prognosa?t={?=$_SESSION['token']?}',
+                 method:"GET",
+                 data:{},
+                 success:function(data)
+                 {
+                     var data = JSON.parse(data);
+                     var json_obj = [data];
+                     var output='';
+                     if(json_obj[0].metaData.code == 200) {
+                       var kesadaran = json_obj[0].response.list;
+                       for (var i in kesadaran) {
+                         output+='<li class=\"list-group-item link-class\">' + kesadaran[i].kdSadar + ': ' + kesadaran[i].nmSadar + '</li>';
+                       }
+                     } else {
+                       output+='<li class=\"list-group-item link-class\">' + json_obj[0].metaData.message + '</li>';
+                     }
+                     output+='';
+                     //console.log(output);
+                     $('#prognosaList').fadeIn();
+                     $('#prognosaList').html(output).show();
+                 }
+            });
+       }
+  });
+  $('#prognosaList').on('click', 'li', function(){
+       $('#getPrognosa').val($(this).text());
+       var getKesadaran = $('#getPrognosa').val();
+       $('#prognosaList').fadeOut();
   });
 </script>
 <script type="text/javascript">

@@ -81,7 +81,8 @@ $("#simpantindakan").click(function(){
   var url = baseURL + '/pcare/addtindakan/' + noKunjungan + '/' + kdTindakan + '?t=' + mlite.token;
 
   $.get(url, function(data){
-    // console.log(data);
+    console.log(data);
+    alert(data);
   });
 
 });
