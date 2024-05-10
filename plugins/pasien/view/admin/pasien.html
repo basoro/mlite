@@ -114,6 +114,8 @@ $("#tab nav a").click(function(){
        var dtable = $('.table').DataTable({
           "processing": true,
           "serverSide": true,
+          "scrollCollapse": true,
+          "scrollY": '50vh', 
           "ajax":{
               // "url": "{?=url()?}/{?=ADMIN?}/vedika/alldata?t={?=$_SESSION['token']?}",
               "url": "{?=url([ADMIN, 'pasien', 'datapasien'])?}",

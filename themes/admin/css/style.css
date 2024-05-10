@@ -1044,3 +1044,10 @@ select[multiple].form-control {
 .fa-Erupsi:before {
     content: "\f07e";
 }
+
+@media (min-width: 768px) {
+    .modal-xl {
+      width: 90%;
+     max-width:1200px;
+    }
+  }
