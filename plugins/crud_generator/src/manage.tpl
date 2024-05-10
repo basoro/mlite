@@ -7,32 +7,32 @@
             <div class="panel-body">
                 <div class="row" style="margin-bottom: 0px;">
                     <div class='col-md-6 text-left'>
-                    <div class="btn-group" role="group" aria-label="Toolbar">
-                        <button id='lihat_data_NAMA_TABLE' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data NAMA_TABLE' style='color:white;'>
-                        <i class='fa fa-eye' style='font-size: 15px;'></i> Lihat </button><button id='tambah_data_NAMA_TABLE' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
-                        <i class='fa fa-plus-square' style='font-size: 15px;'></i> Tambah
-                        </button>
-                        <button id='edit_data_NAMA_TABLE' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
-                        <i class='fa fa-edit' style='font-size: 15px;'></i> Edit
-                        </button>
-                        <button id='hapus_data_NAMA_TABLE' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
-                        <i class='fa fa-trash-alt' style='font-size: 15px;'></i> Hapus
-                        </button>
-                    </div>
+                      <div class="btn-group" role="group" aria-label="Toolbar">
+                          <button id='lihat_data_NAMA_TABLE' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data NAMA_TABLE' style='color:white;'>
+                          <i class='fa fa-eye' style='font-size: 15px;'></i> Lihat </button><button id='tambah_data_NAMA_TABLE' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i> Tambah
+                          </button>
+                          <button id='edit_data_NAMA_TABLE' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-edit' style='font-size: 15px;'></i> Edit
+                          </button>
+                          <button id='hapus_data_NAMA_TABLE' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
+                          <i class='fa fa-trash-alt' style='font-size: 15px;'></i> Hapus
+                          </button>
+                      </div>
                     </div>
                     <div class='col-md-6 text-right'>
-                    <div class="input-group" style="width:100%">
-                        <span class="input-group-addon">Cari :</span>
-                        <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;">
-                        <select class="form-control" id='search_field_NAMA_TABLE' name='search_field_NAMA_TABLE' style="margin: 0 !important;"> 
-                            SEARCH_ISI
-                        </select>
-                        </span>
-                        <input class='form-control' name='search_text_NAMA_TABLE' id='search_text_NAMA_TABLE' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
-                        <span class="input-group-addon">
-                        <span id='searchclear_NAMA_TABLE' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
-                        </span>
-                    </div>
+                      <div class="input-group" style="width:100%">
+                          <span class="input-group-addon">Cari :</span>
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;">
+                          <select class="form-control" id='search_field_NAMA_TABLE' name='search_field_NAMA_TABLE' style="margin: 0 !important;"> 
+                              SEARCH_ISI
+                          </select>
+                          </span>
+                          <input class='form-control' name='search_text_NAMA_TABLE' id='search_text_NAMA_TABLE' type='search' placeholder='Masukkan Kata Kunci Pencarian' />  
+                          <span class="input-group-addon">
+                          <span id='searchclear_NAMA_TABLE' data-toggle='tooltip' data-placement='top' title='Clear'><i class="fa fa-times text-danger"></i></span>
+                          </span>
+                      </div>
                     </div>
                 </div>
                 <div class="table-responsive">
