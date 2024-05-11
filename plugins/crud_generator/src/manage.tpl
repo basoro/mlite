@@ -5,7 +5,7 @@
                 <h3 class="panel-title">Kelola</h3>
             </div>
             <div class="panel-body">
-                <div class="row" style="margin-bottom: 0px;">
+                <div class="row" style="padding-bottom: 10px;">
                     <div class='col-md-6 text-left'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
                           <button id='lihat_data_NAMA_TABLE' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data NAMA_TABLE' style='color:white;'>

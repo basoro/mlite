@@ -1,3 +1,14 @@
+function titleCase(str) {
+    var splitStr = str.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        // You do not need to check if i is larger than splitStr length, as your for does that for you
+        // Assign it back to the array
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+    }
+    // Directly return the joined string
+    return splitStr.join(' '); 
+}
+
 $(document).ready(function () {
     $("#open").click(function() {
         $.ajax({
@@ -79,11 +90,7 @@ $(document).ready(function () {
 
         var table_txt = $("#table_txt").val().replace(/_/g, ' ');
 
-        var table_txt_upper = table_txt.toLowerCase().replace(/\b[a-z]/g, function(letter) {
-            return letter.toUpperCase();
-        });
-
-        text = text.replace('MODULE_NAME', table_txt_upper);
+        text = text.replace('MODULE_NAME', titleCase(table_txt));
         
         text = text.replace('MODULE_DESCRIPTION', table_txt);
         
@@ -92,42 +99,14 @@ $(document).ready(function () {
         // ========== BAGIAN INDEX =========//
         var text_index = $("#t4_index").text();
 
-        var ISI_SEARCH_ISI = "";
-        var ISI_HEAD_TABLE = "";
-        var ISI_FORM_EDIT = "";
-
-        for (i = 0; i < nama_field.options.length; i++) {
-            if(i == nama_field.options.length-1){
-                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + nama_field.options[i].value + "</option>\n";
-                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + nama_field.options[i].value + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + nama_field.options[i].value + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
-
-            }
-            else
-            {
-                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + nama_field.options[i].value + "</option>\n";
-                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + nama_field.options[i].value + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + nama_field.options[i].value + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
-            }
-        }
-
         text_index = text_index.replace(/NAMA_TABLE/g, nama_table);
 
         var nama_modul = nama_table.replace(/_/g, ' ');
 
-        var nama_modul_upper = nama_modul.toLowerCase().replace(/\b[a-z]/g, function(letter) {
-            return letter.toUpperCase();
-        });
-
-        var module_name = nama_modul_upper.replace(/ /g, '_');
+        var module_name = titleCase(nama_modul).replace(/ /g, '_');
 
         text_index = text_index.replace('MODULE_NAME', module_name);
         
-        text_index = text_index.replace('SEARCH_ISI', ISI_SEARCH_ISI);
-        text_index = text_index.replace('HEAD_TABLE', ISI_HEAD_TABLE);
-        text_index = text_index.replace('FORM_EDIT', ISI_FORM_EDIT);
-
-
         // loadData //
         var isi = "";
 
@@ -215,16 +194,16 @@ $(document).ready(function () {
 
         for (i = 0; i < nama_field.options.length; i++) {
             if(i == nama_field.options.length-1){
-                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + nama_field.options[i].value + "</option>\n";
-                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + nama_field.options[i].value + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + nama_field.options[i].value + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
+                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</option>\n";
+                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>\n";
+                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
 
             }
             else
             {
-                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + nama_field.options[i].value + "</option>\n";
-                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + nama_field.options[i].value + "</th>\n";
-                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + nama_field.options[i].value + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
+                ISI_SEARCH_ISI = ISI_SEARCH_ISI + "<option value='" + nama_field.options[i].value + "'>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</option>\n";
+                ISI_HEAD_TABLE = ISI_HEAD_TABLE + "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>\n";
+                ISI_FORM_EDIT = ISI_FORM_EDIT + "<label>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "<br /></label><input type='text' class='form-control' id='" + nama_field.options[i].value + "' name='" + nama_field.options[i].value + "' /><div><span class='error'></span></div>\n";
             }
         }
 
@@ -266,7 +245,6 @@ $(document).ready(function () {
             ISI_RULES_ISI += nama_field.options[i].value + ": 'required'\n";
             ISI_MESSAGES_ISI += nama_field.options[i].value + ":'" + nama_field.options[i].value + " tidak boleh kosong!'\n";
             ISI_SUBMITHANDLER_ISI += "var " + nama_field.options[i].value + "= $('#" + nama_field.options[i].value + "').val();\n";
-            //ISI_DATA_ISI += nama_field.options[i].value + ":" + nama_field.options[i].value + "\n";
             ISI_EDIT_ISI += "var " + nama_field.options[i].value + " = rowData['" + nama_field.options[i].value + "'];\n";
             ISI_FORM_ISI += "$('#" + nama_field.options[i].value + "').val(" + nama_field.options[i].value + ");\n";
             ISI_HEADER_ISI += "<th>" + nama_field.options[i].value + "</th>"
