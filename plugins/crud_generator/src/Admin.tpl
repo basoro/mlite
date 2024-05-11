@@ -87,9 +87,6 @@ class Admin extends AdminModule
             $NAMA_TABLE_add = $this->db()->pdo()->prepare('INSERT INTO NAMA_TABLE VALUES (TEMPAT_VALUES)');
             $NAMA_TABLE_add->execute([ISI_VALUES]);
 
-            if($NAMA_TABLE_add == true){
-                header('location:index_NAMA_TABLE.php');
-            }
         }
         if ($act=="edit") {
 
@@ -100,18 +97,11 @@ class Admin extends AdminModule
             $NAMA_TABLE_edit = $this->db()->pdo()->prepare("UPDATE NAMA_TABLE SET VALUES_EDIT WHERE WHERE_EDIT");
             $NAMA_TABLE_edit->execute([VALUES_ISI_EDIT]);
         
-            // Kembali Ke halaman Semula
-            if($NAMA_TABLE_edit == true){
-                header("location:index_NAMA_TABLE.php");
-            }
         }
 
         if ($act=="del") {
         POST_DELETE
             $result = $this->db()->pdo()->exec("DELETE FROM NAMA_TABLE WHERE WHERE_DELETE");            
-            if($result == true){
-                header("location:index_NAMA_TABLE.php");
-            }
         }
 
         if ($act=="lihat") {
