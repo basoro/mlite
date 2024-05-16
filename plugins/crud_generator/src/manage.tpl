@@ -56,7 +56,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 id="modal-title" class="modal-title">Edit Data NAMA_TABLE
+        <h4 class="modal-title"><span id="modal-title">Edit Data MODULE_NAME</span>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>
@@ -80,7 +80,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 id="modal-title" class="modal-title">Lihat Data NAMA_TABLE
+        <h4 class="modal-title"><span id="modal-title">Lihat Data MODULE_NAME</span>
           <button class="close" type="button" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">×</span>
           </button>

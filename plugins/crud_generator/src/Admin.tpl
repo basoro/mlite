@@ -1,5 +1,5 @@
 <?php
-namespace Plugins\MODULE_NAME;
+namespace Plugins\MODULE_NAME_CLASS;
 
 use Systems\AdminModule;
 
@@ -129,14 +129,14 @@ class Admin extends AdminModule
     public function getCss()
     {
         header('Content-type: text/css');
-        echo $this->draw(MODULES.'/NAMA_TABLE/css/admin/styles.css');
+        echo $this->draw(MODULES.'/MODULE_NAME/css/admin/styles.css');
         exit();
     }
 
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/NAMA_TABLE/js/admin/scripts.js');
+        echo $this->draw(MODULES.'/MODULE_NAME/js/admin/scripts.js');
         exit();
     }
 
@@ -160,8 +160,8 @@ class Admin extends AdminModule
         $this->core->addJS(url('assets/datatables/js/buttons.print.min.js'));
         $this->core->addJS(url('assets/datatables/js/dataTables.select.min.js'));
 
-        $this->core->addCSS(url([ADMIN, 'NAMA_TABLE', 'css']));
-        $this->core->addJS(url([ADMIN, 'NAMA_TABLE', 'javascript']), 'footer');
+        $this->core->addCSS(url([ADMIN, 'MODULE_NAME', 'css']));
+        $this->core->addJS(url([ADMIN, 'MODULE_NAME', 'javascript']), 'footer');
     }
 
 }

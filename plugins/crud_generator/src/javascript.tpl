@@ -9,7 +9,7 @@ jQuery().ready(function () {
         'colReorder': true,
         "bInfo" : false,
         "ajax": {
-            "url": "{?=url([ADMIN,'NAMA_TABLE','data'])?}",
+            "url": "{?=url([ADMIN,'MODULE_NAME','data'])?}",
             "dataType": "json",
             "type": "POST",
             "data": function (data) {
@@ -57,7 +57,7 @@ MESSAGES_ISI
  formData.append('typeact', typeact); // tambahan
 
             $.ajax({
-                url: "{?=url([ADMIN,'NAMA_TABLE','aksi'])?}",
+                url: "{?=url([ADMIN,'MODULE_NAME','aksi'])?}",
                 method: "POST",
                 contentType: false, // tambahan
                 processData: false, // tambahan
@@ -105,7 +105,7 @@ MESSAGES_ISI
   
             FORM_ISI
             //$("#EDIT_FIELD").prop('disabled', true); // GA BISA DIEDIT KALI DISABLE
-            $('#modal-title').text("Edit Data NAMA_TABLE");
+            $('#modal-title').text("Edit Data NAMA_MODULE");
             $("#modal_NAMA_TABLE").modal();
         }
         else {
@@ -128,7 +128,7 @@ DELETE_ISI
             if (a) {
 
                 $.ajax({
-                    url: "{?=url([ADMIN,'NAMA_TABLE','aksi'])?}",
+                    url: "{?=url([ADMIN,'MODULE_NAME','aksi'])?}",
                     method: "POST",
                     data: {
                         DEL_FIELD: DEL_FIELD,
@@ -156,7 +156,7 @@ DELETE_ISI
         $("#typeact").val("add");
         $("#ADD_FIELD").prop('disabled', false);
         
-        $('#modal-title').text("Tambah Data NAMA_TABLE");
+        $('#modal-title').text("Tambah Data NAMA_MODULE");
         $("#modal_NAMA_TABLE").modal();
     });
 
@@ -169,7 +169,7 @@ DELETE_ISI
         var search_text_NAMA_TABLE = $('#search_text_NAMA_TABLE').val();
 
         $.ajax({
-            url: "{?=url([ADMIN,'NAMA_TABLE','aksi'])?}",
+            url: "{?=url([ADMIN,'MODULE_NAME','aksi'])?}",
             method: "POST",
             data: {
                 typeact: 'lihat', 

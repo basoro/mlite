@@ -87,6 +87,7 @@ $(document).ready(function () {
 
     $("#generate").click(function() {
 
+        var nama_module = $("#module_txt").val(); 
         var nama_table = $("#table_txt").val();
         var nama_field = document.getElementById('fields_txt');
 
@@ -95,7 +96,7 @@ $(document).ready(function () {
 
         var table_txt = $("#table_txt").val().replace(/_/g, ' ');
 
-        text = text.replace('MODULE_NAME', titleCase(table_txt));
+        text = text.replace('MODULE_NAME', nama_module);
         
         text = text.replace('MODULE_DESCRIPTION', table_txt);
         
@@ -106,11 +107,8 @@ $(document).ready(function () {
 
         text_index = text_index.replace(/NAMA_TABLE/g, nama_table);
 
-        var nama_modul = nama_table.replace(/_/g, ' ');
-
-        var module_name = titleCase(nama_modul).replace(/ /g, '_');
-
-        text_index = text_index.replace('MODULE_NAME', module_name);
+        text_index = text_index.replace(/MODULE_NAME_CLASS/g, nama_module.replace(/ /g, '_'));
+        text_index = text_index.replace(/MODULE_NAME/g, nama_module.toLowerCase().replace(/ /g, '_'));
         
         // loadData //
         var isi = "";
@@ -213,6 +211,7 @@ $(document).ready(function () {
         }
 
         view_data = view_data.replace(/NAMA_TABLE/g, nama_table);        
+        view_data = view_data.replace(/MODULE_NAME/g, nama_module);
         view_data = view_data.replace('SEARCH_ISI', ISI_SEARCH_ISI);
         view_data = view_data.replace('HEAD_TABLE', ISI_HEAD_TABLE);
         view_data = view_data.replace('FORM_EDIT', ISI_FORM_EDIT);
@@ -274,6 +273,8 @@ $(document).ready(function () {
 
         ISI_DELETE_ISI = "var " + nama_field.options[0].value + " = rowData['" + nama_field.options[0].value + "'];";
 
+        text_javascript = text_javascript.replace(/MODULE_NAME/g, nama_module.toLowerCase().replace(/ /g, '_'));
+        text_javascript = text_javascript.replace(/NAMA_MODULE/g, nama_module);
         text_javascript = text_javascript.replace("COLUMNS_ISI", ISI_COLUMNS_ISI);
         text_javascript = text_javascript.replace("COLUMNDEFS_ISI", ISI_COLUMNDEFS_ISI);
         text_javascript = text_javascript.replace("RULES_ISI", ISI_RULES_ISI);
@@ -294,7 +295,7 @@ $(document).ready(function () {
 
         // Simpan file sebagai modul //
 
-        const modulename = document.getElementById('table_txt').value;
+        const modulename = document.getElementById('module_txt').value.toLowerCase().replace(/ /g, '_');
         const content_info = document.getElementById('t4_info').value;
 
         $.ajax({
