@@ -1,6 +1,9 @@
 .dataTables_wrapper th, td { 
   white-space: nowrap; 
 }
+#tbl_NAMA_TABLE th, #tbl_NAMA_TABLE td {
+  white-space: nowrap; 
+}
 .pmd-datatable-pagination {
   padding-top: 10px !important;
 }

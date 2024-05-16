@@ -190,7 +190,7 @@ DELETE_ISI
             }
         });
 
-        $('#modal-title').text("Lihat Data Customer Service");
+        $('#modal-title').text("Lihat Data");
         $("#modal_lihat_NAMA_TABLE").modal();
     });
     // ===========================================

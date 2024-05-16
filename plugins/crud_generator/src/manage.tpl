@@ -23,7 +23,7 @@
                     <div class='col-md-6 text-right'>
                       <div class="input-group" style="width:100%">
                           <span class="input-group-addon">Cari :</span>
-                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;">
+                          <span class="input-group-addon" style="width:150px;padding:0 !important;background-color: #cccccc;border: 0px;text-align: left !important;">
                           <select class="form-control" id='search_field_NAMA_TABLE' name='search_field_NAMA_TABLE' style="margin: 0 !important;"> 
                               SEARCH_ISI
                           </select>

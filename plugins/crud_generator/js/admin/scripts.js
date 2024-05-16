@@ -36,6 +36,11 @@ $(document).ready(function () {
             dataType: "text",
             success : function (data) { $("#t4_styles").text(data); }
         });
+        $.ajax({
+            url : "{?=url()?}/plugins/crud_generator/src/snippets.tpl",
+            dataType: "text",
+            success : function (data) { $("#t4_snippets").text(data); }
+        });
     });
 
     $("#database").click(function() {
@@ -241,13 +246,13 @@ $(document).ready(function () {
         if(i == nama_field.options.length-1){
 
             ISI_COLUMNS_ISI += "{ 'data': '" + nama_field.options[i].value + "' }\n";
-            ISI_COLUMNDEFS_ISI += "{ 'targets': " + i + ", 'className': 'text-center' }\n";
+            ISI_COLUMNDEFS_ISI += "{ 'targets': " + i + "}\n";
             ISI_RULES_ISI += nama_field.options[i].value + ": 'required'\n";
             ISI_MESSAGES_ISI += nama_field.options[i].value + ":'" + nama_field.options[i].value + " tidak boleh kosong!'\n";
             ISI_SUBMITHANDLER_ISI += "var " + nama_field.options[i].value + "= $('#" + nama_field.options[i].value + "').val();\n";
             ISI_EDIT_ISI += "var " + nama_field.options[i].value + " = rowData['" + nama_field.options[i].value + "'];\n";
             ISI_FORM_ISI += "$('#" + nama_field.options[i].value + "').val(" + nama_field.options[i].value + ");\n";
-            ISI_HEADER_ISI += "<th>" + nama_field.options[i].value + "</th>"
+            ISI_HEADER_ISI += "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>"
             ISI_ETABLE_ISI += "eTable += '<td>' + res[i]['" + nama_field.options[i].value + "'] + '</td>';"
             ISI_TAMBAH_ISI += "$('#" + nama_field.options[i].value + "').val('');\n";
             
@@ -255,13 +260,13 @@ $(document).ready(function () {
         else
         {
             ISI_COLUMNS_ISI += "{ 'data': '" + nama_field.options[i].value + "' },\n";
-            ISI_COLUMNDEFS_ISI += "{ 'targets': " + i + ", 'className': 'text-center' },\n";
+            ISI_COLUMNDEFS_ISI += "{ 'targets': " + i + "},\n";
             ISI_RULES_ISI += nama_field.options[i].value + ": 'required',\n";
             ISI_MESSAGES_ISI += nama_field.options[i].value + ":'" + nama_field.options[i].value + " tidak boleh kosong!',\n";
             ISI_SUBMITHANDLER_ISI += "var " + nama_field.options[i].value + "= $('#" + nama_field.options[i].value + "').val();\n";
             ISI_EDIT_ISI += "var " + nama_field.options[i].value + " = rowData['" + nama_field.options[i].value + "'];\n";
             ISI_FORM_ISI += "$('#" + nama_field.options[i].value + "').val(" + nama_field.options[i].value + ");\n";
-            ISI_HEADER_ISI += "<th>" + nama_field.options[i].value + "</th>"
+            ISI_HEADER_ISI += "<th>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</th>"
             ISI_ETABLE_ISI += "eTable += '<td>' + res[i]['" + nama_field.options[i].value + "'] + '</td>';\n";
             ISI_TAMBAH_ISI += "$('#" + nama_field.options[i].value + "').val('');\n";
         }

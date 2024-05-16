@@ -142,14 +142,9 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
-        // $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-        // $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
-        // $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-
         $this->core->addCSS(url('assets/datatables/css/jquery.dataTables.min.css'));
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
         $this->core->addCSS(url('assets/datatables/css/buttons.dataTables.min.css'));
-        // $this->core->addJS(url('assets/datatables/js/dataTables.buttons.min.js'));
 
         $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
         $this->core->addJS(url('assets/export/xlsx.js'));
