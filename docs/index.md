@@ -29,7 +29,7 @@ Konfigurasi PHP harus memiliki ekstensi berikut:
 Instalasi
 ---------
 
-Pertama unduh versi terbaru [mLITE](https://github.com/basoro/khanza-lite).
+Pertama unduh versi terbaru [mLITE](https://github.com/basoro/mlite).
 
 Ekstrak semua file dari paket terkompresi dan kemudian transfer ke direktori lokal atau server. Untuk server cloud, sambungkan melalui klien (S)FTP, seperti program [FileZilla](https://filezilla-project.org) gratis. Biasanya, file harus diunggah ke `www`, `htdocs` atau `public_html`.
 
