@@ -156,29 +156,12 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
-        // $this->core->addCSS(url('assets/datatables/css/jquery.dataTables.min.css'));
-        // $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-        // $this->core->addCSS(url('assets/datatables/css/buttons.dataTables.min.css'));
-
+        $this->core->addCSS(url('assets/css/datatables.min.css'));
         $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
-        $this->core->addJS(url('assets/export/xlsx.js'));
-        $this->core->addJS(url('assets/export/jspdf.min.js'));
-        $this->core->addJS(url('assets/export/jspdf.plugin.autotable.min.js'));
-        $this->core->addJS(url('assets/export/umum.js'));
-        
-        // $this->core->addJS(url('assets/datatables/js/jquery.dataTables.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/dataTables.buttons.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/buttons.flash.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/jszip_3.1.3_jszip.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/vfs_fonts.js'));
-        // $this->core->addJS(url('assets/datatables/js/buttons.html5.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/buttons.print.min.js'));
-        // $this->core->addJS(url('assets/datatables/js/dataTables.select.min.js'));
-
-        $this->core->addCSS(url('https://cdn.datatables.net/v/bs/jszip-3.10.1/dt-1.13.11/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/r-2.5.0/sl-1.7.0/sr-1.4.0/datatables.min.css'));
-        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js'));
-        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js'));
-        $this->core->addJS(url('https://cdn.datatables.net/v/bs/jszip-3.10.1/dt-1.13.11/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/r-2.5.0/sl-1.7.0/sr-1.4.0/datatables.min.js'));
+        $this->core->addJS(url('assets/jscripts/xlsx.js'));
+        $this->core->addJS(url('assets/jscripts/jspdf.min.js'));
+        $this->core->addJS(url('assets/jscripts/jspdf.plugin.autotable.min.js'));
+        $this->core->addJS(url('assets/jscripts/datatables.min.js'));
 
         $this->core->addCSS(url([ADMIN, 'MODULE_NAME', 'css']));
         $this->core->addJS(url([ADMIN, 'MODULE_NAME', 'javascript']), 'footer');
