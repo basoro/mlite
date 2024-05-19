@@ -94,6 +94,24 @@ class Admin extends AdminModule
       exit();
     }
 
+    public function postTulisDetail()
+    {
+      if (!is_dir(MODULES."/".$_POST['modulename'])) {
+          mkdir(MODULES."/".$_POST['modulename'], 0777);
+      }
+      if (!is_dir(MODULES."/".$_POST['modulename']."/view/")) {
+          mkdir(MODULES."/".$_POST['modulename']."/view", 0777);
+      }
+      if (!is_dir(MODULES."/".$_POST['modulename']."/view/admin")) {
+        mkdir(MODULES."/".$_POST['modulename']."/view/admin", 0777);
+      }
+      $data = $_POST['content']; 
+      $f = fopen(MODULES."/".$_POST['modulename']."/view/admin/detail.html", 'w+');
+      fwrite($f, $data);
+      fclose($f);
+      exit();
+    }    
+
     public function postTulisJavascript()
     {
       if (!is_dir(MODULES."/".$_POST['modulename'])) {

@@ -32,6 +32,11 @@ $(document).ready(function () {
             success : function (data) { $("#t4_view_data").text(data); }
         });
         $.ajax({
+            url : "{?=url()?}/plugins/crud_generator/src/detail.tpl",
+            dataType: "text",
+            success : function (data) { $("#t4_view_detail").text(data); }
+        });
+        $.ajax({
             url : "{?=url()?}/plugins/crud_generator/src/style.tpl",
             dataType: "text",
             success : function (data) { $("#t4_styles").text(data); }
@@ -186,7 +191,7 @@ $(document).ready(function () {
 
 
         // getDetail //
-        text_index = text_index.replace(/GET_DETAIL/g, "$" + nama_field.options[0].value);
+        text_index = text_index.replace(/GET_DETAIL/g, nama_field.options[0].value);
 
         $("#t4_index").text(text_index);
 
@@ -221,6 +226,19 @@ $(document).ready(function () {
 
 
         $("#t4_view_data").text(view_data);
+
+        // ========== BAGIAN VIEW DETAIL =========//
+
+        var view_detail = $("#t4_view_detail").text();
+
+        var ISI_VIEW_DETAIL = "";
+        for (i = 0; i < nama_field.options.length; i++) {
+            ISI_VIEW_DETAIL = ISI_VIEW_DETAIL + "<tr><td>" + titleCase(nama_field.options[i].value.replace(/_/g, ' ')) + "</td><td>{$value." + nama_field.options[i].value + "}</td><tr>\n";
+        }
+        view_detail = view_detail.replace(/NAMA_TABLE/g, nama_table);
+        view_detail = view_detail.replace('TABLE_DETAIL', ISI_VIEW_DETAIL);
+
+        $("#t4_view_detail").text(view_detail);
 
         // ========== BAGIAN JAVASCRIPT =========//
         var text_javascript = $("#t4_javascript").text();
@@ -338,6 +356,17 @@ $(document).ready(function () {
             type: 'POST',
             url: "{?=url([ADMIN,'crud_generator','tulisview'])?}",
             data: {modulename: modulename, content: content_view},     
+            success: function(result) {
+                console.log('the data was successfully sent to the server');
+            }
+        });
+
+        const content_detail = document.getElementById('t4_view_detail').value;
+
+        $.ajax({
+            type: 'POST',
+            url: "{?=url([ADMIN,'crud_generator','tulisdetail'])?}",
+            data: {modulename: modulename, content: content_detail},     
             success: function(result) {
                 console.log('the data was successfully sent to the server');
             }

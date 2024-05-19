@@ -140,9 +140,10 @@ class Admin extends AdminModule
         exit();
     }
 
-    public function getDetail(GET_DETAIL)
+    public function getDetail($GET_DETAIL)
     {
-        echo GET_DETAIL;
+        $detail = $this->db('NAMA_TABLE')->where('GET_DETAIL', $GET_DETAIL)->toArray();
+        echo $this->draw('detail.html', ['detail' => $detail]);
         exit();
     }
 
