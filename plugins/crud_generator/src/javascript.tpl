@@ -31,7 +31,7 @@ COLUMNDEFS_ISI
         ],
         buttons: [],
         "scrollCollapse": true,
-        "scrollY": '48vh', 
+        // "scrollY": '48vh', 
         "pageLength":'25', 
         "lengthChange": true,
         "scrollX": true,
@@ -135,7 +135,12 @@ DELETE_ISI
                         typeact: 'del'
                     },
                     success: function (data) {
-                        alert("Data Berhasil Dihapus");
+                        data = JSON.parse(data);
+                        if(data.status === 'success') {
+                            alert(data.msg);
+                        } else {
+                            alert(data.msg);
+                        }
                         location.reload(true);
                     }
                 })
@@ -179,7 +184,7 @@ DELETE_ISI
             dataType: 'json',
             success: function (res) {
                 console.log(res);
-                var eTable = "<div class='table-responsive'><table id='tbl_NAMA_TABLE' class='display dataTable' style='width:100%'><thead>HEADER_ISI</thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_NAMA_TABLE' class='table display dataTable' style='width:100%'><thead>HEADER_ISI</thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     ETABLE_ISI

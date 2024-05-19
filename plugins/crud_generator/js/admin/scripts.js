@@ -293,6 +293,14 @@ $(document).ready(function () {
 
         $("#t4_javascript").text(text_javascript); 
 
+        // ========= BAGIAN STYLE =========//
+        var text_style = $("#t4_styles").text();
+
+        text_style = text_style.replace(/NAMA_TABLE/g, nama_table);
+        
+        $("#t4_styles").text(text_style); 
+
+
         // Simpan file sebagai modul //
 
         const modulename = document.getElementById('module_txt').value.toLowerCase().replace(/ /g, '_');

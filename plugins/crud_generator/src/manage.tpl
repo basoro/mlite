@@ -9,15 +9,26 @@
                     <div class='col-md-6 text-left'>
                       <div class="btn-group" role="group" aria-label="Toolbar">
                           <button id='lihat_data_NAMA_TABLE' class='btn btn-info' data-toggle='tooltip' data-placement='top' title='Lihat Data NAMA_TABLE' style='color:white;'>
-                          <i class='fa fa-eye' style='font-size: 15px;'></i> Lihat </button><button id='tambah_data_NAMA_TABLE' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
-                          <i class='fa fa-plus-square' style='font-size: 15px;'></i> Tambah
+                          <i class='fa fa-eye' style='font-size: 15px;'></i><span class="hidden-xs"> Lihat</span> </button>
+                          <button id='tambah_data_NAMA_TABLE' class='btn btn-success' data-toggle='tooltip' data-placement='top' title='Edit Data'>
+                          <i class='fa fa-plus-square' style='font-size: 15px;'></i><span class="hidden-xs"> Tambah</span>
                           </button>
                           <button id='edit_data_NAMA_TABLE' class='btn btn-primary' data-toggle='tooltip' data-placement='top' title='Edit Data'>
-                          <i class='fa fa-edit' style='font-size: 15px;'></i> Edit
+                          <i class='fa fa-edit' style='font-size: 15px;'></i><span class="hidden-xs"> Edit</span>
                           </button>
                           <button id='hapus_data_NAMA_TABLE' class='btn btn-danger' data-toggle='tooltip' data-placement='top' title='Hapus Data'>
-                          <i class='fa fa-trash-alt' style='font-size: 15px;'></i> Hapus
+                          <i class='fa fa-trash' style='font-size: 15px;'></i><span class="hidden-xs"> Hapus</span>
                           </button>
+                          <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                              <span class="hidden-xs">More</span>
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                              <li><a href="#">Dropdown link</a></li>
+                              <li><a href="#">Dropdown link</a></li>
+                            </ul>
+                          </div>
                       </div>
                     </div>
                     <div class='col-md-6 text-right'>

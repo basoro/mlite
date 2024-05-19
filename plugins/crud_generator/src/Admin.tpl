@@ -100,8 +100,22 @@ class Admin extends AdminModule
         }
 
         if ($act=="del") {
-        POST_DELETE
-            $result = $this->db()->pdo()->exec("DELETE FROM NAMA_TABLE WHERE WHERE_DELETE");            
+            POST_DELETE
+            $check_db = $this->db()->pdo()->prepare("DELETE FROM NAMA_TABLE WHERE WHERE_DELETE");
+            $result = $check_db->execute();
+            $error = $check_db->errorInfo();
+            if (!empty($result)){
+              $data = array(
+                'status' => 'success', 
+                'msg' => $no_rkm_medis
+              );
+            } else {
+              $data = array(
+                'status' => 'error', 
+                'msg' => $error['2']
+              );
+            }
+            echo json_encode($data);                    
         }
 
         if ($act=="lihat") {
@@ -142,23 +156,29 @@ class Admin extends AdminModule
 
     private function _addHeaderFiles()
     {
-        $this->core->addCSS(url('assets/datatables/css/jquery.dataTables.min.css'));
-        $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-        $this->core->addCSS(url('assets/datatables/css/buttons.dataTables.min.css'));
+        // $this->core->addCSS(url('assets/datatables/css/jquery.dataTables.min.css'));
+        // $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
+        // $this->core->addCSS(url('assets/datatables/css/buttons.dataTables.min.css'));
 
         $this->core->addJS(url('assets/jscripts/jqueryvalidation.js'));
         $this->core->addJS(url('assets/export/xlsx.js'));
         $this->core->addJS(url('assets/export/jspdf.min.js'));
         $this->core->addJS(url('assets/export/jspdf.plugin.autotable.min.js'));
         $this->core->addJS(url('assets/export/umum.js'));
-        $this->core->addJS(url('assets/datatables/js/jquery.dataTables.min.js'));
-        $this->core->addJS(url('assets/datatables/js/dataTables.buttons.min.js'));
-        $this->core->addJS(url('assets/datatables/js/buttons.flash.min.js'));
-        $this->core->addJS(url('assets/datatables/js/jszip_3.1.3_jszip.min.js'));
-        $this->core->addJS(url('assets/datatables/js/vfs_fonts.js'));
-        $this->core->addJS(url('assets/datatables/js/buttons.html5.min.js'));
-        $this->core->addJS(url('assets/datatables/js/buttons.print.min.js'));
-        $this->core->addJS(url('assets/datatables/js/dataTables.select.min.js'));
+        
+        // $this->core->addJS(url('assets/datatables/js/jquery.dataTables.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/dataTables.buttons.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/buttons.flash.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/jszip_3.1.3_jszip.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/vfs_fonts.js'));
+        // $this->core->addJS(url('assets/datatables/js/buttons.html5.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/buttons.print.min.js'));
+        // $this->core->addJS(url('assets/datatables/js/dataTables.select.min.js'));
+
+        $this->core->addCSS(url('https://cdn.datatables.net/v/bs/jszip-3.10.1/dt-1.13.11/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/r-2.5.0/sl-1.7.0/sr-1.4.0/datatables.min.css'));
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js'));
+        $this->core->addJS(url('https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js'));
+        $this->core->addJS(url('https://cdn.datatables.net/v/bs/jszip-3.10.1/dt-1.13.11/b-2.4.2/b-colvis-2.4.2/b-html5-2.4.2/b-print-2.4.2/r-2.5.0/sl-1.7.0/sr-1.4.0/datatables.min.js'));
 
         $this->core->addCSS(url([ADMIN, 'MODULE_NAME', 'css']));
         $this->core->addJS(url([ADMIN, 'MODULE_NAME', 'javascript']), 'footer');
