@@ -198,6 +198,35 @@ DELETE_ISI
         $('#modal-title').text("Lihat Data");
         $("#modal_lihat_NAMA_TABLE").modal();
     });
+
+    // ==============================================================
+    // TOMBOL DETAIL NAMA_TABLE DI CLICK
+    // ==============================================================
+    jQuery("#lihat_detail_NAMA_TABLE").click(function (event) {
+
+        var rowData = var_tbl_NAMA_TABLE.rows({ selected: true }).data()[0];
+
+        if (rowData) {
+DATA_ISI
+            var baseURL = mlite.url + '/' + mlite.admin;
+            event.preventDefault();
+            var loadURL =  baseURL + '/MODULE_NAME/detail/' + DEL_FIELD + '?t=' + mlite.token;
+        
+            var modal = $('#modal_detail_NAMA_TABLE');
+            var modalContent = $('#modal_detail_NAMA_TABLE .modal-content');
+        
+            modal.off('show.bs.modal');
+            modal.on('show.bs.modal', function () {
+                modalContent.load(loadURL);
+            }).modal();
+            return false;
+        
+        }
+        else {
+            alert("Pilih satu baris untuk detail");
+        }
+    });
+        
     // ===========================================
     // Ketika tombol print data di tekan
     // ===========================================

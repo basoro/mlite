@@ -185,6 +185,9 @@ $(document).ready(function () {
         text_index = text_index.replace("VARIABLE_TIPE_ADD", ISI_VARIABLE_TIPE_ADD);        
 
 
+        // getDetail //
+        text_index = text_index.replace(/GET_DETAIL/g, "$" + nama_field.options[0].value);
+
         $("#t4_index").text(text_index);
 
         // ========== BAGIAN VIEW DATA =========//
@@ -271,6 +274,7 @@ $(document).ready(function () {
         }
         }
 
+        ISI_DATA_ISI = "var " + nama_field.options[0].value + " = rowData['" + nama_field.options[0].value + "'];";
         ISI_DELETE_ISI = "var " + nama_field.options[0].value + " = rowData['" + nama_field.options[0].value + "'];";
 
         text_javascript = text_javascript.replace(/MODULE_NAME/g, nama_module.toLowerCase().replace(/ /g, '_'));
@@ -281,9 +285,11 @@ $(document).ready(function () {
         text_javascript = text_javascript.replace("MESSAGES_ISI", ISI_MESSAGES_ISI);
         text_javascript = text_javascript.replace("SUBMITHANDLER_ISI", ISI_SUBMITHANDLER_ISI);
         text_javascript = text_javascript.replace("EDIT_ISI", ISI_EDIT_ISI);
+        text_javascript = text_javascript.replace("DATA_ISI", ISI_DATA_ISI);
         text_javascript = text_javascript.replace("DELETE_ISI", ISI_DELETE_ISI);
         text_javascript = text_javascript.replace("FORM_ISI", ISI_FORM_ISI);
         text_javascript = text_javascript.replace("FORM_ISI", ISI_FORM_ISI);
+        text_javascript = text_javascript.replace(/DATA_FIELD/g, nama_field.options[0].value);
         text_javascript = text_javascript.replace(/DEL_FIELD/g, nama_field.options[0].value);
         text_javascript = text_javascript.replace(/ADD_FIELD/g, nama_field.options[0].value);
         text_javascript = text_javascript.replace(/EDIT_FIELD/g, nama_field.options[0].value);

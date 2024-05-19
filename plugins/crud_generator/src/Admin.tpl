@@ -140,6 +140,12 @@ class Admin extends AdminModule
         exit();
     }
 
+    public function getDetail(GET_DETAIL)
+    {
+        echo GET_DETAIL;
+        exit();
+    }
+
     public function getCss()
     {
         header('Content-type: text/css');

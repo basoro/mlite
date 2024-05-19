@@ -25,8 +25,8 @@
                               <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                              <li><a href="#">Dropdown link</a></li>
-                              <li><a href="#">Dropdown link</a></li>
+                              <li><a href="#" id="lihat_detail_NAMA_TABLE">View Detail</a></li>
+                              <li><a href="#">Other link</a></li>
                             </ul>
                           </div>
                       </div>
@@ -108,6 +108,25 @@
           <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
         <button type="submit" id="export_xlsx" class="btn btn-primary">
           <i class="fa fa-file-excel-o"></i>&nbsp;XLSX </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="modal_detail_NAMA_TABLE" class="modal fade" role="dialog" tabindex="-1">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title"><span id="modal-title">Lihat Detail MODULE_NAME</span>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </h4>
+      </div>
+      <div class="modal-body">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
       </div>
     </div>
   </div>
