@@ -255,6 +255,23 @@ DATA_ISI
 
 
     // ===========================================
+    // Ketika tombol print di tekan
+    // ===========================================
+    function printHtml(id_div){
+
+        var divContents = document.getElementById(id_div).innerHTML;
+
+        var a = window.open('', '', 'height=500, width=500');
+        a.document.write('<html>');
+        a.document.write('<body>');
+        a.document.write(divContents);
+        a.document.write('</body></html>');
+        a.document.close();
+        a.print();
+
+    }
+
+    // ===========================================
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
