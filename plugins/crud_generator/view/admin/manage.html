@@ -1,0 +1,70 @@
+<article class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Kelola</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div style="margin-top: 10px;margin-bottom: 10px;">
+                            <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Nama Modul</label>
+                            <input type="text" id="module_txt" class="form-control" name=""module_txt>
+                        </div>
+                        <div style="margin-top: 10px;margin-bottom: 10px;">
+                            <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Tables</label>
+                            <select id="table_txt" class="form-control" name="table_txt">    
+                            </select>
+                        </div>
+                        <div style="margin-top: 10px;margin-bottom: 50px;">
+                          <label class="input-group-text" for="inputGroupSelect01" style="width: 100px;">Fields</label>
+                          <div class="input-group">
+                            <select id="fields_txt" class="form-control" name="fields_txt">
+                            </select>
+                            <span class="input-group-addon text-danger" id="field_remove"><i class="fa fa-close"></i></span>
+                          </div>
+                        </div>
+                  
+                        <button id="database" name="database" class="btn btn-primary" type="button" style="width: 100%;">1. Pilih table</button>
+                        <button class="btn btn-primary" id="open" name="open" type="button" style="width: 100%;margin: 0;margin-top: 10px;">2. Load Files</button>
+                        <button class="btn btn-primary" id="generate" name="generate" type="button" style="width: 100%;margin: 0;margin-top: 10px;">3. Generate</button>              
+                    </div>
+                    <div class="col-md-9">
+                        <ul class="nav nav-tabs">
+                            <li class="nav-item active"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-1">Info</a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-2">Admin</a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-3">Manage<br></a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-7">Detail<br></a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-4">Javascript<br></a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-5">Styles<br></a></li>
+                            <li class="nav-item"><a class="nav-link" role="tab" data-toggle="tab" href="#tab-6">Snippets<br></a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div class="tab-pane active" role="tabpanel" id="tab-1"  style="padding: 12px;">
+                              <textarea id="t4_info" name="t4_info" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>  
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-2" style="padding: 12px;">
+                                <textarea id="t4_index" name="t4_index" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-3" style="padding: 12px;">
+                                <textarea id="t4_view_data" name="t4_view_data" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-7" style="padding: 12px;">
+                                <textarea id="t4_view_detail" name="t4_view_detail" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-4" style="padding: 12px;">
+                                <textarea id="t4_javascript" name="t4_javascript" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-5" style="padding: 12px;">
+                                <textarea id="t4_styles" name="t4_styles" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>
+                            <div class="tab-pane" role="tabpanel" id="tab-6" style="padding: 12px;">
+                                <textarea id="t4_snippets" name="t4_snippets" style="width: 100%;height: 80vh;background: #333333;color: #85ffa5;"></textarea>
+                            </div>        
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>
+    </div>
+</article>
