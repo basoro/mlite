@@ -228,13 +228,6 @@ DATA_ISI
     });
         
     // ===========================================
-    // Ketika tombol print data di tekan
-    // ===========================================
-    $("#print_data").click(function () {
-        printHtml("forTable_NAMA_TABLE");
-    });
-
-    // ===========================================
     // Ketika tombol export pdf di tekan
     // ===========================================
     $("#export_pdf").click(function () {
@@ -250,7 +243,7 @@ DATA_ISI
         doc.line(20,70,572,70,null); /* doc.line(20,70,820,70,null); --> Jika landscape */
         doc.line(20,72,572,72,null); /* doc.line(20,72,820,72,null); --> Jika landscape */
         doc.setFontSize(14);
-        doc.text("Tabel Data NAMA_TABLE", 20, 95, null, null, null);
+        doc.text("Tabel Data NAMA_TABLE_UPPER", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
             html: '#tbl_NAMA_TABLE',
@@ -279,24 +272,6 @@ DATA_ISI
         window.open(doc.output('bloburl'), '_blank',"toolbar=no,status=no,menubar=no,scrollbars=no,resizable=no,modal=yes");  
               
     })
-
-
-    // ===========================================
-    // Ketika tombol print di tekan
-    // ===========================================
-    function printHtml(id_div){
-
-        var divContents = document.getElementById(id_div).innerHTML;
-
-        var a = window.open('', '', 'height=500, width=500');
-        a.document.write('<html>');
-        a.document.write('<body>');
-        a.document.write(divContents);
-        a.document.write('</body></html>');
-        a.document.close();
-        a.print();
-
-    }
 
     // ===========================================
     // Ketika tombol export xlsx di tekan

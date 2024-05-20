@@ -102,8 +102,6 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
-        <button type="submit" id="print_data" class="btn btn-primary">
-          <i class="fa fa-print"></i>&nbsp;Print Data </button>
         <button type="submit" id="export_pdf" class="btn btn-primary">
           <i class="fa fa-file-pdf-o"></i>&nbsp;PDF </button>
         <button type="submit" id="export_xlsx" class="btn btn-primary">

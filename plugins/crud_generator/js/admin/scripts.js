@@ -256,6 +256,7 @@ $(document).ready(function () {
         var ISI_ETABLE_ISI= ""; 
         var ISI_TAMBAH_ISI= "";
 
+        text_javascript = text_javascript.replace('NAMA_TABLE_UPPER', titleCase(nama_table.replace(/_/g, ' ')));
         text_javascript = text_javascript.replace(/NAMA_TABLE/g, nama_table);
 
 
