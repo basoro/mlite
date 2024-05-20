@@ -114,18 +114,7 @@
 <div id="modal_detail_NAMA_TABLE" class="modal fade" role="dialog" tabindex="-1">
   <div class="modal-dialog modal-xl" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title"><span id="modal-title">Lihat Detail MODULE_NAME</span>
-          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">×</span>
-          </button>
-        </h4>
-      </div>
-      <div class="modal-body">
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-default" type="button" data-dismiss="modal">Close</button>
-      </div>
+      ...
     </div>
   </div>
 </div>
