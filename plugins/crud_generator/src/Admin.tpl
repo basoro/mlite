@@ -157,7 +157,8 @@ class Admin extends AdminModule
     public function getJavascript()
     {
         header('Content-type: text/javascript');
-        echo $this->draw(MODULES.'/MODULE_NAME/js/admin/scripts.js');
+        $settings = $this->settings('settings');
+        echo $this->draw(MODULES.'/MODULE_NAME/js/admin/scripts.js', ['settings' => $settings]);
         exit();
     }
 
