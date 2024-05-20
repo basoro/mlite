@@ -54,6 +54,7 @@ class Admin extends AdminModule
         ['name' => 'Task ID', 'url' => url([ADMIN, 'jkn_mobile', 'taskid']), 'icon' => 'tasks', 'desc' => 'Task ID JKN Mobile'],
         ['name' => 'Quality Rate', 'url' => url([ADMIN, 'jkn_mobile', 'qrantrol']), 'icon' => 'tasks', 'desc' => 'Quality Rate Antrian Online BPJS'],
         ['name' => 'Dashboard Antrol BPJS', 'url' => url([ADMIN, 'jkn_mobile', 'antrol']), 'icon' => 'tasks', 'desc' => 'Antrian Online BPJS'],
+        ['name' => 'Dashboard Antrol Local BPJS', 'url' => url([ADMIN, 'jkn_mobile_v2', 'antrollocal']), 'icon' => 'tasks', 'desc' => 'Antrian Online Local BPJS'],
         ['name' => 'Pengaturan', 'url' => url([ADMIN, 'jkn_mobile', 'settings']), 'icon' => 'tasks', 'desc' => 'Pengaturan JKN Mobile'],
       ];
       return $this->draw('manage.html', ['sub_modules' => $sub_modules]);
@@ -1011,6 +1012,27 @@ class Admin extends AdminModule
       echo '<br>-------------------------------------<br><br>';
 
       exit();
+    }
+
+    public function anyAntrolLocal()
+    {
+        $this->_addHeaderFiles();
+        $this->getCssCard();
+        $date = date('Y-m-d');
+        if (isset($_POST['periode_antrol']) && $_POST['periode_antrol'] != '')
+            $date = $_POST['periode_antrol'];
+        $query = $this->db('mlite_antrian_referensi')->where('tanggal_periksa', $date)->where('status_kirim', 'Gagal')->toArray();
+        $rows = [];
+        foreach ($query as $q) {
+            $no_rawat = $this->db('reg_periksa')->select(['no_rawat' => 'reg_periksa.no_rawat'])->where('no_rkm_medis', $q['no_rkm_medis'])->where('tgl_registrasi', $date)->oneArray();
+            $q['nm_pasien'] = $this->core->getPasienInfo('nm_pasien', $q['no_rkm_medis']);
+            $q['no_rawat'] = $no_rawat['no_rawat'];
+            $q['no_rawat_conv'] = convertNorawat($no_rawat['no_rawat']);
+            $rows[] = $q;
+        }
+
+        $taskid = $rows;
+        return $this->draw('antrollocal.html', ['taskid' => $taskid, 'tgl' => $date]);
     }
 
     public function getSettings()
