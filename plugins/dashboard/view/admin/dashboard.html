@@ -1,25 +1,60 @@
-<article class="row" style="margin: 100px 20px;">
-    <div class="col-md-12">
-        <div class="row">
-            <ul class="modules" style="padding:0;margin:0;">
-                {loop: $modules}
-                {if: $value.name !== 'Dashboard'}
-                <li class="module">
-                    <div class="panel panel-default">
-                        <a href="{$value.url}" class="panel-body text-center">
-                            <div class="panel-thumb">
-                                <i class="fa fa-{$value.icon}"></i>
-                                <div class="desc">
-                                    {$value.description}
-                                </div>
-                            </div>
-                            <h4><b>{$value.name}</b></h4>
-                        </a>
-                    </div>
-                </li>
-                {/if}
-                {/loop}
-            </ul>
-        </div>
+<div class="modal-header" style="border-bottom: 0px #fff solid;">
+    <div class="row">
+      <div class="col col-md-12">
+          <div class="input-group">
+            <input type="text" id="cari_modul" minlength="3" class="form-control" placeholder="Pencarian modul..." required>
+            <span class="input-group-btn">
+              <button class="btn btn-default" type="button"  data-dismiss="modal"><i class="fa fa-close"></i></button>
+            </span>
+          </div>
+      </div>
     </div>
-</article>
+</div>
+<div class="modal-body" style="height: 90vh;overflow-y: auto;">
+    <div class="row">
+        <ul id="list_modul" class="modules" style="padding:0;margin:0;">
+            <li class="module">
+                <div class="panel panel-default">
+                    <a href="{?=url([ADMIN,'dashboard','main'])?}" class="panel-body text-center">
+                        <div class="panel-thumb">
+                            <i class="fa fa-cubes"></i>
+                            <div class="desc">
+                                Dashboard                            </div>
+                        </div>
+                        <h4><b>Dashboard</b></h4>
+                    </a>
+                </div>
+            </li>                    
+            {loop: $modules}
+            {if: $value.name !== 'Dashboard'}
+            <li class="module">
+                <div class="panel panel-default">
+                    <a href="{$value.url}" class="panel-body text-center">
+                        <div class="panel-thumb">
+                            <i class="fa fa-{$value.icon}"></i>
+                            <div class="desc">
+                                {$value.description}
+                            </div>
+                        </div>
+                        <h4><b>{$value.name}</b></h4>
+                    </a>
+                </div>
+            </li>
+            {/if}
+            {/loop}
+        </ul>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+      $("#cari_modul").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#list_modul li").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+    $("#moduleModal").on('hidden.bs.modal', function (e) {
+        $("#moduleModal iframe").attr("src", $("#moduleModal iframe").attr("src"));
+    });
+</script>

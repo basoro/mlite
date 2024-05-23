@@ -120,10 +120,15 @@ class Admin extends AdminModule
 
         if ($act=="lihat") {
 
-            $search_field_NAMA_TABLE = $_POST['search_field'];
-            $search_text_NAMA_TABLE = $_POST['search_value'];
-            
-            $user_lihat = $this->db()->pdo()->prepare("SELECT * from NAMA_TABLE WHERE 1 and (".$search_field_NAMA_TABLE." like '%".$search_text_NAMA_TABLE."%')");
+            $search_field_$$$$= $_POST['search_field_$$$$'];
+            $search_text_$$$$ = $_POST['search_text_$$$$'];
+
+            $searchQuery = " ";
+            if($search_text_$$$$ != ''){
+                $searchQuery .= " and (".$search_field_$$$$." like '%".$search_text_$$$$."%' ) ";
+            }
+
+            $user_lihat = $this->db()->pdo()->prepare("SELECT * from NAMA_TABLE WHERE 1 ".$searchQuery);
             $user_lihat->execute();
             $result = $user_lihat->fetchAll(\PDO::FETCH_ASSOC);
 
