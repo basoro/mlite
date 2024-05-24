@@ -24,7 +24,7 @@ plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
 plugins/dokter_ulun
-#plugins/satu_sehat
+plugins/reg_periksa
 plugins/khanza
 plugins/pasien_galleries
 plugins/cssd
