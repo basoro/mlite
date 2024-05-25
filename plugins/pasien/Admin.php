@@ -823,19 +823,86 @@ class Admin extends AdminModule
     public function getPasien()
     {
         // CSS
+        $this->_addHeaderFiles();
         $this->core->addCSS(url('assets/css/jquery-ui.css'));
         $this->core->addCSS(url('assets/css/dataTables.bootstrap.min.css'));
-        $this->core->addCSS(url('assets/css/bootstrap-datetimepicker.css'));
+
         // JS
+        $this->core->addJS(url(MODULES.'/dashboard/js/admin/webcam.js?v={$mlite.version}'));
         $this->core->addJS(url('assets/jscripts/jquery-ui.js'));
         $this->core->addJS(url('assets/jscripts/jquery.dataTables.min.js'));
         $this->core->addJS(url('assets/jscripts/dataTables.bootstrap.min.js'));
-        $this->core->addJS(url('https://datatables.net/media/blog/2017-12-31/dataTables.scrollResize.js'));
-        $this->core->addJS(url('assets/jscripts/moment-with-locales.js'));
-        $this->core->addJS(url('assets/jscripts/bootstrap-datetimepicker.js'));
 
-        $penjab = $this->db('penjab')->desc('kd_pj')->toArray();
-        return $this->draw('pasien.html', ['penjab' => $penjab]);
+        $cek_pcare = $this->db('mlite_modules')->where('dir', 'pcare')->oneArray();
+        $usernamePcare = '';
+        if($cek_pcare) {
+          $usernamePcare = $this->settings('pcare', 'usernamePcare');
+        }  
+        $penjab = $this->db('penjab')->where('status', '1')->toArray();
+        $stts_nikah = array('BELUM MENIKAH','MENIKAH','JANDA','DUDHA','JOMBLO');
+        $agama = array('ISLAM', 'KRISTEN', 'PROTESTAN', 'HINDU', 'BUDHA', 'KONGHUCU', 'KEPERCAYAAN');
+        $pnd = array('TS','TK','SD','SMP','SMA','SLTA/SEDERAJAT','D1','D2','D3','D4','S1','S2','S3','-');
+        $keluarga = array('AYAH','IBU','ISTRI','SUAMI','SAUDARA','ANAK');
+  
+        $pasien = [
+          'no_rkm_medis' => '',
+          'nm_pasien' => '',
+          'no_ktp' => '',
+          'jk' => '',
+          'tmp_lahir' => '',
+          'tgl_lahir' => '',
+          'nm_ibu' => '-',
+          'alamat' => '',
+          'gol_darah' => '-',
+          'pekerjaan' => '-',
+          'stts_nikah' => '',
+          'agama' => 'ISLAM',
+          'tgl_daftar' => date('Y-m-d'),
+          'no_tlp' => '',
+          'umur' => '',
+          'pnd' => '-',
+          'keluarga' => '',
+          'namakeluarga' => '-',
+          'kd_pj' => '',
+          'no_peserta' => '',
+          'kd_kel' => '1',
+          'kd_kec' => '1',
+          'kd_kab' => '1',
+          'pekerjaanpj' => '',
+          'alamatpj' => '',
+          'kelurahanpj' => '',
+          'kecamatanpj' => '',
+          'kabupatenpj' => '',
+          'perusahaan_pasien' => '',
+          'suku_bangsa' => '',
+          'bahasa_pasien' => '',
+          'cacat_fisik' => '',
+          'email' => '-',
+          'nip' => '',
+          'kd_prop' => '1',
+          'propinsipj' => '',
+          'propinsi' => ['nm_prop' => '-'],
+          'kabupaten' => ['nm_kab' => '-'],
+          'kecamatan' => ['nm_kec' => '-'],
+          'kelurahan' => ['nm_kel' => '-']
+        ];
+
+        return $this->draw('pasien.html', 
+        [
+          'pasien' => $pasien, 
+          'penjab' => $penjab,
+          'stts_nikah' => $stts_nikah,
+          'agama' => $agama,
+          'pnd' => $pnd,
+          'keluarga' => $keluarga,
+          'no_rkm_medis_baru' => $this->core->setNoRM(),
+          'waapitoken' => $this->settings->get('wagateway.token'),
+          'waapiphonenumber' => $this->settings->get('wagateway.phonenumber'),
+          'admin_mode' => $this->settings->get('settings.admin_mode'), 
+          'urlUploadPhoto' => '',
+          'cek_pcare' => $cek_pcare,
+          'usernamePcare' => $usernamePcare
+        ]);
     }
     
     public function postDataPasien()
@@ -858,7 +925,7 @@ class Admin extends AdminModule
           7 => 'no_tlp', 
           8 => 'tgl_daftar', 
           9 => 'email'
-      );
+        );
   
         // $start_date = date('Y-m-d');
         $start_date = '1970-01-01';
@@ -942,6 +1009,53 @@ class Admin extends AdminModule
         exit();
       
     } 
+
+    public function getExportPDF()
+    {
+      $query = $_GET['query'];
+      $tgl_awal = $_GET['tgl_awal'];
+      $tgl_akhir = $_GET['tgl_akhir'];
+      $filter = $_GET['filter'];
+
+      $sql = "SELECT * FROM pasien";
+        if(isset($_GET['tgl_awal']) && isset($_GET['tgl_akhir']) && $_GET['tgl_awal'] !='' && $_GET['tgl_akhir'] !='') {
+          $sql .=" WHERE tgl_daftar BETWEEN '$tgl_awal' AND '$tgl_akhir'";
+        }
+        if(isset($_GET['query']) && $_GET['query'] !='') {
+          $sql .=" AND nm_pasien LIKE '%$query%'";
+        }
+        if(isset($_GET['filter']) && $_GET['filter'] !='') {
+          $sql .=" AND kd_pj = '$filter'";
+        }
+      $stmt = $this->db()->pdo()->prepare($sql);
+      $stmt->execute();
+      $rows = $stmt->fetchAll();        
+
+      echo $this->draw('pasien.export.pdf.html', ['pasien' => $rows]);
+
+      $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'orientation' => 'L'
+      ]);
+
+      $mpdf->SetHTMLHeader($this->core->setPrintHeader());
+      $mpdf->SetHTMLFooter($this->core->setPrintFooter());
+            
+      $url = url('admin/tmp/pasien.export.pdf.html');
+      $html = file_get_contents($url);
+      $mpdf->WriteHTML($this->core->setPrintCss(),\Mpdf\HTMLParserMode::HEADER_CSS);
+      $mpdf->WriteHTML($html,\Mpdf\HTMLParserMode::HTML_BODY);
+
+      // Output a PDF file directly to the browser
+      $mpdf->Output();
+      exit();
+    }
+
+    public function getExportXLS()
+    {
+      echo "Cetak XLS";
+      exit();
+    }
 
     public function getJavascript()
     {

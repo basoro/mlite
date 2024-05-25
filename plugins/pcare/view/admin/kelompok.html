@@ -1,0 +1,70 @@
+<div class="row">
+  <div class="col-sm-3">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Katalog</h3>
+      </div>
+      <div class="panel-body">
+        {include: ../plugins/pcare/view/admin/menu.html}
+      </div>
+    </div>
+  </div>
+  <div class="col-sm-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Kelompok</h3>
+      </div>
+      <div class="panel-body">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="panel-group" id="accordion">
+              <div class="panel panel-default">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Get Referensi Kelompok</a>
+                  </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <form class="" action="" method="">
+                      <input type="hidden" name="t" value="{?=$_SESSION['token']?}">
+                      <input type="hidden" id="gettindakankelompok" name="gettindakankelompok" class="form-control"
+                        value="">
+                      <div class="form-group">
+                        <label for="poli">Kode TKP</label>
+                        <select class="form-control" name="kdClub">
+                          <option value="01">Diabetes Melitus</option>
+                          <option value="02">Hipertensi</option>
+                        </select>
+                      </div>
+                      <button type="submit" class="btn btn-danger">
+                        Kirim Parameter
+                      </button>
+                    </form>
+                    {if: isset($_GET['gettindakankelompok'])}
+                    <h4 class="m-t-xl">Respons result</h4>
+                    <pre></pre>
+                    {/if}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  $('select').selectator();
+</script>
+<script type="text/javascript">
+    {if: isset($_GET['gettindakankelompok'])}
+    $.get("{?=url([ADMIN, 'pcare', 'kelompok', $_GET['kdClub']])?}", function (data) {
+      var data = JSON.parse(data);
+      var data = JSON.stringify(data, null, '\t');
+      $("pre").text(data);
+    });
+    {/if}
+</script>

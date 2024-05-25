@@ -69,7 +69,7 @@
         <nav class="navbar navbar-inverse navbar-fixed-top visible-lg visible-md" style="margin-bottom:0;font-size:16px;">
           <div class="container-fluid">
             <ul class="nav navbar-nav">
-              <li><a href="#" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
+              <li><a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal"><img class="img-responsive" src="{?= url('/assets/img/icon-home.png') ?}" style="display:inline-block;height:24px;margin-top:-2px;margin-right:5px;" alt=""> Menu</a></li>
               {if: $mlite.module_pasien}
               <li><a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access || !$mlite.module_pasien} class="btn disabled"{/if}><img class="menu_icon" src="{?= url('/assets/img/icon-pasien.png') ?}" alt=""> Pasien</a></li>
               {/if}
@@ -121,19 +121,6 @@
                   <li><a href="#" data-toggle="modal" data-target="#tentangModal"> Tentang</a></li>
                   <li><a href="#" data-toggle="modal" data-target="#bantuanModal"> Bantuan</a></li>
                   <li><a href="{?=url(ADMIN.'/logout')?}"> Logout</a></li>
-                  <li role="separator" class="divider"></li>
-                  {loop: $mlite.nav}
-                  <li{if: $value.subnav} class="dropdown-submenu"{/if}>
-                    <a href="{$value.url}">{$value.name}</a>
-                    {if: !empty($value.subnav)}
-                    <ul class="dropdown-menu">
-                        {loop: $value.subnav}
-                        <li><a href="{$value.url}">{$value.name}</a></li>
-                        {/loop}
-                    </ul>
-                    {/if}
-                  </li>
-                  {/loop}
                 </ul>
               </li>
             </ul>
@@ -157,7 +144,7 @@
         <section id="content-wrapper">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="col-lg-12" style="margin-bottom:100px !important;">
+                    <div class="col-lg-12" style="margin-bottom:0px !important;">
                         <h2 class="content-title">{if: $module.name == 'Rawat Jalan' | $module.name == 'Pengguna'}<a href="{?=url([ADMIN,$module.dir,'index'])?}">{$module.name}</a>{else}<a href="{?=url([ADMIN,$module.dir,'manage'])?}">{$module.name}</a>{/if} <a href="{?=url([ADMIN,'dashboard','help',$module.dir])?}" data-toggle="modal" data-target="#moduleModal"><span class="pull-right"><small class="hidden-xs">Help</small> <i class="fa fa-question-circle-o" aria-hidden="true"></i></span></a></h2>
                         {$module.content}
                     </div>
@@ -205,39 +192,7 @@
     <div class="modal fade modal-fullscreen" id="menuModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header" style="border-bottom: 0px #fff solid;">
-                    <div class="row">
-                      <div class="col col-md-12">
-                          <div class="input-group">
-                            <input type="text" id="cari_modul" minlength="3" class="form-control" placeholder="Pencarian modul..." required>
-                            <span class="input-group-btn">
-                              <button class="btn btn-default" type="button"  data-dismiss="modal"><i class="fa fa-close"></i></button>
-                            </span>
-                          </div>
-                      </div>
-                    </div>
-                </div>
-                <div class="modal-body" style="height: 90vh;overflow-y: auto;">
-                    <div class="row">
-                        <ul id="list_modul" class="modules" style="padding:0;margin:0;">
-                            {loop: $mlite.nav}
-                            <li class="module" data-module="{$value.dir}">
-                                <div class="panel panel-default">
-                                    <a href="{$value.url}" class="panel-body text-center">
-                                        <div class="panel-thumb">
-                                            <i class="fa fa-{$value.icon}"></i>
-                                            <div class="desc">
-                                                {$value.desc}
-                                            </div>
-                                        </div>
-                                        <h4><b>{$value.name}</b></h4>
-                                    </a>
-                                </div>
-                            </li>
-                            {/loop}
-                        </ul>
-                    </div>
-                </div>
+              ...
             </div>
         </div>
     </div>
@@ -293,7 +248,7 @@
                     <p><b>Medic LITE Indonesia</b><br>
                       Clean, Light and Modular Medical Management Systems</p>
                     <p>Made with <i class="fa fa-heart text-danger"></i> and <i class="fa fa-coffee text-primary"></i> by <a href="https://basoro.id/" target="_blank"><b>drg. F. Basoro</b></a> & Friends.</p>
-                    <p>Thank you to our main sponsors <span class="badge badge-info badge-style-light">RSUD H. Damanhuri Barabai</span> and <span class="badge badge-warning badge-style-light">RS Aura Syifa Kediri</span>. Also Klinik Utama Cahaya Imani Kandangan, RSIA Muntilan Magelang, RSU Ceria Kandangan, RSUD Datu Sanggul Rantau, RSUD Daha Sejahtera Kandangan and other hospitals that we cannot mention one by one. Also contributors who have been involved in development.</p>
+                    <p>Thank you to our main sponsors <span class="badge badge-info badge-style-light">RSUD H. Damanhuri Barabai</span> and <span class="badge badge-warning badge-style-light">RS Aura Syifa Kediri</span>. Also Klinik Utama Cahaya Imani Kandangan, RSUD Datu Sanggul Rantau, RSUD Daha Sejahtera Kandangan and other hospitals that we cannot mention one by one. Also contributors who have been involved in development.</p>
                     <p>Email: dentix.id@gmail.com - Telegram: @basoro</p>
                     <p>Copyright © 2018 - {?=date('Y')?}</p>
                   </div>
@@ -311,26 +266,11 @@
         navigator.serviceWorker
         .register("{$mlite.path}/service-worker.js")
         .then((swReg) => {
-          //console.log("Service Worker is registered", swReg);
         })
         .catch((err) => {
-          //console.error("Service Worker Error", err);
         });
       });
     }
-    </script>
-    <script>
-    $(document).ready(function(){
-      $("#cari_modul").on("keyup", function() {
-        var value = $(this).val().toLowerCase();
-        $("#list_modul li").filter(function() {
-          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
-        });
-      });
-    });
-    $("#moduleModal").on('hidden.bs.modal', function (e) {
-        $("#moduleModal iframe").attr("src", $("#moduleModal iframe").attr("src"));
-    });
     </script>
     <!-- End PWA Support -->
     <script src="{?= url(THEMES.'/admin/js/scripts.js?v='.$mlite.version) ?}"></script>

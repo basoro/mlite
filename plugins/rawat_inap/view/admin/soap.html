@@ -170,7 +170,7 @@
       <tr>
         <td>
           <div class="">
-            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $value.nip}
+            {if: $this->core->getUserInfo('username', !empty($_SESSION['mlite_user'])) == $data.nip}
             <button type="button" name="button" class="btn btn-success btn-xs edit_soap"
               data-no_rawat="{$data.no_rawat}"
               data-tgl_perawatan="{$data.tgl_perawatan}"

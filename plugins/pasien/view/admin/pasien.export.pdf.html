@@ -1,0 +1,27 @@
+<br><br><br>
+<h3>Data Pasien</h3>
+<table class="table" style="margin-top:2cm;" width="100%">
+    <thead>
+        <tr>
+        <th>Nomor RM</th>
+        <th>Nama Pasien</th>
+        <th>Tgl. Lahir</th>
+        <th>Jenis Kelamin</th>
+        <th>Alamat</th>
+        <th>No. Telepon</th>
+        </tr>
+    </thead>
+    <tbody>
+        {loop: $pasien}
+        <tr>
+        <td>{$value.no_rkm_medis}</td>
+        <td>{$value.nm_pasien}</td>
+        <td>{$value.tgl_lahir}</td>
+        <td>{if: $value.jk == 'L'}Laki-Laki{else}Perempuan{/if}</td>
+        <td>{$value.alamat}</td>
+        <td>{$value.no_tlp}</td>
+        </tr>
+        {/loop}
+    </tbody>
+</table>
+    

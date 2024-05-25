@@ -1,0 +1,204 @@
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">Bridging HFIS</h3>
+            </div>
+            <div class="panel-body">
+                <div class="row">
+                    <div id="notif"></div>
+                </div>
+                <div class="display">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <label for="">Dokter</label>
+                                    <input type="hidden" name="t" id="t" value="{?=$_SESSION['token']?}">
+                                    <select name="kd_dokter" id="kd_dokter" class="form-control">
+                                        {loop: $dokter}
+                                        <option value="{$value.kd_dokter_bpjs}">{$value.nm_dokter_bpjs}</option>
+                                        {/loop}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <label for="">Poli</label>
+                                    <select name="kd_poli" id="kd_poli" class="form-control">
+                                        {loop: $poli}
+                                        <option value="{$value.kd_poli_bpjs}">{$value.nm_poli_bpjs}</option>
+                                        {/loop}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="">Ubah Jadwal HFIS</label>
+                                <div class="input-group">
+                                    <button class="btn btn-primary" onclick="ubahhfis()">Berubah</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Senin</label>
+                                    <input id="senin" type="checkbox" value="1|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotasenin">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari1" class="form-control" id="dari1|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai1" class="form-control" id="sampai1|pagi">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Selasa</label>
+                                    <input id="selasa" type="checkbox" value="2|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotaselasa">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari2" class="form-control" id="dari2|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai2" class="form-control" id="sampai2|pagi">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Rabu</label>
+                                    <input id="rabu" type="checkbox" value="3|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotarabu">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari3" class="form-control" id="dari3|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai3" class="form-control" id="sampai3|pagi">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Kamis</label>
+                                    <input id="kamis" type="checkbox" value="4|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotakamis">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari4" class="form-control" id="dari4|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai4" class="form-control" id="sampai4|pagi">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Jumat</label>
+                                    <input id="jumat" type="checkbox" value="5|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotajumat">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari5" class="form-control" id="dari5|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai5" class="form-control" id="sampai5|pagi">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Sabtu</label>
+                                    <input id="sabtu" type="checkbox" value="6|pagi">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotasabtu">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari6" class="form-control" id="dari6|pagi">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai6" class="form-control" id="sampai6|pagi">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Senin Sore</label>
+                                    <input id="seninsore" type="checkbox" value="1|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotaseninsore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari5" class="form-control" id="darisore1|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai5" class="form-control" id="sampaisore1|sore">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Selasa Sore</label>
+                                    <input id="selasasore" type="checkbox" value="2|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotaselasasore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari6" class="form-control" id="darisore2|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai6" class="form-control" id="sampaisore2|sore">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Rabu Sore</label>
+                                    <input id="rabusore" type="checkbox" value="3|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotarabusore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari5" class="form-control" id="darisore3|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai5" class="form-control" id="sampaisore3|sore">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Kamis Sore</label>
+                                    <input id="kamissore" type="checkbox" value="4|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotakamissore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari6" class="form-control" id="darisore4|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai6" class="form-control" id="sampaisore4|sore">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Jumat Sore</label>
+                                    <input id="jumatsore" type="checkbox" value="5|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotajumatsore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari5" class="form-control" id="darisore5|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai5" class="form-control" id="sampaisore5|sore">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="">Sabtu Sore</label>
+                                    <input id="sabtusore" type="checkbox" value="6|sore">
+                                    <input type="text" class="form-control" placeholder="Kuota" id="kuotasabtusore">
+                                    <br>
+                                    <label for="">Dari Jam</label>
+                                    <input type="time" name="dari6" class="form-control" id="darisore6|sore">
+                                    <label for="">Sampai Jam</label>
+                                    <input type="time" name="sampai6" class="form-control" id="sampaisore6|sore">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $('select').selectator();
+</script>

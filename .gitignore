@@ -24,7 +24,7 @@ plugins/desktop
 plugins/kasir
 plugins/dokter_radiologi
 plugins/dokter_ulun
-#plugins/satu_sehat
+plugins/reg_periksa
 plugins/khanza
 plugins/pasien_galleries
 plugins/cssd
@@ -33,7 +33,6 @@ plugins/utd/Site.php
 plugins/utd/view/adonan.html
 websocket
 plugins/khanza.zip
-plugins/dokter_ulun
 plugins/khanza
 plugins/pasien_galleries
 
@@ -41,3 +40,4 @@ plugins/pasien_galleries
 .env
 logs/
 config.php
+workerman.php
