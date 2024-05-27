@@ -178,8 +178,8 @@ DELETE_ISI
             method: "POST",
             data: {
                 typeact: 'lihat', 
-                search_field: search_field_NAMA_TABLE, 
-                search_value: search_text_NAMA_TABLE
+                search_field_NAMA_TABLE: search_field_NAMA_TABLE, 
+                search_text_NAMA_TABLE: search_text_NAMA_TABLE
             },
             dataType: 'json',
             success: function (res) {
