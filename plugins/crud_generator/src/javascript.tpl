@@ -183,7 +183,6 @@ DELETE_ISI
             },
             dataType: 'json',
             success: function (res) {
-                console.log(res);
                 var eTable = "<div class='table-responsive'><table id='tbl_NAMA_TABLE' class='table display dataTable' style='width:100%'><thead>HEADER_ISI</thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
