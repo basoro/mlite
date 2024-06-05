@@ -111,7 +111,6 @@ MESSAGES_ISI
         else {
             alert("Silakan pilih data yang akan di edit.");
         }
-        //var no_pengajuan = rowData["no_pengajuan"];
 
     });
 
@@ -183,7 +182,7 @@ DELETE_ISI
             },
             dataType: 'json',
             success: function (res) {
-                var eTable = "<div class='table-responsive'><table id='tbl_NAMA_TABLE' class='table display dataTable' style='width:100%'><thead>HEADER_ISI</thead>";
+                var eTable = "<div class='table-responsive'><table id='tbl_lihat_NAMA_TABLE' class='table display dataTable' style='width:100%'><thead>HEADER_ISI</thead>";
                 for (var i = 0; i < res.length; i++) {
                     eTable += "<tr>";
                     ETABLE_ISI
@@ -245,7 +244,7 @@ DATA_ISI
         doc.text("Tabel Data NAMA_TABLE_UPPER", 20, 95, null, null, null);
         const totalPagesExp = "{total_pages_count_string}";        
         doc.autoTable({
-            html: '#tbl_NAMA_TABLE',
+            html: '#tbl_lihat_NAMA_TABLE',
             startY: 105,
             margin: {
                 left: 20, 
@@ -276,7 +275,7 @@ DATA_ISI
     // Ketika tombol export xlsx di tekan
     // ===========================================
     $("#export_xlsx").click(function () {
-        let tbl1 = document.getElementById("tbl_NAMA_TABLE");
+        let tbl1 = document.getElementById("tbl_lihat_NAMA_TABLE");
         let worksheet_tmp1 = XLSX.utils.table_to_sheet(tbl1);
         let a = XLSX.utils.sheet_to_json(worksheet_tmp1, { header: 1 });
         let worksheet1 = XLSX.utils.json_to_sheet(a, { skipHeader: true });
