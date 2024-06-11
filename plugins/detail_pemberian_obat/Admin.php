@@ -260,7 +260,7 @@ class Admin extends AdminModule
         $databarang = $this->db('databarang')->where('status', '1')->toArray();
         $bangsal = $this->db('bangsal')->where('status', '1')->toArray();
         $settings = $this->settings('settings');
-        echo $this->draw(MODULES.'/detail_pemberian_obat/js/admin/scripts.js', ['databarang' => $databarang, 'settings' => $settings, 'bangsal' => $bangsal, 'logo' => $logo]);
+        echo $this->draw(MODULES.'/detail_pemberian_obat/js/admin/scripts.js', ['databarang' => $databarang, 'settings' => $settings, 'bangsal' => $bangsal]);
         exit();
     }
 
