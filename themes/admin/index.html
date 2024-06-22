@@ -173,7 +173,7 @@
     </div>
     {else}
     <div class="icon-bar hidden-lg hidden-md">
-      <a href="#" data-toggle="modal" data-target="#menuModal"><i class="fa fa-home"></i></a>
+      <a href="{?=url([ADMIN,'dashboard', 'menu'])?}" data-toggle="modal" data-target="#menuModal"><i class="fa fa-home"></i></a>
       <a href="{?=url([ADMIN, 'pasien', 'manage'])?}"{if: !$mlite.pasien_access} class="btn disabled"{/if}><i class="fa fa-users"></i></a>
       <a href="{?=url([ADMIN, 'igd', 'manage'])?}"{if: !$mlite.igd_access} class="btn disabled"{/if}><i class="fa fa-ambulance"></i></a>
       <a href="{?=url([ADMIN, 'rawat_jalan', 'manage'])?}"{if: !$mlite.rawat_jalan_access} class="btn disabled"{/if}><i class="fa fa-wheelchair"></i></a>
