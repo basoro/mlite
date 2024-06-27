@@ -181,7 +181,7 @@ class Site extends SiteModule
 
         if ($header[$this->settings->get('jkn_mobile_fktp.header_username')] == $this->settings->get('jkn_mobile_fktp.username') && $header[$this->settings->get('jkn_mobile_fktp.header')] == $this->_getToken()) {
 
-            if (empty($decode['nomorkartu'])or strlen($decode['nik']) < 13) {
+            if (empty($decode['nomorkartu'])or strlen($decode['nomorkartu']) < 13) {
                 $response = array(
                     'metadata' => array(
                         'message' => 'Maaf Nomor kartu kurang dari 13 Digit',
@@ -474,7 +474,7 @@ class Site extends SiteModule
           } else {
               $response = array(
                   'metadata' => array(
-                      'message' => 'Maaf belum Ada Antrian ditanggal ' . $slug[(3+$n)],
+                      'message' => 'Maaf belum Ada Antrian ditanggal ' . $slug[(4+$n)],
                       'code' => 201
                   )
               );
