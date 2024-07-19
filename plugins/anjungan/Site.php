@@ -14,6 +14,7 @@ class Site extends SiteModule
     protected $secretkey;
     protected $user_key;
     protected $api_url;
+    protected $bpjsurl;
 
     public function init()
     {
@@ -21,6 +22,7 @@ class Site extends SiteModule
       $this->secretkey = $this->settings->get('settings.BpjsSecretKey');
       $this->user_key = $this->settings->get('settings.BpjsUserKey');
       $this->api_url = $this->settings->get('settings.BpjsApiUrl');
+      $this->bpjsurl = $this->settings->get('jkn_mobile.BpjsAntrianUrl');
     }
 
     public function routes()
@@ -2062,6 +2064,36 @@ class Site extends SiteModule
               'start_time' => date('H:i:s'),
               'end_time' => '00:00:00'
             ]);
+
+            $cariKodeBooking = $this->db('mlite_antrian_referensi')->where('no_rkm_medis',$_POST['no_rkm_medis'])->where('tanggal_periksa',date('Y-m-d'))->oneArray();
+            if($cariKodeBooking){
+              $no_rawat = $this->db('reg_periksa')->where('no_rkm_medis',$_POST['no_rkm_medis'])->where('tgl_registrasi',date('Y-m-d'))->oneArray();
+              $resep_obat = $this->db('resep_obat')
+              ->where('tgl_peresepan', $no_rawat['tgl_registrasi'])
+              ->where('no_rawat', $no_rawat['no_rawat'])
+              ->where('status', 'ralan')
+              ->oneArray();
+
+              $jenisresep = 'Non Racikan';
+
+              $resep_dokter_racikan = $this->db('resep_dokter_racikan')->where('no_resep', $resep_obat['no_resep'])->oneArray();
+              if(!empty($resep_dokter_racikan)) {
+                $jenisresep = 'Racikan';
+              }
+
+              $data_antrian_farmasi = [
+                'kodebooking' => $cariKodeBooking['kodebooking'],
+                'jenisresep' => $jenisresep,
+                'nomorantrean' => $_GET['noantrian'],
+                'keterangan' => 'Resep dibuat secara elektronik di poli.'
+              ];
+
+              echo 'Request:<br>';
+              echo "<pre>".print_r($data_antrian_farmasi,true)."</pre>";
+              $data_antrian_farmasi = json_encode($data_antrian_farmasi);
+              $url = $this->bpjsurl.'antrean/farmasi/add';
+              BpjsService::post($url, $data_antrian_farmasi, $this->consid, $this->secretkey, $this->user_key, NULL);
+            }
           //redirect(url('anjungan/pasien'));
         break;
         case "loket":
