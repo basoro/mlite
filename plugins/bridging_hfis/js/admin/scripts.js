@@ -1,8 +1,6 @@
 function ubahhfis() {
-    // var t = document.getElementById("t").value;
     var baseURL = mlite.url + '/' + mlite.admin;
     var url = baseURL + '/bridging_hfis/updatebridgehfis?t=' + mlite.token;
-    // var url = 'updatebridgehfis?t=' + t;
     var kd_dokter = document.getElementById("kd_dokter").value;
     var kd_poli = document.getElementById("kd_poli").value;
 
@@ -204,10 +202,6 @@ function ubahhfis() {
         jadwal.push(list);
         // }
     }
-    console.log(json);
-
-    console.log(url);
-    // var http = new XMLHttpRequest();
     const http = new XMLHttpRequest()
     http.open('POST', url);
 
@@ -219,13 +213,4 @@ function ubahhfis() {
             alert(http.responseText);
         }
     }
-    // fetch(url, {
-    //     method: 'POST',
-    //     headers: {
-    //         'Accept': 'application/json, text/plain, */*',
-    //         'Content-Type': 'application/json'
-    //     },
-    //     body: JSON.stringify(json)
-    // }).then(res => res.json())
-    //     .then(res => console.log(res));
 }

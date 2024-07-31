@@ -1,0 +1,59 @@
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+            aria-hidden="true">&times;</span></button>
+    <h4 class="modal-title">Antrian Online Onsite</h4>
+</div>
+<div class="modal-body">
+    <form name="jkn_mobile" action="{?=url(ADMIN.'/jkn_mobile/poliklinik_save/')?}" method="POST">
+        <fieldset>
+            <div class="form-group">
+                <label>No Peserta</label>
+                <input type="text" name="poli_nama" id="poli_nama" class="form-control" value="{$no_peserta}" readonly>
+            </div>
+            <div id="myDiv">Pilih Rujukan</div>
+            <!-- <div class="form-group">
+                <input type="submit" name="save" class="btn btn-primary" value="Simpan" />
+            </div> -->
+        </fieldset>
+    </form>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>
+</div>
+<script>
+    $(document).ready(function(){
+        if ("{$jenispasien}" == "BPJ") {
+            $.get("{$json}", function(data){
+                var data = JSON.parse(data);
+                var jsonPretty = JSON.stringify(data, null, '\t');
+                if(data.metaData.message=='OK') {
+                    var myDiv = document.getElementById("myDiv");
+    
+                    var selectList = document.createElement("select");
+                    selectList.setAttribute("id", "mySelect");
+                    selectList.classList.add('form-control')
+                    myDiv.appendChild(selectList);
+    
+                    //Create and append the options
+                    for (var i = 0; i < data.response.rujukan.length; i++) {
+                        var option = document.createElement("option");
+                        option.setAttribute("value", data.response.rujukan[i].noKunjungan);
+                        option.text = data.response.rujukan[i].poliRujukan.nama;
+                        selectList.appendChild(option);
+                    }
+                } else {
+                    alert('Tidak Ada Rujukan')
+                }
+            });
+        } else {
+            var myDiv = document.getElementById("myDiv");
+    
+            var selectList = document.createElement("input");
+            selectList.setAttribute("id", "mySelect");
+            selectList.classList.add('form-control')
+            selectList.value = "{$json}";
+            selectList.readOnly = true;
+            myDiv.appendChild(selectList);
+        }
+    });
+    </script>

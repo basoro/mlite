@@ -46,8 +46,8 @@
         var poli = document.getElementById('poli').value
         var tgl = document.getElementById('tanggal').value
         var output = ''
+        var url = "{?=url(ADMIN.'/bridging_hfis/hfis/')?}";
         document.getElementById('tampil').innerHTML = output
-        console.log(tgl);
         const xhttp = new XMLHttpRequest();
 
         xhttp.onload = function() {
@@ -66,7 +66,7 @@
         }
 
         // Send a request
-        xhttp.open("POST", "{?=url(ADMIN.'/bridging_hfis/hfis/')?}");
+        xhttp.open("POST", url);
         xhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         xhttp.send("poli="+poli+"&tgl="+tgl);
     }
