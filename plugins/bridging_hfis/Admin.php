@@ -8,6 +8,11 @@ use Systems\Lib\BpjsService;
 class Admin extends AdminModule
 {
 
+    protected $consid;
+    protected $secretkey;
+    protected $user_key;
+    protected $bpjsurl;
+
   public function init()
   {
     $this->consid = $this->settings->get('jkn_mobile.BpjsConsID');
@@ -138,10 +143,9 @@ class Admin extends AdminModule
     return $this->draw('jadwal.hfis.html', ['poli' => $poli]);
   }
 
-  public function postHfis()
+  public function anyHfis()
   {
     $kodepoli = $_POST['poli'];
-    // $_POST['tanggal'] = date('Y-m-d');
     $tanggal = $_POST['tgl'];
     date_default_timezone_set('UTC');
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
@@ -156,7 +160,7 @@ class Admin extends AdminModule
     $stringDecrypt = stringDecrypt($key, $json['response']);
     $decompress = '""';
     if (!empty($stringDecrypt)) {
-      $decompress = decompress($stringDecrypt);
+      $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
     }
     // $response = [];
     if ($json['metadata']['code'] == '200') {

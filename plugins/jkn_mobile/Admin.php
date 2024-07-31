@@ -45,6 +45,7 @@ class Admin extends AdminModule
     {
       $sub_modules = [
         ['name' => 'Katalog', 'url' => url([ADMIN, 'jkn_mobile', 'index']), 'icon' => 'tasks', 'desc' => 'Index JKN Mobile'],
+        ['name' => 'Referensi', 'url' => url([ADMIN, 'jkn_mobile', 'ref']), 'icon' => 'tasks', 'desc' => 'Referensi JKN Mobile'],
         ['name' => 'Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'mappingpoli']), 'icon' => 'tasks', 'desc' => 'Mapping Poliklinik JKN Mobile'],
         ['name' => 'Add Mapping Poliklinik', 'url' => url([ADMIN, 'jkn_mobile', 'addmappingpoli']), 'icon' => 'tasks', 'desc' => 'Add mapping poliklinik JKN Mobile'],
         ['name' => 'Mapping Dokter', 'url' => url([ADMIN, 'jkn_mobile', 'mappingdokter']), 'icon' => 'tasks', 'desc' => 'Mapping Dokter JKN Mobile'],
@@ -63,6 +64,41 @@ class Admin extends AdminModule
     public function getIndex()
     {
         return $this->draw('index.html');
+    }
+
+    public function getRef()
+    {
+        return $this->draw('ref.html');
+    }
+
+    public function getRefPoliFinger()
+    {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+        $url = $this->bpjsurl.'ref/poli/fp';
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json = json_decode($output, true);
+        $stringDecrypt = stringDecrypt($key, $json['response']);
+        $decompress = '""';
+        if(!empty($stringDecrypt)) {
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+        }
+        echo $decompress;
+        exit();
+    }
+
+    public function getOnsite($no_peserta, $jenispasien,$tgl)
+    {
+      if ($jenispasien == 'BPJ') {
+        $url = url([ADMIN, 'vclaim', 'caribynokartu', 'PCare', $no_peserta, 'yes']);
+      } else {
+        $carinorkmmedis = $this->db('pasien')->select('no_rkm_medis')->where('no_peserta',$no_peserta)->oneArray();
+        $no_rawat = $this->db('reg_periksa')->where('no_rkm_medis',$carinorkmmedis['no_rkm_medis'])->where('tgl_registrasi',$tgl)->oneArray();
+        $url = $this->settings->get('settings.ppk_bpjs').''.convertNorawat($no_rawat['no_rawat']).''.$no_rawat['no_reg'];
+      }
+      echo $this->draw('form.onsite.html', ['no_peserta' => $no_peserta, 'json' => $url , 'jenispasien' => $jenispasien]);
+      exit();
     }
 
     public function getRefPoli()
@@ -249,9 +285,8 @@ class Admin extends AdminModule
         $stringDecrypt = stringDecrypt($key, $json['response']);
         $decompress = '""';
         if (!empty($stringDecrypt)) {
-            $decompress = decompress($stringDecrypt);
+          $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
         }
-        // $response = [];
         if ($json['metadata']['code'] == '200') {
             $response = $decompress;
         }
@@ -267,7 +302,6 @@ class Admin extends AdminModule
       $date = date('Y-m-d');
       if(isset($_POST['periode_antrol']) && $_POST['periode_antrol'] !='')
         $date = $_POST['periode_antrol'];
-      //$date = '2022-01-20';
       $exclude_taskid = str_replace(",","','", $this->settings->get('jkn_mobile.exclude_taskid'));
       $query = $this->db()->pdo()->prepare("SELECT pasien.no_peserta,pasien.no_rkm_medis,pasien.no_ktp,pasien.no_tlp,reg_periksa.no_reg,reg_periksa.no_rawat,reg_periksa.tgl_registrasi,reg_periksa.kd_dokter,dokter.nm_dokter,reg_periksa.kd_poli,poliklinik.nm_poli,reg_periksa.stts_daftar,reg_periksa.no_rkm_medis
       FROM reg_periksa INNER JOIN pasien ON reg_periksa.no_rkm_medis=pasien.no_rkm_medis INNER JOIN dokter ON reg_periksa.kd_dokter=dokter.kd_dokter INNER JOIN poliklinik ON reg_periksa.kd_poli=poliklinik.kd_poli WHERE reg_periksa.tgl_registrasi='$date' AND reg_periksa.kd_poli NOT IN ('$exclude_taskid')
