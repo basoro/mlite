@@ -590,10 +590,17 @@
     var baseURL = mlite.url + '/' + mlite.admin;
     event.preventDefault();
     var no_rkm_medis = $('input:text[name=no_rkm_medis]').val();
-    var nomor_rujukan = $('input:text[name=sep_nomor_rujukan]').val();
+    var no_rujukan = $('input:text[name=sep_nomor_rujukan]').val();
+    var no_skpd = $('input:text[name=sep_nomor_skdp]').val();
     var find_no_rawat = $('input:text[name=sep_no_rawat]').val();
     var no_rawat = find_no_rawat.replace(/\//g,'');
     var jenis_kunjungan = $(this).attr("data-jenis_kunjungan");
+    var nomor_rujukan = '';
+    if (jenis_kunjungan == '1') {
+      nomor_rujukan = no_rujukan
+    } else {
+      nomor_rujukan = no_skpd
+    }
 
     var loadURL =  baseURL + '/vclaim/addantrian/' + no_rkm_medis + '/' + no_rawat + '/' + nomor_rujukan + '/' + jenis_kunjungan + '?t=' + mlite.token;
     // alert(loadURL);
