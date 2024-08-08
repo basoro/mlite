@@ -2449,10 +2449,10 @@ class Admin extends AdminModule
     $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
     $key = $this->consid . $this->secretkey . $tStamp;
 
-    $url = $this->api_url . 'monitoring/HistoriPelayanan/NoKartu/' . $noKartu . '/tglAwal/' . $tglAwal . '/tglAkhir/' . $tglAkhir;
+    $url = $this->api_url . 'monitoring/HistoriPelayanan/NoKartu/' . $noKartu . '/tglMulai/' . $tglAwal . '/tglAkhir/' . $tglAkhir;
     $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
     $json = json_decode($output, true);
-    //echo json_encode($json);
+    // echo json_encode($json);
     $code = $json['metaData']['code'];
     $message = $json['metaData']['message'];
     $stringDecrypt = stringDecrypt($key, $json['response']);
@@ -2653,11 +2653,9 @@ class Admin extends AdminModule
 
     $url = $this->settings->get('jkn_mobile.BpjsAntrianUrl').'antrean/add';
     $output = BpjsService::post($url, $data, $this->settings->get('jkn_mobile.BpjsConsID'), $this->settings->get('jkn_mobile.BpjsSecretKey'), $this->settings->get('jkn_mobile.BpjsUserKey'), NULL);
-    //echo $output;
     $data = json_decode($output, true);
     $response = json_encode($data, JSON_PRETTY_PRINT);
-    //$data['metadata']['code'] = '200';
-    if($data['metadata']['code'] == 200) {
+    if($data['metadata']['code'] == 200 || $data['metadata']['code'] == 208) {
       $this->db('mlite_antrian_referensi')->save([
           'tanggal_periksa' => $date,
           'no_rkm_medis' => $no_rkm_medis,
@@ -2667,6 +2665,18 @@ class Admin extends AdminModule
           'jenis_kunjungan' => $jenis_kunjungan,
           'status_kirim' => 'Sudah',
           'keterangan' => $data['metadata']['code'].': '.$data['metadata']['message']
+      ]);
+      $status = 'Antrian telah dikirim';
+    } else if ($data == null) {
+      $this->db('mlite_antrian_referensi')->save([
+        'tanggal_periksa' => $date,
+        'no_rkm_medis' => $no_rkm_medis,
+        'nomor_kartu' => $this->core->getPasienInfo('no_peserta', $no_rkm_medis),
+        'nomor_referensi' => $nomorreferensi,
+        'kodebooking' => $kodebooking,
+        'jenis_kunjungan' => $jenis_kunjungan,
+        'status_kirim' => 'Sudah',
+        'keterangan' => $data['metadata']['code'].' null : null '.$data['metadata']['message']
       ]);
       $status = 'Antrian telah dikirim';
     } else {
