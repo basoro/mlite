@@ -1,8 +1,29 @@
 /*
  Selectator jQuery Plugin
  A plugin for select elements
- version 3.3, Oct 17th, 2020
+ version 3.2, Apr 9th, 2020
  by Ingi á Steinamørk
+
+ The MIT License (MIT)
+
+ Copyright (c) 2013 QODIO
+
+ Permission is hereby granted, free of charge, to any person obtaining a copy of
+ this software and associated documentation files (the "Software"), to deal in
+ the Software without restriction, including without limitation the rights to
+ use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ the Software, and to permit persons to whom the Software is furnished to do so,
+ subject to the following conditions:
+
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
 (function($) {
@@ -27,8 +48,6 @@
 			render: {
 				selected_item: function (_item, escape) {
 					var html = '';
-					if (typeof _item.font !== 'undefined')
-						html += '<div class="' + self.options.prefix + 'selected_item_left">' + _item.font + '</div>';
 					if (typeof _item.left !== 'undefined')
 						html += '<div class="' + self.options.prefix + 'selected_item_left"><img src="' + escape(_item.left) + '" alt=""></div>';
 					if (typeof _item.right !== 'undefined')
@@ -41,8 +60,6 @@
 				},
 				option: function (_item, escape) {
 					var html = '';
-					if (typeof _item.font !== 'undefined')
-						html += '<div class="' + self.options.prefix + 'option_left">' + _item.font + '</div>';
 					if (typeof _item.left !== 'undefined')
 						html += '<div class="' + self.options.prefix + 'option_left"><img src="' + escape(_item.left) + '" alt=""></div>';
 					if (typeof _item.right !== 'undefined')
@@ -89,8 +106,7 @@
 			left:     37,
 			up:       38,
 			right:    39,
-			down:     40,
-			font:     41
+			down:     40
 		};
 
 
@@ -311,7 +327,6 @@
 							hideDropdown();
 						}
 						break;
-					case key.font:
 					case key.left:
 					case key.right:
 					case key.up:
@@ -324,7 +339,7 @@
 						load();
 						break;
 				}
-				if (self.$container_element.hasClass('options-hidden') && (keyCode === key.font || keyCode === key.left || keyCode === key.right || keyCode === key.up || keyCode === key.down)) {
+				if (self.$container_element.hasClass('options-hidden') && (keyCode === key.left || keyCode === key.right || keyCode === key.up || keyCode === key.down)) {
 					showDropdown();
 				}
 				resizeSearchInput();
@@ -347,7 +362,19 @@
 			self.$container_element.on('mousedown', '.' + self.options.prefix + 'selected_item_remove', function (e) {
 				e.preventDefault();
 				e.stopPropagation();
-				self.removeSelection()
+				var source_item_element = $(this).closest('.' + self.options.prefix + 'selected_item').data('source_item_element');
+				source_item_element.removeAttribute('selected');
+				source_item_element.selected = false;
+				if (is_single && self.$source_element.find('[value=""]').length) {
+					var noValueOption = self.$source_element.find('[value=""]')[0];
+					noValueOption.setAttribute('selected', '');
+					noValueOption.selected = true;
+				}
+				self.$source_element.trigger('change');
+				filterResults(self.usefilterResults);
+				renderOptions();
+				renderSelectedItems();
+				hideDropdown()
 			});
 
 			// bind option events
@@ -746,30 +773,6 @@
 		// REFRESH PLUGIN
 		self.refresh = function () {
 			renderSelectedItems();
-		};
-
-
-		// REFRESH PLUGIN
-		self.hideDropdown = function () {
-			hideDropdown();
-		};
-
-
-		// REFRESH PLUGIN
-		self.removeSelection = function () {
-			var source_item_element = self.$container_element.find('.' + self.options.prefix + 'selected_item').data('source_item_element');
-			source_item_element.removeAttribute('selected');
-			source_item_element.selected = false;
-			if (is_single && self.$source_element.find('[value=""]').length) {
-				var noValueOption = self.$source_element.find('[value=""]')[0];
-				noValueOption.setAttribute('selected', '');
-				noValueOption.selected = true;
-			}
-			self.$source_element.trigger('change');
-			filterResults(self.usefilterResults);
-			renderOptions();
-			renderSelectedItems();
-			hideDropdown()
 		};
 
 

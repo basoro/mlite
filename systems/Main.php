@@ -74,6 +74,10 @@ abstract class Main
             mkdir(UPLOADS."/settings", 0777);
         }
 
+        if (!is_dir(UPLOADS."/users")) {
+            mkdir(UPLOADS."/users", 0777);
+        }
+
         if (!is_dir(UPLOADS."/invoices")) {
             mkdir(UPLOADS."/invoices", 0777);
         }
