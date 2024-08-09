@@ -410,7 +410,7 @@ INSERT INTO `mlite_settings` (`id`, `module`, `field`, `value`) VALUES
 (31, 'settings', 'admin_mode', 'complex'),
 (32, 'settings', 'input_kasir', 'tidak'),
 (33, 'settings', 'editor', 'wysiwyg'),
-(34, 'settings', 'version', '4.1.1'),
+(34, 'settings', 'version', '4.1.2'),
 (35, 'settings', 'update_check', '0'),
 (36, 'settings', 'update_changelog', ''),
 (37, 'settings', 'update_version', '0'),
