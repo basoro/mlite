@@ -5,7 +5,7 @@ return [
     'description'   =>  'Modul rawat inap untuk mLITE',
     'author'        =>  'Basoro',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.0.*',
+    'compatibility' =>  '4.*.*',
     'icon'          =>  'hotel',
     'install'       =>  function () use ($core) {
     },

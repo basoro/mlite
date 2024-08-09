@@ -5,7 +5,7 @@ return [
     'description'   =>  'Pengelolaan pengaturan',
     'author'        =>  'Basoro.ID',
     'version'       =>  '1.0',
-    'compatibility' =>  '4.0.*',
+    'compatibility' =>  '4.*.*',
     'icon'          =>  'wrench',
     'install'       =>  function () use ($core) {
     },
