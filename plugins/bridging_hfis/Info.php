@@ -5,7 +5,7 @@
         'description'   =>  'Modul Bridging HFIS di mLITE',
         'author'        =>  'Adly',
         'version'       =>  '1.0',
-        'compatibility' =>  '4.0.*',
+        'compatibility' =>  '4.*.*',
         'icon'          =>  'shield',
         'install'       =>  function () use ($core) {
         },
