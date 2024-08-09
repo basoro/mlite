@@ -446,23 +446,6 @@
     if(typeof nama_racik !== 'undefined' && nama_racik != ''){
       var kat           = 'racikan';
     }
-    /*
-    console.log(
-      'No Rawat: ' + no_rawat + '\n' +
-      'Kd Jenis Prw: ' + kd_jenis_prw + '\n' +
-      'Jml: ' + jml + '\n' +
-      'Tgl Perawatan: ' + tgl_perawatan + '\n' +
-      'Jam Rawat: ' + jam_rawat + '\n' +
-      'Biaya: ' + biaya + '\n' +
-      'Aturan Pakai: ' + aturan_pakai + '\n' +
-      'Nama Racik: ' + nama_racik + '\n' +
-      'Keterangan: ' + keterangan + '\n' +
-      'Kategori: ' + kat + '\n' +
-      'Kode Barang: ' + kode_brng + '\n' +
-      'Kandungan: ' + kandungan + '\n'
-    );
-    */
-
     var url = baseURL + '/dokter_ralan/savedetail?t=' + mlite.token;
     $.post(url, {
       no_rawat : no_rawat,
@@ -478,7 +461,6 @@
       kandungan      : kandungan,
       kat            : kat
     }, function(data) {
-      //console.log(data);
       // tampilkan data
       $("#display").hide();
       var url = baseURL + '/dokter_ralan/rincianeresep?t=' + mlite.token;

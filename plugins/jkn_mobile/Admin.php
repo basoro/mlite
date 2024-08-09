@@ -334,7 +334,7 @@ class Admin extends AdminModule
             $task1 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['start_time'];
             $task2 = $mlite_antrian_loket['postdate'].' '.$mlite_antrian_loket['end_time'];
           }
-          $q['nomor_referensi'] = isset_or($mlite_antrian_referensi['nomor_referensi'], '');
+          $q['nomor_referensi'] = isset_or($mlite_antrian_referensi['kodebooking'], '');
           $q['status_kirim'] = isset_or($mlite_antrian_referensi['status_kirim'], '');
           /*$q['task1'] = strtotime($task1) * 1000;
           $q['task2'] = strtotime($task2) * 1000;
@@ -374,6 +374,9 @@ class Admin extends AdminModule
 
             $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', '7')->oneArray();
             $q['task7'] = date('Y-m-d H:i:s', isset_or($taskid7['waktu']) / 1000 );
+            
+            $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $q['nomor_referensi'])->where('taskid', '99')->oneArray();
+            $q['task99'] = date('Y-m-d H:i:s', isset_or($taskid99['waktu']) / 1000 );
           }
 
           if($taskid1['waktu'] == '') {
@@ -397,7 +400,9 @@ class Admin extends AdminModule
           if($taskid7['waktu'] == '') {
             $q['task7'] = isset_or($resep_obat['datajam']);
           }
-          $q['task99'] = $batal;
+          if($taskid99['waktu'] == '') {
+            $q['task99'] = $batal;
+          }
           $rows[] = $q;
       }
 
@@ -431,27 +436,30 @@ class Admin extends AdminModule
 
       $datetime_reg_periksa = $pasien['tgl_registrasi'].' '.$pasien['jam_reg'];
 
-      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '1')->oneArray();
+      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '1')->oneArray();
       $taskid['1'] = date('Y-m-d H:i:s', isset_or($taskid1['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '2')->oneArray();
+      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '2')->oneArray();
       $taskid['2'] = date('Y-m-d H:i:s', isset_or($taskid2['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '3')->oneArray();
+      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '3')->oneArray();
       $taskid['3'] = date('Y-m-d H:i:s', isset_or($taskid3['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '4')->oneArray();
+      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '4')->oneArray();
       $taskid['4'] = date('Y-m-d H:i:s', isset_or($taskid4['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '5')->oneArray();
+      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '5')->oneArray();
       $taskid['5'] = date('Y-m-d H:i:s', isset_or($taskid5['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '6')->oneArray();
+      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '6')->oneArray();
       $taskid['6'] = date('Y-m-d H:i:s', isset_or($taskid6['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
 
-      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '7')->oneArray();
+      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '7')->oneArray();
       $taskid['7'] = date('Y-m-d H:i:s', isset_or($taskid7['waktu'], strtotime($datetime_reg_periksa) * 1000) / 1000 );
-
+      
+      $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->oneArray();
+      $taskid['99'] = date('Y-m-d H:i:s', $taskid99['waktu'] / 1000 );
+      
       $mlite_antrian_loket = $this->db('mlite_antrian_loket')->where('no_rkm_medis', $pasien['no_rkm_medis'])->where('postdate', $pasien['tgl_registrasi'])->oneArray();
       $berkas_dikirim = $this->db('mutasi_berkas')->select('dikirim')->where('no_rawat', $pasien['no_rawat'])->where('dikirim', '<>', '0000-00-00 00:00:00')->oneArray();
       $berkas_diterima = $this->db('mutasi_berkas')->select('diterima')->where('no_rawat', $pasien['no_rawat'])->where('diterima', '<>', '0000-00-00 00:00:00')->oneArray();
@@ -487,6 +495,9 @@ class Admin extends AdminModule
       if($taskid7['waktu'] == '') {
         $taskid['7'] = isset_or($resep_obat['datajam2'], $datetime_reg_periksa);
       }
+      if($taskid99['waktu'] == '') {
+        $taskid['99'] = '';
+      }
       $status_antrol = $this->db('mlite_antrian_referensi')->where('nomor_referensi', $nomor_referensi)->where('status_kirim', 'Sudah')->oneArray();
       $status_kirim_antrol = 'Belum';
       if($status_antrol) {
@@ -498,91 +509,104 @@ class Admin extends AdminModule
 
     public function postSaveTaskIDInput()
     {
-      $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->delete();
+      $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $_POST['nomor_referensi'])->where('status','!=','Sudah')->delete();
 
-      if(!empty($_POST['taskid1'])) {
+      if (!empty($_POST['taskid99'])) {
         $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 1,
-          'waktu' => strtotime($_POST['taskid1']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Mulai tunggu admisi.'
-        ]);
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 99,
+            'waktu' => strtotime($_POST['taskid99']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+      } else {
+        if(!empty($_POST['taskid1'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 1,
+            'waktu' => strtotime($_POST['taskid1']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid2'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 2,
+            'waktu' => strtotime($_POST['taskid2']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid3'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 3,
+            'waktu' => strtotime($_POST['taskid3']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid4'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 4,
+            'waktu' => strtotime($_POST['taskid4']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid5'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 5,
+            'waktu' => strtotime($_POST['taskid5']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid6'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 6,
+            'waktu' => strtotime($_POST['taskid6']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
+  
+        if(!empty($_POST['taskid7'])) {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->save([
+            'tanggal_periksa' => $_POST['tgl_registrasi'],
+            'nomor_referensi' => $_POST['nomor_referensi'],
+            'taskid' => 7,
+            'waktu' => strtotime($_POST['taskid7']) * 1000,
+            'status' => 'Belum',
+            'keterangan' => ''
+          ]);
+        }
       }
 
-      if(!empty($_POST['taskid2'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 2,
-          'waktu' => strtotime($_POST['taskid2']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Mulai pelayanan admisi.'
-        ]);
-      }
-
-      if(!empty($_POST['taskid3'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 3,
-          'waktu' => strtotime($_POST['taskid3']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Selesai pelayanan admisi atau mulai tunggu poli.'
-        ]);
-      }
-
-      if(!empty($_POST['taskid4'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 4,
-          'waktu' => strtotime($_POST['taskid4']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Mulai pelayanan poli.'
-        ]);
-      }
-
-      if(!empty($_POST['taskid5'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 5,
-          'waktu' => strtotime($_POST['taskid5']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Selesai pelayanan poli.'
-        ]);
-      }
-
-      if(!empty($_POST['taskid6'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 6,
-          'waktu' => strtotime($_POST['taskid6']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Mulai pelayanan apotek.'
-        ]);
-      }
-
-      if(!empty($_POST['taskid7'])) {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->save([
-          'tanggal_periksa' => $_POST['tgl_registrasi'],
-          'nomor_referensi' => $_POST['nomor_referensi'],
-          'taskid' => 7,
-          'waktu' => strtotime($_POST['taskid7']) * 1000,
-          'status' => 'Belum',
-          'keterangan' => 'Selesai pelayanan apotek.'
-        ]);
-      }
 
       redirect(url([ADMIN, 'jkn_mobile', 'taskid']));
     }
@@ -722,329 +746,359 @@ class Admin extends AdminModule
         }
       }
 
-      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '1')->oneArray();
-      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '2')->oneArray();
-      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '3')->oneArray();
-      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '4')->oneArray();
-      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '5')->oneArray();
-      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '6')->oneArray();
-      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $nomor_referensi)->where('taskid', '7')->oneArray();
+      $taskid1 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '1')->oneArray();
+      $taskid2 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '2')->oneArray();
+      $taskid3 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '3')->oneArray();
+      $taskid4 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '4')->oneArray();
+      $taskid5 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '5')->oneArray();
+      $taskid6 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '6')->oneArray();
+      $taskid7 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '7')->oneArray();
+      $taskid99 = $this->db('mlite_antrian_referensi_taskid')->where('nomor_referensi', $kode_booking)->where('taskid', '99')->oneArray();
 
-      echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
+      if ($versi == 'batal') {
         $data1 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 1,
-            'waktu' => $taskid1['waktu']
+          'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+          'taskid' => 99,
+          'waktu' => $taskid99['waktu']
         ];
-      }
-      if($versi == 'v3') {
-        $data1 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 1,
-            'waktu' => $taskid1['waktu'],
-            'jenisresep' => 'Tidak ada'
-        ];
-      }
-      $data1 = json_encode($data1);
-      echo 'Request:<br>';
-      echo $data1;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json1 = json_decode($output1, true);
-      echo 'Response:<br>';
-      echo json_encode($json1);
-      if(isset($json1['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 1)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Mulai tunggu admisi.'
-        ]);
+        $data1 = json_encode($data1);
+        echo 'Request:<br>';
+        echo $data1;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json1 = json_decode($output1, true);
+        echo 'Response:<br>';
+        echo json_encode($json1);
+        if(isset($json1['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 99)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 99)
+          ->save([
+            'status' => 'Gagal',
+            'keterangan' => $json1['metadata']['code'].' : '.$json1['metadata']['message']
+          ]);
+        }
       } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 1)
-        ->save([
-          'keterangan' => $json1['metadata']['code'].' : '.$json1['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
 
-      echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data2 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 2,
-            'waktu' => $taskid2['waktu']
-        ];
+        echo 'Menjalankan WS taskid (1) mulai tunggu admisi<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data1 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 1,
+              'waktu' => $taskid1['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data1 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 1,
+              'waktu' => $taskid1['waktu'],
+          ];
+        }
+        $data1 = json_encode($data1);
+        echo 'Request:<br>';
+        echo $data1;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output1 = BpjsService::post($url, $data1, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json1 = json_decode($output1, true);
+        echo 'Response:<br>';
+        echo json_encode($json1);
+        if(isset($json1['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 1)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 1)
+          ->save([
+            'keterangan' => $json1['metadata']['code'].' : '.$json1['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (2) mulai pelayanan admisi<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data2 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 2,
+              'waktu' => $taskid2['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data2 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 2,
+              'waktu' => $taskid2['waktu'],
+          ];
+        }
+        $data2 = json_encode($data2);
+        echo 'Request:<br>';
+        echo $data2;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output2 = BpjsService::post($url, $data2, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json2 = json_decode($output2, true);
+        echo 'Response:<br>';
+        echo json_encode($json2);
+        if(isset($json2['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 2)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 2)
+          ->save([
+            'keterangan' => $json2['metadata']['code'].' : '.$json2['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data3 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 3,
+              'waktu' => $taskid3['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data3 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 3,
+              'waktu' => $taskid3['waktu'],
+          ];
+        }
+        $data3 = json_encode($data3);
+        echo 'Request:<br>';
+        echo $data3;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output3 = BpjsService::post($url, $data3, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json3 = json_decode($output3, true);
+        echo 'Response:<br>';
+        echo json_encode($json3);
+        if(isset($json3['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 3)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 3)
+          ->save([
+            'keterangan' => $json3['metadata']['code'].' : '.$json3['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data4 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 4,
+              'waktu' => $taskid4['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data4 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 4,
+              'waktu' => $taskid4['waktu'],
+          ];
+        }
+        $data4 = json_encode($data4);
+        echo 'Request:<br>';
+        echo $data4;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output4 = BpjsService::post($url, $data4, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json4 = json_decode($output4, true);
+        echo 'Response:<br>';
+        echo json_encode($json4);
+        if(isset($json4['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 4)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 4)
+          ->save([
+            'keterangan' => $json4['metadata']['code'].' : '.$json4['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data5 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 5,
+              'waktu' => $taskid5['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data5 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 5,
+              'waktu' => $taskid5['waktu'],
+              'jenisresep' => $jenisresep
+          ];
+        }
+        $data5 = json_encode($data5);
+        echo 'Request:<br>';
+        echo $data5;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output5 = BpjsService::post($url, $data5, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json5 = json_decode($output5, true);
+        echo 'Response:<br>';
+        echo json_encode($json5);
+        if(isset($json5['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 5)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 5)
+          ->save([
+            'keterangan' => $json5['metadata']['code'].' : '.$json5['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (6) permintaan resep apotek<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data6 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 6,
+              'waktu' => $taskid6['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data6 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 6,
+              'waktu' => $taskid6['waktu'],
+          ];
+        }
+        $data6 = json_encode($data6);
+        echo 'Request:<br>';
+        echo $data6;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output6 = BpjsService::post($url, $data6, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json6 = json_decode($output6, true);
+        echo 'Response:<br>';
+        echo json_encode($json6);
+        if(isset($json6['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 6)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 6)
+          ->save([
+            'keterangan' => $json6['metadata']['code'].' : '.$json6['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
+  
+        echo 'Menjalankan WS taskid (7) selesai pelayanan apotek<br>';
+        echo '-------------------------------------<br>';
+        $data = [];
+        if($versi == 'v2') {
+          $data7 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 7,
+              'waktu' => $taskid7['waktu']
+          ];
+        }
+        if($versi == 'v3') {
+          $data7 = [
+              'kodebooking' => $mlite_antrian_referensi['kodebooking'],
+              'taskid' => 7,
+              'waktu' => $taskid7['waktu'],
+          ];
+        }
+        $data7 = json_encode($data7);
+        echo 'Request:<br>';
+        echo $data7;
+        echo '<br>';
+        $url = $this->bpjsurl.'antrean/updatewaktu';
+        $output7 = BpjsService::post($url, $data7, $this->consid, $this->secretkey, $this->user_key, NULL);
+        $json7 = json_decode($output7, true);
+        echo 'Response:<br>';
+        echo json_encode($json7);
+        if(isset($json7['metadata']['code']) == 200){
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 7)
+          ->save([
+            'status' => 'Sudah',
+            'keterangan' => $json1['metadata']['message']
+          ]);
+        } else {
+          $this->db('mlite_antrian_referensi_taskid')
+          ->where('nomor_referensi', $kode_booking)
+          ->where('taskid', 7)
+          ->save([
+            'keterangan' => $json7['metadata']['code'].' : '.$json7['metadata']['message']
+          ]);
+        }
+        echo '<br>-------------------------------------<br><br>';
       }
-      if($versi == 'v3') {
-        $data2 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 2,
-            'waktu' => $taskid2['waktu'],
-            'jenisresep' => 'Tidak ada'
-        ];
-      }
-      $data2 = json_encode($data2);
-      echo 'Request:<br>';
-      echo $data2;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output2 = BpjsService::post($url, $data2, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json2 = json_decode($output2, true);
-      echo 'Response:<br>';
-      echo json_encode($json2);
-      if(isset($json2['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 2)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Mulai pelayanan admisi.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 2)
-        ->save([
-          'keterangan' => $json2['metadata']['code'].' : '.$json2['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
-      echo 'Menjalankan WS taskid (3) mulai tunggu poli<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data3 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 3,
-            'waktu' => $taskid3['waktu']
-        ];
-      }
-      if($versi == 'v3') {
-        $data3 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 3,
-            'waktu' => $taskid3['waktu'],
-            'jenisresep' => 'Tidak ada'
-        ];
-      }
-      $data3 = json_encode($data3);
-      echo 'Request:<br>';
-      echo $data3;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output3 = BpjsService::post($url, $data3, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json3 = json_decode($output3, true);
-      echo 'Response:<br>';
-      echo json_encode($json3);
-      if(isset($json3['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 3)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Mulai tunggu poli.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 3)
-        ->save([
-          'keterangan' => $json3['metadata']['code'].' : '.$json3['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
-      echo 'Menjalankan WS taskid (4) mulai pelayanan poli<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data4 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 4,
-            'waktu' => $taskid4['waktu']
-        ];
-      }
-      if($versi == 'v3') {
-        $data4 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 4,
-            'waktu' => $taskid4['waktu'],
-            'jenisresep' => 'Tidak ada'
-        ];
-      }
-      $data4 = json_encode($data4);
-      echo 'Request:<br>';
-      echo $data4;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output4 = BpjsService::post($url, $data4, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json4 = json_decode($output4, true);
-      echo 'Response:<br>';
-      echo json_encode($json4);
-      if(isset($json4['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 4)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Mulai pelayanan poli.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 4)
-        ->save([
-          'keterangan' => $json4['metadata']['code'].' : '.$json4['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
-      echo 'Menjalankan WS taskid (5) selesai pelayanan poli<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data5 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 5,
-            'waktu' => $taskid5['waktu']
-        ];
-      }
-      if($versi == 'v3') {
-        $data5 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 5,
-            'waktu' => $taskid5['waktu'],
-            'jenisresep' => $jenisresep
-        ];
-      }
-      $data5 = json_encode($data5);
-      echo 'Request:<br>';
-      echo $data5;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output5 = BpjsService::post($url, $data5, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json5 = json_decode($output5, true);
-      echo 'Response:<br>';
-      echo json_encode($json5);
-      if(isset($json5['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 5)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Selesai pelayanan poli.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 5)
-        ->save([
-          'keterangan' => $json5['metadata']['code'].' : '.$json5['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
-      echo 'Menjalankan WS taskid (6) permintaan resep apotek<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data6 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 6,
-            'waktu' => $taskid6['waktu']
-        ];
-      }
-      if($versi == 'v3') {
-        $data6 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 6,
-            'waktu' => $taskid6['waktu'],
-            'jenisresep' => $jenisresep
-        ];
-      }
-      $data6 = json_encode($data6);
-      echo 'Request:<br>';
-      echo $data6;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output6 = BpjsService::post($url, $data6, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json6 = json_decode($output6, true);
-      echo 'Response:<br>';
-      echo json_encode($json6);
-      if(isset($json6['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 6)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Mulai pelayanan apotek.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 6)
-        ->save([
-          'keterangan' => $json6['metadata']['code'].' : '.$json6['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
-      echo 'Menjalankan WS taskid (7) selesai pelayanan apotek<br>';
-      echo '-------------------------------------<br>';
-      $data = [];
-      if($versi == 'v2') {
-        $data7 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 7,
-            'waktu' => $taskid7['waktu']
-        ];
-      }
-      if($versi == 'v3') {
-        $data7 = [
-            'kodebooking' => $mlite_antrian_referensi['kodebooking'],
-            'taskid' => 7,
-            'waktu' => $taskid7['waktu'],
-            'jenisresep' => $jenisresep
-        ];
-      }
-      $data7 = json_encode($data7);
-      echo 'Request:<br>';
-      echo $data7;
-      echo '<br>';
-      $url = $this->bpjsurl.'antrean/updatewaktu';
-      $output7 = BpjsService::post($url, $data7, $this->consid, $this->secretkey, $this->user_key, NULL);
-      $json7 = json_decode($output7, true);
-      echo 'Response:<br>';
-      echo json_encode($json7);
-      if(isset($json7['metadata']['code']) == 200){
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 7)
-        ->save([
-          'status' => 'Sudah',
-          'keterangan' => 'Selesai pelayanan apotek.'
-        ]);
-      } else {
-        $this->db('mlite_antrian_referensi_taskid')
-        ->where('nomor_referensi', $nomor_referensi)
-        ->where('taskid', 7)
-        ->save([
-          'keterangan' => $json7['metadata']['code'].' : '.$json7['metadata']['message']
-        ]);
-      }
-      echo '<br>-------------------------------------<br><br>';
-
+      
       exit();
     }
 
@@ -1398,7 +1452,36 @@ class Admin extends AdminModule
             ->oneArray();
         }
         if(!$booking_registrasi) {
-            $notif = 'Data Booking tidak ditemukan';
+          date_default_timezone_set('UTC');
+          $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+          $key = $this->consid.$this->secretkey.$tStamp;
+
+          $data = [
+              'kodebooking' => $_POST['kodebooking'],
+              'keterangan' => $_POST['keterangan']
+          ];
+
+          $data = json_encode($data);
+          $url = $this->bpjsurl.'antrean/batal';
+          $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+          $json = json_decode($output, true);
+          $notif = json_encode($json);
+          if ($json == NULL) {
+            $notif = 'Data Booking di JKN Mobile Tidak Ada!';
+          } else if ($json['metadata']['code'] == 200) {
+            $this->db('mlite_antrian_referensi_batal')->save([
+              'tanggal_batal' => date('Y-m-d'),
+              'nomor_referensi' => $referensi['nomor_referensi'],
+              'kodebooking' => $_POST['kodebooking'],
+              'keterangan' => $_POST['keterangan']
+            ]);
+            $this->db('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->update([
+              'status_kirim' => 'Batal',
+              'keterangan' => $_POST['keterangan']
+            ]);
+            $notif = 'Berhasil Dibatalkan di JKN Mobile';
+          }
+          // $notif = 'Data Booking tidak ditemukan';
         }else{
             if(date("Y-m-d")>$booking_registrasi['tanggal_periksa']){
                 $notif = 'Pembatalan Antrean tidak berlaku mundur';
@@ -1415,24 +1498,24 @@ class Admin extends AdminModule
                     ]);
                     $this->db('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->delete();
                     if (!$this->db('mlite_antrian_referensi')->where('kodebooking', $_POST['kodebooking'])->oneArray()) {
-                        date_default_timezone_set('UTC');
-                        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
-                        $key = $this->consid.$this->secretkey.$tStamp;
+                      date_default_timezone_set('UTC');
+                      $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+                      $key = $this->consid.$this->secretkey.$tStamp;
 
-                        $data = [
-                            'kodebooking' => $_POST['kodebooking'],
-                            'keterangan' => $_POST['keterangan']
-                        ];
+                      $data = [
+                          'kodebooking' => $_POST['kodebooking'],
+                          'keterangan' => $_POST['keterangan']
+                      ];
 
-                        $data = json_encode($data);
-                        $url = $this->bpjsurl.'antrean/batal';
-                        $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
-                        $json = json_decode($output, true);
-                        if ($json == NULL) {
-                            $notif = 'Data Booking di JKN Mobile Tidak Ada!<br>Berhasil Dibatalkan di SIMRS';
-                        } else if ($json['metadata']['code'] == 200) {
-                            $notif = 'Berhasil Dibatalkan di JKN Mobile';
-                        }
+                      $data = json_encode($data);
+                      $url = $this->bpjsurl.'antrean/batal';
+                      $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+                      $json = json_decode($output, true);
+                      if ($json == NULL) {
+                          $notif = 'Data Booking di JKN Mobile Tidak Ada!<br>Berhasil Dibatalkan di SIMRS';
+                      } else if ($json['metadata']['code'] == 200) {
+                          $notif = 'Berhasil Dibatalkan di JKN Mobile';
+                      }
                     }
                 }else{
                     $notif = 'Maaf Terjadi Kesalahan, Hubungi Admnistrator..';
