@@ -16,7 +16,7 @@
   <label for="" style="width: 250px;">Status Kirim Antrol</label><span id="status_kirim_antrol">{$status_kirim_antrol}</span><br>
   <form class="" action="{?=url([ADMIN,'jkn_mobile','savetaskidinput'])?}" method="post">
   <input type="hidden" name="tgl_registrasi" class="form-control" value="{$pasien.tgl_registrasi}">
-  <input type="hidden" name="nomor_referensi" class="form-control" value="{$nomor_referensi}">
+  <input type="hidden" name="nomor_referensi" class="form-control" value="{$kode_booking}">
   <div class="row">
     <div class="col-md-6">
       <div class="form-group">
@@ -63,7 +63,7 @@
     <div class="col-md-6">
       <div class="form-group">
           <label>Task ID 99</label>
-          <input type="text" name="taskid99" class="form-control tanggaljam" value="">
+          <input type="text" name="taskid99" class="form-control tanggaljam" value="{$taskid.99}">
       </div>
     </div>
   </div>
@@ -73,6 +73,7 @@
   </form>
 </div>
 <div class="modal-footer">
+    <a href="{?=url([ADMIN,'jkn_mobile','updatewaktu',$nomor_referensi,$kode_booking,'batal'])?}" class="btn btn-info" target="_blank">Batal Antrian</a>
     <a href="{?=url([ADMIN,'jkn_mobile','updatewaktu',$nomor_referensi,$kode_booking,'v2'])?}" class="btn btn-warning" target="_blank">Update Waktu V2</a>
     <a href="{?=url([ADMIN,'jkn_mobile','updatewaktu',$nomor_referensi,$kode_booking,'v3'])?}" class="btn btn-danger" target="_blank">Update Waktu V3</a>
     <button type="button" class="btn btn-primary" data-dismiss="modal">Tutup</button>

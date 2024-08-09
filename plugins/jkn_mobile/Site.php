@@ -81,6 +81,7 @@ class Site extends SiteModule
         $this->route('jknmobile_v2/antrian/tanggaltunggu/(:str)/(:str)', '_getAntreanWaktuTungguTanggal');
         $this->route('jknmobile_v2/antrian/listtask/(:str)', '_getAntreanGetListTask');
         $this->route('jknmobile_v2/jadwal/(:str)/(:str)', '_getJadwal');
+        $this->route('jknmobile_v2/antrian/pertanggal/(:str)', 'getListAntrol');
 
         $this->route('jknmobile_v2/aplicare/(:str)', 'getAplicare');
         $this->route('jknmobile_v2/aplicare/(:str)/(:str)', 'getAplicare');
@@ -3661,6 +3662,7 @@ class Site extends SiteModule
 
     public function _getAntreanGetListTask()
     {
+        header('Content-Type: application/json');
         $slug = parseURL();
         $data = [
             'kodebooking' => $slug['3']
@@ -3670,7 +3672,18 @@ class Site extends SiteModule
         $url = $this->bpjsurl.'antrean/getlisttask';
         $output = BpjsService::post($url, $data, $this->consid, $this->secretkey, $this->user_key, NULL);
         $json = json_decode($output, true);
-        echo json_encode($json);
+        $decompress = '""';
+        if ($json['metadata']['code'] == 200) {
+            date_default_timezone_set('UTC');
+            $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+            $key = $this->consid.$this->secretkey.$tStamp;
+            # code...
+            $stringDecrypt = stringDecrypt($key, $json['response']);
+            if(!empty($stringDecrypt)) {
+                $decompress = \LZCompressor\LZString::decompressFromEncodedURIComponent(($stringDecrypt));
+            }
+        }
+        echo json_decode(json_encode($decompress,JSON_PRETTY_PRINT));
         exit();
     }
 
@@ -3692,6 +3705,43 @@ class Site extends SiteModule
         $json = json_decode($output, true);
         echo json_encode($json);
         exit();
+    }
+
+    function getListAntrol($tanggal) {
+        date_default_timezone_set('UTC');
+        $tStamp = strval(time() - strtotime("1970-01-01 00:00:00"));
+        $key = $this->consid.$this->secretkey.$tStamp;
+        date_default_timezone_set($this->settings->get('settings.timezone'));
+        $url = $this->bpjsurl.'antrean/pendaftaran/tanggal/'.$tanggal;
+        $output = BpjsService::get($url, NULL, $this->consid, $this->secretkey, $this->user_key, $tStamp);
+        $json = json_decode($output, true);
+        $code = $json['metadata']['code'];
+        $message = $json['metadata']['message'];
+        $decompress = '""';
+        if ($code == 200) {
+            # code...
+            $stringDecrypt = stringDecrypt($key, $json['response']);
+            if(!empty($stringDecrypt)) {
+              $decompress = decompress($stringDecrypt);
+            }
+        }
+        if($json != null) {
+          echo '{
+                  "metaData": {
+                      "code": "'.$code.'",
+                      "message": "'.$message.'"
+                  },
+                  "response": '.$decompress.'}';
+        } else {
+          echo '{
+                  "metaData": {
+                      "code": "5000",
+                      "message": "ERROR"
+                  },
+                  "response": "ADA KESALAHAN ATAU SAMBUNGAN KE SERVER BPJS TERPUTUS."}';
+        }
+        exit();
+
     }
 
     public function getAplicareManajemen()

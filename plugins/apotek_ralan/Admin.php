@@ -180,7 +180,8 @@ class Admin extends AdminModule
         ->where('resep_dokter_racikan.no_racik=resep_dokter_racikan_detail.no_racik')
         ->toArray();
       $get_resep_dokter = array_merge($get_resep_dokter_nonracikan, $get_resep_dokter_racikan);
-
+      $tgl_rawat = date('Y-m-d');
+      $jam_rawat = date('H:i:s');
       foreach ($get_resep_dokter as $item) {
 
         $get_gudangbarang = $this->db('gudangbarang')->where('kode_brng', $item['kode_brng'])->where('kd_bangsal', $this->settings->get('farmasi.deporalan'))->oneArray();
@@ -201,8 +202,8 @@ class Admin extends AdminModule
             'keluar' => $item['jml'],
             'stok_akhir' => $get_gudangbarang['stok'] - $item['jml'],
             'posisi' => 'Pemberian Obat',
-            'tanggal' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tanggal' => $tgl_rawat,
+            'jam' => $jam_rawat,
             'petugas' => $this->core->getUserInfo('fullname', null, true),
             'kd_bangsal' => $this->settings->get('farmasi.deporalan'),
             'status' => 'Simpan',
@@ -213,8 +214,8 @@ class Admin extends AdminModule
 
         $this->db('detail_pemberian_obat')
           ->save([
-            'tgl_perawatan' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tgl_perawatan' => $tgl_rawat,
+            'jam' => $jam_rawat,
             'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'h_beli' => $get_databarang['h_beli'],
@@ -231,8 +232,8 @@ class Admin extends AdminModule
 
         $this->db('aturan_pakai')
           ->save([
-            'tgl_perawatan' => $_POST['tgl_peresepan'],
-            'jam' => $_POST['jam_peresepan'],
+            'tgl_perawatan' => $tgl_rawat,
+            'jam' => $jam_rawat,
             'no_rawat' => $_POST['no_rawat'],
             'kode_brng' => $item['kode_brng'],
             'aturan' => $item['aturan_pakai']
@@ -245,8 +246,8 @@ class Admin extends AdminModule
       if(!empty($resep_dokter_racikan)) {
         $this->db('obat_racikan')->save(
           [
-              'tgl_perawatan' => $_POST['tgl_peresepan'],
-              'jam' => $_POST['jam_peresepan'],
+              'tgl_perawatan' => $tgl_rawat,
+              'jam' => $jam_rawat,
               'no_rawat' => $_POST['no_rawat'],
               'no_racik' => $resep_dokter_racikan['no_racik'],
               'nama_racik' => $resep_dokter_racikan['nama_racik'],
@@ -258,7 +259,7 @@ class Admin extends AdminModule
         );
       }
 
-      $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => $_POST['tgl_peresepan'], 'jam' => $_POST['jam_peresepan']]);
+      $this->db('resep_obat')->where('no_resep', $_POST['no_resep'])->save(['tgl_perawatan' => $tgl_rawat, 'jam' => $jam_rawat]);
 
       exit();
     }
