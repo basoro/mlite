@@ -5,4 +5,5 @@ vendor/
 tmp/
 uploads/
 plugins/crud_generator
+systems/Main.php
 systems/data/database.sdb
