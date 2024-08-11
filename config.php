@@ -26,8 +26,7 @@ define('BASIC_MODULES', serialize([
     1 => 'mlite_modules', 
     2 => 'mlite_users',
     3 => 'mlite_settings', 
-    4 => 'crud_generator',
-    5 => 'mlite_api_tools'
+    4 => 'mlite_api_tools'
 ]));
 
 // Developer mode
